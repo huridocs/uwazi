@@ -1,26 +1,52 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
 
+import { IStore } from 'app/istore';
 import { Tip } from 'app/Layout';
-
 import { ToggleChildren } from 'app/Settings/components/ToggleChildren';
 import { t } from 'app/I18N';
+import { loadPages as loadPagesAction } from 'app/Pages/actions/pageActions';
 
-export const ViewTemplateAsPage = () => (
-  <div>
-    <label>
-      Display as page
-      <Tip icon="info-circle" position="right">
-        {t(
-          'system',
-          'Entity can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.'
-        )}
-      </Tip>
-    </label>
-    <ToggleChildren toggled={false}>
-      <select>
-        <option>Placeholder 1</option>
-        <option>Placeholder 2</option>
-      </select>
-    </ToggleChildren>
-  </div>
-);
+const mapStateToProps = ({ pages }: IStore) => ({
+  pages: pages.filter(p => p.get('entityView')),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators({ loadPages: loadPagesAction }, dispatch);
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type mappedProps = ConnectedProps<typeof connector>;
+
+const ViewTemplateAsPage = ({ pages, loadPages }: mappedProps) => {
+  useEffect(() => {
+    loadPages();
+  }, []);
+
+  return (
+    <div>
+      <label>
+        {t('System', 'Display entity view from page')}
+        <Tip icon="info-circle" position="right">
+          {t(
+            'System',
+            'Entity can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.'
+          )}
+        </Tip>
+      </label>
+      <ToggleChildren toggled={false}>
+        <select>
+          {pages.map(page => (
+            <option value={page?.get('_id')?.toString()} key={page?.get('_id')?.toString()}>
+              {page?.get('title')}
+            </option>
+          ))}
+        </select>
+      </ToggleChildren>
+    </div>
+  );
+};
+
+const container = connector(ViewTemplateAsPage);
+export { container as ViewTemplateAsPage };

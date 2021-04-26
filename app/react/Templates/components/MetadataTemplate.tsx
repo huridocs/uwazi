@@ -1,4 +1,15 @@
+import React, { Component } from 'react';
+import { DropTarget } from 'react-dnd';
+import { List } from 'immutable';
+import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { actions as formActions, Control, Field, Form } from 'react-redux-form';
+import { Icon } from 'UI';
+
 import { TemplateSchema } from 'shared/types/templateType';
+import { PropertySchema } from 'shared/types/commonTypes';
+
 import ShowIf from 'app/App/ShowIf';
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
@@ -14,18 +25,9 @@ import {
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
-import { List } from 'immutable';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { DropTarget } from 'react-dnd';
-import { connect } from 'react-redux';
-import { actions as formActions, Control, Field, Form } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { Icon } from 'UI';
 
 import { ViewTemplateAsPage } from './ViewTemplateAsPage';
-import validator from './ValidateTemplate'; // eslint-disable-line import/no-named-as-default, import/no-named-as-default-member
+import validator from './ValidateTemplate';
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
@@ -41,9 +43,8 @@ interface MetadataTemplateProps {
   _id?: string;
 }
 
-const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) => {
-  return template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
-};
+const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
+  template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
 
 export class MetadataTemplate extends Component<MetadataTemplateProps> {
   static propTypes: any;
@@ -54,7 +55,8 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
 
   static defaultProps: MetadataTemplateProps = {
     notify,
-    saveTemplate, // eslint-disable-line react/default-props-match-prop-types
+    // eslint-disable-next-line react/default-props-match-prop-types
+    saveTemplate,
     savingTemplate: false,
     defaultColor: null,
     properties: [],

@@ -131,4 +131,5 @@ export interface IStore {
     uiState: IImmutable<{ savingPage: boolean }>;
     formState: any;
   };
+  pages: IImmutable<PageType>;
 }

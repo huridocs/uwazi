@@ -7,6 +7,14 @@ import { notificationActions } from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
 import * as types from 'app/Pages/actions/actionTypes';
 
+// TEST!!!
+export function loadPages() {
+  return async dispatch => {
+    const pages = await api.get(new RequestParams());
+    dispatch(actions.set('pages', pages));
+  };
+}
+
 export function resetPage() {
   return dispatch => {
     dispatch(formActions.reset('page.data'));
