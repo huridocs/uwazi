@@ -36,23 +36,13 @@ describe('comonProperties', () => {
       it('should return all its fields with thesauri options', () => {
         const documentTypes = ['1'];
         const filters = propertiesHelper.comonProperties(templates, documentTypes);
-        expect(filters).toEqual([
-          { name: 'author', filter: false, type: 'text', defaultfilter: true },
-          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
-          { name: 'date', filter: true, type: 'text', defaultfilter: true },
-          { name: 'language', filter: true, type: 'text' },
-          { name: 'id', filter: false, type: 'generatedid' },
-        ]);
+        expect(filters).toEqual(templates[0].properties);
       });
       it('should not return the properties which types are excluded', () => {
         const documentTypes = ['1'];
         const filters = propertiesHelper.comonProperties(templates, documentTypes, ['generatedid']);
-        expect(filters).toEqual([
-          { name: 'author', filter: false, type: 'text', defaultfilter: true },
-          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
-          { name: 'date', filter: true, type: 'text', defaultfilter: true },
-          { name: 'language', filter: true, type: 'text' },
-        ]);
+        const expectedProperties = templates[0].properties.filter(p => p.type !== 'generatedid');
+        expect(filters).toEqual(expectedProperties);
       });
     });
 
