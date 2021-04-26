@@ -41,14 +41,26 @@ export const doc = {
       { type: 'entity', value: 'value4', label: 'Value 4' },
     ],
     relationship3: [
-      { value: 'value1', label: 'Value 1' },
-      { value: 'value2', label: 'Value 2' },
-      { value: 'value3', label: 'Value 3' },
+      { value: 'value1', label: 'Value 1', inheritedValue: [{ value: 'how' }] },
+      { value: 'value2', label: 'Value 2', inheritedValue: [{ value: 'are' }] },
+      { value: 'value3', label: 'Value 3', inheritedValue: [{ value: 'you?' }] },
     ],
     relationship4: [
-      { value: 'linkedEntity1', label: 'Entity 1 Title' },
-      { value: 'linkedEntity2', label: 'Entity 2 Title' },
-      { value: 'linkedEntityWithoutMetadata' },
+      {
+        value: 'linkedEntity1',
+        label: 'Entity 1 Title',
+        inheritedValue: [{ value: { lat: 13, lon: 7 } }],
+      },
+      {
+        value: 'linkedEntity2',
+        label: 'Entity 2 Title',
+        inheritedValue: [{ value: { lat: 5, lon: 10, label: 'exisitng label' } }],
+      },
+      {
+        value: 'linkedEntityWithoutMetadata',
+        label: 'Entity 2 Title',
+        inheritedValue: [{ value: { lat: 23, lon: 8, label: 'another label' } }],
+      },
     ],
     geolocation: [{ value: { lat: 2, lon: 3 } }, { value: { lat: 13, lon: 7, label: 'home' } }],
     nested: [{ value: { nestedKey: [1, 2] } }, { value: { nestedKey: [3, 4] } }],
