@@ -1,6 +1,6 @@
 import { Form, Field, Control } from 'react-redux-form';
 import { bindActionCreators, Dispatch } from 'redux';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import React, { Component } from 'react';
 
 import { MarkDown } from 'app/ReactReduxForms';
@@ -13,30 +13,27 @@ import ShowIf from 'app/App/ShowIf';
 import { BackButton } from 'app/Layout';
 import { Icon, ToggleButton } from 'UI';
 
+import { IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import validator from './ValidatePage';
 
-export interface PageCreatorProps {
-  resetPage: () => {};
-  savePage: () => {};
-  updateValue: (model: string, value: any) => {};
-  savingPage: boolean;
-  formState: { [key: string]: { [key: string]: any } };
-  page: {
-    data: {
-      _id: string;
-      title: string;
-      metadata: {
-        content?: string;
-      };
-      language: string;
-      sharedId: string;
-      entityView: boolean;
-    };
-  };
-}
+const mapStateToProps = ({ page }: IStore) => ({
+  page,
+  formState: page.formState,
+  savingPage: page.uiState.get('savingPage'),
+});
 
-export class PageCreator extends Component<PageCreatorProps> {
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators(
+    { resetPage: resetPageAction, savePage: savePageAction, updateValue: updateValueAction },
+    dispatch
+  );
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+export type mappedProps = ConnectedProps<typeof connector>;
+
+class PageCreator extends Component<mappedProps> {
   componentWillUnmount() {
     const { resetPage } = this.props;
     resetPage();
@@ -160,15 +157,5 @@ export class PageCreator extends Component<PageCreatorProps> {
   }
 }
 
-function mapStateToProps({ page }) {
-  return { page, formState: page.formState, savingPage: page.uiState.get('savingPage') };
-}
-
-function mapDispatchToProps(dispatch: Dispatch<PageCreatorProps>) {
-  return bindActionCreators(
-    { resetPage: resetPageAction, savePage: savePageAction, updateValue: updateValueAction },
-    dispatch
-  );
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PageCreator);
+const container = connector(PageCreator);
+export { container as PageCreator };

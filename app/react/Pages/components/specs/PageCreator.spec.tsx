@@ -1,15 +1,18 @@
 import React from 'react';
+import Immutable from 'immutable';
 import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Form, Field, Control } from 'react-redux-form';
 import { MarkDown } from 'app/ReactReduxForms';
-import { PageCreator, PageCreatorProps } from '../PageCreator';
+import { PageCreator, mappedProps } from '../PageCreator';
 
 describe('PageCreator', () => {
-  let component: ShallowWrapper<PageCreator>;
-  let props: PageCreatorProps;
+  let component: ShallowWrapper<typeof PageCreator>;
+  let props: mappedProps;
 
   beforeEach(() => {
+    const formState = { title: {}, $form: { errors: {} } };
+    const uiState = Immutable.fromJS({ savingPage: false });
     props = {
       page: {
         data: {
@@ -20,8 +23,10 @@ describe('PageCreator', () => {
           sharedId: '',
           entityView: false,
         },
+        formState,
+        uiState,
       },
-      formState: { title: {}, $form: { errors: {} } },
+      formState,
       savePage: jasmine.createSpy('savePage'),
       resetPage: jasmine.createSpy('deletePage'),
       updateValue: jasmine.createSpy('updateValue'),
@@ -30,16 +35,8 @@ describe('PageCreator', () => {
   });
 
   const render = () => {
-    component = shallow(
-      <PageCreator
-        page={props.page}
-        formState={props.formState}
-        savePage={props.savePage}
-        resetPage={props.resetPage}
-        updateValue={props.updateValue}
-        savingPage={props.savingPage}
-      />
-    );
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    component = shallow(<PageCreator.WrappedComponent {...props} />);
   };
 
   describe('render', () => {

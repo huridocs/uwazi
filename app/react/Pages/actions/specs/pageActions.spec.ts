@@ -13,12 +13,14 @@ import * as actions from '../pageActions';
 
 describe('Page actions', () => {
   let dispatch: jasmine.Spy;
+  let apiSave: jasmine.Spy;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'save').and.returnValue(
-      Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' })
-    );
+    apiSave = jasmine
+      .createSpy()
+      .and.returnValue(Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' }));
+    api.save = apiSave;
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
@@ -80,7 +82,7 @@ describe('Page actions', () => {
     });
     describe('on error', () => {
       it('should dispatch page saved', done => {
-        api.save.and.callFake(async () => Promise.reject(new Error()));
+        apiSave.and.callFake(async () => Promise.reject(new Error()));
         actions
           .savePage('data')(dispatch)
           .then(() => {

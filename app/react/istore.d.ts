@@ -10,6 +10,7 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ConnectionSchema } from 'shared/types/connectionType';
 import { Settings } from 'shared/types/settingsType';
 import { FileType } from 'shared/types/fileType';
+import { PageType } from 'shared/types/pageType';
 
 export interface TasksState {
   SyncState?: TaskStatus;
@@ -125,4 +126,9 @@ export interface IStore {
     collection: IImmutable<Settings>;
   };
   userGroups: IImmutable<UserGroupSchema[]>;
+  page: {
+    data: PageType;
+    uiState: IImmutable<{ savingPage: boolean }>;
+    formState: any;
+  };
 }
