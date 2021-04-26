@@ -34,6 +34,7 @@ export type EntityWithFilesSchema = {
   title?: string;
   template?: ObjectIdSchema;
   published?: boolean;
+  generatedToc?: boolean;
   icon?: {
     _id?: string | null;
     label?: string;
