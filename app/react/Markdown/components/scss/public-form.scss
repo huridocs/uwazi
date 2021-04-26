@@ -56,6 +56,13 @@
         border-radius: 4px;
         height: 32px;
 
+        .preview-title {
+          width: 70%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
         div > span {
           border: 1px solid #CA5C54;
           box-sizing: border-box;
@@ -67,6 +74,16 @@
           }
         }
       }
+    }
+  }
+  @media (min-width: 768px) {
+    .on-mobile {
+      display: none;
+    }
+  }
+  @media (max-width: 768px) {
+    .on-desktop {
+      display: none;
     }
   }
 }

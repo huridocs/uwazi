@@ -91,6 +91,7 @@ class PublicForm extends Component {
     const { submit, template, remote } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
+    values.attachments = this.state.files.length ? this.state.files : undefined;
 
     submit(values, remote)
       .then(uploadCompletePromise => {
@@ -112,16 +113,16 @@ class PublicForm extends Component {
       });
   }
 
-  renderFileField(id /*, options */) {
-    // const defaults = { className: 'form-control', model: `.${id}` };
-    // const props = Object.assign(defaults, options);
+  renderFileField(id, options) {
+    const defaults = { className: 'form-control on-mobile' /*, model: `.${id}`*/ };
+    const props = Object.assign(defaults, options);
     return (
       <div className="form-group">
         <ul className="search__filter">
           <li className="attachments-list">
             <Translate>{id === 'file' ? 'Document' : 'Attachments'}</Translate>
-            <Dropzone onDrop={this.fileDropped}>
-              <label htmlFor={id}>
+            <Dropzone onDrop={this.fileDropped} style={{ width: '100%' }} className="on-desktop">
+              <label>
                 <div className="text-content">
                   <div id="icon">
                     <Icon icon="cloud-upload-alt" />
@@ -134,11 +135,12 @@ class PublicForm extends Component {
                 {/* <Control.file id={id} {...props} /> */}
               </label>
             </Dropzone>
+            <Control.file id={id} {...props} />
             <div className="preview-list">
               <ul>
                 {this.state.files.map(file => (
                   <li key={file.preview}>
-                    <div>{file.name}</div>
+                    <div className="preview-title">{file.name}</div>
                     <div>
                       <span onClick={() => this.removeAttachment(file)}>
                         <Icon icon="times" />
