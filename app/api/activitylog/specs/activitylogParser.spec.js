@@ -1010,15 +1010,20 @@ describe('Activitylog Parser', () => {
             {
               method: 'POST',
               url: '/api/entities/permissions',
-              body: `${`${`{"ids":["${firstDocSharedId}"],"permissions":` +
-                '[{"refId":"'}${groupId}","type":"group","level":"read"}, ` +
-                '{"refId":"'}${userId}","type":"user","level":"write"}]}`,
+              body: JSON.stringify({
+                ids: [firstDocSharedId],
+                permissions: [
+                  { refId: groupId, type: 'group', level: 'read' },
+                  { refId: userId, type: 'user', level: 'write' },
+                  { refId: 'public', type: 'public', level: 'read' },
+                ],
+              }),
             },
             {
               action: 'UPDATE',
               description: 'Updated permissions on entity',
               name: 'My Doc',
-              extra: ' with permissions for USERS: User 1 - write; GROUPS: Group 1 - read',
+              extra: ' with permissions for USERS: User 1 - write; GROUPS: Group 1 - read; PUBLIC',
             }
           );
         });

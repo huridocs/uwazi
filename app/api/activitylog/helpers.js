@@ -89,14 +89,23 @@ export const loadPermissionsData = async data => {
     { sharedId: { $in: data.ids } },
     { title: 1 }
   );
-  const permissionsIds = data.permissions.map(pu => pu.refId);
+  const permissionsIds = data.permissions
+    .filter(p => p.type !== PermissionType.PUBLIC)
+    .map(pu => pu.refId);
   const allowedUsers = await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
   const allowedGroups = await userGroups.get(
     { _id: { $in: permissionsIds } },
     { name: 1, members: 1 }
   );
+  const publicPermission = !!data.permissions.find(p => p.type === PermissionType.PUBLIC);
 
-  return { ...data, entities: updateEntities, users: allowedUsers, userGroups: allowedGroups };
+  return {
+    ...data,
+    entities: updateEntities,
+    users: allowedUsers,
+    userGroups: allowedGroups,
+    public: publicPermission,
+  };
 };
 
 export const entitiesNames = data => data.entities.map(e => e.title).join(', ');
@@ -120,5 +129,5 @@ export const loadAllowedUsersAndGroups = data => {
 
   return ` with permissions for${grantedUsers.length ? ` USERS: ${grantedUsers};` : ''}${
     grantedNames.length ? ` GROUPS: ${grantedNames}` : ''
-  }`;
+  }${data.public ? '; PUBLIC' : ''}`;
 };
