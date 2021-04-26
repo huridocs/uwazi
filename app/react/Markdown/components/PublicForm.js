@@ -14,6 +14,7 @@ import { FormGroup } from 'app/Forms';
 import { Icon } from 'UI';
 import Loader from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
+import Dropzone from 'react-dropzone';
 
 class PublicForm extends Component {
   static renderTitle(template) {
@@ -61,22 +62,13 @@ class PublicForm extends Component {
     this.state = { submiting: false, files: [] };
   }
 
-  fileDropped(ev) {
-    const fileCache = [];
-    ev.persist();
-    const _files = ev.dataTransfer.items;
-    ev.preventDefault();
-    if (_files) {
-      for (let i = 0; i < ev.dataTransfer.items.length; i += 1) {
-        if (ev.dataTransfer.items[i].kind === 'file') {
-          fileCache.push(ev.dataTransfer.items[i].getAsFile());
-        }
-      }
-    } else {
-      ev.dataTransfer.files.forEach(file => fileCache.push(file));
-    }
-    this.state.files.forEach(file => fileCache.push(file));
-    this.setState({ files: fileCache });
+  fileDropped(files) {
+    console.log(files);
+    const uploadedFiles = files;
+    this.state.files.forEach(file => uploadedFiles.push(file));
+    this.setState({
+      files: uploadedFiles,
+    });
   }
 
   attachDispatch(dispatch) {
@@ -113,36 +105,40 @@ class PublicForm extends Component {
       });
   }
 
-  renderFileField(id, options) {
-    const defaults = { className: 'form-control', model: `.${id}` };
-    const props = Object.assign(defaults, options);
+  renderFileField(id /*, options */) {
+    // const defaults = { className: 'form-control', model: `.${id}` };
+    // const props = Object.assign(defaults, options);
     return (
       <div className="form-group">
         <ul className="search__filter">
           <li className="attachments-list">
             <Translate>{id === 'file' ? 'Document' : 'Attachments'}</Translate>
-            <label
-              htmlFor={id}
-              onDrop={e => this.fileDropped(e)}
-              onDragOver={e => e.preventDefault()}
-              onDragEnter={e => e.preventDefault()}
-              onDragLeave={e => e.preventDefault()}
-            >
-              <div className="text-content">
-                <div id="icon">
-                  <Icon icon="cloud-upload-alt" />
+            <Dropzone onDrop={this.fileDropped}>
+              <label htmlFor={id}>
+                <div className="text-content">
+                  <div id="icon">
+                    <Icon icon="cloud-upload-alt" />
+                  </div>
+                  <div id="upload-text">Drop your files here to upload or</div>
+                  <div id="upload-button">
+                    <div id="button">Select files on your device</div>
+                  </div>
                 </div>
-                <div id="upload-text">Drop your files here to upload or</div>
-                <div id="upload-button">
-                  <div id="button">Select files on your device</div>
-                </div>
-              </div>
-              <Control.file id={id} {...props} />
-            </label>
-            <div>
+                {/* <Control.file id={id} {...props} /> */}
+              </label>
+            </Dropzone>
+            <div className="preview-list">
               <ul>
                 {this.state.files.map(file => (
-                  <li key={file.name}>{file.name}</li>
+                  <li key={file.preview}>
+                    <div>{file.name}</div>
+                    <div>
+                      <span>
+                        <Icon icon="" />
+                        Remove
+                      </span>
+                    </div>
+                  </li>
                 ))}
               </ul>
             </div>
