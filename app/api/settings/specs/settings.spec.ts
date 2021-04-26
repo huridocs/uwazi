@@ -212,6 +212,15 @@ describe('settings', () => {
         expect(settingsFromModel.mapStartingPoint).toEqual(SWITZERLAND_COORDINATES);
       });
     });
+
+    describe('if map starting point is set to empty array on the DB', () => {
+      it('should return the default starting point', async () => {
+        await settings.save({ mapStartingPoint: [] });
+        const settingsFromModel = await settings.get();
+        const SWITZERLAND_COORDINATES = [{ lat: 46, lon: 6 }];
+        expect(settingsFromModel.mapStartingPoint).toEqual(SWITZERLAND_COORDINATES);
+      });
+    });
   });
 
   describe('setDefaultLanguage()', () => {

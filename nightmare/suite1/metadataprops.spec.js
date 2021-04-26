@@ -35,7 +35,6 @@ describe('metadata properties', () => {
         '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(2) > label',
       date:
         '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div.react-datepicker-wrapper > div > input',
-
       emptyDate:
         '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > button',
       dateRangeFrom:
@@ -76,10 +75,6 @@ describe('metadata properties', () => {
         '#metadataForm > div:nth-child(3) > div:nth-child(11) > ul > li.wide > div > div > div:nth-child(1) > input',
       linkUrl:
         '#metadataForm > div:nth-child(3) > div:nth-child(11) > ul > li.wide > div > div > div:nth-child(2) > input',
-      image:
-        '#metadataForm > div:nth-child(3) > div:nth-child(12) > ul > li.wide > div > div > textarea',
-      media:
-        '#metadataForm > div:nth-child(3) > div:nth-child(14) > ul > li.wide > div > div > textarea',
       geolocationLat:
         '#metadataForm > div:nth-child(3) > div:nth-child(15) > ul > li.wide > div > div.form-row > div:nth-child(1) > input',
       geolocationLon:
@@ -169,8 +164,7 @@ describe('metadata properties', () => {
       .write(localSelectors.form.richText, '***smile***')
       .write(localSelectors.form.linkLabel, 'Huridocs')
       .write(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
-      .write(localSelectors.form.image, '/public/logo.svg')
-      .write(localSelectors.form.media, 'test')
+
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
   }, 60000);
@@ -180,6 +174,7 @@ describe('metadata properties', () => {
       .getInnerText(localSelectors.properties.text)
       .then(text => {
         expect(text).toBe('demo text');
+
         return nightmare.getInnerText(localSelectors.properties.numeric);
       })
       .then(numeric => {
@@ -220,9 +215,6 @@ describe('metadata properties', () => {
       })
       .then(text => {
         expect(text).toBe('Huridocs');
-        return nightmare
-          .wait(localSelectors.properties.image)
-          .wait(localSelectors.properties.media);
       });
   }, 60000);
 
@@ -245,8 +237,6 @@ describe('metadata properties', () => {
       .clearInput(localSelectors.form.richText)
       .clearInput(localSelectors.form.linkLabel)
       .clearInput(localSelectors.form.linkUrl)
-      .clearInput(localSelectors.form.image)
-      .clearInput(localSelectors.form.media)
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
   }, 60000);

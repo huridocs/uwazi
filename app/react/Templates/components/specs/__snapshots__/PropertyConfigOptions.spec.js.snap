@@ -8,6 +8,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -18,6 +19,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -28,6 +30,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -46,6 +49,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -56,6 +60,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -66,6 +71,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -79,6 +85,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -89,6 +96,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
       </Tip>
@@ -99,6 +107,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
       </Tip>
@@ -118,6 +127,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -128,6 +138,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -138,6 +149,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -151,6 +163,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -170,6 +183,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -180,6 +194,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -190,6 +205,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -203,6 +219,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -222,6 +239,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -232,6 +250,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -242,6 +261,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -255,6 +275,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -274,6 +295,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -284,6 +306,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -294,6 +317,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -307,6 +331,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -326,6 +351,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -336,6 +362,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -346,6 +373,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -359,6 +387,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -369,6 +398,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
       </Tip>
@@ -379,6 +409,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
       </Tip>
@@ -398,6 +429,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -408,6 +440,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -418,6 +451,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -431,6 +465,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -441,6 +476,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
       </Tip>
@@ -451,6 +487,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
       </Tip>
@@ -470,6 +507,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -480,6 +518,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -490,6 +529,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -503,6 +543,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -513,6 +554,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
       </Tip>
@@ -523,6 +565,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
       </Tip>
@@ -542,6 +585,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -552,6 +596,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -562,6 +607,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -575,6 +621,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
@@ -585,6 +632,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
       </Tip>
@@ -595,6 +643,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
       </Tip>
@@ -614,6 +663,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -624,6 +674,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to publish a document if this property is empty.
     </Tip>
@@ -634,6 +685,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -647,6 +699,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     >
       <Tip
         icon="question-circle"
+        position=""
       >
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>

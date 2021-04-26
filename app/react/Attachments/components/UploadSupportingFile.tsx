@@ -31,6 +31,7 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
           className="upload-button btn btn-success attachments-modal-trigger"
         >
           <Icon icon="plus" />
+          &nbsp;&nbsp;
           <Translate>Add supporting file</Translate>
         </button>
       ) : (

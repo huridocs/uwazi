@@ -24,7 +24,7 @@ const showByType = (prop, compact) => {
       );
       break;
     case 'image':
-      result = (
+      result = prop.value && (
         <img
           key={prop.value}
           className={`multimedia-img ${prop.style}`}
@@ -33,9 +33,10 @@ const showByType = (prop, compact) => {
         />
       );
       break;
-    case 'media':
-      result = <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
+    case 'media': {
+      result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
       break;
+    }
     case 'geolocation':
       result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
       break;

@@ -104,6 +104,7 @@
   margin-left: 5px;
   position: relative;
   color: $c-grey-dark;
+  z-index: 5;
 }
 .no-margin {
   margin: 0 !important;
@@ -120,16 +121,26 @@
   @include tooltip('top-left');
   transform: translate(-175px, -5px);
 }
+
+.property-description-right {
+  @include tooltip('right');
+}
+.property-description-left {
+  @include tooltip('left');
+}
 .property-description-top-left:after {
   transform: translateX(175px);
 }
+
 .property-description,
 .property-description-bottom,
+.property-description-right,
+.property-description-left,
 .property-description-top-left {
   width: 200px;
   white-space: normal;
 
-  .property-help:hover &{
+  .property-help:hover & {
     display: block;
   }
 }

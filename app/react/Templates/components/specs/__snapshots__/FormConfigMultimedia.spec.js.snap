@@ -22,6 +22,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -32,6 +33,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown using all the width available.
     </Tip>
@@ -42,6 +44,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -115,6 +118,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -125,6 +129,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown using all the width available.
     </Tip>
@@ -135,6 +140,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to save a document if this property is empty.
     </Tip>
@@ -208,6 +214,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -218,6 +225,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown using all the width available.
     </Tip>
@@ -228,6 +236,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to save a document if this property is empty.
     </Tip>
@@ -238,6 +247,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -280,6 +290,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -290,6 +301,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown using all the width available.
     </Tip>
@@ -300,6 +312,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to save a document if this property is empty.
     </Tip>
@@ -310,6 +323,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
@@ -383,6 +397,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown without the label.
     </Tip>
@@ -393,6 +408,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will be shown using all the width available.
     </Tip>
@@ -403,6 +419,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       You won't be able to save a document if this property is empty.
     </Tip>
@@ -413,6 +430,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
   >
     <Tip
       icon="question-circle"
+      position=""
     >
       This property will appear in the library cards as part of the basic info.
     </Tip>
