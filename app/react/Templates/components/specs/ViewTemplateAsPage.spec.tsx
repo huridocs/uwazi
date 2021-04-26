@@ -12,25 +12,43 @@ const middlewares = [thunk];
 
 describe('ViewTemplateAsPage', () => {
   const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
-  const store: MockStore<object> = mockStoreCreator({
-    pages: Immutable.fromJS([
-      { title: 'page 1', _id: 'abc123', entityView: true },
-      { title: 'page 2', _id: 'def345', entityView: false },
-      { title: 'page 3', _id: 'df3485' },
-    ]),
-  });
-  const component: ShallowWrapper<typeof ViewTemplateAsPage> = shallow(
-    <Provider store={store}>
-      <ViewTemplateAsPage />
-    </Provider>
-  )
-    .dive()
-    .dive();
+  let component: ShallowWrapper<typeof ViewTemplateAsPage>;
+  let store: MockStore<object>;
+  const render = () => {
+    component = shallow(
+      <Provider store={store}>
+        <ViewTemplateAsPage />
+      </Provider>
+    )
+      .dive()
+      .dive();
+  };
 
-  it('should contain a label with a tip and a toggled pages that can be used', () => {
+  it('should contain a label with a tip, and toggled pages that can be used', () => {
+    store = mockStoreCreator({
+      pages: Immutable.fromJS([
+        { title: 'page 1', _id: 'abc123', entityView: true },
+        { title: 'page 2', _id: 'def345', entityView: false },
+        { title: 'page 3', _id: 'df3485' },
+      ]),
+    });
+    render();
     expect(component.find('label')).toHaveLength(1);
     expect(component.find('Tip')).toHaveLength(1);
     expect(component.find('ToggleChildren')).toHaveLength(1);
     expect(component.find('option').props().children).toBe('page 1');
+  });
+
+  it('should display a message saying that no pages are available if none are present', () => {
+    store = mockStoreCreator({
+      pages: Immutable.fromJS([
+        { title: 'page 2', _id: 'def345', entityView: false },
+        { title: 'page 3', _id: 'df3485' },
+      ]),
+    });
+    render();
+    expect(component.find('label').props().children).toContain(
+      'There are no pages enabled for entity view'
+    );
   });
 });

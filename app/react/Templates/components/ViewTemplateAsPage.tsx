@@ -27,23 +27,27 @@ const ViewTemplateAsPage = ({ pages, loadPages }: mappedProps) => {
   return (
     <div>
       <label>
-        {t('System', 'Display entity view from page')}
+        {pages.size > 0
+          ? t('System', 'Display entity view from page')
+          : t('System', 'There are no pages enabled for entity view')}
         <Tip icon="info-circle" position="right">
           {t(
             'System',
-            'Entity can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.'
+            'Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.'
           )}
         </Tip>
       </label>
-      <ToggleChildren toggled={false}>
-        <select>
-          {pages.map(page => (
-            <option value={page?.get('_id')?.toString()} key={page?.get('_id')?.toString()}>
-              {page?.get('title')}
-            </option>
-          ))}
-        </select>
-      </ToggleChildren>
+      {pages.size > 0 && (
+        <ToggleChildren toggled={false}>
+          <select>
+            {pages.map(page => (
+              <option value={page?.get('_id')?.toString()} key={page?.get('_id')?.toString()}>
+                {page?.get('title')}
+              </option>
+            ))}
+          </select>
+        </ToggleChildren>
+      )}
     </div>
   );
 };
