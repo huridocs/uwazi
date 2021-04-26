@@ -9,6 +9,7 @@ describe('comonProperties', () => {
         { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
         { name: 'date', filter: true, type: 'text', defaultfilter: true },
         { name: 'language', filter: true, type: 'text' },
+        { name: 'id', filter: false, type: 'generatedid' },
       ],
     },
     {
@@ -17,6 +18,7 @@ describe('comonProperties', () => {
         { name: 'author', filter: false, type: 'text' },
         { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
         { name: 'language', filter: false, type: 'text', required: true },
+        { name: 'id', filter: false, type: 'generatedid' },
       ],
     },
     {
@@ -29,21 +31,22 @@ describe('comonProperties', () => {
     },
   ];
 
-  const thesauris = [
-    {
-      _id: 'abc1',
-      values: [
-        { id: 1, value: 'value1' },
-        { id: 2, value: 'value2' },
-      ],
-    },
-  ];
-
   describe('comonProperties()', () => {
     describe('When only one documentType is selected', () => {
       it('should return all its fields with thesauri options', () => {
         const documentTypes = ['1'];
-        const filters = propertiesHelper.comonProperties(templates, documentTypes, thesauris);
+        const filters = propertiesHelper.comonProperties(templates, documentTypes);
+        expect(filters).toEqual([
+          { name: 'author', filter: false, type: 'text', defaultfilter: true },
+          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
+          { name: 'date', filter: true, type: 'text', defaultfilter: true },
+          { name: 'language', filter: true, type: 'text' },
+          { name: 'id', filter: false, type: 'generatedid' },
+        ]);
+      });
+      it('should not return the properties which types are excluded', () => {
+        const documentTypes = ['1'];
+        const filters = propertiesHelper.comonProperties(templates, documentTypes, ['generatedid']);
         expect(filters).toEqual([
           { name: 'author', filter: false, type: 'text', defaultfilter: true },
           { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
@@ -61,6 +64,7 @@ describe('comonProperties', () => {
           { name: 'author', filter: false, type: 'text', defaultfilter: true },
           { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
           { name: 'language', filter: false, type: 'text', required: true },
+          { name: 'id', filter: false, type: 'generatedid' },
         ]);
       });
 

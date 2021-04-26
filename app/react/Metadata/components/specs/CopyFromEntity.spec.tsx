@@ -1,11 +1,10 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import Immutable from 'immutable';
+import { store } from 'app/store';
 import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../CopyFromEntity';
 
-import Immutable from 'immutable';
-
 import { SearchEntities } from '../SearchEntities';
-import { store } from 'app/store';
 
 describe('CopyFromEntity', () => {
   let component: ShallowWrapper<CopyFromEntityProps, CopyFromEntityState, CopyFromEntity>;
@@ -25,6 +24,7 @@ describe('CopyFromEntity', () => {
           properties: [
             { name: 'one', type: 'text' },
             { name: 'two', type: 'text' },
+            { name: 'id', type: 'generatedid' },
           ],
         },
         {
@@ -32,13 +32,18 @@ describe('CopyFromEntity', () => {
           properties: [
             { name: 'two', type: 'text' },
             { name: 'three', type: 'text' },
+            { name: 'id', type: 'generatedid' },
           ],
         },
       ]),
       originalEntity: {
         title: 'I want to be like you',
         template: 'template_1',
-        metadata: { one: [{ value: 'number one' }], two: [{ value: 'number wrong' }] },
+        metadata: {
+          one: [{ value: 'number one' }],
+          two: [{ value: 'number wrong' }],
+          id: [{ value: 'ABC123' }],
+        },
       },
     };
   });
@@ -61,7 +66,11 @@ describe('CopyFromEntity', () => {
       const entityToBeSelected = {
         title: 'Choose me!',
         template: 'template_2',
-        metadata: { two: [{ value: 'number two' }], three: [{ value: 'number three' }] },
+        metadata: {
+          two: [{ value: 'number two' }],
+          three: [{ value: 'number three' }],
+          id: [{ value: 'ABC123' }],
+        },
       };
       component.instance().onSelect(entityToBeSelected);
 
