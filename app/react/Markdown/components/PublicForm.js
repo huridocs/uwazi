@@ -53,6 +53,7 @@ class PublicForm extends Component {
 
   constructor(props) {
     super(props);
+    this.removeAttachment = this.removeAttachment.bind(this);
     this.fileDropped = this.fileDropped.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.validators = {
@@ -63,11 +64,17 @@ class PublicForm extends Component {
   }
 
   fileDropped(files) {
-    console.log(files);
     const uploadedFiles = files;
     this.state.files.forEach(file => uploadedFiles.push(file));
     this.setState({
       files: uploadedFiles,
+    });
+  }
+
+  removeAttachment(removedFile) {
+    const files = this.state.files.filter(file => file !== removedFile);
+    this.setState({
+      files,
     });
   }
 
@@ -133,9 +140,9 @@ class PublicForm extends Component {
                   <li key={file.preview}>
                     <div>{file.name}</div>
                     <div>
-                      <span>
-                        <Icon icon="" />
-                        Remove
+                      <span onClick={() => this.removeAttachment(file)}>
+                        <Icon icon="times" />
+                        &nbsp;Remove
                       </span>
                     </div>
                   </li>
