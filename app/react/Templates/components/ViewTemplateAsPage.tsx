@@ -9,7 +9,7 @@ import { t } from 'app/I18N';
 import { loadPages as loadPagesAction } from 'app/Pages/actions/pageActions';
 
 const mapStateToProps = ({ pages }: IStore) => ({
-  pages: pages.filter(p => p.get('entityView')),
+  pages: pages?.filter(p => p.get('entityView')) || [],
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>

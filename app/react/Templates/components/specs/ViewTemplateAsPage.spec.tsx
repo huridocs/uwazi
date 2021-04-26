@@ -51,4 +51,14 @@ describe('ViewTemplateAsPage', () => {
       'There are no pages enabled for entity view'
     );
   });
+
+  it('should not throw error when there are no pages', () => {
+    store = mockStoreCreator({
+      pages: Immutable.fromJS(undefined),
+    });
+    render();
+    expect(component.find('label').props().children).toContain(
+      'There are no pages enabled for entity view'
+    );
+  });
 });
