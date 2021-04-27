@@ -8,8 +8,9 @@ import { ToggleChildren } from 'app/Settings/components/ToggleChildren';
 import { t } from 'app/I18N';
 import { loadPages as loadPagesAction } from 'app/Pages/actions/pageActions';
 
-const mapStateToProps = ({ pages }: IStore) => ({
+const mapStateToProps = ({ pages }: IStore, ownProps: { toggled: boolean }) => ({
   pages: pages?.filter(p => p.get('entityView')) || [],
+  toggled: ownProps.toggled,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
@@ -19,7 +20,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const ViewTemplateAsPage = ({ pages, loadPages }: mappedProps) => {
+const ViewTemplateAsPage = ({ pages, loadPages, toggled }: mappedProps) => {
   useEffect(() => {
     loadPages();
   }, []);
@@ -38,7 +39,7 @@ const ViewTemplateAsPage = ({ pages, loadPages }: mappedProps) => {
         </Tip>
       </label>
       {pages.size > 0 && (
-        <ToggleChildren toggled={false}>
+        <ToggleChildren toggled={toggled}>
           <select>
             {pages.map(page => (
               <option value={page?.get('_id')?.toString()} key={page?.get('_id')?.toString()}>

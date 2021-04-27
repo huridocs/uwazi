@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
 import { List } from 'immutable';
@@ -40,6 +41,7 @@ interface MetadataTemplateProps {
   relationType?: any;
   savingTemplate: boolean;
   templates?: any;
+  entityViewPage?: string;
   _id?: string;
 }
 
@@ -133,7 +135,9 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
               />
             )}
           </div>
-          <ViewTemplateAsPage />
+          <FormGroup model=".entityViewPage">
+            <ViewTemplateAsPage toggled={Boolean(this.props.entityViewPage)} />
+          </FormGroup>
           <ShowIf if={!this.props.relationType}>
             {connectDropTarget(
               <ul className="metadataTemplate-list list-group">
@@ -204,6 +208,7 @@ MetadataTemplate.propTypes = {
   commonProperties: PropTypes.array,
   templates: PropTypes.object,
   defaultColor: PropTypes.string,
+  entityViewPage: PropTypes.string,
 };
 /* eslint-enable react/forbid-prop-types, react/require-default-props */
 
@@ -239,10 +244,14 @@ export const mapStateToProps = (
     templates,
     relationTypes,
   }: {
-    template: { data: { _id: string; commonProperties: any; properties: any }; uiState: any };
+    template: {
+      data: { _id: string; commonProperties: any; properties: any; entityViewPage: string };
+      uiState: any;
+    };
     templates: any;
     relationTypes: any;
   },
+
   props: { relationType?: any }
 ) => {
   const _templates = props.relationType ? relationTypes : templates;
@@ -250,6 +259,7 @@ export const mapStateToProps = (
     _id: template.data._id,
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
+    entityViewPage: template.data.entityViewPage,
     templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate'),
     defaultColor: getTemplateDefaultColor(templates, template),
