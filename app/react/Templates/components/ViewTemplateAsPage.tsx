@@ -40,7 +40,7 @@ const ViewTemplateAsPage = ({ pages, loadPages, selectedPage }: mappedProps) => 
         </Tip>
       </label>
       {pages.size > 0 && (
-        <ToggleChildren toggled={Boolean(selectedPage)}>
+        <ToggleChildren toggled={Boolean(selectedPage)} onToggleOff={() => setSelected('')}>
           <select
             value={selected}
             onChange={e => {
