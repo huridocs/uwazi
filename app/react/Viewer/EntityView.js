@@ -41,8 +41,14 @@ export default class Entity extends Component {
     ];
   }
 
+  // Not where we want this to happen!
+  // componentWillUnmount() {
+  //   this.context.store.dispatch(uiActions.showTab('info'));
+  // }
+
+  // TEST!!!
   componentWillUnmount() {
-    this.context.store.dispatch(uiActions.showTab('info'));
+    this.context.store.dispatch(uiActions.resetUserSelectedTab());
   }
 
   static renderTools() {

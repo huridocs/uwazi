@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
@@ -106,20 +107,24 @@ export class EntityViewer extends Component {
       <div className="row">
         <Helmet title={entity.get('title') ? entity.get('title') : 'Entity'} />
 
-        <div className="content-header content-header-entity">
-          <div className="content-header-title">
-            <PropertyIcon
-              className="item-icon item-icon-center"
-              data={entity.get('icon')}
-              size="sm"
-            />
-            <h1 className="item-name">{entity.get('title')}</h1>
-            <TemplateLabel template={entity.get('template')} />
+        {// TEST!!!
+        tab !== 'page' && (
+          <div className="content-header content-header-entity">
+            <div className="content-header-title">
+              <PropertyIcon
+                className="item-icon item-icon-center"
+                data={entity.get('icon')}
+                size="sm"
+              />
+              <h1 className="item-name">{entity.get('title')}</h1>
+              <TemplateLabel template={entity.get('template')} />
+            </div>
           </div>
-        </div>
+        )}
 
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
           <Tabs selectedTab={selectedTab}>
+            <TabContent for={selectedTab === 'page' ? selectedTab : 'none'}>Full page</TabContent>
             <TabContent
               for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
             >
@@ -192,6 +197,17 @@ export class EntityViewer extends Component {
               }}
             >
               <ul className="nav nav-tabs">
+                <li>
+                  <TabLink
+                    to="page"
+                    role="button"
+                    tabIndex="0"
+                    aria-label={t('System', 'Page', null, false)}
+                  >
+                    <Icon icon="file-image" />
+                    <span className="tab-link-tooltip">{t('System', 'Page')}</span>
+                  </TabLink>
+                </li>
                 <li>
                   <TabLink
                     to="info"
@@ -302,16 +318,24 @@ const selectRelationTypes = createSelector(
   r => r.toJS()
 );
 
-const mapStateToProps = state => ({
-  entity: state.entityView.entity,
-  relationTypes: selectRelationTypes(state),
-  templates: state.templates,
-  relationships: state.entityView.entity.get('relations'),
-  connectionsGroups: state.relationships.list.connectionsGroups,
-  entityBeingEdited: !!state.entityView.entityForm._id,
-  tab: state.entityView.uiState.get('tab'),
-  library: state.library,
-});
+const mapStateToProps = state => {
+  // TEST!!!
+  const entityTemplateId = state.entityView.entity && state.entityView.entity.get('template');
+  const entityTemplate = state.templates.find(template => template.get('_id') === entityTemplateId);
+  const templateWithPageView = entityTemplate.get('entityViewPage');
+  const defaultTab = templateWithPageView ? 'page' : 'info';
+  const { uiState } = state.entityView;
+  return {
+    entity: state.entityView.entity,
+    relationTypes: selectRelationTypes(state),
+    templates: state.templates,
+    relationships: state.entityView.entity.get('relations'),
+    connectionsGroups: state.relationships.list.connectionsGroups,
+    entityBeingEdited: !!state.entityView.entityForm._id,
+    tab: uiState.get('userSelectedTab') ? uiState.get('tab') : defaultTab,
+    library: state.library,
+  };
+};
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
