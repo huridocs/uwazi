@@ -121,7 +121,11 @@ class PublicForm extends Component {
         <ul className="search__filter">
           <li className="attachments-list">
             <Translate>{id === 'file' ? 'Document' : 'Attachments'}</Translate>
-            <Dropzone onDrop={this.fileDropped} style={{ width: '100%' }} className="on-desktop">
+            <Dropzone
+              onDrop={this.fileDropped}
+              className="on-desktop"
+              accept={id === 'file' ? '.pdf' : undefined}
+            >
               <label>
                 <div className="text-content">
                   <div id="icon">
@@ -132,7 +136,6 @@ class PublicForm extends Component {
                     <div id="button">Select files on your device</div>
                   </div>
                 </div>
-                {/* <Control.file id={id} {...props} /> */}
               </label>
             </Dropzone>
             <div className="on-mobile">
