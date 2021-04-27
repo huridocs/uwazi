@@ -365,18 +365,24 @@ export default {
     ]);
     let docTemplate = template;
     doc.editDate = date.currentUTC();
+
+    let storedEntities;
     if (doc.sharedId) {
-      await this.updateEntity(this.sanitize(doc, template), template);
+      storedEntities = await this.updateEntity(this.sanitize(doc, template), template);
     } else {
       if (!doc.template) {
         doc.template = defaultTemplate._id;
         doc.metadata = {};
         docTemplate = defaultTemplate;
       }
-      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
+      storedEntities = await this.createEntity(
+        this.sanitize(doc, docTemplate),
+        languages,
+        sharedId
+      );
     }
     const [entity] = await this.getWithRelationships({ sharedId, language }, '+permissions');
-    if (updateRelationships) {
+    if (entity && updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
       await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
@@ -384,7 +390,7 @@ export default {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
-    return entity;
+    return entity || storedEntities.find(e => e.language === language);
   },
 
   async updateDenormalizedMetadataInRelatedEntities(entity) {

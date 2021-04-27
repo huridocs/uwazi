@@ -535,6 +535,18 @@ describe('entities', () => {
           .catch(catchErrors(done));
       });
     });
+
+    describe('save from public form', () => {
+      it('should save the entity with unrestricted access', async () => {
+        const user = {};
+        userFactory.mock(undefined);
+        const entity = { title: 'Batman begins', template: templateId, language: 'es' };
+        const createdEntity = await entities.save(entity, { user, language: 'es' });
+        expect(createdEntity._id).not.toBeUndefined();
+        expect(createdEntity.title).toEqual(entity.title);
+        userFactory.mockEditorUser();
+      });
+    });
   });
 
   describe('updateMetdataFromRelationships', () => {
