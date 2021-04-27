@@ -114,7 +114,7 @@ class PublicForm extends Component {
   }
 
   renderFileField(id, options) {
-    const defaults = { className: 'form-control on-mobile' /*, model: `.${id}`*/ };
+    const defaults = { className: 'form-control on-mobile', model: `.${id}` };
     const props = Object.assign(defaults, options);
     return (
       <div className="form-group">
@@ -135,7 +135,13 @@ class PublicForm extends Component {
                 {/* <Control.file id={id} {...props} /> */}
               </label>
             </Dropzone>
-            <Control.file id={id} {...props} />
+            <div className="on-mobile">
+              <Control.file
+                id={id}
+                {...props}
+                onChange={e => this.fileDropped([...e.target.files])}
+              />
+            </div>
             <div className="preview-list">
               <ul>
                 {this.state.files.map(file => (
