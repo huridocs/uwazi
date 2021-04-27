@@ -309,20 +309,72 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       <ul
         className="search__filter"
       >
-        <li>
-          <label
-            htmlFor="file"
+        <li
+          className="attachments-list"
+        >
+          <Connect(Translate)>
+            Document
+          </Connect(Translate)>
+          <t
+            className="on-desktop"
+            disableClick={false}
+            disablePreview={false}
+            disabled={false}
+            maxSize={Infinity}
+            minSize={0}
+            multiple={true}
+            onDrop={[Function]}
+            preventDropOnDocument={true}
+            style={
+              Object {
+                "width": "100%",
+              }
+            }
           >
-            <Connect(Translate)>
-              Document
-            </Connect(Translate)>
+            <label>
+              <div
+                className="text-content"
+              >
+                <div
+                  id="icon"
+                >
+                  <Connect(Icon)
+                    icon="cloud-upload-alt"
+                  />
+                </div>
+                <div
+                  id="upload-text"
+                >
+                  Drop your files here to upload or
+                </div>
+                <div
+                  id="upload-button"
+                >
+                  <div
+                    id="button"
+                  >
+                    Select files on your device
+                  </div>
+                </div>
+              </div>
+            </label>
+          </t>
+          <div
+            className="on-mobile"
+          >
             <DefaultConnectedControlFile
               accept=".pdf"
-              className="form-control"
+              className="form-control on-mobile"
               id="file"
               model=".file"
+              onChange={[Function]}
             />
-          </label>
+          </div>
+          <div
+            className="preview-list"
+          >
+            <ul />
+          </div>
         </li>
       </ul>
     </div>
@@ -332,20 +384,72 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       <ul
         className="search__filter"
       >
-        <li>
-          <label
-            htmlFor="attachments"
+        <li
+          className="attachments-list"
+        >
+          <Connect(Translate)>
+            Attachments
+          </Connect(Translate)>
+          <t
+            className="on-desktop"
+            disableClick={false}
+            disablePreview={false}
+            disabled={false}
+            maxSize={Infinity}
+            minSize={0}
+            multiple={true}
+            onDrop={[Function]}
+            preventDropOnDocument={true}
+            style={
+              Object {
+                "width": "100%",
+              }
+            }
           >
-            <Connect(Translate)>
-              Attachments
-            </Connect(Translate)>
+            <label>
+              <div
+                className="text-content"
+              >
+                <div
+                  id="icon"
+                >
+                  <Connect(Icon)
+                    icon="cloud-upload-alt"
+                  />
+                </div>
+                <div
+                  id="upload-text"
+                >
+                  Drop your files here to upload or
+                </div>
+                <div
+                  id="upload-button"
+                >
+                  <div
+                    id="button"
+                  >
+                    Select files on your device
+                  </div>
+                </div>
+              </div>
+            </label>
+          </t>
+          <div
+            className="on-mobile"
+          >
             <DefaultConnectedControlFile
-              className="form-control"
+              className="form-control on-mobile"
               id="attachments"
               model=".attachments"
               multiple="multiple"
+              onChange={[Function]}
             />
-          </label>
+          </div>
+          <div
+            className="preview-list"
+          >
+            <ul />
+          </div>
         </li>
       </ul>
     </div>

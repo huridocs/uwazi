@@ -204,7 +204,7 @@ class PublicForm extends Component {
           <div className="public-form">
             {PublicForm.renderTitle(template)}
             <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
-            {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
+            {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
             {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
             {this.renderCaptcha()}
             <input type="submit" className="btn btn-success" value="Submit" />
