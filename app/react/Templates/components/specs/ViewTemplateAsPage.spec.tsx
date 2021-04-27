@@ -17,14 +17,14 @@ describe('ViewTemplateAsPage', () => {
   const render = () => {
     component = shallow(
       <Provider store={store}>
-        <ViewTemplateAsPage />
+        <ViewTemplateAsPage toggled />
       </Provider>
     )
       .dive()
       .dive();
   };
 
-  it('should contain a label with a tip, and toggled pages that can be used', () => {
+  it('should contain a label with a tip, and toggled pages that can be used for entity view', () => {
     store = mockStoreCreator({
       pages: Immutable.fromJS([
         { title: 'page 1', _id: 'abc123', entityView: true },
