@@ -72,10 +72,7 @@ class PublicForm extends Component {
   }
 
   removeAttachment(removedFile) {
-    const files = this.state.files.filter(file => file !== removedFile);
-    this.setState({
-      files,
-    });
+    this.setState(prevState => prevState.files.filter(file => file !== removedFile));
   }
 
   attachDispatch(dispatch) {
