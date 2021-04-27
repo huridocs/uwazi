@@ -316,6 +316,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
             Document
           </Connect(Translate)>
           <t
+            accept=".pdf"
             className="on-desktop"
             disableClick={false}
             disablePreview={false}
@@ -325,11 +326,6 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
             multiple={true}
             onDrop={[Function]}
             preventDropOnDocument={true}
-            style={
-              Object {
-                "width": "100%",
-              }
-            }
           >
             <label>
               <div
@@ -400,11 +396,6 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
             multiple={true}
             onDrop={[Function]}
             preventDropOnDocument={true}
-            style={
-              Object {
-                "width": "100%",
-              }
-            }
           >
             <label>
               <div
