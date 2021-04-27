@@ -1,9 +1,3 @@
-/**
- * /* eslint-disable
- *
- * @format
- */
-
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 
