@@ -6,6 +6,7 @@ const mongoSchema = new mongoose.Schema({
   name: String,
   color: { type: String, default: '' },
   default: Boolean,
+  entityViewPage: { type: String, default: '' },
   properties: [
     new mongoose.Schema({
       id: String,
