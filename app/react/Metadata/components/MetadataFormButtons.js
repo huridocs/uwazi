@@ -82,7 +82,7 @@ export class MetadataFormButtons extends Component {
               className="btn btn-success copy-from-btn"
               onClick={this.props.copyFrom}
             >
-              <Icon icon="clone" />
+              <Icon icon="copy-from" transform="left-0.07 up-0.06" />
               <span className="btn-label">
                 <Translate>Copy From</Translate>
               </span>

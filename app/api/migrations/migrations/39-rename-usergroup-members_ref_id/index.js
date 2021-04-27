@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
 export default {
-  delta: 38,
+  delta: 39,
 
   name: 'rename-usergroup-members_ref_id',
 

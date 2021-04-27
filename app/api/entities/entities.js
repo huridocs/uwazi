@@ -29,7 +29,7 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
   }
 
   const translation = (await translationsModel.get({ locale: entity.language }))[0];
-
+  const allTemplates = await templates.get();
   const resolveProp = async (key, value) => {
     if (!Array.isArray(value)) {
       throw new Error('denormalizeMetadata received non-array prop!');
@@ -63,15 +63,28 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
         }
 
         if (prop.type === 'relationship') {
-          const partner = await model.getUnrestricted({
+          const [partner] = await model.getUnrestricted({
             sharedId: elem.value,
             language: entity.language,
           });
 
-          if (partner && partner[0] && partner[0].title) {
-            elem.label = partner[0].title;
-            elem.icon = partner[0].icon;
-            elem.type = partner[0].file ? 'document' : 'entity';
+          if (partner && partner.title) {
+            elem.label = partner.title;
+            elem.icon = partner.icon;
+            elem.type = partner.file ? 'document' : 'entity';
+          }
+
+          if (prop.inherit && partner) {
+            const partnerTemplate = allTemplates.find(
+              t => t._id.toString() === partner.template.toString()
+            );
+
+            const inheritedProperty = partnerTemplate.properties.find(
+              p => p._id && p._id.toString() === prop.inheritProperty.toString()
+            );
+
+            elem.inheritedValue = partner.metadata[inheritedProperty.name];
+            elem.inheritedType = inheritedProperty.type;
           }
         }
         return elem;
@@ -134,6 +147,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
         ) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
+
         const toSave = { ...entity };
 
         toSave.published = d.published;
@@ -364,12 +378,19 @@ export default {
     const [entity] = await this.getWithRelationships({ sharedId, language }, '+permissions');
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
+      await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
     if (index) {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
     return entity;
+  },
+
+  async updateDenormalizedMetadataInRelatedEntities(entity) {
+    const related = await relationships.getByDocument(entity.sharedId, entity.language);
+    const sharedIds = related.map(r => r.entityData.sharedId);
+    await this.updateMetdataFromRelationships(sharedIds, entity.language);
   },
 
   async denormalize(_doc, { user, language }) {
@@ -829,14 +850,14 @@ export default {
   },
 
   async addLanguage(language, limit = 50) {
-    const [lanuageTranslationAlreadyExists] = await this.getUnrestrictedWithDocuments(
+    const [languageTranslationAlreadyExists] = await this.getUnrestrictedWithDocuments(
       { locale: language },
       null,
       {
         limit: 1,
       }
     );
-    if (lanuageTranslationAlreadyExists) {
+    if (languageTranslationAlreadyExists) {
       return;
     }
 

@@ -515,7 +515,7 @@ describe('entities', () => {
       };
       const user = { _id: db.id() };
 
-      await entities.save(doc, { user, language: 'es' });
+      await entities.save(doc, { user, language: 'es' }, false);
       await new Promise(resolve => setTimeout(resolve, 3000));
       expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
@@ -756,6 +756,16 @@ describe('entities', () => {
       entity.metadata.friends[0].label = '';
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.friends[0].label).toBe('shared2title');
+    });
+
+    it('should denormalize inherited metadata', async () => {
+      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+
+      const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
+      expect(denormalized.metadata.enemies[0].inheritedValue).toEqual([
+        { value: 'something to be inherited' },
+      ]);
+      expect(denormalized.metadata.enemies[0].inheritedType).toBe('text');
     });
   });
 
