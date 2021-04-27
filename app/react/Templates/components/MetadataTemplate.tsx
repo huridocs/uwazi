@@ -136,7 +136,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
             )}
           </div>
           <FormGroup model=".entityViewPage">
-            <ViewTemplateAsPage toggled={Boolean(this.props.entityViewPage)} />
+            <ViewTemplateAsPage selectedPage={this.props.entityViewPage || ''} />
           </FormGroup>
           <ShowIf if={!this.props.relationType}>
             {connectDropTarget(

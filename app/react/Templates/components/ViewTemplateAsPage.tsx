@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -8,9 +8,9 @@ import { ToggleChildren } from 'app/Settings/components/ToggleChildren';
 import { t } from 'app/I18N';
 import { loadPages as loadPagesAction } from 'app/Pages/actions/pageActions';
 
-const mapStateToProps = ({ pages }: IStore, ownProps: { toggled: boolean }) => ({
+const mapStateToProps = ({ pages }: IStore, ownProps: { selectedPage: string }) => ({
   pages: pages?.filter(p => p.get('entityView')) || [],
-  toggled: ownProps.toggled,
+  selectedPage: ownProps.selectedPage,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
@@ -20,7 +20,8 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const ViewTemplateAsPage = ({ pages, loadPages, toggled }: mappedProps) => {
+const ViewTemplateAsPage = ({ pages, loadPages, selectedPage }: mappedProps) => {
+  const [selected, setSelected] = useState(selectedPage);
   useEffect(() => {
     loadPages();
   }, []);
@@ -39,8 +40,13 @@ const ViewTemplateAsPage = ({ pages, loadPages, toggled }: mappedProps) => {
         </Tip>
       </label>
       {pages.size > 0 && (
-        <ToggleChildren toggled={toggled}>
-          <select>
+        <ToggleChildren toggled={Boolean(selectedPage)}>
+          <select
+            value={selected}
+            onChange={e => {
+              setSelected(e.target.value);
+            }}
+          >
             {pages.map(page => (
               <option value={page?.get('_id')?.toString()} key={page?.get('_id')?.toString()}>
                 {page?.get('title')}

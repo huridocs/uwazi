@@ -17,7 +17,7 @@ describe('ViewTemplateAsPage', () => {
   const render = () => {
     component = shallow(
       <Provider store={store}>
-        <ViewTemplateAsPage toggled />
+        <ViewTemplateAsPage selectedPage="pageID" />
       </Provider>
     )
       .dive()
