@@ -7,6 +7,10 @@ export function showTab(tab) {
   };
 }
 
+export function resetUserSelectedTab() {
+  return { type: types.RESET_USER_SELECTED_TAB };
+}
+
 export function hideFilters() {
   return { type: types.HIDE_FILTERS };
 }

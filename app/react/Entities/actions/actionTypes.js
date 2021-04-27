@@ -1,4 +1,5 @@
 //UI
 export const SHOW_TAB = 'SHOW_TAB';
+export const RESET_USER_SELECTED_TAB = 'RESET_USER_SELECTED_TAB';
 export const SHOW_FILTERS = 'SHOW_FILTERS';
 export const HIDE_FILTERS = 'HIDE_FILTERS';
