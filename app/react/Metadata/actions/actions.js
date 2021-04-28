@@ -81,7 +81,9 @@ export const UnwrapMetadataObject = (MetadataObject, Template) =>
 
     return {
       ...UnwrapedMO,
-      [key]: isMultiProperty ? MetadataObject[key].map(v => v.value) : MetadataObject[key][0].value,
+      [key]: isMultiProperty
+        ? MetadataObject[key].map(v => v.value)
+        : MetadataObject[key][0].value || MetadataObject[key],
     };
   }, {});
 

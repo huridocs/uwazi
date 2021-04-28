@@ -48,7 +48,7 @@ describe('Metadata Actions', () => {
         sharedId: '1',
         title: 'updated title',
         template: 'templateId',
-        metadata: { test: 'test' },
+        metadata: { test: 'test', id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) },
       };
 
       expect(dispatch).toHaveBeenCalledWith('formload');
