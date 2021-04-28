@@ -65,7 +65,7 @@ class PageCreator extends Component<mappedProps> {
               </div>
             </div>
             <div className="panel-body page-viewer document-viewer">
-              <div>
+              <div className="entity-view">
                 <Translate>Enable this page to be used as an entity view page: </Translate>
                 <Control
                   model=".entityView"
