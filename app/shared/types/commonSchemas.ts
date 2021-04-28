@@ -145,7 +145,7 @@ export const propertySchema = {
   type: 'object',
   required: ['label', 'type', 'name'],
   additionalProperties: false,
-  requireContentForSelectFields: true,
+  requireOrInvalidContentForSelectFields: true,
   requireRelationTypeForRelationship: true,
   requireInheritPropertyForInheritingRelationship: true,
   definitions: { objectIdSchema },
