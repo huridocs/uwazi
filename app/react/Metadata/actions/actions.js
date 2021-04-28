@@ -79,11 +79,12 @@ export const UnwrapMetadataObject = (MetadataObject, Template) =>
       'geolocation',
     ].includes(property.type);
 
+    const defaultPlainValue = property.type === 'generatedid' ? MetadataObject[key] : undefined;
     return {
       ...UnwrapedMO,
       [key]: isMultiProperty
         ? MetadataObject[key].map(v => v.value)
-        : MetadataObject[key][0].value || MetadataObject[key],
+        : MetadataObject[key][0].value || defaultPlainValue,
     };
   }, {});
 
