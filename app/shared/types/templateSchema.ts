@@ -75,7 +75,7 @@ ajv.addKeyword('uniquePropertyFields', {
   },
 });
 
-ajv.addKeyword('requireContentForSelectFields', {
+ajv.addKeyword('requireOrInvalidContentForSelectFields', {
   async: true,
   errors: false,
   type: 'object',
