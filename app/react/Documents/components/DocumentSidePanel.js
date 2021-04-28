@@ -23,6 +23,7 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -128,9 +129,12 @@ export class DocumentSidePanel extends Component {
         </div>
       );
     }
-    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
 
-    const summary = connectionsGroups.reduce(
+    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references, hubs } = this.props;
+
+    this.visibleConnectionGroups = filterVisibleConnections(connectionsGroups, hubs);
+
+    const summary = this.visibleConnectionGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -440,7 +444,7 @@ export class DocumentSidePanel extends Component {
                 />
               </TabContent>
               <TabContent for="connections" className="connections">
-                <ConnectionsGroups connectionsGroups={this.props.connectionsGroups} />
+                <ConnectionsGroups connectionsGroups={this.visibleConnectionGroups} />
               </TabContent>
               <TabContent for="semantic-search-results">
                 <DocumentSemanticSearchResults doc={jsDoc} />
@@ -507,6 +511,7 @@ DocumentSidePanel.propTypes = {
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
+  hubs: PropTypes.object,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -534,6 +539,7 @@ export const mapStateToProps = (state, ownProps) => {
     defaultLanguage,
     templates: state.templates,
     formData: state[ownProps.storeKey].sidepanel.metadata,
+    hubs: state.relationships.hubs,
   };
 };
 

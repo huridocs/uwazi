@@ -45,7 +45,9 @@ describe('DocumentSidePanel', () => {
       hubs: Immutable.fromJS([
         {
           hub: '1',
-          rightRelationships: [{ template: null }, { template: 'connection2' }],
+          rightRelationships: [
+            { template: 'connection1', relationships: [{ entityData: { template: 't1' } }] },
+          ],
         },
       ]),
       open: true,
