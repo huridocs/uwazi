@@ -25,7 +25,10 @@ describe('templateActions', () => {
     formModel = {
       thesauris: Immutable.fromJS([{ _id: 'first_thesauri_id' }, { _id: 2 }]),
       template: {
-        data: { properties: [{ name: 'property1' }, { name: 'property2' }] },
+        data: {
+          properties: [{ name: 'property1' }, { name: 'property2' }],
+          entityViewPage: 'old value',
+        },
       },
     };
     dispatch = jasmine.createSpy('dispatch');
@@ -36,6 +39,13 @@ describe('templateActions', () => {
     spyOn(formActions, 'remove');
     spyOn(formActions, 'reset');
     spyOn(formActions, 'resetErrors');
+  });
+
+  describe('updateValue', () => {
+    it('should update the model with the provided value', () => {
+      actions.updateValue('.entityViewPage', 'newPage')(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('template.data.entityViewPage', 'newPage');
+    });
   });
 
   describe('addProperty()', () => {
