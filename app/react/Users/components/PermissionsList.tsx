@@ -37,11 +37,11 @@ const permissionsByRole: PermissionByRole[] = [
     roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
   },
   {
-    label: 'Share entities with the public',
-    roles: { admin: 'full', editor: 'full', collaborator: 'none' },
+    label: 'Create connections and references',
+    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
   },
   {
-    label: 'Create connections and references',
+    label: 'Share entities with the public',
     roles: { admin: 'full', editor: 'full', collaborator: 'none' },
   },
   {
