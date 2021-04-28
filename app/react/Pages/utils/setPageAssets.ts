@@ -41,11 +41,14 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   return listsData;
 };
 
-const setPageAssets = async (requestParams: RequestParams) => {
+const setPageAssets = async (requestParams: RequestParams, additionalDatasets: {}) => {
   const page = await PagesAPI.getById(requestParams);
 
   const listsData = prepareLists(page.metadata.content, requestParams);
-  const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders());
+  // TEST!!!
+  const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders(), {
+    additionalDatasets,
+  });
 
   const [pageView, searchParams, searchOptions, datasets, listSearchs] = await Promise.all([
     page,

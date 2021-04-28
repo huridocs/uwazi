@@ -83,9 +83,10 @@ const addValues = (aggregations, values) => {
 };
 
 export default {
-  async fetch(markdown, requestParams) {
+  async fetch(markdown, requestParams, { additionalDatasets = {} }) {
     const datasets = parseDatasets(markdown);
-    return requestDatasets(datasets, requestParams).then(conformDatasets);
+    const extendedDatsets = { ...datasets, ...additionalDatasets };
+    return requestDatasets(extendedDatsets, requestParams).then(conformDatasets);
   },
 
   getRows(state, { dataset = 'default' }) {
