@@ -27,9 +27,9 @@ describe('ViewTemplateAsPage', () => {
   it('should contain a label with a tip, and toggled pages that can be used for entity view', () => {
     store = mockStoreCreator({
       pages: Immutable.fromJS([
-        { title: 'page 1', _id: 'abc123', entityView: true },
-        { title: 'page 2', _id: 'def345', entityView: false },
-        { title: 'page 3', _id: 'df3485' },
+        { title: 'page 1', sharedId: 'abc123', entityView: true },
+        { title: 'page 2', sharedId: 'def345', entityView: false },
+        { title: 'page 3', sharedId: 'df3485' },
       ]),
     });
     render();
@@ -42,8 +42,8 @@ describe('ViewTemplateAsPage', () => {
   it('should display a message saying that no pages are available if none are present', () => {
     store = mockStoreCreator({
       pages: Immutable.fromJS([
-        { title: 'page 2', _id: 'def345', entityView: false },
-        { title: 'page 3', _id: 'df3485' },
+        { title: 'page 2', sharedId: 'def345', entityView: false },
+        { title: 'page 3', sharedId: 'df3485' },
       ]),
     });
     render();

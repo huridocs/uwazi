@@ -47,7 +47,7 @@ const ViewTemplateAsPage = ({ pages, loadPages, selectedPage, updateValue }: map
         >
           <Select
             model=".entityViewPage"
-            optionsValue="_id"
+            optionsValue="sharedId"
             optionsLabel="title"
             options={pages.toJS()}
           />

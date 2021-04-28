@@ -250,7 +250,7 @@ export const templateSchema = {
     name: { type: 'string', minLength: 1 },
     color: { type: 'string', default: '' },
     default: { type: 'boolean', default: false },
-    entityViewPage: objectIdSchema,
+    entityViewPage: { type: 'string', default: '' },
     commonProperties: {
       type: 'array',
       requireTitleProperty: true,
