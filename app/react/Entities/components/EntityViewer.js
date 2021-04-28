@@ -25,6 +25,7 @@ import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
 import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
+import { PageViewer } from 'app/Pages/components/PageViewer';
 
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
@@ -90,7 +91,14 @@ export class EntityViewer extends Component {
   }
 
   render() {
-    const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
+    const {
+      entity,
+      entityBeingEdited,
+      tab,
+      connectionsGroups,
+      relationships,
+      hasPageView,
+    } = this.props;
     const { panelOpen, copyFrom, copyFromProps } = this.state;
     const selectedTab = tab;
     const rawEntity = entity.toJS();
@@ -103,6 +111,7 @@ export class EntityViewer extends Component {
       },
       { totalConnections: 0 }
     );
+
     return (
       <div className="row">
         <Helmet title={entity.get('title') ? entity.get('title') : 'Entity'} />
@@ -124,7 +133,11 @@ export class EntityViewer extends Component {
 
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
           <Tabs selectedTab={selectedTab}>
-            <TabContent for={selectedTab === 'page' ? selectedTab : 'none'}>Full page</TabContent>
+            {hasPageView && (
+              <TabContent for={selectedTab === 'page' ? selectedTab : 'none'}>
+                <PageViewer />
+              </TabContent>
+            )}
             <TabContent
               for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
             >
@@ -197,17 +210,19 @@ export class EntityViewer extends Component {
               }}
             >
               <ul className="nav nav-tabs">
-                <li>
-                  <TabLink
-                    to="page"
-                    role="button"
-                    tabIndex="0"
-                    aria-label={t('System', 'Page', null, false)}
-                  >
-                    <Icon icon="file-image" />
-                    <span className="tab-link-tooltip">{t('System', 'Page')}</span>
-                  </TabLink>
-                </li>
+                {hasPageView && (
+                  <li>
+                    <TabLink
+                      to="page"
+                      role="button"
+                      tabIndex="0"
+                      aria-label={t('System', 'Page', null, false)}
+                    >
+                      <Icon icon="file-image" />
+                      <span className="tab-link-tooltip">{t('System', 'Page')}</span>
+                    </TabLink>
+                  </li>
+                )}
                 <li>
                   <TabLink
                     to="info"
@@ -291,6 +306,7 @@ EntityViewer.defaultProps = {
   relationships: Immutable.fromJS([]),
   entityBeingEdited: false,
   tab: 'info',
+  hasPageView: false,
 };
 
 EntityViewer.propTypes = {
@@ -307,6 +323,7 @@ EntityViewer.propTypes = {
   tab: PropTypes.string,
   library: PropTypes.object,
   showTab: PropTypes.func.isRequired,
+  hasPageView: PropTypes.bool,
 };
 
 EntityViewer.contextTypes = {
@@ -333,6 +350,7 @@ const mapStateToProps = state => {
     connectionsGroups: state.relationships.list.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: uiState.get('userSelectedTab') ? uiState.get('tab') : defaultTab,
+    hasPageView: Boolean(templateWithPageView),
     library: state.library,
   };
 };
