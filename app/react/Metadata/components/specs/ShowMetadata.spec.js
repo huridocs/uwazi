@@ -4,6 +4,7 @@ import { caseTemplate, matterTemplate } from 'app/Timeline/utils/timelineFixedDa
 import { shallow } from 'enzyme';
 
 import { ShowMetadata } from '../ShowMetadata';
+import { FormatMetadata } from 'app/Metadata/containers/FormatMetadata';
 
 describe('Metadata', () => {
   let props;
@@ -47,5 +48,12 @@ describe('Metadata', () => {
 
     component = shallow(<ShowMetadata {...props} />).find('.metadata-timeline-viewer');
     expect(component).toMatchSnapshot();
+  });
+
+  it('should hide the label if the property is configured to', () => {
+    const component = shallow(<ShowMetadata {...props} />);
+    const callback = component.find(FormatMetadata).props().renderLabel;
+    expect(callback({ noLabel: true }, 'label')).toBeFalsy();
+    expect(callback({}, 'label')).toBe('label');
   });
 });

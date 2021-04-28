@@ -60,6 +60,7 @@ export class ShowMetadata extends Component {
           relationships={relationships}
           showSubset={showSubset}
           groupGeolocations={groupGeolocations}
+          renderLabel={(prop, label) => !prop.noLabel && label}
         />
       </div>
     );

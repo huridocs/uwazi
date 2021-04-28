@@ -79,6 +79,7 @@ exports[`Metadata should render without timeline by default 1`] = `
   <Connect(BaseFormatMetadata)
     entity={Object {}}
     groupGeolocations={false}
+    renderLabel={[Function]}
   />
 </div>
 `;
