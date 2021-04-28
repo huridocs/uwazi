@@ -1,10 +1,10 @@
-import { IDGenerator } from 'shared/IDGenerator';
 import { unique } from 'api/utils/filters';
+import { generateID } from 'shared/IDGenerator';
 
 describe('IDGenerator', () => {
   describe('generateId', () => {
     const generateAssertedID = (characterLength = 2, numericLength = 4, extraLength = 0) => {
-      const generatedId = IDGenerator.generateID(characterLength, numericLength, extraLength);
+      const generatedId = generateID(characterLength, numericLength, extraLength);
       const extraExpectedLength = extraLength > 0 ? Math.min(extraLength, 13) + 1 : 0;
       expect(generatedId.length).toBe(characterLength + numericLength + extraExpectedLength);
       const characterPart = generatedId.substr(0, characterLength);
@@ -49,7 +49,7 @@ describe('IDGenerator', () => {
     `(
       'should generate a random ID even with lengths outside 0..13',
       ({ letters, numbers, extra, output }) => {
-        const generatedId = IDGenerator.generateID(letters, numbers, extra);
+        const generatedId = generateID(letters, numbers, extra);
         expect(generatedId.length).toBe(output);
       }
     );

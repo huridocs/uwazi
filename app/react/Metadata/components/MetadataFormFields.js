@@ -9,7 +9,7 @@ import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
-import { IDGenerator } from 'shared/IDGenerator';
+import { generateID } from 'shared/IDGenerator';
 import {
   DatePicker,
   DateRange,
@@ -162,9 +162,7 @@ export class MetadataFormFields extends Component {
             <input
               type="text"
               className="form-control"
-              defaultValue={
-                formModel === 'publicform' ? IDGenerator.generateID(2, 4, 4) : undefined
-              }
+              defaultValue={formModel === 'publicform' ? generateID(2, 4, 4) : undefined}
             />
           </Field>
         );

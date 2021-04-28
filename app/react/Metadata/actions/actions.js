@@ -7,7 +7,7 @@ import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libra
 import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from 'app/Search/SearchAPI';
 import { actions } from 'app/BasicReducer';
-import { IDGenerator } from 'shared/IDGenerator';
+import { generateID } from 'shared/IDGenerator';
 import emptyTemplate from '../helpers/defaultTemplate';
 
 export function resetReduxForm(form) {
@@ -27,7 +27,7 @@ const defaultValueByType = (type, options) => {
     case 'daterange':
       return { from: null, to: null };
     case 'generatedid':
-      return !options.resetExisting ? IDGenerator.generateID(3, 4, 4) : undefined;
+      return !options.resetExisting ? generateID(3, 4, 4) : undefined;
     case 'multiselect':
     case 'relationship':
     case 'nested':
