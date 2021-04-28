@@ -8,7 +8,7 @@ export interface TemplateSchema {
   name: string;
   color?: string;
   default?: boolean;
-  entityViewPage?: string;
+  entityViewPage?: ObjectIdSchema;
   commonProperties?: [PropertySchema, ...PropertySchema[]];
   properties?: PropertySchema[];
   [k: string]: unknown | undefined;
