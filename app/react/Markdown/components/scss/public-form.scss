@@ -76,17 +76,7 @@
       }
     }
   }
-  .on-desktop {
+  .dropzone {
     width: 100%
-  }
-  @media (min-width: 768px) {
-    .on-mobile {
-      display: none;
-    }
-  }
-  @media (max-width: 768px) {
-    .on-desktop {
-      display: none;
-    }
   }
 }

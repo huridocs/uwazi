@@ -15,6 +15,7 @@ import { Icon } from 'UI';
 import Loader from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
 import Dropzone from 'react-dropzone';
+import { BrowserView, MobileView } from 'react-device-detect';
 
 class PublicForm extends Component {
   static renderTitle(template) {
@@ -71,8 +72,12 @@ class PublicForm extends Component {
     });
   }
 
-  removeAttachment(removedFile) {
-    this.setState(prevState => prevState.files.filter(file => file !== removedFile));
+  removeAttachment(removedFile, e) {
+    console.log(e);
+    this.setState(prevState => ({ files: prevState.files.filter(file => file !== removedFile) }));
+    if (!this.state.files.length) {
+      e.target.value = null;
+    }
   }
 
   attachDispatch(dispatch) {
@@ -118,37 +123,39 @@ class PublicForm extends Component {
         <ul className="search__filter">
           <li className="attachments-list">
             <Translate>{id === 'file' ? 'Document' : 'Attachments'}</Translate>
-            <Dropzone
-              onDrop={this.fileDropped}
-              className="on-desktop"
-              accept={id === 'file' ? '.pdf' : undefined}
-            >
-              <label>
-                <div className="text-content">
-                  <div id="icon">
-                    <Icon icon="cloud-upload-alt" />
+            <BrowserView>
+              <Dropzone
+                onDrop={this.fileDropped}
+                className="dropzone"
+                accept={id === 'file' ? '.pdf' : undefined}
+              >
+                <label>
+                  <div className="text-content">
+                    <div id="icon">
+                      <Icon icon="cloud-upload-alt" />
+                    </div>
+                    <div id="upload-text">Drop your files here to upload or</div>
+                    <div id="upload-button">
+                      <div id="button">Select files on your device</div>
+                    </div>
                   </div>
-                  <div id="upload-text">Drop your files here to upload or</div>
-                  <div id="upload-button">
-                    <div id="button">Select files on your device</div>
-                  </div>
-                </div>
-              </label>
-            </Dropzone>
-            <div className="on-mobile">
+                </label>
+              </Dropzone>
+            </BrowserView>
+            <MobileView>
               <Control.file
                 id={id}
                 {...props}
                 onChange={e => this.fileDropped([...e.target.files])}
               />
-            </div>
+            </MobileView>
             <div className="preview-list">
               <ul>
                 {this.state.files.map(file => (
                   <li key={file.preview}>
                     <div className="preview-title">{file.name}</div>
                     <div>
-                      <span onClick={() => this.removeAttachment(file)}>
+                      <span onClick={e => this.removeAttachment(file, e)}>
                         <Icon icon="times" />
                         &nbsp;Remove
                       </span>
