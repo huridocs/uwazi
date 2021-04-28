@@ -72,11 +72,13 @@ class PublicForm extends Component {
     });
   }
 
-  removeAttachment(removedFile, e) {
-    console.log(e);
-    this.setState(prevState => ({ files: prevState.files.filter(file => file !== removedFile) }));
+  async removeAttachment(removedFile) {
+    await this.setState(prevState => ({
+      files: prevState.files.filter(file => file !== removedFile),
+    }));
     if (!this.state.files.length) {
-      e.target.value = null;
+      const input = document.querySelector('input[name="publicform.file"]');
+      input.value = '';
     }
   }
 
@@ -90,29 +92,31 @@ class PublicForm extends Component {
 
   handleSubmit(_values) {
     const values = wrapEntityMetadata(_values);
-    const { submit, template, remote } = this.props;
+    const { /* submit,*/ template /*, remote */ } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
     values.attachments = this.state.files.length ? this.state.files : undefined;
 
-    submit(values, remote)
-      .then(uploadCompletePromise => {
-        this.setState({ submiting: true });
-        return uploadCompletePromise.promise
-          .then(() => {
-            this.setState({ submiting: false });
-            this.resetForm();
-            this.refreshCaptcha();
-          })
-          .catch(() => {
-            this.setState({ submiting: false });
-            this.refreshCaptcha();
-          });
-      })
-      .catch(() => {
-        this.setState({ submiting: false });
-        this.refreshCaptcha();
-      });
+    console.log(values);
+
+    // submit(values, remote)
+    //   .then(uploadCompletePromise => {
+    //     this.setState({ submiting: true });
+    //     return uploadCompletePromise.promise
+    //       .then(() => {
+    //         this.setState({ submiting: false });
+    //         this.resetForm();
+    //         this.refreshCaptcha();
+    //       })
+    //       .catch(() => {
+    //         this.setState({ submiting: false });
+    //         this.refreshCaptcha();
+    //       });
+    //   })
+    //   .catch(() => {
+    //     this.setState({ submiting: false });
+    //     this.refreshCaptcha();
+    //   });
   }
 
   renderFileField(id, options) {
@@ -155,7 +159,7 @@ class PublicForm extends Component {
                   <li key={file.preview}>
                     <div className="preview-title">{file.name}</div>
                     <div>
-                      <span onClick={e => this.removeAttachment(file, e)}>
+                      <span onClick={() => this.removeAttachment(file)}>
                         <Icon icon="times" />
                         &nbsp;Remove
                       </span>
