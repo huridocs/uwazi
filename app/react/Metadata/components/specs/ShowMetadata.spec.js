@@ -3,8 +3,8 @@ import React from 'react';
 import { caseTemplate, matterTemplate } from 'app/Timeline/utils/timelineFixedData';
 import { shallow } from 'enzyme';
 
-import { ShowMetadata } from '../ShowMetadata';
 import { FormatMetadata } from 'app/Metadata/containers/FormatMetadata';
+import { ShowMetadata } from '../ShowMetadata';
 
 describe('Metadata', () => {
   let props;

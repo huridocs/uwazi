@@ -1,5 +1,3 @@
-/** @format */
-
 import ShowIf from 'app/App/ShowIf';
 import { DocumentLanguage, TemplateLabel } from 'app/Layout';
 import { Icon } from 'app/Layout/Icon';
