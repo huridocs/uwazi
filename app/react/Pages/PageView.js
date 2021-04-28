@@ -1,69 +1,18 @@
 import React from 'react';
-import rison from 'rison-node';
 
 import { actions } from 'app/BasicReducer';
-import { markdownDatasets } from 'app/Markdown';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import api from 'app/Search/SearchAPI';
 
-import PageViewer from './components/PageViewer';
-import PagesAPI from './PagesAPI';
-import pageItemLists from './utils/pageItemLists';
-
-function prepareLists(content, requestParams) {
-  const listsData = pageItemLists.generate(content);
-
-  listsData.searchs = Promise.all(
-    listsData.params.map((params, index) => {
-      const sanitizedParams = params ? decodeURI(params) : '';
-      const queryDefault = { filters: {}, types: [] };
-      let query = queryDefault;
-
-      if (sanitizedParams) {
-        query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
-        if (typeof query !== 'object') {
-          query = queryDefault;
-        }
-      }
-
-      query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
-      return api.search(requestParams.set(query));
-    })
-  );
-
-  return listsData;
-}
+import { PageViewer } from './components/PageViewer';
+import { setPageAssets } from './utils/setPageAssets';
 
 class PageView extends RouteHandler {
   static async requestState(requestParams) {
-    const page = await PagesAPI.getById(requestParams);
-
-    const listsData = prepareLists(page.metadata.content, requestParams);
-    const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders());
-
-    const [pageView, searchParams, searchOptions, datasets, listSearchs] = await Promise.all([
-      page,
-      listsData.params,
-      listsData.options,
-      dataSets,
-      listsData.searchs,
-    ]);
-
-    const itemLists = searchParams.map((p, index) => ({
-      params: p,
-      items: listSearchs[index].rows,
-      options: searchOptions[index],
-    }));
-
-    return [
-      actions.set('page/pageView', pageView),
-      actions.set('page/itemLists', itemLists),
-      actions.set('page/datasets', datasets),
-    ];
+    return setPageAssets(requestParams);
   }
 
   closeSidePanel() {

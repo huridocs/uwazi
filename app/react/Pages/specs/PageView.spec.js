@@ -3,7 +3,7 @@ import { actions } from 'app/BasicReducer';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import { markdownDatasets } from 'app/Markdown';
-import PageViewer from 'app/Pages/components/PageViewer';
+import { PageViewer } from 'app/Pages/components/PageViewer';
 import PagesAPI from 'app/Pages/PagesAPI';
 import api from 'app/Search/SearchAPI';
 import { RequestParams } from 'app/utils/RequestParams';

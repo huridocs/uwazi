@@ -26,7 +26,7 @@ describe('PageViewer', () => {
   });
 
   const render = () => {
-    component = shallow(<PageViewer {...props} />, { context });
+    component = shallow(<PageViewer.WrappedComponent {...props} />, { context });
   };
 
   describe('render', () => {
