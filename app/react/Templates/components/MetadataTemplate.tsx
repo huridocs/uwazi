@@ -22,7 +22,6 @@ import {
   inserted,
   saveTemplate,
   validateMapping,
-  updateValue,
 } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
@@ -136,9 +135,11 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
               />
             )}
           </div>
-          <FormGroup model=".entityViewPage">
-            <ViewTemplateAsPage selectedPage={this.props.entityViewPage || ''} />
-          </FormGroup>
+          <div className="metadataTemplate-pageview">
+            <FormGroup model=".entityViewPage">
+              <ViewTemplateAsPage selectedPage={this.props.entityViewPage || ''} />
+            </FormGroup>
+          </div>
           <ShowIf if={!this.props.relationType}>
             {connectDropTarget(
               <ul className="metadataTemplate-list list-group">
