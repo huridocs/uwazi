@@ -62,30 +62,30 @@ export const resetMetadata = (metadata, template, options, previousTemplate) => 
   return resetedMetadata;
 };
 
+const getPropertyValue = (property, metadataProperty) => {
+  switch (property.type) {
+    case 'multiselect':
+    case 'multidaterange':
+    case 'nested':
+    case 'relationship':
+    case 'multidate':
+    case 'geolocation':
+      return metadataProperty.map(v => v.value);
+    case 'generatedid':
+      return metadataProperty;
+    default:
+      return metadataProperty[0].value;
+  }
+};
+
 export const UnwrapMetadataObject = (MetadataObject, Template) =>
   Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
     if (!MetadataObject[key].length) {
       return UnwrapedMO;
     }
-
     const property = Template.properties.find(p => p.name === key);
-
-    const isMultiProperty = [
-      'multiselect',
-      'multidaterange',
-      'nested',
-      'relationship',
-      'multidate',
-      'geolocation',
-    ].includes(property.type);
-
-    const defaultPlainValue = property.type === 'generatedid' ? MetadataObject[key] : undefined;
-    return {
-      ...UnwrapedMO,
-      [key]: isMultiProperty
-        ? MetadataObject[key].map(v => v.value)
-        : MetadataObject[key][0].value || defaultPlainValue,
-    };
+    const propertyValue = getPropertyValue(property, MetadataObject[key]);
+    return { ...UnwrapedMO, [key]: propertyValue };
   }, {});
 
 export function loadFetchedInReduxForm(form, entity, templates) {
