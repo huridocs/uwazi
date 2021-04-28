@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { IStore } from 'app/istore';
 import { Tip } from 'app/Layout';
 import { ToggleChildren } from 'app/Settings/components/ToggleChildren';
+import { Select } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
 import { loadPages as loadPagesAction } from 'app/Pages/actions/pageActions';
+import { updateValue as updateValueAction } from 'app/Templates/actions/templateActions';
 
 const mapStateToProps = ({ pages }: IStore, ownProps: { selectedPage: string }) => ({
   pages: pages?.filter(p => p.get('entityView')) || [],
@@ -14,14 +16,13 @@ const mapStateToProps = ({ pages }: IStore, ownProps: { selectedPage: string }) 
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ loadPages: loadPagesAction }, dispatch);
+  bindActionCreators({ loadPages: loadPagesAction, updateValue: updateValueAction }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const ViewTemplateAsPage = ({ pages, loadPages, selectedPage }: mappedProps) => {
-  const [selected, setSelected] = useState(selectedPage);
+const ViewTemplateAsPage = ({ pages, loadPages, selectedPage, updateValue }: mappedProps) => {
   useEffect(() => {
     loadPages();
   }, []);
@@ -40,19 +41,16 @@ const ViewTemplateAsPage = ({ pages, loadPages, selectedPage }: mappedProps) => 
         </Tip>
       </label>
       {pages.size > 0 && (
-        <ToggleChildren toggled={Boolean(selectedPage)} onToggleOff={() => setSelected('')}>
-          <select
-            value={selected}
-            onChange={e => {
-              setSelected(e.target.value);
-            }}
-          >
-            {pages.map(page => (
-              <option value={page?.get('_id')?.toString()} key={page?.get('_id')?.toString()}>
-                {page?.get('title')}
-              </option>
-            ))}
-          </select>
+        <ToggleChildren
+          toggled={Boolean(selectedPage)}
+          onToggleOff={() => updateValue('.entityViewPage', '')}
+        >
+          <Select
+            model=".entityViewPage"
+            optionsValue="_id"
+            optionsLabel="title"
+            options={pages.toJS()}
+          />
         </ToggleChildren>
       )}
     </div>

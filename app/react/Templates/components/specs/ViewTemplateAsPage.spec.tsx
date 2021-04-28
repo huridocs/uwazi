@@ -36,7 +36,7 @@ describe('ViewTemplateAsPage', () => {
     expect(component.find('label')).toHaveLength(1);
     expect(component.find('Tip')).toHaveLength(1);
     expect(component.find('ToggleChildren')).toHaveLength(1);
-    expect(component.find('option').props().children).toBe('page 1');
+    expect(component.find('Select').props()).toMatchObject({ options: [{ title: 'page 1' }] });
   });
 
   it('should display a message saying that no pages are available if none are present', () => {

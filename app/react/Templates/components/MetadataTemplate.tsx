@@ -22,6 +22,7 @@ import {
   inserted,
   saveTemplate,
   validateMapping,
+  updateValue,
 } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
