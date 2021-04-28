@@ -92,31 +92,29 @@ class PublicForm extends Component {
 
   handleSubmit(_values) {
     const values = wrapEntityMetadata(_values);
-    const { /* submit,*/ template /*, remote */ } = this.props;
+    const { submit, template, remote } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
     values.attachments = this.state.files.length ? this.state.files : undefined;
 
-    console.log(values);
-
-    // submit(values, remote)
-    //   .then(uploadCompletePromise => {
-    //     this.setState({ submiting: true });
-    //     return uploadCompletePromise.promise
-    //       .then(() => {
-    //         this.setState({ submiting: false });
-    //         this.resetForm();
-    //         this.refreshCaptcha();
-    //       })
-    //       .catch(() => {
-    //         this.setState({ submiting: false });
-    //         this.refreshCaptcha();
-    //       });
-    //   })
-    //   .catch(() => {
-    //     this.setState({ submiting: false });
-    //     this.refreshCaptcha();
-    //   });
+    submit(values, remote)
+      .then(uploadCompletePromise => {
+        this.setState({ submiting: true });
+        return uploadCompletePromise.promise
+          .then(() => {
+            this.setState({ submiting: false });
+            this.resetForm();
+            this.refreshCaptcha();
+          })
+          .catch(() => {
+            this.setState({ submiting: false });
+            this.refreshCaptcha();
+          });
+      })
+      .catch(() => {
+        this.setState({ submiting: false });
+        this.refreshCaptcha();
+      });
   }
 
   renderFileField(id, options) {
