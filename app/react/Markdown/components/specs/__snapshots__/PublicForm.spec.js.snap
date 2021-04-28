@@ -315,49 +315,49 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
           <Connect(Translate)>
             Document
           </Connect(Translate)>
-          <t
-            accept=".pdf"
-            className="on-desktop"
-            disableClick={false}
-            disablePreview={false}
-            disabled={false}
-            maxSize={Infinity}
-            minSize={0}
-            multiple={true}
-            onDrop={[Function]}
-            preventDropOnDocument={true}
-          >
-            <label>
-              <div
-                className="text-content"
-              >
+          <BrowserView>
+            <t
+              accept=".pdf"
+              className="dropzone"
+              disableClick={false}
+              disablePreview={false}
+              disabled={false}
+              maxSize={Infinity}
+              minSize={0}
+              multiple={true}
+              onDrop={[Function]}
+              preventDropOnDocument={true}
+            >
+              <label>
                 <div
-                  id="icon"
-                >
-                  <Connect(Icon)
-                    icon="cloud-upload-alt"
-                  />
-                </div>
-                <div
-                  id="upload-text"
-                >
-                  Drop your files here to upload or
-                </div>
-                <div
-                  id="upload-button"
+                  className="text-content"
                 >
                   <div
-                    id="button"
+                    id="icon"
                   >
-                    Select files on your device
+                    <Connect(Icon)
+                      icon="cloud-upload-alt"
+                    />
+                  </div>
+                  <div
+                    id="upload-text"
+                  >
+                    Drop your files here to upload or
+                  </div>
+                  <div
+                    id="upload-button"
+                  >
+                    <div
+                      id="button"
+                    >
+                      Select files on your device
+                    </div>
                   </div>
                 </div>
-              </div>
-            </label>
-          </t>
-          <div
-            className="on-mobile"
-          >
+              </label>
+            </t>
+          </BrowserView>
+          <MobileView>
             <DefaultConnectedControlFile
               accept=".pdf"
               className="form-control on-mobile"
@@ -365,7 +365,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
               model=".file"
               onChange={[Function]}
             />
-          </div>
+          </MobileView>
           <div
             className="preview-list"
           >
@@ -386,48 +386,48 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
           <Connect(Translate)>
             Attachments
           </Connect(Translate)>
-          <t
-            className="on-desktop"
-            disableClick={false}
-            disablePreview={false}
-            disabled={false}
-            maxSize={Infinity}
-            minSize={0}
-            multiple={true}
-            onDrop={[Function]}
-            preventDropOnDocument={true}
-          >
-            <label>
-              <div
-                className="text-content"
-              >
+          <BrowserView>
+            <t
+              className="dropzone"
+              disableClick={false}
+              disablePreview={false}
+              disabled={false}
+              maxSize={Infinity}
+              minSize={0}
+              multiple={true}
+              onDrop={[Function]}
+              preventDropOnDocument={true}
+            >
+              <label>
                 <div
-                  id="icon"
-                >
-                  <Connect(Icon)
-                    icon="cloud-upload-alt"
-                  />
-                </div>
-                <div
-                  id="upload-text"
-                >
-                  Drop your files here to upload or
-                </div>
-                <div
-                  id="upload-button"
+                  className="text-content"
                 >
                   <div
-                    id="button"
+                    id="icon"
                   >
-                    Select files on your device
+                    <Connect(Icon)
+                      icon="cloud-upload-alt"
+                    />
+                  </div>
+                  <div
+                    id="upload-text"
+                  >
+                    Drop your files here to upload or
+                  </div>
+                  <div
+                    id="upload-button"
+                  >
+                    <div
+                      id="button"
+                    >
+                      Select files on your device
+                    </div>
                   </div>
                 </div>
-              </div>
-            </label>
-          </t>
-          <div
-            className="on-mobile"
-          >
+              </label>
+            </t>
+          </BrowserView>
+          <MobileView>
             <DefaultConnectedControlFile
               className="form-control on-mobile"
               id="attachments"
@@ -435,7 +435,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
               multiple="multiple"
               onChange={[Function]}
             />
-          </div>
+          </MobileView>
           <div
             className="preview-list"
           >
