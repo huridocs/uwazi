@@ -1,17 +1,13 @@
 import Immutable from 'immutable';
+import { ConnectionSchema } from 'shared/types/connectionType';
 
 interface ConnectionGroup {
   key: string;
   templates: { _id: string; count: number }[];
 }
-
-interface RelationshipData {
-  entityData: { template: string };
-}
-
 interface RelationShip {
   template: string;
-  relationships: RelationshipData[];
+  relationships: ConnectionSchema[];
 }
 interface Hub {
   rightRelationships: RelationShip[];
@@ -20,7 +16,7 @@ interface Hub {
 export const filterVisibleConnections = (connectionsGroups: ConnectionGroup[], hubs: Hub[]) => {
   const filteredConnectionGroups = connectionsGroups
     .map(group => {
-      const relationsForRelType: RelationshipData[] = [];
+      const relationsForRelType: ConnectionSchema[] = [];
       hubs.forEach(hub => {
         hub.rightRelationships
           .filter(r => r.template === group.key)
@@ -33,7 +29,9 @@ export const filterVisibleConnections = (connectionsGroups: ConnectionGroup[], h
         return null;
       }
 
-      const entityTemplates = relationsForRelType.map(r => r.entityData.template);
+      const entityTemplates = relationsForRelType.map(
+        (r: ConnectionSchema) => r.entityData?.template
+      );
 
       const filteredTemplates = group.templates
         .map(temp => {
