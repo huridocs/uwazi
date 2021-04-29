@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import { ObjectId } from 'mongodb';
 import model from 'api/templates/templatesModel';
+import { thesauri } from 'api/thesauri/thesauri';
 import { ensure, wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import { getCompatibleTypes } from 'shared/propertyTypes';
@@ -74,15 +75,21 @@ ajv.addKeyword('uniquePropertyFields', {
   },
 });
 
-ajv.addKeyword('requireContentForSelectFields', {
+ajv.addKeyword('requireOrInvalidContentForSelectFields', {
+  async: true,
   errors: false,
   type: 'object',
-  validate(schema: any, data: PropertySchema) {
+  async validate(schema: any, data: PropertySchema) {
     if (!schema) {
       return true;
     }
     if (['multiselect', 'select'].includes(data.type)) {
-      return !!(data.content && data.content.length);
+      if (!data.content || !data.content.length) {
+        return false;
+      }
+
+      const found = await thesauri.getById(data.content);
+      return !!found;
     }
 
     return true;

@@ -22,6 +22,8 @@ const customImports = {
   'app/shared/types/connectionSchema.ts': ["import { FileType } from 'shared/types/fileType';"],
 };
 
+const dryCheck = !!process.argv[2] && process.argv[2] === '--check';
+
 const firstUp = name => name.charAt(0).toUpperCase() + name.slice(1);
 const typesFileName = file =>
   file
@@ -49,16 +51,38 @@ const typeImports = matches => {
   }, '');
 };
 
+const checkTypeFile = (file, content) => {
+  const endProcess = () => {
+    console.error(`Must emit types: ${file} changed`);
+    process.exit(1);
+  };
+
+  if (fs.existsSync(file)) {
+    const oldContent = fs.readFileSync(file).toString();
+
+    if (oldContent !== content) endProcess();
+  } else {
+    endProcess();
+  }
+};
+
 const writeTypeFile = (file, commonImport, snippets) => {
   const goodSnippets = snippets.filter(p => p);
   if (goodSnippets.length) {
     const typeFile = typesFileName(file);
     const customImport = customImports[file] ? `${customImports[file].join('\n')}\n` : '';
-    console.log(`Emitting ${goodSnippets.length} types from ${file} to ${typeFile}.`);
-    fs.writeFileSync(
-      typeFile,
-      banner + customImport + commonImport + goodSnippets.reduce((res, s) => `${res}\n${s}`, '')
-    );
+    if (!dryCheck) {
+      console.log(`Emitting ${goodSnippets.length} types from ${file} to ${typeFile}.`);
+    }
+
+    const content =
+      banner + customImport + commonImport + goodSnippets.reduce((res, s) => `${res}\n${s}`, '');
+
+    if (dryCheck) {
+      checkTypeFile(typeFile, content);
+    } else {
+      fs.writeFileSync(typeFile, content);
+    }
   }
 };
 
