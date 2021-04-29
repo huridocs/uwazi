@@ -1,10 +1,9 @@
-import Immutable from 'immutable';
 import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 
 describe('relationshipsUtils', () => {
   describe('filterVisibleConnections', () => {
     it('should filter connectionGroups based in hub availability of entities', () => {
-      const connectionsGroups = Immutable.fromJS([
+      const connectionsGroups = [
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
         {
           key: 'g2',
@@ -22,8 +21,8 @@ describe('relationshipsUtils', () => {
           ],
         },
         { key: 'g5', templates: [{ _id: 't6', count: 6 }] },
-      ]);
-      const hubs = Immutable.fromJS([
+      ];
+      const hubs = [
         {
           hub: '1',
           rightRelationships: [
@@ -49,7 +48,7 @@ describe('relationshipsUtils', () => {
             { template: 'g5', relationships: [{ entityData: { template: 't6' } }] },
           ],
         },
-      ]);
+      ];
       const filteredConnections = filterVisibleConnections(connectionsGroups, hubs);
       expect(filteredConnections.size).toBe(4);
       expect(filteredConnections.get(0).get('key')).toEqual('g1');

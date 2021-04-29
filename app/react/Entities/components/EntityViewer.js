@@ -92,7 +92,7 @@ export class EntityViewer extends Component {
   render() {
     const { entity, entityBeingEdited, tab, connectionsGroups, hubs, relationships } = this.props;
 
-    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups, hubs);
+    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const { panelOpen, copyFrom, copyFromProps } = this.state;
     const selectedTab = tab;
     const rawEntity = entity.toJS();

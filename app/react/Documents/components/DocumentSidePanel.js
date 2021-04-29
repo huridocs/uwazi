@@ -132,7 +132,7 @@ export class DocumentSidePanel extends Component {
 
     const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references, hubs } = this.props;
 
-    this.visibleConnectionGroups = filterVisibleConnections(connectionsGroups, hubs);
+    this.visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
 
     const summary = this.visibleConnectionGroups.reduce(
       (summaryData, g) => {

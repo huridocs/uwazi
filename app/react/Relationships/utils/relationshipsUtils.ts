@@ -1,35 +1,51 @@
-export const filterVisibleConnections = (connectionsGroups: any, hubs: any) =>
-  connectionsGroups
-    .map((group: any) => {
-      const relationsForRelType = hubs.reduce((memo: any, hub: any) => {
-        const relations = hub
-          .get('rightRelationships')
-          .filter((r: any) => r.get('template') === group.get('key'))
-          .reduce((memo2: any, r: any) => memo2.concat(r.get('relationships').toJS()), []);
+import Immutable from 'immutable';
 
-        if (!relations.length) {
-          return memo;
-        }
+interface ConnectionGroup {
+  key: string;
+  templates: { _id: string; count: number }[];
+}
 
-        return memo.concat(relations);
-      }, []);
+interface RelationshipData {
+  entityData: { template: string };
+}
+
+interface RelationShip {
+  template: string;
+  relationships: RelationshipData[];
+}
+interface Hub {
+  rightRelationships: RelationShip[];
+}
+
+export const filterVisibleConnections = (connectionsGroups: ConnectionGroup[], hubs: Hub[]) => {
+  const filteredConnectionGroups = connectionsGroups
+    .map(group => {
+      const relationsForRelType: RelationshipData[] = [];
+      hubs.forEach(hub => {
+        hub.rightRelationships
+          .filter(r => r.template === group.key)
+          .forEach(r => {
+            relationsForRelType.push(...r.relationships);
+          });
+      });
 
       if (!relationsForRelType.length) {
         return null;
       }
 
-      const entityTemplates = relationsForRelType.map((r: any) => r.entityData.template);
+      const entityTemplates = relationsForRelType.map(r => r.entityData.template);
 
-      const filteredTemplates = group
-        .get('templates')
-        .map((temp: any) => {
-          if (entityTemplates.includes(temp.get('_id'))) {
+      const filteredTemplates = group.templates
+        .map(temp => {
+          if (entityTemplates.includes(temp._id)) {
             return temp;
           }
           return null;
         })
-        .filter((temp: any) => temp);
+        .filter(temp => temp);
 
-      return group.set('templates', filteredTemplates);
+      return { ...group, templates: filteredTemplates };
     })
-    .filter((g: any) => g);
+    .filter(g => g);
+  return Immutable.fromJS(filteredConnectionGroups);
+};
