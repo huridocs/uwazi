@@ -19,7 +19,12 @@ describe('Metadata', () => {
     props.entity = {};
 
     const component = shallow(<ShowMetadata {...props} />);
-    expect(component).toMatchSnapshot();
+    expect(
+      component
+        .find('.metadata-timeline-viewer')
+        .parent()
+        .props().if
+    ).toBe(false);
   });
 
   it('should render templateType when showType', () => {
