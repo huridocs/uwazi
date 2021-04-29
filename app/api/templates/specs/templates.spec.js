@@ -18,6 +18,7 @@ import fixtures, {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
+  thesauriId1,
 } from './fixtures.js';
 
 describe('templates', () => {
@@ -117,8 +118,8 @@ describe('templates', () => {
           name: 'changed',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
-            { id: '1', type: 'select', content: 'new_thesauri', label: 'select3' },
-            { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' },
+            { id: '1', type: 'select', content: thesauriId1.toString(), label: 'select3' },
+            { id: '2', type: 'multiselect', content: thesauriId1.toString(), label: 'multiselect' },
           ],
         };
 
@@ -142,7 +143,13 @@ describe('templates', () => {
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { id: '1', type: 'text', name: 'text', label: 'Select5' },
-          { id: '2', type: 'select', name: 'select5', label: 'Text', content: 'a' },
+          {
+            id: '2',
+            type: 'select',
+            name: 'select5',
+            label: 'Text',
+            content: thesauriId1.toString(),
+          },
         ],
       };
 
@@ -187,7 +194,7 @@ describe('templates', () => {
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { label: 'label 1', type: 'text' },
-          { label: 'label 2', type: 'select', content: 's' },
+          { label: 'label 2', type: 'select', content: thesauriId1.toString() },
           { label: 'label 3', type: 'image' },
           { label: 'label 4', name: 'name', type: 'text' },
           { label: 'label 5', type: 'geolocation' },
@@ -453,9 +460,9 @@ describe('templates', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(Ajv.ValidationError);
         expect(error.errors.some(e => e.params.missingProperty === 'label')).toBe(true);
-        expect(error.errors.some(e => e.params.keyword === 'requireContentForSelectFields')).toBe(
-          true
-        );
+        expect(
+          error.errors.some(e => e.params.keyword === 'requireOrInvalidContentForSelectFields')
+        ).toBe(true);
       }
     });
   });
