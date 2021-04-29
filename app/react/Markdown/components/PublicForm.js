@@ -102,17 +102,17 @@ class PublicForm extends Component {
         this.setState({ submiting: true });
         return uploadCompletePromise.promise
           .then(() => {
-            this.setState({ submiting: false });
+            this.setState({ submiting: false, files: [] });
             this.resetForm();
             this.refreshCaptcha();
           })
           .catch(() => {
-            this.setState({ submiting: false });
+            this.setState({ submiting: false, files: [] });
             this.refreshCaptcha();
           });
       })
       .catch(() => {
-        this.setState({ submiting: false });
+        this.setState({ submiting: false, files: [] });
         this.refreshCaptcha();
       });
   }
