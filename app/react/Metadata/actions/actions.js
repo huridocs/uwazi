@@ -72,7 +72,7 @@ const getPropertyValue = (property, metadataProperty) => {
     case 'geolocation':
       return metadataProperty.map(v => v.value);
     case 'generatedid':
-      return metadataProperty;
+      return typeof metadataProperty === 'string' ? metadataProperty : metadataProperty[0].value;
     default:
       return metadataProperty[0].value;
   }
