@@ -536,7 +536,7 @@ describe('entities', () => {
       });
     });
 
-    describe('save from public form', () => {
+    describe('save entity without a logged user', () => {
       it('should save the entity with unrestricted access', async () => {
         const user = {};
         userFactory.mock(undefined);
