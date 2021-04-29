@@ -3,7 +3,7 @@ import { ConnectionSchema } from 'shared/types/connectionType';
 
 interface ConnectionGroup {
   key: string;
-  templates: { _id: string; count: number }[];
+  templates: { _id: string }[];
 }
 interface RelationShip {
   template: string;
