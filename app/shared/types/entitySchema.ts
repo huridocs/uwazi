@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
