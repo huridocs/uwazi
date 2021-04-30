@@ -21,9 +21,19 @@ describe('Custom home page and styles', () => {
     await logout();
   });
 
-  it('should log in and create add page', async () => {
+  it('should white list the template', async () => {
     await adminLogin();
     await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Collection' });
+    await expect(page).toClick(
+      '#collectionSettings > div:nth-child(16) > div > div.toggle-children-button'
+    );
+    await expect(page).toClick('span', { text: 'Mecanismo' });
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('.alert.alert-success');
+  });
+
+  it('should log in and create add page', async () => {
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
   });
@@ -44,12 +54,31 @@ describe('Custom home page and styles', () => {
       expect(page).toClick('a', { text: 'view page' }),
     ]);
 
-    await expect(newTab).toFill('input[name="publicform.title"]', 'Test public submit');
+    await expect(newTab).toFill('input[name="publicform.title"]', 'Test public submit entity');
     await expect(newTab).toFill(
       'input[name="publicform.metadata.resumen"]',
       'This was submited via public form'
     );
+    await expect(newTab).toClick('span', { text: 'Bahamas' });
     await expect(newTab).toFill('.captcha input', '42hf');
     await expect(newTab).toClick('input[type="submit"]');
+    await expect(newTab).toClick('.alert.alert-success');
+  });
+
+  it('should check the newly created entity', async () => {
+    await page.bringToFront();
+    await page.waitFor(50); // index delay
+    await expect(page).toClick('a', {
+      text: 'Private documents',
+    });
+    await expect(page).toClick('.item-name span', {
+      text: 'Test public submit entity',
+    });
+    await expect(page).toMatchElement('.metadata-name-resumen', {
+      text: 'This was submited via public form',
+    });
+    await expect(page).toMatchElement('.metadata-name-paises', {
+      text: 'Bahamas',
+    });
   });
 });
