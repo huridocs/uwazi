@@ -380,6 +380,22 @@ describe('entities', () => {
       });
     });
 
+    it('should ignore the permissions parameter', () => {
+      const doc = {
+        _id: unpublishedDocId,
+        sharedId: 'other',
+        metadata: {},
+        permissions: [],
+      };
+
+      entities.save(doc, { language: 'en' }).then(updatedDoc => {
+        expect(updatedDoc.permissions).toEqual([
+          expect.objectContaining({ refId: 'user1' }),
+          expect.objectContaining({ refId: 'user2' }),
+        ]);
+      });
+    });
+
     describe('when generatedToc is undefined', () => {
       it('should not replicate the value to all languages', async () => {
         const doc = { _id: batmanFinishesId, sharedId: 'shared', generatedToc: true };

@@ -150,7 +150,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
         const toSave = { ...entity };
 
-        toSave.published = d.published;
+        delete toSave.published;
+        delete toSave.permissions;
 
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
@@ -515,6 +516,7 @@ export default {
                 { ...entity.metadata, ...pureValues.metadata },
                 diffMetadata
               ),
+              permissions: entity.permissions || [],
             },
             params,
             true,
