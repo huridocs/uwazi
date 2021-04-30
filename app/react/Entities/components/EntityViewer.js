@@ -25,48 +25,11 @@ import { Icon } from 'UI';
 import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 
+import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
-
-const filterVisibleConnections = (connectionsGroups, hubs) =>
-  connectionsGroups
-    .map(group => {
-      const relationsForRelType = hubs.reduce((memo, hub) => {
-        const relations = hub
-          .get('rightRelationships')
-          .filter(r => r.get('template') === group.get('key'))
-          .reduce((memo2, r) => memo2.concat(r.get('relationships').toJS()), []);
-
-        if (!relations.length) {
-          return memo;
-        }
-
-        return memo.concat(relations);
-      }, []);
-
-      if (!relationsForRelType.length) {
-        return null;
-      }
-
-      const entityTemplates = relationsForRelType.map(r => r.entityData.template);
-
-      const filteredTemplates = group
-        .get('templates')
-        .map(temp => {
-          if (entityTemplates.includes(temp.get('_id'))) {
-            return temp;
-          }
-          return null;
-        })
-        .filter(temp => temp);
-
-      const groupWithFilteredTemplates = group.set('templates', filteredTemplates);
-
-      return groupWithFilteredTemplates;
-    })
-    .filter(g => g);
 
 export class EntityViewer extends Component {
   constructor(props, context) {
@@ -129,7 +92,7 @@ export class EntityViewer extends Component {
   render() {
     const { entity, entityBeingEdited, tab, connectionsGroups, hubs, relationships } = this.props;
 
-    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups, hubs);
+    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const { panelOpen, copyFrom, copyFromProps } = this.state;
     const selectedTab = tab;
     const rawEntity = entity.toJS();
