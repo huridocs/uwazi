@@ -36,6 +36,7 @@ export default class Entity extends Component {
         currentEntity: {
           url: `entities?sharedId=${entity.sharedId}`,
           query: true,
+          extractFirstRow: true,
         },
       });
       additionalActions = additionalActions.concat(pageActions);

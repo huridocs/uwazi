@@ -54,18 +54,25 @@ const requestDatasets = (datasets, requestParams) =>
   Promise.all(
     Object.keys(datasets).map(name => {
       if (datasets[name].query) {
-        return api.get(datasets[name].url, requestParams).then(data => ({ data: data.json, name }));
+        return api
+          .get(datasets[name].url, requestParams)
+          .then(data => ({ data: data.json, name, params: datasets[name] }));
       }
       const apiAction = datasets[name].entity ? entitiesApi.get : searchApi.search;
       const params = datasets[name].entity ? { sharedId: datasets[name].entity } : datasets[name];
       const postAction = datasets[name].entity ? d => d[0] : d => d;
       return apiAction(requestParams.set(params))
         .then(postAction)
-        .then(data => ({ data, name }));
+        .then(data => ({ data, name, params: datasets[name] }));
     })
   );
 
-const conformDatasets = sets => sets.reduce((memo, set) => ({ ...memo, [set.name]: set.data }), {});
+const conformDatasets = sets =>
+  sets.reduce((memo, set) => {
+    // TEST!!!
+    const data = set.params.extractFirstRow ? set.data.rows[0] : set.data;
+    return { ...memo, [set.name]: data };
+  }, {});
 
 const getAggregations = (state, { property, dataset = 'default' }) => {
   const data = state.page.datasets.get(dataset);
@@ -83,8 +90,9 @@ const addValues = (aggregations, values) => {
 };
 
 export default {
-  async fetch(markdown, requestParams, { additionalDatasets = {} }) {
+  async fetch(markdown, requestParams, { additionalDatasets = {} } = {}) {
     const datasets = parseDatasets(markdown);
+    // TEST!!!
     const extendedDatsets = { ...datasets, ...additionalDatasets };
     return requestDatasets(extendedDatsets, requestParams).then(conformDatasets);
   },
