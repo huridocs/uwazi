@@ -38,7 +38,9 @@ const searchRoutes = (app: Application) => {
     '/api/v2/entities',
     queryTypes.middleware(),
     validateRequest({
-      query: SearchQuerySchema,
+      properties: {
+        query: SearchQuerySchema,
+      },
     }),
     captureError(async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
       const { query, language, url } = req;

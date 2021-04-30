@@ -2,6 +2,7 @@ import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
 
+import errorLog from 'api/log/errorLog';
 import { testingDB } from 'api/utils/testing_db';
 import { elastic } from 'api/search';
 
@@ -15,7 +16,6 @@ import {
   entity2es,
   entity3es,
 } from './fixturesTitleSearch';
-import errorLog from 'api/log/errorLog';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -27,6 +27,14 @@ describe('entities get searchString', () => {
   afterAll(async () => testingDB.disconnect());
 
   describe('GET', () => {
+    it('should have a validation', async () => {
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query({ not_allowed_property: { key: 'value' } });
+
+      expect(body.error).toBe('validation failed');
+    });
+
     it('should return all entities for the default language and required links', async () => {
       const { body } = await request(app)
         .get('/api/v2/entities')
