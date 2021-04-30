@@ -76,7 +76,7 @@ class PageCreator extends Component<mappedProps> {
                   }}
                 />
               </div>
-              <ShowIf if={Boolean(page.data._id)}>
+              <ShowIf if={Boolean(page.data._id) && !page.data.entityView}>
                 <div className="alert alert-info">
                   <Icon icon="angle-right" /> {pageUrl}
                   <a
@@ -89,7 +89,12 @@ class PageCreator extends Component<mappedProps> {
                   </a>
                 </div>
               </ShowIf>
-              <MarkDown htmlOnViewer model=".metadata.content" rows={18} />
+              <MarkDown
+                htmlOnViewer
+                model=".metadata.content"
+                rows={18}
+                showPreview={!page.data.entityView}
+              />
               <div className="alert alert-info">
                 <Icon icon="info-circle" size="2x" />
                 <div className="force-ltr">
