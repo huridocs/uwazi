@@ -67,7 +67,7 @@ describe('Custom home page and styles', () => {
 
   it('should check the newly created entity', async () => {
     await page.bringToFront();
-    await page.waitFor(100); // index delay
+    await page.waitFor(200); // index delay
     await expect(page).toClick('a', {
       text: 'Private documents',
     });
