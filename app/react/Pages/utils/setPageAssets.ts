@@ -41,7 +41,7 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   return listsData;
 };
 
-const setPageAssets = async (requestParams: RequestParams, additionalDatasets: {}) => {
+const setPageAssets = async (requestParams: RequestParams, additionalDatasets?: {}) => {
   const page = await PagesAPI.getById(requestParams);
 
   const listsData = prepareLists(page.metadata.content, requestParams);
