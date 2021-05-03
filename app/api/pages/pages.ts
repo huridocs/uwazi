@@ -54,9 +54,8 @@ export default {
   },
 
   async delete(sharedId: string) {
-    const page = await this.get({ sharedId });
     const templatesUsingPage = await templates.get({
-      entityViewPage: page[0].sharedId,
+      entityViewPage: sharedId,
     });
     if (templatesUsingPage.length > 0) {
       const templatesTitles = templatesUsingPage.map(template => template.name);
