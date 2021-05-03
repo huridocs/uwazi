@@ -5,7 +5,7 @@ import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
 import { ShowMetadata } from 'app/Metadata';
 import { shallow } from 'enzyme';
 import { FileList } from 'app/Attachments/components/FileList';
-import { EntityViewer } from '../EntityViewer';
+import { EntityViewer, mapStateToProps } from '../EntityViewer';
 
 describe('EntityViewer', () => {
   let component;
@@ -17,7 +17,7 @@ describe('EntityViewer', () => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
       entity: Immutable.fromJS({
-        title: 'Title',
+        title: 'Entity Title',
         documents: [{ _id: '123', title: 'Test doc' }],
         relations: [{ template: null, entity: '123', hub: 'abc' }],
       }),
@@ -56,6 +56,17 @@ describe('EntityViewer', () => {
     component = shallow(<EntityViewer {...props} />, { context });
     instance = component.instance();
   };
+
+  it('should render the header on all but "page" view', () => {
+    render();
+    const headerSelector = '.content-header';
+    const h1Selector = `${headerSelector} > .content-header-title h1`;
+    expect(component.find(h1Selector).text()).toBe('Entity Title');
+
+    component.setProps({ tab: 'page' });
+
+    expect(component.find(headerSelector).length).toBe(0);
+  });
 
   it('should render the ConnectionsGroups', () => {
     render();
@@ -136,6 +147,49 @@ describe('EntityViewer', () => {
       expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(true);
       expect(component.find('.entity-connections').prop('open')).toBe(true);
       expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(false);
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    let state;
+
+    beforeEach(() => {
+      state = {
+        entityView: {
+          entity: Immutable.fromJS({ template: '1' }),
+          entityForm: {},
+          uiState: Immutable.fromJS({ tab: 'connections', userSelectedTab: false }),
+        },
+        templates: Immutable.fromJS([
+          { _id: '1', entityViewPage: false },
+          { _id: '2', entityViewPage: 'somePage' },
+        ]),
+        relationTypes: Immutable.fromJS([]),
+        relationships: { list: { connectionsGroups: '' } },
+      };
+    });
+
+    describe('When no user selected tab', () => {
+      it('should set tab to info if entity doesnt have "hasPageView"', () => {
+        const mappedProps = mapStateToProps(state);
+        expect(mappedProps.hasPageView).toBe(false);
+        expect(mappedProps.tab).toBe('info');
+      });
+
+      it('should set tab to page if entity has "hasPageView"', () => {
+        state.entityView.entity = state.entityView.entity.set('template', '2');
+        const mappedProps = mapStateToProps(state);
+        expect(mappedProps.hasPageView).toBe(true);
+        expect(mappedProps.tab).toBe('page');
+      });
+    });
+
+    describe('When user selected tab', () => {
+      it('should respect passed tab', () => {
+        state.entityView.uiState = state.entityView.uiState.set('userSelectedTab', true);
+        const mappedProps = mapStateToProps(state);
+        expect(mappedProps.tab).toBe('connections');
+      });
     });
   });
 });

@@ -94,13 +94,12 @@ export class EntityViewer extends Component {
     const {
       entity,
       entityBeingEdited,
-      tab,
+      tab: selectedTab,
       connectionsGroups,
       relationships,
       hasPageView,
     } = this.props;
     const { panelOpen, copyFrom, copyFromProps } = this.state;
-    const selectedTab = tab;
     const rawEntity = entity.toJS();
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
@@ -116,8 +115,7 @@ export class EntityViewer extends Component {
       <div className="row">
         <Helmet title={entity.get('title') ? entity.get('title') : 'Entity'} />
 
-        {// TEST!!!
-        tab !== 'page' && (
+        {selectedTab !== 'page' && (
           <div className="content-header content-header-entity">
             <div className="content-header-title">
               <PropertyIcon
@@ -134,7 +132,7 @@ export class EntityViewer extends Component {
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
           <Tabs selectedTab={selectedTab}>
             {hasPageView && (
-              <TabContent for={selectedTab === 'page' ? selectedTab : 'none'}>
+              <TabContent for="page">
                 <PageViewer />
               </TabContent>
             )}
@@ -192,7 +190,7 @@ export class EntityViewer extends Component {
           </div>
         </ShowIf>
 
-        <SidePanel className={`entity-connections entity-${this.props.tab}`} open={panelOpen}>
+        <SidePanel className={`entity-connections entity-${selectedTab}`} open={panelOpen}>
           <div className="sidepanel-header">
             <button
               type="button"
@@ -335,8 +333,7 @@ const selectRelationTypes = createSelector(
   r => r.toJS()
 );
 
-const mapStateToProps = state => {
-  // TEST!!!
+export const mapStateToProps = state => {
   const entityTemplateId = state.entityView.entity && state.entityView.entity.get('template');
   const entityTemplate = state.templates.find(template => template.get('_id') === entityTemplateId);
   const templateWithPageView = entityTemplate.get('entityViewPage');
@@ -351,6 +348,7 @@ const mapStateToProps = state => {
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: uiState.get('userSelectedTab') ? uiState.get('tab') : defaultTab,
     hasPageView: Boolean(templateWithPageView),
+    // Is this used at all?
     library: state.library,
   };
 };
