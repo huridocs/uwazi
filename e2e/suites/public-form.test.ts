@@ -33,12 +33,9 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('.alert.alert-success');
   });
 
-  it('should log in and create add page', async () => {
+  it('should create a page with a public form', async () => {
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
-  });
-
-  it('should create a page with a public form', async () => {
     await expect(page).toFill('input[name="page.data.title"]', 'Public Form Page');
     await expect(page).toFill(
       selectors.pageContentsInput,
@@ -67,7 +64,7 @@ describe('Custom home page and styles', () => {
 
   it('should check the newly created entity', async () => {
     await page.bringToFront();
-    await page.waitFor(200); // index delay
+    await page.waitFor(500); // index delay
     await expect(page).toClick('a', {
       text: 'Private documents',
     });
