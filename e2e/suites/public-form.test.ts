@@ -3,6 +3,15 @@ import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 
+async function getViewPageOpenedTab() {
+  const [newTab] = await Promise.all([
+    new Promise(resolve => browser.once('targetcreated', target => resolve(target.page()))),
+    expect(page).toClick('a', { text: 'view page' }),
+  ]);
+
+  return newTab;
+}
+
 describe('Custom home page and styles', () => {
   beforeAll(async () => {
     await insertFixtures();
@@ -39,10 +48,7 @@ describe('Custom home page and styles', () => {
   });
 
   it('should visit the page and do a submit', async () => {
-    const [newTab] = await Promise.all([
-      new Promise(resolve => browser.once('targetcreated', target => resolve(target.page()))),
-      expect(page).toClick('a', { text: 'view page' }),
-    ]);
+    const newTab = await getViewPageOpenedTab();
 
     await expect(newTab).toFill('input[name="publicform.title"]', 'Test public submit entity');
     await expect(newTab).toFill(
