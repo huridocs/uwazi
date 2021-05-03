@@ -102,6 +102,6 @@ describe('MetadataFormFields with one entity to edit ', () => {
     const generatedIdField = component.find('[model=".metadata.field4"]').at(0);
     expect(generatedIdField.props().className).toBe(' hidden ');
     const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
-    expect(generatedIdInput.props().defaultValue.length).toBe(11);
+    expect(generatedIdInput.props().defaultValue.length).toBe(12);
   });
 });
