@@ -13,7 +13,7 @@ describe('migration rename-usergroup-members_ref_id', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(39);
+    expect(migration.delta).toBe(40);
   });
 
   it('should rename the referenced users in groups members list', async () => {
