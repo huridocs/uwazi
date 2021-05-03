@@ -1,4 +1,5 @@
 import db from 'api/utils/testing_db';
+import pages from '../pages';
 
 const pageToUpdate = db.id();
 
@@ -10,6 +11,7 @@ export default {
       language: 'es',
       title: 'Batman finishes',
       user: { username: 'user' },
+      entityView: true,
     },
     {
       _id: db.id(),
@@ -37,6 +39,18 @@ export default {
 
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
+  ],
+  templates: [
+    {
+      _id: db.id(),
+      title: 'Template with custom page 1',
+      entityViewPage: '1',
+    },
+    {
+      _id: db.id(),
+      title: 'Template with custom page 2',
+      entityViewPage: '1',
+    },
   ],
 };
 

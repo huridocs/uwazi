@@ -69,7 +69,7 @@ describe('pages', () => {
         spyOn(date, 'currentUTC').and.returnValue(10);
 
         const modifiedDoc = await pages.save(
-          { _id: pageToUpdate, sharedId: '1', title: 'Edited title' },
+          { _id: pageToUpdate, sharedId: '1', title: 'Edited title', entityView: true },
           { username: 'another_user' }
         );
 
@@ -85,10 +85,18 @@ describe('pages', () => {
 
   describe('delete', () => {
     it('should delete the page in all languages', async () => {
-      const sharedId = '1';
+      const sharedId = '2';
       await pages.delete(sharedId);
       const result = await pages.get({ sharedId });
       expect(result.length).toBe(0);
+    });
+    it('should not allow deleting pages used as entity view', async () => {
+      const sharedId = '1';
+      try {
+        await pages.delete(sharedId);
+      } catch (err) {
+        expect(err.message).toContain('This page is in use by the following templates:');
+      }
     });
   });
 

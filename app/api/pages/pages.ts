@@ -1,8 +1,10 @@
-import { createError } from 'api/utils';
 import ID from 'shared/uniqueID';
-import date from 'api/utils/date.js';
-import { UwaziFilterQuery } from 'api/odm';
 import { PageType } from 'shared/types/pageType';
+import { validatePage } from 'shared/types/pageSchema';
+import date from 'api/utils/date.js';
+import templates from 'api/templates';
+import { createError } from 'api/utils';
+import { UwaziFilterQuery } from 'api/odm';
 import { User } from 'api/users/usersModel';
 
 import model from './pagesModel';
@@ -20,12 +22,13 @@ const assignUserAndDate = (page: PageType, user?: User) => {
 };
 
 export default {
+  // eslint-disable-next-line max-statements
   async save(_page: PageType, user?: User, language?: string) {
+    await validatePage(_page);
     let page = { ..._page };
     if (!page.sharedId) {
       page = assignUserAndDate(page, user);
     }
-
     if (page.sharedId) {
       return model.save(page);
     }
@@ -37,7 +40,6 @@ export default {
       language: lang.key,
       sharedId,
     }));
-
     await model.saveMultiple(pages);
     return this.getById(sharedId, language);
   },
@@ -52,6 +54,21 @@ export default {
   },
 
   async delete(sharedId: string) {
+    const page = await this.get({ sharedId });
+    const templatesUsingPage = await templates.get({
+      entityViewPage: page[0].sharedId,
+    });
+    if (templatesUsingPage.length > 0) {
+      const templatesTitles = templatesUsingPage.map(template => template.name);
+      return Promise.reject(
+        createError(
+          `This page is in use by the following templates: ${templatesTitles.join(
+            ', '
+          )}. Remove the page from the templates before trying again.`,
+          409
+        )
+      );
+    }
     return model.delete({ sharedId });
   },
 
