@@ -167,11 +167,11 @@ describe('Connections actions', () => {
           [
             {
               entity: 'sourceId',
-              template: null,
               reference: {
                 selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
                 text: 'source text',
               },
+              template: null,
             },
             { entity: 'targetId', template: 'relationTypeId' },
           ],
@@ -195,11 +195,11 @@ describe('Connections actions', () => {
           [
             {
               entity: 'sourceId',
-              template: null,
               reference: {
                 selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
                 text: 'source text',
               },
+              template: null,
             },
             {
               entity: 'targetId',
