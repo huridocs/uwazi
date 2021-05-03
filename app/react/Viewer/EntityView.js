@@ -24,8 +24,6 @@ export default class Entity extends Component {
       relationships.requestState(requestParams, state),
     ]);
 
-    // ----
-    // TEST!!!
     const entityTemplate = state.templates.find(t => t.get('_id') === entity.template);
 
     let additionalActions = [];
@@ -41,7 +39,6 @@ export default class Entity extends Component {
       });
       additionalActions = additionalActions.concat(pageActions);
     }
-    // ----
 
     return [
       actions.set('relationTypes', relationTypes),
@@ -62,12 +59,6 @@ export default class Entity extends Component {
     ].concat(additionalActions);
   }
 
-  // Not where we want this to happen!
-  // componentWillUnmount() {
-  //   this.context.store.dispatch(uiActions.showTab('info'));
-  // }
-
-  // TEST!!!
   componentWillUnmount() {
     this.context.store.dispatch(uiActions.resetUserSelectedTab());
     this.context.store.dispatch(actions.unset('page/pageView'));
