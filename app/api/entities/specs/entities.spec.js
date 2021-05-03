@@ -911,7 +911,10 @@ describe('entities', () => {
         ['shared'],
         {
           diffMetadata: {
-            multiselect: { added: [{ value: 'country_two' }], removed: [{ value: 'country_one' }] },
+            multiselect: {
+              added: [{ value: 'country_two' }],
+              removed: [{ value: 'country_one' }],
+            },
           },
         },
         { language: 'en' }
