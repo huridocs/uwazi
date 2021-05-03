@@ -45,7 +45,7 @@ const setPageAssets = async (requestParams: RequestParams, additionalDatasets?: 
   const page = await PagesAPI.getById(requestParams);
 
   const listsData = prepareLists(page.metadata.content, requestParams);
-  // TEST!!!
+
   const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders(), {
     additionalDatasets,
   });
