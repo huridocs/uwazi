@@ -2,6 +2,7 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
+import { refreshIndex } from '../helpers/elastichelpers';
 
 async function getViewPageOpenedTab() {
   const [newTab] = await Promise.all([
@@ -63,7 +64,7 @@ describe('Custom home page and styles', () => {
 
   it('should check the newly created entity', async () => {
     await page.bringToFront();
-    await page.waitFor(500); // index delay
+    await refreshIndex();
     await expect(page).toClick('a', {
       text: 'Private documents',
     });
