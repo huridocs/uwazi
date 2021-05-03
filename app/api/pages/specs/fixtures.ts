@@ -1,5 +1,4 @@
 import db from 'api/utils/testing_db';
-import pages from '../pages';
 
 const pageToUpdate = db.id();
 
