@@ -70,6 +70,9 @@ export default class Entity extends Component {
   // TEST!!!
   componentWillUnmount() {
     this.context.store.dispatch(uiActions.resetUserSelectedTab());
+    this.context.store.dispatch(actions.unset('page/pageView'));
+    this.context.store.dispatch(actions.unset('page/itemLists'));
+    this.context.store.dispatch(actions.unset('page/datasets'));
   }
 
   static renderTools() {
