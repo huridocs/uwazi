@@ -9,7 +9,7 @@ import { EntitySchema } from 'shared/types/entityType';
 export interface ConnectionSchema {
   _id?: ObjectIdSchema;
   hub?: ObjectIdSchema;
-  template?: ObjectIdSchema;
+  template?: null | ObjectIdSchema;
   file?: ObjectIdSchema;
   entity?: string;
   entityData?: {
@@ -108,12 +108,21 @@ export interface ConnectionSchema {
   };
   reference?: {
     text: string;
-    selectionRectangles: {
-      top: number;
-      left: number;
-      width: number;
-      height: number;
-      page: string;
-    }[];
+    selectionRectangles: [
+      {
+        top: number;
+        left: number;
+        width: number;
+        height: number;
+        page: string;
+      },
+      ...{
+        top: number;
+        left: number;
+        width: number;
+        height: number;
+        page: string;
+      }[]
+    ];
   };
 }
