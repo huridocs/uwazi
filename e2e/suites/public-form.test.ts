@@ -3,13 +3,6 @@ import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 
-const selectors = {
-  pageContentsInput:
-    '.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
-  useCustomLandingPage:
-    '#collectionSettings > div:nth-child(5) > div > div.toggle-children-button > label',
-};
-
 describe('Custom home page and styles', () => {
   beforeAll(async () => {
     await insertFixtures();
@@ -38,7 +31,7 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('a', { text: 'Add page' });
     await expect(page).toFill('input[name="page.data.title"]', 'Public Form Page');
     await expect(page).toFill(
-      selectors.pageContentsInput,
+      '.markdownEditor textarea',
       '<PublicForm template="58ada34c299e82674854504b" />'
     );
 
