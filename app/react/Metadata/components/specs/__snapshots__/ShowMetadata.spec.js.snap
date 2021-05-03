@@ -58,27 +58,3 @@ exports[`Metadata should render title and templateType when and showTitle 1`] = 
   </div>
 </div>
 `;
-
-exports[`Metadata should render without timeline by default 1`] = `
-<div
-  className="view"
->
-  <ShowIf
-    if={false}
-  >
-    <dl
-      className="metadata-timeline-viewer"
-    >
-      <dd>
-        <Connect(TimelineViewer)
-          entity={Object {}}
-        />
-      </dd>
-    </dl>
-  </ShowIf>
-  <Connect(BaseFormatMetadata)
-    entity={Object {}}
-    groupGeolocations={false}
-  />
-</div>
-`;
