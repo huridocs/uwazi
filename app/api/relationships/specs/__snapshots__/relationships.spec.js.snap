@@ -26,7 +26,6 @@ Array [
       },
       "hub": "hub2",
       "reference": Object {
-        "selectionRectangles": Array [],
         "text": "changed text",
       },
       "template": "relation2",

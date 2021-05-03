@@ -114,7 +114,6 @@ export function saveRelationships() {
 
                 return relationships.concat(newRelationships);
               }
-
               return relationships;
             },
             []
