@@ -69,7 +69,6 @@ const requestDatasets = (datasets, requestParams) =>
 
 const conformDatasets = sets =>
   sets.reduce((memo, set) => {
-    // TEST!!!
     const data = set.params.extractFirstRow ? set.data.rows[0] : set.data;
     return { ...memo, [set.name]: data };
   }, {});
@@ -92,7 +91,6 @@ const addValues = (aggregations, values) => {
 export default {
   async fetch(markdown, requestParams, { additionalDatasets = {} } = {}) {
     const datasets = parseDatasets(markdown);
-    // TEST!!!
     const extendedDatsets = { ...datasets, ...additionalDatasets };
     return requestDatasets(extendedDatsets, requestParams).then(conformDatasets);
   },

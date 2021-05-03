@@ -21,7 +21,13 @@ describe('markdownDatasets', () => {
     };
   };
 
-  describe('request', () => {
+  describe('fetch', () => {
+    const basicQueryMarkdown = `
+    <div>
+      <Query url="users?_id=23234324" name="customQuery"/>
+    </div>
+    `;
+
     beforeEach(() => {
       requestParams = new RequestParams({}, 'headers');
       spyOn(searchApi, 'search').and.callFake(params =>
@@ -30,9 +36,12 @@ describe('markdownDatasets', () => {
       spyOn(entitiesApi, 'get').and.callFake(params =>
         Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }])
       );
-      spyOn(api, 'get').and.callFake((url, pasedRequestParams) =>
-        Promise.resolve({ json: { url, headers: pasedRequestParams.headers } })
-      );
+      spyOn(api, 'get').and.callFake((url, pasedRequestParams) => {
+        if (url === 'multirowEndpoint') {
+          return Promise.resolve({ json: { rows: ['row1', 'row2'] } });
+        }
+        return Promise.resolve({ json: { url, headers: pasedRequestParams.headers } });
+      });
     });
 
     it('should not fetch anything if no datasets defined', async () => {
@@ -101,16 +110,45 @@ describe('markdownDatasets', () => {
     });
 
     it('should allow query to any api endpoint', async () => {
-      const markdown = `
-      <div>
-        <Query url="users?_id=23234324" name="customQuery"/>
-      </div>
-      `;
-
+      const markdown = basicQueryMarkdown;
       const datasets = await markdownDatasets.fetch(markdown, requestParams);
-
       expect(datasets).toEqual({
         customQuery: { url: 'users?_id=23234324', headers: 'headers' },
+      });
+    });
+
+    describe('added datasets', () => {
+      it('should allow passing arbitrary additional datasets, overriding markdown values', async () => {
+        const markdown = `${basicQueryMarkdown}
+        <Query url="toBeOverriden" name="customDataset" />
+        `;
+
+        const additionalDatasets = {
+          customDataset: { url: 'apiEndpoint?params=true', query: true },
+        };
+
+        const datasets = await markdownDatasets.fetch(markdown, requestParams, {
+          additionalDatasets,
+        });
+
+        expect(datasets).toEqual({
+          customDataset: { url: 'apiEndpoint?params=true', headers: 'headers' },
+          customQuery: { url: 'users?_id=23234324', headers: 'headers' },
+        });
+      });
+
+      it('should allow passing params to extract first row of response', async () => {
+        const additionalDatasets = {
+          multipleRows: { url: 'multirowEndpoint', query: true },
+          singleRow: { url: 'multirowEndpoint', query: true, extractFirstRow: true },
+        };
+
+        const datasets = await markdownDatasets.fetch('', requestParams, { additionalDatasets });
+
+        expect(datasets).toEqual({
+          multipleRows: { rows: ['row1', 'row2'] },
+          singleRow: 'row1',
+        });
       });
     });
   });
