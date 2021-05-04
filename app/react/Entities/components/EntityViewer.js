@@ -256,7 +256,7 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent
-                for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}
+                for={['info', 'connections', 'page'].includes(selectedTab) ? selectedTab : 'none'}
               >
                 <ConnectionsGroups />
               </TabContent>

@@ -8,6 +8,7 @@ import BarChart from './BarChart';
 import FreeBarChart from './FreeBarChart';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
+import { CurrentEntity } from './CurrentEntity';
 import EntityLink from './EntityLink';
 import ItemList from './ItemList';
 import Repeat from './Repeat';
@@ -31,6 +32,7 @@ export default {
   ContactForm,
   Context,
   Connect,
+  CurrentEntity,
   EntityLink,
   ItemList,
   Slideshow,
