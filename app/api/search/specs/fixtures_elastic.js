@@ -237,6 +237,7 @@ export const fixtures = {
         select1: [{ value: 'SpainID', label: 'Cool Spain' }],
         multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         date: [{ value: 30000 }],
+        auto_id: [{ value: 'ABC1234' }],
       },
     },
     {
@@ -418,6 +419,7 @@ export const fixtures = {
           filter: true,
         },
         { name: 'country_geolocation', type: 'geolocation', filter: true },
+        { name: 'auto_id', type: 'generatedid' },
       ],
     },
   ],

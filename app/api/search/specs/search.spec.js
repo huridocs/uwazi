@@ -830,4 +830,9 @@ describe('search', () => {
     const results = await search.search({ searchTerm: '*' }, 'es');
     expect(results.rows.length).toBe(4);
   });
+
+  it('should search for generatedid properties values', async () => {
+    const resultsFound = await search.search({ searchTerm: 'ABC1234' }, 'en');
+    expect(resultsFound.rows.length).toBe(1);
+  });
 });

@@ -542,7 +542,7 @@ const _getTextFields = (query, templates) =>
   propertiesHelper
     .allUniqueProperties(templates)
     .map(prop =>
-      ['text', 'markdown'].includes(prop.type)
+      ['text', 'markdown', 'generatedid'].includes(prop.type)
         ? `metadata.${prop.name}.value`
         : `metadata.${prop.name}.label`
     )
