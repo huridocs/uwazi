@@ -12,6 +12,7 @@ import { generateNamesAndIds } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
 import { RelationshipCollection, groupByHubs } from './relationshipsHelpers';
+import { validateConnectionSchema } from './validateConnectionSchema';
 
 const normalizeConnectedDocumentData = (relationship, connectedDocument) => {
   relationship.entityData = connectedDocument;
@@ -270,6 +271,8 @@ export default {
     }
 
     const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
+
+    await validateConnectionSchema(rel);
 
     const existingEntities = (
       await entities.get({
