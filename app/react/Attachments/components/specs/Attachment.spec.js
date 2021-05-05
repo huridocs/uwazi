@@ -32,6 +32,7 @@ describe('Attachment', () => {
       submitForm: jasmine.createSpy('submitForm'),
       resetForm: jasmine.createSpy('resetForm'),
       isSourceDocument: false,
+      entity: { sharedID: 'parentSharedId' },
     };
 
     context = { confirm: jasmine.createSpy('confirm') };
@@ -115,6 +116,14 @@ describe('Attachment', () => {
       context.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteAttachment).toHaveBeenCalledWith('parentSharedId', file, 'storeKey');
     });
+
+    it('should check authorization roles to listed attachment', () => {
+      render();
+      const attachmentButtons = component.find('.item-shortcut-group').children();
+      const attachmentButtonsAuthorizationProps = attachmentButtons.at(0).props();
+      expect(attachmentButtonsAuthorizationProps.roles).toEqual(['admin', 'editor']);
+      expect(attachmentButtonsAuthorizationProps.orWriteAccessTo).toEqual([props.entity]);
+    });
   });
 
   it('should hold a thumbnail for PDFs and valid images', () => {
@@ -155,5 +164,16 @@ describe('Attachment', () => {
       ownProps = { file: { _id: 'otherId' } };
       expect(mapStateToProps(state, ownProps).beingEdited).toEqual(false);
     });
+  });
+
+  it('should check authorization roles to listed attachment', () => {
+    render();
+    const authorizationProps = component
+      .find('.attachment')
+      .children()
+      .at(1)
+      .props();
+    expect(authorizationProps.roles).toEqual(['admin', 'editor']);
+    expect(authorizationProps.orWriteAccessTo).toEqual([props.entity]);
   });
 });

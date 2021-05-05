@@ -1,4 +1,4 @@
-import { instanceModel } from 'api/odm';
+import { instanceModelWithPermissions } from 'api/odm/ModelWithPermissions';
 import mongoose from 'mongoose';
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -23,16 +23,17 @@ const mongoSchema = new mongoose.Schema(
     }),
     creationDate: Number,
     editDate: Number,
-    metadata: mongoose.Schema.Types.Mixed,
+    metadata: { type: mongoose.Schema.Types.Mixed, default: {} },
     suggestedMetadata: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+    permissions: { type: mongoose.Schema.Types.Mixed, select: false },
   },
-  { emitIndexErrors: true }
+  { emitIndexErrors: true, minimize: false }
 );
 
 mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
-const Model = instanceModel<EntitySchema>('entities', mongoSchema);
+const Model = instanceModelWithPermissions<EntitySchema>('entities', mongoSchema);
 
 const supportedLanguages = [
   'da',
@@ -67,5 +68,8 @@ const setMongoLanguage = (doc: EntitySchema) => {
 
 const modelSaveRaw = Model.save.bind(Model);
 Model.save = async doc => modelSaveRaw(setMongoLanguage(doc));
+
+const modelSaveUnrestrictedRaw = Model.saveUnrestricted.bind(Model);
+Model.saveUnrestricted = async doc => modelSaveUnrestrictedRaw(setMongoLanguage(doc));
 
 export default Model;

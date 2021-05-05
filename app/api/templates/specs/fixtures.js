@@ -1,9 +1,3 @@
-/**
- * /* eslint-disable
- *
- * @format
- */
-
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 
@@ -14,6 +8,7 @@ const swapTemplate = db.id();
 const relatedTo = db.id();
 const templateToBeInherited = db.id();
 const propertyToBeInherited = db.id();
+const thesauriId1 = db.id();
 export default {
   templates: [
     {
@@ -116,8 +111,10 @@ export default {
           label: 'Inherit',
           relationtype: relatedTo,
           content: templateToBeInherited,
-          inherit: true,
-          inheritProperty: propertyToBeInherited,
+          inherit: {
+            property: propertyToBeInherited,
+            type: 'text',
+          },
         },
       ],
     },
@@ -130,6 +127,7 @@ export default {
       languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
+  dictionaries: [{ _id: thesauriId1, name: 'options' }],
 };
 
 export {
@@ -139,4 +137,6 @@ export {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
+  relatedTo,
+  thesauriId1,
 };

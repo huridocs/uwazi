@@ -1,0 +1,82 @@
+.attachments-list {
+  label {
+    width: 100%;
+    height: 186px;
+    border: 1px dashed #6D6C7C;
+    border-radius: 4px;
+
+    .text-content {
+      width: 240px;
+      height: 100%;
+      text-align: center;
+      margin-left: 35%;
+      color: #818181;
+
+      #icon {
+        font-size: 3em;
+        color: #ddd;
+      }
+
+      #upload-button {
+        #button {
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          height: 30px;
+          width: 70%;
+          margin-left: 17%;
+          font-style: normal;
+          font-weight: normal;
+          font-size: 12px;
+          line-height: 14px;
+          padding-top: 0.9vh;
+          cursor: pointer;
+        }
+      }
+    }
+
+    input {
+      display: none
+    }
+  }
+  .preview-list {
+    ul {
+      padding: 5px 0px 5px 0px;
+      list-style: none;
+      font-size: 12px;
+
+      li {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        padding: 0px 5px 0px 5px;
+        border-radius: 4px;
+        height: 32px;
+
+        .preview-title {
+          width: 70%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        div > span {
+          border: 1px solid #CA5C54;
+          box-sizing: border-box;
+          border-radius: 4px;
+          padding: 3px 6px 3px 6px;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+  .dropzone {
+    width: 100%
+  }
+}

@@ -4,6 +4,8 @@ import debounce from 'app/utils/debounce';
 import { notificationActions } from 'app/Notifications';
 import { referencesActions } from 'app/Viewer';
 import { RequestParams } from 'app/utils/RequestParams';
+import SearchApi from 'app/Search/SearchAPI';
+import EntitiesApi from '../../Entities/EntitiesAPI';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -114,7 +116,6 @@ export function saveRelationships() {
 
                 return relationships.concat(newRelationships);
               }
-
               return relationships;
             },
             []
@@ -167,9 +168,7 @@ export function saveRelationships() {
       .then(response =>
         Promise.all([
           response,
-          api
-            .get('entities', new RequestParams({ sharedId: parentEntityId }))
-            .then(r => r.json.rows[0]),
+          EntitiesApi.get(new RequestParams({ sharedId: parentEntityId })).then(([r]) => r),
           reloadRelationships(parentEntityId)(dispatch, getState),
         ])
       )
@@ -201,8 +200,7 @@ export function immidiateSearch(dispatch, searchTerm) {
     includeUnpublished: true,
   });
 
-  return api.get('search', requestParams).then(response => {
-    const results = response.json.rows;
+  return SearchApi.search(requestParams).then(({ rows: results }) => {
     dispatch(actions.set('relationships/searchResults', results));
   });
 }

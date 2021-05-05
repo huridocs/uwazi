@@ -6,7 +6,8 @@ import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
-import * as pageAssetsUtils from 'app/Pages/utils/setPageAssets';
+import * as pageAssetsUtils from 'app/Pages/utils/getPageAssets';
+import { formater as formatter } from 'app/Metadata';
 
 import EntitiesAPI from '../../Entities/EntitiesAPI';
 import EntityView from '../EntityView';
@@ -14,9 +15,18 @@ import EntityView from '../EntityView';
 describe('EntityView', () => {
   describe('requestState', () => {
     const templates = Immutable.fromJS([{ _id: '1' }, { _id: '2', entityViewPage: 'aViewPage' }]);
+    const thesauri = {};
     const entities = [
       { _id: 1, sharedId: '123', template: '1' },
-      { _id: 2, sharedId: 'abc', template: '2' },
+      {
+        _id: 2,
+        sharedId: 'abc',
+        template: '2',
+        metadata: {
+          property_one: [{ value: 'rawP1' }],
+          property_two: [{ value: 'rawP2' }],
+        },
+      },
     ];
     const relationTypes = [{ _id: 1, name: 'against' }];
 
@@ -48,23 +58,54 @@ describe('EntityView', () => {
 
     describe('when template has "entityViewPage"', () => {
       beforeEach(() => {
-        spyOn(pageAssetsUtils, 'setPageAssets').and.returnValue(
-          Promise.resolve(['pageAction1', 'pageAction2'])
+        spyOn(pageAssetsUtils, 'getPageAssets').and.callFake(
+          async (query, _additionalDatasets, localDatasets) => {
+            expect(query).toEqual({ data: { sharedId: 'aViewPage' }, headers: 'headers' });
+            return Promise.resolve({
+              pageView: 'pageViewValues',
+              itemLists: 'itemListsValue',
+              datasets: { ...localDatasets },
+            });
+          }
         );
+
+        spyOn(formatter, 'prepareMetadata').and.callFake(_entity => {
+          const entity = { ..._entity };
+          entity.title = `formattedEntity-${entity.sharedId}`;
+          entity.metadata = Object.keys(entity.metadata).map(k => ({
+            name: k,
+            value: `formatted-${entity.metadata[k][0].value}`,
+          }));
+          return entity;
+        });
       });
 
-      it('should append the "currentEntity" and set the page values in the store', async () => {
+      const expectActionSet = (value, storeLocation, expectedValue) => {
+        expect(value).toEqual({
+          type: `${storeLocation}/SET`,
+          value: expectedValue,
+        });
+      };
+
+      // eslint-disable-next-line max-statements
+      it('should append the entity-specific datasets to the page in the store', async () => {
         const request = new RequestParams({ sharedId: 'abc' }, 'headers');
-        const actions = await EntityView.requestState(request, { templates });
+        const actions = await EntityView.requestState(request, { templates, thesauris: thesauri });
 
-        const expectedQuery = { data: { sharedId: 'aViewPage' }, headers: 'headers' };
-        const expectedDataset = {
-          currentEntity: { extractFirstRow: true, query: true, url: 'entities?sharedId=abc' },
-        };
+        expectActionSet(actions[actions.length - 3], 'page/pageView', 'pageViewValues');
+        expectActionSet(actions[actions.length - 2], 'page/itemLists', 'itemListsValue');
 
-        expect(pageAssetsUtils.setPageAssets).toHaveBeenCalledWith(expectedQuery, expectedDataset);
-        expect(actions[actions.length - 2]).toBe('pageAction1');
-        expect(actions[actions.length - 1]).toBe('pageAction2');
+        const datasetsActions = actions[actions.length - 1];
+
+        expect(datasetsActions.type).toBe('page/datasets/SET');
+        expect(formatter.prepareMetadata).toHaveBeenCalledWith(entities[1], templates, thesauri);
+        expect(datasetsActions.value.entity.title).toBe('formattedEntity-abc');
+        expect(datasetsActions.value.entity.metadata).toEqual({
+          property_one: { name: 'property_one', value: 'formatted-rawP1' },
+          property_two: { name: 'property_two', value: 'formatted-rawP2' },
+        });
+        expect(datasetsActions.value.entityRaw).toEqual(entities[1]);
+        expect(datasetsActions.value.template).toEqual(templates.get(1));
       });
     });
   });

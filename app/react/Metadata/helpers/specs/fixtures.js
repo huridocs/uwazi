@@ -41,14 +41,26 @@ export const doc = {
       { type: 'entity', value: 'value4', label: 'Value 4' },
     ],
     relationship3: [
-      { value: 'value1', label: 'Value 1' },
-      { value: 'value2', label: 'Value 2' },
-      { value: 'value3', label: 'Value 3' },
+      { value: 'value1', label: 'Value 1', inheritedValue: [{ value: 'how' }] },
+      { value: 'value2', label: 'Value 2', inheritedValue: [{ value: 'are' }] },
+      { value: 'value3', label: 'Value 3', inheritedValue: [{ value: 'you?' }] },
     ],
     relationship4: [
-      { value: 'linkedEntity1', label: 'Entity 1 Title' },
-      { value: 'linkedEntity2', label: 'Entity 2 Title' },
-      { value: 'linkedEntityWithoutMetadata' },
+      {
+        value: 'linkedEntity1',
+        label: 'Entity 1 Title',
+        inheritedValue: [{ value: { lat: 13, lon: 7 } }],
+      },
+      {
+        value: 'linkedEntity2',
+        label: 'Entity 2 Title',
+        inheritedValue: [{ value: { lat: 5, lon: 10, label: 'exisitng label' } }],
+      },
+      {
+        value: 'linkedEntityWithoutMetadata',
+        label: 'Entity 2 Title',
+        inheritedValue: [{ value: { lat: 23, lon: 8, label: 'another label' } }],
+      },
     ],
     geolocation: [{ value: { lat: 2, lon: 3 } }, { value: { lat: 13, lon: 7, label: 'home' } }],
     nested: [{ value: { nestedKey: [1, 2] } }, { value: { nestedKey: [3, 4] } }],
@@ -94,7 +106,12 @@ export const templates = Immutable.fromJS([
     properties: [
       { name: 'text', type: 'text', label: 'Text', showInCard: true },
       { name: 'date', type: 'date', label: 'Date' },
-      { name: 'multiselect', content: 'thesauriId', type: 'multiselect', label: 'Multiselect' },
+      {
+        name: 'multiselect',
+        content: 'thesauriId',
+        type: 'multiselect',
+        label: 'Multiselect',
+      },
       { name: 'multidate', type: 'multidate', label: 'Multi Date' },
       { name: 'daterange', type: 'daterange', label: 'Date Range' },
       { name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range' },
@@ -133,8 +150,7 @@ export const templates = Immutable.fromJS([
       },
       {
         name: 'relationship3',
-        inherit: true,
-        inheritProperty: '123',
+        inherit: { property: '123', type: 'text' },
         type: 'relationship',
         label: 'Relationship 3',
         content: 'template2',
@@ -142,8 +158,7 @@ export const templates = Immutable.fromJS([
       },
       {
         name: 'relationship4',
-        inherit: true,
-        inheritProperty: '456',
+        inherit: { property: '456', type: 'geolocation' },
         type: 'relationship',
         label: 'Relationship 4',
         content: 'template2',

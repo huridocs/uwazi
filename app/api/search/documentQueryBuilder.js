@@ -1,10 +1,40 @@
 /* eslint-disable camelcase, max-lines */
 
 import { preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
-import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
+import {
+  propertyToAggregation,
+  generatedTocAggregations,
+  permissionsLevelAgreggations,
+} from './metadataAggregations';
+
+const nested = (filters, path) => ({
+  nested: {
+    path,
+    query: {
+      bool: {
+        must: filters,
+      },
+    },
+  },
+});
 
 export default function() {
+  const defaultFilter = [
+    {
+      bool: {
+        should: [
+          {
+            term: {
+              published: true,
+            },
+          },
+        ],
+      },
+    },
+  ];
+
   const baseQuery = {
     explain: false,
     _source: {
@@ -33,7 +63,7 @@ export default function() {
       bool: {
         must: [{ bool: { should: [] } }],
         must_not: [],
-        filter: [{ term: { published: true } }],
+        filter: defaultFilter,
       },
     },
     sort: [],
@@ -52,7 +82,7 @@ export default function() {
                 filter: {
                   bool: {
                     must: [{ bool: { should: [] } }],
-                    filter: [{ match: { published: true } }],
+                    filter: defaultFilter,
                   },
                 },
               },
@@ -83,7 +113,8 @@ export default function() {
       return baseQuery;
     },
 
-    fullTextSearch( // eslint-disable-line max-params
+    // eslint-disable-next-line max-statements
+    fullTextSearch(
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,
@@ -158,6 +189,11 @@ export default function() {
       return this;
     },
 
+    include(fields = []) {
+      baseQuery._source.include = baseQuery._source.include.concat(fields);
+      return this;
+    },
+
     language(language) {
       const match = { term: { language } };
       baseQuery.query.bool.filter.push(match);
@@ -166,21 +202,19 @@ export default function() {
     },
 
     onlyUnpublished() {
-      baseQuery.query.bool.filter[0].term.published = false;
-      aggregations._types.aggregations.filtered.filter.bool.filter[0].match.published = false;
+      baseQuery.query.bool.filter[0].bool.must = baseQuery.query.bool.filter[0].bool.should;
+      baseQuery.query.bool.filter[0].bool.must[0].term.published = false;
+      delete baseQuery.query.bool.filter[0].bool.should;
       return this;
     },
 
     includeUnpublished() {
-      const matchPulished = baseQuery.query.bool.filter.findIndex(i => i.term && i.term.published);
-      if (matchPulished >= 0) {
-        baseQuery.query.bool.filter.splice(matchPulished, 1);
-      }
-      const aggPulished = aggregations._types.aggregations.filtered.filter.bool.filter.findIndex(
-        i => i.match && i.match.published
-      );
-      if (aggPulished >= 0) {
-        aggregations._types.aggregations.filtered.filter.bool.filter.splice(aggPulished, 1);
+      const user = permissionsContext.getUserInContext();
+      if (user && ['admin', 'editor'].includes(user.role)) {
+        const shouldFilter = baseQuery.query.bool.filter[0].bool.should[0];
+        if (shouldFilter.term && shouldFilter.term.published) {
+          delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
+        }
       }
       return this;
     },
@@ -232,13 +266,24 @@ export default function() {
     },
 
     customFilters(filters = {}) {
-      Object.keys(filters).forEach(key => {
-        if (filters[key].values.length) {
-          addFilter({
-            terms: { [key]: filters[key].values },
-          });
-        }
-      });
+      Object.keys(filters)
+        .filter(key => filters[key].values.length)
+        .forEach(key => {
+          if (key === 'permissions.level') {
+            addFilter(
+              nested(
+                [
+                  { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
+                  { terms: { 'permissions.level': filters[key].values } },
+                ],
+                'permissions'
+              )
+            );
+            return;
+          }
+
+          addFilter({ terms: { [key]: filters[key].values } });
+        });
       return this;
     },
 
@@ -252,8 +297,12 @@ export default function() {
       return this;
     },
 
-    generatedTOCAggregations() {
+    generatedTocAggregations() {
       baseQuery.aggregations.all.aggregations.generatedToc = generatedTocAggregations(baseQuery);
+    },
+
+    permissionsLevelAgreggations() {
+      baseQuery.aggregations.all.aggregations.permissions = permissionsLevelAgreggations(baseQuery);
     },
 
     aggregations(properties, dictionaries) {
@@ -351,6 +400,21 @@ export default function() {
 
     resetAggregations() {
       baseQuery.aggregations.all.aggregations = {};
+      return this;
+    },
+
+    filterByPermissions(onlyPublished) {
+      if (onlyPublished) {
+        return this;
+      }
+      const user = permissionsContext.getUserInContext();
+      if (user && !['admin', 'editor'].includes(user.role)) {
+        const permissionsFilter = nested(
+          [{ terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } }],
+          'permissions'
+        );
+        baseQuery.query.bool.filter[0].bool.should.push(permissionsFilter);
+      }
       return this;
     },
   };

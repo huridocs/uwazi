@@ -9,6 +9,29 @@ $c-background: #fcfcfc;
     margin-left: auto;
     margin-right: auto;
   }
+  .hidden-connections-counter{
+    display: inline-block;
+    color: #2B56C1;
+    cursor: pointer;
+    .hidden-info {
+      display: none;
+    }
+    &:hover .hidden-info {
+      z-index: 2;
+      top: 20px;
+      width: 375px;
+      height: 48px;
+      display: block;
+      padding: 8px;
+      font-size: 12px;
+      background-color: #FFF7E2;
+      color: #444444;
+      position: absolute;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      box-sizing: border-box;
+      border-radius: 4px;
+    }
+  }
 }
 
 .relationships-graph {

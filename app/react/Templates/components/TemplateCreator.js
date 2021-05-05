@@ -1,5 +1,3 @@
-/** @format */
-
 import 'app/Templates/scss/templates.scss';
 
 import { DragDropContext } from 'react-dnd';
@@ -90,6 +88,10 @@ export class TemplateCreator extends Component {
                       {this.props.project === 'cejil' && (
                         <PropertyOption label="Violated articles" type="nested" />
                       )}
+                      {
+                        // Temporally hidden until we complete de functionality
+                        // <PropertyOption label="Generated ID" type="generatedid" />
+                      }
                     </ul>
                     {this.props.noRelationtypes && (
                       <div className="alert alert-warning">

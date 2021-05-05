@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import model from 'api/templates/templatesModel';
 import templates from 'api/templates';
 import pages from 'api/pages';
+import { thesauri } from 'api/thesauri/thesauri';
 
 import { ensure, wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
@@ -77,15 +78,21 @@ ajv.addKeyword('uniquePropertyFields', {
   },
 });
 
-ajv.addKeyword('requireContentForSelectFields', {
+ajv.addKeyword('requireOrInvalidContentForSelectFields', {
+  async: true,
   errors: false,
   type: 'object',
-  validate(schema: any, data: PropertySchema) {
+  async validate(schema: any, data: PropertySchema) {
     if (!schema) {
       return true;
     }
     if (['multiselect', 'select'].includes(data.type)) {
-      return !!(data.content && data.content.length);
+      if (!data.content || !data.content.length) {
+        return false;
+      }
+
+      const found = await thesauri.getById(data.content);
+      return !!found;
     }
 
     return true;
@@ -101,20 +108,6 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
     }
     if (data.type === 'relationship') {
       return !!(data.relationType && data.relationType.length);
-    }
-    return true;
-  },
-});
-
-ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
-  errors: false,
-  type: 'object',
-  validate(schema: any, data: TemplateSchema) {
-    if (!schema) {
-      return true;
-    }
-    if (data.type === 'relationship' && data.inherit) {
-      return !!data.inheritProperty;
     }
     return true;
   },
@@ -238,26 +231,40 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
   },
 });
 
-ajv.addKeyword('entityViewPageExists', {
+ajv.addKeyword('entityViewPageExistsAndIsEnabled', {
   async: true,
   errors: true,
   type: 'object',
   async validate(fields: any, template: TemplateSchema) {
-    const page = await pages.get({
-      sharedId: template.entityViewPage,
-    });
-    if (page.length > 0 || !template.entityViewPage) {
+    if (template.entityViewPage) {
+      const page = await pages.get({
+        sharedId: template.entityViewPage,
+      });
+      if (page.length === 0) {
+        throw new Ajv.ValidationError([
+          {
+            keyword: 'entityViewPageExists',
+            schemaPath: '',
+            params: { keyword: 'entityViewPageExists', fields },
+            message: 'The selected page does not exist',
+            dataPath: '.templates',
+          },
+        ]);
+      }
+      if (!page[0].entityView) {
+        throw new Ajv.ValidationError([
+          {
+            keyword: 'entityViewPageIsEnabled',
+            schemaPath: '',
+            params: { keyword: 'entityViewPageIsEnabled', fields },
+            message: 'The selected page is not enabled for entity view',
+            dataPath: '.templates',
+          },
+        ]);
+      }
       return true;
     }
-    throw new Ajv.ValidationError([
-      {
-        keyword: 'entityViewPageExists',
-        schemaPath: '',
-        params: { keyword: 'entityViewPageExists', fields },
-        message: 'The selected page does not exist',
-        dataPath: '.templates',
-      },
-    ]);
+    return true;
   },
 });
 
@@ -268,7 +275,7 @@ export const templateSchema = {
   uniqueName: true,
   cantDeleteInheritedProperties: true,
   cantReuseNameWithDifferentType: true,
-  entityViewPageExists: true,
+  entityViewPageExistsAndIsEnabled: true,
   required: ['name'],
   uniquePropertyFields: ['id', 'name'],
   definitions: { objectIdSchema, propertySchema },

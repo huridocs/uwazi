@@ -60,23 +60,24 @@ const indexdReferencesByPage = createSelector(
             return mappedReferences;
           }
 
-          const pages = (connection.reference?.selectionRectangles || [])
-            .map(selection => selection.page)
-            .filter(unique);
+          if (connection.reference) {
+            const pages = connection.reference.selectionRectangles
+              .map(selection => selection.page)
+              .filter(unique);
 
-          pages.forEach(page => {
-            if (!page) {
-              return;
-            }
+            pages.forEach(page => {
+              if (!page) {
+                return;
+              }
 
-            if (!mappedReferences[page]) {
-              // eslint-disable-next-line no-param-reassign
-              mappedReferences[page] = [];
-            }
+              if (!mappedReferences[page]) {
+                // eslint-disable-next-line no-param-reassign
+                mappedReferences[page] = [];
+              }
 
-            mappedReferences[page].push(connection);
-          });
-
+              mappedReferences[page].push(connection);
+            });
+          }
           return mappedReferences;
         },
         {}

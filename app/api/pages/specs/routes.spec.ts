@@ -1,21 +1,18 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import { Application } from 'express';
 import request from 'supertest';
 
 import testingDB from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 
 import pagesRoutes from '../routes';
-import fixtures from './fixtures';
+import { fixtures } from './fixtures';
 
 const getUser = () => ({ _username: 'user 1', role: 'admin' });
 
-const app: Application = setUpApp(
-  pagesRoutes,
-  (req: Request, _res: Response, next: NextFunction) => {
-    (req as any).user = getUser();
-    next();
-  }
-);
+const app: Application = setUpApp(pagesRoutes, (req, _res, next) => {
+  (req as any).user = getUser();
+  next();
+});
 
 describe('Pages Routes', () => {
   beforeEach(async () => {

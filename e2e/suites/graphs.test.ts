@@ -9,8 +9,7 @@ import { displayGraph } from '../helpers/graphs';
 import disableTransitions from '../helpers/disableTransitions';
 
 const localSelectors = {
-  pageContentsInput:
-    '.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
+  pageContentsInput: '.tab-content > textarea',
   createdPageLink: '.document-viewer > div.alert-info a',
 };
 

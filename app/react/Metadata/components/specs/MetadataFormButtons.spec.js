@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';
@@ -7,6 +5,7 @@ import { I18NLink } from 'app/I18N';
 
 import { Icon } from 'UI';
 
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 import { MetadataFormButtons } from '../MetadataFormButtons';
 
 describe('MetadataFormButtons', () => {
@@ -20,8 +19,6 @@ describe('MetadataFormButtons', () => {
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       resetForm: jasmine.createSpy('resetForm'),
       delete: jasmine.createSpy('delete'),
-      publish: jasmine.createSpy('publish'),
-      unpublish: jasmine.createSpy('unpublish'),
       data: immutable({ test: 'test', sharedId: 'shId', file: {} }),
       templates: immutable([{ test: 'test' }]),
       formName: 'FormName',
@@ -118,31 +115,23 @@ describe('MetadataFormButtons', () => {
     });
   });
 
-  describe('publish', () => {
-    beforeEach(() => {
+  describe('Share', () => {
+    it('should pass the sharedId to the share button', () => {
       render();
+      const shareBtn = component.find(ShareButton);
+      expect(shareBtn.props().sharedIds).toEqual(['shId']);
     });
 
-    it('should reset the form', () => {
-      component.find('.publish').simulate('click', { stopPropagation: () => {} });
-      expect(context.confirm).toHaveBeenCalled();
-      const confirm = context.confirm.calls.allArgs()[0][0];
-      confirm.accept();
-      expect(props.publish).toHaveBeenCalled();
-    });
-  });
-
-  describe('unpublish', () => {
-    beforeEach(() => {
+    it('should not render share button', () => {
+      props.entityBeingEdited = true;
       render();
+      expect(component.find(ShareButton).length).toBe(0);
     });
 
-    it('should reset the form', () => {
-      component.find('.unpublish').simulate('click', { stopPropagation: () => {} });
-      expect(context.confirm).toHaveBeenCalled();
-      const confirm = context.confirm.calls.allArgs()[0][0];
-      confirm.accept();
-      expect(props.unpublish).toHaveBeenCalled();
+    it('should not render share button if no data', () => {
+      props.data = props.data.set('sharedId', null);
+      render();
+      expect(component.find(ShareButton).length).toBe(0);
     });
   });
 

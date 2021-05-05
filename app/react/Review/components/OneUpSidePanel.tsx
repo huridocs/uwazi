@@ -116,7 +116,7 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
         <div className="sidepanel-body">
           <Tabs selectedTab={selectedTab}>
             <TabContent for={selectedTab === 'connections' ? selectedTab : 'none'}>
-              <ConnectionsGroups />
+              <ConnectionsGroups connectionsGroups={connectionsGroups} />
             </TabContent>
             <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
               <MetadataForm

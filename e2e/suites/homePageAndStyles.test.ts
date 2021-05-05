@@ -5,8 +5,7 @@ import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 
 const selectors = {
-  pageContentsInput:
-    '.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
+  pageContentsInput: '.tab-content > textarea:nth-child(1)',
   useCustomLandingPage:
     '#collectionSettings > div:nth-child(5) > div > div.toggle-children-button > label',
 };

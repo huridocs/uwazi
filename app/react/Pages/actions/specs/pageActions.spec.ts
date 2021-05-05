@@ -15,6 +15,7 @@ describe('Page actions', () => {
   let dispatch: jasmine.Spy;
   let apiSave: jasmine.Spy;
 
+  // eslint-disable-next-line max-statements
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
     apiSave = jasmine
@@ -22,6 +23,7 @@ describe('Page actions', () => {
       .and.returnValue(Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' }));
     api.save = apiSave;
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
+    spyOn(api, 'get').and.returnValue(Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
     spyOn(formActions, 'change').and.returnValue('MODEL VALUE UPDATED');
@@ -121,6 +123,15 @@ describe('Page actions', () => {
       actions.updateValue('.modelName', 'someValue')(dispatch);
       expect(formActions.change).toHaveBeenCalledWith('page.data.modelName', 'someValue');
       expect(dispatch).toHaveBeenCalledWith('MODEL VALUE UPDATED');
+    });
+  });
+
+  describe('loadPages', () => {
+    it('should get the pages', async () => {
+      actions
+        .loadPages()(dispatch)
+        .catch(() => fail('should not fail'));
+      expect(api.get).toHaveBeenCalledWith(new RequestParams());
     });
   });
 });

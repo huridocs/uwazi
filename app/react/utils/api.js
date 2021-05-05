@@ -105,6 +105,8 @@ export default {
 
   post: (url, req = {}) => _request(url, req, 'post'),
 
+  put: (url, req = {}) => _request(url, req, 'put'),
+
   delete: (url, req = {}) => _request(url, req, 'delete'),
 
   cookie(c) {

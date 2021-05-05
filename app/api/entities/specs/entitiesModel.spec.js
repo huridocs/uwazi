@@ -1,4 +1,4 @@
-import { catchErrors } from '../../utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import entitiesModel from '../entitiesModel';
 import testingDB from '../../utils/testing_db';
 

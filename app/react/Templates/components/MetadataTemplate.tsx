@@ -11,7 +11,6 @@ import { Icon } from 'UI';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 
-import ShowIf from 'app/App/ShowIf';
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t } from 'app/I18N';
@@ -27,7 +26,7 @@ import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
 
-import { ViewTemplateAsPage } from './ViewTemplateAsPage';
+import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
 
 interface MetadataTemplateProps {
@@ -38,6 +37,7 @@ interface MetadataTemplateProps {
   connectDropTarget?: any;
   defaultColor: any;
   properties: PropertySchema[];
+  environment: string;
   relationType?: any;
   savingTemplate: boolean;
   templates?: any;
@@ -57,8 +57,10 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
 
   static defaultProps: MetadataTemplateProps = {
     notify,
-    // eslint-disable-next-line react/default-props-match-prop-types
+    /* eslint-disable react/default-props-match-prop-types */
     saveTemplate,
+    environment: 'template',
+    /* eslint-enable react/default-props-match-prop-types */
     savingTemplate: false,
     defaultColor: null,
     properties: [],
@@ -80,15 +82,20 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
 
     const mappingValidation = await validateMapping(template);
     if (!mappingValidation.valid) {
-      const fields = mappingValidation.errors.map((e: any) => e.name);
       this.context.confirm({
         accept: () => {
           template.reindex = true;
           return this.props.saveTemplate(template);
         },
-        title: 'Template conflict',
-        message: `The field or fields [${fields}] have been previously used for a different type of data,
-         in order to reuse those names, all your collection must be reindexed. This process may take several minutes, do you want to continue? `,
+        title: t('System', 'Template conflict', null, false),
+        message: t(
+          'System',
+          'Mapping conflict error',
+          `The template have changed and the mappings are not compatible,
+        all your collection must be reindexed. This process may take several minutes,
+        do you want to continue?`,
+          false
+        ),
       });
       return;
     }
@@ -101,7 +108,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
   }
 
   render() {
-    const { connectDropTarget, defaultColor } = this.props;
+    const { connectDropTarget, defaultColor, environment } = this.props;
     const commonProperties = this.props.commonProperties || [];
     return (
       <div>
@@ -135,47 +142,51 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
               />
             )}
           </div>
-          <div className="metadataTemplate-pageview">
-            <FormGroup model=".entityViewPage">
-              <ViewTemplateAsPage selectedPage={this.props.entityViewPage || ''} />
-            </FormGroup>
-          </div>
-          <ShowIf if={!this.props.relationType}>
-            {connectDropTarget(
-              <ul className="metadataTemplate-list list-group">
-                {commonProperties.map((config: any, index: number) => {
-                  const localID = config.localID || config._id;
-                  return (
-                    <MetadataProperty
-                      {...config}
-                      key={localID}
-                      localID={localID}
-                      index={index - commonProperties.length}
-                    />
-                  );
-                })}
-                {this.props.properties.map((config: any, index: number) => {
-                  const localID = config.localID || config._id;
-                  return (
-                    <MetadataProperty
-                      _id={config._id}
-                      type={config.type}
-                      inserting={config.inserting}
-                      key={localID}
-                      localID={localID}
-                      index={index}
-                    />
-                  );
-                })}
-                <div className="no-properties">
-                  <span className="no-properties-wrap">
-                    <Icon icon="clone" />
-                    Drag properties here
-                  </span>
-                </div>
-              </ul>
-            )}
-          </ShowIf>
+
+          {environment === 'template' && (
+            <>
+              <div className="metadataTemplate-pageview">
+                <FormGroup model=".entityViewPage">
+                  <TemplateAsPageControl selectedPage={this.props.entityViewPage || ''} />
+                </FormGroup>
+              </div>
+              {connectDropTarget(
+                <ul className="metadataTemplate-list list-group">
+                  {commonProperties.map((config: any, index: number) => {
+                    const localID = config.localID || config._id;
+                    return (
+                      <MetadataProperty
+                        {...config}
+                        key={localID}
+                        localID={localID}
+                        index={index - commonProperties.length}
+                      />
+                    );
+                  })}
+                  {this.props.properties.map((config: any, index: number) => {
+                    const localID = config.localID || config._id;
+                    return (
+                      <MetadataProperty
+                        _id={config._id}
+                        type={config.type}
+                        inserting={config.inserting}
+                        key={localID}
+                        localID={localID}
+                        index={index}
+                      />
+                    );
+                  })}
+                  <div className="no-properties">
+                    <span className="no-properties-wrap">
+                      <Icon icon="clone" />
+                      Drag properties here
+                    </span>
+                  </div>
+                </ul>
+              )}
+            </>
+          )}
+
           <div className="settings-footer">
             <I18NLink to={this.props.backUrl} className="btn btn-default">
               <Icon icon="arrow-left" directionAware />
@@ -211,6 +222,7 @@ MetadataTemplate.propTypes = {
   templates: PropTypes.object,
   defaultColor: PropTypes.string,
   entityViewPage: PropTypes.string,
+  environment: PropTypes.string.isRequired,
 };
 /* eslint-enable react/forbid-prop-types, react/require-default-props */
 
@@ -256,7 +268,8 @@ export const mapStateToProps = (
 
   props: { relationType?: any }
 ) => {
-  const _templates = props.relationType ? relationTypes : templates;
+  const environment = props.relationType ? 'relationType' : 'template';
+  const _templates = environment === 'relationType' ? relationTypes : templates;
   return {
     _id: template.data._id,
     commonProperties: template.data.commonProperties,
@@ -265,6 +278,7 @@ export const mapStateToProps = (
     templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate'),
     defaultColor: getTemplateDefaultColor(templates, template),
+    environment,
   };
 };
 

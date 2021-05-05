@@ -136,23 +136,14 @@ const getPropertyBasedMarkers = (template, entity) => {
   return extractMarkers({ entity, geolocationProps, metadata, color, type: 'PropertyBased' });
 };
 
-const getInheritedMarkers = (template, entity, templates) => {
+const getInheritedMarkers = (template, entity) => {
   const templateProperties = template.get('properties');
   const color = template.get('color');
   const metadata = entity.get('metadata');
 
-  const geolocationProps = templateProperties.filter(property => {
-    if (property.get('type') === 'relationship' && property.has('inheritProperty')) {
-      const contentTemplate = templates.find(
-        t => t.get('_id').toString() === property.get('content').toString()
-      );
-      const inheritedProperty = contentTemplate
-        .get('properties')
-        .find(p => p.get('_id').toString() === property.get('inheritProperty').toString());
-      return inheritedProperty.get('type') === 'geolocation';
-    }
-    return false;
-  });
+  const geolocationProps = templateProperties.filter(
+    property => property.getIn(['inherit', 'type']) === 'geolocation'
+  );
 
   return extractMarkers({ entity, geolocationProps, metadata, color, type: 'Inherited' });
 };
