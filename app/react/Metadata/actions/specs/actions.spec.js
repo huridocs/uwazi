@@ -5,7 +5,6 @@ import thunk from 'redux-thunk';
 import { mockID } from 'shared/uniqueID.js';
 import { api } from 'app/Entities';
 import { RequestParams } from 'app/utils/RequestParams';
-
 import * as actions from '../actions';
 
 const middlewares = [thunk];
@@ -34,6 +33,7 @@ describe('Metadata Actions', () => {
             { name: 'test' },
             { name: 'newProp' },
             { name: 'testRelation', type: 'relationship' },
+            { name: 'id', type: 'generatedid' },
           ],
         },
       ];
@@ -48,7 +48,7 @@ describe('Metadata Actions', () => {
         sharedId: '1',
         title: 'updated title',
         template: 'templateId',
-        metadata: { test: 'test' },
+        metadata: { test: 'test', id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) },
       };
 
       expect(dispatch).toHaveBeenCalledWith('formload');
@@ -95,11 +95,7 @@ describe('Metadata Actions', () => {
       it('should set the first template', async () => {
         await actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-        const expectedDoc = {
-          title: 'test',
-          metadata: {},
-          template: 'templateId1',
-        };
+        const expectedDoc = { title: 'test', metadata: {}, template: 'templateId1' };
         expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
         expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
@@ -123,7 +119,11 @@ describe('Metadata Actions', () => {
 
       const template = {
         _id: 'newTemplate',
-        properties: [{ name: 'test' }, { name: 'newProp', type: 'nested' }],
+        properties: [
+          { name: 'test' },
+          { name: 'newProp', type: 'nested' },
+          { name: 'id', type: 'generatedid' },
+        ],
       };
       state = {
         templates: Immutable.fromJS([
@@ -158,13 +158,15 @@ describe('Metadata Actions', () => {
           _id: 'entityId',
           title: 'test',
           template: 'newTemplate',
-          metadata: { test: [{ value: 'test' }], newProp: [] },
+          metadata: {
+            test: [{ value: 'test' }],
+            newProp: [],
+            id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/),
+          },
         };
         expect(dispatch).toHaveBeenCalledWith('formReset');
         expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
-
         jasmine.clock().tick(0);
-
         expect(dispatch).toHaveBeenCalledWith('formLoad');
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
@@ -179,15 +181,23 @@ describe('Metadata Actions', () => {
         _id: '1',
         properties: [
           { name: 'year', type: 'numeric' },
+          { name: 'dates', type: 'daterange' },
           { name: 'powers', content: '1', type: 'multiselect' },
           { name: 'enemies', content: '2', type: 'multiselect' },
           { name: 'color', type: 'text', required: true },
+          { name: 'id', type: 'generatedid' },
         ],
       };
 
       const expectedModel = {
         template: '1',
-        metadata: { year: '', powers: [], enemies: [], color: '' },
+        metadata: {
+          year: '',
+          powers: [],
+          enemies: [],
+          color: '',
+          dates: { from: null, to: null },
+        },
       };
 
       const dispatch = jasmine.createSpy('dispatch');

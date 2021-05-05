@@ -27,6 +27,7 @@ import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { PageViewer } from 'app/Pages/components/PageViewer';
 
+import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
@@ -96,12 +97,16 @@ export class EntityViewer extends Component {
       entityBeingEdited,
       tab: selectedTab,
       connectionsGroups,
+      hubs,
       relationships,
       hasPageView,
     } = this.props;
+
+    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const { panelOpen, copyFrom, copyFromProps } = this.state;
+    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const rawEntity = entity.toJS();
-    const summary = connectionsGroups.reduce(
+    const summary = visibleConnectionGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -258,7 +263,7 @@ export class EntityViewer extends Component {
               <TabContent
                 for={['info', 'connections', 'page'].includes(selectedTab) ? selectedTab : 'none'}
               >
-                <ConnectionsGroups />
+                <ConnectionsGroups connectionsGroups={visibleConnectionGroups} />
               </TabContent>
             </Tabs>
           </div>
@@ -304,6 +309,7 @@ EntityViewer.defaultProps = {
   relationships: Immutable.fromJS([]),
   entityBeingEdited: false,
   tab: 'info',
+  hubs: Immutable.fromJS([]),
   hasPageView: false,
 };
 
@@ -313,6 +319,7 @@ EntityViewer.propTypes = {
   entity: PropTypes.instanceOf(Immutable.Map).isRequired,
   entityBeingEdited: PropTypes.bool,
   connectionsGroups: PropTypes.object,
+  hubs: PropTypes.instanceOf(Immutable.List),
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func.isRequired,
   connectionsChanged: PropTypes.func,
@@ -345,6 +352,7 @@ export const mapStateToProps = state => {
     templates: state.templates,
     relationships: state.entityView.entity.get('relations'),
     connectionsGroups: state.relationships.list.connectionsGroups,
+    hubs: state.relationships.hubs,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: uiState.get('userSelectedTab') ? uiState.get('tab') : defaultTab,
     hasPageView: Boolean(templateWithPageView),

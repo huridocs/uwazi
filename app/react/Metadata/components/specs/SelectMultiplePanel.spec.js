@@ -1,8 +1,7 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import NeedAuthorization from 'app/Auth/components/NeedAuthorization';
 import { TemplateLabel, SidePanel } from 'app/Layout';
 import { SelectMultiplePanel, mapStateToProps } from '../SelectMultiplePanel';
 
@@ -112,10 +111,7 @@ describe('SelectMultiplePanel', () => {
       props.template = Immutable.fromJS({ _id: '4', properties: [] });
       props.formState = {
         icon: { pristine: false },
-        metadata: {
-          title: { pristine: false },
-          date: { pristine: true },
-        },
+        metadata: { title: { pristine: false }, date: { pristine: true } },
       };
       render();
       instance
@@ -235,6 +231,18 @@ describe('SelectMultiplePanel', () => {
           expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
         });
       });
+    });
+  });
+
+  describe('renderEditingButtons', () => {
+    it('should control the access of the user', () => {
+      render();
+      const authorization = component.find(NeedAuthorization);
+      expect(authorization.props().orWriteAccessTo).toEqual([
+        { title: 'A rude awakening', template: '1' },
+        { title: 'A falling star', template: '2' },
+      ]);
+      expect(authorization.props().roles).toEqual(['admin', 'editor']);
     });
   });
 });

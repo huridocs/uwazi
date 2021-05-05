@@ -503,6 +503,10 @@ $item-padding: 15px;
   padding: 0 $item-padding;
   font-size: $f-size-sm;
 
+  span {
+    display: inherit;
+  }
+
   div {
     white-space: nowrap;
   }
@@ -521,6 +525,26 @@ $item-padding: 15px;
     overflow: hidden;
     margin-right: 8px;
     text-overflow: ellipsis;
+  }
+
+  .property-help {
+    color: #2b56c1;
+    display: inline-block;
+    text-align: center;
+    line-height: 22px;
+    font-size: 12px;
+
+    position: static;
+    width: 22px;
+    height: 22px;
+    left: 0px;
+    top: 0px;
+
+    background: #f2f7ff;
+    border: 1px solid #2b56c1;
+    box-sizing: border-box;
+    border-radius: 50px;
+    margin-left: 0;
   }
 }
 

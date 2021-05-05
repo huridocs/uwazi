@@ -2,9 +2,9 @@ import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
-import { tenants } from 'api/tenants';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
+import { denormalizeInheritedProperties } from 'api/templates/utils';
 import { elastic } from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
@@ -81,10 +81,10 @@ const bulkIndex = async (docs, _action = 'index') => {
   return results;
 };
 
-const getEntitiesToIndex = async (query, stepIndex, limit, select) => {
+const getEntitiesToIndex = async (query, stepBach, limit, select) => {
   const thisQuery = { ...query };
-  thisQuery._id = !thisQuery._id ? { $gte: stepIndex } : thisQuery._id;
-  return entities.get(thisQuery, '', {
+  thisQuery._id = { $in: stepBach };
+  return entities.getUnrestrictedWithDocuments(thisQuery, '+permissions', {
     limit,
     documentsFullText: select && select.includes('+fullText'),
   });
@@ -97,12 +97,10 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async (query, limit) => {
-  const allIds = await entities.getWithoutDocuments(query, '_id', { sort: { _id: 1 } });
-  const milestoneIds = [];
-  for (let i = 0; i < allIds.length; i += limit) {
-    milestoneIds.push(allIds[i]);
-  }
-  return milestoneIds;
+  const allIds = await entities.getWithoutDocuments(query, '_id');
+  return [...Array(Math.ceil(allIds.length / limit))].map((_v, i) =>
+    allIds.slice(i * limit, (i + 1) * limit)
+  );
 };
 
 /*eslint max-statements: ["error", 20]*/
@@ -110,12 +108,14 @@ const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, searchInstance } = options;
   const steps = await getSteps(query, limit);
 
+  const { _id: remove, ...queryToIndex } = query;
+
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool
     .for(steps)
     .withConcurrency(10)
-    .process(async stepIndex => {
-      const entitiesToIndex = await getEntitiesToIndex(query, stepIndex, limit, select);
+    .process(async stepBatch => {
+      const entitiesToIndex = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
       if (entitiesToIndex.length > 0) {
         await bulkIndexAndCallback({
           searchInstance,
@@ -165,38 +165,18 @@ const reindexAll = async (tmpls, searchInstance) => {
   return indexEntities({ query: {}, searchInstance });
 };
 
-const equalPropMapping = (mapA, mapB) => {
-  if (!mapA || !mapB) {
-    return true;
-  }
-
-  return (
-    Object.keys(mapA.properties).length === Object.keys(mapB.properties).length &&
-    Object.keys(mapA.properties).reduce(
-      (result, propKey) =>
-        result &&
-        mapB.properties[propKey] &&
-        mapA.properties[propKey].type === mapB.properties[propKey].type,
-      true
-    )
-  );
-};
-
 const checkMapping = async template => {
-  const errors = [];
-  const mapping = elasticMapFactory.mapping([template]);
-  const currentMapping = await elastic.indices.getMapping();
-  const elasticIndex = tenants.current().indexName;
-  const mappedProps =
-    currentMapping.body[elasticIndex].mappings.properties.metadata.properties || {};
-  const newMappedProps = mapping.properties.metadata.properties;
-  Object.keys(newMappedProps).forEach(key => {
-    if (!equalPropMapping(mappedProps[key], newMappedProps[key])) {
-      errors.push({ name: template.properties.find(p => p.name === key).label });
+  try {
+    await updateMapping([
+      { ...template, properties: await denormalizeInheritedProperties(template) },
+    ]);
+  } catch (e) {
+    if (e.meta?.body?.error?.reason?.match(/mapp[ing|er]/)) {
+      return { error: 'mapping conflict', valid: false };
     }
-  });
-
-  return { errors, valid: !errors.length };
+    throw e;
+  }
+  return { valid: true };
 };
 
 export { bulkIndex, indexEntities, updateMapping, checkMapping, reindexAll };

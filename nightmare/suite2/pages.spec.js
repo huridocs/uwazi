@@ -11,8 +11,7 @@ const localSelectors = {
     '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
   pageTitleInput:
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
-  pageContentsInput:
-    '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content-visible > textarea',
+  pageContentsInput: '.tab-content > textarea',
 };
 
 const nightmare = createNightmare();

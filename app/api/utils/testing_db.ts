@@ -1,11 +1,15 @@
 import mongoose, { Connection } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
+import { PageType } from 'shared/types/pageType';
 import { DB } from 'api/odm';
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 
@@ -20,6 +24,8 @@ export type DBFixture = {
   files?: FileType[];
   entities?: EntitySchema[];
   dictionaries?: ThesaurusSchema[];
+  usergroups?: UserGroupSchema[];
+  pages?: PageType[];
   [k: string]: any;
 };
 
@@ -58,10 +64,11 @@ const testingDB: {
   mongodb: Db | null;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
-  id: (id?: string | undefined) => ObjectId;
+  id: (id?: string | undefined) => ObjectIdSchema;
   clear: (collections?: string[] | undefined) => Promise<void>;
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
   dbName: string;
+  setupFixturesAndContext: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
 } = {
   mongodb: null,
   dbName: '',
@@ -105,13 +112,21 @@ const testingDB: {
     await fixturer.clear(mongodb, collections);
   },
 
-  async clearAllAndLoad(fixtures: DBFixture, elasticIndex?: string) {
+  async setupFixturesAndContext(fixtures: DBFixture, elasticIndex?: string) {
     await this.connect();
     await fixturer.clearAllAndLoad(mongodb, fixtures);
+    new UserInContextMockFactory().mockEditorUser();
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
       await elasticTesting.reindex();
     }
+  },
+
+  /**
+   * @deprecated
+   */
+  async clearAllAndLoad(fixtures: DBFixture, elasticIndex?: string) {
+    await this.setupFixturesAndContext(fixtures, elasticIndex);
   },
 };
 

@@ -1,3 +1,5 @@
+@import '../../scss/elements/pill';
+
 .sidepanel-body,
 .entity-viewer {
   .view {
@@ -115,16 +117,7 @@ dl.metadata-type-multimedia {
 
 dl.metadata-type-geolocation,
 dl.metadata-type-geolocation_group {
-  .pill {
-    background: #d9534e;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    box-sizing: border-box;
-    border-radius: 26px;
-    padding: 2px 8px;
-    color: white;
-    display: inline-block;
-    margin: 2px 8px 2px 0;
-  }
+  @include pillItem(#d9534e, white);
 
   .pills-container {
     border-top: none;

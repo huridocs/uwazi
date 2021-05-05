@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 import errorLog from 'api/log/errorLog';
 
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import fixtures, {
   connectionID1,
   connectionID2,
@@ -52,6 +53,12 @@ describe('relationships', () => {
     };
 
     it('should return all the relationships of a document', async () => {
+      const userFactory = new UserInContextMockFactory();
+      userFactory.mock({
+        _id: 'user1',
+        role: 'collaborator',
+        groups: [],
+      });
       const result = await relationships.getByDocument('entity2', 'en');
       expect(result.length).toBe(12);
       const entity1Connection = result.find(connection => connection.entity === 'entity1');
@@ -211,6 +218,7 @@ describe('relationships', () => {
         _id: _savedItem._id.equals(connectionID5) ? 'connectionID5' : _savedItem._id,
         template: _savedItem.template.equals(relation2) ? 'relation2' : _savedItem.relation2,
         hub: _savedItem.hub.equals(hub2) ? 'hub2' : _savedItem.hub2,
+        reference: { text: _savedItem.reference.text },
       };
 
       savedItem.entityData = {
@@ -232,7 +240,10 @@ describe('relationships', () => {
             entity: 'entity3',
             hub: hub2,
             template: relation2,
-            reference: { text: 'changed text' },
+            reference: {
+              text: 'changed text',
+              selectionRectangles: [{ width: 1, height: 1, top: 1, left: 1, page: '1' }],
+            },
           },
         ],
         delete: [{ _id: connectionID2 }, { _id: connectionID3 }],
@@ -366,7 +377,7 @@ describe('relationships', () => {
     describe('when saving one reference without hub', () => {
       it('should throw an error', done => {
         relationships
-          .save({ entity: 'entity3', range: { text: 'range' } }, 'en')
+          .save({ entity: 'entity3' }, 'en')
           .then(() => {
             done.fail('Should throw an error');
           })

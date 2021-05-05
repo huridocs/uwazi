@@ -14,13 +14,15 @@ export function login(credentials) {
   };
 }
 
-export function recoverPassword(email) {
+export function recoverPassword(email, altMessage) {
   const request = new RequestParams({ email });
   return dispatch =>
     api.post('recoverpassword', request).then(() => {
       dispatch(
         notify(
-          'Instructions to reset your password have been send, please check your email',
+          !altMessage
+            ? 'Instructions to reset your password have been sent, please check your email'
+            : altMessage,
           'success'
         )
       );

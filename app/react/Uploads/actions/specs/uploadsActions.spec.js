@@ -8,7 +8,6 @@ import { mockID } from 'shared/uniqueID.js';
 import * as actions from 'app/Uploads/actions/uploadsActions';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
-import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
 
 import api from '../../../utils/api';
@@ -316,34 +315,6 @@ describe('uploadsActions', () => {
           expect(api.delete).toHaveBeenCalledWith('files', new RequestParams({ _id: 'id' }));
           done();
         });
-      });
-    });
-
-    describe('publishDocument', () => {
-      it('should save the document with published:true and dispatch notification on success', done => {
-        const document = { name: 'doc', _id: 'abc1' };
-
-        const expectedActions = [
-          {
-            type: notificationsTypes.NOTIFY,
-            notification: { message: 'Document published', type: 'success', id: 'unique_id' },
-          },
-          { type: types.REMOVE_DOCUMENT, doc: document },
-          { type: 'viewer/doc/SET', value: { testBackendResult: 'ok' } },
-          { type: 'UNSELECT_ALL_DOCUMENTS' },
-        ];
-        const store = mockStore({});
-
-        store
-          .dispatch(actions.publishDocument(document))
-          .then(() => {
-            expect(backend.lastOptions().body).toEqual(
-              JSON.stringify({ name: 'doc', _id: 'abc1', published: true })
-            );
-            expect(store.getActions()).toEqual(expectedActions);
-          })
-          .then(done)
-          .catch(done.fail);
       });
     });
   });

@@ -1,5 +1,5 @@
 import * as types from 'app/Library/actions/actionTypes';
-import api from 'app/Search/SearchAPI';
+import qs from 'qs';
 import { notificationActions } from 'app/Notifications';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
@@ -267,9 +267,17 @@ export function updateEntities(updatedDocs) {
   return { type: types.UPDATE_DOCUMENTS, docs: updatedDocs };
 }
 
-export function searchSnippets(searchTerm, sharedId, storeKey) {
+export function searchSnippets(searchString, sharedId, storeKey) {
+  const requestParams = new RequestParams(
+    qs.stringify({
+      filter: { sharedId, searchString: `fullText:(${searchString})` },
+      fields: ['snippets'],
+    })
+  );
+
   return dispatch =>
-    api.searchSnippets(new RequestParams({ searchTerm, id: sharedId })).then(snippets => {
+    searchAPI.searchSnippets(requestParams).then(({ data }) => {
+      const snippets = data.length ? data[0].snippets : { total: 0, fullText: [], metadata: [] };
       dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
       return snippets;
     });

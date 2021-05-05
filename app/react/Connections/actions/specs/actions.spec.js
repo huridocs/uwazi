@@ -1,10 +1,10 @@
 import configureMockStore from 'redux-mock-store';
+import qs from 'qs';
 import thunk from 'redux-thunk';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { mockID } from 'shared/uniqueID.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-
 import * as actions from '../actions';
 
 const middlewares = [thunk];
@@ -20,7 +20,7 @@ describe('Connections actions', () => {
     spyOn(api, 'get').and.returnValue(
       Promise.resolve({
         json: {
-          rows: [
+          data: [
             { title: 'Southern Nights', documents: [], attachments: [] },
             { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
           ],
@@ -37,16 +37,18 @@ describe('Connections actions', () => {
   });
 
   describe('Search-related actions', () => {
-    describe('immidiateSearch', () => {
+    describe('immediateSearch', () => {
       it('should search for connections', () => {
-        actions.immidiateSearch(store.dispatch, 'term');
-        const expectedParams = new RequestParams({ searchTerm: 'term', fields: ['title'] });
-        expect(api.get).toHaveBeenCalledWith('search', expectedParams);
+        actions.immediateSearch(store.dispatch, 'term');
+        const expectedParams = new RequestParams(
+          qs.stringify({ filter: { searchString: 'title:(term)' } })
+        );
+        expect(api.get).toHaveBeenCalledWith('v2/entities', expectedParams);
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_CONNECTIONS' });
       });
 
       it('should set the results upon response', done => {
-        actions.immidiateSearch(store.dispatch, 'term').then(() => {
+        actions.immediateSearch(store.dispatch, 'term').then(() => {
           const expectedAction = {
             type: 'connections/searchResults/SET',
             value: [
@@ -61,7 +63,7 @@ describe('Connections actions', () => {
 
       describe('when doing a reference to a paragraph', () => {
         it('should not include entities without documents', done => {
-          actions.immidiateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
+          actions.immediateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
             expect(store.getActions()).toContainEqual({
               type: 'connections/searchResults/SET',
               value: [
@@ -88,8 +90,8 @@ describe('Connections actions', () => {
         jasmine.clock().tick(400);
 
         expect(api.get).toHaveBeenCalledWith(
-          'search',
-          new RequestParams({ searchTerm: 'term', fields: ['title'] })
+          'v2/entities',
+          new RequestParams(qs.stringify({ filter: { searchString: 'title:(term)' } }))
         );
         jasmine.clock().uninstall();
       });
@@ -99,10 +101,7 @@ describe('Connections actions', () => {
   describe('startNewConnection', () => {
     it('should perform an immediate empty search', () => {
       actions.startNewConnection('type', 'sourceId')(store.dispatch);
-      expect(api.get).toHaveBeenCalledWith(
-        'search',
-        new RequestParams({ searchTerm: '', fields: ['title'] })
-      );
+      expect(api.get).toHaveBeenCalledWith('v2/entities', new RequestParams(''));
     });
 
     it('should restore default search term and open the panel', done => {
@@ -167,11 +166,11 @@ describe('Connections actions', () => {
           [
             {
               entity: 'sourceId',
-              template: null,
               reference: {
                 selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
                 text: 'source text',
               },
+              template: null,
             },
             { entity: 'targetId', template: 'relationTypeId' },
           ],
@@ -195,11 +194,11 @@ describe('Connections actions', () => {
           [
             {
               entity: 'sourceId',
-              template: null,
               reference: {
                 selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
                 text: 'source text',
               },
+              template: null,
             },
             {
               entity: 'targetId',

@@ -5,7 +5,7 @@ import { LocalForm, Control } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Map } from 'immutable';
 import { DateRange } from 'app/ReactReduxForms';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import * as actions from '../actions/activitylogActions';
 
 class ActivitylogForm extends Component {
@@ -76,7 +76,9 @@ class ActivitylogForm extends Component {
               />
             </div>
             <div className="form-group col-sm-12">
-              <input type="submit" className="btn btn-success" value="Search" />
+              <button type="submit" className="btn btn-success">
+                <Translate>Search</Translate>
+              </button>
             </div>
           </LocalForm>
         </div>

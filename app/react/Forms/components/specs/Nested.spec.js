@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Nested from '../Nested';
-import MarkDown from '../MarkDown';
+import { MarkDown } from '../MarkDown';
 
 describe('Nested', () => {
   let component;

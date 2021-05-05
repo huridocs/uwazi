@@ -9,7 +9,12 @@ import { ObjectID } from 'mongodb';
 
 import { validateTemplate } from '../../shared/types/templateSchema';
 import model from './templatesModel';
-import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
+import {
+  generateNamesAndIds,
+  getDeletedProperties,
+  getUpdatedNames,
+  denormalizeInheritedProperties,
+} from './utils';
 
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
@@ -71,6 +76,7 @@ export default {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
@@ -94,6 +100,7 @@ export default {
     if (!template._id) {
       return;
     }
+
     const current = await this.getById(ensure(template._id));
 
     const currentTemplate = ensure<TemplateSchema>(current);
@@ -152,10 +159,10 @@ export default {
       (iteratedTemplate.properties || []).every(
         iteratedProperty =>
           !iteratedProperty.content ||
-          !iteratedProperty.inheritProperty ||
+          !iteratedProperty.inherit?.property ||
           !(
             iteratedProperty.content.toString() === template.toString() &&
-            iteratedProperty.inheritProperty.toString() === (property || '').toString()
+            iteratedProperty.inherit.property.toString() === (property || '').toString()
           )
       )
     );

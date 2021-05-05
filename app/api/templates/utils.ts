@@ -1,23 +1,69 @@
 import uuid from 'node-uuid';
-import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { TemplateSchema } from 'shared/types/templateType';
+import propertiesHelper from 'shared/comonProperties';
+import { safeName as sharedSafeName } from 'shared/propertyNames';
+import { ObjectID } from 'mongodb';
+import model from './templatesModel';
 
-const generateNewSafeName = (label: string) =>
-  label
-    .trim()
-    .replace(/[#|\\|/|*|?|"|<|>|=|||\s|:|.]/gi, '_')
-    .replace(/^[_|\-|+|$]/, '')
-    .toLowerCase();
+export const safeName = sharedSafeName;
 
-export const safeName = (label: string, newNameGeneration: boolean = false) => {
-  if (newNameGeneration) {
-    return generateNewSafeName(label);
-  }
-  return label
-    .trim()
-    .replace(/[^a-z0-9]/gi, '_')
-    .toLowerCase();
+const getInheritedProps = async (templates: TemplateSchema[]) => {
+  const properties: PropertySchema[] = propertiesHelper
+    .allUniqueProperties(templates)
+    .filter((p: PropertySchema) => p.inherit?.property);
+
+  return (
+    await model.db.aggregate([
+      {
+        $match: {
+          'properties._id': {
+            $in: properties.map(p => new ObjectID(p.inherit?.property)),
+          },
+        },
+      },
+      {
+        $project: {
+          properties: {
+            $filter: {
+              input: '$properties',
+              as: 'property',
+              cond: {
+                $or: properties.map(p => ({
+                  $eq: ['$$property._id', new ObjectID(p.inherit?.property)],
+                })),
+              },
+            },
+          },
+          _id: 0,
+        },
+      },
+      { $unwind: '$properties' },
+      { $replaceRoot: { newRoot: '$properties' } },
+    ])
+  ).reduce((indexed, prop) => {
+    // eslint-disable-next-line no-param-reassign
+    indexed[prop._id.toString()] = prop;
+    return indexed;
+  }, {});
+};
+
+export const denormalizeInheritedProperties = async (template: TemplateSchema) => {
+  const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
+
+  return template.properties?.map(prop => {
+    if (!prop.inherit?.property) {
+      delete prop.inherit;
+      return prop;
+    }
+
+    const { type } = inheritedProperties[prop.inherit.property];
+    // eslint-disable-next-line no-param-reassign
+    prop.inherit.type = type;
+    return prop;
+  });
 };
 
 const generateName = (property: PropertySchema, newNameGeneration: boolean) => {

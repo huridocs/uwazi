@@ -58,11 +58,14 @@ exports[`ActivitylogForm should render a form 1`] = `
       <div
         className="form-group col-sm-12"
       >
-        <input
+        <button
           className="btn btn-success"
           type="submit"
-          value="Search"
-        />
+        >
+          <Connect(Translate)>
+            Search
+          </Connect(Translate)>
+        </button>
       </div>
     </LocalForm>
   </div>

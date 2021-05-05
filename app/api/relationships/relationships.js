@@ -11,7 +11,12 @@ import { search } from '../search';
 import { generateNamesAndIds } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
-import { RelationshipCollection, groupByHubs } from './relationshipsHelpers';
+import {
+  RelationshipCollection,
+  getEntityReferencesByRelationshipTypes,
+  guessRelationshipPropertyHub,
+} from './relationshipsHelpers';
+import { validateConnectionSchema } from './validateConnectionSchema';
 
 const normalizeConnectedDocumentData = (relationship, connectedDocument) => {
   relationship.entityData = connectedDocument;
@@ -35,21 +40,6 @@ const updateRelationship = async relationship =>
     template:
       relationship.template && relationship.template._id !== null ? relationship.template : null,
   });
-
-function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
-  return hubs.reduce((result, hub) => {
-    const allReferencesAreOfTheType = hub.every(
-      reference =>
-        reference.entity === entitySharedId ||
-        (reference.template && reference.template.toString() === propertyRelationType)
-    );
-    if (allReferencesAreOfTheType) {
-      return hub;
-    }
-
-    return result;
-  }, null);
-}
 
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
 const conformRelationships = (rows, parentEntitySharedId) => {
@@ -136,20 +126,6 @@ const determinePropertyValues = (entity, propertyName) => {
   return propertyValues.map(mo => mo.value);
 };
 
-const getHub = (propertyRelationType, hubs, sharedId) => {
-  const hub = findPropertyHub(propertyRelationType, hubs, sharedId);
-  return hub || [{ entity: sharedId, hub: generateID() }];
-};
-
-const determineReferenceValues = (references, property, entity) => {
-  const hubs = groupByHubs(references);
-  const propertyRelationType = property.relationType.toString();
-  const entityType = property.content;
-  const hub = getHub(propertyRelationType, hubs, entity.sharedId);
-
-  return { propertyRelationType, entityType, hub };
-};
-
 export default {
   get(query, select, pagination) {
     return model.get(query, select, pagination);
@@ -188,7 +164,7 @@ export default {
     return this.getDocumentHubs(sharedId, file, onlyTextReferences).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities
-        .get({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
+        .getUnrestrictedWithDocuments({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
           'template',
           'creationDate',
           'title',
@@ -271,6 +247,8 @@ export default {
 
     const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
 
+    await validateConnectionSchema(rel);
+
     const existingEntities = (
       await entities.get({
         sharedId: { $in: rel.map(r => r.entity) },
@@ -320,72 +298,78 @@ export default {
     return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
-  saveEntityBasedReferences(entity, language) {
-    if (!language) {
-      return Promise.reject(createError('Language cant be undefined'));
-    }
+  async saveEntityBasedReferences(entity, language) {
+    if (!language) throw createError('Language cant be undefined');
+    if (!entity.template) return [];
 
-    if (!entity.template) {
-      return Promise.resolve([]);
-    }
+    const template = await templatesAPI.getById(entity.template);
+    const relationshipProperties = getPropertiesToBeConnections(template);
 
-    return templatesAPI
-      .getById(entity.template)
-      .then(getPropertiesToBeConnections)
-      .then(properties => Promise.all([properties, this.getByDocument(entity.sharedId, language)]))
-      .then(([properties, references]) =>
-        Promise.all(
-          properties.map(property => {
-            const propertyValues = determinePropertyValues(entity, property.name);
-            const { propertyRelationType, entityType, hub } = determineReferenceValues(
-              references,
-              property,
-              entity
-            );
+    if (!relationshipProperties.length) return [];
 
-            const referencesOfThisType = references.filter(
-              reference =>
-                reference.template &&
-                reference.template.toString() === propertyRelationType.toString()
-            );
+    const existingReferences = await getEntityReferencesByRelationshipTypes(
+      entity.sharedId,
+      relationshipProperties.map(p => generateID(p.relationType))
+    );
 
-            propertyValues.forEach(entitySharedId => {
-              const relationshipDoesNotExists = !referencesOfThisType.find(
-                reference => reference.entity === entitySharedId
-              );
-              if (relationshipDoesNotExists) {
-                hub.push({
-                  entity: entitySharedId,
-                  hub: hub[0].hub,
-                  template: propertyRelationType,
-                });
-              }
-            });
+    return Promise.all(
+      // eslint-disable-next-line max-statements
+      relationshipProperties.map(async property => {
+        const newValues = determinePropertyValues(entity, property.name);
+        const { relationType: propertyRelationType, content: propertyEntityType } = property;
 
-            const referencesToBeDeleted = references.filter(
-              reference =>
-                !(reference.entity === entity.sharedId) &&
-                reference.template &&
-                reference.template.toString() === propertyRelationType &&
-                (!entityType || reference.entityData.template.toString() === entityType) &&
-                !propertyValues.includes(reference.entity)
-            );
+        let referencesOfThisType = existingReferences.find(
+          g => g._id.toString() === propertyRelationType.toString()
+        );
+        referencesOfThisType = (referencesOfThisType && referencesOfThisType.references) || [];
 
-            let save = Promise.resolve();
-            if (hub.length > 1) {
-              save = this.save(hub, language, false);
-            }
+        const toCreate = newValues.filter(
+          value => !referencesOfThisType.find(r => r.rightSide.entity === value)
+        );
 
-            return save.then(() =>
-              Promise.all(
-                referencesToBeDeleted.map(reference =>
-                  this.delete({ _id: reference._id }, language, false)
-                )
-              )
-            );
-          })
-        )
-      );
+        if (toCreate.length) {
+          const candidateHub = await guessRelationshipPropertyHub(
+            entity.sharedId,
+            generateID(propertyRelationType)
+          );
+
+          const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
+          const newReferencesBase = candidateHub[0]
+            ? []
+            : [{ entity: entity.sharedId, hub: hubId }];
+
+          const newReferences = toCreate.map(value => ({
+            entity: value,
+            hub: hubId,
+            template: generateID(propertyRelationType),
+          }));
+
+          await this.save([...newReferencesBase, ...newReferences], language, false);
+        }
+
+        const matchingRefsNotInNewSet = r =>
+          r.rightSide.entity !== entity.sharedId &&
+          (!propertyEntityType ||
+            r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
+          !newValues.includes(r.rightSide.entity);
+
+        const toDelete = referencesOfThisType
+          .filter(matchingRefsNotInNewSet)
+          .map(r => r.rightSide._id);
+
+        if (toDelete.length) {
+          await this.delete(
+            {
+              _id: { $in: toDelete },
+            },
+            language,
+            false
+          );
+        }
+
+        return [];
+      })
+    );
   },
 
   search(entitySharedId, query, language, user) {
