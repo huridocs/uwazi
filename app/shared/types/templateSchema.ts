@@ -231,26 +231,40 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
   },
 });
 
-ajv.addKeyword('entityViewPageExists', {
+ajv.addKeyword('entityViewPageExistsAndIsEnabled', {
   async: true,
   errors: true,
   type: 'object',
   async validate(fields: any, template: TemplateSchema) {
-    const page = await pages.get({
-      sharedId: template.entityViewPage,
-    });
-    if (page.length > 0 || !template.entityViewPage) {
+    if (template.entityViewPage) {
+      const page = await pages.get({
+        sharedId: template.entityViewPage,
+      });
+      if (page.length === 0) {
+        throw new Ajv.ValidationError([
+          {
+            keyword: 'entityViewPageExists',
+            schemaPath: '',
+            params: { keyword: 'entityViewPageExists', fields },
+            message: 'The selected page does not exist',
+            dataPath: '.templates',
+          },
+        ]);
+      }
+      if (!page[0].entityView) {
+        throw new Ajv.ValidationError([
+          {
+            keyword: 'entityViewPageIsEnabled',
+            schemaPath: '',
+            params: { keyword: 'entityViewPageIsEnabled', fields },
+            message: 'The selected page is not enabled for entity view',
+            dataPath: '.templates',
+          },
+        ]);
+      }
       return true;
     }
-    throw new Ajv.ValidationError([
-      {
-        keyword: 'entityViewPageExists',
-        schemaPath: '',
-        params: { keyword: 'entityViewPageExists', fields },
-        message: 'The selected page does not exist',
-        dataPath: '.templates',
-      },
-    ]);
+    return true;
   },
 });
 
@@ -261,7 +275,7 @@ export const templateSchema = {
   uniqueName: true,
   cantDeleteInheritedProperties: true,
   cantReuseNameWithDifferentType: true,
-  entityViewPageExists: true,
+  entityViewPageExistsAndIsEnabled: true,
   required: ['name'],
   uniquePropertyFields: ['id', 'name'],
   definitions: { objectIdSchema, propertySchema },
