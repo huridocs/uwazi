@@ -40,6 +40,7 @@ export default function documents(state = initialState, action = {}) {
       .get('rows')
       .get(docIndex)
       .toJS();
+    doc.documents = doc.documents || [];
     doc.documents.push(action.file);
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
