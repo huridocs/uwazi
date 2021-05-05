@@ -324,17 +324,20 @@ export default {
     ]);
     let docTemplate = template;
     doc.editDate = date.currentUTC();
+    let storedEntity;
     if (doc.sharedId) {
-      await this.updateEntity(this.sanitize(doc, template), template);
+      storedEntity = await this.updateEntity(this.sanitize(doc, template), template);
     } else {
       if (!doc.template) {
         doc.template = defaultTemplate._id;
         doc.metadata = {};
         docTemplate = defaultTemplate;
       }
-      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
+      storedEntity = await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     }
-    const [entity] = await this.getWithRelationships({ sharedId, language });
+
+    const entity = storedEntity.find(e => e.language === language);
+
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
       await this.updateDenormalizedMetadataInRelatedEntities(entity);
