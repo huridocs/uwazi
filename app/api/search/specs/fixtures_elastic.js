@@ -237,7 +237,6 @@ export const fixtures = {
         select1: [{ value: 'SpainID', label: 'Cool Spain' }],
         multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         date: [{ value: 30000 }],
-        auto_id: [{ value: 'ABC1234' }],
       },
     },
     {
@@ -255,6 +254,7 @@ export const fixtures = {
         multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         nestedField_nested: [{ value: { nested1: ['3', '4', '5'] } }],
         country_geolocation: [{ value: { lat: 1, lon: 2 } }],
+        auto_id: [{ value: 'ABC1234' }],
       },
     },
     {
@@ -270,6 +270,7 @@ export const fixtures = {
         field3: [{ value: 'joker' }],
         nestedField_nested: [{ value: { nested1: ['5', '6', '7'] } }],
         country_geolocation: [{ value: { lat: 1, lon: 2 } }],
+        auto_id: [{ value: 'XYZ1234' }],
       },
     },
     {
@@ -419,7 +420,7 @@ export const fixtures = {
           filter: true,
         },
         { name: 'country_geolocation', type: 'geolocation', filter: true },
-        { name: 'auto_id', type: 'generatedid' },
+        { name: 'auto_id', type: 'generatedid', filter: true },
       ],
     },
   ],

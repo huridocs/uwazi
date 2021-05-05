@@ -835,4 +835,16 @@ describe('search', () => {
     const resultsFound = await search.search({ searchTerm: 'ABC1234' }, 'en');
     expect(resultsFound.rows.length).toBe(1);
   });
+
+  it('should filter by generatedid property type', async () => {
+    const resultsFound = await search.search(
+      {
+        types: [ids.templateMetadata2],
+        filters: { auto_id: { value: 'xyz1234' } },
+        published: true,
+      },
+      'en'
+    );
+    expect(resultsFound.rows.length).toBe(1);
+  });
 });
