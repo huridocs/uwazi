@@ -20,6 +20,10 @@ const attemptRisonDecode = string => {
 };
 
 export function toUrlParams(_data) {
+  if (typeof _data === 'string') {
+    return `?${_data}`;
+  }
+
   const data = { ..._data };
   if (!data || Object.keys(data).length === 0) {
     return '';

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 
 import { RequestParams } from 'app/utils/RequestParams';

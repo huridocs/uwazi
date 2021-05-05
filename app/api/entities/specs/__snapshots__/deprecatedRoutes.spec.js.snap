@@ -48,38 +48,6 @@ Object {
 }
 `;
 
-exports[`entities GET should have a validation schema 1`] = `
-Object {
-  "children": Object {
-    "_id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "omitRelationships": Object {
-      "type": "any",
-    },
-    "sharedId": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "withPdfInfo": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-  },
-  "flags": Object {
-    "presence": "required",
-  },
-  "type": "object",
-}
-`;
-
 exports[`entities POST /api/entities/bulkdelete should have a validation schema 1`] = `
 Object {
   "children": Object {

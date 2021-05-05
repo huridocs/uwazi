@@ -4,23 +4,26 @@ import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
 import needsAuthorization from '../auth/authMiddleware';
-import { validation } from '../utils';
+import { parseQuery, validation } from '../utils';
 
 Joi.objectId = objectId(Joi);
 
 export default app => {
-  app.post('/api/entities', needsAuthorization(['admin', 'editor']), (req, res, next) =>
-    entities
-      .save(req.body, { user: req.user, language: req.language })
-      .then(response => {
-        res.json(response);
-        return templates.getById(response.template);
-      })
-      .then(template => thesauri.templateToThesauri(template, req.language, req.user))
-      .then(templateTransformed => {
-        req.io.emitToCurrentTenant('thesauriChange', templateTransformed);
-      })
-      .catch(next)
+  app.post(
+    '/api/entities',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    (req, res, next) =>
+      entities
+        .save(req.body, { user: req.user, language: req.language })
+        .then(response => {
+          res.json(response);
+          return templates.getById(response.template);
+        })
+        .then(template => thesauri.templateToThesauri(template, req.language, req.user))
+        .then(templateTransformed => {
+          req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
+        })
+        .catch(next)
   );
 
   app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>
@@ -34,7 +37,7 @@ export default app => {
 
   app.post(
     '/api/entities/multipleupdate',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     (req, res, next) =>
       entities
         .multipleUpdate(req.body.ids, req.body.values, { user: req.user, language: req.language })
@@ -81,23 +84,33 @@ export default app => {
 
   app.get(
     '/api/entities',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string(),
-          _id: Joi.string(),
-          omitRelationships: Joi.any(),
-          withPdfInfo: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
+    parseQuery,
+    validation.validateRequest({
+      properties: {
+        query: {
+          properties: {
+            sharedId: { type: 'string' },
+            _id: { type: 'string' },
+            withPdf: { type: 'string' },
+            omitRelationships: { type: 'boolean' },
+            include: { type: 'array', items: [{ type: 'string', enum: ['permissions'] }] },
+          },
+        },
+      },
+    }),
     (req, res, next) => {
-      const { omitRelationships, withPdfInfo, ...query } = req.query;
+      const { omitRelationships, withPdfInfo, include = [], ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
       const language = req.language ? { language: req.language } : {};
-      entities[action]({ ...query, ...published, ...language }, {}, { limit: 1, withPdfInfo })
+      entities[action](
+        { ...query, ...published, ...language },
+        include.map(field => `+${field}`).join(' '),
+        {
+          limit: 1,
+          withPdfInfo,
+        }
+      )
         .then(_entities => {
           if (!_entities.length) {
             res.status(404);
@@ -116,7 +129,7 @@ export default app => {
 
   app.delete(
     '/api/entities',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest(
       Joi.object()
         .keys({

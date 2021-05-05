@@ -7,9 +7,10 @@
     "jasmine": true,
     "es6": true
   },
-
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
   "plugins": ["react", "jest", "@typescript-eslint", "prettier"],
-
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": false }],
     "indent": "off", // handled by prettier

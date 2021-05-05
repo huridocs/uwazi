@@ -11,32 +11,23 @@ export interface UserGroupListProps {
   className: string;
 }
 
-const UserGroupListComponent = ({
+export const UserGroupList = ({
   userGroups,
   handleSelect,
   handleAddGroup,
   className,
 }: UserGroupListProps) => {
-  const [selectedId, setSelectedId] = useState();
+  const [selectedId, setSelectedId] = useState<string | undefined>('');
   const addGroup = () => {
     setSelectedId(undefined);
     handleAddGroup();
   };
   const selectRow = (userGroup: UserGroupSchema) => {
-    setSelectedId(userGroup._id);
+    setSelectedId(userGroup._id?.toString());
     handleSelect(userGroup);
   };
   return (
     <div className="group-list">
-      <div className="beta-feature">
-        <div className="beta-alert">
-          <Icon icon="info-circle" />
-          {' Beta feature'}
-        </div>
-        <span className="beta-tooltip">
-          This feature is part of access control levels, still under construction
-        </span>
-      </div>
       <table className={className}>
         <thead>
           <tr>
@@ -79,5 +70,3 @@ const UserGroupListComponent = ({
     </div>
   );
 };
-
-export const UserGroupList = UserGroupListComponent;

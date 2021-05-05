@@ -5,6 +5,7 @@ Object {
   "checkbox": "check",
   "date": "calendar",
   "daterange": "calendar",
+  "generatedid": "fingerprint",
   "geolocation": "map-marker",
   "image": "image",
   "link": "link",

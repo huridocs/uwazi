@@ -33,7 +33,9 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
         icon="times"
       />
       <span>
-        Close
+        <Connect(Translate)>
+          Close
+        </Connect(Translate)>
       </span>
     </button>
   </div>
@@ -225,7 +227,9 @@ exports[`Attachments Modal Should match render of web form 1`] = `
         icon="times"
       />
       <span>
-        Close
+        <Connect(Translate)>
+          Close
+        </Connect(Translate)>
       </span>
     </button>
   </div>

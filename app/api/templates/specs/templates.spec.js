@@ -8,6 +8,7 @@ import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
+import { propertyTypes } from 'shared/propertyTypes';
 
 import templates from '../templates';
 
@@ -18,6 +19,8 @@ import fixtures, {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
+  relatedTo,
+  thesauriId1,
 } from './fixtures.js';
 
 describe('templates', () => {
@@ -37,7 +40,13 @@ describe('templates', () => {
       const newTemplate = {
         name: 'created_template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [{ label: 'fieldLabel', type: 'text' }],
+        properties: [
+          { label: 'fieldLabel', type: 'text' },
+          {
+            label: 'Generated ID',
+            type: 'generatedid',
+          },
+        ],
       };
 
       const template = await templates.save(newTemplate);
@@ -117,8 +126,8 @@ describe('templates', () => {
           name: 'changed',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
-            { id: '1', type: 'select', content: 'new_thesauri', label: 'select3' },
-            { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' },
+            { id: '1', type: 'select', content: thesauriId1.toString(), label: 'select3' },
+            { id: '2', type: 'multiselect', content: thesauriId1.toString(), label: 'multiselect' },
           ],
         };
 
@@ -142,7 +151,13 @@ describe('templates', () => {
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { id: '1', type: 'text', name: 'text', label: 'Select5' },
-          { id: '2', type: 'select', name: 'select5', label: 'Text', content: 'a' },
+          {
+            id: '2',
+            type: 'select',
+            name: 'select5',
+            label: 'Text',
+            content: thesauriId1.toString(),
+          },
         ],
       };
 
@@ -187,7 +202,7 @@ describe('templates', () => {
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { label: 'label 1', type: 'text' },
-          { label: 'label 2', type: 'select', content: 's' },
+          { label: 'label 2', type: 'select', content: thesauriId1.toString() },
           { label: 'label 3', type: 'image' },
           { label: 'label 4', name: 'name', type: 'text' },
           { label: 'label 5', type: 'geolocation' },
@@ -440,6 +455,46 @@ describe('templates', () => {
     });
   });
 
+  describe('inherit', () => {
+    let savedTemplate;
+    beforeEach(async () => {
+      savedTemplate = await templates.save({
+        name: 'template',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          {
+            type: propertyTypes.relationship,
+            content: templateToBeInherited.toString(),
+            relationType: relatedTo.toString(),
+            name: 'new inherit',
+            label: 'New Inherit',
+            inherit: {
+              property: propertyToBeInherited.toString(),
+              type: 'this should not be saved',
+            },
+          },
+        ],
+      });
+    });
+
+    it('should denormalize the inherited property type', async () => {
+      expect(savedTemplate.properties).toEqual([
+        expect.objectContaining({
+          inherit: {
+            property: propertyToBeInherited.toString(),
+            type: 'text',
+          },
+        }),
+      ]);
+    });
+
+    it('should remove denormalized type when removing inheritance', async () => {
+      savedTemplate.properties[0].inherit.property = '';
+      const resavedTemplate = await templates.save(savedTemplate, 'en', false);
+      expect(resavedTemplate.properties[0].inherit).not.toBeDefined();
+    });
+  });
+
   describe('validation', () => {
     it('should validate on save', async () => {
       const tpl = {
@@ -453,9 +508,9 @@ describe('templates', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(Ajv.ValidationError);
         expect(error.errors.some(e => e.params.missingProperty === 'label')).toBe(true);
-        expect(error.errors.some(e => e.params.keyword === 'requireContentForSelectFields')).toBe(
-          true
-        );
+        expect(
+          error.errors.some(e => e.params.keyword === 'requireOrInvalidContentForSelectFields')
+        ).toBe(true);
       }
     });
   });

@@ -22,16 +22,6 @@ const documents = {
     return document.fullText[page].replace(pageNumberMatch, '');
   },
 
-  async savePDFInfo(_id, pdfInfo) {
-    const [doc] = await files.get({ _id }, '+pdfInfo');
-    if (doc.pdfInfo) {
-      return doc;
-    }
-    const result = await files.save({ _id, pdfInfo });
-    result.pdfInfo = pdfInfo;
-    return result;
-  },
-
   get(query, select) {
     return entities.get(query, select);
   },

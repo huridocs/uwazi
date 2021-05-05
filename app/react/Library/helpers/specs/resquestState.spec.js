@@ -33,6 +33,7 @@ describe('static requestState()', () => {
     settings: { collection: Immutable.fromJS({ features: {} }) },
     thesauris: Immutable.fromJS(thesauris),
     relationTypes: Immutable.fromJS(relationTypes),
+    user: Immutable.fromJS({}),
   };
 
   beforeEach(() => {
@@ -112,6 +113,37 @@ describe('static requestState()', () => {
       expect(query).toEqual({
         from: 0,
         limit: 35,
+        order: 'desc',
+        sort: 'creationDate',
+        view: undefined,
+      });
+    });
+
+    it('should return permission aggregations if logged in', () => {
+      const params = { q: '(order:desc,sort:creationDate)' };
+      globalResources.user = Immutable.fromJS({ role: 'admin' });
+      let query = processQuery(params, globalResources, 'library');
+      expect(query).toEqual({
+        order: 'desc',
+        sort: 'creationDate',
+        view: undefined,
+        aggregatePermissionsByLevel: true,
+      });
+
+      query = processQuery(params, globalResources, 'uploads');
+      expect(query).toEqual({
+        order: 'desc',
+        sort: 'creationDate',
+        view: undefined,
+        aggregatePermissionsByLevel: true,
+      });
+    });
+
+    it('should not return permission if user is not logged in', () => {
+      const params = { q: '(order:desc,sort:creationDate)' };
+      globalResources.user = Immutable.fromJS({});
+      const query = processQuery(params, globalResources, 'library');
+      expect(query).toEqual({
         order: 'desc',
         sort: 'creationDate',
         view: undefined,

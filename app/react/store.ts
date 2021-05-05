@@ -39,4 +39,8 @@ if (!store) {
   store = create();
 }
 
+if (typeof window !== 'undefined' && !module.hot) {
+  window.store = store;
+}
+
 export { store };

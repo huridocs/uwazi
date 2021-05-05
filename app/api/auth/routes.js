@@ -82,7 +82,8 @@ export default app => {
 
   app.get('/api/captcha', cors(corsOptions), async (_req, res) => {
     const captcha = svgCaptcha.create({ ignoreChars: '0OoiILluvUV' });
-    const storedCaptcha = await CaptchaModel.save({ text: captcha.text });
+    const text = process.env.DATABASE_NAME !== 'uwazi_e2e' ? captcha.text : '42hf';
+    const storedCaptcha = await CaptchaModel.save({ text });
 
     res.json({ svg: captcha.data, id: storedCaptcha._id.toString() });
   });

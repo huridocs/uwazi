@@ -8,6 +8,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ConnectionSchema } from 'shared/types/connectionType';
+import { UserSchema } from 'shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
@@ -125,6 +126,7 @@ export interface IStore {
   settings: {
     collection: IImmutable<Settings>;
   };
+  users: IImmutable<UserSchema[]>;
   userGroups: IImmutable<UserGroupSchema[]>;
   page: {
     data: PageType;

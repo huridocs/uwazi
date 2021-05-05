@@ -36,12 +36,16 @@ import { faFlask } from '@fortawesome/free-solid-svg-icons/faFlask';
 import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf';
 import { faFileImage } from '@fortawesome/free-solid-svg-icons/faFileImage';
+import { faFingerprint } from '@fortawesome/free-solid-svg-icons/faFingerprint';
 import { faFont } from '@fortawesome/free-solid-svg-icons/faFont';
 import { faGavel } from '@fortawesome/free-solid-svg-icons/faGavel';
+import { faGlobeAfrica } from '@fortawesome/free-solid-svg-icons/faGlobeAfrica';
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
+import { faKey } from '@fortawesome/free-solid-svg-icons/faKey';
+import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons/faLevelDownAlt';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb';
 import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 import { faList } from '@fortawesome/free-solid-svg-icons/faList';
@@ -86,10 +90,15 @@ import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
 import { faEye } from '@fortawesome/free-solid-svg-icons/faEye';
 import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons/faArrowsAlt';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
+import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
+import { faUserCheck } from '@fortawesome/free-solid-svg-icons/faUserCheck';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt';
+import { twoFactorAuth } from 'UI/Icon/two-factor-auth';
+import { infoCircleHollow } from 'UI/Icon/info-circle-hollow';
 import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
@@ -135,12 +144,16 @@ const icons = {
   faFilter,
   faFilePdf,
   faFileImage,
+  faFingerprint,
   faFont,
   faGavel,
+  faGlobeAfrica,
   faHome,
   faImage,
   faInfoCircle,
+  faKey,
   faLanguage,
+  faLevelDownAlt,
   faLightbulb,
   faLink,
   faList,
@@ -184,8 +197,11 @@ const icons = {
   faVideo,
   faEye,
   faEyeSlash,
+  faUser,
   faUsers,
   faUserTimes,
+  faUserPlus,
+  faUserCheck,
   faHandPaper,
   faExternalLinkAlt,
   saveAndNext,
@@ -193,6 +209,8 @@ const icons = {
   exportCsv,
   copyFrom,
   funnelFilter,
+  twoFactorAuth,
+  infoCircleHollow,
 };
 
 export const loadIcons = () => {

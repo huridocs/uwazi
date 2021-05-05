@@ -8,11 +8,16 @@ import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 
 import { PageViewer } from './components/PageViewer';
-import { setPageAssets } from './utils/setPageAssets';
+import { getPageAssets } from './utils/getPageAssets';
 
 class PageView extends RouteHandler {
   static async requestState(requestParams) {
-    return setPageAssets(requestParams);
+    const { pageView, itemLists, datasets } = await getPageAssets(requestParams);
+    return [
+      actions.set('page/pageView', pageView),
+      actions.set('page/itemLists', itemLists),
+      actions.set('page/datasets', datasets),
+    ];
   }
 
   closeSidePanel() {

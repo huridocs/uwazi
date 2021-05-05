@@ -1,5 +1,6 @@
-import { Translate } from 'app/I18N';
 import React from 'react';
+import { Translate } from 'app/I18N';
+import { Icon } from 'UI';
 
 export interface EntityCounterProps {
   selectedEntitiesCount: number;
@@ -7,6 +8,7 @@ export interface EntityCounterProps {
   entityTotal: number;
   totalConnectionsCount?: number;
   hitsTotalRelation: string;
+  hiddenConnectionsCount: number;
 }
 
 export const DocumentCounter = (props: EntityCounterProps) => {
@@ -16,27 +18,43 @@ export const DocumentCounter = (props: EntityCounterProps) => {
     entityListCount,
     entityTotal,
     hitsTotalRelation,
+    hiddenConnectionsCount,
   } = props;
   const totalEntitiesValue = <b> {`${entityTotal}${hitsTotalRelation === 'gte' ? '+' : ''}`} </b>;
-  const counter =
-    totalConnectionsCount === undefined ? (
-      <>
-        {selectedEntitiesCount > 0 && (
-          <>
-            <b> {selectedEntitiesCount} </b> <Translate>selected of</Translate>
-          </>
-        )}
-        <b> {entityListCount} </b> <Translate>shown of</Translate>
-        {totalEntitiesValue}
-        <Translate>documents</Translate>
-      </>
-    ) : (
-      <>
-        <b>{totalConnectionsCount} </b>
-        <Translate>connections</Translate>, {totalEntitiesValue}
-        <Translate>documents</Translate>
-      </>
-    );
+  const entityCounter = (
+    <>
+      {selectedEntitiesCount > 0 && (
+        <>
+          <b> {selectedEntitiesCount} </b> <Translate>selected of</Translate>
+        </>
+      )}
+      <b> {entityListCount} </b> <Translate>shown of</Translate>
+      {totalEntitiesValue}
+      <Translate>documents</Translate>
+    </>
+  );
+  const connectionsCounter = (
+    <>
+      <b>{totalConnectionsCount! - hiddenConnectionsCount} </b>
+      <Translate>connections</Translate>
+      {hiddenConnectionsCount > 0 && (
+        <>
+          {' ('}
+          <div className="hidden-connections-counter">
+            {`${hiddenConnectionsCount} `}
+            <Translate>hidden</Translate> <Icon icon="info-circle-hollow" />
+            <span className="hidden-info">
+              You don’t have rights to see these entities. To see them, someone from the
+              organization has to share them with you.
+            </span>
+          </div>
+          )
+        </>
+      )}
+      , <b>{totalEntitiesValue} </b>
+      <Translate>documents</Translate>
+    </>
+  );
 
-  return <span>{counter}</span>;
+  return <span>{totalConnectionsCount === undefined ? entityCounter : connectionsCounter}</span>;
 };

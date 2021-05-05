@@ -4,9 +4,9 @@ import { Server } from 'http';
 import io from 'socket.io-client';
 import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
 import { tenants, Tenant } from 'api/tenants/tenantContext';
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 import { setupSockets } from '../setupSockets';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 const closeServer = async (httpServer: Server) =>
   new Promise(resolve => {
@@ -64,7 +64,7 @@ describe('socket middlewares setup', () => {
     tenants.add(<Tenant>{ name: 'tenant2' });
 
     app.get('/api/test', (req, res) => {
-      req.io.emitToCurrentTenant('eventName', 'eventData');
+      req.sockets.emitToCurrentTenant('eventName', 'eventData');
       res.json({});
     });
 

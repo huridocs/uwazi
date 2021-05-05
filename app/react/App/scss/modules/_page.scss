@@ -8,6 +8,15 @@
   width: 100%;
 }
 
-.public-form.submiting h3 {
-  text-align: center;
+.public-form {
+  .submiting {
+    h3 {
+      text-align: center;
+    }
+  }
+  .markdownEditor {
+    .tab-nav {
+      visibility: hidden;
+    }
+  }
 }

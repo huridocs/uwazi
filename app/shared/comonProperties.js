@@ -13,14 +13,17 @@ function allTemplatesHaveIt(templates, property) {
   );
 }
 
-const comonProperties = (templates, documentTypes = []) => {
+const comonProperties = (templates, documentTypes = [], excludedTypes = []) => {
   const properties = [];
   const selectedTemplates = templates.filter(template =>
     documentTypes.includes(template._id.toString())
   );
 
   if (selectedTemplates.length) {
-    selectedTemplates[0].properties.forEach(_property => {
+    const propertiesToCompare = selectedTemplates[0].properties.filter(
+      property => !excludedTypes.includes(property.type)
+    );
+    propertiesToCompare.forEach(_property => {
       if (allTemplatesHaveIt(selectedTemplates, _property)) {
         const property = selectedTemplates.reduce((result, tmpl) => {
           const prop = tmpl.properties.find(_prop => sameProperty(_prop, _property), {});
@@ -64,12 +67,16 @@ const allUniqueProperties = templates =>
     return filters;
   }, []);
 
+const getInheritedProperty = (property, properties) =>
+  properties.find(p => property.inherit.property.toString() === p._id.toString());
+
 const textFields = templates =>
   allUniqueProperties(templates).filter(
     property => property.type === 'text' || property.type === 'markdown'
   );
 
 export default {
+  getInheritedProperty,
   comonProperties,
   comonFilters,
   defaultFilters,

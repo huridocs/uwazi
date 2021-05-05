@@ -90,10 +90,7 @@ describe('multi edit path', () => {
     nightmare
       .waitToClick(selectors.libraryView.libraryFirstDocument)
       .shiftClick(selectors.libraryView.libraryThirdDocument)
-      .waitToClick(selectors.uploadsView.multiPublishButton)
-      .waitToClick(selectors.uploadsView.acceptPublishModel)
-      .waitToClick('.alert.alert-success')
-      .waitToDisapear('.alert.alert-success')
+      .shareWithPublic('multiShareButton')
       .then(() => {
         done();
       })
