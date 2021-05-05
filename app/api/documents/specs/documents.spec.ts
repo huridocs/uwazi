@@ -6,10 +6,9 @@ import relationships from 'api/relationships';
 import entities from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import { files } from 'api/files';
 import { fileExists, uploadsPath } from 'api/files/filesystem';
 
-import { fixtures, document1 } from './fixtures';
+import { fixtures } from './fixtures';
 import { documents } from '../documents.js';
 
 describe('documents', () => {
@@ -99,24 +98,6 @@ describe('documents', () => {
       expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
       expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
       expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
-    });
-  });
-
-  describe('pdfInfo', () => {
-    it('should save pdfInfo and return it or just return it if already existed', async () => {
-      const testingPdfInfo = {
-        1: { chars: 10 },
-        2: { chars: 20 },
-      };
-      const pdfInfoNOTPresent = await documents.savePDFInfo(document1, testingPdfInfo);
-      expect(pdfInfoNOTPresent.pdfInfo).toBe(testingPdfInfo);
-      const pdfInfoStored = await files.get(document1, '+pdfInfo');
-      expect(pdfInfoStored[0].pdfInfo).toEqual(testingPdfInfo);
-
-      spyOn(files, 'save').and.callThrough();
-      const pdfInfoPresent = await documents.savePDFInfo(document1, testingPdfInfo);
-      expect(files.save).not.toHaveBeenCalled();
-      expect(pdfInfoPresent.pdfInfo).toEqual(testingPdfInfo);
     });
   });
 });

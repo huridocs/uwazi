@@ -9,7 +9,7 @@ import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { browserHistory } from 'react-router';
 import { Icon } from 'UI';
 import SearchTips from 'app/Library/components/SearchTips';
-import { toUrlParams } from '../../../shared/JSONRequest';
+import { toUrlParams } from 'shared/JSONRequest';
 import SnippetList from './SnippetList';
 
 export class SearchText extends Component {

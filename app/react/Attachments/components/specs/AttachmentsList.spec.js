@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
+import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
 import AttachmentsList from '../AttachmentsList';
 
 describe('AttachmentsList', () => {
@@ -22,6 +23,7 @@ describe('AttachmentsList', () => {
       isDocumentAttachments: false,
       readOnly: false,
       storeKey: 'storeKey',
+      entity: { sharedId: 'parentId' },
     };
   });
 
@@ -58,5 +60,16 @@ describe('AttachmentsList', () => {
       render();
       expect(component).toMatchSnapshot();
     });
+  });
+
+  it('should check authorization roles to upload files', () => {
+    render();
+    const authorizationProps = component
+      .find(UploadSupportingFile)
+      .parents()
+      .at(1)
+      .props();
+    expect(authorizationProps.roles).toEqual(['admin', 'editor']);
+    expect(authorizationProps.orWriteAccessTo).toEqual([props.entity]);
   });
 });

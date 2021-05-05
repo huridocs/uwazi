@@ -11,6 +11,7 @@ describe('library helper', () => {
         { name: 'date', filter: true, type: 'text' },
         { name: 'language', filter: true, type: 'text' },
         { name: 'rich', filter: true, type: 'markdown' },
+        { name: 'id', filter: true, type: 'generatedid' },
       ],
     },
     {
@@ -96,19 +97,6 @@ describe('library helper', () => {
       expect(state.search.searchTerm).toBe('searchTerm');
       expect(state.search.order).toBe('order');
       expect(state.search.sort).toBe('sort');
-    });
-
-    it('should populate filters with default values when they are not set', () => {
-      const query = {
-        searchTerm: 'searchTerm',
-        types: ['1'],
-        filters: {},
-      };
-
-      const state = libraryHelper.URLQueryToState(query, templates);
-      expect(state.search.filters.country).toEqual({});
-      expect(state.search.filters.language).toBe('');
-      expect(state.search.filters.rich).toBe('');
     });
   });
 

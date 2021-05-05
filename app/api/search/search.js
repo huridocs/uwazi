@@ -5,6 +5,8 @@ import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { checkWritePermissions } from 'shared/permissionsUtils';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entities from '../entities';
@@ -23,36 +25,28 @@ function processFilters(filters, properties) {
     }
 
     let { type } = property;
-    const value = filters[filterName];
-    if (['date', 'multidate', 'numeric'].includes(property.type)) {
+    let value = filters[filterName];
+
+    if (property.inherit) {
+      ({ type } = propertiesHelper.getInheritedProperty(property, properties));
+    }
+
+    if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
+      value = value.toLowerCase();
+    }
+    if (['date', 'multidate', 'numeric'].includes(type)) {
       type = 'range';
     }
-    if (['select', 'multiselect', 'relationship'].includes(property.type)) {
+    if (['select', 'multiselect', 'relationship'].includes(type)) {
       type = 'multiselect';
     }
-    if (property.type === 'multidaterange' || property.type === 'daterange') {
+    if (type === 'multidaterange' || type === 'daterange') {
       type = 'daterange';
     }
 
-    if (['multidaterange', 'daterange', 'date', 'multidate'].includes(property.type)) {
+    if (['multidaterange', 'daterange', 'date', 'multidate'].includes(type)) {
       value.from = date.descriptionToTimestamp(value.from);
       value.to = date.descriptionToTimestamp(value.to);
-    }
-
-    if (property.type === 'relationshipfilter') {
-      return [
-        ...res,
-        {
-          ...property,
-          value,
-          suggested,
-          type,
-          filters: property.filters.map(f => ({
-            ...f,
-            name: `${f.name}.value`,
-          })),
-        },
-      ];
     }
 
     return [
@@ -62,22 +56,30 @@ function processFilters(filters, properties) {
         value,
         suggested,
         type,
-        name: `${property.name}.value`,
+        name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
       },
     ];
   }, []);
 }
 
-function aggregationProperties(properties) {
-  return properties
-    .filter(
-      property =>
-        property.type === 'select' ||
-        property.type === 'multiselect' ||
-        property.type === 'relationship' ||
-        property.type === 'nested'
-    )
-    .map(property => ({ ...property, name: `${property.name}.value` }));
+function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
+  return propertiesToBeAggregated
+    .filter(property => {
+      const type = property.inherit
+        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).type
+        : property.type;
+
+      return (
+        type === 'select' || type === 'multiselect' || type === 'relationship' || type === 'nested'
+      );
+    })
+    .map(property => ({
+      ...property,
+      name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
+      content: property.inherit
+        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).content
+        : property.content,
+    }));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -154,8 +156,9 @@ function searchGeolocation(documentsQuery, templates) {
 
       if (prop.type === 'relationship' && prop.inherit) {
         const contentTemplate = templates.find(t => t._id.toString() === prop.content.toString());
-        const inheritedProperty = contentTemplate.properties.find(
-          p => p._id.toString() === prop.inheritProperty.toString()
+        const inheritedProperty = propertiesHelper.getInheritedProperty(
+          prop,
+          contentTemplate.properties
         );
         if (inheritedProperty.type === 'geolocation') {
           geolocationProperties.push(`${prop.name}`);
@@ -175,7 +178,7 @@ function searchGeolocation(documentsQuery, templates) {
 
 const _sanitizeAgregationNames = aggregations =>
   Object.keys(aggregations).reduce((allAggregations, key) => {
-    const sanitizedKey = key.replace('.value', '');
+    const sanitizedKey = key.replace('.inheritedValue.value', '').replace('.value', '');
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 
@@ -243,14 +246,17 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (
       !aggregations[key].buckets ||
-      key === '_types' ||
       aggregations[key].type === 'nested' ||
-      key === 'generatedToc'
+      ['_types', 'generatedToc', 'permissions'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
-    const property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
+    let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
+
+    if (property.inherit) {
+      property = propertiesHelper.getInheritedProperty(property, properties);
+    }
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
@@ -273,6 +279,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       .filter(item => item);
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
+
     if (dictionary && dictionary.values.find(v => v.values)) {
       denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
         denormalizedAggregation,
@@ -293,6 +300,14 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       aggregation.buckets = Object.keys(aggregation.buckets).map(key => ({
         key,
         ...aggregation.buckets[key],
+      }));
+    }
+
+    //permissions
+    if (aggregationKey === 'permissions') {
+      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
+        key: b.key,
+        filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
       }));
     }
 
@@ -327,6 +342,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     result[aggregationKey] = aggregation;
   });
+
   return result;
 };
 
@@ -374,12 +390,22 @@ const _sanitizeAggregations = async (
   return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
+const permissionsInformation = (hit, user) => {
+  const { permissions } = hit._source;
+
+  const canWrite = checkWritePermissions(user, permissions);
+
+  return canWrite ? permissions : undefined;
+};
+
 const processResponse = async (response, templates, dictionaries, language, filters) => {
+  const user = permissionsContext.getUserInContext();
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
+    result.permissions = permissionsInformation(hit, user);
     return result;
   });
 
@@ -404,12 +430,16 @@ const determineInheritedProperties = templates =>
   templates.reduce((memo, template) => {
     const inheritedProperties = memo;
     template.properties.forEach(property => {
-      if (property.type === 'relationship' && property.inherit) {
+      if (
+        property.type === 'relationship' &&
+        property.inherit &&
+        property.inherit.type === 'geolocation'
+      ) {
         const contentTemplate = templates.find(
           t => t._id.toString() === property.content.toString()
         );
         const inheritedProperty = contentTemplate.properties.find(
-          p => p.type === 'geolocation' && p._id.toString() === property.inheritProperty.toString()
+          p => p._id.toString() === property.inherit.property.toString()
         );
         if (inheritedProperty) {
           inheritedProperties[template._id.toString()] =
@@ -542,7 +572,7 @@ const _getTextFields = (query, templates) =>
   propertiesHelper
     .allUniqueProperties(templates)
     .map(prop =>
-      ['text', 'markdown'].includes(prop.type)
+      ['text', 'markdown', 'generatedid'].includes(prop.type)
         ? `metadata.${prop.name}.value`
         : `metadata.${prop.name}.label`
     )
@@ -561,11 +591,14 @@ const buildQuery = async (query, language, user, resources) => {
   const searchTextType = query.searchTerm
     ? await searchTypeFromSearchTermValidity(query.searchTerm)
     : 'query_string';
+  const onlyPublished = query.published || !(query.includeUnpublished || query.unpublished);
   const queryBuilder = documentQueryBuilder()
+    .include(query.include)
     .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
-    .language(language);
+    .language(language)
+    .filterByPermissions(onlyPublished);
 
   if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);
@@ -605,7 +638,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = aggregationProperties(properties);
+  const aggregations = aggregationProperties(properties, allUniqueProps);
 
   const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
   // this is where the query filters are built
@@ -626,8 +659,12 @@ const search = {
       searchGeolocation(queryBuilder, templates);
     }
 
+    if (query.aggregatePermissionsByLevel) {
+      queryBuilder.permissionsLevelAgreggations();
+    }
+
     if (query.aggregateGeneratedToc) {
-      queryBuilder.generatedTOCAggregations();
+      queryBuilder.generatedTocAggregations();
     }
 
     return elastic
@@ -766,6 +803,7 @@ const search = {
       .filter(o => o.results);
 
     const filteredOptions = filterOptions(searchTerm, options);
+
     return {
       options: filteredOptions.slice(0, preloadOptionsLimit),
       count: filteredOptions.length,

@@ -5,6 +5,9 @@ const templateId = db.id();
 const relatedTo = db.id();
 const templateToBeInherited = db.id();
 const propertyToBeInherited = db.id();
+const thesauriId1 = db.id();
+const thesauriId2 = db.id();
+const thesauriId4 = db.id();
 
 export default {
   templates: [
@@ -31,8 +34,10 @@ export default {
           label: 'Inherit',
           relationtype: relatedTo,
           content: templateToBeInherited,
-          inherit: true,
-          inheritProperty: propertyToBeInherited,
+          inherit: {
+            property: propertyToBeInherited,
+            type: propertyTypes.text,
+          },
         },
       ],
     },
@@ -44,13 +49,13 @@ export default {
           type: propertyTypes.select,
           name: 'sharedproperty1',
           label: 'sharedProperty1',
-          content: 'thesauriId1',
+          content: thesauriId1.toString(),
         },
         {
           type: propertyTypes.select,
           name: 'sharedproperty2',
           label: 'sharedProperty2',
-          content: 'thesauriId2',
+          content: thesauriId2.toString(),
         },
         {
           type: propertyTypes.numeric,
@@ -68,7 +73,7 @@ export default {
           name: 'validproperty4',
           label: 'validProperty4',
           type: propertyTypes.multiselect,
-          content: 'thesauriId4',
+          content: thesauriId4.toString(),
         },
         {
           name: 'validpropertydate',
@@ -89,7 +94,7 @@ export default {
           name: 'validpropertymultiselect',
           label: 'validPropertyMultiSelect',
           type: propertyTypes.select,
-          content: 'thesauriId4',
+          content: thesauriId4.toString(),
         },
         {
           name: 'validpropertymultidate',
@@ -113,6 +118,18 @@ export default {
     },
   ],
   relationtypes: [{ _id: relatedTo, name: 'related to' }],
+  dictionaries: [
+    { _id: thesauriId1, name: 'options' },
+    { _id: thesauriId2, name: 'options' },
+    { _id: thesauriId4, name: 'options' },
+  ],
 };
 
-export { templateId, templateToBeInherited, propertyToBeInherited };
+export {
+  templateId,
+  templateToBeInherited,
+  propertyToBeInherited,
+  thesauriId1,
+  thesauriId2,
+  thesauriId4,
+};

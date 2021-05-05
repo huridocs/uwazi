@@ -3,6 +3,7 @@ import React from 'react';
 import { caseTemplate, matterTemplate } from 'app/Timeline/utils/timelineFixedData';
 import { shallow } from 'enzyme';
 
+import { FormatMetadata } from 'app/Metadata/containers/FormatMetadata';
 import { ShowMetadata } from '../ShowMetadata';
 
 describe('Metadata', () => {
@@ -18,7 +19,12 @@ describe('Metadata', () => {
     props.entity = {};
 
     const component = shallow(<ShowMetadata {...props} />);
-    expect(component).toMatchSnapshot();
+    expect(
+      component
+        .find('.metadata-timeline-viewer')
+        .parent()
+        .props().if
+    ).toBe(false);
   });
 
   it('should render templateType when showType', () => {
@@ -47,5 +53,12 @@ describe('Metadata', () => {
 
     component = shallow(<ShowMetadata {...props} />).find('.metadata-timeline-viewer');
     expect(component).toMatchSnapshot();
+  });
+
+  it('should hide the label if the property is configured to', () => {
+    const component = shallow(<ShowMetadata {...props} />);
+    const callback = component.find(FormatMetadata).props().renderLabel;
+    expect(callback({ noLabel: true }, 'label')).toBeFalsy();
+    expect(callback({}, 'label')).toBe('label');
   });
 });

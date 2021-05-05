@@ -1,6 +1,21 @@
 import documentProperties from './document_properties';
 import { textSortField } from './mappings';
 
+const PermissionProperties = {
+  type: 'nested',
+  properties: {
+    refId: {
+      type: 'keyword',
+    },
+    level: {
+      type: 'keyword',
+    },
+    type: {
+      type: 'keyword',
+    },
+  },
+};
+
 const properties = {
   documents: documentProperties,
   '@timestamp': { type: 'date', doc_values: true },
@@ -73,6 +88,7 @@ const properties = {
   user: {
     type: 'keyword',
   },
+  permissions: PermissionProperties,
 };
 
 export default properties;

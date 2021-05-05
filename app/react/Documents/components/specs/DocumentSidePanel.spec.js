@@ -39,8 +39,16 @@ describe('DocumentSidePanel', () => {
       connections: Immutable.fromJS(['connections']),
       formPath: 'formPath',
       connectionsGroups: Immutable.fromJS([
-        { templates: [{ count: 1 }, { count: 2 }] },
-        { templates: [{ count: 3 }, { count: 4 }] },
+        { key: 'connection1', templates: [{ count: 1 }, { count: 2 }] },
+        { key: 'connection2', templates: [{ count: 3 }, { count: 4 }] },
+      ]),
+      hubs: Immutable.fromJS([
+        {
+          hub: '1',
+          rightRelationships: [
+            { template: 'connection1', relationships: [{ entityData: { template: 't1' } }] },
+          ],
+        },
       ]),
       open: true,
       defaultLanguage: 'es',

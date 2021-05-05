@@ -8,9 +8,13 @@ export default (app: Application) => {
   app.get(
     '/api/usergroups',
     needsAuthorization(['admin']),
-    async (_req: Request, res: Response) => {
-      const groups = await userGroups.get({});
-      res.json(groups);
+    async (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        const groups = await userGroups.get({});
+        res.json(groups);
+      } catch (err) {
+        next(err);
+      }
     }
   );
 
@@ -27,8 +31,8 @@ export default (app: Application) => {
       try {
         const userGroup = await userGroups.save(req.body);
         res.json(userGroup);
-      } catch (e) {
-        next(e);
+      } catch (err) {
+        next(err);
       }
     }
   );
@@ -46,9 +50,13 @@ export default (app: Application) => {
         },
       },
     }),
-    async (req: Request, res: Response) => {
-      const deletedGroup = await userGroups.delete(req.query);
-      res.json(deletedGroup);
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const deletedGroup = await userGroups.delete(req.query);
+        res.json(deletedGroup);
+      } catch (err) {
+        next(err);
+      }
     }
   );
 };

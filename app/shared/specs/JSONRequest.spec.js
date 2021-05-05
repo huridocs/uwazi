@@ -1,4 +1,5 @@
 import backend from 'fetch-mock';
+import qs from 'qs';
 
 import request from '../JSONRequest';
 
@@ -172,6 +173,23 @@ describe('JSONRequest', () => {
             done();
           })
           .catch(done.fail);
+      });
+
+      it('should not transform data if its already a string', async () => {
+        backend.get(
+          `http://localhost:3000/api/withParams?${qs.stringify({ param1: 'param1' })}`,
+          JSON.stringify({ response: 'get with params' })
+        );
+        const response = await request.get(
+          'http://localhost:3000/api/withParams',
+          qs.stringify({
+            param1: 'param1',
+          })
+        );
+
+        expect(response.status).toBe(200);
+        expect(response.json).toEqual({ response: 'get with params' });
+        expect(backend.lastOptions().body).not.toBeDefined();
       });
     });
 

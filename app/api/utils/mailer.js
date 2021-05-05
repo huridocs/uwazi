@@ -1,6 +1,6 @@
-import nodemailer from 'nodemailer';
 import mailerConfig from 'api/config/mailer';
 import settings from 'api/settings/settings';
+import { getMailerTransport } from 'api/utils/mailerTransport';
 
 let transporterOptions = {
   sendmail: true,
@@ -24,7 +24,7 @@ export default {
         .get()
         .then(config => {
           try {
-            transporter = nodemailer.createTransport(
+            transporter = getMailerTransport().createTransport(
               config.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions
             );
             transporter.sendMail(mailOptions, (error, info) => {

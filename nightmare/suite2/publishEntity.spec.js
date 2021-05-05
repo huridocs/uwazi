@@ -37,14 +37,7 @@ describe('publish entity path', () => {
       .waitToClick(selectors.newEntity.form.suporPowers.laserBeam)
       .pickToday(selectors.newEntity.form.firstSighting)
       .click(selectors.uploadsView.saveButton)
-      .waitToClick(selectors.uploadsView.publishButton)
-      .waitToClick(selectors.uploadsView.acceptPublishModel)
-      .wait('.alert.alert-success')
-      .isVisible('.alert.alert-success')
-      .then(result => {
-        expect(result).toBe(true);
-        return nightmare.waitToClick('.alert.alert-success');
-      })
+      .shareWithPublic('shareButton')
       .then(done);
   });
 
@@ -147,8 +140,10 @@ describe('publish entity path', () => {
   it('should unpublish the entity', async () => {
     const cards = await nightmare.library
       .openCardSidePanel('scarecrow')
-      .clickLink('Unpublish')
-      .clickLink('Accept')
+      .waitToClick(selectors.uploadsView.shareButton)
+      .wait(500)
+      .select('.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select', 'delete')
+      .waitToClick('.share-modal  button.confirm-button')
       .waitForTheEntityToBeIndexed()
       .waitToClick(selectors.navigation.uploadsNavButton)
       .wait(selectors.uploadsView.newEntityButtom)

@@ -30,7 +30,9 @@ exports[`Geolocation should hide clear fields button  when latitude and longitud
       className="form-group half-width"
     >
       <label>
-        Latitude
+        <Connect(Translate)>
+          Latitude
+        </Connect(Translate)>
       </label>
       <input
         className="form-control"
@@ -45,7 +47,9 @@ exports[`Geolocation should hide clear fields button  when latitude and longitud
       className="form-group half-width"
     >
       <label>
-        Longitude
+        <Connect(Translate)>
+          Longitude
+        </Connect(Translate)>
       </label>
       <input
         className="form-control"
@@ -97,7 +101,9 @@ exports[`Geolocation should render button to clear fields when longitude and lat
       className="form-group half-width"
     >
       <label>
-        Latitude
+        <Connect(Translate)>
+          Latitude
+        </Connect(Translate)>
       </label>
       <input
         className="form-control"
@@ -112,7 +118,9 @@ exports[`Geolocation should render button to clear fields when longitude and lat
       className="form-group half-width"
     >
       <label>
-        Longitude
+        <Connect(Translate)>
+          Longitude
+        </Connect(Translate)>
       </label>
       <input
         className="form-control"

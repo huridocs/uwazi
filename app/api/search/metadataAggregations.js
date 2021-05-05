@@ -1,4 +1,5 @@
 import { preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const aggregation = (key, should, filters) => ({
   terms: {
@@ -174,4 +175,54 @@ export const generatedTocAggregations = baseQuery => {
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
   return aggregation(path, should, filters);
+};
+
+export const permissionsLevelAgreggations = baseQuery => {
+  const path = 'permissions.level';
+  const filters = extractFilters(baseQuery, path);
+  const { should } = baseQuery.query.bool;
+
+  const baseFilters = filters.filter(f => !(f.nested && f.nested.path === 'permissions'));
+
+  return {
+    filter: {
+      bool: {
+        should,
+        filter: baseFilters,
+      },
+    },
+    aggregations: {
+      nestedPermissions: {
+        nested: { path: 'permissions' },
+        aggregations: {
+          filtered: {
+            terms: {
+              field: path,
+              size: preloadOptionsSearch,
+            },
+            aggregations: {
+              filteredByUser: {
+                filter: {
+                  bool: {
+                    filter: [
+                      {
+                        terms: {
+                          'permissions.refId': permissionsContext.permissionsRefIds(),
+                        },
+                      },
+                    ],
+                  },
+                },
+                aggregations: {
+                  uniqueEntities: {
+                    reverse_nested: {},
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
 };

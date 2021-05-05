@@ -5,9 +5,10 @@ import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { RequestParams } from 'app/utils/RequestParams';
-import emptyTemplate from '../helpers/defaultTemplate';
 import searchAPI from 'app/Search/SearchAPI';
 import { actions } from 'app/BasicReducer';
+import { generateID } from 'shared/IDGenerator';
+import emptyTemplate from '../helpers/defaultTemplate';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -21,6 +22,26 @@ const propertyExists = (property, previousTemplate) =>
     )
   );
 
+const defaultValueByType = (type, options) => {
+  switch (type) {
+    case 'daterange':
+      return { from: null, to: null };
+    case 'generatedid':
+      return !options.resetExisting ? generateID(3, 4, 4) : undefined;
+    case 'multiselect':
+    case 'relationship':
+    case 'nested':
+    case 'multidate':
+    case 'multidaterange':
+      return [];
+    default:
+      if (!['date', 'geolocation', 'link'].includes(type)) {
+        return '';
+      }
+      return undefined;
+  }
+};
+
 export const resetMetadata = (metadata, template, options, previousTemplate) => {
   const resetedMetadata = {};
   template.properties.forEach(property => {
@@ -33,20 +54,28 @@ export const resetMetadata = (metadata, template, options, previousTemplate) => 
     if (!resetValue) {
       resetedMetadata[property.name] = metadata[property.name];
     }
-    if (resetValue && !['date', 'geolocation', 'link'].includes(type)) {
-      resetedMetadata[name] = '';
-    }
-    if (resetValue && type === 'daterange') {
-      resetedMetadata[name] = { from: null, to: null };
-    }
-    if (
-      resetValue &&
-      ['multiselect', 'relationship', 'nested', 'multidate', 'multidaterange'].includes(type)
-    ) {
-      resetedMetadata[name] = [];
+    if (resetValue) {
+      const defaultValue = defaultValueByType(type, options);
+      if (defaultValue !== undefined) resetedMetadata[name] = defaultValue;
     }
   });
   return resetedMetadata;
+};
+
+const getPropertyValue = (property, metadataProperty) => {
+  switch (property.type) {
+    case 'multiselect':
+    case 'multidaterange':
+    case 'nested':
+    case 'relationship':
+    case 'multidate':
+    case 'geolocation':
+      return metadataProperty.map(v => v.value);
+    case 'generatedid':
+      return typeof metadataProperty === 'string' ? metadataProperty : metadataProperty[0].value;
+    default:
+      return metadataProperty[0].value;
+  }
 };
 
 export const UnwrapMetadataObject = (MetadataObject, Template) =>
@@ -54,22 +83,9 @@ export const UnwrapMetadataObject = (MetadataObject, Template) =>
     if (!MetadataObject[key].length) {
       return UnwrapedMO;
     }
-
     const property = Template.properties.find(p => p.name === key);
-
-    const isMultiProperty = [
-      'multiselect',
-      'multidaterange',
-      'nested',
-      'relationship',
-      'multidate',
-      'geolocation',
-    ].includes(property.type);
-
-    return {
-      ...UnwrapedMO,
-      [key]: isMultiProperty ? MetadataObject[key].map(v => v.value) : MetadataObject[key][0].value,
-    };
+    const propertyValue = getPropertyValue(property, MetadataObject[key]);
+    return { ...UnwrapedMO, [key]: propertyValue };
   }, {});
 
 export function loadFetchedInReduxForm(form, entity, templates) {

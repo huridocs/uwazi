@@ -1,5 +1,5 @@
 import HtmlParser from 'htmlparser2/lib/Parser';
-import queryString from 'query-string';
+import qs from 'qs';
 import rison from 'rison-node';
 import Big from 'big.js';
 
@@ -8,7 +8,7 @@ import api from 'app/utils/api';
 import entitiesApi from 'app/Entities/EntitiesAPI';
 
 const conformUrl = ({ url = '', geolocation = false }) => {
-  const { q } = queryString.parse(url.substring(url.indexOf('?')));
+  const { q } = qs.parse(url.substring(url.indexOf('?')), { ignoreQueryPrefix: true });
 
   if (!q) {
     const defaultValue = geolocation

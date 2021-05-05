@@ -5,6 +5,8 @@ import { ObjectIdSchema, MetadataSchema } from 'shared/types/commonTypes';
 
 import { FileType } from 'shared/types/fileType';
 
+import { PermissionSchema } from 'shared/types/permissionType';
+
 export interface EntitySchema {
   _id?: ObjectIdSchema;
   sharedId?: string;
@@ -23,6 +25,7 @@ export interface EntitySchema {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
+  permissions?: PermissionSchema[];
   [k: string]: unknown | undefined;
 }
 
@@ -44,6 +47,11 @@ export type EntityWithFilesSchema = {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
+  permissions?: {
+    refId: ObjectIdSchema;
+    type: 'user' | 'group' | 'public';
+    level: 'read' | 'write' | 'mixed';
+  }[];
   [k: string]: unknown | undefined;
 } & {
   attachments?: FileType[];
