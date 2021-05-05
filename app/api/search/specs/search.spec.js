@@ -840,7 +840,7 @@ describe('search', () => {
     const resultsFound = await search.search(
       {
         types: [ids.templateMetadata2],
-        filters: { auto_id: { value: 'xyz1234' } },
+        filters: { auto_id: 'XYZ1234' },
         published: true,
       },
       'en'

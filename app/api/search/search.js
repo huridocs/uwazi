@@ -23,7 +23,10 @@ function processFilters(filters, properties) {
     }
 
     let { type } = property;
-    const value = filters[filterName];
+    let value = filters[filterName];
+    if (['text', 'markdown', 'generatedid'].includes(property.type) && typeof value === 'string') {
+      value = value.toLowerCase();
+    }
     if (['date', 'multidate', 'numeric'].includes(property.type)) {
       type = 'range';
     }
