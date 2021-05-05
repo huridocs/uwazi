@@ -69,6 +69,10 @@ export interface MetadataObjectSchema {
   suggestion_confidence?: number;
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
+  inheritedValue?: {
+    [k: string]: unknown | undefined;
+  };
+  inheritedType?: string;
   [k: string]: unknown | undefined;
 }
 
@@ -111,7 +115,8 @@ export interface PropertySchema {
     | 'preview'
     | 'relationship'
     | 'select'
-    | 'text';
+    | 'text'
+    | 'generatedid';
   prioritySorting?: boolean;
   content?: string;
   relationType?: string;

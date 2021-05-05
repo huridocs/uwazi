@@ -50,7 +50,10 @@
   color: $c-black;
   border-color: $c-black;
 }
-
+.btn-outline-warning {
+  color: $c-warning;
+  border-color: $c-warning;
+}
 .btn-hover-success:hover {
   background-color: $c-success;
   border-color: $c-success-dark;

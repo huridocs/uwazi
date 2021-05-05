@@ -36,7 +36,6 @@ import EditThesauri from 'app/Thesauri/EditThesauri';
 import NewThesauri from 'app/Thesauri/NewThesauri';
 import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import Uploads from 'app/Uploads/UploadsRoute';
-import { EditUser, NewUser, Users } from 'app/Users';
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
@@ -44,6 +43,7 @@ import ViewerRoute from 'app/Viewer/ViewerRoute';
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 
+import { UserManagement } from 'app/Users/UserManagement';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
 
@@ -129,11 +129,7 @@ const routes = (
       <Route path="2fa" component={Configure2fa} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
-      <Route path="users">
-        <IndexRoute component={Users} />
-        <Route path="new" component={NewUser} />
-        <Route path="edit/:userId" component={EditUser} />
-      </Route>
+      <Route path="users" component={UserManagement} />
       <Route path="pages">
         <IndexRoute component={Pages} />
         <Route path="new" component={NewPage} />
@@ -176,6 +172,7 @@ const routes = (
     <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
     <Route path="entity/:sharedId" component={ViewerRoute} onEnter={onEnter} />
     <Route path="page/:sharedId" component={PageView} onEnter={onEnter} />
+    <Route path="page/:sharedId/:slug" component={PageView} onEnter={onEnter} />
     <Route
       path="semanticsearch/:searchId"
       component={SemanticSearchResultsView}

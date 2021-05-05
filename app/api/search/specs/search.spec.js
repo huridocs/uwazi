@@ -2,21 +2,30 @@
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
+const editorUser = { _id: 'userId', role: 'editor' };
+
 describe('search', () => {
   let result;
+  const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
     result = elasticResult().toObject();
     const elasticIndex = 'search_index_test';
-    await db.clearAllAndLoad(elasticFixtures, elasticIndex);
+    await db.setupFixturesAndContext(elasticFixtures, elasticIndex);
   }, fixturesTimeOut);
+
+  beforeEach(async () => {
+    userFactory.mockEditorUser();
+  });
 
   afterAll(async () => {
     await db.disconnect();
+    userFactory.restore();
   });
 
   describe('searchSnippets', () => {
@@ -30,8 +39,12 @@ describe('search', () => {
     });
 
     it('perform a search on metadata and fullText and return the snippets', async () => {
-      const user = { _id: 'userId' };
-      const snippets = await search.searchSnippets('gargoyles', ids.metadataSnippets, 'en', user);
+      const snippets = await search.searchSnippets(
+        'gargoyles',
+        ids.metadataSnippets,
+        'en',
+        editorUser
+      );
 
       const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
       const fieldSnippet = snippets.metadata.find(
@@ -47,17 +60,17 @@ describe('search', () => {
     });
 
     it('should include unpublished documents if logged in', async () => {
-      const user = { _id: 'userId' };
       const snippets = await search.searchSnippets(
         'unpublished',
         'unpublishedSharedId',
         'en',
-        user
+        editorUser
       );
       expect(snippets.fullText.length).toBe(1);
     });
 
     it('should not include unpublished if not logged in', async () => {
+      userFactory.mock(undefined);
       const snippets = await search.searchSnippets(
         'unpublished',
         'unpublishedSharedId',
@@ -69,6 +82,7 @@ describe('search', () => {
 
     describe('when document is not matched', () => {
       it('should return snippet object with 0 count and empty arrays', done => {
+        userFactory.mock(undefined);
         search
           .searchSnippets('not matching string', ids.batmanFinishes, 'es')
           .then(snippets => {
@@ -85,6 +99,7 @@ describe('search', () => {
 
     describe('when searchTerm is empty', () => {
       it('should return empty array', done => {
+        userFactory.mock(undefined);
         search
           .searchSnippets('', ids.batmanFinishes, 'es')
           .then(snippets => {
@@ -97,6 +112,7 @@ describe('search', () => {
 
     it('should return a simple query string for no valid lucene syntax', async () => {
       try {
+        userFactory.mock(undefined);
         await search.searchSnippets('batman OR', ids.batmanFinishes, 'es');
       } catch (e) {
         fail('should not throw an exception', e.message);
@@ -105,6 +121,7 @@ describe('search', () => {
   });
 
   it('should perform a fullTextSearch on passed fields', async () => {
+    userFactory.mock(undefined);
     const [resultsNotFound, resultsFound] = await Promise.all([
       search.search({ searchTerm: 'spanish', fields: ['title'] }, 'es'),
       search.search({ searchTerm: 'Batman', fields: ['title'] }, 'es'),
@@ -115,6 +132,7 @@ describe('search', () => {
   });
 
   it('should perform a fullTextSearch on fullText and title', done => {
+    userFactory.mock(undefined);
     Promise.all([
       search.search({ searchTerm: 'spanish' }, 'es'),
       search.search({ searchTerm: 'english' }, 'es'),
@@ -173,6 +191,7 @@ describe('search', () => {
   });
 
   it('should return aggregations when searching by 2 terms', done => {
+    userFactory.mock(undefined);
     search
       .search({ searchTerm: 'english document' }, 'es')
       .then(response => {
@@ -186,6 +205,7 @@ describe('search', () => {
   });
 
   it('should match entities related somehow with other entities with a title that is the search term', async () => {
+    userFactory.mock(undefined);
     const { rows } = await search.search({ searchTerm: 'egypt' }, 'en');
 
     expect(rows.length).toBe(5);
@@ -200,6 +220,7 @@ describe('search', () => {
   });
 
   it('should limit the results', done => {
+    userFactory.mock(undefined);
     search.search({ searchTerm: '', limit: 1, sort: 'title' }, 'en').then(({ rows }) => {
       expect(rows.length).toBe(1);
       expect(rows[0].title).toBe('template1 title en');
@@ -208,6 +229,7 @@ describe('search', () => {
   });
 
   it('should return results from a given number', done => {
+    userFactory.mock(undefined);
     search.search({ searchTerm: '', limit: 1, sort: 'title', from: 1 }, 'en').then(({ rows }) => {
       expect(rows.length).toBe(1);
       expect(rows[0].title).toBe('Something');
@@ -216,6 +238,7 @@ describe('search', () => {
   });
 
   it('should filter by templates', done => {
+    userFactory.mock(undefined);
     Promise.all([
       search.search({ types: [ids.template1] }, 'es'),
       search.search({ types: [ids.template2] }, 'es'),
@@ -246,6 +269,7 @@ describe('search', () => {
   });
 
   it('should allow searching only within specific Ids', done => {
+    userFactory.mock(undefined);
     Promise.all([
       search.search({ ids: [ids.batmanBegins] }, 'es'),
       search.search({ ids: ids.batmanBegins }, 'en'),
@@ -265,6 +289,7 @@ describe('search', () => {
   });
 
   it('should return the label with the aggregations', async () => {
+    userFactory.mock(undefined);
     const response = await search.search(
       { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
       'en'
@@ -280,35 +305,27 @@ describe('search', () => {
     expect(response.aggregations.all.groupedDictionary.buckets[5].label).toBe('Any');
   });
 
-  it('should filter by metadata, and return template aggregations based on the filter the language and the published status', done => {
-    Promise.all([
-      search.search(
-        { types: [ids.templateMetadata1, ids.templateMetadata2], filters: { field1: 'joker' } },
-        'en'
-      ),
-      search.search(
-        { types: [ids.templateMetadata1, ids.templateMetadata2], unpublished: true },
-        'en',
-        { _id: 'user' }
-      ),
-    ])
-      .then(([joker, unpublished]) => {
-        expect(joker.rows.length).toBe(2);
+  it('should filter by metadata, and return template aggregations based on the filter the language and the published status', async () => {
+    userFactory.mock(undefined);
+    const joker = await search.search(
+      { types: [ids.templateMetadata1, ids.templateMetadata2], filters: { field1: 'joker' } },
+      'en'
+    );
 
-        const typesAggs = joker.aggregations.all._types.buckets;
-        expect(typesAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(2);
-        expect(typesAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
+    const unpublished = await search.search(
+      { types: [ids.templateMetadata1, ids.templateMetadata2], unpublished: true },
+      'en',
+      editorUser
+    );
+    expect(joker.rows.length).toBe(2);
 
-        const unpublishedAggs = unpublished.aggregations.all._types.buckets;
-        expect(unpublishedAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(
-          1
-        );
-        expect(unpublishedAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(
-          0
-        );
-        done();
-      })
-      .catch(catchErrors(done));
+    const typesAggs = joker.aggregations.all._types.buckets;
+    expect(typesAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(2);
+    expect(typesAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
+
+    const unpublishedAggs = unpublished.aggregations.all._types.buckets;
+    expect(unpublishedAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
+    expect(unpublishedAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
   });
 
   it('should filter by daterange metadata', async () => {
@@ -320,7 +337,7 @@ describe('search', () => {
         sort: 'title',
       },
       'en',
-      { _id: 'user' }
+      editorUser
     );
 
     expect(entities.rows.length).toBe(1);
@@ -334,7 +351,7 @@ describe('search', () => {
         sort: 'title',
       },
       'en',
-      { _id: 'user' }
+      editorUser
     );
 
     expect(entities.rows.length).toBe(2);
@@ -342,21 +359,20 @@ describe('search', () => {
     expect(entities.rows[1].title).toBe('Metadata2');
   });
 
-  it('should filter by fullText, and return template aggregations based on the filter the language and the published status', done => {
-    Promise.all([search.search({ searchTerm: 'spanish' }, 'es')])
-      .then(([matches]) => {
-        const matchesAggs = matches.aggregations.all._types.buckets;
-        expect(matchesAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(1);
-        expect(matchesAggs.find(a => a.key === ids.template2).filtered.doc_count).toBe(0);
-        expect(matchesAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(0);
-        expect(matchesAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
-        done();
-      })
-      .catch(catchErrors(done));
+  it('should filter by fullText, and return template aggregations based on the filter the language and the published status', async () => {
+    userFactory.mock(undefined);
+    const matches = await search.search({ searchTerm: 'spanish' }, 'es');
+
+    const matchesAggs = matches.aggregations.all._types.buckets;
+    expect(matchesAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(1);
+    expect(matchesAggs.find(a => a.key === ids.template2).filtered.doc_count).toBe(0);
+    expect(matchesAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(0);
+    expect(matchesAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
   });
 
   describe('when the query is for geolocation', () => {
     it('should set size to 9999', done => {
+      userFactory.mock(undefined);
       spyOn(elastic, 'search').and.returnValue(Promise.resolve(result));
       search.search({ searchTerm: '', geolocation: true }, 'en').then(() => {
         const elasticQuery = elastic.search.calls.argsFor(0)[0].body;
@@ -366,6 +382,7 @@ describe('search', () => {
     });
 
     it('should only get entities with geolocation fields ', done => {
+      userFactory.mock(undefined);
       search.search({ searchTerm: '', geolocation: true }, 'en').then(entities => {
         expect(entities.rows.length).toBe(3);
         done();
@@ -373,6 +390,7 @@ describe('search', () => {
     });
 
     it('should only select title and geolocation fields ', done => {
+      userFactory.mock(undefined);
       search.search({ searchTerm: '', geolocation: true }, 'en').then(({ rows }) => {
         expect(rows[0].title).toBeDefined();
         expect(rows[0].template).toBeDefined();
@@ -385,46 +403,47 @@ describe('search', () => {
   });
 
   describe('select aggregations', () => {
-    it('should return aggregations of select fields when filtering by types', done => {
-      Promise.all([
-        search.search({ types: [ids.templateMetadata1] }, 'en'),
-        search.search({ types: [ids.templateMetadata2] }, 'en'),
-        search.search({ types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en'),
-        search.search({ types: [ids.templateMetadata1], unpublished: true }, 'en', {
-          _id: 'user',
-        }),
-      ])
-        .then(([template1, template2, both, template1Unpublished]) => {
-          const template1Aggs = template1.aggregations.all.select1.buckets;
-          expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+    it('should return aggregations of select fields when filtering by types', async () => {
+      userFactory.mock(undefined);
+      const template1 = await search.search({ types: [ids.templateMetadata1] }, 'en');
+      const template2 = await search.search({ types: [ids.templateMetadata2] }, 'en');
+      const both = await search.search(
+        { types: [ids.templateMetadata1, ids.templateMetadata2] },
+        'en'
+      );
+      const template1Unpublished = await search.search(
+        { types: [ids.templateMetadata1], unpublished: true },
+        'en',
+        editorUser
+      );
+      const template1Aggs = template1.aggregations.all.select1.buckets;
+      expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
 
-          expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
-          expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
-          expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
+      expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
+      expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
+      expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
 
-          const template2Aggs = template2.aggregations.all.select1.buckets;
-          expect(template2Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
-          expect(template2Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
-          expect(template2Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
-          expect(template2Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(1);
+      const template2Aggs = template2.aggregations.all.select1.buckets;
+      expect(template2Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
+      expect(template2Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
+      expect(template2Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+      expect(template2Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(1);
 
-          const bothAggs = both.aggregations.all.select1.buckets;
-          expect(bothAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
-          expect(bothAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(2);
-          expect(bothAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
-          expect(bothAggs.find(a => a.key === 'any').filtered.doc_count).toBe(4);
+      const bothAggs = both.aggregations.all.select1.buckets;
+      expect(bothAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+      expect(bothAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(2);
+      expect(bothAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+      expect(bothAggs.find(a => a.key === 'any').filtered.doc_count).toBe(4);
 
-          const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
-          expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
-          expect(template1UnpubishedAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(0);
-          done();
-        })
-        .catch(catchErrors(done));
+      const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
+      expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
+      expect(template1UnpubishedAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(0);
     });
   });
 
   describe('multiselect aggregations', () => {
     it('should return aggregations of multiselect fields', done => {
+      userFactory.mock(undefined);
       Promise.all([
         search.search({ types: [ids.templateMetadata1] }, 'en'),
         search.search({ types: [ids.templateMetadata2] }, 'en'),
@@ -477,6 +496,7 @@ describe('search', () => {
 
     describe('allAggregations', () => {
       it('should return all aggregations', async () => {
+        userFactory.mock(undefined);
         const allAggregations = await search.search({ allAggregations: true }, 'en');
         const aggregationsIncluded = Object.keys(allAggregations.aggregations.all);
         expect(aggregationsIncluded).toMatchSnapshot();
@@ -485,6 +505,7 @@ describe('search', () => {
 
     describe('AND flag', () => {
       it('should not fail when no values sent', async () => {
+        userFactory.mock(undefined);
         const filtered = await search.search(
           {
             filters: { multiselect1: { and: true } },
@@ -497,6 +518,7 @@ describe('search', () => {
       });
 
       it('should restrict the results to those who have all values of the filter', done => {
+        userFactory.mock(undefined);
         search
           .search(
             {
@@ -527,6 +549,7 @@ describe('search', () => {
 
     describe('nested', () => {
       it('should search by nested and calculate nested aggregations of fields when filtering by types', done => {
+        userFactory.mock(undefined);
         Promise.all([
           search.search({ types: [ids.templateMetadata2] }, 'en'),
           search.search(
@@ -578,6 +601,7 @@ describe('search', () => {
       });
 
       it('should search second level of nested field', done => {
+        userFactory.mock(undefined);
         Promise.all([
           search.search(
             {
@@ -637,6 +661,7 @@ describe('search', () => {
 
       describe('strict nested filter', () => {
         it('should return only results with values selected in the same key', done => {
+          userFactory.mock(undefined);
           Promise.all([
             search.search(
               {
@@ -675,6 +700,7 @@ describe('search', () => {
   });
 
   it('should sort (ignoring case and leading whitespaces) if sort is present', done => {
+    userFactory.mock(undefined);
     Promise.all([
       search.search(
         { types: [ids.templateMetadata1, ids.templateMetadata2], order: 'asc', sort: 'title' },
@@ -701,6 +727,7 @@ describe('search', () => {
   });
 
   it('sort by metadata values', async () => {
+    userFactory.mock(undefined);
     const entities = await search.search(
       { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.date' },
       'en'
@@ -711,6 +738,7 @@ describe('search', () => {
   });
 
   it('sort by denormalized values', async () => {
+    userFactory.mock(undefined);
     const entities = await search.search(
       { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.select1' },
       'en'
@@ -727,12 +755,13 @@ describe('search', () => {
         includeUnpublished: true,
       },
       'es',
-      'user'
+      editorUser
     );
     expect(rows.length).toBe(5);
   });
 
   it('should not include unpublished documents if no user', async () => {
+    userFactory.mock(undefined);
     const { rows } = await search.search(
       {
         searchTerm: '',
@@ -748,6 +777,7 @@ describe('search', () => {
 
   describe('autocomplete()', () => {
     it('should return a list of options matching by title', async () => {
+      userFactory.mock(undefined);
       const { options } = await search.autocomplete('bat', 'en');
       expect(options.length).toBe(2);
       expect(options[0].value).toBeDefined();
@@ -757,6 +787,7 @@ describe('search', () => {
     });
 
     it('should filter by template', async () => {
+      userFactory.mock(undefined);
       const { options } = await search.autocomplete('en', 'en');
       expect(options.length).toBe(4);
       const { options: filteredByTemplateOptions } = await search.autocomplete('en', 'en', [
@@ -766,6 +797,7 @@ describe('search', () => {
     });
 
     it('should filter by unpublished', async () => {
+      userFactory.mock(undefined);
       const { options } = await search.autocomplete('unpublished', 'es');
       expect(options.length).toBe(0);
       const { options: optionsUnpublished } = await search.autocomplete(
@@ -791,6 +823,19 @@ describe('search', () => {
       const { rows } = await search.search(query, 'en');
       expect(rows).toEqual([expect.objectContaining({ title: 'Batman finishes en' })]);
     });
+
+    it('when values is empty should not filter', async () => {
+      const query = {
+        customFilters: {
+          generatedToc: {
+            values: [],
+          },
+        },
+      };
+
+      const { rows } = await search.search(query, 'en');
+      expect(rows.length).toBe(13);
+    });
   });
 
   describe('autocompleteAggregations()', () => {
@@ -800,14 +845,12 @@ describe('search', () => {
         filters: {},
       };
 
-      const user = { _id: ids.userId };
-
       const { options, count } = await search.autocompleteAggregations(
         query,
         'en',
         'multiselect1',
         'egyp',
-        user
+        editorUser
       );
 
       expect(options.length).toBe(1);
@@ -820,6 +863,7 @@ describe('search', () => {
 
   it('should return a simple query string for no valid lucene syntax', async () => {
     try {
+      userFactory.mock(undefined);
       await search.search({ searchTerm: 'spanish OR', fields: ['title'] }, 'es');
     } catch (e) {
       fail('should not throw an exception', e.message);
@@ -827,7 +871,25 @@ describe('search', () => {
   });
 
   it('should search a empty search term when the asked term is the * character', async () => {
+    userFactory.mock(undefined);
     const results = await search.search({ searchTerm: '*' }, 'es');
     expect(results.rows.length).toBe(4);
+  });
+
+  it('should search for generatedid properties values', async () => {
+    const resultsFound = await search.search({ searchTerm: 'ABC1234' }, 'en');
+    expect(resultsFound.rows.length).toBe(1);
+  });
+
+  it('should filter by generatedid property type', async () => {
+    const resultsFound = await search.search(
+      {
+        types: [ids.templateMetadata2],
+        filters: { auto_id: 'XYZ1234' },
+        published: true,
+      },
+      'en'
+    );
+    expect(resultsFound.rows.length).toBe(1);
   });
 });

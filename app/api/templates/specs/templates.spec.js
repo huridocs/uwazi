@@ -8,7 +8,8 @@ import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
-
+import { propertyTypes } from 'shared/propertyTypes';
+import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 import templates from '../templates';
 
 import fixtures, {
@@ -18,6 +19,8 @@ import fixtures, {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
+  thesauriId1,
+  thesauriId2,
 } from './fixtures.js';
 
 describe('templates', () => {
@@ -37,7 +40,13 @@ describe('templates', () => {
       const newTemplate = {
         name: 'created_template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [{ label: 'fieldLabel', type: 'text' }],
+        properties: [
+          { label: 'fieldLabel', type: 'text' },
+          {
+            label: 'Generated ID',
+            type: 'generatedid',
+          },
+        ],
       };
 
       const template = await templates.save(newTemplate);
@@ -117,8 +126,8 @@ describe('templates', () => {
           name: 'changed',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
-            { id: '1', type: 'select', content: 'new_thesauri', label: 'select3' },
-            { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' },
+            { id: '1', type: 'select', content: thesauriId2.toString(), label: 'select3' },
+            { id: '2', type: 'multiselect', content: thesauriId2.toString(), label: 'multiselect' },
           ],
         };
 
@@ -142,7 +151,13 @@ describe('templates', () => {
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { id: '1', type: 'text', name: 'text', label: 'Select5' },
-          { id: '2', type: 'select', name: 'select5', label: 'Text', content: 'a' },
+          {
+            id: '2',
+            type: 'select',
+            name: 'select5',
+            label: 'Text',
+            content: thesauriId1.toString(),
+          },
         ],
       };
 
@@ -187,7 +202,7 @@ describe('templates', () => {
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { label: 'label 1', type: 'text' },
-          { label: 'label 2', type: 'select', content: 's' },
+          { label: 'label 2', type: 'select', content: thesauriId1.toString() },
           { label: 'label 3', type: 'image' },
           { label: 'label 4', name: 'name', type: 'text' },
           { label: 'label 5', type: 'geolocation' },
@@ -243,12 +258,10 @@ describe('templates', () => {
         templates
           .save(toSave, 'en')
           .then(() => {
-            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(
-              toSave,
-              template,
-              'en',
-              true
-            );
+            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en', {
+              reindex: true,
+              generatedIdAdded: false,
+            });
             done();
           })
           .catch(catchErrors(done));
@@ -333,6 +346,40 @@ describe('templates', () => {
           .catch(done.fail);
       });
     });
+
+    describe('generatedId', () => {
+      const populateGeneratedIdByTemplateSpy = jest
+        .spyOn(generatedIdPropertyAutoFiller, 'populateGeneratedIdByTemplate')
+        .mockImplementation(() => Promise.resolve());
+
+      afterEach(() => {
+        populateGeneratedIdByTemplateSpy.mockReset();
+      });
+
+      describe('when there is a new property with generatedId type', () => {
+        it('should call populateGeneratedIdBTemplate to auto-fill values', async () => {
+          const templateToUpdate = {
+            _id: templateToBeEditedId,
+            name: 'template to be edited',
+            commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+            properties: [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
+          };
+          await templates.save(templateToUpdate, 'en');
+
+          expect(populateGeneratedIdByTemplateSpy).toHaveBeenCalledWith(
+            templateToBeEditedId,
+            templateToUpdate.properties
+          );
+        });
+      });
+      describe('when there are no new properties with generatedId type', () => {
+        it('should not call populateGeneratedIdBTemplate to auto-fill values', async () => {
+          const [storedTemplate] = await templates.get({ _id: templateWithContents });
+          await templates.save(storedTemplate, 'en');
+          expect(populateGeneratedIdByTemplateSpy).not.toHaveBeenCalled();
+        });
+      });
+    });
   });
 
   describe('delete', () => {
@@ -399,7 +446,7 @@ describe('templates', () => {
   describe('countByThesauri()', () => {
     it('should return number of templates using a thesauri', done => {
       templates
-        .countByThesauri('thesauri1')
+        .countByThesauri(thesauriId1.toString())
         .then(result => {
           expect(result).toBe(3);
           done();
@@ -453,9 +500,9 @@ describe('templates', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(Ajv.ValidationError);
         expect(error.errors.some(e => e.params.missingProperty === 'label')).toBe(true);
-        expect(error.errors.some(e => e.params.keyword === 'requireContentForSelectFields')).toBe(
-          true
-        );
+        expect(
+          error.errors.some(e => e.params.keyword === 'requireOrInvalidContentForSelectFields')
+        ).toBe(true);
       }
     });
   });

@@ -3,7 +3,7 @@ import { mockID } from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
 
-import fixtures, { pageToUpdate } from './fixtures';
+import { fixtures, pageToUpdate } from './fixtures';
 import pages from '../pages';
 
 describe('pages', () => {
@@ -80,6 +80,17 @@ describe('pages', () => {
         expect(doc.user).not.toBe('another_user');
         expect(doc.creationDate).toBe(1);
       });
+
+      it('should save the same entityView value across all languages', async () => {
+        const pageToUpdateEntityView = await pages.get({ sharedId: '3', language: 'en' });
+        await pages.save({ ...pageToUpdateEntityView[0], entityView: true });
+        const updatedPages = await pages.get({ sharedId: '3' });
+        expect(updatedPages.length).toBe(2);
+        expect(updatedPages).toEqual([
+          expect.objectContaining({ entityView: true }),
+          expect.objectContaining({ entityView: true }),
+        ]);
+      });
     });
   });
 
@@ -104,7 +115,7 @@ describe('pages', () => {
     it('should duplicate all the pages from the default language to the new one', async () => {
       await pages.addLanguage('ab');
       const newPages = await pages.get({ language: 'ab' });
-      expect(newPages.length).toBe(2);
+      expect(newPages.length).toBe(3);
     });
   });
 

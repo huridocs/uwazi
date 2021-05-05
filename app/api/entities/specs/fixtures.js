@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
@@ -31,6 +32,9 @@ const relationType3 = db.id();
 const relationType4 = db.id();
 const uploadId1 = db.id();
 const uploadId2 = db.id();
+const inheritedProperty = db.id();
+
+const permissions = [{ refId: 'userId', level: AccessLevels.WRITE, type: PermissionType.USER }];
 
 export default {
   files: [
@@ -158,6 +162,10 @@ export default {
           { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
         ],
       },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
+      ],
     },
     {
       sharedId: 'other',
@@ -170,6 +178,10 @@ export default {
           { icon: null, label: 'translated2', type: 'entity', value: 'shared1' },
         ],
       },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
+      ],
     },
     //select/multiselect/date sync
     {
@@ -181,6 +193,10 @@ export default {
       title: 'EN',
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     {
       _id: db.id(),
@@ -192,6 +208,10 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     {
       _id: db.id(),
@@ -203,6 +223,10 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     //docs to change metadata property names
     {
@@ -312,7 +336,9 @@ export default {
       sharedId: 'shared2',
       language: 'en',
       title: 'shared2title',
-      metadata: {},
+      metadata: {
+        property1: [{ value: 'something to be inherited' }],
+      },
     },
     { sharedId: 'source2', language: 'en' },
     {
@@ -348,6 +374,13 @@ export default {
       language: 'en',
       sharedId: 'value1',
     },
+    {
+      _id: db.id(),
+      sharedId: 'sharedPerm',
+      title: 'Entity With Permissions',
+      language: 'es',
+      permissions,
+    },
   ],
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
@@ -357,29 +390,33 @@ export default {
       _id: templateId,
       name: 'template_test',
       properties: [
-        { type: 'text', name: 'text' },
-        { type: 'text', name: 'property1' },
-        { type: 'text', name: 'property2' },
-        { type: 'text', name: 'description' },
-        { type: 'select', name: 'select', content: dictionary },
-        { type: 'multiselect', name: 'multiselect', content: dictionary },
-        { type: 'date', name: 'date' },
-        { type: 'multidate', name: 'multidate' },
-        { type: 'multidaterange', name: 'multidaterange' },
-        { type: 'daterange', name: 'daterange' },
+        { _id: db.id(), type: 'text', name: 'text' },
+        { _id: inheritedProperty, type: 'text', name: 'property1' },
+        { _id: db.id(), type: 'text', name: 'property2' },
+        { _id: db.id(), type: 'text', name: 'description' },
+        { _id: db.id(), type: 'select', name: 'select', content: dictionary },
+        { _id: db.id(), type: 'multiselect', name: 'multiselect', content: dictionary },
+        { _id: db.id(), type: 'date', name: 'date' },
+        { _id: db.id(), type: 'multidate', name: 'multidate' },
+        { _id: db.id(), type: 'multidaterange', name: 'multidaterange' },
+        { _id: db.id(), type: 'daterange', name: 'daterange' },
         {
+          _id: db.id(),
           type: 'relationship',
           name: 'friends',
           relationType: relationType1,
         },
         {
+          _id: db.id(),
           type: 'relationship',
           name: 'enemies',
           relationType: relationType4,
           content: templateId.toString(),
+          inherit: true,
+          inheritProperty: inheritedProperty,
         },
-        { type: 'nested', name: 'field_nested' },
-        { type: 'numeric', name: 'numeric' },
+        { _id: db.id(), type: 'nested', name: 'field_nested' },
+        { _id: db.id(), type: 'numeric', name: 'numeric' },
       ],
     },
     {
@@ -387,6 +424,7 @@ export default {
       name: 'templateWithOnlyMultiSelectSelect',
       properties: [
         {
+          _id: db.id(),
           type: 'relationship',
           name: 'multiselect',
           content: templateWithEntityAsThesauri.toString(),
@@ -397,23 +435,33 @@ export default {
       _id: templateWithOnlySelect,
       name: 'templateWithOnlySelect',
       properties: [
-        { type: 'relationship', name: 'select', content: templateChangingNames.toString() },
+        {
+          _id: db.id(),
+          type: 'relationship',
+          name: 'select',
+          content: templateChangingNames.toString(),
+        },
       ],
     },
     {
       _id: templateWithEntityAsThesauri,
       name: 'template_with_thesauri_as_template',
       properties: [
-        { type: 'relationship', name: 'select', content: templateId.toString() },
-        { type: 'relationship', name: 'multiselect', content: templateId.toString() },
+        { _id: db.id(), type: 'relationship', name: 'select', content: templateId.toString() },
+        { _id: db.id(), type: 'relationship', name: 'multiselect', content: templateId.toString() },
       ],
     },
     {
       _id: templateWithEntityAsThesauri2,
       name: 'template_with_thesauri_as_template',
       properties: [
-        { type: 'relationship', name: 'select2', content: templateId.toString() },
-        { type: 'relationship', name: 'multiselect2', content: templateId.toString() },
+        { _id: db.id(), type: 'relationship', name: 'select2', content: templateId.toString() },
+        {
+          _id: db.id(),
+          type: 'relationship',
+          name: 'multiselect2',
+          content: templateId.toString(),
+        },
       ],
     },
     {
@@ -421,23 +469,23 @@ export default {
       name: 'template_changing_names',
       default: true,
       properties: [
-        { id: '1', type: 'text', name: 'property1' },
-        { id: '2', type: 'text', name: 'property2' },
-        { id: '3', type: 'text', name: 'property3' },
+        { _id: db.id(), id: '1', type: 'text', name: 'property1' },
+        { _id: db.id(), id: '2', type: 'text', name: 'property2' },
+        { _id: db.id(), id: '3', type: 'text', name: 'property3' },
       ],
     },
   ],
   connections: [
     { _id: referenceId, entity: 'shared', template: null, hub: hub1, entityData: {} },
-    { entity: 'shared2', template: relationType1, hub: hub1, entityData: {} },
-    { entity: 'shared', template: null, hub: hub2, entityData: {} },
-    { entity: 'source2', template: relationType2, hub: hub2, entityData: {} },
-    { entity: 'another', template: relationType3, hub: hub3, entityData: {} },
-    { entity: 'document', template: relationType3, hub: hub3, entityData: {} },
-    { entity: 'shared', template: relationType2, hub: hub4, entityData: {} },
-    { entity: 'shared1', template: relationType2, hub: hub4, entityData: {} },
-    { entity: 'shared1', template: relationType2, hub: hub5, entityData: {} },
-    { entity: 'shared', template: relationType2, hub: hub5, entityData: {} },
+    { _id: db.id(), entity: 'shared2', template: relationType1, hub: hub1, entityData: {} },
+    { _id: db.id(), entity: 'shared', template: null, hub: hub2, entityData: {} },
+    { _id: db.id(), entity: 'source2', template: relationType2, hub: hub2, entityData: {} },
+    { _id: db.id(), entity: 'another', template: relationType3, hub: hub3, entityData: {} },
+    { _id: db.id(), entity: 'document', template: relationType3, hub: hub3, entityData: {} },
+    { _id: db.id(), entity: 'shared', template: relationType2, hub: hub4, entityData: {} },
+    { _id: db.id(), entity: 'shared1', template: relationType2, hub: hub4, entityData: {} },
+    { _id: db.id(), entity: 'shared1', template: relationType2, hub: hub5, entityData: {} },
+    { _id: db.id(), entity: 'shared', template: relationType2, hub: hub5, entityData: {} },
   ],
   dictionaries: [
     {
@@ -503,4 +551,5 @@ export {
   unpublishedDocId,
   uploadId1,
   uploadId2,
+  permissions,
 };

@@ -4,6 +4,7 @@
 export interface SearchParams {
   query?: {
     aggregateGeneratedToc?: boolean;
+    aggregatePermissionsByLevel?: boolean;
     filters?: {
       [k: string]: unknown | undefined;
     };
@@ -11,10 +12,14 @@ export interface SearchParams {
       generatedToc?: {
         values?: [] | [boolean];
       };
+      'permissions.level'?: {
+        values?: [] | [string];
+      };
     };
     types?: [] | [string];
     _types?: [] | [string];
     fields?: [] | [string];
+    include?: [] | [string];
     allAggregations?: boolean;
     aggregations?: string;
     order?: 'asc' | 'desc';

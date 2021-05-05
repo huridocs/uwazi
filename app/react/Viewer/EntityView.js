@@ -6,11 +6,21 @@ import SearchButton from 'app/Entities/components/SearchButton';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
-import { setPageAssets } from 'app/Pages/utils/setPageAssets';
+import { getPageAssets } from 'app/Pages/utils/getPageAssets';
+import { formater as formatter } from 'app/Metadata';
 
 import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
 import * as uiActions from '../Entities/actions/uiActions';
+
+const formatEntity = (entity, templates, thesauris) => {
+  const formattedEntity = formatter.prepareMetadata(entity, templates, thesauris);
+  formattedEntity.metadata = formattedEntity.metadata.reduce(
+    (memo, property) => ({ ...memo, [property.name]: property }),
+    {}
+  );
+  return formattedEntity;
+};
 
 export default class Entity extends Component {
   static async requestState(requestParams, state) {
@@ -30,13 +40,22 @@ export default class Entity extends Component {
 
     if (entityTemplate.get('entityViewPage')) {
       const pageQuery = { sharedId: entityTemplate.get('entityViewPage') };
-      const pageActions = await setPageAssets(requestParams.set(pageQuery), {
-        currentEntity: {
-          url: `entities?sharedId=${entity.sharedId}`,
-          query: true,
-          extractFirstRow: true,
-        },
-      });
+      const { pageView, itemLists, datasets } = await getPageAssets(
+        requestParams.set(pageQuery),
+        undefined,
+        {
+          entity: formatEntity(entity, state.templates, state.thesauris),
+          entityRaw: entity,
+          template: entityTemplate,
+        }
+      );
+
+      const pageActions = [
+        actions.set('page/pageView', pageView),
+        actions.set('page/itemLists', itemLists),
+        actions.set('page/datasets', datasets),
+      ];
+
       additionalActions = additionalActions.concat(pageActions);
     }
 

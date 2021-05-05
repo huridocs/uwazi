@@ -1,14 +1,16 @@
 import { config } from 'api/config';
+import { tenants } from 'api/tenants/tenantContext';
+import { DB } from 'api/odm';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { IndexError } from 'api/search/entitiesIndex';
+import { search } from 'api/search';
 import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
-import { search } from '../app/api/search';
 import templatesModel from '../app/api/templates';
-import { IndexError } from '../app/api/search/entitiesIndex';
+import settingsModel from '../app/api/settings';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
 import errorLog from '../app/api/log/errorLog';
-import { tenants } from 'api/tenants/tenantContext';
-import { DB } from 'api/odm';
 
 const getIndexUrl = () => {
   const elasticUrl = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
@@ -82,8 +84,12 @@ const prepareIndex = async () => {
   process.stdout.write(' - Base properties mapping\r\n');
   await request.put(getIndexUrl(), elasticMapping);
   process.stdout.write(' - Custom templates mapping\r\n');
+  const { features } = await settingsModel.get();
   const templates = await templatesModel.get();
-  const templatesMapping = elasticMapFactory.mapping(templates);
+  const templatesMapping = elasticMapFactory.mapping(
+    templates,
+    features?.topicClassification || false
+  );
   await request.put(`${getIndexUrl()}/_mapping`, templatesMapping);
   process.stdout.write(' [done]\n');
 };
@@ -131,6 +137,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
   await tenants.run(async () => {
     try {
+      permissionsContext.setCommandContext();
       await prepareIndex();
       await tweakSettingsForPerformmance();
       await reindex();

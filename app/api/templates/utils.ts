@@ -1,24 +1,11 @@
 import uuid from 'node-uuid';
-import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
-const generateNewSafeName = (label: string) =>
-  label
-    .trim()
-    .replace(/[#|\\|/|*|?|"|<|>|=|||\s|:|.]/gi, '_')
-    .replace(/^[_|\-|+|$]/, '')
-    .toLowerCase();
+import { safeName as sharedSafeName } from 'shared/propertyNames';
 
-export const safeName = (label: string, newNameGeneration: boolean = false) => {
-  if (newNameGeneration) {
-    return generateNewSafeName(label);
-  }
-  return label
-    .trim()
-    .replace(/[^a-z0-9]/gi, '_')
-    .toLowerCase();
-};
+export const safeName = sharedSafeName;
 
 const generateName = (property: PropertySchema, newNameGeneration: boolean) => {
   const name = property.label ? safeName(property.label, newNameGeneration) : property.name;

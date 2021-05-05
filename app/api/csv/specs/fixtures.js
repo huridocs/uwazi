@@ -19,35 +19,47 @@ export default {
       name: 'base template',
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.text,
           label: 'text label',
           name: templateUtils.safeName('text label'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.numeric,
           label: 'numeric label',
           name: templateUtils.safeName('numeric label'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),
           content: thesauri1Id,
         },
         {
+          _id: db.id(),
           type: 'non_defined_type',
           label: 'not defined type',
           name: templateUtils.safeName('not defined type'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.text,
           label: 'not configured on csv',
           name: templateUtils.safeName('not configured on csv'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.geolocation,
           label: 'geolocation',
           name: templateUtils.safeName('geolocation_geolocation'),
+        },
+        {
+          _id: db.id(),
+          type: propertyTypes.generatedid,
+          label: 'Auto ID',
+          name: templateUtils.safeName('auto id'),
         },
       ],
     },

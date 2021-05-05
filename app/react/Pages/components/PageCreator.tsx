@@ -2,6 +2,7 @@ import { Form, Field, Control } from 'react-redux-form';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import React, { Component } from 'react';
+import _ from 'lodash';
 
 import { MarkDown } from 'app/ReactReduxForms';
 import {
@@ -42,7 +43,7 @@ class PageCreator extends Component<mappedProps> {
   render() {
     const { formState, page, savePage, updateValue, savingPage } = this.props;
     const backUrl = '/settings/pages';
-    const pageUrl = `/page/${page.data.sharedId}`;
+    const pageUrl = `/page/${page.data.sharedId}/${_.kebabCase(page.data.title)}`;
 
     let nameGroupClass = 'template-name form-group';
     if (

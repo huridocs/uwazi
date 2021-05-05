@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import moment from 'moment';
+import moment from 'moment-timezone';
 import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
@@ -38,7 +38,7 @@ const formatMetadataSortedProperty = (metadata, sortedProperty) =>
 
 const addCreationDate = (result, doc) =>
   result.push({
-    value: moment.utc(doc.creationDate).format('ll'),
+    value: moment(doc.creationDate).format('ll'),
     label: 'Date added',
     name: 'creationDate',
     translateContext: 'System',
@@ -47,7 +47,7 @@ const addCreationDate = (result, doc) =>
 
 const addModificationDate = (result, doc) =>
   result.push({
-    value: moment.utc(doc.editDate).format('ll'),
+    value: moment(doc.editDate).format('ll'),
     label: 'Date modified',
     name: 'editDate',
     translateContext: 'System',
@@ -92,10 +92,11 @@ export default {
 
   getSelectOptions(option, thesauri) {
     let value = '';
-    const { icon } = option;
+    let icon;
 
     if (option) {
       value = option.label || option.value;
+      icon = option.icon;
     }
 
     let url;
@@ -192,36 +193,37 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  inherit(property, thesauriValues = [], thesauris, options, templates, relationships) {
+  inherit(property, propValue = [], thesauris, options, templates) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template
       .get('properties')
       .find(p => p.get('_id') === property.get('inheritProperty'));
-    const methodType = this[inheritedProperty.get('type')]
-      ? inheritedProperty.get('type')
-      : 'default';
+
     const type = inheritedProperty.get('type');
-    let value = thesauriValues.map(referencedEntity => {
-      const name = inheritedProperty.get('name');
-      const reference = relationships.toJS().find(r => r.entity === referencedEntity.value) || {
-        entityData: { metadata: {} },
-      };
-      const metadata = reference.entityData.metadata ? reference.entityData.metadata : {};
-      if (metadata[name] || type === 'preview') {
-        return this[methodType](inheritedProperty, metadata[name], thesauris, options, templates);
-      }
+    const methodType = this[type] ? type : 'default';
 
-      return { value: metadata[name] };
-    });
-
+    let value = propValue
+      .map(v => {
+        if (v && v.inheritedValue) {
+          return this[methodType](
+            inheritedProperty,
+            v.inheritedValue,
+            thesauris,
+            options,
+            templates
+          );
+        }
+      })
+      .filter(v => v);
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
       const templateThesauris = thesauris.find(
         _thesauri => _thesauri.get('_id') === template.get('_id')
       );
       propType = type;
-      value = this.flattenInheritedMultiValue(value, type, thesauriValues, templateThesauris);
+      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris);
     }
+
     return {
       translateContext: template.get('_id'),
       ...inheritedProperty.toJS(),
@@ -342,19 +344,12 @@ export default {
     return { ...doc, metadata: metadata.toJS(), documentType: template.get('name') };
   },
 
-  applyTransformation(property, { doc, thesauris, options, template, templates, relationships }) {
+  applyTransformation(property, { doc, thesauris, options, template, templates }) {
     const value = doc.metadata[property.get('name')];
     const showInCard = property.get('showInCard');
 
-    if (property.get('inherit') && relationships) {
-      return this.inherit(
-        property,
-        value,
-        thesauris,
-        { ...options, doc },
-        templates,
-        relationships
-      );
+    if (property.get('inherit')) {
+      return this.inherit(property, value, thesauris, { ...options, doc }, templates);
     }
 
     const methodType = this[property.get('type')] ? property.get('type') : 'default';

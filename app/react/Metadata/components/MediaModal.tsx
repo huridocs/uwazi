@@ -91,7 +91,9 @@ export const MediaModal = ({
 
         <button type="button" onClick={onClose} className="attachments-modal__close">
           <Icon icon="times" />
-          <span>Close</span>
+          <span>
+            <Translate>Close</Translate>
+          </span>
         </button>
       </div>
       <div className="attachments-modal__content">

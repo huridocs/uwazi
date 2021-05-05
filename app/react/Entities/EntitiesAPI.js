@@ -1,10 +1,15 @@
-/** @format */
-
 import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 
 export default {
-  get(requestParams) {
-    return api.get('entities', requestParams).then(response => response.json.rows);
+  get(requestParams = new RequestParams()) {
+    const params = requestParams.add({
+      include:
+        requestParams.data && requestParams.data.include
+          ? requestParams.data.include.concat(['permissions'])
+          : ['permissions'],
+    });
+    return api.get('entities', params).then(response => response.json.rows);
   },
 
   countByTemplate(requestParams) {

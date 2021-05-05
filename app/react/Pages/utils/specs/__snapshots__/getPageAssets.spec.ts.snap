@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getPageAssets should request page for view 1`] = `
+Object {
+  "datasets": Object {},
+  "itemLists": Array [
+    Object {
+      "items": Array [
+        "resultsFor:0",
+      ],
+      "options": Object {},
+      "params": "?q=(a:1,b:2)",
+    },
+    Object {
+      "items": Array [
+        "resultsFor:1",
+      ],
+      "options": Object {
+        "limit": 9,
+      },
+      "params": "",
+    },
+    Object {
+      "items": Array [
+        "resultsFor:2",
+      ],
+      "options": Object {
+        "limit": 0,
+      },
+      "params": "?q=(x:1,y:!(%27array%27),limit:24)",
+    },
+    Object {
+      "items": Array [
+        "resultsFor:3",
+      ],
+      "options": Object {
+        "limit": 12,
+      },
+      "params": "?order=metadata.form&treatAs=number",
+    },
+  ],
+  "pageView": Object {
+    "_id": "abc2",
+    "metadata": Object {
+      "content": "originalContent",
+    },
+    "scriptRendered": false,
+    "title": "Page 1",
+  },
+}
+`;

@@ -4,7 +4,7 @@ import redis from 'redis';
 import redisAdapter from 'socket.io-redis';
 import cookie from 'cookie';
 import { Server } from 'http';
-import socketIo, { Server as SocketIoServer } from 'socket.io';
+import { Server as SocketIoServer } from 'socket.io';
 import { Application, Request, Response, NextFunction } from 'express';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
@@ -13,7 +13,9 @@ declare global {
   namespace Express {
     export interface Request {
       emitToSessionSocket: Function;
-      io: SocketIoServer;
+      sockets: {
+        emitToCurrentTenant: Function;
+      };
     }
   }
   namespace SocketIO {
@@ -24,18 +26,22 @@ declare global {
 }
 
 const setupSockets = (server: Server, app: Application) => {
-  const io: SocketIoServer = socketIo(server);
+  const io = new SocketIoServer(server);
 
   io.on('connection', socket => {
+    //eslint-disable-next-line @typescript-eslint/no-floating-promises
     socket.join(socket.request.headers.tenant || config.defaultTenant.name);
     const socketCookie = cookie.parse(socket.request.headers.cookie || '');
     if (socketCookie) {
+      //eslint-disable-next-line @typescript-eslint/no-floating-promises
       socket.join(socketCookie['connect.sid']);
     }
   });
 
-  io.emitToCurrentTenant = (event, ...args) => {
-    io.to(tenants.current().name).emit(event, ...args);
+  const sockets = {
+    emitToCurrentTenant: (event: string, ...args: any[]) => {
+      io.to(tenants.current().name).emit(event, ...args);
+    },
   };
 
   if (config.redis.activated) {
@@ -52,7 +58,7 @@ const setupSockets = (server: Server, app: Application) => {
   }
 
   app.use((req, _res, next) => {
-    req.io = io;
+    req.sockets = sockets;
     next();
   });
 

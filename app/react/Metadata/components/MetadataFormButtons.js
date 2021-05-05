@@ -8,9 +8,8 @@ import ShowIf from 'app/App/ShowIf';
 import { NeedAuthorization } from 'app/Auth';
 import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
-import { publish, unpublish } from 'app/Uploads/actions/uploadsActions';
-import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
 
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
@@ -35,34 +34,10 @@ export class MetadataFormButtons extends Component {
       return <span>{ViewButton}</span>;
     }
 
-    const _publish = e => {
-      e.stopPropagation();
-      this.context.confirm({
-        accept: () => {
-          this.props.publish(entitiesUtils.filterBaseProperties(data));
-        },
-        title: 'Confirm',
-        message: 'Are you sure you want to publish this entity?',
-        type: 'success',
-      });
-    };
-    const _unpublish = e => {
-      e.stopPropagation();
-      this.context.confirm({
-        accept: () => {
-          this.props.unpublish(entitiesUtils.filterBaseProperties(data));
-        },
-        title: 'Confirm',
-        message: 'Are you sure you want to unpublish this entity?',
-        type: 'warning',
-      });
-    };
-    const isEntity = !data.file;
-    const canBePublished = (data.processed || isEntity) && !data.published && !!data.template;
     return (
       <span>
         <ShowIf if={this.props.includeViewButton}>{ViewButton}</ShowIf>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           <ShowIf if={!entityBeingEdited}>
             <button
               type="button"
@@ -107,14 +82,14 @@ export class MetadataFormButtons extends Component {
               className="btn btn-success copy-from-btn"
               onClick={this.props.copyFrom}
             >
-              <Icon icon="clone" />
+              <Icon icon="copy-from" transform="left-0.07 up-0.06" />
               <span className="btn-label">
                 <Translate>Copy From</Translate>
               </span>
             </button>
           </>
         </ShowIf>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           <ShowIf if={!entityBeingEdited && !hideDelete}>
             <button
               className="delete-metadata btn btn-danger"
@@ -128,25 +103,10 @@ export class MetadataFormButtons extends Component {
             </button>
           </ShowIf>
         </NeedAuthorization>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={!entityBeingEdited && canBePublished}>
-            <button className="publish btn btn-success" type="button" onClick={_publish}>
-              <Icon icon="paper-plane" />
-              <span className="btn-label">
-                <Translate>Publish</Translate>
-              </span>
-            </button>
-          </ShowIf>
-        </NeedAuthorization>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={data.published}>
-            <button className="unpublish btn btn-warning" type="button" onClick={_unpublish}>
-              <Icon icon="paper-plane" />
-              <span className="btn-label">
-                <Translate>Unpublish</Translate>
-              </span>
-            </button>
-          </ShowIf>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
+          {!entityBeingEdited && !hideDelete && data && data.sharedId && (
+            <ShareButton sharedIds={[data.sharedId]} storeKey={this.props.storeKey} />
+          )}
         </NeedAuthorization>
       </span>
     );
@@ -164,14 +124,13 @@ MetadataFormButtons.defaultProps = {
   formName: 'metadataForm',
   delete: () => {},
   copyFrom: () => {},
+  storeKey: undefined,
 };
 
 MetadataFormButtons.propTypes = {
   loadInReduxForm: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
   delete: PropTypes.func,
-  publish: PropTypes.func.isRequired,
-  unpublish: PropTypes.func.isRequired,
   templates: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   entityBeingEdited: PropTypes.bool,
@@ -181,6 +140,7 @@ MetadataFormButtons.propTypes = {
   exclusivelyViewButton: PropTypes.bool,
   hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
+  storeKey: PropTypes.string,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });
@@ -190,8 +150,6 @@ function mapDispatchToProps(dispatch, props) {
     {
       loadInReduxForm: actions.loadInReduxForm,
       resetForm: actions.resetReduxForm,
-      publish,
-      unpublish,
     },
     wrapDispatch(dispatch, props.storeKey)
   );

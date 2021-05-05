@@ -91,7 +91,7 @@ export default {
     translationInputEs:
       '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > ul > li:nth-child(3) > div:nth-child(3) > div > div > input',
     translationsSaveButton:
-      '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
+      '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button[type="submit"]',
     privateInstance: '#collectionSettings > div:nth-child(8) > div > label',
     templatePropertiesList:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
@@ -147,7 +147,7 @@ export default {
     firstEntityViewButton:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
     documentTypeFilter:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
+      '#app > div.content > div > div > div > aside.library-filters > .sidepanel-body > .filters-box > #filtersForm > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
     editEntityButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.edit-metadata.btn.btn-primary',
     saveButton:
@@ -161,9 +161,9 @@ export default {
     documentAfterLoadMore:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(31)',
     superVillianType:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div > ul > li:nth-child(2) > label',
+      '#app > div.content > div > div > div > aside.library-filters > .sidepanel-body > .filters-box > #filtersForm > div.documentTypes-selector > ul > li:nth-child(2) > label > span.multiselectItem-name',
     minorVillianType:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div > ul > li:nth-child(5) > label',
+      '#app > div.content > div > div > div > aside.library-filters > .sidepanel-body > .filters-box > #filtersForm > div.documentTypes-selector > ul > li:nth-child(5) > label > span.multiselectItem-name',
     resetFilters:
       '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.sidepanel-title > div.filter-buttons > div.clear-button',
     sidePanelCloseButton:
@@ -272,10 +272,10 @@ export default {
       '#app > div.content > div > div > div.content-header > div > button:nth-child(2)',
     saveButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
-    publishButton:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.publish.btn.btn-success',
-    multiPublishButton:
-      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.publish.btn.btn-success',
+    shareButton:
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success.share-btn',
+    multiShareButton:
+      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.btn.btn-success.share-btn',
     acceptPublishModel:
       'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success',
     metadataPanel: '.side-panel.metadata-sidepanel',
@@ -349,7 +349,7 @@ export default {
       firstSighting:
         '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > input',
       whoIsHe:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content-visible > textarea',
+        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div.markdownEditor > div > div.tab-content-visible > textarea',
     },
     viewer: {
       title:

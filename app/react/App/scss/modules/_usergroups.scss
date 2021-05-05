@@ -1,8 +1,12 @@
+@import '../../scss/config/colors';
+@import '../../scss/config/typography';
+@import '../../scss/elements/pill';
+
 .userManagementTabs {
   position: relative;
   margin-top: 15px;
   .nav {
-    display: none;
+    display: flex;
     list-style: none;
     border-bottom: 1px solid $c-grey-light;
     height: 28px;
@@ -55,15 +59,7 @@
       text-align: center;
     }
     td {
-      .pill {
-        border: 1px solid rgba(0, 0, 0, 0.25);
-        box-sizing: border-box;
-        border-radius: 26px;
-        padding: 2px 8px;
-        display: inline-block;
-        margin: 2px 8px 2px 0;
-        font-size: smaller;
-      }
+      @include pillItem;
     }
     tbody tr {
       &:hover > td {
@@ -86,28 +82,6 @@
   .settings-footer.edition-mode {
     display: none;
   }
-
-  .beta-feature {
-    .beta-alert {
-      text-align: right;
-      color: $c-type-15;
-      cursor: pointer;
-      float: right;
-      width: 100px;
-    }
-    .beta-tooltip{
-      display: none;
-    }
-    &:hover .beta-tooltip{
-      @include tooltip('left');
-      left: calc(100% - 420px);
-      top: 55px;
-      width: 320px;
-      display: block;
-      font-size: x-small;
-    }
-  }
-
 }
 .user-group-form {
   .search-user{

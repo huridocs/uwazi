@@ -1,15 +1,15 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 
-const pageToUpdate = db.id();
+export const pageToUpdate = db.id();
 
-export default {
+export const fixtures: DBFixture = {
   pages: [
     {
       _id: db.id(),
       sharedId: '1',
       language: 'es',
       title: 'Batman finishes',
-      user: { username: 'user' },
+      user: 'user',
       entityView: true,
     },
     {
@@ -17,7 +17,8 @@ export default {
       sharedId: '1',
       language: 'en',
       title: 'Batman finishes',
-      user: { username: 'user' },
+      user: 'user',
+      entityView: true,
     },
     {
       _id: pageToUpdate,
@@ -25,14 +26,28 @@ export default {
       language: 'es',
       title: 'Penguin almost done',
       creationDate: 1,
-      user: { username: 'user' },
+      user: 'user',
     },
     {
       _id: db.id(),
       sharedId: '2',
       language: 'fr',
       title: 'Right there',
-      user: { username: 'user' },
+      user: 'user',
+    },
+    {
+      _id: db.id(),
+      sharedId: '3',
+      language: 'es',
+      title: 'Pagina que sera entityView',
+      entityView: false,
+    },
+    {
+      _id: db.id(),
+      sharedId: '3',
+      language: 'en',
+      title: 'Page that will be for entityView',
+      entityView: false,
     },
   ],
 
@@ -52,5 +67,3 @@ export default {
     },
   ],
 };
-
-export { pageToUpdate };

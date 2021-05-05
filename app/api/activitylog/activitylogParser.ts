@@ -59,6 +59,10 @@ const entryValues: { [key: string]: EntryValue } = {
     idField: '_id',
     nameField: 'name',
   },
+  'POST/api/translations/import': {
+    desc: 'Imported translations from file',
+    method: Methods.Update,
+  },
   'POST/api/entities': {
     desc: 'Created entity / document',
     method: Methods.Create,
@@ -165,6 +169,13 @@ const entryValues: { [key: string]: EntryValue } = {
     desc: 'Delete user group',
     method: Methods.Delete,
     nameField: '_id',
+  },
+  'POST/api/entities/permissions': {
+    desc: 'Updated permissions on entity',
+    method: Methods.Update,
+    related: helpers.loadPermissionsData,
+    nameFunc: helpers.entitiesNames,
+    extra: helpers.loadAllowedUsersAndGroups,
   },
 };
 

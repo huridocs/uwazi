@@ -7,6 +7,9 @@ import fixtures, {
   templateId,
   templateToBeInherited,
   propertyToBeInherited,
+  thesauriId1,
+  thesauriId2,
+  thesauriId4,
 } from './validatorFixtures';
 
 import { safeName } from '../utils';
@@ -127,6 +130,12 @@ describe('template schema', () => {
         await testInvalid();
       });
 
+      it('invalid if select or multiselect property content does not exists', async () => {
+        template.properties = [];
+        template.properties.push(makeProperty('foo', 'multiselect', { content: db.id() }));
+        await testInvalid();
+      });
+
       it('invalid if relationship property does not have a relationtype field', async () => {
         template.properties = [];
         template.properties.push(makeProperty('foo', 'relationship', { content: 'content' }));
@@ -199,13 +208,13 @@ describe('template schema', () => {
           name: 'sharedproperty1',
           label: 'sharedProperty1',
           type: 'select',
-          content: 'thesauriId2',
+          content: thesauriId2.toString(),
         },
         {
           name: 'sharedproperty2',
           label: 'sharedProperty2',
           type: 'select',
-          content: 'thesauriId1',
+          content: thesauriId1.toString(),
         },
         {
           name: 'sharedproperty3',
@@ -223,7 +232,7 @@ describe('template schema', () => {
           name: 'validproperty4',
           label: 'validProperty4',
           type: 'select',
-          content: 'thesauriId4',
+          content: thesauriId4.toString(),
         },
         {
           name: 'validpropertydate',
@@ -239,7 +248,7 @@ describe('template schema', () => {
           name: 'validpropertymultiselect',
           label: 'validPropertyMultiSelect',
           type: 'multiselect',
-          content: 'thesauriId4',
+          content: thesauriId4.toString(),
         },
         {
           name: 'validpropertymultidate',
@@ -267,6 +276,7 @@ describe('template schema', () => {
           fail('should throw validation error');
         } catch (e) {
           expect(e).toBeInstanceOf(Ajv.ValidationError);
+
           expect(e.errors.length).toBe(4);
           expect(e).toHaveProperty(
             'errors',
@@ -302,10 +312,25 @@ describe('template schema', () => {
       properties: [],
       entityViewPage: 'iDontExist',
     };
+    const template2 = {
+      _id: templateId,
+      name: 'My template',
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      properties: [],
+      entityViewPage: 'iExistButImNotForEntityView',
+    };
 
     it('should not allow selecting non existing pages', async () => {
       try {
         await validateTemplate(template);
+        fail('it should not validate');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Ajv.ValidationError);
+      }
+    });
+    it('should not allow selecting pages that are not enabled for entity view', async () => {
+      try {
+        await validateTemplate(template2);
         fail('it should not validate');
       } catch (e) {
         expect(e).toBeInstanceOf(Ajv.ValidationError);

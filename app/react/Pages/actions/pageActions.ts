@@ -10,7 +10,6 @@ import * as types from 'app/Pages/actions/actionTypes';
 
 import { PageType } from 'shared/types/pageType';
 
-// TEST!!!
 export function loadPages() {
   return async (dispatch: Dispatch<{}>) => {
     const pages = await api.get(new RequestParams());

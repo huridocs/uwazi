@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
 import RouteHandler from 'app/App/RouteHandler';
-import queryString from 'query-string';
+import qs from 'qs';
 import { Icon } from 'UI';
 
 import auth from 'app/Auth';
@@ -49,7 +49,8 @@ class ResetPassword extends RouteHandler {
       <div className="content login-content">
         <div className="row">
           <div className="col-xs-12 col-sm-4 col-sm-offset-4">
-            {queryString.parse(this.context.router.location.search).createAccount === 'true' && (
+            {qs.parse(this.context.router.location.search, { ignoreQueryPrefix: true })
+              .createAccount === 'true' && (
               <div className="alert alert-info">
                 <Icon icon="info-circle" />
                 <div>

@@ -2,15 +2,19 @@
  * @jest-environment jsdom
  */
 import React, { Component } from 'react';
-import TestUtils from 'react-dom/test-utils';
-import TestBackend from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
-import Immutable from 'immutable';
-import { shallow } from 'enzyme';
 import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
-import { combineReducers, createStore } from 'redux';
+import TestUtils from 'react-dom/test-utils';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import Immutable from 'immutable';
+import thunk from 'redux-thunk';
+import { shallow } from 'enzyme';
+import TestBackend from 'react-dnd-test-backend';
+
 import api from 'app/Templates/TemplatesAPI';
+import entitiesApi from 'app/Entities/EntitiesAPI';
+import pagesApi from 'app/Pages/PagesAPI';
 
 import {
   MetadataTemplate,
@@ -19,7 +23,6 @@ import {
 } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
-import { ViewTemplateAsPage } from '../ViewTemplateAsPage';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
@@ -78,6 +81,7 @@ describe('MetadataTemplate', () => {
       templates: Immutable.fromJS({ templates: [] }),
       modals: Immutable.fromJS({}),
     };
+
     const store = createStore(
       combineReducers({
         template: combineReducers({
@@ -89,8 +93,10 @@ describe('MetadataTemplate', () => {
         form: () => initialData.form,
         modals: () => initialData.modals,
       }),
-      initialData
+      initialData,
+      applyMiddleware(thunk)
     );
+
     TestUtils.renderIntoDocument(
       <Provider store={store}>
         <ComponentToRender ref={ref => (result = ref)} {...props} index={1} />
@@ -111,7 +117,10 @@ describe('MetadataTemplate', () => {
       templates: Immutable.fromJS([]),
       saveTemplate: jasmine.createSpy('saveTemplate'),
       defaultColor: '#112233',
+      entityViewPage: 'aPageSharedId',
+      environment: 'template',
     };
+    spyOn(pagesApi, 'get').and.returnValue(Promise.resolve({}));
   });
 
   describe('render()', () => {
@@ -134,9 +143,16 @@ describe('MetadataTemplate', () => {
       expect(component.find(Control).first()).toMatchSnapshot();
     });
 
-    it('should render a ViewTemplateAsPage component', () => {
+    it('should render a field with the entityViewPage model', () => {
       const component = shallow(<MetadataTemplate {...props} />);
-      expect(component.contains(<ViewTemplateAsPage />)).toBe(true);
+      const field = component.findWhere(n => n.props().model === '.entityViewPage');
+      expect(field).toHaveLength(1);
+    });
+
+    it('should render a component with that receives the entityViewPage prop', () => {
+      const component = shallow(<MetadataTemplate {...props} />);
+      const formComponent = component.findWhere(n => n.props().selectedPage === 'aPageSharedId');
+      expect(formComponent).toHaveLength(1);
     });
 
     describe('when fields is empty', () => {
@@ -180,11 +196,32 @@ describe('MetadataTemplate', () => {
         expect(component.find(MetadataProperty).length).toBe(2);
       });
     });
+
+    describe('enviroment prop', () => {
+      it('should render the template editor when environment is template', () => {
+        props.properties = [
+          { label: 'country', type: 'text', _id: '1' },
+          { label: 'author', type: 'text', _id: '2' },
+        ];
+        const component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find(MetadataProperty).length).toBe(2);
+      });
+      it('should not render the template editor when environment is relationType', () => {
+        props.environment = 'relationType';
+        props.properties = [
+          { label: 'country', type: 'text', _id: '1' },
+          { label: 'author', type: 'text', _id: '2' },
+        ];
+        const component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find(MetadataProperty).length).toBe(0);
+      });
+    });
   });
 
   describe('onSubmit', () => {
     it('should trim the properties labels and then call props.saveTemplate', async () => {
       spyOn(api, 'validateMapping').and.returnValue({ errors: [], valid: true });
+      spyOn(entitiesApi, 'countByTemplate').and.returnValue(100);
       const component = shallow(<MetadataTemplate {...props} />);
       const template = { properties: [{ label: ' trim me please ' }] };
       await component.instance().onSubmit(template);
@@ -193,21 +230,59 @@ describe('MetadataTemplate', () => {
       });
     });
 
-    describe('when the mapping has con flicts', () => {
-      it('should ask for a reindex', async () => {
-        spyOn(api, 'validateMapping').and.returnValue({
-          errors: [{ name: 'Date of birth' }],
-          valid: false,
-        });
-        const context = { confirm: jasmine.createSpy('confirm') };
+    describe('confirmation of saving', () => {
+      let context;
+      const templateWithId = {
+        _id: 'template1',
+        properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+      };
 
+      async function submitTemplate(templateToSubmit, validMapping = true, entityCount = 100) {
+        context = {
+          confirm: jasmine.createSpy('confirm'),
+        };
+        spyOn(api, 'validateMapping').and.returnValue({
+          error: 'error',
+          valid: validMapping,
+        });
+        spyOn(entitiesApi, 'countByTemplate').and.returnValue(entityCount);
         const component = shallow(<MetadataTemplate {...props} />, { context });
-        const template = { properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }] };
-        await component.instance().onSubmit(template);
-        context.confirm.calls.mostRecent().args[0].accept();
-        expect(props.saveTemplate).toHaveBeenCalledWith({
-          properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
-          reindex: true,
+        await component.instance().onSubmit(templateToSubmit);
+      }
+
+      describe('when the mapping has conflicts', () => {
+        it('should ask for a reindex', async () => {
+          await submitTemplate(templateWithId, false);
+          context.confirm.calls.mostRecent().args[0].accept();
+          expect(props.saveTemplate).toHaveBeenCalledWith({
+            ...templateWithId,
+            reindex: true,
+          });
+        });
+
+        describe('when there is a quite amount of entities from the template', () => {
+          it('should ask for a reindex but do not do it if the user cancels it', async () => {
+            await submitTemplate(templateWithId, true, 50000);
+            context.confirm.calls.mostRecent().args[0].cancel();
+            expect(props.saveTemplate).not.toHaveBeenCalled();
+          });
+
+          it('should ask for a reindex and do it if the user accepts it', async () => {
+            await submitTemplate(templateWithId, true, 50000);
+            context.confirm.calls.mostRecent().args[0].accept();
+            expect(props.saveTemplate).toHaveBeenCalledWith({
+              _id: templateWithId._id,
+              properties: templateWithId.properties,
+              reindex: true,
+            });
+          });
+        });
+
+        describe('when it is a new template', () => {
+          it('should not check for the number of entities', async () => {
+            await submitTemplate({ properties: templateWithId.properties }, true, null);
+            expect(entitiesApi.countByTemplate).not.toHaveBeenCalled();
+          });
         });
       });
     });

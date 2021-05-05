@@ -6,7 +6,9 @@ import { validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
 import pages from 'api/pages';
+import { CSVLoader } from 'api/csv';
 
+import { uploadMiddleware } from 'api/files';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
@@ -19,10 +21,37 @@ export default app => {
   });
 
   app.post(
+    '/api/translations/import',
+    needsAuthorization(),
+    uploadMiddleware(),
+    validation.validateRequest({
+      body: {
+        properties: {
+          context: { type: 'string' },
+        },
+        required: ['context'],
+      },
+    }),
+
+    async (req, res, next) => {
+      try {
+        const { context } = req.body;
+        const loader = new CSVLoader();
+        const response = await loader.loadTranslations(req.file.path, context);
+        response.forEach(translation => {
+          req.sockets.emitToCurrentTenant('translationsChange', translation);
+        });
+        res.json(response);
+      } catch (e) {
+        next(e);
+      }
+    }
+  );
+
+  app.post(
     '/api/translations',
 
     needsAuthorization(),
-
     validation.validateRequest(
       Joi.object()
         .keys({
@@ -49,7 +78,7 @@ export default app => {
         .save(req.body)
         .then(response => {
           response.contexts = translations.prepareContexts(response.contexts);
-          req.io.emitToCurrentTenant('translationsChange', response);
+          req.sockets.emitToCurrentTenant('translationsChange', response);
           res.json(response);
         })
         .catch(next);
@@ -71,7 +100,7 @@ export default app => {
       settings
         .setDefaultLanguage(req.body.key)
         .then(response => {
-          req.io.emitToCurrentTenant('updateSettings', response);
+          req.sockets.emitToCurrentTenant('updateSettings', response);
           res.json(response);
         })
         .catch(next);
@@ -98,8 +127,8 @@ export default app => {
         await entities.addLanguage(req.body.key);
         await pages.addLanguage(req.body.key);
 
-        req.io.emitToCurrentTenant('updateSettings', newSettings);
-        req.io.emitToCurrentTenant('translationsChange', newTranslations);
+        req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+        req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
         res.json(newSettings);
       } catch (e) {
         next(e);
@@ -126,8 +155,8 @@ export default app => {
         pages.removeLanguage(req.query.key),
       ])
         .then(([newSettings, newTranslations]) => {
-          req.io.emitToCurrentTenant('updateSettings', newSettings);
-          req.io.emitToCurrentTenant('translationsChange', newTranslations);
+          req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+          req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
           res.json(newSettings);
         })
         .catch(next);

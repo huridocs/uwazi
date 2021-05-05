@@ -16,13 +16,13 @@ export default app => {
       delete req.body.reindex;
 
       const response = await templates.save(req.body, req.language, !reindex);
-      req.io.emitToCurrentTenant('templateChange', response);
+      req.sockets.emitToCurrentTenant('templateChange', response);
       const updatedSettings = await settings.updateFilterName(
         response._id.toString(),
         response.name
       );
       if (updatedSettings) {
-        req.io.emitToCurrentTenant('updateSettings', updatedSettings);
+        req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
       }
 
       if (reindex) {
@@ -46,9 +46,9 @@ export default app => {
     async (req, res, next) => {
       try {
         const [newDefault, oldDefault] = await templates.setAsDefault(req.body._id.toString());
-        req.io.emitToCurrentTenant('templateChange', newDefault);
+        req.sockets.emitToCurrentTenant('templateChange', newDefault);
         if (oldDefault) {
-          req.io.emitToCurrentTenant('templateChange', oldDefault);
+          req.sockets.emitToCurrentTenant('templateChange', oldDefault);
         }
         res.json(newDefault);
       } catch (err) {
@@ -80,8 +80,8 @@ export default app => {
         .then(() => settings.removeTemplateFromFilters(template._id))
         .then(newSettings => {
           res.json(template);
-          req.io.emitToCurrentTenant('updateSettings', newSettings);
-          req.io.emitToCurrentTenant('templateDelete', template);
+          req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+          req.sockets.emitToCurrentTenant('templateDelete', template);
         })
         .catch(next);
     }
