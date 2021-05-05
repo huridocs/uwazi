@@ -1,10 +1,13 @@
 import Ajv from 'ajv';
 import { ObjectId } from 'mongodb';
+
 import model from 'api/templates/templatesModel';
+import templates from 'api/templates';
+import pages from 'api/pages';
+
 import { ensure, wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import { getCompatibleTypes } from 'shared/propertyTypes';
-import templates from 'api/templates';
 
 import { TemplateSchema } from './templateType';
 import { PropertySchema } from './commonTypes';
@@ -235,6 +238,29 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
   },
 });
 
+ajv.addKeyword('entityViewPageExists', {
+  async: true,
+  errors: true,
+  type: 'object',
+  async validate(fields: any, template: TemplateSchema) {
+    const page = await pages.get({
+      sharedId: template.entityViewPage,
+    });
+    if (page.length > 0 || !template.entityViewPage) {
+      return true;
+    }
+    throw new Ajv.ValidationError([
+      {
+        keyword: 'entityViewPageExists',
+        schemaPath: '',
+        params: { keyword: 'entityViewPageExists', fields },
+        message: 'The selected page does not exist',
+        dataPath: '.templates',
+      },
+    ]);
+  },
+});
+
 export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
@@ -242,6 +268,7 @@ export const templateSchema = {
   uniqueName: true,
   cantDeleteInheritedProperties: true,
   cantReuseNameWithDifferentType: true,
+  entityViewPageExists: true,
   required: ['name'],
   uniquePropertyFields: ['id', 'name'],
   definitions: { objectIdSchema, propertySchema },

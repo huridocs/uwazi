@@ -105,6 +105,13 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title' }],
     },
   ],
+  pages: [
+    {
+      _id: db.id(),
+      title: 'A page for entity view',
+      sharedId: 'aFS2dsSdas',
+    },
+  ],
   relationtypes: [{ _id: relatedTo, name: 'related to' }],
 };
 

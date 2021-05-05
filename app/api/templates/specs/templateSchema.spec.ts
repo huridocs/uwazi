@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { TemplateSchema } from 'shared/types/templateType';
