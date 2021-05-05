@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -291,6 +292,25 @@ describe('template schema', () => {
           );
         }
       });
+    });
+  });
+
+  describe('when selecting an entity view page', () => {
+    const template = {
+      _id: templateId,
+      name: 'My template',
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      properties: [],
+      entityViewPage: 'iDontExist',
+    };
+
+    it('should not allow selecting non existing pages', async () => {
+      try {
+        await validateTemplate(template);
+        fail('it should not validate');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Ajv.ValidationError);
+      }
     });
   });
 });
