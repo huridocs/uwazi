@@ -22,6 +22,7 @@ export class EditTranslationForm extends Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
+    this.onImportClicked = this.onImportClicked(this);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -30,6 +31,11 @@ export class EditTranslationForm extends Component {
 
   componentWillUnmount() {
     this.props.resetForm();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  onImportClicked() {
+    console.log('Importing started');
   }
 
   prepareTranslations() {
@@ -114,6 +120,14 @@ export class EditTranslationForm extends Component {
           </div>
           <div className="settings-footer">
             <BackButton to="/settings/translations" />
+            <button
+              type="button"
+              className="btn btn-primary import-template"
+              onClick={this.onImportClicked}
+            >
+              <Icon icon="upload" />
+              <span className="btn-label">Import</span>
+            </button>
             <button type="submit" className="btn btn-success save-template">
               <Icon icon="save" />
               <span className="btn-label">{t('System', 'Save')}</span>
