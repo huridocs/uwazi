@@ -474,6 +474,7 @@ DocumentSidePanel.defaultProps = {
   EntityForm: () => false,
   raw: false,
   file: {},
+  hubs: Immutable.fromJS([]),
 };
 
 DocumentSidePanel.propTypes = {
@@ -511,7 +512,7 @@ DocumentSidePanel.propTypes = {
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
-  hubs: PropTypes.object,
+  hubs: PropTypes.instanceOf(Immutable.List),
 };
 
 DocumentSidePanel.contextTypes = {

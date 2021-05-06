@@ -192,11 +192,9 @@ export default {
       model.get({ username: user.username }),
       model.get({ email: user.email }),
     ]);
-    if (userNameMatch.length) {
-      return Promise.reject(createError('Username already exists', 409));
-    }
-    if (emailMatch.length) {
-      return Promise.reject(createError('Email already exists', 409));
+    if (userNameMatch.length || emailMatch.length) {
+      const message = userNameMatch.length ? 'Username already exists' : 'Email already exists';
+      return Promise.reject(createError(message, 409));
     }
     const password = user.password ? user.password : random();
     const _user = await model.save({

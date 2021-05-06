@@ -278,6 +278,7 @@ EntityViewer.defaultProps = {
   relationships: Immutable.fromJS([]),
   entityBeingEdited: false,
   tab: 'info',
+  hubs: Immutable.fromJS([]),
 };
 
 EntityViewer.propTypes = {
@@ -286,7 +287,7 @@ EntityViewer.propTypes = {
   entity: PropTypes.instanceOf(Immutable.Map).isRequired,
   entityBeingEdited: PropTypes.bool,
   connectionsGroups: PropTypes.object,
-  hubs: PropTypes.object,
+  hubs: PropTypes.instanceOf(Immutable.List),
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func.isRequired,
   connectionsChanged: PropTypes.func,
