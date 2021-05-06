@@ -9,6 +9,7 @@ import pages from 'api/pages';
 
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
+import { uploadMiddleware } from 'api/files';
 
 export default app => {
   app.get('/api/translations', (_req, res, next) => {
@@ -22,15 +23,15 @@ export default app => {
     '/api/translations',
 
     needsAuthorization(),
-
+    uploadMiddleware(),
     validation.validateRequest(
-      Joi.object()
-        .keys({
+      Joi.alternatives(
+        Joi.object().keys({
           _id: Joi.objectId(),
           __v: Joi.number(),
-          locale: Joi.string().required(),
+          locale: Joi.string(),
           contexts: Joi.array()
-            .required()
+            // .required()
             .items(
               Joi.object().keys({
                 _id: Joi.string(),
@@ -41,10 +42,15 @@ export default app => {
               })
             ),
         })
-        .required()
+      )
     ),
 
     (req, res, next) => {
+      if (req.file) {
+        console.log(req.file);
+        res.json({ message: 'Received' });
+        return;
+      }
       translations
         .save(req.body)
         .then(response => {

@@ -68,7 +68,9 @@ export class EditTranslationForm extends Component {
   import() {
     const file = this.fileInputRef.current.files[0];
     this.fileFormRef.current.reset();
-    console.log(file);
+    if (file) {
+      this.props.importTranslations(this.props.context, file);
+    }
   }
 
   save(_translations) {
@@ -162,6 +164,7 @@ EditTranslationForm.propTypes = {
   translationsForm: PropTypes.array,
   settings: PropTypes.object,
   saveTranslations: PropTypes.func,
+  importTranslations: PropTypes.func,
   resetForm: PropTypes.func,
   formState: PropTypes.object,
 };
@@ -176,7 +179,11 @@ export function mapStateToProps({ translationsForm, translationsFormState, setti
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    { saveTranslations: actions.saveTranslations, resetForm: actions.resetForm },
+    {
+      saveTranslations: actions.saveTranslations,
+      resetForm: actions.resetForm,
+      importTranslations: actions.importTranslations,
+    },
     dispatch
   );
 }

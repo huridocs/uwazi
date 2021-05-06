@@ -2,7 +2,9 @@ import { actions as formActions } from 'react-redux-form';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import { RequestParams } from 'app/utils/RequestParams';
+import superagent from 'superagent';
 
+import { APIURL } from 'app/config';
 import t from '../t';
 import I18NApi from '../I18NApi';
 
@@ -41,6 +43,32 @@ export function saveTranslations(translations) {
         notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
       }
     );
+  };
+}
+
+export function importTranslations(context, file) {
+  return dispatch => {
+    // eslint-disable-next-line no-new
+    new Promise(resolve => {
+      superagent
+        .post(`${APIURL}translations`)
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .attach('file', file, file.name)
+        .on('response', response => {
+          const data = JSON.parse(response.text);
+          if (response.status === 200) {
+            notifications.notify(
+              t(context, 'Translations imported', null, false),
+              'success'
+            )(dispatch);
+          } else {
+            notifications.notify(t(context, data.error, null, false), 'danger')(dispatch);
+          }
+          resolve();
+        })
+        .end();
+    });
   };
 }
 
