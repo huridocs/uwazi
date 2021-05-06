@@ -22,7 +22,10 @@ export class EditTranslationForm extends Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
-    this.onImportClicked = this.onImportClicked(this);
+    this.onImportClicked = this.onImportClicked.bind(this);
+    this.import = this.import.bind(this);
+    this.fileInputRef = React.createRef();
+    this.fileFormRef = React.createRef();
   }
 
   shouldComponentUpdate(nextProps) {
@@ -35,7 +38,7 @@ export class EditTranslationForm extends Component {
 
   // eslint-disable-next-line class-methods-use-this
   onImportClicked() {
-    console.log('Importing started');
+    this.fileInputRef.current.click();
   }
 
   prepareTranslations() {
@@ -60,6 +63,12 @@ export class EditTranslationForm extends Component {
     }
 
     return translationsForm;
+  }
+
+  import() {
+    const file = this.fileInputRef.current.files[0];
+    this.fileFormRef.current.reset();
+    console.log(file);
   }
 
   save(_translations) {
@@ -134,6 +143,15 @@ export class EditTranslationForm extends Component {
             </button>
           </div>
         </Form>
+        <form ref={this.fileFormRef} style={{ display: 'none' }}>
+          <input
+            ref={this.fileInputRef}
+            type="file"
+            accept="text/csv"
+            style={{ display: 'none' }}
+            onChange={this.import}
+          />
+        </form>
       </div>
     );
   }
