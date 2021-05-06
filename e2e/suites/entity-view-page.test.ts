@@ -2,7 +2,6 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
-import { host } from '../config';
 
 describe('Entities', () => {
   beforeAll(async () => {
@@ -43,7 +42,6 @@ describe('Entities', () => {
     await expect(page).toClick(
       'div.item-document:nth-child(4) > div:nth-child(3) > div:nth-child(2)'
     );
-    await page.reload();
     await expect(page).toMatch('My entity view');
   });
 
