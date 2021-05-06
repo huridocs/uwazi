@@ -12,7 +12,6 @@ import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
 
 import api from 'app/Templates/TemplatesAPI';
-import { FormGroup } from 'app/Forms';
 import {
   MetadataTemplate,
   dropTarget,
@@ -20,8 +19,6 @@ import {
 } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
-
-import { ViewTemplateAsPage } from '../ViewTemplateAsPage';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
