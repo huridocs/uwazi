@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
@@ -323,7 +325,88 @@ export default {
     return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
-  saveEntityBasedReferences(entity, language) {
+  async saveEntityBasedReferences(entity, language) {
+    const START = new Date();
+    if (!language) throw createError('Language cant be undefined');
+    if (!entity.template) return [];
+
+    const template = await templatesAPI.getById(entity.template);
+    const relationshipProperties = getPropertiesToBeConnections(template);
+
+    if (!relationshipProperties.length) return [];
+
+    const entityHubs = await this.get({ entity: entity.sharedId });
+
+    return Promise.all(
+      relationshipProperties.map(async property => {
+        const newValues = determinePropertyValues(entity, property.name);
+        const propertyRelationType = property.relationType;
+
+        const existingReferences = await this.get({
+          template: generateID(propertyRelationType),
+          hub: { $in: entityHubs.map(r => r.hub) },
+        });
+
+        // const toCreate = newValues
+        //   .map(value => (existingReferences.find(r => r.entity === value) ? null : value))
+        //   .filter(r => r);
+
+        const toCreate = newValues.filter(
+          value => !existingReferences.find(r => r.entity === value)
+        );
+
+        if (toCreate.length) {
+          const candidateHub = await model.db.aggregate([
+            {
+              $match: {
+                hub: { $in: entityHubs.map(h => h.hub) },
+                template: { $ne: null },
+              },
+            },
+            {
+              $group: {
+                _id: '$hub',
+                templates: { $addToSet: '$template' },
+              },
+            },
+            {
+              $match: {
+                $and: [
+                  { 'templates.0': generateID(propertyRelationType) },
+                  { 'templates.1': { $exists: false } },
+                ],
+              },
+            },
+          ]);
+
+          const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
+          const newReferencesBase = candidateHub[0]
+            ? []
+            : [{ entity: entity.sharedId, hub: hubId }];
+
+          const newReferences = toCreate.map(value => ({
+            entity: value,
+            hub: hubId,
+            template: generateID(propertyRelationType),
+          }));
+
+          await this.save([...newReferencesBase, ...newReferences], language, false);
+        }
+
+        const toDelete = existingReferences.filter(r => !newValues.includes(r.entity));
+        if (toDelete.length) {
+          await this.delete({
+            _id: { $in: toDelete },
+          });
+        }
+
+        console.log(new Date() - START);
+        return [];
+      })
+    );
+  },
+
+  _saveEntityBasedReferences(entity, language) {
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));
     }
