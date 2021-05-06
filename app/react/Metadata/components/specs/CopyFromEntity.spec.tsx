@@ -1,11 +1,9 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../CopyFromEntity';
-
 import Immutable from 'immutable';
-
-import { SearchEntities } from '../SearchEntities';
 import { store } from 'app/store';
+import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../CopyFromEntity';
+import { SearchEntities } from '../SearchEntities';
 
 describe('CopyFromEntity', () => {
   let component: ShallowWrapper<CopyFromEntityProps, CopyFromEntityState, CopyFromEntity>;
@@ -25,6 +23,7 @@ describe('CopyFromEntity', () => {
           properties: [
             { name: 'one', type: 'text' },
             { name: 'two', type: 'text' },
+            { name: 'id', type: 'generatedid' },
           ],
         },
         {
@@ -32,19 +31,34 @@ describe('CopyFromEntity', () => {
           properties: [
             { name: 'two', type: 'text' },
             { name: 'three', type: 'text' },
+            { name: 'id', type: 'generatedid' },
           ],
         },
       ]),
       originalEntity: {
         title: 'I want to be like you',
         template: 'template_1',
-        metadata: { one: [{ value: 'number one' }], two: [{ value: 'number wrong' }] },
+        metadata: {
+          one: [{ value: 'number one' }],
+          two: [{ value: 'number wrong' }],
+          id: [{ value: 'ABC123' }],
+        },
       },
     };
   });
 
   const render = () => {
     component = shallow(<CopyFromEntity {...props} />);
+  };
+
+  const entityToBeSelected = {
+    title: 'Choose me!',
+    template: 'template_2',
+    metadata: {
+      two: [{ value: 'number two' }],
+      three: [{ value: 'number three' }],
+      id: [{ value: 'ABC123' }],
+    },
   };
 
   describe('render', () => {
@@ -58,11 +72,6 @@ describe('CopyFromEntity', () => {
   describe('when an entity is selected', () => {
     it('should render the entity an set the common props in the state', () => {
       render();
-      const entityToBeSelected = {
-        title: 'Choose me!',
-        template: 'template_2',
-        metadata: { two: [{ value: 'number two' }], three: [{ value: 'number three' }] },
-      };
       component.instance().onSelect(entityToBeSelected);
 
       expect(component.instance().state.propsToCopy).toEqual(['two']);
@@ -73,11 +82,7 @@ describe('CopyFromEntity', () => {
   describe('copy()', () => {
     it('should load in the redux form the entity with matched values', () => {
       render();
-      component.instance().onSelect({
-        title: 'Choose me!',
-        template: 'template_2',
-        metadata: { two: [{ value: 'number two' }], three: [{ value: 'number three' }] },
-      });
+      component.instance().onSelect(entityToBeSelected);
       component.instance().copy();
       expect(store?.dispatch).toHaveBeenCalledWith({ type: 'entityThesauris/SET', value: {} });
       expect(store?.dispatch).toHaveBeenCalledWith({ model: 'myForm', type: 'rrf/setPristine' });
@@ -89,7 +94,7 @@ describe('CopyFromEntity', () => {
         silent: true,
         type: 'rrf/change',
         value: {
-          metadata: { one: 'number one', two: 'number two' },
+          metadata: { one: 'number one', two: 'number two', id: 'ABC123' },
           template: 'template_1',
           title: 'I want to be like you',
         },

@@ -58,85 +58,65 @@ const noSortNumber = {
   doc_values: true,
 };
 
-const textType = () => {
-  return {
-    value: text,
-  };
-};
+const textType = () => ({
+  value: text,
+});
 
-const dateType = () => {
-  return {
-    value: number,
-  };
-};
+const dateType = () => ({
+  value: number,
+});
 
-const daterangeType = () => {
-  return {
-    value: {
-      properties: {
-        from: number,
-        to: number,
-      },
+const daterangeType = () => ({
+  value: {
+    properties: {
+      from: number,
+      to: number,
     },
-  };
-};
+  },
+});
 
-const geolocationType = () => {
-  return {
-    value: {
-      properties: {
-        label: text,
-        lat: noSortNumber,
-        lon: noSortNumber,
-      },
+const geolocationType = () => ({
+  value: {
+    properties: {
+      label: text,
+      lat: noSortNumber,
+      lon: noSortNumber,
     },
-  };
-};
+  },
+});
 
-const imageType = () => {
-  return {
-    value: noIndexText,
-  };
-};
+const imageType = () => ({
+  value: noIndexText,
+});
 
-const linkType = () => {
-  return {
-    value: {
-      properties: {
-        label: text,
-        url: noIndexText,
-      },
+const linkType = () => ({
+  value: {
+    properties: {
+      label: text,
+      url: noIndexText,
     },
-  };
-};
+  },
+});
 
-const selectType = () => {
-  return {
-    label: text,
-    value: id,
-  };
-};
+const selectType = () => ({
+  label: text,
+  value: id,
+});
 
-const numericType = () => {
-  return {
-    value: number,
-  };
-};
+const numericType = () => ({
+  value: number,
+});
 
-const relationshipType = () => {
-  return {
-    icon: { type: 'object', enabled: false },
-    label: text,
-    value: id,
-    type: noIndexText,
-  };
-};
+const relationshipType = () => ({
+  icon: { type: 'object', enabled: false },
+  label: text,
+  value: id,
+  type: noIndexText,
+});
 
-const nestedType = () => {
-  return {
-    value: nested,
-  };
-};
+const nestedType = () => ({
+  value: nested,
+});
 
 const propertyMappings = {
   text: textType,
@@ -154,6 +134,7 @@ const propertyMappings = {
   numeric: numericType,
   relationship: relationshipType,
   select: selectType,
+  generatedid: textType,
 };
 
 export {

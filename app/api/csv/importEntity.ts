@@ -9,20 +9,23 @@ import { ImportFile } from 'api/csv/importFile';
 import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
 
-import typeParsers from './typeParsers';
 import { attachmentsPath, files } from 'api/files';
+import typeParsers from './typeParsers';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
   typeParsers[prop.type]
     ? typeParsers[prop.type](toImportEntity, prop)
     : typeParsers.text(toImportEntity, prop);
 
+const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
+  prop.name ? toImportEntity[prop.name] || prop.type === 'generatedid' : false;
+
 const toMetadata = async (
   template: TemplateSchema,
   toImportEntity: RawEntity
 ): Promise<MetadataSchema> =>
   (template.properties || [])
-    .filter(prop => (prop.name ? toImportEntity[prop.name] : false))
+    .filter(prop => hasValidValue(prop, toImportEntity))
     .reduce<Promise<MetadataSchema>>(
       async (meta, prop) =>
         ({
@@ -57,7 +60,7 @@ const importEntity = async (
   importFile: ImportFile,
   { user = {}, language }: Options
 ) => {
-  const attachments = toImportEntity.attachments;
+  const { attachments } = toImportEntity;
   delete toImportEntity.attachments;
   const eo = await entityObject(toImportEntity, template, { language });
   const entity = await entities.save(eo, { user, language }, true, false);
