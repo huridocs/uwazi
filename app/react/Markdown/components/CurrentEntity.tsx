@@ -37,11 +37,7 @@ const logError = (err: any, value?: string, propertyName?: string) => {
 };
 
 const CurrentEntity = ({ entity, templates, thesauri, value, propertyName }: ComponentProps) => {
-  console.log('entity:', entity.toJS());
-  console.log('value:', value);
-  console.log('propertyName:', propertyName);
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauri);
-  console.log(formattedEntity);
   let output = <></>;
 
   try {
