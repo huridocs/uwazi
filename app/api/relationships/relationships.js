@@ -333,7 +333,9 @@ export default {
     const template = await templatesAPI.getById(entity.template);
     const relationshipProperties = getPropertiesToBeConnections(template);
 
-    if (!relationshipProperties.length) return []; //
+    if (!relationshipProperties.length) return [];
+
+    //unless we fetch the existing references here, the previous line is not necessary
 
     return Promise.all(
       relationshipProperties.map(async property => {
@@ -341,16 +343,10 @@ export default {
         const propertyRelationType = property.relationType;
         const propertyEntityType = property.content;
 
-        const entityHubs = await this.get({
-          entity: entity.sharedId,
-          template: null,
-        });
-
         const existingReferences = await model.db.aggregate([
           {
             $match: {
               entity: entity.sharedId,
-              template: null,
             },
           },
           {
@@ -374,12 +370,10 @@ export default {
               from: 'entities',
               localField: 'rightSide.entity',
               foreignField: 'sharedId',
-              as: 'entityData',
+              as: 'rightSide.entityData',
             },
           },
         ]);
-
-        console.log(JSON.stringify(existingReferences, null, 2));
 
         const toCreate = newValues.filter(
           value => !existingReferences.find(r => r.rightSide.entity === value)
@@ -389,14 +383,29 @@ export default {
           const candidateHub = await model.db.aggregate([
             {
               $match: {
-                hub: { $in: entityHubs.map(h => h.hub) },
-                template: { $ne: null },
+                entity: entity.sharedId,
+              },
+            },
+            {
+              $lookup: {
+                from: 'connections',
+                localField: 'hub',
+                foreignField: 'hub',
+                as: 'rightSide',
+              },
+            },
+            {
+              $unwind: '$rightSide',
+            },
+            {
+              $match: {
+                'rightSide.entity': { $ne: entity.sharedId },
               },
             },
             {
               $group: {
-                _id: '$hub',
-                templates: { $addToSet: '$template' },
+                _id: '$rightSide.hub',
+                templates: { $addToSet: '$rightSide.template' },
               },
             },
             {
@@ -427,12 +436,11 @@ export default {
           .filter(
             r =>
               r.rightSide.entity !== entity.sharedId &&
-              (!propertyEntityType || r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
+              (!propertyEntityType ||
+                r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
               !newValues.includes(r.rightSide.entity)
           )
           .map(r => r.rightSide._id);
-
-          console.log(toDelete);
 
         if (toDelete.length) {
           await this.delete({
