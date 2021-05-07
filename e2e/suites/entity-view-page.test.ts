@@ -1,4 +1,5 @@
 import { adminLogin, logout } from '../helpers/login';
+import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
@@ -38,11 +39,12 @@ describe('Entities', () => {
   });
 
   it('should display the entity in its custom page', async () => {
-    await expect(page).toClick('a', { text: 'Public documents' });
+    await page.goto(`${host}`);
+    await page.reload();
     await expect(page).toClick(
       'div.item-document:nth-child(4) > div:nth-child(3) > div:nth-child(2)'
     );
-    await expect(page).toMatch('My entity view');
+    await expect(page).toMatchElement('h1', { text: 'My entity view' });
   });
 
   afterAll(async () => {
