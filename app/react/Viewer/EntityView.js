@@ -30,17 +30,11 @@ export default class Entity extends Component {
 
     if (entityTemplate.get('entityViewPage')) {
       const pageQuery = { sharedId: entityTemplate.get('entityViewPage') };
-      const pageActions = await setPageAssets(
-        requestParams.set(pageQuery),
-        {
-          currentEntity: {
-            url: `entities?sharedId=${entity.sharedId}`,
-            query: true,
-            extractFirstRow: true,
-          },
-        },
-        { currentTemplate: entityTemplate }
-      );
+      const pageActions = await setPageAssets(requestParams.set(pageQuery), undefined, {
+        currentEntity: entity,
+        currentTemplate: entityTemplate,
+      });
+
       additionalActions = additionalActions.concat(pageActions);
     }
 

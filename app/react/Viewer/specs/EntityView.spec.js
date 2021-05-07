@@ -49,11 +49,11 @@ describe('EntityView', () => {
     describe('when template has "entityViewPage"', () => {
       beforeEach(() => {
         spyOn(pageAssetsUtils, 'setPageAssets').and.callFake(
-          async (query, additionalDatasets, localDatasets) => {
+          async (query, _additionalDatasets, localDatasets) => {
             expect(query).toEqual({ data: { sharedId: 'aViewPage' }, headers: 'headers' });
             return Promise.resolve([
               'normalPageActions',
-              { customPageActions: { ...additionalDatasets, ...localDatasets } },
+              { customPageActions: { ...localDatasets } },
             ]);
           }
         );
@@ -65,15 +65,10 @@ describe('EntityView', () => {
 
         expect(actions[actions.length - 2]).toBe('normalPageActions');
 
-        expect(actions[actions.length - 1].customPageActions.currentEntity).toEqual({
-          extractFirstRow: true,
-          query: true,
-          url: 'entities?sharedId=abc',
-        });
+        const { customPageActions } = actions[actions.length - 1];
 
-        expect(actions[actions.length - 1].customPageActions.currentTemplate).toEqual(
-          templates.get(1)
-        );
+        expect(customPageActions.currentEntity).toEqual(entities[1]);
+        expect(customPageActions.currentTemplate).toEqual(templates.get(1));
       });
     });
   });
