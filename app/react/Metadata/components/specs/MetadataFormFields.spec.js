@@ -13,21 +13,10 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
   beforeEach(() => {
     fieldsTemplate = [
-      {
-        name: 'field1',
-        label: 'label1',
-      },
-      {
-        name: 'field2',
-        label: 'label2',
-        type: 'relationship',
-        content: '2',
-      },
-      {
-        name: 'field3',
-        label: 'label3',
-        type: 'date',
-      },
+      { name: 'field1', label: 'label1', type: 'text' },
+      { name: 'field2', label: 'label2', type: 'relationship', content: '2' },
+      { name: 'field3', label: 'label3', type: 'date' },
+      { name: 'field4', label: 'label4', type: 'generatedid' },
     ];
 
     props = {
@@ -67,36 +56,52 @@ describe('MetadataFormFields with one entity to edit ', () => {
     };
   });
 
-  const render = () => {
-    component = shallow(<MetadataFormFields {...props} />);
+  const render = args => {
+    const componentProps = { ...props, ...args };
+    component = shallow(<MetadataFormFields {...componentProps} />);
   };
 
-  it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {
-    render();
+  describe('default props', () => {
+    beforeEach(() => {
+      render();
+    });
+    it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {
+      const formGroups = component.find(FormGroup);
+      expect(formGroups.at(0).props().model).toBe('.metadata.field1');
+      expect(formGroups.at(1).props().model).toBe('.metadata.field2');
+      expect(formGroups.at(2).props().model).toBe('.metadata.field3');
 
-    const formGroups = component.find(FormGroup);
-    expect(formGroups.at(0).props().model).toBe('.metadata.field1');
-    expect(formGroups.at(1).props().model).toBe('.metadata.field2');
-    expect(formGroups.at(2).props().model).toBe('.metadata.field3');
+      const warnings = component.find(MultipleEditionFieldWarning);
+      expect(warnings.at(0).props().model).toBe('metadata');
+      expect(warnings.at(0).props().field).toBe('metadata.field1');
+      expect(warnings.at(1).props().field).toBe('metadata.field2');
+      expect(warnings.at(2).props().field).toBe('metadata.field3');
+    });
 
-    const warnings = component.find(MultipleEditionFieldWarning);
-    expect(warnings.at(0).props().model).toBe('metadata');
-    expect(warnings.at(0).props().field).toBe('metadata.field1');
-    expect(warnings.at(1).props().field).toBe('metadata.field2');
-    expect(warnings.at(2).props().field).toBe('metadata.field3');
+    it('should render dynamic fields based on the template selected', () => {
+      const inputField = component.find('[model=".metadata.field1"]').find('input');
+      expect(inputField.length).toBe(1);
+
+      const multiselect = component.find(LookupMultiSelect);
+      expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
+      expect(multiselect.props().optionsValue).toEqual('id');
+
+      const datepicker = component.find(DatePicker);
+      expect(datepicker.length).toBe(1);
+    });
+
+    it('should render a generatedid property without a default value', () => {
+      const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
+      expect(generatedIdInput.length).toBe(1);
+      expect(generatedIdInput.props().defaultValue).toBe(undefined);
+    });
   });
 
-  it('should render dynamic fields based on the template selected', () => {
-    render();
-    const inputField = component.findWhere(node => node.props().model === '.metadata.field1');
-    const input = inputField.find('input');
-    expect(input).toBeDefined();
-
-    const multiselect = component.find(LookupMultiSelect);
-    expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
-    expect(multiselect.props().optionsValue).toEqual('id');
-
-    const datepicker = component.find(DatePicker);
-    expect(datepicker.length).toBe(1);
+  it('should hide fields with type generatedId if model is publicform', () => {
+    render({ model: 'publicform' });
+    const generatedIdField = component.find('[model=".metadata.field4"]').at(0);
+    expect(generatedIdField.props().className).toBe(' hidden ');
+    const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
+    expect(generatedIdInput.props().defaultValue.length).toBe(12);
   });
 });

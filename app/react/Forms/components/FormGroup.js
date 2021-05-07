@@ -33,6 +33,13 @@ export class FormGroup extends Component {
 
 const childrenType = PropTypes.oneOfType([PropTypes.object, PropTypes.array]);
 
+FormGroup.defaultProps = {
+  hasError: false,
+  className: '',
+  model: '',
+  children: PropTypes.any,
+};
+
 FormGroup.propTypes = {
   hasError: PropTypes.bool,
   className: PropTypes.string,

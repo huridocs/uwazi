@@ -90,6 +90,7 @@ export class TemplateCreator extends Component {
                       {this.props.project === 'cejil' && (
                         <PropertyOption label="Violated articles" type="nested" />
                       )}
+                      <PropertyOption label="Generated ID" type="generatedid" />
                     </ul>
                     {this.props.noRelationtypes && (
                       <div className="alert alert-warning">
