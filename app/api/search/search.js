@@ -25,7 +25,10 @@ function processFilters(filters, properties) {
     }
 
     let { type } = property;
-    const value = filters[filterName];
+    let value = filters[filterName];
+    if (['text', 'markdown', 'generatedid'].includes(property.type) && typeof value === 'string') {
+      value = value.toLowerCase();
+    }
     if (['date', 'multidate', 'numeric'].includes(property.type)) {
       type = 'range';
     }
@@ -562,7 +565,7 @@ const _getTextFields = (query, templates) =>
   propertiesHelper
     .allUniqueProperties(templates)
     .map(prop =>
-      ['text', 'markdown'].includes(prop.type)
+      ['text', 'markdown', 'generatedid'].includes(prop.type)
         ? `metadata.${prop.name}.value`
         : `metadata.${prop.name}.label`
     )

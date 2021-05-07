@@ -11,6 +11,7 @@ describe('library helper', () => {
         { name: 'date', filter: true, type: 'text' },
         { name: 'language', filter: true, type: 'text' },
         { name: 'rich', filter: true, type: 'markdown' },
+        { name: 'id', filter: true, type: 'generatedid' },
       ],
     },
     {
@@ -109,6 +110,7 @@ describe('library helper', () => {
       expect(state.search.filters.country).toEqual({});
       expect(state.search.filters.language).toBe('');
       expect(state.search.filters.rich).toBe('');
+      expect(state.search.filters.id).toBe('');
     });
   });
 
