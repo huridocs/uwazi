@@ -7,6 +7,11 @@ import pageItemLists from '../pageItemLists';
 
 import { setPageAssets } from '../setPageAssets';
 
+interface Action {
+  type: string;
+  value: any;
+}
+
 describe('setPageAssets', () => {
   const page = {
     _id: 'abc2',
@@ -97,30 +102,38 @@ describe('setPageAssets', () => {
 
   describe('Datasets', () => {
     let markdownDatasetsResponse: {};
+    const getDatasetsActions = (stateActions: Action[]) =>
+      stateActions.find(a => a.type === 'page/datasets/SET')?.value;
 
     beforeEach(() => {
       markdownDatasetsResponse = { request1: 'url1', request2: 'url2' };
-      spyOn(markdownDatasets, 'fetch').and.returnValue(Promise.resolve(markdownDatasetsResponse));
+      spyOn(markdownDatasets, 'fetch').and.callFake(async (content, requestParams, options) => {
+        expect(content).toBe('originalContent');
+        expect(requestParams).toEqual(request.onlyHeaders());
+        return Promise.resolve({ ...markdownDatasetsResponse, ...options.additionalDatasets });
+      });
     });
 
     it('should request each dataset inside the content', async () => {
       const stateActions = await setPageAssets(request);
-      expect(markdownDatasets.fetch).toHaveBeenCalledWith(
-        'originalContent',
-        request.onlyHeaders(),
-        { addtionalDatasets: undefined }
-      );
-
-      expect(stateActions[2].value).toEqual(markdownDatasetsResponse);
+      expect(getDatasetsActions(stateActions)).toEqual(markdownDatasetsResponse);
     });
 
-    it('should request additional dattasets passed', async () => {
-      await setPageAssets(request, { customDataset: { url: 'someurl' } });
-      expect(markdownDatasets.fetch).toHaveBeenCalledWith(
-        'originalContent',
-        request.onlyHeaders(),
-        { additionalDatasets: { customDataset: { url: 'someurl' } } }
-      );
+    describe('Extended datasets and data', () => {
+      it('should request additional dataset queries and passed data', async () => {
+        const stateActions = await setPageAssets(
+          request,
+          { customDataset: { url: 'someurl' } },
+          { customData: { localData: 'from store' } }
+        );
+
+        expect(getDatasetsActions(stateActions)).toEqual({
+          request1: 'url1',
+          request2: 'url2',
+          customDataset: { url: 'someurl' },
+          customData: { localData: 'from store' },
+        });
+      });
     });
   });
 });
