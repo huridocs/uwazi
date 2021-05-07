@@ -1,5 +1,5 @@
-/* eslint-disable max-lines */
 /* eslint-disable max-statements */
+/* eslint-disable max-lines */
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
@@ -333,26 +333,56 @@ export default {
     const template = await templatesAPI.getById(entity.template);
     const relationshipProperties = getPropertiesToBeConnections(template);
 
-    if (!relationshipProperties.length) return [];
-
-    const entityHubs = await this.get({ entity: entity.sharedId });
+    if (!relationshipProperties.length) return []; //
 
     return Promise.all(
       relationshipProperties.map(async property => {
         const newValues = determinePropertyValues(entity, property.name);
         const propertyRelationType = property.relationType;
+        const propertyEntityType = property.content;
 
-        const existingReferences = await this.get({
-          template: generateID(propertyRelationType),
-          hub: { $in: entityHubs.map(r => r.hub) },
+        const entityHubs = await this.get({
+          entity: entity.sharedId,
+          template: null,
         });
 
-        // const toCreate = newValues
-        //   .map(value => (existingReferences.find(r => r.entity === value) ? null : value))
-        //   .filter(r => r);
+        const existingReferences = await model.db.aggregate([
+          {
+            $match: {
+              entity: entity.sharedId,
+              template: null,
+            },
+          },
+          {
+            $lookup: {
+              from: 'connections',
+              localField: 'hub',
+              foreignField: 'hub',
+              as: 'rightSide',
+            },
+          },
+          {
+            $unwind: '$rightSide',
+          },
+          {
+            $match: {
+              'rightSide.template': generateID(propertyRelationType),
+            },
+          },
+          {
+            $lookup: {
+              from: 'entities',
+              localField: 'rightSide.entity',
+              foreignField: 'sharedId',
+              as: 'entityData',
+            },
+          },
+        ]);
+
+        console.log(JSON.stringify(existingReferences, null, 2));
 
         const toCreate = newValues.filter(
-          value => !existingReferences.find(r => r.entity === value)
+          value => !existingReferences.find(r => r.rightSide.entity === value)
         );
 
         if (toCreate.length) {
@@ -393,7 +423,17 @@ export default {
           await this.save([...newReferencesBase, ...newReferences], language, false);
         }
 
-        const toDelete = existingReferences.filter(r => !newValues.includes(r.entity));
+        const toDelete = existingReferences
+          .filter(
+            r =>
+              r.rightSide.entity !== entity.sharedId &&
+              (!propertyEntityType || r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
+              !newValues.includes(r.rightSide.entity)
+          )
+          .map(r => r.rightSide._id);
+
+          console.log(toDelete);
+
         if (toDelete.length) {
           await this.delete({
             _id: { $in: toDelete },

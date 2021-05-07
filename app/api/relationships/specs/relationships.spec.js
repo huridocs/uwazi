@@ -453,7 +453,7 @@ describe('relationships', () => {
         friend: [{ value: 'alfred' }],
       });
       let connections = await relationships.getByDocument('bruceWayne', 'en');
-      console.log(connections);
+
       expect(connections.length).toBe(6);
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
@@ -467,8 +467,8 @@ describe('relationships', () => {
       expect(connections.find(c => c.entity === 'alfred').template.toString()).toBe(
         family.toString()
       );
-      console.log(connections);
-      //expect(connections.length).toBe(7);
+
+      expect(connections.length).toBe(7);
     });
   });
 
