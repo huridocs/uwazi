@@ -96,7 +96,7 @@ const validateRelationshipForeignIds = async (
   value: MetadataObjectSchema[] = []
 ) => {
   if (value && property.type === propertyTypes.relationship) {
-    const valueIds = value.map(v => v.value);
+    const valueIds = value.map(v => v.ref.value);
 
     const entityIds = (
       await entities.get(
@@ -108,7 +108,7 @@ const validateRelationshipForeignIds = async (
       )
     ).map(v => v.sharedId);
 
-    const diff = value.filter(v => !entityIds.includes(String(v.value)));
+    const diff = value.filter(v => !entityIds.includes(String(v.ref.value)));
 
     if (diff.length) {
       return [

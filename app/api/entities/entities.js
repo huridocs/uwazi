@@ -33,10 +33,10 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
     const prop = template.properties.find(p => p.name === key);
     return Promise.all(
       value.map(async _elem => {
-        const elem = { ..._elem };
-        if (!elem.hasOwnProperty('value')) {
-          throw new Error('denormalizeMetadata received non-value prop!');
-        }
+        const elem = {
+          ..._elem,
+          ...(_elem.ref ? { ref: { ..._elem.ref } } : {}),
+        };
         if (!prop) {
           return elem;
         }
@@ -59,12 +59,17 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
         }
 
         if (prop.type === 'relationship') {
-          const [partner] = await model.get({ sharedId: elem.value, language: entity.language });
+          const [partner] = await model.get({
+            sharedId: elem.ref.value,
+            language: entity.language,
+          });
 
           if (partner && partner.title) {
-            elem.label = partner.title;
-            elem.icon = partner.icon;
-            elem.type = partner.file ? 'document' : 'entity';
+            elem.ref.label = partner.title;
+            elem.ref.icon = partner.icon;
+
+            // elem.value = [elem.ref.value];
+            // elem.label = [elem.ref.label];
           }
 
           if (prop.inherit && partner) {
@@ -76,14 +81,15 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
               p => p._id && p._id.toString() === prop.inheritProperty.toString()
             );
 
-            elem.inheritedValue = partner.metadata[inheritedProperty.name];
-            elem.inheritedType = inheritedProperty.type;
+            elem.value = partner.metadata[inheritedProperty.name].map(v => v.value);
+            elem.label = partner.metadata[inheritedProperty.name].map(v => v.label);
           }
         }
         return elem;
       })
     );
   };
+
   if (!template) {
     template = await templates.getById(entity.template);
     if (!template) {
@@ -128,6 +134,7 @@ async function updateEntity(entity, _template) {
   const toSyncProperties = template.properties
     .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
+
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   return Promise.all(
     docLanguages.map(async d => {
@@ -230,6 +237,9 @@ function getEntityTemplate(doc, language) {
 const uniqueMetadataObject = (elem, pos, arr) =>
   elem.value && arr.findIndex(e => e.value === elem.value) === pos;
 
+const uniqueMetadataObjectRef = (elem, pos, arr) =>
+  elem.ref && arr.findIndex(e => e.ref.value === elem.ref.value) === pos;
+
 function sanitize(doc, template) {
   if (!template) {
     return Object.assign(doc, { metadata: undefined });
@@ -240,12 +250,15 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if (
-      [propertyTypes.multiselect, propertyTypes.relationship].includes(type) &&
-      sanitizedMetadata[name]
-    ) {
+    if (propertyTypes.multiselect === type && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, {
         [name]: sanitizedMetadata[name].filter(uniqueMetadataObject),
+      });
+    }
+
+    if (propertyTypes.relationship === type && sanitizedMetadata[name]) {
+      return Object.assign(sanitizedMetadata, {
+        [name]: sanitizedMetadata[name].filter(uniqueMetadataObjectRef),
       });
     }
 
@@ -281,6 +294,7 @@ function updateMetadataWithDiff(metadata, diffMetadata) {
   if (!diffMetadata) {
     return metadata;
   }
+
   const newMetadata = { ...metadata };
   Object.keys(diffMetadata).forEach(p => {
     const dm = diffMetadata[p];
@@ -298,6 +312,7 @@ function updateMetadataWithDiff(metadata, diffMetadata) {
       ...toAdd.filter(va => !newMetadata[p].map(v => v.value).includes(va.value)),
     ];
   });
+
   return newMetadata;
 }
 
@@ -348,7 +363,8 @@ export default {
 
   async updateDenormalizedMetadataInRelatedEntities(entity) {
     const related = await relationships.getByDocument(entity.sharedId, entity.language);
-    const sharedIds = related.map(r => r.entityData.sharedId);
+    let sharedIds = related.map(r => r.entityData.sharedId);
+    sharedIds = sharedIds.filter(sid => sid !== entity.sharedId).filter(sid => sid);
     await this.updateMetdataFromRelationships(sharedIds, entity.language);
   },
 
@@ -460,6 +476,7 @@ export default {
     await Promise.all(
       ids.map(async id => {
         const entity = await this.getById(id, params.language);
+
         if (entity) {
           await this.save(
             {
@@ -524,10 +541,10 @@ export default {
             );
 
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
-              value: r.entity,
-              label: r.entityData.title,
+              ref: { value: r.entity, label: r.entityData.title },
             }));
           });
+
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);
             await this.updateEntity(this.sanitize(entity, template), template);
@@ -673,8 +690,8 @@ export default {
       )
       .map(property => {
         const p = {};
-        p[`metadata.${property.name}.value`] = deletedId;
-        changes[`metadata.${property.name}`] = { value: deletedId };
+        p[`metadata.${property.name}.ref.value`] = deletedId;
+        changes[`metadata.${property.name}`] = { 'ref.value': deletedId };
         return p;
       });
     if (!query.$or.length) {
@@ -759,7 +776,7 @@ export default {
   async renameRelatedEntityInMetadata(relatedEntity) {
     await this.renameInMetadata(
       relatedEntity.sharedId,
-      { label: relatedEntity.title, icon: relatedEntity.icon },
+      { 'ref.label': relatedEntity.title, 'ref.icon': relatedEntity.icon },
       relatedEntity.template,
       {
         types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],

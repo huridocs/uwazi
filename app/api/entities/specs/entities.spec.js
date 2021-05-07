@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks,max-statements */
+/* eslint-disable max-nested-callbacks,max-statements, max-lines */
 
 import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -61,27 +61,27 @@ describe('entities', () => {
             { value: 'country_two' },
           ],
           friends: [
-            { value: 'id1' },
-            { value: 'id2' },
-            { value: 'id2' },
-            { value: 'id1' },
-            { value: 'id3' },
-            { value: 'id3' },
+            { ref: { value: 'id1' } },
+            { ref: { value: 'id2' } },
+            { ref: { value: 'id2' } },
+            { ref: { value: 'id1' } },
+            { ref: { value: 'id3' } },
+            { ref: { value: 'id3' } },
           ],
         },
       };
       const user = {};
-
       const createdEntity = await entities.save(entity, { user, language: 'es' });
 
       expect(createdEntity.metadata.multiselect.sort((a, b) => b.value < a.value)).toEqual([
         { value: 'country_one', label: 'Pais1' },
         { value: 'country_two', label: 'Pais2' },
       ]);
-      expect(createdEntity.metadata.friends.sort((a, b) => b.value < a.value)).toEqual([
-        { value: 'id1', label: 'entity one', type: 'entity' },
-        { value: 'id2', label: 'entity two', type: 'entity' },
-        { value: 'id3', label: 'entity three', type: 'entity' },
+
+      expect(createdEntity.metadata.friends.sort((a, b) => b.ref.value < a.ref.value)).toEqual([
+        { ref: { value: 'id1', label: 'entity one' } },
+        { ref: { value: 'id2', label: 'entity two' } },
+        { ref: { value: 'id3', label: 'entity three' } },
       ]);
     });
 
@@ -201,16 +201,26 @@ describe('entities', () => {
         language: 'en',
       };
       const savedEntity = await entities.save(partialDoc, { language: 'en' });
+
       expect(savedEntity.title).toBe('Updated title');
       expect(savedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(savedEntity.metadata.friends).toEqual([
-        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+        {
+          ref: { icon: null, label: 'shared2title', value: 'shared2' },
+          value: ['shared2'],
+          label: ['shared2title'],
+        },
       ]);
+
       const refetchedEntity = await entities.getById(batmanFinishesId);
       expect(refetchedEntity.title).toBe('Updated title');
       expect(refetchedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(refetchedEntity.metadata.friends).toEqual([
-        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+        {
+          ref: { icon: null, label: 'shared2title', value: 'shared2' },
+          value: ['shared2'],
+          label: ['shared2title'],
+        },
       ]);
       expect(search.indexEntities).toHaveBeenCalled();
     });
@@ -260,12 +270,12 @@ describe('entities', () => {
 
         await entities.save(doc, { language: 'en' });
         let relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.enemies[0].icon._id).toBe('changedIcon');
+        expect(relatedEntity.metadata.enemies[0].ref.icon._id).toBe('changedIcon');
 
         relatedEntity = await entities.getById('other', 'en');
-        expect(relatedEntity.metadata.enemies[1].icon._id).toBe('changedIcon');
-        expect(relatedEntity.metadata.enemies[0].icon).toBe(null);
-        expect(relatedEntity.metadata.enemies[2].icon).toBe(null);
+        expect(relatedEntity.metadata.enemies[1].ref.icon._id).toBe('changedIcon');
+        expect(relatedEntity.metadata.enemies[0].ref.icon).toBe(null);
+        expect(relatedEntity.metadata.enemies[2].ref.icon).toBe(null);
 
         const updatedDoc = {
           _id: shared2,
@@ -277,7 +287,7 @@ describe('entities', () => {
 
         await entities.save(updatedDoc, { language: 'en' });
         relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.enemies[0].icon._id).toBe('changedIconAgain');
+        expect(relatedEntity.metadata.enemies[0].ref.icon._id).toBe('changedIconAgain');
       });
     });
 
@@ -291,12 +301,12 @@ describe('entities', () => {
 
         await entities.save(doc, { language: 'en' });
         let relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.enemies[0].label).toBe('changedTitle');
+        expect(relatedEntity.metadata.enemies[0].ref.label).toBe('changedTitle');
 
         relatedEntity = await entities.getById('other', 'en');
-        expect(relatedEntity.metadata.enemies[1].label).toBe('changedTitle');
-        expect(relatedEntity.metadata.enemies[0].label).toBe('shouldNotChange');
-        expect(relatedEntity.metadata.enemies[2].label).toBe('shouldNotChange1');
+        expect(relatedEntity.metadata.enemies[1].ref.label).toBe('changedTitle');
+        expect(relatedEntity.metadata.enemies[0].ref.label).toBe('shouldNotChange');
+        expect(relatedEntity.metadata.enemies[2].ref.label).toBe('shouldNotChange1');
       });
 
       it('should not change related labels on other languages', async () => {
@@ -310,8 +320,8 @@ describe('entities', () => {
 
         const relatedEntity = await entities.getById('other', 'es');
 
-        expect(relatedEntity.metadata.enemies[0].label).toBe('translated1');
-        expect(relatedEntity.metadata.enemies[1].label).toBe('translated2');
+        expect(relatedEntity.metadata.enemies[0].ref.label).toBe('translated1');
+        expect(relatedEntity.metadata.enemies[1].ref.label).toBe('translated2');
       });
 
       it('should index entities changed after propagating label change', async () => {
@@ -469,7 +479,11 @@ describe('entities', () => {
         template: templateId,
         language: 'es',
         metadata: {
-          friends: [{ value: 'id1' }, { value: 'id2' }, { value: 'id3' }],
+          friends: [
+            { ref: { value: 'id1' } },
+            { ref: { value: 'id2' } },
+            { ref: { value: 'id3' } },
+          ],
         },
       };
       const user = { _id: db.id() };
@@ -538,7 +552,7 @@ describe('entities', () => {
       await entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en');
       const updatedEntity = await entities.getById('shared', 'en');
       expect(updatedEntity.metadata.friends).toEqual([
-        { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
+        { ref: { icon: null, label: 'shared2title', value: 'shared2' } },
       ]);
     });
 
@@ -728,17 +742,20 @@ describe('entities', () => {
       const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
       entity.metadata.friends[0].label = '';
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
-      expect(denormalized.metadata.friends[0].label).toBe('shared2title');
+      expect(denormalized.metadata.friends[0].ref.label).toBe('shared2title');
     });
 
     it('should denormalize inherited metadata', async () => {
       const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
 
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
-      expect(denormalized.metadata.enemies[0].inheritedValue).toEqual([
-        { value: 'something to be inherited' },
+      expect(denormalized.metadata.enemies).toEqual([
+        {
+          ref: { value: 'shared2', label: 'shared2title' },
+          label: ['something to be inherited', 'something to be inherited too'],
+          value: ['abc123', 'def456'],
+        },
       ]);
-      expect(denormalized.metadata.enemies[0].inheritedType).toBe('text');
     });
   });
 
@@ -789,7 +806,7 @@ describe('entities', () => {
       const metadata = {
         property1: [{ value: 'new text' }],
         description: [{ value: 'yeah!' }],
-        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+        friends: [{ ref: { icon: null, label: 'shared2title', value: 'shared2' } }],
       };
 
       const updatedEntities = await entities.multipleUpdate(
@@ -801,6 +818,7 @@ describe('entities', () => {
       expect(updatedEntities.length).toBe(2);
 
       const sharedEntity = updatedEntities.find(e => e.sharedId === 'shared');
+
       expect(sharedEntity).toEqual(
         expect.objectContaining({
           sharedId: 'shared',
@@ -914,7 +932,13 @@ describe('entities', () => {
           expect(savedEntity.metadata).toEqual(
             expect.objectContaining({
               property1: [{ value: 'value1' }],
-              friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+              friends: [
+                {
+                  ref: { icon: null, label: 'shared2title', value: 'shared2' },
+                  label: ['shared2title'],
+                  value: ['shared2'],
+                },
+              ],
             })
           );
           expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
@@ -1128,8 +1152,8 @@ describe('entities', () => {
         search.indexEntities.and.callThrough();
         await entities.delete('shared');
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value0' }]);
-        expect(documentsToIndex[1].metadata.multiselect2).toEqual([{ value: 'value2' }]);
+        expect(documentsToIndex[0].metadata.multiselect).toEqual([{ ref: { value: 'value0' } }]);
+        expect(documentsToIndex[1].metadata.multiselect2).toEqual([{ ref: { value: 'value2' } }]);
         expect(documentsToIndex[2].metadata.select).toEqual([]);
         expect(documentsToIndex[3].metadata.select2).toEqual([]);
       });
@@ -1148,7 +1172,7 @@ describe('entities', () => {
           search.indexEntities.and.callThrough();
           await entities.delete('multiselect');
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
+          expect(documentsToIndex[0].metadata.multiselect).toEqual([{ ref: { value: 'value1' } }]);
         });
       });
     });

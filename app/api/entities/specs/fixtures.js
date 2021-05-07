@@ -120,8 +120,20 @@ export default {
       published: true,
       metadata: {
         property1: [{ value: 'value1' }],
-        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
-        enemies: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+        friends: [
+          {
+            ref: { icon: null, label: 'shared2title', value: 'shared2' },
+            value: ['shared2'],
+            label: ['shared2title'],
+          },
+        ],
+        enemies: [
+          {
+            ref: { icon: null, label: 'shared2title', value: 'shared2' },
+            value: ['shared2'],
+            label: ['shared2title'],
+          },
+        ],
       },
     },
     {
@@ -154,9 +166,18 @@ export default {
       metadata: {
         property2: [{ value: 'value1' }],
         enemies: [
-          { icon: null, label: 'shouldNotChange', type: 'entity', value: 'shared1' },
-          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
-          { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
+          {
+            ref: { icon: null, label: 'shouldNotChange', type: 'entity', value: 'shared1' },
+            value: ['shared1'],
+          },
+          {
+            ref: { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+            value: ['shared2'],
+          },
+          {
+            ref: { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
+            value: ['shared1'],
+          },
         ],
       },
     },
@@ -167,8 +188,8 @@ export default {
       language: 'es',
       metadata: {
         enemies: [
-          { icon: null, label: 'translated1', type: 'entity', value: 'shared2' },
-          { icon: null, label: 'translated2', type: 'entity', value: 'shared1' },
+          { ref: { icon: null, label: 'translated1', type: 'entity', value: 'shared2' } },
+          { ref: { icon: null, label: 'translated2', type: 'entity', value: 'shared1' } },
         ],
       },
     },
@@ -244,7 +265,7 @@ export default {
       sharedId: 'multiselect',
       type: 'entity',
       language: 'en',
-      metadata: { multiselect: [{ value: 'shared' }, { value: 'value0' }] },
+      metadata: { multiselect: [{ ref: { value: 'shared' } }, { ref: { value: 'value0' } }] },
     },
     {
       title: 'title',
@@ -253,7 +274,7 @@ export default {
       sharedId: 'multiselect',
       type: 'entity',
       language: 'es',
-      metadata: { multiselect2: [{ value: 'shared' }, { value: 'value2' }] },
+      metadata: { multiselect2: [{ ref: { value: 'shared' } }, { ref: { value: 'value2' } }] },
     },
     {
       title: 'title',
@@ -262,7 +283,7 @@ export default {
       sharedId: 'select',
       type: 'entity',
       language: 'en',
-      metadata: { select: [{ value: 'shared' }] },
+      metadata: { select: [{ ref: { value: 'shared' } }] },
       file: { filename: '123.pdf' },
     },
     {
@@ -272,7 +293,7 @@ export default {
       sharedId: 'select',
       type: 'entity',
       language: 'es',
-      metadata: { select2: [{ value: 'shared' }] },
+      metadata: { select2: [{ ref: { value: 'shared' } }] },
       file: { filename: '123.pdf' },
       fullText: { 1: 'text' },
     },
@@ -293,7 +314,7 @@ export default {
       sharedId: 'otherTemplateWithSelect',
       type: 'entity',
       language: 'es',
-      metadata: { select: [{ value: 'shared10' }] },
+      metadata: { select: [{ ref: { value: 'shared10' } }] },
       file: { filename: '123.pdf' },
       fullText: { 1: 'text' },
     },
@@ -304,7 +325,7 @@ export default {
       sharedId: 'otherTemplateWithMultiselect',
       type: 'entity',
       language: 'es',
-      metadata: { multiselect: [{ value: 'value1' }, { value: 'multiselect' }] },
+      metadata: { multiselect: [{ ref: { value: 'value1' } }, { ref: { value: 'multiselect' } }] },
       file: { filename: '123.pdf' },
     },
     {
@@ -314,7 +335,10 @@ export default {
       language: 'en',
       title: 'shared2title',
       metadata: {
-        property1: [{ value: 'something to be inherited' }],
+        property1: [
+          { label: 'something to be inherited', value: 'abc123' },
+          { label: 'something to be inherited too', value: 'def456' },
+        ],
       },
     },
     { sharedId: 'source2', language: 'en' },

@@ -119,7 +119,6 @@ export const validators = {
   [propertyTypes.select]: validateSingleWrappedValue(isValidSelect),
   [propertyTypes.numeric]: validateSingleWrappedValue(validateNumericProperty),
   [propertyTypes.multiselect]: validateMultiSelectProperty,
-  [propertyTypes.relationship]: validateMultiSelectProperty,
   [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
   [propertyTypes.geolocation]: validateGeolocationProperty,
   validateRequiredProperty,

@@ -85,6 +85,7 @@ export const propertyValueSchema = {
     { type: 'string' },
     { type: 'number' },
     { type: 'boolean' },
+    { type: 'array' },
     linkSchema,
     dateRangeSchema,
     latLonSchema,
@@ -95,15 +96,13 @@ export const propertyValueSchema = {
 export const metadataObjectSchema = {
   type: 'object',
   definitions: { propertyValueSchema },
-  required: ['value'],
+  anyOf: [{ required: ['value'] }, { required: ['ref'] }],
   properties: {
     value: propertyValueSchema,
-    label: { type: 'string' },
+    label: { oneOf: [{ type: 'string' }, { type: 'array' }] },
     suggestion_confidence: { type: 'number' },
     suggestion_model: { type: 'string' },
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
-    inheritedValue: { value: propertyValueSchema },
-    inheritedType: { type: 'string' },
   },
 };
 

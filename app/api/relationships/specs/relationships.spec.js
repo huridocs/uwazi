@@ -390,8 +390,8 @@ describe('relationships', () => {
         template: template.toString(),
         sharedId: 'bruceWayne',
         metadata: {
-          family: [{ value: 'thomasWayne' }],
-          friend: [{ value: 'robin' }, { value: 'alfred' }],
+          family: [{ ref: { value: 'thomasWayne' } }],
+          friend: [{ ref: { value: 'robin' } }, { ref: { value: 'alfred' } }],
         },
       };
     });
@@ -402,7 +402,7 @@ describe('relationships', () => {
     };
 
     it('should create connections based on properties', async () => {
-      await saveReferencesChangingMetadataTo({ friend: [{ value: 'robin' }] });
+      await saveReferencesChangingMetadataTo({ friend: [{ ref: { value: 'robin' } }] });
       const connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
       expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
@@ -440,16 +440,16 @@ describe('relationships', () => {
       await relationships.saveEntityBasedReferences(entity, 'en');
 
       await saveReferencesChangingMetadataTo({
-        family: [{ value: 'thomasWayne' }],
-        friend: [{ value: 'alfred' }],
+        family: [{ ref: { value: 'thomasWayne' } }],
+        friend: [{ ref: { value: 'alfred' } }],
       });
       let connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.length).toBe(6);
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
       await saveReferencesChangingMetadataTo({
-        family: [{ value: 'alfred' }],
-        friend: [{ value: 'robin' }],
+        family: [{ ref: { value: 'alfred' } }],
+        friend: [{ ref: { value: 'robin' } }],
       });
       connections = await relationships.getByDocument('bruceWayne', 'en');
 
