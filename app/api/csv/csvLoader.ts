@@ -8,12 +8,12 @@ import thesauri from 'api/thesauri';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
+import { ensure } from 'shared/tsUtils';
+import { ObjectId } from 'mongodb';
 import csv, { CSVRow } from './csv';
 import importFile from './importFile';
 import { importEntity, translateEntity } from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
-import { ensure } from 'shared/tsUtils';
-import { ObjectId } from 'mongodb';
 
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
@@ -118,4 +118,33 @@ export class CSVLoader extends EventEmitter {
     return saved;
   }
   /* eslint-enable class-methods-use-this */
+
+  async loadTranslations(csvPath: string, translationContext: string) {
+    const file = importFile(csvPath);
+    const availableLanguages = ensure<LanguageSchema[]>(
+      (await settings.get()).languages
+    ).map((l: LanguageSchema) => ({ label: l.label, language: l.key }));
+
+    await csv(await file.readStream(), this.stopOnError)
+      .onRow(async (row: CSVRow) => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        availableLanguages.forEach(async (lang: any) => {
+          if (!row[lang.label]) return;
+          const { contexts } = (await translations.get()).find(
+            trans => trans.locale === lang.language
+          );
+          const selectedContext = contexts.find(
+            (context: any) => context.id === translationContext
+          );
+
+          // console.log({ key: row.Key, value: row[lang.label] });
+          await translations.updateContext(selectedContext.id, selectedContext.label, {}, [], {
+            key: row.Key,
+            value: row[lang.label],
+          });
+        });
+      })
+      .read();
+    return Promise.resolve({ message: translationContext, languages: availableLanguages });
+  }
 }

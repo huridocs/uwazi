@@ -54,6 +54,7 @@ export function importTranslations(context, file) {
         .post(`${APIURL}translations`)
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
+        .field('context', context)
         .attach('file', file, file.name)
         .on('response', response => {
           const data = JSON.parse(response.text);

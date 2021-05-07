@@ -6,10 +6,11 @@ import { validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
 import pages from 'api/pages';
+import { CSVLoader } from 'api/csv';
 
+import { uploadMiddleware } from 'api/files';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
-import { uploadMiddleware } from 'api/files';
 
 export default app => {
   app.get('/api/translations', (_req, res, next) => {
@@ -26,39 +27,49 @@ export default app => {
     uploadMiddleware(),
     validation.validateRequest(
       Joi.alternatives(
-        Joi.object().keys({
-          _id: Joi.objectId(),
-          __v: Joi.number(),
-          locale: Joi.string(),
-          contexts: Joi.array()
-            // .required()
-            .items(
-              Joi.object().keys({
-                _id: Joi.string(),
-                id: Joi.string(),
-                label: Joi.string(),
-                type: Joi.string(),
-                values: Joi.object().pattern(Joi.string(), Joi.string()),
-              })
-            ),
-        })
-      )
+        Joi.object()
+          .keys({
+            _id: Joi.objectId(),
+            __v: Joi.number(),
+            locale: Joi.string().required(),
+            contexts: Joi.array()
+              .required()
+              .items(
+                Joi.object().keys({
+                  _id: Joi.string(),
+                  id: Joi.string(),
+                  label: Joi.string(),
+                  type: Joi.string(),
+                  values: Joi.object().pattern(Joi.string(), Joi.string()),
+                })
+              ),
+          })
+          .required(),
+        Joi.object()
+          .keys({
+            context: Joi.string().required(),
+          })
+          .required()
+      ).required()
     ),
 
-    (req, res, next) => {
-      if (req.file) {
-        console.log(req.file);
-        res.json({ message: 'Received' });
-        return;
-      }
-      translations
-        .save(req.body)
-        .then(response => {
-          response.contexts = translations.prepareContexts(response.contexts);
-          req.io.emitToCurrentTenant('translationsChange', response);
+    async (req, res, next) => {
+      try {
+        const { context } = req.body;
+        if (req.file) {
+          const loader = new CSVLoader();
+          const response = await loader.loadTranslations(req.file.path, context);
           res.json(response);
-        })
-        .catch(next);
+        } else {
+          translations.save(req.body).then(response => {
+            response.contexts = translations.prepareContexts(response.contexts);
+            req.io.emitToCurrentTenant('translationsChange', response);
+            res.json(response);
+          });
+        }
+      } catch (e) {
+        next(e);
+      }
     }
   );
 
