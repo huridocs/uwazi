@@ -5,14 +5,13 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { AccessLevels } from 'shared/types/permissionSchema';
+import { AccessLevels, MixedAccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';
 import { connect } from 'react-redux';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI';
-import { MixedAccessLevels, PermissionType } from '../../../shared/types/permissionSchema';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
