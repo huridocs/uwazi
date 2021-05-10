@@ -2,16 +2,19 @@
  * @jest-environment jsdom
  */
 import React, { Component } from 'react';
-import TestUtils from 'react-dom/test-utils';
-import TestBackend from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
-import Immutable from 'immutable';
-import { shallow } from 'enzyme';
 import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
-import { combineReducers, createStore } from 'redux';
+import TestUtils from 'react-dom/test-utils';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import Immutable from 'immutable';
+import thunk from 'redux-thunk';
+import { shallow } from 'enzyme';
+import TestBackend from 'react-dnd-test-backend';
 
 import api from 'app/Templates/TemplatesAPI';
+import pagesApi from 'app/Pages/PagesAPI';
+
 import {
   MetadataTemplate,
   dropTarget,
@@ -77,6 +80,7 @@ describe('MetadataTemplate', () => {
       templates: Immutable.fromJS({ templates: [] }),
       modals: Immutable.fromJS({}),
     };
+
     const store = createStore(
       combineReducers({
         template: combineReducers({
@@ -88,8 +92,10 @@ describe('MetadataTemplate', () => {
         form: () => initialData.form,
         modals: () => initialData.modals,
       }),
-      initialData
+      initialData,
+      applyMiddleware(thunk)
     );
+
     TestUtils.renderIntoDocument(
       <Provider store={store}>
         <ComponentToRender ref={ref => (result = ref)} {...props} index={1} />
@@ -111,6 +117,7 @@ describe('MetadataTemplate', () => {
       saveTemplate: jasmine.createSpy('saveTemplate'),
       defaultColor: '#112233',
     };
+    spyOn(pagesApi, 'get').and.returnValue(Promise.resolve({}));
   });
 
   describe('render()', () => {
