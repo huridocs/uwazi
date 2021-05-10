@@ -3,6 +3,7 @@ import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
+import { contents } from '../helpers/entityViewPageFixtures';
 
 describe('Entities', () => {
   beforeAll(async () => {
@@ -19,7 +20,7 @@ describe('Entities', () => {
     await expect(page).toFill('input[name="page.data.title"]', 'My entity view page');
     await expect(page).toFill(
       '.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
-      '<h1>My entity view</h1>'
+      contents
     );
     await expect(page).toClick('.slider');
     await expect(page).toMatchElement('button', { text: 'Save' });
@@ -44,7 +45,12 @@ describe('Entities', () => {
     await expect(page).toClick(
       'div.item-document:nth-child(4) > div:nth-child(3) > div:nth-child(2)'
     );
-    await expect(page).toMatchElement('h1', { text: 'My entity view' });
+    await expect(page).toMatchElement('p', {
+      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+    });
+    await expect(page).toMatchElement('li', {
+      text: 'Corte Interamericana de Derechos Humanos',
+    });
   });
 
   afterAll(async () => {
