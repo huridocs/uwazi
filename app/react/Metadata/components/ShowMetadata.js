@@ -1,5 +1,3 @@
-/** @format */
-
 import ShowIf from 'app/App/ShowIf';
 import { DocumentLanguage, TemplateLabel } from 'app/Layout';
 import { Icon } from 'app/Layout/Icon';
@@ -60,6 +58,7 @@ export class ShowMetadata extends Component {
           relationships={relationships}
           showSubset={showSubset}
           groupGeolocations={groupGeolocations}
+          renderLabel={(prop, label) => !prop.noLabel && label}
         />
       </div>
     );

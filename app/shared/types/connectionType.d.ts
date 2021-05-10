@@ -9,7 +9,7 @@ import { EntitySchema } from 'shared/types/entityType';
 export interface ConnectionSchema {
   _id?: ObjectIdSchema;
   hub?: ObjectIdSchema;
-  template?: ObjectIdSchema;
+  template?: null | ObjectIdSchema;
   file?: ObjectIdSchema;
   entity?: string;
   entityData?: {
@@ -58,6 +58,10 @@ export interface ConnectionSchema {
             suggestion_confidence?: number;
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
+            inheritedValue?: {
+              [k: string]: unknown | undefined;
+            };
+            inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]
         | undefined;
@@ -92,6 +96,10 @@ export interface ConnectionSchema {
             suggestion_confidence?: number;
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
+            inheritedValue?: {
+              [k: string]: unknown | undefined;
+            };
+            inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]
         | undefined;
@@ -100,12 +108,21 @@ export interface ConnectionSchema {
   };
   reference?: {
     text: string;
-    selectionRectangles: {
-      top: number;
-      left: number;
-      width: number;
-      height: number;
-      page: string;
-    }[];
+    selectionRectangles: [
+      {
+        top: number;
+        left: number;
+        width: number;
+        height: number;
+        page: string;
+      },
+      ...{
+        top: number;
+        left: number;
+        width: number;
+        height: number;
+        page: string;
+      }[]
+    ];
   };
 }
