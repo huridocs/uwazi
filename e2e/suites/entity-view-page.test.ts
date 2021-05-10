@@ -31,7 +31,7 @@ describe('Entities', () => {
   it('should set the template as entity view', async () => {
     await expect(page).toClick('a', { text: 'Account settings' });
     await expect(page).toClick('a', { text: 'Templates' });
-    await expect(page).toClick('a', { text: 'Ordenes del presidente' });
+    await expect(page).toClick('a', { text: 'Medida Provisional' });
     await expect(page).toClick('.slider');
     await expect(page).toSelect('select.form-control', 'My entity view page');
     await expect(page).toMatchElement('button', { text: 'Save' });
@@ -43,13 +43,13 @@ describe('Entities', () => {
     await page.goto(`${host}`);
     await page.reload();
     await expect(page).toClick(
-      'div.item-document:nth-child(4) > div:nth-child(3) > div:nth-child(2)'
+      'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
     );
     await expect(page).toMatchElement('p', {
-      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+      text: 'Artavia Murillo y otros',
     });
     await expect(page).toMatchElement('li', {
-      text: 'Corte Interamericana de Derechos Humanos',
+      text: 'Costa Rica',
     });
   });
 
