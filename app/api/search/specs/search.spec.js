@@ -4,10 +4,6 @@ import { search } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
-import entities from 'api/entities';
-import entitiesModel from 'api/entities/entitiesModel';
-import templatesModel from 'api/templates/templatesModel';
-import templates from 'api/templates';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
@@ -327,6 +323,38 @@ describe('search', () => {
     const unpublishedAggs = unpublished.aggregations.all._types.buckets;
     expect(unpublishedAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
     expect(unpublishedAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
+  });
+
+  it('should filter by metadata inheritValue', async () => {
+    const [spain, egypt, both, bothAnd] = await Promise.all([
+      search.search(
+        { types: [ids.template1], filters: { relationshipcountry: { values: ['SpainID'] } } },
+        'en'
+      ),
+      search.search(
+        { types: [ids.template1], filters: { relationshipcountry: { values: ['EgyptID'] } } },
+        'en'
+      ),
+      search.search(
+        {
+          types: [ids.template1],
+          filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'] } },
+        },
+        'en'
+      ),
+      search.search(
+        {
+          types: [ids.template1],
+          filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'], and: true } },
+        },
+        'en'
+      ),
+    ]);
+
+    expect(spain.rows.length).toBe(1);
+    expect(egypt.rows.length).toBe(2);
+    expect(both.rows.length).toBe(2);
+    expect(bothAnd.rows.length).toBe(1);
   });
 
   it('should filter by daterange metadata', async () => {
