@@ -6,6 +6,8 @@ const batmanBegins = 'shared2';
 const batmanFinishes = 'shared';
 const metadataSnippets = 'metadataSnippets';
 
+const multiselect1 = db.id();
+const entity1 = db.id();
 const template = db.id();
 const template1 = db.id();
 const template2 = db.id();
@@ -166,9 +168,47 @@ export const fixtures = {
       published: true,
       user: userId,
     },
-    //metadata filters
+    //inherited aggregations
     {
       _id: db.id(),
+      sharedId: 'inherited',
+      template: template1,
+      language: 'en',
+      published: true,
+      user: userId,
+      metadata: {
+        relationshipcountry: [
+          {
+            value: entity1,
+            label: 'metadata1',
+            inheritedValue: [
+              { value: 'EgyptID', label: 'Egypt' },
+              { value: 'SpainID', label: 'Spain' },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      _id: db.id(),
+      sharedId: 'inherited 2',
+      template: template1,
+      language: 'en',
+      published: true,
+      user: userId,
+      metadata: {
+        relationshipcountry: [
+          {
+            value: entity1,
+            label: 'metadata1',
+            inheritedValue: [{ value: 'EgyptID', label: 'Egypt' }],
+          },
+        ],
+      },
+    },
+    //metadata filters
+    {
+      _id: entity1,
       sharedId: 'metadata1',
       template: templateMetadata1,
       language: 'en',
@@ -347,16 +387,27 @@ export const fixtures = {
     {
       _id: template1,
       properties: [
-        { name: 'date', type: 'date', filter: true },
-        { name: 'multidate', type: 'multidate', filter: true },
-        { name: 'daterange', type: 'daterange', filter: true },
-        { name: 'multidaterange', type: 'multidaterange', filter: true },
+        { _id: db.id(), name: 'date', type: 'date', filter: true },
+        { _id: db.id(), name: 'multidate', type: 'multidate', filter: true },
+        { _id: db.id(), name: 'daterange', type: 'daterange', filter: true },
+        { _id: db.id(), name: 'multidaterange', type: 'multidaterange', filter: true },
         {
+          _id: db.id(),
           name: 'relationship',
           type: 'relationship',
           filter: true,
           relationType,
           content: template2,
+        },
+        {
+          _id: db.id(),
+          name: 'relationshipcountry',
+          type: 'relationship',
+          filter: true,
+          relationType,
+          content: templateMetadata1,
+          inherit: true,
+          inheritProperty: multiselect1,
         },
       ],
     },
@@ -364,36 +415,40 @@ export const fixtures = {
     {
       _id: templateMetadata1,
       properties: [
-        { name: 'field1', type: 'text', filter: true },
-        { name: 'field2', type: 'text', filter: true },
+        { _id: db.id(), name: 'field1', type: 'text', filter: true },
+        { _id: db.id(), name: 'field2', type: 'text', filter: true },
         {
+          _id: db.id(),
           name: 'select1',
           type: 'select',
           filter: true,
           content: countriesDictionaryID.toString(),
         },
         {
+          _id: multiselect1,
           name: 'multiselect1',
           type: 'multiselect',
           filter: true,
           content: countriesDictionaryID.toString(),
         },
-        { name: 'daterange', type: 'daterange', filter: true },
-        { name: 'date', type: 'date', filter: true },
+        { _id: db.id(), name: 'daterange', type: 'daterange', filter: true },
+        { _id: db.id(), name: 'date', type: 'date', filter: true },
         {
+          _id: db.id(),
           name: 'nestedField_nested',
           type: 'nested',
           nestedProperties: ['nested1', 'nested2'],
           filter: true,
         },
-        { name: 'city_geolocation', type: 'geolocation', filter: true },
+        { _id: db.id(), name: 'city_geolocation', type: 'geolocation', filter: true },
         {
+          _id: db.id(),
           name: 'groupedDictionary',
           type: 'multiselect',
           filter: true,
           content: countriesDictionaryID,
         },
-        { name: 'rich_text', type: 'markdown', filter: true },
+        { _id: db.id(), name: 'rich_text', type: 'markdown', filter: true },
       ],
     },
     {

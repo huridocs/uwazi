@@ -94,6 +94,7 @@ export default {
     if (!template._id) {
       return;
     }
+
     const current = await this.getById(ensure(template._id));
 
     const currentTemplate = ensure<TemplateSchema>(current);

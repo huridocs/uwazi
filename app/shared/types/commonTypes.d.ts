@@ -70,8 +70,10 @@ export interface MetadataObjectSchema {
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
   inheritedValue?: {
+    value?: PropertyValueSchema;
+    label?: string;
     [k: string]: unknown | undefined;
-  };
+  }[];
   inheritedType?: string;
   [k: string]: unknown | undefined;
 }

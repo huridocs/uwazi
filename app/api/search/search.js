@@ -82,7 +82,10 @@ function aggregationProperties(properties) {
         property.type === 'relationship' ||
         property.type === 'nested'
     )
-    .map(property => ({ ...property, name: `${property.name}.value` }));
+    .map(property => ({
+      ...property,
+      name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
+    }));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -180,7 +183,7 @@ function searchGeolocation(documentsQuery, templates) {
 
 const _sanitizeAgregationNames = aggregations =>
   Object.keys(aggregations).reduce((allAggregations, key) => {
-    const sanitizedKey = key.replace('.value', '');
+    const sanitizedKey = key.replace('.inheritedValue.value', '').replace('.value', '');
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 
@@ -254,7 +257,13 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
-    const property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
+    let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
+
+    if (property.inherit) {
+      property = properties.find(
+        prop => property.inheritProperty.toString() === prop._id.toString()
+      );
+    }
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
