@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { IStore } from 'app/istore';
 import formatter from 'app/Metadata/helpers/formater';
+import { safeName } from 'shared/propertyNames';
 
 export interface CurrentEntityProps {
   value?: string;
@@ -23,8 +24,8 @@ type ComponentProps = CurrentEntityProps & MappedProps;
 
 const extractRootProperty = (formattedEntity: any, property: string) => formattedEntity[property];
 
-const extractMetadataProperty = (formattedEntity: any, property?: string) => {
-  const propertyData = formattedEntity.metadata.find((p: any) => p.name === property);
+const extractMetadataProperty = (formattedEntity: any, property: string = '') => {
+  const propertyData = formattedEntity.metadata.find((p: any) => p.name === safeName(property));
   return propertyData.value;
 };
 
