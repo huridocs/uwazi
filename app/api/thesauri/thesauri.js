@@ -136,24 +136,24 @@ const thesauri = {
     return model.getById(id);
   },
 
-  get(thesauriId, language, user) {
+  async get(thesauriId, language, user) {
     let query;
     if (thesauriId) {
       query = { _id: thesauriId };
     }
-    return Promise.all([model.get(query), templates.get(query)]).then(
-      ([dictionaries, allTemplates]) => {
-        const processTemplates = Promise.all(
-          allTemplates.map(result =>
-            this.templateToThesauri(result, language, user).then(
-              templateTransformedInThesauri => templateTransformedInThesauri
-            )
-          )
-        );
 
-        return processTemplates.then(processedTemplates => dictionaries.concat(processedTemplates));
-      }
+    const dictionaries = await model.get(query);
+    const allTemplates = await templates.get(query);
+
+    const processedTemplates = await Promise.all(
+      allTemplates.map(result =>
+        this.templateToThesauri(result, language, user).then(
+          templateTransformedInThesauri => templateTransformedInThesauri
+        )
+      )
     );
+
+    return dictionaries.concat(processedTemplates);
   },
 
   dictionaries(query) {

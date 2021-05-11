@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
 import { generateNamesAndIds } from 'api/templates/utils';
@@ -13,9 +14,12 @@ import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
+import { unique } from 'api/utils/filters';
+import { AccessLevels } from 'shared/types/permissionSchema';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { validateEntity } from 'shared/types/entitySchema';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
-import { validateEntity } from '../../shared/types/entitySchema';
 import settings from '../settings';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
@@ -59,7 +63,10 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
         }
 
         if (prop.type === 'relationship') {
-          const [partner] = await model.get({ sharedId: elem.value, language: entity.language });
+          const [partner] = await model.getUnrestricted({
+            sharedId: elem.value,
+            language: entity.language,
+          });
 
           if (partner && partner.title) {
             elem.label = partner.title;
@@ -112,7 +119,7 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
-async function updateEntity(entity, _template) {
+async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
   if (
     docLanguages[0].template &&
@@ -129,6 +136,7 @@ async function updateEntity(entity, _template) {
     .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
+  const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
@@ -141,6 +149,10 @@ async function updateEntity(entity, _template) {
         }
 
         const toSave = { ...entity };
+
+        delete toSave.published;
+        delete toSave.permissions;
+
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
         }
@@ -151,7 +163,7 @@ async function updateEntity(entity, _template) {
             template
           );
         }
-        return model.save(toSave);
+        return saveFunc(toSave);
       }
 
       if (entity.metadata) {
@@ -170,10 +182,6 @@ async function updateEntity(entity, _template) {
         d.suggestedMetadata = await denormalizeMetadata(d.suggestedMetadata, d, template);
       }
 
-      if (typeof entity.published !== 'undefined') {
-        d.published = entity.published;
-      }
-
       if (typeof entity.template !== 'undefined') {
         d.template = entity.template;
       }
@@ -181,7 +189,7 @@ async function updateEntity(entity, _template) {
       if (typeof entity.generatedToc !== 'undefined') {
         d.generatedToc = entity.generatedToc;
       }
-      return model.save(d);
+      return saveFunc(d);
     })
   );
 }
@@ -301,6 +309,40 @@ function updateMetadataWithDiff(metadata, diffMetadata) {
   return newMetadata;
 }
 
+const validateWritePermissions = (ids, entitiesToUpdate) => {
+  const user = permissionsContext.getUserInContext();
+  if (!['admin', 'editor'].includes(user.role)) {
+    const userIds = user.groups.map(g => g._id.toString());
+    userIds.push(user._id.toString());
+
+    const allowedEntitiesToUpdate = entitiesToUpdate.filter(e => {
+      const writeGranted = (e.permissions || [])
+        .filter(p => p.level === AccessLevels.WRITE)
+        .map(p => p.refId)
+        .filter(id => userIds.includes(id));
+      return writeGranted.length > 0;
+    });
+    const uniqueIdsLength = allowedEntitiesToUpdate.map(e => e.sharedId).filter(unique).length;
+    if (uniqueIdsLength !== ids.length) {
+      throw Error('Have not permissions granted to update the requested entities');
+    }
+  }
+};
+
+const withDocuments = (entities, documentsFullText, withPdfInfo) =>
+  Promise.all(
+    entities.map(async entity => {
+      const entityFiles = await files.get(
+        { entity: entity.sharedId },
+        (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
+      );
+
+      entity.documents = entityFiles.filter(f => f.type === 'document');
+      entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+      return entity;
+    })
+  );
+
 export default {
   denormalizeMetadata,
   sanitize,
@@ -324,21 +366,25 @@ export default {
     ]);
     let docTemplate = template;
     doc.editDate = date.currentUTC();
-    let storedEntity;
+    let storedEntities;
     if (doc.sharedId) {
-      storedEntity = await this.updateEntity(this.sanitize(doc, template), template);
+      storedEntities = await this.updateEntity(this.sanitize(doc, template), template);
     } else {
       if (!doc.template) {
         doc.template = defaultTemplate._id;
         doc.metadata = {};
         docTemplate = defaultTemplate;
       }
-      storedEntity = await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
+      storedEntities = await this.createEntity(
+        this.sanitize(doc, docTemplate),
+        languages,
+        sharedId
+      );
     }
 
-    const entity = storedEntity.find(e => e.language === language);
-
-    if (updateRelationships) {
+    const entity = storedEntities.find(e => e.language === language);
+    
+    if (entity && updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
       await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
@@ -346,7 +392,7 @@ export default {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
-    return entity;
+    return entity || storedEntities.find(e => e.language === language);
   },
 
   async updateDenormalizedMetadataInRelatedEntities(entity) {
@@ -405,26 +451,25 @@ export default {
   },
 
   getWithoutDocuments(query, select, options = {}) {
-    return model.get(query, select, options);
+    return model.getUnrestricted(query, select, options);
+  },
+
+  async getUnrestrictedWithDocuments(query, select, options = {}) {
+    const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
+    const entities = await model.getUnrestricted(query, select, restOfOptions);
+
+    return withDocuments(entities, documentsFullText, withPdfInfo);
+  },
+
+  async getUnrestricted(query, select, options) {
+    return model.getUnrestricted(query, select, options);
   },
 
   async get(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const entities = await model.get(query, select, restOfOptions);
 
-    const setDocs = Promise.all(
-      entities.map(async entity => {
-        const entityFiles = await files.get(
-          { entity: entity.sharedId },
-          (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-        );
-
-        entity.documents = entityFiles.filter(f => f.type === 'document');
-        entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-        return entity;
-      })
-    );
-    return setDocs;
+    return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
   async getWithRelationships(query, select, pagination) {
@@ -460,9 +505,15 @@ export default {
 
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
+
+    const entitiesToUpdate = await this.getUnrestricted({ sharedId: { $in: ids } }, '+permissions');
+    validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {
-        const entity = await this.getById(id, params.language);
+        const entity = await entitiesToUpdate.find(
+          e => e.sharedId === id && e.language === params.language
+        );
+
         if (entity) {
           await this.save(
             {
@@ -472,6 +523,7 @@ export default {
                 { ...entity.metadata, ...pureValues.metadata },
                 diffMetadata
               ),
+              permissions: entity.permissions || [],
             },
             params,
             true,
@@ -533,7 +585,7 @@ export default {
           });
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);
-            await this.updateEntity(this.sanitize(entity, template), template);
+            await this.updateEntity(this.sanitize(entity, template), template, true);
           }
         }
       })
@@ -807,10 +859,14 @@ export default {
   },
 
   async addLanguage(language, limit = 50) {
-    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, {
-      limit: 1,
-    });
-    if (lanuageTranslationAlreadyExists) {
+    const [languageTranslationAlreadyExists] = await this.getUnrestrictedWithDocuments(
+      { locale: language },
+      null,
+      {
+        limit: 1,
+      }
+    );
+    if (languageTranslationAlreadyExists) {
       return;
     }
 
@@ -822,10 +878,14 @@ export default {
         return;
       }
 
-      const entities = await this.get({ language: defaultLanguage }, '', {
-        skip: offset,
-        limit,
-      });
+      const entities = await this.getUnrestrictedWithDocuments(
+        { language: defaultLanguage },
+        '+permissions',
+        {
+          skip: offset,
+          limit,
+        }
+      );
       const newLanguageEntities = await this.generateNewEntitiesForLanguage(entities, language);
       const newSavedEntities = await this.saveMultiple(newLanguageEntities);
       await newSavedEntities.reduce(async (previous, entity) => {

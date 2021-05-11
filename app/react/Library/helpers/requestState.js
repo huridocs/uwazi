@@ -37,10 +37,13 @@ export function processQuery(params, globalResources, key) {
   }
 
   const { userSelectedSorting, ...sanitizedQuery } = query;
-  return tocGenerationUtils.aggregations(
-    sanitizedQuery,
-    globalResources.settings.collection.toJS()
-  );
+
+  const loggedIn = globalResources.user && globalResources.user.has('role');
+
+  return {
+    ...tocGenerationUtils.aggregations(sanitizedQuery, globalResources.settings.collection.toJS()),
+    ...(loggedIn ? { aggregatePermissionsByLevel: true } : {}),
+  };
 }
 
 export default function requestState(request, globalResources, calculateTableColumns = false) {

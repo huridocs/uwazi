@@ -151,10 +151,6 @@ describe('entities', () => {
   });
 
   describe('GET', () => {
-    it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/entities')).toMatchSnapshot();
-    });
-
     it('should return matching document', done => {
       const expectedEntity = [
         {
@@ -177,7 +173,7 @@ describe('entities', () => {
               language: 'lang',
               published: true,
             },
-            {},
+            '',
             { limit: 1 }
           );
           expect(response).toEqual({ rows: expectedEntity });
@@ -235,7 +231,7 @@ describe('entities', () => {
           language: 'lang',
           published: true,
         },
-        {},
+        '',
         { limit: 1 }
       );
     });

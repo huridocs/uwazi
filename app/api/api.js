@@ -36,4 +36,5 @@ export default (app, server) => {
   require('./swagger/swaggerconfig').default(app);
   require('./tasks/routes').default(app);
   require('./usergroups/routes').default(app);
+  require('./permissions/routes').permissionRoutes(app);
 };

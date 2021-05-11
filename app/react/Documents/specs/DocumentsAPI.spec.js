@@ -13,8 +13,12 @@ describe('DocumentsAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-      .get(`${APIURL}entities`, { body: JSON.stringify({ rows: arrayResponse }) })
-      .get(`${APIURL}entities?_id=documentId`, { body: JSON.stringify({ rows: singleResponse }) })
+      .get(`${APIURL}entities?include=%5B%22permissions%22%5D`, {
+        body: JSON.stringify({ rows: arrayResponse }),
+      })
+      .get(`${APIURL}entities?_id=documentId&include=%5B%22permissions%22%5D`, {
+        body: JSON.stringify({ rows: singleResponse }),
+      })
       .get(`${APIURL}documents/search`, { body: JSON.stringify(searchResponse) })
       .get(`${APIURL}documents/list?keys=%5B%221%22%2C%222%22%5D`, {
         body: JSON.stringify({ rows: listResponse }),

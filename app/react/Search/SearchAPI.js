@@ -1,4 +1,5 @@
 import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 
 export default {
   countByTemplate(requestParams) {
@@ -11,8 +12,14 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
 
-  search(requestParams) {
-    return api.get('search', requestParams).then(response => response.json);
+  search(requestParams = new RequestParams()) {
+    const params = requestParams.add({
+      include:
+        requestParams.data && requestParams.data.include
+          ? requestParams.data.include.concat(['permissions'])
+          : ['permissions'],
+    });
+    return api.get('search', params).then(response => response.json);
   },
 
   list(requestParams) {
