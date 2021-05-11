@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { fromJS as Immutable } from 'immutable';
 import PropTypes from 'prop-types';
-import queryString from 'query-string';
+import qs from 'qs';
 
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
@@ -15,7 +15,7 @@ import Slider from './slider';
 export class ItemList extends Component {
   render() {
     const { items, link } = this.props;
-    const { sort } = queryString.parse(link.substring(link.indexOf('?')));
+    const { sort } = qs.parse(link.substring(link.indexOf('?')), { ignoreQueryPrefix: true });
     const searchParams = sort ? { sort } : { sort: 'title' };
 
     const mapDispatchToProps = dispatch =>

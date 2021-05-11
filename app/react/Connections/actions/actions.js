@@ -1,28 +1,32 @@
+import qs from 'qs';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/utils/api';
 import debounce from 'app/utils/debounce';
 import { RequestParams } from 'app/utils/RequestParams';
-import SearchApi from 'app/Search/SearchAPI';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
 
-export function immidiateSearch(dispatch, searchTerm, connectionType) {
+export function immediateSearch(dispatch, searchString, connectionType) {
   dispatch(uiActions.searching());
 
-  const requestParams = new RequestParams({ searchTerm, fields: ['title'] });
+  const requestParams = new RequestParams(
+    qs.stringify({
+      filter: { searchString: searchString ? `title:(${searchString})` : undefined },
+    })
+  );
 
-  return SearchApi.search(requestParams).then(({ rows }) => {
-    let results = rows;
+  return api.get('v2/entities', requestParams).then(({ json: { data } }) => {
+    let results = data;
     if (connectionType === 'targetRanged') {
-      results = results.filter(r => r.documents.length);
+      results = results.filter(r => r.documents && r.documents.length);
     }
     dispatch(actions.set('connections/searchResults', results));
   });
 }
 
-const debouncedSearch = debounce(immidiateSearch, 400);
+const debouncedSearch = debounce(immediateSearch, 400);
 
 export function search(searchTerm, connectionType) {
   return dispatch => {
@@ -33,7 +37,7 @@ export function search(searchTerm, connectionType) {
 
 export function startNewConnection(connectionType, sourceDocument) {
   return dispatch =>
-    immidiateSearch(dispatch, '', connectionType).then(() => {
+    immediateSearch(dispatch, '', connectionType).then(() => {
       dispatch(actions.set('connections/searchTerm', ''));
       dispatch(uiActions.openPanel(connectionType, sourceDocument));
     });
