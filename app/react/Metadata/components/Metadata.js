@@ -7,7 +7,7 @@ import React from 'react';
 import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
-const showByType = (prop, compact) => {
+export const showByType = (prop, compact) => {
   let result = prop.value;
   switch (prop.type) {
     case null:
