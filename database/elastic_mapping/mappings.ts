@@ -116,6 +116,12 @@ const relationshipType = () => ({
   label: text,
   value: id,
   type: noIndexText,
+  inheritedValue: {
+    properties: {
+      value: id,
+      label: { type: 'keyword' },
+    },
+  },
 });
 
 const nestedType = () => ({

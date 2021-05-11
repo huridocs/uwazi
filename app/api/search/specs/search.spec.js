@@ -4,6 +4,10 @@ import { search } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
+import entities from 'api/entities';
+import entitiesModel from 'api/entities/entitiesModel';
+import templatesModel from 'api/templates/templatesModel';
+import templates from 'api/templates';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
@@ -237,35 +241,32 @@ describe('search', () => {
     });
   });
 
-  it('should filter by templates', done => {
+  it('should filter by templates', async () => {
     userFactory.mock(undefined);
-    Promise.all([
+    await Promise.all([
       search.search({ types: [ids.template1] }, 'es'),
       search.search({ types: [ids.template2] }, 'es'),
       search.search({ types: [ids.template1] }, 'en'),
       search.search({ types: [ids.template1, ids.template2] }, 'en'),
       search.search({ types: ['missing'] }, 'en'),
       search.search({ types: [ids.template1, 'missing'] }, 'en'),
-    ])
-      .then(
-        ([
-          template1es,
-          template2es,
-          template1en,
-          allTemplatesEn,
-          onlyMissing,
-          template1AndMissing,
-        ]) => {
-          expect(template1es.rows.length).toBe(2);
-          expect(template1en.rows.length).toBe(3);
-          expect(template2es.rows.length).toBe(1);
-          expect(allTemplatesEn.rows.length).toBe(4);
-          expect(onlyMissing.rows.length).toBe(2);
-          expect(template1AndMissing.rows.length).toBe(5);
-          done();
-        }
-      )
-      .catch(catchErrors(done));
+    ]).then(
+      ([
+        template1es,
+        template2es,
+        template1en,
+        allTemplatesEn,
+        onlyMissing,
+        template1AndMissing,
+      ]) => {
+        expect(template1es.rows.length).toBe(2);
+        expect(template1en.rows.length).toBe(5);
+        expect(template2es.rows.length).toBe(1);
+        expect(allTemplatesEn.rows.length).toBe(6);
+        expect(onlyMissing.rows.length).toBe(2);
+        expect(template1AndMissing.rows.length).toBe(7);
+      }
+    );
   });
 
   it('should allow searching only within specific Ids', done => {
@@ -438,6 +439,16 @@ describe('search', () => {
       const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
       expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
       expect(template1UnpubishedAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(0);
+    });
+  });
+
+  describe('inherit aggregations', () => {
+    it('should return aggregations based on inheritValue', async () => {
+      const allAggregations = await search.search({ allAggregations: true }, 'en');
+
+      const template1Aggs = allAggregations.aggregations.all.relationshipcountry.buckets;
+      expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+      expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
     });
   });
 
@@ -834,7 +845,7 @@ describe('search', () => {
       };
 
       const { rows } = await search.search(query, 'en');
-      expect(rows.length).toBe(13);
+      expect(rows.length).toBe(15);
     });
   });
 
