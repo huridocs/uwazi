@@ -17,7 +17,8 @@ interface ListsData {
   searchs?: any;
 }
 
-const buildQuery = (sanitizedParams: string, queryDefault: any) => {
+const buildQuery = (sanitizedParams: string) => {
+  const queryDefault = { filters: {}, types: [] };
   if (sanitizedParams) {
     const query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
     if (typeof query !== 'object') {
@@ -34,8 +35,8 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   listsData.searchs = Promise.all(
     listsData.params.map((params, index) => {
       const sanitizedParams = params ? decodeURI(params) : '';
-      const queryDefault = { filters: {}, types: [] };
-      const query: Query = buildQuery(sanitizedParams, queryDefault);
+
+      const query: Query = buildQuery(sanitizedParams);
 
       query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
       return api.search(requestParams.set(query));
