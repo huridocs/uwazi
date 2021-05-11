@@ -339,10 +339,12 @@ export default {
 
     return Promise.all(
       relationshipProperties.map(async property => {
+        const PROPERTY = new Date();
         const newValues = determinePropertyValues(entity, property.name);
         const propertyRelationType = property.relationType;
         const propertyEntityType = property.content;
 
+        const EXISTING = new Date();
         const existingReferences = await model.db.aggregate([
           {
             $match: {
@@ -375,11 +377,14 @@ export default {
           },
         ]);
 
+        console.log('saveEntityBasedReferences PROPERTY EXISTING', new Date() - EXISTING);
+
         const toCreate = newValues.filter(
           value => !existingReferences.find(r => r.rightSide.entity === value)
         );
 
         if (toCreate.length) {
+          const CANDIDATE = new Date();
           const candidateHub = await model.db.aggregate([
             {
               $match: {
@@ -417,6 +422,7 @@ export default {
               },
             },
           ]);
+          console.log('saveEntityBasedReferences PROPERTY CANDIDATE HUB ', new Date() - CANDIDATE);
 
           const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
           const newReferencesBase = candidateHub[0]
@@ -429,7 +435,9 @@ export default {
             template: generateID(propertyRelationType),
           }));
 
+          const SAVE = new Date();
           await this.save([...newReferencesBase, ...newReferences], language, false);
+          console.log('saveEntityBasedReferences SAVE ', new Date() - SAVE);
         }
 
         const toDelete = existingReferences
@@ -443,15 +451,20 @@ export default {
           .map(r => r.rightSide._id);
 
         if (toDelete.length) {
+          const DELETE = new Date();
           await this.delete({
             _id: { $in: toDelete },
           });
+          console.log('saveEntityBasedReferences DELETE ', new Date() - DELETE);
         }
 
-        console.log(new Date() - START);
+        console.log('saveEntityBasedReferences PROPERTY', new Date() - PROPERTY);
         return [];
       })
-    );
+    ).then(r => {
+      console.log('saveEntityBasedReferences TOTAL ', new Date() - START);
+      return r;
+    });
   },
 
   _saveEntityBasedReferences(entity, language) {

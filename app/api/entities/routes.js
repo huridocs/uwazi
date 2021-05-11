@@ -9,6 +9,7 @@ import { parseQuery, validation } from '../utils';
 Joi.objectId = objectId(Joi);
 
 export default app => {
+<<<<<<< HEAD
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
@@ -24,6 +25,27 @@ export default app => {
           req.io.emitToCurrentTenant('thesauriChange', templateTransformed);
         })
         .catch(next)
+=======
+  app.post('/api/entities', needsAuthorization(['admin', 'editor']), (req, res, next) => {
+    const APIENTITIES = new Date();
+    return entities
+      .save(req.body, { user: req.user, language: req.language })
+      .then(response => {
+        res.json(response);
+        return templates.getById(response.template);
+      })
+      .then(template => thesauri.templateToThesauri(template, req.language, req.user))
+      .then(templateTransformed => {
+        req.io.emitToCurrentTenant('thesauriChange', templateTransformed);
+      })
+      .then(r => {
+        console.log('api/entities', new Date() - APIENTITIES);
+        console.log('-------');
+        return r;
+      })
+      .catch(next)
+  }
+>>>>>>> Benchmarking tools
   );
 
   app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>
