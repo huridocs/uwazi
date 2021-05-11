@@ -116,6 +116,7 @@ describe('MetadataTemplate', () => {
       templates: Immutable.fromJS([]),
       saveTemplate: jasmine.createSpy('saveTemplate'),
       defaultColor: '#112233',
+      entityViewPage: 'aPageSharedId',
     };
     spyOn(pagesApi, 'get').and.returnValue(Promise.resolve({}));
   });
@@ -138,6 +139,18 @@ describe('MetadataTemplate', () => {
     it('should render template color field', () => {
       const component = shallow(<MetadataTemplate {...props} />);
       expect(component.find(Control).first()).toMatchSnapshot();
+    });
+
+    it('should render a field with the entityViewPage model', () => {
+      const component = shallow(<MetadataTemplate {...props} />);
+      const field = component.findWhere(n => n.props().model === '.entityViewPage');
+      expect(field).toHaveLength(1);
+    });
+
+    it('should render a component with that receives the entityViewPage prop', () => {
+      const component = shallow(<MetadataTemplate {...props} />);
+      const formComponent = component.findWhere(n => n.props().selectedPage === 'aPageSharedId');
+      expect(formComponent).toHaveLength(1);
     });
 
     describe('when fields is empty', () => {
