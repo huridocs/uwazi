@@ -17,6 +17,17 @@ interface ListsData {
   searchs?: any;
 }
 
+const buildQuery = (sanitizedParams: string, queryDefault: any) => {
+  if (sanitizedParams) {
+    const query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
+    if (typeof query !== 'object') {
+      return queryDefault;
+    }
+    return query;
+  }
+  return queryDefault;
+};
+
 const prepareLists = (content: string, requestParams: RequestParams) => {
   const listsData: ListsData = pageItemLists.generate(content);
 
@@ -24,14 +35,7 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
     listsData.params.map((params, index) => {
       const sanitizedParams = params ? decodeURI(params) : '';
       const queryDefault = { filters: {}, types: [] };
-      let query: Query = queryDefault;
-
-      if (sanitizedParams) {
-        query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
-        if (typeof query !== 'object') {
-          query = queryDefault;
-        }
-      }
+      const query: Query = buildQuery(sanitizedParams, queryDefault);
 
       query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
       return api.search(requestParams.set(query));
