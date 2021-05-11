@@ -143,8 +143,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
             )}
           </div>
 
-          {// TEST!!!
-          environment === 'template' && (
+          {environment === 'template' && (
             <>
               <div className="metadataTemplate-pageview">
                 <FormGroup model=".entityViewPage">
@@ -279,7 +278,6 @@ export const mapStateToProps = (
     templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate'),
     defaultColor: getTemplateDefaultColor(templates, template),
-    // TEST!!!
     environment,
   };
 };

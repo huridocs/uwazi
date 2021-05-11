@@ -117,6 +117,7 @@ describe('MetadataTemplate', () => {
       saveTemplate: jasmine.createSpy('saveTemplate'),
       defaultColor: '#112233',
       entityViewPage: 'aPageSharedId',
+      environment: 'template',
     };
     spyOn(pagesApi, 'get').and.returnValue(Promise.resolve({}));
   });
@@ -192,6 +193,26 @@ describe('MetadataTemplate', () => {
         props.commonProperties = [];
         const component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
+      });
+    });
+
+    describe('enviroment prop', () => {
+      it('should render the template editor when environment is template', () => {
+        props.properties = [
+          { label: 'country', type: 'text', _id: '1' },
+          { label: 'author', type: 'text', _id: '2' },
+        ];
+        const component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find(MetadataProperty).length).toBe(2);
+      });
+      it('should not render the template editor when environment is relationType', () => {
+        props.environment = 'relationType';
+        props.properties = [
+          { label: 'country', type: 'text', _id: '1' },
+          { label: 'author', type: 'text', _id: '2' },
+        ];
+        const component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find(MetadataProperty).length).toBe(0);
       });
     });
   });
