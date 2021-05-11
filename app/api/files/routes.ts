@@ -14,7 +14,7 @@ import { validation, createError, handleError } from '../utils';
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware(uploadsPath),
     async (req, res) => {
       try {
@@ -35,7 +35,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/custom',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware(customUploadsPath),
     activitylogMiddleware,
     (req, res, next) => {
@@ -50,7 +50,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/attachment',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware(attachmentsPath),
     activitylogMiddleware,
     (req, res, next) => {
@@ -63,18 +63,22 @@ export default (app: Application) => {
     }
   );
 
-  app.post('/api/files', needsAuthorization(['admin', 'editor']), async (req, res, next) => {
-    files
-      .save(req.body)
-      .then(result => {
-        res.json(result);
-      })
-      .catch(next);
-  });
+  app.post(
+    '/api/files',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    (req, res, next) => {
+      files
+        .save(req.body)
+        .then(result => {
+          res.json(result);
+        })
+        .catch(next);
+    }
+  );
 
   app.post(
     '/api/files/tocReviewed',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       properties: {
         body: {
@@ -134,7 +138,7 @@ export default (app: Application) => {
 
   app.delete(
     '/api/files',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
 
     validation.validateRequest({
       properties: {
@@ -159,14 +163,18 @@ export default (app: Application) => {
     }
   );
 
-  app.get('/api/files', needsAuthorization(['admin', 'editor']), (req, res, next) => {
-    files
-      .get(req.query)
-      .then(result => {
-        res.json(result);
-      })
-      .catch(next);
-  });
+  app.get(
+    '/api/files',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    (req, res, next) => {
+      files
+        .get(req.query)
+        .then(result => {
+          res.json(result);
+        })
+        .catch(next);
+    }
+  );
 
   app.post(
     '/api/import',

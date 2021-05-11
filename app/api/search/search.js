@@ -5,6 +5,8 @@ import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { checkWritePermissions } from 'shared/permissionsUtils';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entities from '../entities';
@@ -246,9 +248,8 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (
       !aggregations[key].buckets ||
-      key === '_types' ||
       aggregations[key].type === 'nested' ||
-      key === 'generatedToc'
+      ['_types', 'generatedToc', 'permissions'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
@@ -299,6 +300,14 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       }));
     }
 
+    //permissions
+    if (aggregationKey === 'permissions') {
+      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
+        key: b.key,
+        filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
+      }));
+    }
+
     //nested
     if (!aggregation.buckets) {
       Object.keys(aggregation).forEach(key => {
@@ -330,6 +339,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     result[aggregationKey] = aggregation;
   });
+
   return result;
 };
 
@@ -377,12 +387,22 @@ const _sanitizeAggregations = async (
   return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
+const permissionsInformation = (hit, user) => {
+  const { permissions } = hit._source;
+
+  const canWrite = checkWritePermissions(user, permissions);
+
+  return canWrite ? permissions : undefined;
+};
+
 const processResponse = async (response, templates, dictionaries, language, filters) => {
+  const user = permissionsContext.getUserInContext();
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
+    result.permissions = permissionsInformation(hit, user);
     return result;
   });
 
@@ -564,11 +584,14 @@ const buildQuery = async (query, language, user, resources) => {
   const searchTextType = query.searchTerm
     ? await searchTypeFromSearchTermValidity(query.searchTerm)
     : 'query_string';
+  const onlyPublished = query.published || !(query.includeUnpublished || query.unpublished);
   const queryBuilder = documentQueryBuilder()
+    .include(query.include)
     .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
-    .language(language);
+    .language(language)
+    .filterByPermissions(onlyPublished);
 
   if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);
@@ -629,8 +652,12 @@ const search = {
       searchGeolocation(queryBuilder, templates);
     }
 
+    if (query.aggregatePermissionsByLevel) {
+      queryBuilder.permissionsLevelAgreggations();
+    }
+
     if (query.aggregateGeneratedToc) {
-      queryBuilder.generatedTOCAggregations();
+      queryBuilder.generatedTocAggregations();
     }
 
     return elastic

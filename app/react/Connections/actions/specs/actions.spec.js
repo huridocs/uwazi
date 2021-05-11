@@ -4,7 +4,7 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { mockID } from 'shared/uniqueID.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-
+import SearchApi from 'app/Search/SearchAPI';
 import * as actions from '../actions';
 
 const middlewares = [thunk];
@@ -17,14 +17,12 @@ describe('Connections actions', () => {
   beforeEach(() => {
     mockID();
     store = mockStore({});
-    spyOn(api, 'get').and.returnValue(
+    spyOn(SearchApi, 'search').and.returnValue(
       Promise.resolve({
-        json: {
-          rows: [
-            { title: 'Southern Nights', documents: [], attachments: [] },
-            { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
-          ],
-        },
+        rows: [
+          { title: 'Southern Nights', documents: [], attachments: [] },
+          { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+        ],
       })
     );
     spyOn(api, 'post').and.callFake(url => {
@@ -41,7 +39,7 @@ describe('Connections actions', () => {
       it('should search for connections', () => {
         actions.immidiateSearch(store.dispatch, 'term');
         const expectedParams = new RequestParams({ searchTerm: 'term', fields: ['title'] });
-        expect(api.get).toHaveBeenCalledWith('search', expectedParams);
+        expect(SearchApi.search).toHaveBeenCalledWith(expectedParams);
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_CONNECTIONS' });
       });
 
@@ -83,12 +81,11 @@ describe('Connections actions', () => {
           type: 'connections/searchTerm/SET',
           value: 'term',
         });
-        expect(api.get).not.toHaveBeenCalled();
+        expect(SearchApi.search).not.toHaveBeenCalled();
 
         jasmine.clock().tick(400);
 
-        expect(api.get).toHaveBeenCalledWith(
-          'search',
+        expect(SearchApi.search).toHaveBeenCalledWith(
           new RequestParams({ searchTerm: 'term', fields: ['title'] })
         );
         jasmine.clock().uninstall();
@@ -99,8 +96,7 @@ describe('Connections actions', () => {
   describe('startNewConnection', () => {
     it('should perform an immediate empty search', () => {
       actions.startNewConnection('type', 'sourceId')(store.dispatch);
-      expect(api.get).toHaveBeenCalledWith(
-        'search',
+      expect(SearchApi.search).toHaveBeenCalledWith(
         new RequestParams({ searchTerm: '', fields: ['title'] })
       );
     });

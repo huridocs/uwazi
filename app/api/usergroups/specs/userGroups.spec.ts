@@ -3,7 +3,8 @@ import userGroups from 'api/usergroups/userGroups';
 import db from 'api/utils/testing_db';
 import { models } from 'api/odm/models';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import fixtures, { group1Id, group2Id, user1Id, user2Id } from './fixtures.js';
+import { UserSchema } from 'shared/types/userType';
+import { fixtures, group1Id, group2Id, user1Id, user2Id } from './fixtures';
 
 describe('userGroups', () => {
   beforeEach(async () => {
@@ -17,11 +18,14 @@ describe('userGroups', () => {
       const groups = await userGroups.get({}, '', { sort: { name: 1 } });
       expect(groups[0]._id?.toString()).toBe(group1Id.toString());
       expect(groups[0].name).toBe('Group 1');
+      const membersGroup1 = groups[0].members as Partial<UserSchema>[];
+      const membersGroup2 = groups[1].members as Partial<UserSchema>[];
+
       expect(groups[0].members.length).toBe(1);
-      expect(groups[0].members[0].username).toBe('user2');
+      expect(membersGroup1[0].username).toBe('user2');
       expect(groups[1]._id?.toString()).toBe(group2Id.toString());
-      expect(groups[1].members[0].username).toBe('user1');
-      expect(groups[1].members[1].username).toBe('user3');
+      expect(membersGroup2[0].username).toBe('user1');
+      expect(membersGroup2[1].username).toBe('user3');
     });
   });
 
@@ -37,7 +41,7 @@ describe('userGroups', () => {
       const userGroup1: UserGroupSchema = {
         _id: group1Id.toString(),
         name: 'Group 1 edited',
-        members: [{ _id: user1Id.toString(), username: 'wrong name' }, { _id: user2Id.toString() }],
+        members: [{ refId: user1Id.toString() }, { refId: user2Id.toString() }],
       };
 
       await userGroups.save(userGroup1);
@@ -46,9 +50,9 @@ describe('userGroups', () => {
         name: 'Group 1 edited',
       });
 
-      expect(storedUserGroups[0].members[0]._id.toString()).toBe(user1Id.toString());
+      expect(storedUserGroups[0].members[0].refId.toString()).toBe(user1Id.toString());
       expect(storedUserGroups[0].members[0].username).toBeUndefined();
-      expect(storedUserGroups[0].members[1]._id.toString()).toBe(user2Id.toString());
+      expect(storedUserGroups[0].members[1].refId.toString()).toBe(user2Id.toString());
     });
 
     it('should allow empty members groups', async () => {
@@ -75,6 +79,28 @@ describe('userGroups', () => {
     });
   });
 
+  describe('save multiple', () => {
+    it('should save a list of user groups', async () => {
+      const userGroup1: UserGroupSchema = {
+        _id: group1Id.toString(),
+        name: 'Group 1 M',
+        members: [{ refId: user1Id.toString() }],
+      };
+      const userGroup2: UserGroupSchema = {
+        _id: group2Id.toString(),
+        name: 'Group 2 M',
+        members: [{ refId: user2Id.toString() }],
+      };
+      await userGroups.saveMultiple([userGroup1, userGroup2]);
+      const storedUserGroups: UserGroupSchema[] = await models.usergroups.get({});
+      expect(storedUserGroups[0].name).toBe('Group 1 M');
+      expect(storedUserGroups[0].members[0].refId).toEqual(user1Id.toString());
+      expect((storedUserGroups[0].members[0] as Partial<UserSchema>).username).toBeUndefined();
+      expect(storedUserGroups[1].name).toBe('Group 2 M');
+      expect(storedUserGroups[1].members[0].refId).toEqual(user2Id.toString());
+      expect((storedUserGroups[0].members[0] as Partial<UserSchema>).username).toBeUndefined();
+    });
+  });
   describe('delete', () => {
     it('should delete the user group with by the specified id', async () => {
       await userGroups.delete({ _id: group2Id.toString() });

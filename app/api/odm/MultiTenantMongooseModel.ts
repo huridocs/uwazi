@@ -57,7 +57,7 @@ class MultiTenantMongooseModel<T> {
   }
 
   async findOne(conditions: UwaziFilterQuery<T>, projection: any) {
-    return this.dbForCurrentTenant().findOne(conditions, projection);
+    return this.dbForCurrentTenant().findOne(conditions, projection, { lean: true });
   }
 
   async replaceOne(conditions: UwaziFilterQuery<T>, replacement: any) {

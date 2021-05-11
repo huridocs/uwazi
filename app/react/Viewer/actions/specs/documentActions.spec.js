@@ -206,33 +206,42 @@ describe('documentActions', () => {
         .get(`${APIURL}documents/search?searchTerm=term&fields=%5B%22field%22%5D`, {
           body: JSON.stringify('documents'),
         })
-        .get(`${APIURL}entities?sharedId=targetId&omitRelationships=true`, {
-          body: JSON.stringify({
-            rows: [{ documents: [{ pdfInfo: 'test' }] }],
-          }),
-        })
-        .get(`${APIURL}entities?sharedId=docCalledWithWrongPDFFilename&omitRelationships=true`, {
-          body: JSON.stringify({
-            rows: [
-              {
-                _id: 'pdfCalledWithWrongFilename',
-                sharedId: 'shared',
-                documents: [
-                  {
-                    _id: 'pdfCalledWithWrongFilename',
-                    filename: 'filename',
-                    pdfInfo: 'processed pdf',
-                  },
-                ],
-              },
-            ],
-          }),
-        })
-        .get(`${APIURL}entities?sharedId=docWithPDFRdy&omitRelationships=true`, {
-          body: JSON.stringify({
-            rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
-          }),
-        })
+        .get(
+          `${APIURL}entities?sharedId=targetId&omitRelationships=true&include=%5B%22permissions%22%5D`,
+          {
+            body: JSON.stringify({
+              rows: [{ documents: [{ pdfInfo: 'test' }] }],
+            }),
+          }
+        )
+        .get(
+          `${APIURL}entities?sharedId=docCalledWithWrongPDFFilename&omitRelationships=true&include=%5B%22permissions%22%5D`,
+          {
+            body: JSON.stringify({
+              rows: [
+                {
+                  _id: 'pdfCalledWithWrongFilename',
+                  sharedId: 'shared',
+                  documents: [
+                    {
+                      _id: 'pdfCalledWithWrongFilename',
+                      filename: 'filename',
+                      pdfInfo: 'processed pdf',
+                    },
+                  ],
+                },
+              ],
+            }),
+          }
+        )
+        .get(
+          `${APIURL}entities?sharedId=docWithPDFRdy&omitRelationships=true&include=%5B%22permissions%22%5D`,
+          {
+            body: JSON.stringify({
+              rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
+            }),
+          }
+        )
         .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
           body: JSON.stringify({
             rows: [

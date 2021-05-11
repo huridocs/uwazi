@@ -5,10 +5,11 @@ import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import MultiSelect from 'app/Forms/components/MultiSelect';
+import { UserSchema } from 'shared/types/userType';
 
 export interface UserGroupSidePanelProps {
   userGroup: UserGroupSchema;
-  users: GroupMemberSchema[];
+  users: Partial<UserSchema>[];
   userGroups: UserGroupSchema[];
   opened: boolean;
   closePanel: (event: any) => void;
@@ -16,13 +17,13 @@ export interface UserGroupSidePanelProps {
   onDelete: (event: any) => void;
 }
 
-const sortByName = (members: GroupMemberSchema[]) =>
+const sortByName = (members: Partial<UserSchema>[]) =>
   members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
 
-const mapUserIds = (users: GroupMemberSchema[]) =>
-  users.map(user => (user._id ? user._id.toString() : ''));
+const mapUserIds = (members: GroupMemberSchema[]) =>
+  members.map(member => (member.refId ? member.refId.toString() : ''));
 
-const UserGroupSidePanelComponent = ({
+export const UserGroupSidePanel = ({
   userGroup,
   users,
   userGroups,
@@ -31,29 +32,20 @@ const UserGroupSidePanelComponent = ({
   onSave,
   onDelete,
 }: UserGroupSidePanelProps) => {
-  const [group, setGroup] = useState<UserGroupSchema>(userGroup);
-  const [values, setValues] = useState<string[]>(mapUserIds(userGroup.members));
-  const { register, handleSubmit, errors } = useForm();
+  const [selectedUsers, setSelectedUsers] = useState<string[]>(mapUserIds(userGroup.members));
+  const { register, handleSubmit, errors } = useForm({ defaultValues: userGroup });
   const availableUsers = sortByName(users);
 
-  const updateMembers = (userIds: string[]) => {
-    const selectedUsers: GroupMemberSchema[] = users
-      .filter((user: GroupMemberSchema) => userIds.includes(user._id as string))
+  const saveGroup = (groupToSave: UserGroupSchema) => {
+    const updatedMembers = users
+      .filter((user: Partial<UserSchema>) => selectedUsers.includes(user._id as string))
       .map(user => ({
-        _id: user._id,
-        username: user.username,
-        role: user.role,
-        email: user.email,
+        refId: user._id,
       }));
-    setValues(mapUserIds(selectedUsers));
-    setGroup({ ...group, members: [...selectedUsers] });
+    onSave({ ...groupToSave, members: [...updatedMembers] });
   };
 
-  const updateGroupName = (event: any) => {
-    setGroup({ ...group, name: event.target.value });
-  };
-
-  const isDuplicated = (nameVal: string) =>
+  const isUnique = (nameVal: string) =>
     !userGroups.find(
       existingGroup =>
         existingGroup._id !== userGroup._id &&
@@ -66,11 +58,8 @@ const UserGroupSidePanelComponent = ({
         <Translate>{`${userGroup._id ? 'Edit' : 'Add'} Group`}</Translate>
       </div>
       <div className="sidepanel-body">
-        <form
-          id="userGroupFrom"
-          className="user-group-form"
-          onSubmit={handleSubmit(() => onSave(group))}
-        >
+        <form id="userGroupFrom" className="user-group-form" onSubmit={handleSubmit(saveGroup)}>
+          <input type="hidden" name="_id" ref={register} />
           <div id="name_field" className="form-group nested-selector">
             <label>
               <Translate>Name of the group</Translate>
@@ -79,10 +68,13 @@ const UserGroupSidePanelComponent = ({
               type="text"
               className="form-control"
               autoComplete="off"
-              value={group.name}
               name="name"
-              onChange={updateGroupName}
-              ref={register({ required: true, validate: isDuplicated, maxLength: 256 })}
+              ref={register({
+                required: true,
+                validate: isUnique,
+                maxLength: 50,
+                minLength: 3,
+              })}
             />
             {errors.name && (
               <div className="validation-error">
@@ -90,6 +82,7 @@ const UserGroupSidePanelComponent = ({
                 {errors.name.type === 'required' && <Translate>Name is required</Translate>}
                 {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
                 {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
+                {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
               </div>
             )}
           </div>
@@ -99,8 +92,10 @@ const UserGroupSidePanelComponent = ({
               options={availableUsers}
               optionsLabel="username"
               optionsValue="_id"
-              value={values}
-              onChange={updateMembers}
+              value={selectedUsers}
+              onChange={usersIds => {
+                setSelectedUsers(usersIds);
+              }}
               optionsToShow={8}
               sortbyLabel
             />
@@ -124,7 +119,7 @@ const UserGroupSidePanelComponent = ({
           <ConfirmButton
             id="deleteBtn"
             className="btn btn-outline-danger"
-            action={() => onDelete(group)}
+            action={() => onDelete(userGroup)}
           >
             <Icon icon="trash-alt" />
             <span className="btn-label">
@@ -142,5 +137,3 @@ const UserGroupSidePanelComponent = ({
     </SidePanel>
   );
 };
-
-export const UserGroupSidePanel = UserGroupSidePanelComponent;

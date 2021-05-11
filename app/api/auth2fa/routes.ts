@@ -7,7 +7,7 @@ import { validation } from 'api/utils';
 export default (app: Application) => {
   app.post(
     '/api/auth2fa-secret',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest(Joi.object().keys({})),
     async (req, res, next) => {
       try {
@@ -21,7 +21,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/auth2fa-enable',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest(
       Joi.object()
         .keys({ token: Joi.string().required() })
