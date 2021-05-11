@@ -44,7 +44,7 @@ function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedPro
   properties = properties.map(property => {
     let defaultValue = {};
 
-    if (property.type === 'text' || property.type === 'markdown') {
+    if (['text', 'markdown', 'generatedid'].includes(property.type)) {
       defaultValue = '';
     }
 

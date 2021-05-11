@@ -10,7 +10,9 @@ export const connectionSchema = {
   properties: {
     _id: objectIdSchema,
     hub: objectIdSchema,
-    template: objectIdSchema,
+    template: {
+      oneOf: [{ type: 'null' }, objectIdSchema],
+    },
     file: objectIdSchema,
     entity: { type: 'string' },
     entityData: entitySchema,
@@ -22,6 +24,7 @@ export const connectionSchema = {
         text: { type: 'string' },
         selectionRectangles: {
           type: 'array',
+          minItems: 1,
           items: {
             type: 'object',
             additionalProperties: false,

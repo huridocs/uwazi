@@ -109,6 +109,10 @@ export class SelectMultiplePanel extends Component {
     this.props.loadForm(this.props.formKey, this.props.template.toJS());
   }
 
+  sharedIds() {
+    return this.props.entitiesSelected.map(entity => entity.get('sharedId'));
+  }
+
   renderEditingForm() {
     const { formKey, thesauris } = this.props;
 
@@ -154,10 +158,6 @@ export class SelectMultiplePanel extends Component {
         </button>
       </NeedAuthorization>
     );
-  }
-
-  sharedIds() {
-    return this.props.entitiesSelected.map(entity => entity.get('sharedId'));
   }
 
   renderListButtons() {

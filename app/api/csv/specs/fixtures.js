@@ -49,6 +49,11 @@ export default {
           label: 'geolocation',
           name: templateUtils.safeName('geolocation_geolocation'),
         },
+        {
+          type: propertyTypes.generatedid,
+          label: 'Auto ID',
+          name: templateUtils.safeName('auto id'),
+        },
       ],
     },
   ],

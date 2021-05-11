@@ -10,7 +10,7 @@ const nightmare = createNightmare();
 selectors.doc = {
   form: {
     title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
-    type: '#metadataForm > div.form-group.undefined > ul > li.wide > select',
+    type: '#metadataForm > div.form-group > ul > li.wide > select',
     company: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
     superPowersSearch:
       '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > ul > li:nth-child(1) > div > input',
