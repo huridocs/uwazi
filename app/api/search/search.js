@@ -44,22 +44,6 @@ function processFilters(filters, properties) {
       value.to = date.descriptionToTimestamp(value.to);
     }
 
-    if (property.type === 'relationshipfilter') {
-      return [
-        ...res,
-        {
-          ...property,
-          value,
-          suggested,
-          type,
-          filters: property.filters.map(f => ({
-            ...f,
-            name: `${f.name}.value`,
-          })),
-        },
-      ];
-    }
-
     return [
       ...res,
       {
@@ -67,7 +51,7 @@ function processFilters(filters, properties) {
         value,
         suggested,
         type,
-        name: `${property.name}.value`,
+        name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
       },
     ];
   }, []);

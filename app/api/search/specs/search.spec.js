@@ -328,6 +328,38 @@ describe('search', () => {
     expect(unpublishedAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
   });
 
+  it('should filter by metadata inheritValue', async () => {
+    const [spain, egypt, both, bothAnd] = await Promise.all([
+      search.search(
+        { types: [ids.template1], filters: { relationshipcountry: { values: ['SpainID'] } } },
+        'en'
+      ),
+      search.search(
+        { types: [ids.template1], filters: { relationshipcountry: { values: ['EgyptID'] } } },
+        'en'
+      ),
+      search.search(
+        {
+          types: [ids.template1],
+          filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'] } },
+        },
+        'en'
+      ),
+      search.search(
+        {
+          types: [ids.template1],
+          filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'], and: true } },
+        },
+        'en'
+      ),
+    ]);
+
+    expect(spain.rows.length).toBe(1);
+    expect(egypt.rows.length).toBe(2);
+    expect(both.rows.length).toBe(2);
+    expect(bothAnd.rows.length).toBe(1);
+  });
+
   it('should filter by daterange metadata', async () => {
     let entities = await search.search(
       {
