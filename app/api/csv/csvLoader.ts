@@ -131,7 +131,13 @@ export class CSVLoader extends EventEmitter {
         availableLanguages.forEach(async (lang: any) => {
           if (!row[lang.label]) return;
 
-          await translations.addEntry(translationContext, row.Key, row[lang.label]);
+          console.log({ [row.Key]: row[lang.label] });
+          await translations.addEntryInLanguage(
+            translationContext,
+            row.Key,
+            row[lang.label],
+            lang.language
+          );
         });
       })
       .read();
