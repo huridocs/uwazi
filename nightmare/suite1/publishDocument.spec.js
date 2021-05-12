@@ -59,14 +59,7 @@ describe('PublishDocument', () => {
       .write(selectors.doc.form.superPowersSearch, 'regen')
       .waitToClick(selectors.doc.form.suporPowers.regeneration)
       .click(selectors.libraryView.saveButton)
-      .waitToClick(selectors.uploadsView.publishButton)
-      .waitToClick(selectors.uploadsView.acceptPublishModel)
-      .wait('.alert.alert-success')
-      .isVisible('.alert.alert-success')
-      .then(result => {
-        expect(result).toBe(true);
-        return nightmare.waitToClick('.alert.alert-success');
-      })
+      .shareWithPublic('shareButton')
       .then(done);
   });
 

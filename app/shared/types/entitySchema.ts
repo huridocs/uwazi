@@ -5,6 +5,7 @@ import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
 import { fileSchema } from 'shared/types/fileSchema';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
+import { permissionSchema } from 'shared/types/permissionSchema';
 import { EntitySchema } from './entityType';
 import { TemplateSchema } from './templateType';
 import { validateMetadataField } from './validateMetadataField';
@@ -119,6 +120,7 @@ export const entitySchema = {
   definitions: {
     objectIdSchema,
     metadataSchema,
+    permissionSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -142,6 +144,10 @@ export const entitySchema = {
     user: objectIdSchema,
     metadata: metadataSchema,
     suggestedMetadata: metadataSchema,
+    permissions: {
+      type: 'array',
+      items: permissionSchema,
+    },
   },
 };
 

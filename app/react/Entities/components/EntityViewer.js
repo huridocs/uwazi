@@ -25,6 +25,7 @@ import { Icon } from 'UI';
 import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 
+import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
@@ -89,11 +90,13 @@ export class EntityViewer extends Component {
   }
 
   render() {
-    const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
+    const { entity, entityBeingEdited, tab, connectionsGroups, hubs, relationships } = this.props;
+
+    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const { panelOpen, copyFrom, copyFromProps } = this.state;
     const selectedTab = tab;
     const rawEntity = entity.toJS();
-    const summary = connectionsGroups.reduce(
+    const summary = visibleConnectionGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -229,7 +232,7 @@ export class EntityViewer extends Component {
               <TabContent
                 for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}
               >
-                <ConnectionsGroups />
+                <ConnectionsGroups connectionsGroups={visibleConnectionGroups} />
               </TabContent>
             </Tabs>
           </div>
@@ -275,6 +278,7 @@ EntityViewer.defaultProps = {
   relationships: Immutable.fromJS([]),
   entityBeingEdited: false,
   tab: 'info',
+  hubs: Immutable.fromJS([]),
 };
 
 EntityViewer.propTypes = {
@@ -283,6 +287,7 @@ EntityViewer.propTypes = {
   entity: PropTypes.instanceOf(Immutable.Map).isRequired,
   entityBeingEdited: PropTypes.bool,
   connectionsGroups: PropTypes.object,
+  hubs: PropTypes.instanceOf(Immutable.List),
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func.isRequired,
   connectionsChanged: PropTypes.func,
@@ -308,6 +313,7 @@ const mapStateToProps = state => ({
   templates: state.templates,
   relationships: state.entityView.entity.get('relations'),
   connectionsGroups: state.relationships.list.connectionsGroups,
+  hubs: state.relationships.hubs,
   entityBeingEdited: !!state.entityView.entityForm._id,
   tab: state.entityView.uiState.get('tab'),
   library: state.library,

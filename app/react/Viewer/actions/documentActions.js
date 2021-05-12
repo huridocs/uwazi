@@ -14,6 +14,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 import { sortTextSelections } from '../utils/sortTextSelections';
+import EntitiesApi from '../../Entities/EntitiesAPI';
 
 export function setDocument(document, html) {
   return {
@@ -99,9 +100,7 @@ function getEntityDoc(entity, filename, defaultLanguage) {
 }
 
 export async function getDocument(requestParams, defaultLanguage, filename) {
-  const [entity] = (
-    await api.get('entities', requestParams.add({ omitRelationships: true }))
-  ).json.rows;
+  const [entity] = await EntitiesApi.get(requestParams.add({ omitRelationships: true }));
 
   entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
   return entity;

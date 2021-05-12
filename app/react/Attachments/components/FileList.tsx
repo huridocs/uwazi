@@ -67,7 +67,7 @@ export class FileList extends Component<FileListProps> {
             <Translate>Primary Documents</Translate>
           </h2>
           <div>
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
               <UploadButton
                 entitySharedId={this.props.entity.sharedId}
                 storeKey={this.props.storeKey}

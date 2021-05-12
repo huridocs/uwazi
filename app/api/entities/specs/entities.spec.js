@@ -10,6 +10,8 @@ import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { uploadsPath } from 'api/files/filesystem';
 
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
@@ -25,12 +27,14 @@ import fixtures, {
 } from './fixtures.js';
 
 describe('entities', () => {
+  const userFactory = new UserInContextMockFactory();
+
   beforeEach(async () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -341,7 +345,7 @@ describe('entities', () => {
     });
 
     describe('when published/template/generatedToc property changes', () => {
-      it('should replicate the change for all the languages', done => {
+      it('should replicate the change for all the languages and ignore the published field', done => {
         const doc = {
           _id: batmanFinishesId,
           sharedId: 'shared',
@@ -364,15 +368,31 @@ describe('entities', () => {
             expect(docEN.template).toBeDefined();
             expect(docES.template).toBeDefined();
 
-            expect(docES.published).toBe(false);
+            expect(docES.published).toBe(true);
             expect(docES.generatedToc).toBe(true);
             expect(docES.template.equals(templateId)).toBe(true);
-            expect(docEN.published).toBe(false);
+            expect(docEN.published).toBe(true);
             expect(docEN.generatedToc).toBe(true);
             expect(docEN.template.equals(templateId)).toBe(true);
             done();
           })
           .catch(catchErrors(done));
+      });
+    });
+
+    it('should ignore the permissions parameter', () => {
+      const doc = {
+        _id: unpublishedDocId,
+        sharedId: 'other',
+        metadata: {},
+        permissions: [],
+      };
+
+      entities.save(doc, { language: 'en' }).then(updatedDoc => {
+        expect(updatedDoc.permissions).toEqual([
+          expect.objectContaining({ refId: 'user1' }),
+          expect.objectContaining({ refId: 'user2' }),
+        ]);
       });
     });
 
@@ -531,6 +551,18 @@ describe('entities', () => {
           .catch(catchErrors(done));
       });
     });
+
+    describe('save entity without a logged user', () => {
+      it('should save the entity with unrestricted access', async () => {
+        const user = {};
+        userFactory.mock(undefined);
+        const entity = { title: 'Batman begins', template: templateId, language: 'es' };
+        const createdEntity = await entities.save(entity, { user, language: 'es' });
+        expect(createdEntity._id).not.toBeUndefined();
+        expect(createdEntity.title).toEqual(entity.title);
+        userFactory.mockEditorUser();
+      });
+    });
   });
 
   describe('updateMetdataFromRelationships', () => {
@@ -560,6 +592,24 @@ describe('entities', () => {
         multiselect: [],
         select: [],
         numeric: [],
+      });
+    });
+
+    describe('unrestricted for collaborator', () => {
+      it('should save the entity with unrestricted access', async () => {
+        userFactory.mock({
+          _id: 'user1',
+          role: UserRole.COLLABORATOR,
+          username: 'User 1',
+          email: 'col@test.com',
+        });
+
+        await entities.updateMetdataFromRelationships(['shared'], 'en');
+        const updatedEntity = await entities.getById('shared', 'en');
+        expect(updatedEntity.metadata.friends).toEqual([
+          { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
+        ]);
+        userFactory.mockEditorUser();
       });
     });
   });
@@ -725,6 +775,11 @@ describe('entities', () => {
 
   describe('denormalize', () => {
     it('should denormalize entity with missing metadata labels', async () => {
+      userFactory.mock({
+        _id: 'user1',
+        username: 'collaborator',
+        role: UserRole.COLLABORATOR,
+      });
       const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
       entity.metadata.friends[0].label = '';
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
@@ -782,6 +837,19 @@ describe('entities', () => {
       expect(docs[4].title).toBe('value2');
       expect(docs[5].title).toBe('value0');
     });
+
+    it('should return all entities (including unpublished) if required and user is a collaborator', async () => {
+      userFactory.mock({
+        _id: 'user1',
+        role: 'collaborator',
+        groups: [],
+      });
+      const docs = await entities.getByTemplate(templateId, 'en', false);
+      expect(docs.length).toBe(3);
+      expect(docs[0].title).toBe('Batman finishes');
+      expect(docs[1].title).toBe('Unpublished entity');
+      expect(docs[2].title).toBe('EN');
+    });
   });
 
   describe('multipleUpdate()', () => {
@@ -806,7 +874,7 @@ describe('entities', () => {
           sharedId: 'shared',
           language: 'en',
           icon: { label: 'test' },
-          published: false,
+          published: true,
           metadata: expect.objectContaining(metadata),
         })
       );
@@ -817,7 +885,7 @@ describe('entities', () => {
           sharedId: 'shared1',
           language: 'en',
           icon: { label: 'test' },
-          published: false,
+          published: true,
           metadata: expect.objectContaining(metadata),
         })
       );
@@ -861,7 +929,7 @@ describe('entities', () => {
           sharedId: 'shared',
           language: 'en',
           icon: { label: 'test' },
-          published: false,
+          published: true,
           metadata: expect.objectContaining({
             multiselect: [
               {
@@ -890,6 +958,44 @@ describe('entities', () => {
           }),
         })
       );
+    });
+
+    it('should return error if user does not have write permissions over entities', async () => {
+      userFactory.mock({
+        _id: 'user1',
+        role: 'collaborator',
+        groups: [],
+      });
+      try {
+        await entities.multipleUpdate(
+          ['shared1', 'other'],
+          {
+            published: false,
+          },
+          { language: 'en' }
+        );
+        fail('Should throw error');
+      } catch (e) {
+        expect(e.message).toContain('permissions');
+      }
+    });
+
+    it('should update entities if user has permissions on them', async () => {
+      userFactory.mock({
+        _id: 'user2',
+        role: 'collaborator',
+        groups: [{ _id: 'group1' }],
+      });
+
+      const updated = await entities.multipleUpdate(
+        ['shared1', 'other'],
+        {
+          title: 'test title',
+        },
+        { language: 'en' }
+      );
+
+      expect(updated.find(e => e.title !== 'test title')).toBeUndefined();
     });
   });
 
@@ -1182,8 +1288,12 @@ describe('entities', () => {
       await entities.saveMultiple([{ _id: docId1, file: {} }]);
 
       await entities.addLanguage('ab', 2);
-      const newEntities = await entities.get({ language: 'ab' });
-      expect(newEntities.length).toBe(11);
+      const newEntities = await entities.get({ language: 'ab' }, '+permissions');
+      expect(newEntities.length).toBe(12);
+
+      const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
+      const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');
+      expect(toCheckPermissions.permissions).toEqual(fromCheckPermissions.permissions);
     });
   });
 

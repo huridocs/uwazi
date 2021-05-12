@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 
 import db from 'api/utils/testing_db';
-import { fileId } from 'api/activitylog/specs/fixturesParser';
+import { fileId, groupId, userId } from 'api/activitylog/specs/fixturesParser';
 import fixtures, {
   firstTemplate,
   firstDoc,
@@ -1002,6 +1002,34 @@ describe('Activitylog Parser', () => {
         });
       });
     });
+
+    describe('routes: /api/entities/permissions', () => {
+      describe('method: POST /api/entities/permissions', () => {
+        it('should beautify as UPDATE with entities names and permissions as extra data', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/entities/permissions',
+              body: JSON.stringify({
+                ids: [firstDocSharedId],
+                permissions: [
+                  { refId: groupId, type: 'group', level: 'read' },
+                  { refId: userId, type: 'user', level: 'write' },
+                  { refId: 'public', type: 'public', level: 'read' },
+                ],
+              }),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated permissions on entity',
+              name: 'My Doc',
+              extra: ' with permissions for USERS: User 1 - write; GROUPS: Group 1 - read; PUBLIC',
+            }
+          );
+        });
+      });
+    });
+
     describe('MIGRATIONS logs', () => {
       afterEach(() => {
         jest.resetAllMocks();
