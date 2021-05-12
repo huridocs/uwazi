@@ -7,6 +7,7 @@ import validateRequest from 'api/utils/validateRequest';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
+import { searchSnippets } from 'api/search.v2/snippetsSearch';
 import { buildQuery } from './buildQuery';
 
 interface UwaziResponse {
@@ -58,6 +59,22 @@ const searchRoutes = (app: Application) => {
           first: query.page?.limit ? url : undefined,
         },
       });
+    })
+  );
+
+  app.get(
+    '/api/v2/entity/:_id/snippets',
+    queryTypes.middleware(),
+    validateRequest({
+      properties: {
+        query: SearchQuerySchema,
+      },
+    }),
+    captureError(async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
+      const { query, language, url } = req;
+      const { _id } = req.params;
+      const response = await searchSnippets(_id, query, language);
+      res.json({ data: response, links: { self: url } });
     })
   );
 };
