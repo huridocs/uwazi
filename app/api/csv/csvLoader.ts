@@ -130,18 +130,8 @@ export class CSVLoader extends EventEmitter {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         availableLanguages.forEach(async (lang: any) => {
           if (!row[lang.label]) return;
-          const { contexts } = (await translations.get()).find(
-            trans => trans.locale === lang.language
-          );
-          const selectedContext = contexts.find(
-            (context: any) => context.id === translationContext
-          );
 
-          // console.log({ key: row.Key, value: row[lang.label] });
-          await translations.updateContext(selectedContext.id, selectedContext.label, {}, [], {
-            key: row.Key,
-            value: row[lang.label],
-          });
+          await translations.addEntry(translationContext, row.Key, row[lang.label]);
         });
       })
       .read();
