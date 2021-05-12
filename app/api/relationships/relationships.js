@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
@@ -13,7 +12,12 @@ import { search } from '../search';
 import { generateNamesAndIds } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
-import { RelationshipCollection, groupByHubs } from './relationshipsHelpers';
+import {
+  RelationshipCollection,
+  groupByHubs,
+  getEntityReferencesByRelationshipTypes,
+  guessRelationshipPropertyHub,
+} from './relationshipsHelpers';
 import { validateConnectionSchema } from './validateConnectionSchema';
 
 const normalizeConnectedDocumentData = (relationship, connectedDocument) => {
@@ -325,6 +329,7 @@ export default {
     return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
+  // eslint-disable-next-line max-statements
   async saveEntityBasedReferences(entity, language) {
     const START = new Date();
     if (!language) throw createError('Language cant be undefined');
@@ -335,93 +340,35 @@ export default {
 
     if (!relationshipProperties.length) return [];
 
-    //unless we fetch the existing references here, the previous line is not necessary
+    const EXISTING = new Date();
+    const existingReferences = await getEntityReferencesByRelationshipTypes(
+      entity.sharedId,
+      relationshipProperties.map(p => generateID(p.relationType))
+    );
+    console.log('saveEntityBasedReferences PROPERTY EXISTING', new Date() - EXISTING);
 
     return Promise.all(
+      // eslint-disable-next-line max-statements
       relationshipProperties.map(async property => {
         const PROPERTY = new Date();
         const newValues = determinePropertyValues(entity, property.name);
-        const propertyRelationType = property.relationType;
-        const propertyEntityType = property.content;
+        const { relationType: propertyRelationType, content: propertyEntityType } = property;
 
-        const EXISTING = new Date();
-        const existingReferences = await model.db.aggregate([
-          {
-            $match: {
-              entity: entity.sharedId,
-            },
-          },
-          {
-            $lookup: {
-              from: 'connections',
-              localField: 'hub',
-              foreignField: 'hub',
-              as: 'rightSide',
-            },
-          },
-          {
-            $unwind: '$rightSide',
-          },
-          {
-            $match: {
-              'rightSide.template': generateID(propertyRelationType),
-            },
-          },
-          {
-            $lookup: {
-              from: 'entities',
-              localField: 'rightSide.entity',
-              foreignField: 'sharedId',
-              as: 'rightSide.entityData',
-            },
-          },
-        ]);
-
-        console.log('saveEntityBasedReferences PROPERTY EXISTING', new Date() - EXISTING);
+        let referencesOfThisType = existingReferences.find(
+          g => g._id.toString() === propertyRelationType.toString()
+        );
+        referencesOfThisType = (referencesOfThisType && referencesOfThisType.references) || [];
 
         const toCreate = newValues.filter(
-          value => !existingReferences.find(r => r.rightSide.entity === value)
+          value => !referencesOfThisType.find(r => r.rightSide.entity === value)
         );
 
         if (toCreate.length) {
           const CANDIDATE = new Date();
-          const candidateHub = await model.db.aggregate([
-            {
-              $match: {
-                entity: entity.sharedId,
-              },
-            },
-            {
-              $lookup: {
-                from: 'connections',
-                localField: 'hub',
-                foreignField: 'hub',
-                as: 'rightSide',
-              },
-            },
-            {
-              $unwind: '$rightSide',
-            },
-            {
-              $match: {
-                'rightSide.entity': { $ne: entity.sharedId },
-              },
-            },
-            {
-              $group: {
-                _id: '$rightSide.hub',
-                templates: { $addToSet: '$rightSide.template' },
-              },
-            },
-            {
-              $match: {
-                $and: [
-                  { 'templates.0': generateID(propertyRelationType) },
-                  { 'templates.1': { $exists: false } },
-                ],
-              },
-            },
-          ]);
+          const candidateHub = await guessRelationshipPropertyHub(
+            entity.sharedId,
+            generateID(propertyRelationType)
+          );
           console.log('saveEntityBasedReferences PROPERTY CANDIDATE HUB ', new Date() - CANDIDATE);
 
           const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
@@ -440,21 +387,25 @@ export default {
           console.log('saveEntityBasedReferences SAVE ', new Date() - SAVE);
         }
 
-        const toDelete = existingReferences
-          .filter(
-            r =>
-              r.rightSide.entity !== entity.sharedId &&
-              (!propertyEntityType ||
-                r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
-              !newValues.includes(r.rightSide.entity)
-          )
+        const matchingRefsNotInNewSet = r =>
+          r.rightSide.entity !== entity.sharedId &&
+          (!propertyEntityType ||
+            r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
+          !newValues.includes(r.rightSide.entity);
+
+        const toDelete = referencesOfThisType
+          .filter(matchingRefsNotInNewSet)
           .map(r => r.rightSide._id);
 
         if (toDelete.length) {
           const DELETE = new Date();
-          await this.delete({
-            _id: { $in: toDelete },
-          });
+          await this.delete(
+            {
+              _id: { $in: toDelete },
+            },
+            language,
+            false
+          );
           console.log('saveEntityBasedReferences DELETE ', new Date() - DELETE);
         }
 
@@ -467,7 +418,8 @@ export default {
     });
   },
 
-  _saveEntityBasedReferences(entity, language) {
+  __saveEntityBasedReferences(entity, language) {
+    const START = new Date();
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));
     }
@@ -479,15 +431,32 @@ export default {
     return templatesAPI
       .getById(entity.template)
       .then(getPropertiesToBeConnections)
-      .then(properties => Promise.all([properties, this.getByDocument(entity.sharedId, language)]))
+      .then(properties =>
+        Promise.all([
+          properties,
+          (async () => {
+            const EXISTING = new Date();
+            const ex = await this.getByDocument(entity.sharedId, language);
+            console.log('saveEntityBasedReferences PROPERTY EXISTING', new Date() - EXISTING);
+            return ex;
+          })(),
+        ])
+      )
       .then(([properties, references]) =>
         Promise.all(
           properties.map(property => {
+            const PROPERTY = new Date();
+
             const propertyValues = determinePropertyValues(entity, property.name);
+            const CANDIDATE = new Date();
             const { propertyRelationType, entityType, hub } = determineReferenceValues(
               references,
               property,
               entity
+            );
+            console.log(
+              'saveEntityBasedReferences PROPERTY CANDIDATE HUB ',
+              new Date() - CANDIDATE
             );
 
             const referencesOfThisType = references.filter(
@@ -518,21 +487,38 @@ export default {
                 !propertyValues.includes(reference.entity)
             );
 
+            const SAVE = new Date();
             let save = Promise.resolve();
             if (hub.length > 1) {
               save = this.save(hub, language, false);
             }
 
-            return save.then(() =>
-              Promise.all(
-                referencesToBeDeleted.map(reference =>
-                  this.delete({ _id: reference._id }, language, false)
-                )
-              )
-            );
+            save.then(() => {
+              console.log('saveEntityBasedReferences SAVE ', new Date() - SAVE);
+            });
+            return save
+              .then(() => {
+                const DELETE = new Date();
+                return Promise.all(
+                  referencesToBeDeleted.map(reference =>
+                    this.delete({ _id: reference._id }, language, false)
+                  )
+                ).then(r => {
+                  console.log('saveEntityBasedReferences DELETE ', new Date() - DELETE);
+                  return r;
+                });
+              })
+              .then(r => {
+                console.log('saveEntityBasedReferences PROPERTY', new Date() - PROPERTY);
+                return r;
+              });
           })
         )
-      );
+      )
+      .then(r => {
+        console.log('OLD saveEntityBasedReferences TOTAL ', new Date() - START);
+        return r;
+      });
   },
 
   search(entitySharedId, query, language, user) {
