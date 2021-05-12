@@ -550,6 +550,14 @@ describe('entities', () => {
           })
           .catch(catchErrors(done));
       });
+
+      it('should return the previously saved documents of the entity', async () => {
+        const modifiedDoc = { _id: batmanFinishesId, sharedId: 'shared' };
+        const doc = await entities.save(modifiedDoc, {
+          language: 'en',
+        });
+        expect(doc.documents[0].entity).toBe('shared');
+      });
     });
 
     describe('save entity without a logged user', () => {
