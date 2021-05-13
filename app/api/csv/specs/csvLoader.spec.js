@@ -5,7 +5,7 @@ import translations from 'api/i18n';
 import { search } from 'api/search';
 import settings from 'api/settings';
 
-import { CSVLoader } from 'api/csv';
+import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
@@ -115,16 +115,7 @@ describe('csvLoader', () => {
         'select_label',
         'not_defined_type',
         'geolocation_geolocation',
-        'auto_id',
       ]);
-    });
-
-    it('should generate an id when the template has a property with generatedid type', () => {
-      expect(imported[0].metadata).toEqual(
-        expect.objectContaining({
-          auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
-        })
-      );
     });
 
     it('should ignore properties not configured in the template', () => {
@@ -255,6 +246,7 @@ describe('csvLoader', () => {
 
   describe('when sharedId is provided', () => {
     it('should update the entitiy', async () => {
+      entities.save.mockRestore();
       const entity = await entities.save(
         { title: 'entity4444', template: template1Id },
         { user: {}, language: 'en' }
