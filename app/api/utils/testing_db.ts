@@ -25,7 +25,7 @@ export type DBFixture = {
   entities?: EntitySchema[];
   dictionaries?: ThesaurusSchema[];
   usergroups?: UserGroupSchema[];
-  pages: PageType[];
+  pages?: PageType[];
   [k: string]: any;
 };
 
