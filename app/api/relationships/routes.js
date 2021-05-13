@@ -1,5 +1,3 @@
-/** @format */
-
 import Joi from 'joi';
 import Ajv from 'ajv';
 import relationships from './relationships.js';
@@ -9,7 +7,7 @@ import needsAuthorization from '../auth/authMiddleware';
 export default app => {
   app.post(
     '/api/relationships/bulk',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) => {
       try {
         const response = await relationships.bulk(req.body, req.language);
@@ -90,7 +88,9 @@ export default app => {
       'query'
     ),
     (req, res, next) => {
-      const unpublished = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
+      const unpublished = Boolean(
+        req.user && ['admin', 'editor', 'collaborator'].includes(req.user.role)
+      );
       relationships
         .getByDocument(
           req.query.sharedId,

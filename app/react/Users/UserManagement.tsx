@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
-import UsersList from 'app/Users/components/UsersList';
 import { Translate } from 'app/I18N';
 import { UserGroups } from './components/usergroups/UserGroups';
+import { Users } from './components/Users';
 
 export const UserManagement = () => {
   const [selectedTab, setSelectedTab] = useState('users');
@@ -24,7 +24,7 @@ export const UserManagement = () => {
           </ul>
         </div>
         <TabContent for="users">
-          <UsersList />
+          <Users />
         </TabContent>
         <TabContent for="usergroups">
           <UserGroups />

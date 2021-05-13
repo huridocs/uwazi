@@ -214,7 +214,7 @@ const relationshipfilter = filter => {
 
 const filterToMatch = (filter, path = 'metadata') => {
   let match;
-  if (filter.type === 'text' || filter.type === 'markdown') {
+  if (['text', 'markdown', 'generatedid'].includes(filter.type)) {
     match = textFilter(filter, path);
   }
 

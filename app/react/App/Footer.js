@@ -40,7 +40,7 @@ class Footer extends Component {
               {t('System', 'Library')}
             </I18NLink>
           </li>
-          <NeedAuthorization roles={['admin', 'editor']}>
+          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <li className="footer-nav_item">
               <I18NLink to="/uploads">{t('System', 'Uploads')}</I18NLink>
             </li>

@@ -4,7 +4,9 @@ import testingDB from 'api/utils/testing_db';
 
 import { setUpApp } from 'api/utils/testingRoutes';
 import userGroupRoutes from 'api/usergroups/routes';
+import { testingTenants } from 'api/utils/testingTenants';
 import request, { Response as SuperTestResponse } from 'supertest';
+import errorLog from 'api/log/errorLog';
 import userGroups from '../userGroups';
 
 jest.mock(
@@ -109,7 +111,7 @@ describe('usergroups routes', () => {
         const response = await postUserGroup({
           name: 'group 1',
           other: 'invalid',
-          members: [{ _id: 'user1', other: 'invalid1' }],
+          members: [{ refId: 'user1', other: 'invalid1' }],
         });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toBe('additionalProperties');
@@ -164,6 +166,37 @@ describe('usergroups routes', () => {
         user = undefined;
         const response: request.Response = await endpointCall();
         expect(response.unauthorized).toBe(true);
+      }
+    );
+  });
+
+  describe('error handling', () => {
+    let originalSilent: boolean | undefined;
+
+    beforeAll(() => {
+      originalSilent = errorLog.transports[1].silent;
+      errorLog.transports[1].silent = true;
+    });
+
+    afterAll(() => {
+      errorLog.transports[1].silent = originalSilent;
+    });
+
+    it.each([getUserGroups, postUserGroup, deleteUserGroup])(
+      'should handle server errors',
+      async (
+        endpointCall:
+          | (() => Promise<SuperTestResponse>)
+          | ((args?: any) => Promise<SuperTestResponse>)
+      ) => {
+        user = { username: 'user 1', role: 'admin' };
+        testingTenants.mockCurrentTenant({ name: 'default' });
+        spyOn(userGroups, 'delete').and.throwError('unhandled error');
+        spyOn(userGroups, 'get').and.throwError('unhandled error');
+        spyOn(userGroups, 'save').and.throwError('unhandled error');
+        const response: request.Response = await endpointCall();
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain('Error: unhandled error');
       }
     );
   });

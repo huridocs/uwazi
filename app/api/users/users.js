@@ -6,6 +6,7 @@ import random from 'shared/uniqueID';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
+import { getByMemberIdList, updateUserMemberships } from 'api/usergroups/userGroupsMembers';
 import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
@@ -141,28 +142,49 @@ const sanitizeUser = user => {
   return sanitizedUser;
 };
 
+const populateGroupsOfUsers = async (user, groups) => {
+  const memberships = groups
+    .filter(group => group.members.find(member => member.refId === user._id.toString()))
+    .map(group => ({
+      _id: group._id,
+      name: group.name,
+    }));
+  return { ...user, groups: memberships };
+};
+
+function unauthorizedAction(user, userInTheDatabase, currentUser) {
+  return (
+    (user.hasOwnProperty('role') &&
+      user.role !== userInTheDatabase.role &&
+      currentUser.role !== 'admin') ||
+    (user._id !== currentUser._id.toString() && currentUser.role !== 'admin')
+  );
+}
+
 export default {
   async save(user, currentUser) {
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
+
+    if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
+      return Promise.reject(createError('Unauthorized', 403));
+    }
 
     if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
       return Promise.reject(createError('Can not change your own role', 403));
     }
 
-    if (
-      user.hasOwnProperty('role') &&
-      user.role !== userInTheDatabase.role &&
-      currentUser.role !== 'admin'
-    ) {
-      return Promise.reject(createError('Unauthorized', 403));
-    }
-
     const { using2fa, secret, ...userToSave } = user;
 
-    return model.save({
+    const updatedUser = await model.save({
       ...userToSave,
       password: user.password ? await encryptPassword(user.password) : userInTheDatabase.password,
     });
+
+    if (currentUser.role === 'admin' && user.groups) {
+      await updateUserMemberships(updatedUser, user.groups);
+    }
+
+    return updatedUser;
   },
 
   async newUser(user, domain) {
@@ -170,11 +192,9 @@ export default {
       model.get({ username: user.username }),
       model.get({ email: user.email }),
     ]);
-    if (userNameMatch.length) {
-      return Promise.reject(createError('Username already exists', 409));
-    }
-    if (emailMatch.length) {
-      return Promise.reject(createError('Email already exists', 409));
+    if (userNameMatch.length || emailMatch.length) {
+      const message = userNameMatch.length ? 'Username already exists' : 'Email already exists';
+      return Promise.reject(createError(message, 409));
     }
     const password = user.password ? user.password : random();
     const _user = await model.save({
@@ -183,30 +203,42 @@ export default {
       using2fa: undefined,
       secret: undefined,
     });
+    if (user.groups && user.groups.length > 0) {
+      await updateUserMemberships(_user, user.groups);
+    }
     await this.recoverPassword(user.email, domain, { newUser: true });
     return _user;
   },
 
-  get(query, select) {
-    return model.get(query, select);
+  async get(query, select) {
+    const users = await model.get(query, select);
+    if (typeof select === 'string' && select.includes('+groups')) {
+      const userIds = users.map(user => user._id.toString());
+      const groups = await getByMemberIdList(userIds);
+      return Promise.all(users.map(user => populateGroupsOfUsers(user, groups)));
+    }
+    return users;
   },
 
-  getById(id, select = '') {
-    return model.getById(id, select);
+  async getById(id, select = '', includeGroups = false) {
+    const user = await model.getById(id, select);
+    if (includeGroups && user) {
+      const groups = await getByMemberIdList([user._id.toString()]);
+      return populateGroupsOfUsers(user, groups);
+    }
+    return user;
   },
 
-  delete(_id, currentUser) {
+  async delete(_id, currentUser) {
     if (_id === currentUser._id.toString()) {
       return Promise.reject(createError('Can not delete yourself', 403));
     }
-
-    return model.count().then(count => {
-      if (count > 1) {
-        return model.delete({ _id });
-      }
-
-      return Promise.reject(createError('Can not delete last user', 403));
-    });
+    const count = await model.count();
+    if (count > 1) {
+      await updateUserMemberships({ _id }, []);
+      return model.delete({ _id });
+    }
+    return Promise.reject(createError('Can not delete last user', 403));
   },
 
   async login({ username, password, token }, domain) {

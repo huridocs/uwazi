@@ -318,7 +318,11 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const { optionsValue, optionsLabel, prefix } = this.props;
     const key = `${groupIndex}${index}`;
     return (
-      <li className="multiselectItem" key={key} title={option[optionsLabel]}>
+      <li
+        className="multiselectItem"
+        key={key}
+        title={option.title ? option.title : option[optionsLabel]}
+      >
         <input
           type="checkbox"
           className={`multiselectItem-input${

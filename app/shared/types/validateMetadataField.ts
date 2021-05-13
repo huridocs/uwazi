@@ -51,14 +51,13 @@ const validateType = (
   return [];
 };
 
-const flattenDictionaryValues = (dictionary: ThesaurusSchema) => {
-  return (dictionary.values || []).reduce<ThesaurusValueSchema[]>((flattened, v) => {
+const flattenDictionaryValues = (dictionary: ThesaurusSchema) =>
+  (dictionary.values || []).reduce<ThesaurusValueSchema[]>((flattened, v) => {
     if (v.values?.length) {
       return flattened.concat(v.values);
     }
     return flattened.concat([v]);
   }, []);
-};
 
 const validateDictionariesForeignIds = async (
   property: PropertySchema,
@@ -99,7 +98,7 @@ const validateRelationshipForeignIds = async (
     const valueIds = value.map(v => v.value);
 
     const entityIds = (
-      await entities.get(
+      await entities.getUnrestrictedWithDocuments(
         {
           sharedId: { $in: valueIds },
           ...(property.content && { template: property.content }),

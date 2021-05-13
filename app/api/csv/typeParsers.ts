@@ -4,6 +4,7 @@ import { RawEntity } from 'api/csv/entityRow';
 import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
+import generatedid from './typeParsers/generatedid';
 import geolocation from './typeParsers/geolocation';
 import multiselect from './typeParsers/multiselect';
 import select from './typeParsers/select';
@@ -24,7 +25,7 @@ export default {
   media: defaultParser,
   markdown: defaultParser,
   text: defaultParser,
-
+  generatedid,
   geolocation,
   select,
   multiselect,
