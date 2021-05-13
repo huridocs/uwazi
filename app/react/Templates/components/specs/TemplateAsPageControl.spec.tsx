@@ -6,18 +6,18 @@ import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { Provider } from 'react-redux';
 
-import { ViewTemplateAsPage } from '../ViewTemplateAsPage';
+import { TemplateAsPageControl } from '../TemplateAsPageControl';
 
 const middlewares = [thunk];
 
-describe('ViewTemplateAsPage', () => {
+describe('TemplateAsPageControl', () => {
   const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
-  let component: ShallowWrapper<typeof ViewTemplateAsPage>;
+  let component: ShallowWrapper<typeof TemplateAsPageControl>;
   let store: MockStore<object>;
   const render = () => {
     component = shallow(
       <Provider store={store}>
-        <ViewTemplateAsPage selectedPage="" />
+        <TemplateAsPageControl selectedPage="" />
       </Provider>
     )
       .dive()

@@ -22,7 +22,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const ViewTemplateAsPage = ({ pages, loadPages, selectedPage, updateValue }: mappedProps) => {
+const TemplateAsPageControl = ({ pages, loadPages, selectedPage, updateValue }: mappedProps) => {
   useEffect(() => {
     loadPages();
   }, []);
@@ -57,5 +57,5 @@ const ViewTemplateAsPage = ({ pages, loadPages, selectedPage, updateValue }: map
   );
 };
 
-const container = connector(ViewTemplateAsPage);
-export { container as ViewTemplateAsPage };
+const container = connector(TemplateAsPageControl);
+export { container as TemplateAsPageControl };

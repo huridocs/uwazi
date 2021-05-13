@@ -26,7 +26,7 @@ import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
 
-import { ViewTemplateAsPage } from './ViewTemplateAsPage';
+import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
 
 interface MetadataTemplateProps {
@@ -147,7 +147,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
             <>
               <div className="metadataTemplate-pageview">
                 <FormGroup model=".entityViewPage">
-                  <ViewTemplateAsPage selectedPage={this.props.entityViewPage || ''} />
+                  <TemplateAsPageControl selectedPage={this.props.entityViewPage || ''} />
                 </FormGroup>
               </div>
               {connectDropTarget(
