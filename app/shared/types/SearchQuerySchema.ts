@@ -16,5 +16,6 @@ export const SearchQuerySchema = {
         published: { type: 'boolean' },
       },
     },
+    fullTextSnippets: { type: 'boolean' },
   },
 };

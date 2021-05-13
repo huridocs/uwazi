@@ -9,4 +9,5 @@ export interface SearchQuery {
     searchString?: string | number;
     published?: boolean;
   };
+  fullTextSnippets?: boolean;
 }

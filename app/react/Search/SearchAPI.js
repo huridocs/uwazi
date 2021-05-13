@@ -1,5 +1,6 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
+import qs from 'qs';
 
 export default {
   countByTemplate(requestParams) {
@@ -12,9 +13,8 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
 
-  searchEntitySnippets(sharedId, requestParams) {
-    const url = `v2/entities/${sharedId}/snippets`;
-    return api.get(url, requestParams).then(response => response.json);
+  searchEntitySnippets(requestParams) {
+    return api.get('v2/entities/', requestParams).then(response => response.json);
   },
 
   search(requestParams = new RequestParams()) {

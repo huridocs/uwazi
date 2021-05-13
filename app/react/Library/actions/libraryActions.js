@@ -277,9 +277,19 @@ export function searchSnippets(searchTerm, sharedId, storeKey) {
 }
 
 export function searchEntitySnippets(searchString, sharedId, storeKey) {
-  const requestParams = new RequestParams(qs.stringify({ filter: { searchString } }));
+  const requestParams = new RequestParams(
+    qs.stringify({
+      filter: {
+        searchString: searchString
+          ? `sharedId.raw:(${sharedId}), fullText:(${searchString})`
+          : undefined,
+      },
+      fullTextSnippets: true,
+    })
+  );
+
   return dispatch =>
-    api.searchEntitySnippets(sharedId, requestParams).then(({ data }) => {
+    api.searchEntitySnippets(requestParams).then(({ data }) => {
       dispatch(actions.set(`${storeKey}.sidepanel.snippets`, data));
       return data;
     });

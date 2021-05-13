@@ -16,10 +16,11 @@ describe('searchSnippets', () => {
 
   afterAll(async () => testingDB.disconnect());
 
-  async function searchEntitySnippets(sharedId: string, searchString: string | undefined) {
+  async function searchEntitySnippets(sharedId: string, fullTextTerm: string | undefined) {
+    const searchString = `sharedId.raw:(${sharedId}), fullText:(${fullTextTerm})`;
     return request(app)
-      .get(`/api/v2/entities/${sharedId}/snippets`)
-      .query({ filter: { searchString } })
+      .get('/api/v2/entities')
+      .query({ filter: { searchString }, fullTextSnippets: true })
       .expect(200);
   }
 
@@ -28,11 +29,8 @@ describe('searchSnippets', () => {
     const snippets = body.data;
     const matches = expect.stringContaining('<b>searched</b>');
     const expected = {
-      count: 4,
-      metadata: [
-        { field: 'metadata.property1.value', texts: [matches] },
-        { field: 'title', texts: [matches] },
-      ],
+      count: 2,
+      metadata: [],
       fullText: [
         { page: 2, text: matches },
         { page: 4, text: matches },
@@ -56,21 +54,10 @@ describe('searchSnippets', () => {
     }
   });
 
-  it('should return only the metadata snippets if there is no fullText matches', async () => {
-    const { body } = await searchEntitySnippets('entity2SharedId', 'fulltext');
-    const snippets = body.data;
-    const expected = {
-      count: 1,
-      metadata: [{ field: 'title', texts: [expect.stringContaining('<b>fulltext</b>')] }],
-      fullText: [],
-    };
-    expect(snippets).toEqual(expected);
-  });
-
   it('should support no valid lucene syntax', async () => {
     try {
       const { body } = await searchEntitySnippets('entity2SharedId', 'fulltext OR');
-      expect(body.data.count).toBe(1);
+      expect(body.data.count).toBe(0);
     } catch (e) {
       fail('should not throw an exception');
     }
@@ -89,14 +76,10 @@ describe('searchSnippets', () => {
     it('should return the snippets of a public document', async () => {
       const { body } = await searchEntitySnippets('entity3SharedId', 'searched');
       const snippets = body.data;
-      const matches = expect.stringContaining('<b>searched</b>');
       const expected = {
-        count: 2,
-        metadata: [
-          { field: 'metadata.property2.value', texts: [matches] },
-          { field: 'title', texts: [matches] },
-        ],
-        fullText: [],
+        count: 1,
+        metadata: [],
+        fullText: [{ page: 3, text: expect.stringContaining('<b>searched</b>') }],
       };
       expect(snippets).toEqual(expected);
     });
@@ -121,8 +104,8 @@ describe('searchSnippets', () => {
       const { body } = await searchEntitySnippets('entity4SharedId', 'searched');
       const expected = {
         count: 1,
-        metadata: [{ field: 'title', texts: [expect.stringContaining('<b>searched</b>')] }],
-        fullText: [],
+        metadata: [],
+        fullText: [{ page: 4, text: expect.stringContaining('<b>searched</b>') }],
       };
       expect(body.data).toEqual(expected);
     });

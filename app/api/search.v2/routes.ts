@@ -7,7 +7,7 @@ import validateRequest from 'api/utils/validateRequest';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
-import { searchSnippets } from 'api/search.v2/snippetsSearch';
+import { extractSnippets } from 'api/search.v2/snippetsSearch';
 import { buildQuery } from './buildQuery';
 
 interface UwaziResponse {
@@ -48,33 +48,20 @@ const searchRoutes = (app: Application) => {
 
       const response = await elastic.search({ body: await buildQuery(query, language) });
 
+      const result = query.fullTextSnippets
+        ? extractSnippets(response.body.hits)
+        : response.body.hits.hits.map(h => {
+            const entity = h._source;
+            entity._id = h._id;
+            return entity;
+          });
       res.json({
-        data: response.body.hits.hits.map(h => {
-          const entity = h._source;
-          entity._id = h._id;
-          return entity;
-        }),
+        data: result,
         links: {
           self: url,
           first: query.page?.limit ? url : undefined,
         },
       });
-    })
-  );
-
-  app.get(
-    '/api/v2/entities/:_id/snippets',
-    queryTypes.middleware(),
-    validateRequest({
-      properties: {
-        query: SearchQuerySchema,
-      },
-    }),
-    captureError(async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
-      const { query, language, url } = req;
-      const { _id } = req.params;
-      const response = await searchSnippets(_id, query, language);
-      res.json({ data: response, links: { self: url } });
     })
   );
 };

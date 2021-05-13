@@ -1,26 +1,13 @@
 import db, { testingDB, DBFixture } from 'api/utils/testing_db';
 
-const templateId = testingDB.id();
-
 export const fixturesSnippetsSearch: DBFixture = {
   settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
-  templates: [
-    {
-      _id: templateId,
-      name: 'template1',
-      properties: [
-        { type: 'text', name: 'property1' },
-        { type: 'text', name: 'property2' },
-      ],
-    },
-  ],
   entities: [
     {
       _id: testingDB.id(),
       sharedId: 'entity1SharedId',
       title: 'entity that contains the searched term for fulltext search',
       language: 'en',
-      template: templateId,
       metadata: {
         property1: [{ value: 'this property has the searched term as content' }],
         property2: [{ value: 'another value' }],
@@ -31,7 +18,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity2SharedId',
       title: 'does not match fulltext search',
       language: 'en',
-      template: templateId,
     },
     {
       _id: testingDB.id(),
@@ -39,7 +25,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       title: 'public entity that also contains the searched term in title and metadata',
       language: 'en',
       published: true,
-      template: templateId,
       metadata: {
         property1: [{ value: 'whatever value' }],
         property2: [{ value: 'searched term as content' }],
@@ -50,7 +35,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity4SharedId',
       title: 'private entity that also contains the searched term only in title',
       language: 'en',
-      template: templateId,
       permissions: [{ level: 'read', refId: 'user1', type: 'user' }],
     },
     {
@@ -58,7 +42,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity1SharedId',
       title: 'entidad que contiene searched term como contenido',
       language: 'es',
-      template: templateId,
       metadata: {
         property1: [{ value: 'this property has the searched term as content' }],
         property2: [{ value: 'another value' }],
@@ -69,7 +52,7 @@ export const fixturesSnippetsSearch: DBFixture = {
     {
       _id: db.id(),
       entity: 'entity1SharedId',
-      filename: '8202c463d6158af8065022d9b5014cc1.pdf',
+      filename: 'entity1SharedId.pdf',
       language: 'eng',
       type: 'document',
       fullText: {
@@ -81,6 +64,31 @@ export const fixturesSnippetsSearch: DBFixture = {
       pdfInfo: {
         1: { chars: 10 },
         2: { chars: 20 },
+      },
+    },
+    {
+      _id: db.id(),
+      entity: 'entity3SharedId',
+      filename: 'entity3SharedId.pdf',
+      language: 'eng',
+      type: 'document',
+      fullText: {
+        1: 'Other[[1]] phrase[[1]] which[[1]] contains[[1]] different[[1]] data[[1]].'.repeat(5),
+        2: 'Other[[2]] phrase[[2]] which[[2]] contains[[2]] different[[2]] data[[2]].'.repeat(5),
+        3: 'Phrase[[3]] which[[3]] contains[[3]] searched[[3]] term[[3]]. '.repeat(5),
+      },
+    },
+    {
+      _id: db.id(),
+      entity: 'entity4SharedId',
+      filename: 'entity4SharedId.pdf',
+      language: 'eng',
+      type: 'document',
+      fullText: {
+        1: 'Other[[1]] phrase[[1]] which[[1]] contains[[1]] different[[1]] data[[1]].'.repeat(5),
+        2: 'Other[[2]] phrase[[2]] which[[2]] contains[[2]] different[[2]] data[[2]].'.repeat(5),
+        3: 'Other[[3]] phrase[[3]] which[[3]] contains[[3]] different[[3]] data[[3]].'.repeat(5),
+        4: 'Phrase[[3]] which[[4]] contains[[4]] searched[[4]] term[[4]]. '.repeat(5),
       },
     },
   ],
