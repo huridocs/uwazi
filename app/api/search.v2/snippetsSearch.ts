@@ -2,6 +2,9 @@ import { SearchQuery } from 'shared/types/SearchQueryType';
 import { elastic } from 'api/search';
 import { buildSnippetsQuery } from 'api/search.v2/buildQuery';
 import { searchStringMethod } from 'api/search.v2/queryHelpers';
+import templatesModel from 'api/templates/templates';
+import propertiesHelper from 'shared/comonProperties';
+import { PropertySchema } from 'shared/types/commonTypes';
 
 interface ElasticSearchResults {
   _index: string;
@@ -44,9 +47,13 @@ function extractMetadataSnippets(hit: ElasticSearchResults) {
 export const searchSnippets = async (_id: string, query: SearchQuery, language: string) => {
   const defaultSnippets = { count: 0, metadata: [], fullText: [] };
   if (query.filter && query.filter.searchString) {
-    const searchMethod = await searchStringMethod(query.filter.searchString);
+    const templates = await templatesModel.get();
+    const searchFields = propertiesHelper
+      .textFields(templates)
+      .map((prop: PropertySchema) => `metadata.${prop.name}.value`)
+      .concat(['title', 'fullText']);
     const response = await elastic.search({
-      body: await buildSnippetsQuery(_id, query, language, searchMethod),
+      body: await buildSnippetsQuery(_id, query, language, searchFields),
     });
 
     const hit = response.body.hits.hits[0];
