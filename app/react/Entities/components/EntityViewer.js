@@ -104,6 +104,7 @@ export class EntityViewer extends Component {
 
     const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const { panelOpen, copyFrom, copyFromProps } = this.state;
+    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const rawEntity = entity.toJS();
     const summary = visibleConnectionGroups.reduce(
       (summaryData, g) => {
