@@ -13,16 +13,20 @@ interface ElasticSearchResults {
 }
 
 function extractFullTextSnippets(hit: ElasticSearchResults) {
-  let fullTextSnippets: { text: string; page: number }[] = [];
+  const fullTextSnippets: { text: string; page: number }[] = [];
+
   if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length > 0) {
     const { highlight } = hit.inner_hits.fullText.hits.hits[0];
     const regex = /\[{2}(\d+)]{2}/g;
-    fullTextSnippets = Object.values<string>(highlight).map(([snippet]) => {
-      const matches = regex.exec(snippet);
-      return {
-        text: snippet.replace(regex, ''),
-        page: matches ? Number(matches[1]) : 0,
-      };
+
+    Object.values<string[]>(highlight).forEach(snippets => {
+      snippets.forEach(snippet => {
+        const matches = regex.exec(snippet);
+        fullTextSnippets.push({
+          text: snippet.replace(regex, ''),
+          page: matches ? Number(matches[1]) : 0,
+        });
+      });
     });
   }
   return fullTextSnippets;

@@ -18,9 +18,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity2SharedId',
       title: 'does not match fulltext search',
       language: 'en',
-      fullText: {
-        1: 'simple[[1]] content[[1]]',
-      },
     },
     {
       _id: testingDB.id(),
@@ -38,10 +35,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity4SharedId',
       title: 'private entity that also contains the searched term only in metadata',
       language: 'en',
-      fullText: {
-        1: 'other[[2]] phrase[[2]]',
-        2: 'phrase[[1]] which[[1]] contains [[1]] searched[[1]] term[[1]]',
-      },
       permissions: [{ level: 'read', refId: 'user1', type: 'user' }],
     },
     {
@@ -49,11 +42,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity1SharedId',
       title: 'entidad que contiene searched term como contenido',
       language: 'es',
-      fullText: {
-        1: 'phrase[[1]] which[[1]] contains [[1]] searched[[1]] term[[1]]',
-        2: 'other[[2]] phrase[[2]]',
-        3: 'final[[3]] text[[3]]',
-      },
       metadata: {
         property1: [{ value: 'this property has the searched term as content' }],
         property2: [{ value: 'another value' }],
@@ -68,9 +56,10 @@ export const fixturesSnippetsSearch: DBFixture = {
       language: 'eng',
       type: 'document',
       fullText: {
-        1: 'Phrase[[1]] which[[1]] contains[[1]] searched[[1]] term[[1]]. ',
-        2: 'Other[[2]] phrase[[2]]. ',
-        3: 'Final[[3]] text[[3]]. ',
+        1: 'Other[[1]] phrase[[1]] which[[1]] contains[[1]] different[[1]] data[[1]].'.repeat(5),
+        2: 'Phrase[[2]] which[[2]] contains[[2]] searched[[2]] term[[2]]. '.repeat(5),
+        3: 'Other[[3]] phrase[[3]] which[[3]] contains[[3]] different[[3]] data[[3]].'.repeat(5),
+        4: 'Phrase[[4]] which[[4]] contains[[4]] searched[[4]] term[[4]]. '.repeat(5),
       },
       pdfInfo: {
         1: { chars: 10 },

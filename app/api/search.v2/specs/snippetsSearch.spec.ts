@@ -3,8 +3,8 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { searchRoutes } from 'api/search.v2/routes';
 import { testingDB } from 'api/utils/testing_db';
 import { fixturesSnippetsSearch } from 'api/search.v2/specs/snippetsSearchFixtures';
-import request from 'supertest';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import request from 'supertest';
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -26,13 +26,16 @@ describe('searchSnippets', () => {
   it('should return the metadata and fullText snippets of a document', async () => {
     const { body } = await searchEntitySnippets('entity1SharedId', 'searched');
     const snippets = body.data;
-    expect(snippets.count).toBe(2);
+    expect(snippets.count).toBe(3);
     expect(snippets.metadata.length).toBe(1);
     expect(snippets.metadata[0].texts[0]).toContain('<b>searched</b>');
-    expect(snippets.fullText.length).toBe(1);
-    expect(snippets.fullText[0].page).toBe(1);
+    expect(snippets.fullText.length).toBe(2);
+    expect(snippets.fullText[0].page).toBe(2);
     expect(snippets.fullText[0].text).toContain('<b>searched</b>');
-    expect(snippets.fullText[0].text).not.toContain('[[1]]');
+    expect(snippets.fullText[0].text).not.toContain('[[2]]');
+    expect(snippets.fullText[1].page).toBe(4);
+    expect(snippets.fullText[1].text).toContain('<b>searched</b>');
+    expect(snippets.fullText[1].text).not.toContain('[[4]]');
   });
 
   it('should return empty snippets if there is not matches', async () => {
