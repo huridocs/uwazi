@@ -7,23 +7,17 @@ import { permissionsFilters } from './permissionsFilters';
 async function extractSearchParams(query: SearchQuery) {
   if (query.filter && query.filter.searchString && typeof query.filter.searchString === 'string') {
     const regex = /fullText:\s*([^,]*)/g;
-    const fullTextGroups = regex.exec(query.filter.searchString);
-    const fullTextSearchString = fullTextGroups ? fullTextGroups[1] : undefined;
-    const searchString = fullTextGroups
-      ? query.filter.searchString.replace(fullTextGroups[0], '')
-      : query.filter.searchString;
-    const searchMethod =
-      query.filter && query.filter.searchString
-        ? await searchStringMethod(query.filter.searchString)
-        : 'query_string';
+    const fullTextGroups = regex.exec(query.filter.searchString) || [''];
+    const fullTextSearchString = fullTextGroups[1];
+    const searchString = query.filter.searchString.replace(fullTextGroups[0], '');
+    const searchMethod = await searchStringMethod(query.filter.searchString);
     return { searchString, fullTextSearchString, searchMethod };
   }
   return { searchMethod: 'query_string' };
 }
 
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
-  const __ret = await extractSearchParams(query);
-  const { searchString, fullTextSearchString, searchMethod } = __ret;
+  const { searchString, fullTextSearchString, searchMethod } = await extractSearchParams(query);
   return {
     _source: {
       includes: ['title', 'template', 'sharedId', 'language', 'documents._id'],

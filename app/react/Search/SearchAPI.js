@@ -1,6 +1,5 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import qs from 'qs';
 
 export default {
   countByTemplate(requestParams) {
