@@ -187,7 +187,7 @@ describe('templateActions', () => {
         );
       });
 
-      it('should save the template and dispatch a TEMPLATE_SAVED action', done => {
+      it('should save the template and dispatch a TEMPLATE_SAVED action', async () => {
         spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
         const originalTemplateData = {
           name: 'my template',
@@ -209,24 +209,20 @@ describe('templateActions', () => {
         ];
         const store = mockStore({});
 
-        store
-          .dispatch(actions.saveTemplate(originalTemplateData))
-          .then(() => {
-            expect(store.getActions()).toEqual(expectedActions);
+        await store.dispatch(actions.saveTemplate(originalTemplateData));
 
-            expect(originalTemplateData.properties[0].localID).toBe('a1b2');
-            expect(formActions.merge).toHaveBeenCalledWith('template.data', {
-              name: 'saved_template',
-            });
-          })
-          .then(done)
-          .catch(done.fail);
+        expect(store.getActions()).toEqual(expectedActions);
+        expect(originalTemplateData.properties[0].localID).toBe('a1b2');
+        expect(formActions.merge).toHaveBeenCalledWith('template.data', {
+          name: 'saved_template',
+        });
       });
 
       describe('on error', () => {
-        it('should dispatch template_saved', done => {
+        it('should dispatch template_saved', async () => {
           spyOn(api, 'save').and.callFake(() => Promise.reject(new Error()));
           spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
+
           const originalTemplateData = {
             name: 'my template',
             properties: [
@@ -242,13 +238,8 @@ describe('templateActions', () => {
 
           const store = mockStore({});
 
-          store
-            .dispatch(actions.saveTemplate(originalTemplateData))
-            .then(() => {
-              expect(store.getActions()).toEqual(expectedActions);
-            })
-            .then(done)
-            .catch(done.fail);
+          await store.dispatch(actions.saveTemplate(originalTemplateData));
+          expect(store.getActions()).toEqual(expectedActions);
         });
       });
     });
