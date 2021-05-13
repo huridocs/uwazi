@@ -77,7 +77,7 @@ export const buildSnippetsQuery = async (
               {
                 [searchMethod]: {
                   query: query.filter?.searchString,
-                  fields: ['metadata.*.value$', 'title'],
+                  fields: ['metadata.*.value', 'title'],
                   boost: 2,
                 },
               },
@@ -94,7 +94,7 @@ export const buildSnippetsQuery = async (
     encoder: 'html',
     fields: [
       {
-        'metadata.*.value$': {},
+        'metadata.*.value': {},
       },
       {
         title: {},

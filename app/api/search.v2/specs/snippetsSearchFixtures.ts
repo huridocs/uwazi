@@ -1,13 +1,26 @@
 import db, { testingDB, DBFixture } from 'api/utils/testing_db';
 
+const templateId = testingDB.id();
+
 export const fixturesSnippetsSearch: DBFixture = {
   settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+  templates: [
+    {
+      _id: templateId,
+      name: 'template1',
+      properties: [
+        { type: 'text', name: 'property1' },
+        { type: 'text', name: 'property2' },
+      ],
+    },
+  ],
   entities: [
     {
       _id: testingDB.id(),
       sharedId: 'entity1SharedId',
       title: 'entity that contains the searched term for fulltext search',
       language: 'en',
+      template: templateId,
       metadata: {
         property1: [{ value: 'this property has the searched term as content' }],
         property2: [{ value: 'another value' }],
@@ -18,13 +31,15 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity2SharedId',
       title: 'does not match fulltext search',
       language: 'en',
+      template: templateId,
     },
     {
       _id: testingDB.id(),
       sharedId: 'entity3SharedId',
-      title: 'public entity that also contains the searched term only in metadata',
+      title: 'public entity that also contains the searched term in title and metadata',
       language: 'en',
       published: true,
+      template: templateId,
       metadata: {
         property1: [{ value: 'whatever value' }],
         property2: [{ value: 'searched term as content' }],
@@ -33,8 +48,9 @@ export const fixturesSnippetsSearch: DBFixture = {
     {
       _id: testingDB.id(),
       sharedId: 'entity4SharedId',
-      title: 'private entity that also contains the searched term only in metadata',
+      title: 'private entity that also contains the searched term only in title',
       language: 'en',
+      template: templateId,
       permissions: [{ level: 'read', refId: 'user1', type: 'user' }],
     },
     {
@@ -42,6 +58,7 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity1SharedId',
       title: 'entidad que contiene searched term como contenido',
       language: 'es',
+      template: templateId,
       metadata: {
         property1: [{ value: 'this property has the searched term as content' }],
         property2: [{ value: 'another value' }],
