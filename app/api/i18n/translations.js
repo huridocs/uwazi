@@ -146,21 +146,13 @@ export default {
 
   addEntryInLanguage(contextId, key, defaultValue, language) {
     // eslint-disable-next-line max-statements
-    return model.get().then(results => {
-      const translation = results.find(trans => trans.locale === language);
+    return this.get({ locale: language }).then(([translation]) => {
       const context = translation.contexts.find(ctx => ctx.id === contextId);
       if (!context) {
         return Promise.resolve();
       }
-      context.values = context.values || [];
-      const value = context.values.find(val => val.key === key);
-      if (value) {
-        const index = context.values.indexOf(value);
-        context.values[index].value = defaultValue;
-        // console.log('Found existing key, updating: ', key, context.values[index]);
-      } else {
-        context.values.push({ key, value: defaultValue });
-      }
+
+      context.values[key] = defaultValue;
 
       return this.save(translation);
     });

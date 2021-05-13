@@ -125,20 +125,22 @@ export class CSVLoader extends EventEmitter {
       (await settings.get()).languages
     ).map((l: LanguageSchema) => ({ label: l.label, language: l.key }));
 
+    const translationValues = [];
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
+        const value = {};
+        console.log(row);
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        availableLanguages.forEach(async (lang: any) => {
-          if (!row[lang.label]) return;
-
-          console.log({ [row.Key]: row[lang.label] });
-          await translations.addEntryInLanguage(
-            translationContext,
-            row.Key,
-            row[lang.label],
-            lang.language
-          );
-        });
+        // await availableLanguages.reduce(async (prev, lang: any) => {
+        //   await prev;
+        //   if (!row[lang.label]) return Promise.resolve();
+        //   return translations.addEntryInLanguage(
+        //     translationContext,
+        //     row.Key,
+        //     row[lang.label],
+        //     lang.language
+        //   );
+        // }, Promise.resolve());
       })
       .read();
     return Promise.resolve({ message: translationContext, languages: availableLanguages });

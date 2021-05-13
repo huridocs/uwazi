@@ -3,6 +3,7 @@ import entities from 'api/entities';
 import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
+import settings from 'api/settings';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -26,6 +27,56 @@ describe('csvLoader', () => {
       spyOn(entities, 'save').and.callFake(e => e);
       await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
       expect(entities.save.calls.argsFor(0)[1].user).toEqual({ username: 'user' });
+    });
+  });
+
+  describe('load translations', () => {
+    beforeAll(async () => {
+      await db.clearAllAndLoad(fixtures);
+
+      await translations.addLanguage('es');
+      await translations.addContext(
+        'System',
+        'System',
+        {
+          'original 1': 'original 1',
+          'original 2': 'original 2',
+          'original 3': 'original 3',
+        },
+        ''
+      );
+      await settings.addLanguage({ key: 'es', label: 'Spanish' });
+
+      await translations.addLanguage('fr');
+      await settings.addLanguage({ key: 'fr', label: 'French' });
+
+      const nonExistent = 'Russian';
+
+      const csv = `Key       , English, Spanish, French  , ${nonExistent}  ,
+                   original 1, value 1, valor 1, valeur 1, 1               ,
+                   original 2, value 2, valor 2, valeur 2, 2               ,
+                   original 3, value 3, valor 3, valeur 3, 3               ,`;
+
+      await loader.loadTranslations(stream(csv), 'System');
+    });
+
+    fit('should set all translations from csv', async () => {
+      const [english, spanish, french] = await translations.get();
+      expect(english.contexts[0].values).toEqual({
+        'original 1': 'value 1',
+        'original 2': 'value 2',
+        'original 3': 'value 3',
+      });
+      expect(spanish.contexts[0].values).toEqual({
+        'original 1': 'valor 1',
+        'original 2': 'valor 2',
+        'original 3': 'valor 3',
+      });
+      expect(french.contexts[0].values).toEqual({
+        'original 1': 'valeur 1',
+        'original 2': 'valeur 2',
+        'original 3': 'valeur 3',
+      });
     });
   });
 
