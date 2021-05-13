@@ -3,7 +3,7 @@ import { mockID } from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
 
-import fixtures, { pageToUpdate } from './fixtures';
+import { fixtures, pageToUpdate } from './fixtures';
 import pages from '../pages';
 
 describe('pages', () => {
