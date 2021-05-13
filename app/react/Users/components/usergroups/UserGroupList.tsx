@@ -11,7 +11,7 @@ export interface UserGroupListProps {
   className: string;
 }
 
-const UserGroupListComponent = ({
+export const UserGroupList = ({
   userGroups,
   handleSelect,
   handleAddGroup,
@@ -28,15 +28,6 @@ const UserGroupListComponent = ({
   };
   return (
     <div className="group-list">
-      <div className="beta-feature">
-        <div className="beta-alert">
-          <Icon icon="info-circle" />
-          {' Beta feature'}
-        </div>
-        <span className="beta-tooltip">
-          This feature is part of access control levels, still under construction
-        </span>
-      </div>
       <table className={className}>
         <thead>
           <tr>
@@ -79,5 +70,3 @@ const UserGroupListComponent = ({
     </div>
   );
 };
-
-export const UserGroupList = UserGroupListComponent;

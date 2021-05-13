@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
@@ -32,6 +33,8 @@ const relationType4 = db.id();
 const uploadId1 = db.id();
 const uploadId2 = db.id();
 const inheritedProperty = db.id();
+
+const permissions = [{ refId: 'userId', level: AccessLevels.WRITE, type: PermissionType.USER }];
 
 export default {
   files: [
@@ -159,6 +162,10 @@ export default {
           { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
         ],
       },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
+      ],
     },
     {
       sharedId: 'other',
@@ -171,6 +178,10 @@ export default {
           { icon: null, label: 'translated2', type: 'entity', value: 'shared1' },
         ],
       },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
+      ],
     },
     //select/multiselect/date sync
     {
@@ -182,6 +193,10 @@ export default {
       title: 'EN',
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     {
       _id: db.id(),
@@ -193,6 +208,10 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     {
       _id: db.id(),
@@ -204,6 +223,10 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     //docs to change metadata property names
     {
@@ -350,6 +373,13 @@ export default {
       template: templateWithEntityAsThesauri,
       language: 'en',
       sharedId: 'value1',
+    },
+    {
+      _id: db.id(),
+      sharedId: 'sharedPerm',
+      title: 'Entity With Permissions',
+      language: 'es',
+      permissions,
     },
   ],
   settings: [
@@ -508,4 +538,5 @@ export {
   unpublishedDocId,
   uploadId1,
   uploadId2,
+  permissions,
 };

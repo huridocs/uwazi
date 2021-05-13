@@ -1,0 +1,108 @@
+@import '../../scss/config/colors';
+@import '../../scss/config/typography';
+@import '../../scss/elements/pill';
+
+.user-list {
+  table {
+    width: 100%;
+    white-space: nowrap;
+    border-collapse: separate;
+    border: 1px;
+    th {
+      font-weight: bold;
+      border-bottom: 2px solid $c-grey-light;
+    }
+    td {
+      width: 20%;
+      padding: 7px 10px;
+      font-size: $f-size;
+      @include pillItem;
+    }
+    tbody tr {
+      &:hover > td {
+        background-color: #f2f6fb;
+        cursor: pointer;
+      }
+      &.selected > td {
+        background-color: #bed1ec;
+      }
+    }
+    tbody td {
+      border-bottom: 1px solid $c-grey-light;
+    }
+  }
+  table.edition-mode{
+    width: calc(100% - 400px);
+  }
+  .settings-footer.edition-mode {
+    display: none;
+  }
+}
+.user-form {
+  .user-memberships {
+    width: 100%;
+    padding-top: 10px;
+    margin: 0 15px;
+  }
+  .role-info {
+    display: flex;
+    border: 0;
+    background-color: transparent;
+    float: right;
+  }
+}
+.permissions-modal {
+  .permissions-list {
+    width: 100%;
+
+    table {
+      empty-cells: hide;
+      white-space: nowrap;
+      border-collapse: separate;
+      border: 1px;
+    }
+
+    td {
+      padding: 7px 10px;
+      font-size: $f-size;
+    }
+
+    th {
+      border-bottom: 2px solid $c-grey-light;
+    }
+
+    th:nth-child(n+2) {
+      text-align: center;
+    }
+
+    tbody > tr > *:nth-last-child(1) {
+      width: 70%
+    }
+
+    tbody > tr > *:nth-child(n+2) {
+      width: 10%
+    }
+
+    tbody td {
+      border-bottom: 1px solid $c-grey-light;
+    }
+
+    td:not(:first-of-type) {
+      text-align: center;
+    }
+  }
+  .legend {
+    padding-top: 10px;
+    span {
+      font-size: small;
+      font-weight: bold;
+    }
+
+    .legend-item {
+      span {
+        font-size: $f-size-sm;
+        font-weight: normal;
+      }
+    }
+  }
+}

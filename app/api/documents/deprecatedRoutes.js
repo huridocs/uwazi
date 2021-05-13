@@ -60,7 +60,7 @@ export default app => {
 
   app.delete(
     '/api/documents',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest(
       Joi.object({
         sharedId: Joi.string().required(),

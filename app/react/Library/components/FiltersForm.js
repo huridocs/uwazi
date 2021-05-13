@@ -6,12 +6,14 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 
+import debounce from 'app/utils/debounce';
+import libraryHelper from 'app/Library/helpers/libraryFilters';
+import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
 import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
-import debounce from 'app/utils/debounce';
-import libraryHelper from 'app/Library/helpers/libraryFilters';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
+import { PermissionsFilter } from './PermissionsFilter';
 
 import Filters from './FiltersFromProperties';
 
@@ -64,6 +66,23 @@ export class FiltersForm extends Component {
 
     return (
       <div className="filters-box">
+        <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
+          <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
+
+          <div className="documentTypes-selector nested-selector">
+            <DocumentTypesList storeKey={this.props.storeKey} />
+          </div>
+
+          <Filters
+            onChange={this.activateAutoSearch}
+            properties={fields}
+            translationContext={translationContext}
+            storeKey={this.props.storeKey}
+          />
+
+          <FilterTocGeneration onChange={this.activateAutoSearch} aggregations={aggregations} />
+        </Form>
+
         {(() => {
           const activeTypes = templates.filter(template =>
             documentTypes.includes(template.get('_id'))
@@ -90,16 +109,6 @@ export class FiltersForm extends Component {
 
           return null;
         })()}
-
-        <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
-          <Filters
-            onChange={this.activateAutoSearch}
-            properties={fields}
-            translationContext={translationContext}
-            storeKey={this.props.storeKey}
-          />
-          <FilterTocGeneration onChange={this.activateAutoSearch} aggregations={aggregations} />
-        </Form>
       </div>
     );
   }

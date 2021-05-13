@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import rison from 'rison-node';
-import queryString from 'query-string';
+import qs from 'qs';
 
 import Loader from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
@@ -26,7 +26,9 @@ export const ListChartComponent = props => {
     let query = { filters: {} };
 
     if (props.baseUrl) {
-      const { q } = queryString.parse(props.baseUrl.substring(props.baseUrl.indexOf('?')));
+      const { q } = qs.parse(props.baseUrl.substring(props.baseUrl.indexOf('?')), {
+        ignoreQueryPrefix: true,
+      });
       query = rison.decode(q);
       query.filters = query.filters || {};
     }

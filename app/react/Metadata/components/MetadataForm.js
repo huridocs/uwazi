@@ -11,9 +11,9 @@ import { Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
+import { wrapEntityMetadata } from 'app/Metadata';
 import defaultTemplate from '../helpers/defaultTemplate';
 import validator from '../helpers/validator';
-import { wrapEntityMetadata } from '../helpers/wrapper';
 import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 

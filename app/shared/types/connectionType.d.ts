@@ -104,6 +104,11 @@ export interface ConnectionSchema {
           }[]
         | undefined;
     };
+    permissions?: {
+      refId: ObjectIdSchema;
+      type: 'user' | 'group' | 'public';
+      level: 'read' | 'write' | 'mixed';
+    }[];
     [k: string]: unknown | undefined;
   };
   reference?: {

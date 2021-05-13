@@ -73,5 +73,12 @@ describe('file', () => {
       context.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteFile).toHaveBeenCalledWith(props.file, props.entity);
     });
+
+    it('should check authorization roles to upload files', () => {
+      render();
+      const button = component.find('.file-edit');
+      expect(button.parent().props().roles).toEqual(['admin', 'editor']);
+      expect(button.parent().props().orWriteAccessTo).toEqual([props.entity]);
+    });
   });
 });

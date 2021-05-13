@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import SelectFilter from 'app/Library/components/SelectFilter';
-import { Aggregations } from 'shared/types/Aggregations';
+import { Aggregations } from 'shared/types/aggregations';
 import { FilterTocGeneration } from '../FilterTocGeneration';
 
 describe('FilterTocGeneration', () => {

@@ -9,6 +9,7 @@ import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
+import { generateID } from 'shared/IDGenerator';
 import {
   DatePicker,
   DateRange,
@@ -45,7 +46,7 @@ export const translateOptions = thesauri =>
     .toJS();
 
 export class MetadataFormFields extends Component {
-  getField(property, _model, thesauris) {
+  getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
     const { dateFormat, version, entityThesauris, attachments } = this.props;
@@ -155,6 +156,16 @@ export class MetadataFormFields extends Component {
             <em>This content is automatically generated</em>
           </div>
         );
+      case 'generatedid':
+        return (
+          <Field model={_model}>
+            <input
+              type="text"
+              className="form-control"
+              defaultValue={formModel === 'publicform' ? generateID(3, 4, 4) : undefined}
+            />
+          </Field>
+        );
       case 'text':
         return (
           <Field model={_model}>
@@ -181,7 +192,15 @@ export class MetadataFormFields extends Component {
         {fields
           .filter(p => !showSubset || showSubset.includes(p.name))
           .map(property => (
-            <FormGroup key={property.name} model={`.metadata.${property.name}`}>
+            <FormGroup
+              key={property.name}
+              model={`.metadata.${property.name}`}
+              className={
+                model === 'publicform' && property.type === 'generatedid'
+                  ? ' hidden '
+                  : property.type
+              }
+            >
               <ul
                 className={`search__filter is-active ${
                   this.props.highlightedProps.includes(property.name) ? 'highlight' : ''
@@ -213,7 +232,7 @@ export class MetadataFormFields extends Component {
                   </li>
                 ) : null}
                 <li className="wide">
-                  {this.getField(property, `.metadata.${property.name}`, thesauris)}
+                  {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
                 </li>
               </ul>
             </FormGroup>
@@ -262,7 +281,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   if (!storeKey) {
-    const entity = state.entityView.entity;
+    const { entity } = state.entityView;
     attachments = entity.get('attachments');
   }
 
