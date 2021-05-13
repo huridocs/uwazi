@@ -63,7 +63,7 @@ const searchRoutes = (app: Application) => {
   );
 
   app.get(
-    '/api/v2/entity/:_id/snippets',
+    '/api/v2/entities/:_id/snippets',
     queryTypes.middleware(),
     validateRequest({
       properties: {

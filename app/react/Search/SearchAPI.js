@@ -12,6 +12,11 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
 
+  searchEntitySnippets(sharedId, requestParams) {
+    const url = `v2/entities/${sharedId}/snippets`;
+    return api.get(url, requestParams).then(response => response.json);
+  },
+
   search(requestParams = new RequestParams()) {
     const params = requestParams.add({
       include:

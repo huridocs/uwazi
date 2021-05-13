@@ -12,6 +12,7 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
 import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
+import qs from 'qs';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 
 export function enterLibrary() {
@@ -272,6 +273,15 @@ export function searchSnippets(searchTerm, sharedId, storeKey) {
     api.searchSnippets(new RequestParams({ searchTerm, id: sharedId })).then(snippets => {
       dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
       return snippets;
+    });
+}
+
+export function searchEntitySnippets(searchString, sharedId, storeKey) {
+  const requestParams = new RequestParams(qs.stringify({ filter: { searchString } }));
+  return dispatch =>
+    api.searchEntitySnippets(sharedId, requestParams).then(({ data }) => {
+      dispatch(actions.set(`${storeKey}.sidepanel.snippets`, data));
+      return data;
     });
 }
 

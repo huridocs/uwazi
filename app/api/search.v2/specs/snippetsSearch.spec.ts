@@ -18,7 +18,7 @@ describe('searchSnippets', () => {
 
   async function searchEntitySnippets(sharedId: string, searchString: string | undefined) {
     return request(app)
-      .get(`/api/v2/entity/${sharedId}/snippets`)
+      .get(`/api/v2/entities/${sharedId}/snippets`)
       .query({ filter: { searchString } })
       .expect(200);
   }
