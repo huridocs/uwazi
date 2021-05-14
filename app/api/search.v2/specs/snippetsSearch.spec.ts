@@ -43,6 +43,7 @@ describe('searchSnippets', () => {
     searchString                              | firstResultSharedId  | total
     ${'fullText:(searched)'}                  | ${'entity1SharedId'} | ${3}
     ${'title:(private), fullText:(searched)'} | ${'entity4SharedId'} | ${1}
+    ${undefined}                              | ${'entity1SharedId'} | ${4}
   `(
     'should return a standard result if fullTextSnippets is not required',
     async ({ searchString, firstResultSharedId, total }) => {
