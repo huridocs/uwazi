@@ -13,7 +13,7 @@ async function extractSearchParams(query: SearchQuery) {
     const searchMethod = await searchStringMethod(query.filter.searchString);
     return { searchString, fullTextSearchString, searchMethod };
   }
-  return { searchMethod: 'query_string' };
+  return { searchString: query.filter?.searchString, searchMethod: 'query_string' };
 }
 
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
