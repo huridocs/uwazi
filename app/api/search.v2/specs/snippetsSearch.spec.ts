@@ -24,7 +24,7 @@ describe('searchSnippets', () => {
       .expect(200);
   }
 
-  it('should return the metadata and fullText snippets of a document', async () => {
+  it('should return fullText snippets of a document', async () => {
     const { body } = await searchEntitySnippets('entity1SharedId', 'searched');
     const snippets = body.data;
     const matches = expect.stringContaining('<b>searched</b>');
@@ -38,6 +38,23 @@ describe('searchSnippets', () => {
     };
     expect(snippets).toEqual(expected);
   });
+
+  it.each`
+    searchString                              | firstResultSharedId  | total
+    ${'fullText:(searched)'}                  | ${'entity1SharedId'} | ${3}
+    ${'title:(private), fullText:(searched)'} | ${'entity4SharedId'} | ${1}
+  `(
+    'should return a standard result if fullTextSnippets is not required',
+    async ({ searchString, firstResultSharedId, total }) => {
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query({ filter: { searchString } })
+        .expect(200);
+      expect(body.data.length).toBe(total);
+      const [entity] = body.data;
+      expect(entity.sharedId).toEqual(firstResultSharedId);
+    }
+  );
 
   it('should return empty snippets if there is not matches', async () => {
     const { body } = await searchEntitySnippets('entity1SharedId', 'nonexistent');

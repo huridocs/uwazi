@@ -8,10 +8,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity1SharedId',
       title: 'entity that contains the searched term for fulltext search',
       language: 'en',
-      metadata: {
-        property1: [{ value: 'this property has the searched term as content' }],
-        property2: [{ value: 'another value' }],
-      },
     },
     {
       _id: testingDB.id(),
@@ -22,13 +18,9 @@ export const fixturesSnippetsSearch: DBFixture = {
     {
       _id: testingDB.id(),
       sharedId: 'entity3SharedId',
-      title: 'public entity that also contains the searched term in title and metadata',
+      title: 'public entity that also contains the searched term in title',
       language: 'en',
       published: true,
-      metadata: {
-        property1: [{ value: 'whatever value' }],
-        property2: [{ value: 'searched term as content' }],
-      },
     },
     {
       _id: testingDB.id(),
@@ -42,10 +34,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity1SharedId',
       title: 'entidad que contiene searched term como contenido',
       language: 'es',
-      metadata: {
-        property1: [{ value: 'this property has the searched term as content' }],
-        property2: [{ value: 'another value' }],
-      },
     },
   ],
   files: [
