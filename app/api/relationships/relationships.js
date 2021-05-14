@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';

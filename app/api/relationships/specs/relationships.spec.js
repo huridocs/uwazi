@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
@@ -453,7 +451,6 @@ describe('relationships', () => {
         friend: [{ value: 'alfred' }],
       });
       let connections = await relationships.getByDocument('bruceWayne', 'en');
-
       expect(connections.length).toBe(6);
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
@@ -467,7 +464,6 @@ describe('relationships', () => {
       expect(connections.find(c => c.entity === 'alfred').template.toString()).toBe(
         family.toString()
       );
-
       expect(connections.length).toBe(7);
     });
   });
