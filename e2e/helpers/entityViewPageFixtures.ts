@@ -1,9 +1,9 @@
 export const contents = `<h1>My entity view</h1>
-<p><Value path="currentEntity.title" /></p>
+<p className="custom-title"><Value path="currentEntity.title" /></p>
 <br />
 
 <Repeat path="currentEntity.metadata.pa_s">
-  <li>
+  <li className="custom-list">
     <Value path="label" />
   </li>
 </Repeat>

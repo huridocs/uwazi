@@ -45,10 +45,13 @@ describe('Entities', () => {
     await expect(page).toClick(
       'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
     );
-    await expect(page).toMatchElement('p', {
+    await expect(page).toMatchElement('h1', {
+      text: 'My entity view',
+    });
+    await expect(page).toMatchElement('.custom-title', {
       text: 'Artavia Murillo y otros',
     });
-    await expect(page).toMatchElement('li', {
+    await expect(page).toMatchElement('.custom-list', {
       text: 'Costa Rica',
     });
   });
