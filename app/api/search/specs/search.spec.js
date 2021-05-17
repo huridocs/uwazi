@@ -325,36 +325,85 @@ describe('search', () => {
     expect(unpublishedAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
   });
 
-  it('should filter by metadata inheritValue', async () => {
-    const [spain, egypt, both, bothAnd] = await Promise.all([
-      search.search(
-        { types: [ids.template1], filters: { relationshipcountry: { values: ['SpainID'] } } },
-        'en'
-      ),
-      search.search(
-        { types: [ids.template1], filters: { relationshipcountry: { values: ['EgyptID'] } } },
-        'en'
-      ),
-      search.search(
-        {
-          types: [ids.template1],
-          filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'] } },
-        },
-        'en'
-      ),
-      search.search(
-        {
-          types: [ids.template1],
-          filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'], and: true } },
-        },
-        'en'
-      ),
-    ]);
+  describe('filtering by metadata inheritValue', () => {
+    it('should filter by select / multiselect', async () => {
+      const [spain, egypt, both, bothAnd] = await Promise.all([
+        search.search(
+          { types: [ids.template1], filters: { relationshipcountry: { values: ['SpainID'] } } },
+          'en'
+        ),
+        search.search(
+          { types: [ids.template1], filters: { relationshipcountry: { values: ['EgyptID'] } } },
+          'en'
+        ),
+        search.search(
+          {
+            types: [ids.template1],
+            filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'] } },
+          },
+          'en'
+        ),
+        search.search(
+          {
+            types: [ids.template1],
+            filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'], and: true } },
+          },
+          'en'
+        ),
+      ]);
 
-    expect(spain.rows.length).toBe(1);
-    expect(egypt.rows.length).toBe(2);
-    expect(both.rows.length).toBe(2);
-    expect(bothAnd.rows.length).toBe(1);
+      expect(spain.rows.length).toBe(1);
+      expect(egypt.rows.length).toBe(2);
+      expect(both.rows.length).toBe(2);
+      expect(bothAnd.rows.length).toBe(1);
+    });
+
+    it('should filter by range values', async () => {
+      const [spain, egypt, both] = await Promise.all([
+        search.search(
+          {
+            types: [ids.template1],
+            filters: { relationshipdate: { from: 15, to: 25 } },
+          },
+          'en'
+        ),
+        search.search(
+          { types: [ids.template1], filters: { relationshipdate: { from: 25, to: 45 } } },
+          'en'
+        ),
+        search.search(
+          { types: [ids.template1], filters: { relationshipdate: { from: 15, to: 45 } } },
+          'en'
+        ),
+      ]);
+
+      expect(spain.rows.length).toBe(1);
+      expect(egypt.rows.length).toBe(2);
+      expect(both.rows.length).toBe(2);
+    });
+
+    fit('should filter by text values', async () => {
+      const [spain, both] = await Promise.all([
+        search.search(
+          {
+            types: [ids.template1],
+            filters: { relationshiptext: 'kawans nala' },
+          },
+          'en'
+        ),
+
+        search.search(
+          {
+            types: [ids.template1],
+            filters: { relationshiptext: 'chow chow' },
+          },
+          'en'
+        ),
+      ]);
+
+      expect(spain.rows.length).toBe(1);
+      expect(both.rows.length).toBe(2);
+    });
   });
 
   it('should filter by daterange metadata', async () => {
