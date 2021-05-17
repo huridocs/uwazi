@@ -28,9 +28,9 @@ function processFilters(filters, properties) {
     let value = filters[filterName];
 
     if (property.inherit) {
-      type = properties.find(p => {
+      ({ type } = properties.find(p => {
         return property.inheritProperty.toString() === p._id.toString();
-      }).type;
+      }));
     }
 
     if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
