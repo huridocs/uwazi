@@ -18,6 +18,7 @@ export const fixtures: DBFixture = {
       language: 'en',
       title: 'Batman finishes',
       user: 'user',
+      entityView: true,
     },
     {
       _id: pageToUpdate,
@@ -33,6 +34,20 @@ export const fixtures: DBFixture = {
       language: 'fr',
       title: 'Right there',
       user: 'user',
+    },
+    {
+      _id: db.id(),
+      sharedId: '3',
+      language: 'es',
+      title: 'Pagina que sera entityView',
+      entityView: false,
+    },
+    {
+      _id: db.id(),
+      sharedId: '3',
+      language: 'en',
+      title: 'Page that will be for entityView',
+      entityView: false,
     },
   ],
 
