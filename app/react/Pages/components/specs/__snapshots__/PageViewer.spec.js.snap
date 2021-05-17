@@ -2,7 +2,6 @@
 
 exports[`PageViewer render should render the script, appending the datasets 1`] = `
 <Script>
-  var datasets={"key":"value"};
-JSScript
+  JSScript
 </Script>
 `;
