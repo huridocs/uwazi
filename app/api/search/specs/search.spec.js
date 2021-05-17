@@ -522,6 +522,18 @@ describe('search', () => {
     });
   });
 
+  describe('inherit aggregations', () => {
+    it('should return aggregations based on inheritValue', async () => {
+      const allAggregations = await search.search({ allAggregations: true }, 'en');
+
+      const template1Aggs = allAggregations.aggregations.all.relationshipcountry.buckets;
+      expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+      expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
+      const europeBucket = template1Aggs.find(a => a.key === 'EuropeID');
+      expect(europeBucket.values.find(a => a.key === 'GermanyID').filtered.doc_count).toBe(1);
+    });
+  });
+
   describe('multiselect aggregations', () => {
     it('should return aggregations of multiselect fields', done => {
       userFactory.mock(undefined);

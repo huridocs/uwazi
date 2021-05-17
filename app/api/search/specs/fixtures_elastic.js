@@ -186,6 +186,7 @@ export const fixtures = {
             inheritedValue: [
               { value: 'EgyptID', label: 'Egypt' },
               { value: 'SpainID', label: 'Spain' },
+              { value: 'GermanyID', label: 'Germany' },
             ],
           },
         ],
@@ -253,6 +254,7 @@ export const fixtures = {
         multiselect1: [
           { value: 'EgyptID', label: 'Egypt' },
           { value: 'SpainID', label: 'Spain' },
+          { label: 'Germany', id: 'GermanyID' },
         ],
         groupedDictionary: [{ value: 'GermanyID' }],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
