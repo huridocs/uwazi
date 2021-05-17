@@ -28,9 +28,7 @@ function processFilters(filters, properties) {
     let value = filters[filterName];
 
     if (property.inherit) {
-      ({ type } = properties.find(p => {
-        return property.inheritProperty.toString() === p._id.toString();
-      }));
+      ({ type } = propertiesHelper.getInheritedProperty(property, properties));
     }
 
     if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
@@ -65,15 +63,10 @@ function processFilters(filters, properties) {
 }
 
 function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
-  const mappedProps = allUniqueProperties.reduce((map, prop) => {
-    // eslint-disable-next-line no-param-reassign
-    map[prop._id.toString()] = prop;
-    return map;
-  }, {});
   return propertiesToBeAggregated
     .filter(property => {
       const type = property.inherit
-        ? mappedProps[property.inheritProperty.toString()].type
+        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).type
         : property.type;
 
       return (
@@ -84,7 +77,7 @@ function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
       ...property,
       name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
       content: property.inherit
-        ? mappedProps[property.inheritProperty.toString()].content
+        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).content
         : property.content,
     }));
 }
@@ -163,8 +156,9 @@ function searchGeolocation(documentsQuery, templates) {
 
       if (prop.type === 'relationship' && prop.inherit) {
         const contentTemplate = templates.find(t => t._id.toString() === prop.content.toString());
-        const inheritedProperty = contentTemplate.properties.find(
-          p => p._id.toString() === prop.inheritProperty.toString()
+        const inheritedProperty = propertiesHelper.getInheritedProperty(
+          prop,
+          contentTemplate.properties
         );
         if (inheritedProperty.type === 'geolocation') {
           geolocationProperties.push(`${prop.name}`);
@@ -261,9 +255,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
 
     if (property.inherit) {
-      property = properties.find(
-        prop => property.inheritProperty.toString() === prop._id.toString()
-      );
+      property = propertiesHelper.getInheritedProperty(property, properties);
     }
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(

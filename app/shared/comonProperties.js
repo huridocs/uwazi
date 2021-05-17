@@ -67,12 +67,16 @@ const allUniqueProperties = templates =>
     return filters;
   }, []);
 
+const getInheritedProperty = (property, properties) =>
+  properties.find(p => property.inheritProperty.toString() === p._id.toString());
+
 const textFields = templates =>
   allUniqueProperties(templates).filter(
     property => property.type === 'text' || property.type === 'markdown'
   );
 
 export default {
+  getInheritedProperty,
   comonProperties,
   comonFilters,
   defaultFilters,
