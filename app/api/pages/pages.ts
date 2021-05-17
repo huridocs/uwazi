@@ -21,15 +21,27 @@ const assignUserAndDate = (page: PageType, user?: User) => {
   };
 };
 
+const entityViewSyncing = async (page: PageType) => {
+  const pageInAllLaguangues = await model.get({ sharedId: page.sharedId });
+  const updatedPages = pageInAllLaguangues.map(data => ({
+    ...data,
+    entityView: page.entityView || false,
+  }));
+  await model.saveMultiple(updatedPages);
+};
+
 export default {
   // eslint-disable-next-line max-statements
   async save(_page: PageType, user?: User, language?: string) {
     await validatePage(_page);
     let page = { ..._page };
+
     if (!page.sharedId) {
       page = assignUserAndDate(page, user);
     }
+
     if (page.sharedId) {
+      await entityViewSyncing(page);
       return model.save(page);
     }
 
