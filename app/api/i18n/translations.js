@@ -133,7 +133,6 @@ export default {
             if (value) {
               const index = context.values.indexOf(value);
               context.values[index].value = defaultValue;
-              console.log('Found existing key, updating: ', key, context.values[index]);
             } else {
               context.values.push({ key, value: defaultValue });
             }
