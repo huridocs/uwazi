@@ -5,14 +5,9 @@ import { markdownDatasets } from 'app/Markdown';
 import PagesAPI from '../../PagesAPI';
 import pageItemLists from '../pageItemLists';
 
-import { setPageAssets } from '../setPageAssets';
+import { getPageAssets } from '../getPageAssets';
 
-interface Action {
-  type: string;
-  value: any;
-}
-
-describe('setPageAssets', () => {
+describe('getPageAssets', () => {
   const page = {
     _id: 'abc2',
     title: 'Page 1',
@@ -51,7 +46,7 @@ describe('setPageAssets', () => {
   });
 
   it('should request page for view', async () => {
-    const stateActions = await setPageAssets(request);
+    const stateActions = await getPageAssets(request);
 
     expect(PagesAPI.getById).toHaveBeenCalledWith(request);
     expect(stateActions).toMatchSnapshot();
@@ -71,7 +66,7 @@ describe('setPageAssets', () => {
   };
 
   it('should request each list inside the content limited to 6 items (default) or the passed value and set the state', async () => {
-    const stateActions = await setPageAssets(request);
+    const stateActions = await getPageAssets(request);
 
     expect(apiSearch.calls.count()).toBe(4);
     expect(JSON.parse(JSON.stringify(apiSearch.calls.argsFor(0)[0]))).toEqual({
@@ -96,14 +91,11 @@ describe('setPageAssets', () => {
       headers: 'headers',
     });
 
-    const itemLists = stateActions[1].value;
-    assertItemLists(itemLists);
+    assertItemLists(stateActions.itemLists);
   });
 
   describe('Datasets', () => {
     let markdownDatasetsResponse: {};
-    const getDatasetsActions = (stateActions: Action[]) =>
-      stateActions.find(a => a.type === 'page/datasets/SET')?.value;
 
     beforeEach(() => {
       markdownDatasetsResponse = { request1: 'url1', request2: 'url2' };
@@ -115,19 +107,19 @@ describe('setPageAssets', () => {
     });
 
     it('should request each dataset inside the content', async () => {
-      const stateActions = await setPageAssets(request);
-      expect(getDatasetsActions(stateActions)).toEqual(markdownDatasetsResponse);
+      const stateActions = await getPageAssets(request);
+      expect(stateActions.datasets).toEqual(markdownDatasetsResponse);
     });
 
     describe('Extended datasets and data', () => {
       it('should request additional dataset queries and passed data', async () => {
-        const stateActions = await setPageAssets(
+        const stateActions = await getPageAssets(
           request,
           { customDataset: { url: 'someurl' } },
           { customData: { localData: 'from store' } }
         );
 
-        expect(getDatasetsActions(stateActions)).toEqual({
+        expect(stateActions.datasets).toEqual({
           request1: 'url1',
           request2: 'url2',
           customDataset: { url: 'someurl' },

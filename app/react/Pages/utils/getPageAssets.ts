@@ -1,7 +1,6 @@
 import rison from 'rison-node';
 
 import api from 'app/Search/SearchAPI';
-import { actions } from 'app/BasicReducer';
 import { markdownDatasets } from 'app/Markdown';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -46,7 +45,7 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   return listsData;
 };
 
-const setPageAssets = async (
+const getPageAssets = async (
   requestParams: RequestParams,
   additionalDatasets?: {},
   localDatasets?: {}
@@ -73,11 +72,11 @@ const setPageAssets = async (
     options: searchOptions[index],
   }));
 
-  return [
-    actions.set('page/pageView', pageView),
-    actions.set('page/itemLists', itemLists),
-    actions.set('page/datasets', { ...datasets, ...localDatasets }),
-  ];
+  return {
+    pageView,
+    itemLists,
+    datasets: { ...datasets, ...localDatasets },
+  };
 };
 
-export { setPageAssets };
+export { getPageAssets };
