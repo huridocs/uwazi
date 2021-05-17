@@ -107,7 +107,7 @@ describe('csvLoader', () => {
       expect(events).toEqual(['title1', 'title2', 'title3']);
     });
 
-    fit('should only import valid metadata', () => {
+    it('should only import valid metadata', () => {
       const metadataImported = Object.keys(imported[0].metadata);
       expect(metadataImported).toEqual([
         'text_label',
