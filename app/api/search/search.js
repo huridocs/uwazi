@@ -65,15 +65,16 @@ function processFilters(filters, properties) {
 }
 
 function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
+  const mappedProps = allUniqueProperties.reduce((map, prop) => {
+    // eslint-disable-next-line no-param-reassign
+    map[prop._id.toString()] = prop;
+    return map;
+  }, {});
   return propertiesToBeAggregated
     .filter(property => {
-      let { type } = property;
-
-      if (property.inherit) {
-        type = allUniqueProperties.find(p => {
-          return property.inheritProperty.toString() === p._id.toString();
-        }).type;
-      }
+      const type = property.inherit
+        ? mappedProps[property.inheritProperty.toString()].type
+        : property.type;
 
       return (
         type === 'select' || type === 'multiselect' || type === 'relationship' || type === 'nested'
@@ -82,6 +83,9 @@ function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
     .map(property => ({
       ...property,
       name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
+      content: property.inherit
+        ? mappedProps[property.inheritProperty.toString()].content
+        : property.content,
     }));
 }
 
@@ -283,6 +287,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       .filter(item => item);
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
+
     if (dictionary && dictionary.values.find(v => v.values)) {
       denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
         denormalizedAggregation,
@@ -666,7 +671,6 @@ const search = {
       queryBuilder.generatedTocAggregations();
     }
 
-    // console.log(JSON.stringify(queryBuilder.query(), null, 4));
     return elastic
       .search({ body: queryBuilder.query() })
       .then(response => processResponse(response, templates, dictionaries, language, query.filters))
@@ -803,6 +807,7 @@ const search = {
       .filter(o => o.results);
 
     const filteredOptions = filterOptions(searchTerm, options);
+
     return {
       options: filteredOptions.slice(0, preloadOptionsLimit),
       count: filteredOptions.length,
