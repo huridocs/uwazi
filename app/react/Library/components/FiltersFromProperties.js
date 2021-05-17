@@ -6,6 +6,7 @@ import React from 'react';
 import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
+import { selectTemplates } from 'app/utils/coreSelectors';
 import propertiesHelper from 'shared/comonProperties';
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
@@ -27,7 +28,7 @@ export const FiltersFromProperties = ({
       let { type } = property;
       if (property.inherit) {
         ({ type } = propertiesHelper
-          .allUniqueProperties(templates.toJS())
+          .allUniqueProperties(templates)
           .find(p => p._id === property.inheritProperty));
       }
 
@@ -104,7 +105,7 @@ FiltersFromProperties.defaultProps = {
 };
 
 FiltersFromProperties.propTypes = {
-  templates: PropTypes.instanceOf(Immutable.List).isRequired,
+  templates: PropTypes.array.isRequired,
   onChange: PropTypes.func,
   dateFormat: PropTypes.string,
   modelPrefix: PropTypes.string,
@@ -119,7 +120,7 @@ export function mapStateToProps(state, props) {
     dateFormat: state.settings.collection.get('dateFormat'),
     aggregations: state[props.storeKey].aggregations,
     storeKey: props.storeKey,
-    templates: state.templates,
+    templates: selectTemplates(state),
   };
 }
 
