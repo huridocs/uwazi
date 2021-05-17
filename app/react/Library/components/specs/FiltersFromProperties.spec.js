@@ -25,6 +25,15 @@ describe('FiltersFromProperties', () => {
     const state = {
       settings: { collection: Immutable.fromJS({ dateFormat: 'dateFormat' }) },
       library: { aggregations: Immutable.fromJS({ aggregations: 'aggregations' }) },
+      templates: Immutable.fromJS([
+        {
+          name: 'blah',
+          properties: [
+            { _id: '1234', type: 'date', name: 'age' },
+            { _id: '4567', type: 'text', name: 'name' },
+          ],
+        },
+      ]),
     };
 
     props = mapStateToProps(state, { storeKey: 'library' });
@@ -144,6 +153,25 @@ describe('FiltersFromProperties', () => {
       expect(t).toHaveBeenCalledWith('thesaurus2', 'suboption2', _text, returnComponent);
       expect(component.get(0).props.options[0].options[0].label).toBe('translatedOption');
       expect(component.get(1).props.options[0].options[0].label).toBe('translatedOption');
+    });
+  });
+
+  describe('when inheriting properties', () => {
+    fit('should render the filter apropiate for the inherited property', () => {
+      props.properties = [
+        {
+          content: 'aContent',
+          name: 'countries',
+          label: 'Countries',
+          type: 'relationship',
+          inherit: true,
+          inheritProperty: '1234',
+          options: [{ label: 'option2' }],
+        },
+      ];
+      props.translationContext = 'oneContext';
+      const component = shallow(<FiltersFromProperties {...props} />).find(DateFilter);
+      expect(component.length).toBe(1);
     });
   });
 
