@@ -95,7 +95,7 @@ describe('csvLoader', () => {
         throw loader.errors()[Object.keys(loader.errors())[0]];
       }
 
-      imported = await entities.get();
+      imported = await entities.get({ language: 'en' });
     });
 
     it('should load title', () => {
@@ -107,7 +107,7 @@ describe('csvLoader', () => {
       expect(events).toEqual(['title1', 'title2', 'title3']);
     });
 
-    it('should only import valid metadata', () => {
+    fit('should only import valid metadata', () => {
       const metadataImported = Object.keys(imported[0].metadata);
       expect(metadataImported).toEqual([
         'text_label',
@@ -125,7 +125,7 @@ describe('csvLoader', () => {
     });
 
     describe('metadata parsing', () => {
-      it('should parse metadata properties by type using typeParsers', () => {
+      it('should parse metadata properties by type using typeParsers', async () => {
         const textValues = imported.map(i => i.metadata.text_label[0].value);
         expect(textValues).toEqual(['text value 1', 'text value 2', 'text value 3']);
 
