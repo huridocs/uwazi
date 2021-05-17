@@ -157,7 +157,7 @@ describe('FiltersFromProperties', () => {
   });
 
   describe('when inheriting properties', () => {
-    fit('should render the filter apropiate for the inherited property', () => {
+    it('should render the filter apropiate for the inherited property', () => {
       props.properties = [
         {
           content: 'aContent',
