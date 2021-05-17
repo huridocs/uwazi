@@ -26,20 +26,27 @@ function processFilters(filters, properties) {
 
     let { type } = property;
     let value = filters[filterName];
-    if (['text', 'markdown', 'generatedid'].includes(property.type) && typeof value === 'string') {
+
+    if (property.inherit) {
+      type = properties.find(p => {
+        return property.inheritProperty.toString() === p._id.toString();
+      }).type;
+    }
+
+    if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
       value = value.toLowerCase();
     }
-    if (['date', 'multidate', 'numeric'].includes(property.type)) {
+    if (['date', 'multidate', 'numeric'].includes(type)) {
       type = 'range';
     }
-    if (['select', 'multiselect', 'relationship'].includes(property.type)) {
+    if (['select', 'multiselect', 'relationship'].includes(type)) {
       type = 'multiselect';
     }
-    if (property.type === 'multidaterange' || property.type === 'daterange') {
+    if (type === 'multidaterange' || type === 'daterange') {
       type = 'daterange';
     }
 
-    if (['multidaterange', 'daterange', 'date', 'multidate'].includes(property.type)) {
+    if (['multidaterange', 'daterange', 'date', 'multidate'].includes(type)) {
       value.from = date.descriptionToTimestamp(value.from);
       value.to = date.descriptionToTimestamp(value.to);
     }
@@ -57,16 +64,25 @@ function processFilters(filters, properties) {
   }, []);
 }
 
-function aggregationProperties(properties) {
-  return properties
-    .filter(
-      property =>
-        property.type === 'select' ||
-        property.type === 'multiselect' ||
-        property.type === 'relationship' ||
-        property.type === 'nested'
-    )
-    .map(property => ({ ...property, name: `${property.name}.value` }));
+function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
+  return propertiesToBeAggregated
+    .filter(property => {
+      let { type } = property;
+
+      if (property.inherit) {
+        type = allUniqueProperties.find(p => {
+          return property.inheritProperty.toString() === p._id.toString();
+        }).type;
+      }
+
+      return (
+        type === 'select' || type === 'multiselect' || type === 'relationship' || type === 'nested'
+      );
+    })
+    .map(property => ({
+      ...property,
+      name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
+    }));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -615,7 +631,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = aggregationProperties(properties);
+  const aggregations = aggregationProperties(properties, allUniqueProps);
 
   const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
   // this is where the query filters are built
@@ -644,6 +660,7 @@ const search = {
       queryBuilder.generatedTocAggregations();
     }
 
+    // console.log(JSON.stringify(queryBuilder.query(), null, 4));
     return elastic
       .search({ body: queryBuilder.query() })
       .then(response => processResponse(response, templates, dictionaries, language, query.filters))

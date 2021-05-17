@@ -36,6 +36,7 @@ export default {
           }
 
           const fieldMapping = propertyMappings[property.type]();
+
           map.properties.metadata.properties[property.name] = { properties: fieldMapping };
           map.properties.suggestedMetadata.properties[property.name] = { properties: fieldMapping };
           return map;
