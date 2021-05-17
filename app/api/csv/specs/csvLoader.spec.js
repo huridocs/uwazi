@@ -60,7 +60,7 @@ describe('csvLoader', () => {
       await loader.loadTranslations(stream(csv), 'System');
     });
 
-    fit('should set all translations from csv', async () => {
+    it('should set all translations from csv', async () => {
       const [english, spanish, french] = await translations.get();
       expect(english.contexts[0].values).toEqual({
         'original 1': 'value 1',
