@@ -7,6 +7,8 @@ const batmanFinishes = 'shared';
 const metadataSnippets = 'metadataSnippets';
 
 const multiselect1 = db.id();
+const dateField = db.id();
+const richTextField = db.id();
 const entity1 = db.id();
 const template = db.id();
 const template1 = db.id();
@@ -187,6 +189,20 @@ export const fixtures = {
             ],
           },
         ],
+        relationshipdate: [
+          {
+            value: entity1,
+            label: 'metadata1',
+            inheritedValue: [{ value: 20 }, { value: 40 }],
+          },
+        ],
+        relationshiptext: [
+          {
+            value: entity1,
+            label: 'metadata1',
+            inheritedValue: [{ value: 'kawans nala' }, { value: 'chow chow' }],
+          },
+        ],
       },
     },
     {
@@ -202,6 +218,20 @@ export const fixtures = {
             value: entity1,
             label: 'metadata1',
             inheritedValue: [{ value: 'EgyptID', label: 'Egypt' }],
+          },
+        ],
+        relationshipdate: [
+          {
+            value: entity1,
+            label: 'metadata1',
+            inheritedValue: [{ value: 40 }],
+          },
+        ],
+        relationshiptext: [
+          {
+            value: entity1,
+            label: 'metadata1',
+            inheritedValue: [{ value: 'chow chow' }],
           },
         ],
       },
@@ -409,6 +439,26 @@ export const fixtures = {
           inherit: true,
           inheritProperty: multiselect1,
         },
+        {
+          _id: db.id(),
+          name: 'relationshipdate',
+          type: 'relationship',
+          filter: true,
+          relationType,
+          content: templateMetadata1,
+          inherit: true,
+          inheritProperty: dateField,
+        },
+        {
+          _id: db.id(),
+          name: 'relationshiptext',
+          type: 'relationship',
+          filter: true,
+          relationType,
+          content: templateMetadata1,
+          inherit: true,
+          inheritProperty: richTextField,
+        },
       ],
     },
     { _id: template2, properties: [] },
@@ -432,7 +482,7 @@ export const fixtures = {
           content: countriesDictionaryID.toString(),
         },
         { _id: db.id(), name: 'daterange', type: 'daterange', filter: true },
-        { _id: db.id(), name: 'date', type: 'date', filter: true },
+        { _id: dateField, name: 'dateToBeInherited', type: 'date', filter: true },
         {
           _id: db.id(),
           name: 'nestedField_nested',
@@ -448,34 +498,37 @@ export const fixtures = {
           filter: true,
           content: countriesDictionaryID,
         },
-        { _id: db.id(), name: 'rich_text', type: 'markdown', filter: true },
+        { _id: richTextField, name: 'rich_text', type: 'markdown', filter: true },
       ],
     },
     {
       _id: templateMetadata2,
       properties: [
-        { name: 'field1', type: 'text', filter: true },
-        { name: 'field3', type: 'text', filter: true },
+        { _id: db.id(), name: 'field1', type: 'text', filter: true },
+        { _id: db.id(), name: 'field3', type: 'text', filter: true },
         {
+          _id: db.id(),
           name: 'select1',
           type: 'select',
           filter: true,
           content: countriesDictionaryID.toString(),
         },
         {
+          _id: db.id(),
           name: 'multiselect1',
           type: 'multiselect',
           filter: true,
           content: countriesDictionaryID.toString(),
         },
         {
+          _id: db.id(),
           name: 'nestedField_nested',
           type: 'nested',
           nestedProperties: ['nested1', 'nested2'],
           filter: true,
         },
-        { name: 'country_geolocation', type: 'geolocation', filter: true },
-        { name: 'auto_id', type: 'generatedid', filter: true },
+        { _id: db.id(), name: 'country_geolocation', type: 'geolocation', filter: true },
+        { _id: db.id(), name: 'auto_id', type: 'generatedid', filter: true },
       ],
     },
   ],
