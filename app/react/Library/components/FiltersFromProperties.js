@@ -26,9 +26,9 @@ export const FiltersFromProperties = ({
     {properties.map(property => {
       let { type } = property;
       if (property.inherit) {
-        type = propertiesHelper
+        ({ type } = propertiesHelper
           .allUniqueProperties(templates.toJS())
-          .find(p => p._id === property.inheritProperty).type;
+          .find(p => p._id === property.inheritProperty));
       }
 
       const commonProps = {
