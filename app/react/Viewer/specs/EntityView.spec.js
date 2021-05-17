@@ -6,7 +6,7 @@ import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
-import * as pageAssetsUtils from 'app/Pages/utils/setPageAssets';
+import * as pageAssetsUtils from 'app/Pages/utils/getPageAssets';
 
 import EntitiesAPI from '../../Entities/EntitiesAPI';
 import EntityView from '../EntityView';
@@ -48,27 +48,37 @@ describe('EntityView', () => {
 
     describe('when template has "entityViewPage"', () => {
       beforeEach(() => {
-        spyOn(pageAssetsUtils, 'setPageAssets').and.callFake(
+        spyOn(pageAssetsUtils, 'getPageAssets').and.callFake(
           async (query, _additionalDatasets, localDatasets) => {
             expect(query).toEqual({ data: { sharedId: 'aViewPage' }, headers: 'headers' });
-            return Promise.resolve([
-              'normalPageActions',
-              { customPageActions: { ...localDatasets } },
-            ]);
+            return Promise.resolve({
+              pageView: 'pageViewValues',
+              itemLists: 'itemListsValue',
+              datasets: { ...localDatasets },
+            });
           }
         );
       });
+
+      const expectActionSet = (value, storeLocation, expectedValue) => {
+        expect(value).toEqual({
+          type: `${storeLocation}/SET`,
+          value: expectedValue,
+        });
+      };
 
       it('should append the "currentEntity" and "currentTemplate" to the page datasets in the store', async () => {
         const request = new RequestParams({ sharedId: 'abc' }, 'headers');
         const actions = await EntityView.requestState(request, { templates });
 
-        expect(actions[actions.length - 2]).toBe('normalPageActions');
+        expectActionSet(actions[actions.length - 3], 'page/pageView', 'pageViewValues');
+        expectActionSet(actions[actions.length - 2], 'page/itemLists', 'itemListsValue');
 
-        const { customPageActions } = actions[actions.length - 1];
+        const datasetsActions = actions[actions.length - 1];
 
-        expect(customPageActions.currentEntity).toEqual(entities[1]);
-        expect(customPageActions.currentTemplate).toEqual(templates.get(1));
+        expect(datasetsActions.type).toBe('page/datasets/SET');
+        expect(datasetsActions.value.currentEntity).toEqual(entities[1]);
+        expect(datasetsActions.value.currentTemplate).toEqual(templates.get(1));
       });
     });
   });

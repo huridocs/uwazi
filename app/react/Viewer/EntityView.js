@@ -6,7 +6,7 @@ import SearchButton from 'app/Entities/components/SearchButton';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
-import { setPageAssets } from 'app/Pages/utils/setPageAssets';
+import { getPageAssets } from 'app/Pages/utils/getPageAssets';
 
 import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
@@ -30,10 +30,20 @@ export default class Entity extends Component {
 
     if (entityTemplate.get('entityViewPage')) {
       const pageQuery = { sharedId: entityTemplate.get('entityViewPage') };
-      const pageActions = await setPageAssets(requestParams.set(pageQuery), undefined, {
-        currentEntity: entity,
-        currentTemplate: entityTemplate,
-      });
+      const { pageView, itemLists, datasets } = await getPageAssets(
+        requestParams.set(pageQuery),
+        undefined,
+        {
+          currentEntity: entity,
+          currentTemplate: entityTemplate,
+        }
+      );
+
+      const pageActions = [
+        actions.set('page/pageView', pageView),
+        actions.set('page/itemLists', itemLists),
+        actions.set('page/datasets', datasets),
+      ];
 
       additionalActions = additionalActions.concat(pageActions);
     }

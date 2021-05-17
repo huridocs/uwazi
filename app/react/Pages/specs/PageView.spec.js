@@ -8,7 +8,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import PageView from '../PageView';
-import * as assetsUtils from '../utils/setPageAssets';
+import * as assetsUtils from '../utils/getPageAssets';
 
 describe('PageView', () => {
   let component;
@@ -20,7 +20,11 @@ describe('PageView', () => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<PageView />, { context });
     instance = component.instance();
-    spyOn(assetsUtils, 'setPageAssets').and.returnValue('pageActionsArray');
+    spyOn(assetsUtils, 'getPageAssets').and.returnValue({
+      pageView: 'pageViewValues',
+      itemLists: 'itemListsValues',
+      datasets: 'datasetsValues',
+    });
   });
 
   it('should render a PageViewer', () => {
@@ -70,8 +74,12 @@ describe('PageView', () => {
     it('should request page assets for view and set actions', async () => {
       const request = new RequestParams({ sharedId: 'abc2' }, 'headers');
       const stateActions = await PageView.requestState(request);
-      expect(assetsUtils.setPageAssets).toHaveBeenCalledWith(request);
-      expect(stateActions).toBe('pageActionsArray');
+      expect(assetsUtils.getPageAssets).toHaveBeenCalledWith(request);
+      expect(stateActions).toEqual([
+        { type: 'page/pageView/SET', value: 'pageViewValues' },
+        { type: 'page/itemLists/SET', value: 'itemListsValues' },
+        { type: 'page/datasets/SET', value: 'datasetsValues' },
+      ]);
     });
   });
 });
