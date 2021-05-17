@@ -120,7 +120,7 @@
     "mongoose": "5.9.25",
     "multer": "^1.4.2",
     "node-uuid": "^1.4.7",
-    "nodemailer": "^6.4.11",
+    "nodemailer": "^6.4.16",
     "nprogress": "^0.2.0",
     "otplib": "^11.0.1",
     "passport": "^0.4.1",
