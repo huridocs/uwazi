@@ -91,7 +91,7 @@ describe('entitiesIndex', () => {
           _id: '123',
           name: 'test',
           properties: [
-            { name: 'name', type: 'text' },
+            { _id: '123', name: 'name', type: 'text' },
             { name: 'dob', type: 'date' },
             { name: 'country', type: 'select' },
           ],
