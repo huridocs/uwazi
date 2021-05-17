@@ -17,9 +17,7 @@ class PageViewer extends Component {
     const { page, itemLists, datasets } = this.props;
     const lists = itemLists.toJS();
     const originalText = page.getIn(['metadata', 'content']) || '';
-    let scriptCode = page.getIn(['metadata', 'script']) || '';
-
-    scriptCode = `var datasets=${JSON.stringify(datasets)};\r\n${scriptCode}`;
+    const scriptCode = page.getIn(['metadata', 'script']) || '';
 
     return (
       <div className="row">
