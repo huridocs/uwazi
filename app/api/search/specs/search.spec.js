@@ -385,7 +385,7 @@ describe('search', () => {
       expect(both.rows.length).toBe(2);
     });
 
-    fit('should filter by text values', async () => {
+    it('should filter by text values', async () => {
       const [spain, both] = await Promise.all([
         search.search(
           {
