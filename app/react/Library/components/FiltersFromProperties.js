@@ -6,12 +6,12 @@ import React from 'react';
 import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
+import propertiesHelper from 'shared/comonProperties';
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
-import propertiesHelper from 'shared/comonProperties';
 
 export const FiltersFromProperties = ({
   onChange,
@@ -24,7 +24,7 @@ export const FiltersFromProperties = ({
 }) => (
   <>
     {properties.map(property => {
-      let type = property.type;
+      let { type } = property;
       if (property.inherit) {
         type = propertiesHelper
           .allUniqueProperties(templates.toJS())
