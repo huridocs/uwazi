@@ -12,7 +12,7 @@ import { getPageAssets } from './utils/getPageAssets';
 
 class PageView extends RouteHandler {
   static async requestState(requestParams) {
-    const { pageView, itemLists, datasets } = getPageAssets(requestParams);
+    const { pageView, itemLists, datasets } = await getPageAssets(requestParams);
     return [
       actions.set('page/pageView', pageView),
       actions.set('page/itemLists', itemLists),

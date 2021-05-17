@@ -20,11 +20,13 @@ describe('PageView', () => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<PageView />, { context });
     instance = component.instance();
-    spyOn(assetsUtils, 'getPageAssets').and.returnValue({
-      pageView: 'pageViewValues',
-      itemLists: 'itemListsValues',
-      datasets: 'datasetsValues',
-    });
+    spyOn(assetsUtils, 'getPageAssets').and.returnValue(
+      Promise.resolve({
+        pageView: 'pageViewValues',
+        itemLists: 'itemListsValues',
+        datasets: 'datasetsValues',
+      })
+    );
   });
 
   it('should render a PageViewer', () => {
