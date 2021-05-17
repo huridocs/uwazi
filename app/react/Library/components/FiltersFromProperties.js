@@ -11,7 +11,7 @@ import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
-import RelationshipFilter from './RelationshipFilter';
+import propertiesHelper from 'shared/comonProperties';
 
 export const FiltersFromProperties = ({
   onChange,
@@ -19,10 +19,18 @@ export const FiltersFromProperties = ({
   translationContext,
   modelPrefix = '',
   storeKey,
+  templates,
   ...props
 }) => (
   <>
     {properties.map(property => {
+      let type = property.type;
+      if (property.inherit) {
+        type = propertiesHelper
+          .allUniqueProperties(templates.toJS())
+          .find(p => p._id === property.inheritProperty).type;
+      }
+
       const commonProps = {
         model: `.filters${modelPrefix}.${property.name}`,
         label: t(translationContext, property.label),
@@ -50,22 +58,11 @@ export const FiltersFromProperties = ({
 
       let filter = <TextFilter {...commonProps} />;
 
-      if (property.type === 'relationshipfilter') {
-        filter = (
-          <RelationshipFilter
-            {...commonProps}
-            storeKey={props.storeKey}
-            translationContext={translationContext}
-            property={property}
-          />
-        );
-      }
-
-      if (property.type === 'numeric') {
+      if (type === 'numeric') {
         filter = <NumberRangeFilter {...commonProps} />;
       }
 
-      if (['select', 'multiselect', 'relationship'].includes(property.type)) {
+      if (['select', 'multiselect', 'relationship'].includes(type)) {
         filter = (
           <SelectFilter
             {...commonProps}
@@ -79,17 +76,17 @@ export const FiltersFromProperties = ({
         );
       }
 
-      if (property.type === 'nested') {
+      if (type === 'nested') {
         filter = (
           <NestedFilter {...commonProps} property={property} aggregations={props.aggregations} />
         );
       }
 
       if (
-        property.type === 'date' ||
-        property.type === 'multidate' ||
-        property.type === 'multidaterange' ||
-        property.type === 'daterange'
+        type === 'date' ||
+        type === 'multidate' ||
+        type === 'multidaterange' ||
+        type === 'daterange'
       ) {
         filter = <DateFilter {...commonProps} format={props.dateFormat} />;
       }
@@ -107,6 +104,7 @@ FiltersFromProperties.defaultProps = {
 };
 
 FiltersFromProperties.propTypes = {
+  templates: PropTypes.instanceOf(Immutable.List).isRequired,
   onChange: PropTypes.func,
   dateFormat: PropTypes.string,
   modelPrefix: PropTypes.string,
@@ -121,6 +119,7 @@ export function mapStateToProps(state, props) {
     dateFormat: state.settings.collection.get('dateFormat'),
     aggregations: state[props.storeKey].aggregations,
     storeKey: props.storeKey,
+    templates: state.templates,
   };
 }
 
