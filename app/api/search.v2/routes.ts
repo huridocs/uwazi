@@ -7,7 +7,7 @@ import validateRequest from 'api/utils/validateRequest';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
-import { extractSnippets } from 'api/search.v2/snippetsSearch';
+import { mapResults } from 'api/search.v2/searchResponse';
 import { buildQuery } from './buildQuery';
 
 interface UwaziResponse {
@@ -48,15 +48,8 @@ const searchRoutes = (app: Application) => {
 
       const response = await elastic.search({ body: await buildQuery(query, language) });
 
-      const result = query.fullTextSnippets
-        ? extractSnippets(response.body.hits)
-        : response.body.hits.hits.map(h => {
-            const entity = h._source;
-            entity._id = h._id;
-            return entity;
-          });
       res.json({
-        data: result,
+        data: mapResults(response.body.hits.hits, query),
         links: {
           self: url,
           first: query.page?.limit ? url : undefined,

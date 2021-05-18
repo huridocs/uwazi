@@ -6,14 +6,23 @@ import { permissionsFilters } from './permissionsFilters';
 
 async function extractSearchParams(query: SearchQuery) {
   if (query.filter && query.filter.searchString && typeof query.filter.searchString === 'string') {
-    const regex = /fullText:\s*([^,]*)/g;
-    const fullTextGroups = regex.exec(query.filter.searchString) || [''];
-    const fullTextSearchString = fullTextGroups[1];
-    const searchString = query.filter.searchString.replace(fullTextGroups[0], '');
-    const searchMethod = await searchStringMethod(query.filter.searchString);
+    let { searchString } = query.filter;
+    let fullTextSearchString = searchString;
+    const searchMethod = await searchStringMethod(searchString);
+
+    if (query.filter.searchString.includes(':')) {
+      const fullTextGroups = /fullText:\s*([^,]*)/g.exec(searchString) || [''];
+      if (fullTextGroups.length > 1) {
+        [searchString] = fullTextGroups;
+        fullTextSearchString = fullTextGroups[1].replace(fullTextGroups[0], '');
+      } else fullTextSearchString = '';
+    }
     return { searchString, fullTextSearchString, searchMethod };
   }
-  return { searchString: query.filter?.searchString, searchMethod: 'query_string' };
+  return {
+    searchString: query.filter?.searchString,
+    searchMethod: 'query_string',
+  };
 }
 
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
@@ -24,7 +33,17 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
     },
     query: {
       bool: {
-        filter: [{ term: { language } }, ...permissionsFilters(query)].filter(cleanUp),
+        filter: [
+          query.filter?.sharedId && {
+            terms: {
+              'sharedId.raw': [query.filter.sharedId],
+            },
+          },
+          {
+            term: { language },
+          },
+          ...permissionsFilters(query),
+        ].filter(cleanUp),
         must: [
           fullTextSearchString && {
             has_child: {

@@ -13,9 +13,10 @@ export const SearchQuerySchema = {
       additionalProperties: false,
       properties: {
         searchString: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+        sharedId: { type: 'string' },
         published: { type: 'boolean' },
       },
     },
-    fullTextSnippets: { type: 'boolean' },
+    fields: { type: 'array', items: { type: 'string' } },
   },
 };

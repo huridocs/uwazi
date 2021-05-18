@@ -1,7 +1,11 @@
+import { EntitySchema } from 'shared/types/entityType';
+import { SearchQuery } from 'shared/types/SearchQueryType';
+
 interface ElasticSearchResults {
   _index: string;
   _type: string;
   _id: string;
+  _source: EntitySchema;
   // eslint-disable-next-line camelcase
   inner_hits?: { fullText: { hits: { hits: [{ highlight: {} }] } } };
 }
@@ -23,18 +27,15 @@ function extractFullTextSnippets(hit: ElasticSearchResults) {
       });
     });
   }
-  return fullTextSnippets;
+  return { count: fullTextSnippets.length, metadata: [], fullText: fullTextSnippets };
 }
 
-export const extractSnippets = (hits: { hits: ElasticSearchResults[] }) => {
-  const defaultSnippets = { count: 0, metadata: [], fullText: [] };
-  if (hits.hits[0]) {
-    const fullTextSnippets = extractFullTextSnippets(hits.hits[0]);
-    return {
-      count: fullTextSnippets.length,
-      metadata: [],
-      fullText: fullTextSnippets,
-    };
-  }
-  return defaultSnippets;
-};
+export const mapResults = (entityResults: ElasticSearchResults[], searchQuery: SearchQuery) =>
+  entityResults.map(entityResult => {
+    const entity = entityResult._source;
+    entity._id = entityResult._id;
+    if (searchQuery.fields && searchQuery.fields.includes('snippets')) {
+      entity.snippets = extractFullTextSnippets(entityResult);
+    }
+    return entity;
+  });

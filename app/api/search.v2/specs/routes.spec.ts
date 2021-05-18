@@ -75,7 +75,7 @@ describe('entities get searchString', () => {
     it('should return entities that match the searchString', async () => {
       const { body: bodyEn } = await request(app)
         .get('/api/v2/entities')
-        .query({ filter: { searchString: 'search' } })
+        .query({ filter: { searchString: 'title:(search)' } })
         .expect(200);
 
       expect(bodyEn.data).toEqual([
@@ -85,7 +85,7 @@ describe('entities get searchString', () => {
 
       const { body: bodyEs } = await request(app)
         .get('/api/v2/entities')
-        .query({ filter: { searchString: 'search' } })
+        .query({ filter: { searchString: 'title:(search)' } })
         .set('content-language', 'es')
         .expect(200);
 
@@ -93,24 +93,26 @@ describe('entities get searchString', () => {
     });
 
     it('should allow limiting the results and return required links', async () => {
-      const { body } = await request(app)
+      const {
+        body,
+        // @ts-ignore
+        req: { path },
+      } = await request(app)
         .get('/api/v2/entities')
-        .query({ filter: { searchString: 'title' }, page: { limit: 2 } });
+        .query({ filter: { searchString: 'title:(title)' }, page: { limit: 2 } });
 
       expect(body.data).toEqual([
         expect.objectContaining({ _id: entity1en.toString() }),
         expect.objectContaining({ _id: entity2en.toString() }),
       ]);
 
-      const expectedUrl = encodeURI('/api/v2/entities?filter[searchString]=title&page[limit]=2');
-
-      expect(body.links.first).toBe(expectedUrl);
+      expect(body.links.first).toEqual(path);
     });
 
     it('should still search with simple query for no valid lucene syntax', async () => {
       const { body } = await request(app)
         .get('/api/v2/entities')
-        .query({ filter: { searchString: 'title OR' }, page: { limit: 2 } });
+        .query({ filter: { searchString: 'title:(title OR)' }, page: { limit: 2 } });
 
       expect(body.data).toEqual([
         expect.objectContaining({ _id: entity1en.toString() }),
