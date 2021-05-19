@@ -114,7 +114,7 @@ describe('metadata properties', () => {
       localSelectors.templateProperties
     );
 
-    if (numberOfProps !== 16) {
+    if (numberOfProps !== 15) {
       fail('amount of props have change, update this path');
     }
   });
