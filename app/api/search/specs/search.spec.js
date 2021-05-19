@@ -239,7 +239,14 @@ describe('search', () => {
 
   it('should filter by templates', done => {
     userFactory.mock(undefined);
-    Promise.all([
+    const [
+      template1es,
+      template2es,
+      template1en,
+      allTemplatesEn,
+      onlyMissing,
+      template1AndMissing,
+    ] = await Promise.all([
       search.search({ types: [ids.template1] }, 'es'),
       search.search({ types: [ids.template2] }, 'es'),
       search.search({ types: [ids.template1] }, 'en'),
@@ -266,6 +273,16 @@ describe('search', () => {
         }
       )
       .catch(catchErrors(done));
+=======
+    ]);
+
+    expect(template1es.rows.length).toBe(2);
+    expect(template1en.rows.length).toBe(5);
+    expect(template2es.rows.length).toBe(1);
+    expect(allTemplatesEn.rows.length).toBe(6);
+    expect(onlyMissing.rows.length).toBe(2);
+    expect(template1AndMissing.rows.length).toBe(7);
+>>>>>>> 06895cfd3 (minor fixes)
   });
 
   it('should allow searching only within specific Ids', done => {
