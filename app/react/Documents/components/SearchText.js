@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
-import { searchEntitySnippets } from 'app/Library/actions/libraryActions';
+import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { browserHistory } from 'react-router';
 import { Icon } from 'UI';
@@ -42,7 +42,7 @@ export class SearchText extends Component {
 
   searchSnippets(searchTerm, sharedId) {
     if (sharedId) {
-      this.props.searchEntitySnippets(searchTerm, sharedId, this.props.storeKey);
+      this.props.searchSnippets(searchTerm, sharedId, this.props.storeKey);
       if (this.formDispatch) {
         this.formDispatch(formActions.change('searchText.searchTerm', searchTerm));
       }
@@ -56,7 +56,7 @@ export class SearchText extends Component {
 
     browserHistory.push(path + toUrlParams(query));
 
-    return this.props.searchEntitySnippets(
+    return this.props.searchSnippets(
       value.searchTerm,
       this.props.doc.get('sharedId'),
       this.props.storeKey
@@ -132,7 +132,7 @@ SearchText.propTypes = {
   storeKey: PropTypes.string,
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
-  searchEntitySnippets: PropTypes.func,
+  searchSnippets: PropTypes.func,
   selectSnippet: PropTypes.func.isRequired,
 };
 
@@ -152,7 +152,7 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ searchEntitySnippets, selectSnippet }, dispatch);
+  return bindActionCreators({ searchSnippets, selectSnippet }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

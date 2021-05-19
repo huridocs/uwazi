@@ -8,12 +8,7 @@ export default {
   },
 
   searchSnippets(requestParams) {
-    const url = 'search_snippets';
-    return api.get(url, requestParams).then(response => response.json);
-  },
-
-  searchEntitySnippets(requestParams) {
-    return api.get('v2/entities/', requestParams).then(response => response.json);
+    return api.get('v2/entities', requestParams).then(response => response.json);
   },
 
   search(requestParams = new RequestParams()) {

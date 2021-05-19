@@ -1,23 +1,20 @@
 import { SearchQuery } from 'shared/types/SearchQueryType';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
-
 import { cleanUp, searchStringMethod } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
 
-async function extractSearchParams(query: SearchQuery) {
+async function extractSearchParams(
+  query: SearchQuery
+): Promise<{
+  searchString?: string | number | undefined;
+  fullTextSearchString?: string;
+  searchMethod: string;
+}> {
   if (query.filter && query.filter.searchString && typeof query.filter.searchString === 'string') {
-    let { searchString } = query.filter;
-    let fullTextSearchString = searchString;
+    const { searchString } = query.filter;
+    const searchTypeKey = searchString.includes(':') ? 'searchString' : 'fullTextSearchString';
     const searchMethod = await searchStringMethod(searchString);
-
-    if (query.filter.searchString.includes(':')) {
-      const fullTextGroups = /fullText:\s*([^,]*)/g.exec(searchString) || [''];
-      if (fullTextGroups.length > 1) {
-        [searchString] = fullTextGroups;
-        fullTextSearchString = fullTextGroups[1].replace(fullTextGroups[0], '');
-      } else fullTextSearchString = '';
-    }
-    return { searchString, fullTextSearchString, searchMethod };
+    return { [searchTypeKey]: searchString, searchMethod };
   }
   return {
     searchString: query.filter?.searchString,

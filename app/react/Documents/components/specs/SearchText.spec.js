@@ -28,7 +28,7 @@ describe('SearchText', () => {
     props = {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       storeKey: 'storeKey',
-      searchEntitySnippets: jasmine
+      searchSnippets: jasmine
         .createSpy('searchSnippets')
         .and.returnValue(Promise.resolve([{ page: 2 }])),
       selectSnippet: jest.fn(),
@@ -95,7 +95,7 @@ describe('SearchText', () => {
       instance.attachDispatch(dispatch);
 
       instance.searchSnippets('term', 'docId');
-      expect(props.searchEntitySnippets).toHaveBeenCalledWith('term', 'docId', 'storeKey');
+      expect(props.searchSnippets).toHaveBeenCalledWith('term', 'docId', 'storeKey');
       expect(formActions.change).toHaveBeenCalledWith('searchText.searchTerm', 'term');
       expect(dispatch).toHaveBeenCalledWith('changeAction');
     });
@@ -108,7 +108,7 @@ describe('SearchText', () => {
       instance.attachDispatch(dispatch);
 
       instance.searchSnippets('term', null);
-      expect(props.searchEntitySnippets).not.toHaveBeenCalled();
+      expect(props.searchSnippets).not.toHaveBeenCalled();
       expect(dispatch).not.toHaveBeenCalled();
     });
   });
@@ -159,7 +159,7 @@ describe('SearchText', () => {
       render();
 
       instance.submit({ searchTerm: 'value' }).then(() => {
-        expect(props.searchEntitySnippets).toHaveBeenCalledWith('value', 'sharedId', 'storeKey');
+        expect(props.searchSnippets).toHaveBeenCalledWith('value', 'sharedId', 'storeKey');
         done();
       });
     });
@@ -185,11 +185,7 @@ describe('SearchText', () => {
       props.doc = Immutable.fromJS({ _id: 'another_id', sharedId: 'sharedId2' });
 
       component.setProps(props);
-      expect(props.searchEntitySnippets).toHaveBeenCalledWith(
-        'newSearchTerm',
-        'sharedId2',
-        'storeKey'
-      );
+      expect(props.searchSnippets).toHaveBeenCalledWith('newSearchTerm', 'sharedId2', 'storeKey');
       expect(instance.formDispatch).toHaveBeenCalledWith(
         formActions.change('searchText.searchTerm', 'newSearchTerm')
       );

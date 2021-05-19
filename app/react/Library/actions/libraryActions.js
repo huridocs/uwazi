@@ -1,5 +1,4 @@
 import * as types from 'app/Library/actions/actionTypes';
-import api from 'app/Search/SearchAPI';
 import { notificationActions } from 'app/Notifications';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
@@ -268,30 +267,19 @@ export function updateEntities(updatedDocs) {
   return { type: types.UPDATE_DOCUMENTS, docs: updatedDocs };
 }
 
-export function searchSnippets(searchTerm, sharedId, storeKey) {
-  return dispatch =>
-    api.searchSnippets(new RequestParams({ searchTerm, id: sharedId })).then(snippets => {
-      dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
-      return snippets;
-    });
-}
-
-export function searchEntitySnippets(searchString, sharedId, storeKey) {
+export function searchSnippets(searchString, sharedId, storeKey) {
   const requestParams = new RequestParams(
     qs.stringify({
-      filter: {
-        searchString: searchString
-          ? `sharedId.raw:(${sharedId}), fullText:(${searchString})`
-          : undefined,
-      },
-      fullTextSnippets: true,
+      filter: { sharedId, searchString },
+      fields: ['snippets'],
     })
   );
 
   return dispatch =>
-    api.searchEntitySnippets(requestParams).then(({ data }) => {
-      dispatch(actions.set(`${storeKey}.sidepanel.snippets`, data));
-      return data;
+    searchAPI.searchSnippets(requestParams).then(({ data }) => {
+      const snippets = data.length ? data[0].snippets : undefined;
+      dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
+      return snippets;
     });
 }
 

@@ -3,12 +3,10 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { searchRoutes } from 'api/search.v2/routes';
 import { testingDB } from 'api/utils/testing_db';
 import { fixturesSnippetsSearch } from 'api/search.v2/specs/snippetsSearchFixtures';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import request from 'supertest';
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
-  const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
     await testingDB.setupFixturesAndContext(fixturesSnippetsSearch, 'entities.v2.snippets_search');
@@ -23,7 +21,7 @@ describe('searchSnippets', () => {
       .expect(200);
   }
 
-  it('should return fullText snippets of a document', async () => {
+  it('should return fullText snippets of an entity', async () => {
     const { body } = await searchEntitySnippets('entity1SharedId', 'searched');
     const snippets = body.data;
     const matches = expect.stringContaining('<b>searched</b>');
@@ -42,13 +40,13 @@ describe('searchSnippets', () => {
     expect(snippets).toEqual(expected);
   });
 
-  it.skip.each`
-    searchString                              | firstResultSharedId  | total
-    ${'fullText:(searched)'}                  | ${'entity1SharedId'} | ${3}
-    ${'title:(private), fullText:(searched)'} | ${'entity4SharedId'} | ${1}
-    ${undefined}                              | ${'entity1SharedId'} | ${4}
+  it.each`
+    searchString         | firstResultSharedId  | total
+    ${'searched'}        | ${'entity1SharedId'} | ${2}
+    ${'title:(private)'} | ${'entity3SharedId'} | ${1}
+    ${undefined}         | ${'entity1SharedId'} | ${3}
   `(
-    'should return a standard result if fullTextSnippets is not required',
+    'should not return snippets if they are not requested for $searchString',
     async ({ searchString, firstResultSharedId, total }) => {
       const { body } = await request(app)
         .get('/api/v2/entities')
@@ -61,78 +59,17 @@ describe('searchSnippets', () => {
     }
   );
 
-  it.skip('should return empty snippets if there is not matches', async () => {
+  it('should not return entities if no fullText search matches', async () => {
     const { body } = await searchEntitySnippets('entity1SharedId', 'nonexistent');
-    const snippets = body.data;
-
-    expect(snippets).toEqual([
-      expect.objectContaining({ snippets: { count: 0, metadata: [], fullText: [] } }),
-    ]);
-  });
-
-  it.skip('should return empty snippets if there is no searchString', async () => {
-    try {
-      const { body } = await searchEntitySnippets('entity2SharedId', undefined);
-      expect(body.data).toEqual({ count: 0, metadata: [], fullText: [] });
-    } catch (e) {
-      fail('should not throw an exception');
-    }
+    expect(body.data.length).toBe(0);
   });
 
   it('should support no valid lucene syntax', async () => {
     try {
-      const { body } = await searchEntitySnippets('entity2SharedId', 'fulltext OR');
+      const { body } = await searchEntitySnippets('entity3SharedId', 'fulltext OR');
       expect(body.data.length).toBe(0);
     } catch (e) {
       fail('should not throw an exception');
     }
-  });
-
-  describe('logged out user', () => {
-    beforeAll(async () => {
-      userFactory.mock(undefined);
-    });
-
-    it.skip('should not return private documents', async () => {
-      const { body } = await searchEntitySnippets('entity1SharedId', 'searched');
-      expect(body.data.length).toBe(0);
-    });
-
-    it.skip('should return the snippets of a public document', async () => {
-      const { body } = await searchEntitySnippets('entity3SharedId', 'searched');
-      const snippets = body.data;
-      const expected = {
-        count: 1,
-        metadata: [],
-        fullText: [{ page: 3, text: expect.stringContaining('<b>searched</b>') }],
-      };
-      expect(snippets).toEqual(expected);
-    });
-  });
-
-  describe('collaborator user', () => {
-    beforeAll(async () => {
-      userFactory.mock({
-        _id: 'user1',
-        role: 'collaborator',
-        username: 'user1',
-        email: 'col@test.test',
-      });
-    });
-
-    it.skip('should not return not shared private documents', async () => {
-      const { body } = await searchEntitySnippets('entity1SharedId', 'searched');
-      expect(body.data).toEqual({ count: 0, metadata: [], fullText: [] });
-    });
-
-    it.skip('should return the snippets of a private document shared with her', async () => {
-      const { body } = await searchEntitySnippets('entity4SharedId', 'searched');
-      const expected = {
-        count: 1,
-        metadata: [],
-        fullText: [{ page: 4, text: expect.stringContaining('<b>searched</b>') }],
-      };
-      expect(body.data).toEqual(expected);
-    });
   });
 });

@@ -6,7 +6,7 @@ export const fixturesSnippetsSearch: DBFixture = {
     {
       _id: testingDB.id(),
       sharedId: 'entity1SharedId',
-      title: 'entity that contains the searched term for fulltext search',
+      title: 'entity with a document',
       language: 'en',
     },
     {
@@ -18,21 +18,14 @@ export const fixturesSnippetsSearch: DBFixture = {
     {
       _id: testingDB.id(),
       sharedId: 'entity3SharedId',
-      title: 'public entity that also contains the searched term in title',
-      language: 'en',
-      published: true,
-    },
-    {
-      _id: testingDB.id(),
-      sharedId: 'entity4SharedId',
-      title: 'private entity that also contains the searched term only in title',
+      title: 'private entity valid for fullText search',
       language: 'en',
       permissions: [{ level: 'read', refId: 'user1', type: 'user' }],
     },
     {
       _id: testingDB.id(),
       sharedId: 'entity1SharedId',
-      title: 'entidad que contiene searched term como contenido',
+      title: 'entidad con un documento',
       language: 'es',
     },
   ],
@@ -58,18 +51,6 @@ export const fixturesSnippetsSearch: DBFixture = {
       _id: db.id(),
       entity: 'entity3SharedId',
       filename: 'entity3SharedId.pdf',
-      language: 'eng',
-      type: 'document',
-      fullText: {
-        1: 'Other[[1]] phrase[[1]] which[[1]] contains[[1]] different[[1]] data[[1]].'.repeat(5),
-        2: 'Other[[2]] phrase[[2]] which[[2]] contains[[2]] different[[2]] data[[2]].'.repeat(5),
-        3: 'Phrase[[3]] which[[3]] contains[[3]] searched[[3]] term[[3]]. '.repeat(5),
-      },
-    },
-    {
-      _id: db.id(),
-      entity: 'entity4SharedId',
-      filename: 'entity4SharedId.pdf',
       language: 'eng',
       type: 'document',
       fullText: {

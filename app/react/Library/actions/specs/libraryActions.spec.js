@@ -3,6 +3,7 @@
  */
 
 import backend from 'fetch-mock';
+import qs from 'qs';
 import { APIURL } from 'app/config.js';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
@@ -435,24 +436,24 @@ describe('libraryActions', () => {
     });
 
     describe('searchSnippets', () => {
-      it('should search snippets for the searchTerm', done => {
-        spyOn(SearchApi, 'searchSnippets').and.returnValue(Promise.resolve('response'));
+      it('should search snippets for the searchTerm', async () => {
+        spyOn(SearchApi, 'searchSnippets').and.returnValue(
+          Promise.resolve({ data: [{ snippets: [] }] })
+        );
 
-        const expectedActions = [{ type: 'storeKey.sidepanel.snippets/SET', value: 'response' }];
-
+        const expectedActions = [{ type: 'storeKey.sidepanel.snippets/SET', value: [] }];
         const store = mockStore({ locale: 'es' });
+        const snippets = await store.dispatch(
+          actions.searchSnippets('query', 'sharedId', 'storeKey')
+        );
 
-        store
-          .dispatch(actions.searchSnippets('query', 'sharedId', 'storeKey'))
-          .then(snippets => {
-            expect(snippets).toBe('response');
-            expect(SearchApi.searchSnippets).toHaveBeenCalledWith(
-              new RequestParams({ searchTerm: 'query', id: 'sharedId' })
-            );
-            expect(store.getActions()).toEqual(expectedActions);
-          })
-          .then(done)
-          .catch(done.fail);
+        expect(snippets).toEqual([]);
+        const expectedParam = qs.stringify({
+          filter: { sharedId: 'sharedId', searchString: 'query' },
+          fields: ['snippets'],
+        });
+        expect(SearchApi.searchSnippets).toHaveBeenCalledWith(new RequestParams(expectedParam));
+        expect(store.getActions()).toEqual(expectedActions);
       });
     });
 
