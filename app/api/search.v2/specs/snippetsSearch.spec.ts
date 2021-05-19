@@ -1,9 +1,10 @@
+import qs from 'qs';
+import request from 'supertest';
 import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { searchRoutes } from 'api/search.v2/routes';
 import { testingDB } from 'api/utils/testing_db';
 import { fixturesSnippetsSearch } from 'api/search.v2/specs/snippetsSearchFixtures';
-import request from 'supertest';
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -14,10 +15,10 @@ describe('searchSnippets', () => {
 
   afterAll(async () => testingDB.disconnect());
 
-  async function searchEntitySnippets(sharedId: string, searchString: string | undefined) {
+  async function searchEntitySnippets(sharedId: string, searchString: string) {
     return request(app)
       .get('/api/v2/entities')
-      .query({ filter: { sharedId, searchString }, fields: ['snippets', 'other'] })
+      .query(qs.stringify({ filter: { sharedId, searchString }, fields: ['snippets'] }))
       .expect(200);
   }
 
