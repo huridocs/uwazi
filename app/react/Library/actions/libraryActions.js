@@ -1,4 +1,5 @@
 import * as types from 'app/Library/actions/actionTypes';
+import qs from 'qs';
 import { notificationActions } from 'app/Notifications';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
@@ -11,7 +12,6 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
 import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
-import qs from 'qs';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 
 export function enterLibrary() {
@@ -277,7 +277,7 @@ export function searchSnippets(searchString, sharedId, storeKey) {
 
   return dispatch =>
     searchAPI.searchSnippets(requestParams).then(({ data }) => {
-      const snippets = data.length ? data[0].snippets : undefined;
+      const snippets = data.length ? data[0].snippets : { total: 0, fullText: [], metadata: [] };
       dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
       return snippets;
     });
