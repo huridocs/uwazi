@@ -1,40 +1,5 @@
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyMappings } from './mappings';
-import templatesModel from 'api/templates/templatesModel';
-import propertiesHelper from 'shared/comonProperties';
-
-const getInheritedProps = async templates => {
-  const properties = propertiesHelper.allUniqueProperties(templates).filter(p => p.inherit);
-  return (
-    await templatesModel.db.aggregate([
-      // Get just the docs that contain a shapes element where color is 'red'
-      {
-        $match: {
-          'properties._id': { $in: properties.map(p => p.inheritProperty) },
-        },
-      },
-      {
-        $project: {
-          properties: {
-            $filter: {
-              input: '$properties',
-              as: 'property',
-              cond: {
-                $or: properties.map(p => ({ $eq: ['$$property._id', p.inheritProperty] })),
-              },
-            },
-          },
-          _id: 0,
-        },
-      },
-      { $unwind: '$properties' },
-      { $replaceRoot: { newRoot: '$properties' } },
-    ])
-  ).reduce((indexed, prop) => {
-    indexed[prop._id.toString()] = prop;
-    return indexed;
-  }, {});
-};
 
 export default {
   mapping: (templates: TemplateSchema[], topicClassification: boolean) => {
