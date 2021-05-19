@@ -8,6 +8,7 @@ import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
+import { propertyTypes } from 'shared/propertyTypes';
 
 import templates from '../templates';
 
@@ -18,6 +19,7 @@ import fixtures, {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
+  relatedTo,
   thesauriId1,
 } from './fixtures.js';
 
@@ -450,6 +452,37 @@ describe('templates', () => {
       } catch (err) {
         expect(err.message).toContain('Invalid ID');
       }
+    });
+  });
+
+  describe('inherit', () => {
+    fit('should denormalize the inherited property type', async () => {
+      const savedTemplate = await templates.save({
+        name: 'template',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          {
+            type: propertyTypes.relationship,
+            content: templateToBeInherited.toString(),
+            relationType: relatedTo.toString(),
+            name: 'new inherit',
+            label: 'New Inherit',
+            inherit: {
+              property: propertyToBeInherited.toString(),
+              type: 'this should not be saved',
+            },
+          },
+        ],
+      });
+
+      expect(savedTemplate.properties).toEqual([
+        expect.objectContaining({
+          inherit: {
+            property: propertyToBeInherited.toString(),
+            type: 'text',
+          },
+        }),
+      ]);
     });
   });
 

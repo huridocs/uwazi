@@ -9,6 +9,7 @@ const metadataSnippets = 'metadataSnippets';
 const multiselect1 = db.id();
 const dateField = db.id();
 const richTextField = db.id();
+const cityGeolocation = db.id();
 const entity1 = db.id();
 const template = db.id();
 const template1 = db.id();
@@ -182,7 +183,7 @@ export const fixtures = {
         relationshipcountry: [
           {
             value: entity1,
-            label: 'metadata1',
+            label: 'inherited country',
             inheritedValue: [
               { value: 'EgyptID', label: 'Egypt' },
               { value: 'SpainID', label: 'Spain' },
@@ -193,15 +194,22 @@ export const fixtures = {
         relationshipdate: [
           {
             value: entity1,
-            label: 'metadata1',
+            label: 'inherited date',
             inheritedValue: [{ value: 20 }, { value: 40 }],
           },
         ],
         relationshiptext: [
           {
             value: entity1,
-            label: 'metadata1',
+            label: 'inherited text',
             inheritedValue: [{ value: 'kawans nala' }, { value: 'chow chow' }],
+          },
+        ],
+        relationshipGeolocation: [
+          {
+            value: entity1,
+            label: 'inherited geolocation',
+            inheritedValue: [{ value: { lat: 1, lon: 2 } }],
           },
         ],
       },
@@ -461,6 +469,16 @@ export const fixtures = {
           inherit: true,
           inheritProperty: richTextField,
         },
+        {
+          _id: db.id(),
+          name: 'relationshipGeolocation',
+          type: 'relationship',
+          filter: true,
+          relationType,
+          content: templateMetadata1,
+          inherit: true,
+          inheritProperty: cityGeolocation,
+        },
       ],
     },
     { _id: template2, properties: [] },
@@ -492,7 +510,7 @@ export const fixtures = {
           nestedProperties: ['nested1', 'nested2'],
           filter: true,
         },
-        { _id: db.id(), name: 'city_geolocation', type: 'geolocation', filter: true },
+        { _id: cityGeolocation, name: 'city_geolocation', type: 'geolocation', filter: true },
         {
           _id: db.id(),
           name: 'groupedDictionary',

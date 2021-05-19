@@ -381,11 +381,11 @@ describe('search', () => {
     });
 
     it('should filter by text values', async () => {
-      const [spain, both] = await Promise.all([
+      const [singleMatch, multipleMatch] = await Promise.all([
         search.search(
           {
             types: [ids.template1],
-            filters: { relationshiptext: 'kawans nala' },
+            filters: { relationshiptext: 'kawans' },
           },
           'en'
         ),
@@ -393,14 +393,14 @@ describe('search', () => {
         search.search(
           {
             types: [ids.template1],
-            filters: { relationshiptext: 'chow chow' },
+            filters: { relationshiptext: 'chow' },
           },
           'en'
         ),
       ]);
 
-      expect(spain.rows.length).toBe(1);
-      expect(both.rows.length).toBe(2);
+      expect(singleMatch.rows.length).toBe(1);
+      expect(multipleMatch.rows.length).toBe(2);
     });
   });
 
@@ -460,7 +460,7 @@ describe('search', () => {
     it('should only get entities with geolocation fields ', done => {
       userFactory.mock(undefined);
       search.search({ searchTerm: '', geolocation: true }, 'en').then(entities => {
-        expect(entities.rows.length).toBe(3);
+        expect(entities.rows.length).toBe(4);
         done();
       });
     });
