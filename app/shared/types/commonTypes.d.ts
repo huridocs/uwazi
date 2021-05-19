@@ -122,8 +122,11 @@ export interface PropertySchema {
   prioritySorting?: boolean;
   content?: string;
   relationType?: string;
-  inherit?: boolean;
-  inheritProperty?: string;
+  inherit?: {
+    property?: string;
+    type?: string;
+    [k: string]: unknown | undefined;
+  };
   filter?: boolean;
   noLabel?: boolean;
   fullWidth?: boolean;
