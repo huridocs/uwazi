@@ -110,20 +110,6 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
   },
 });
 
-ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
-  errors: false,
-  type: 'object',
-  validate(schema: any, data: TemplateSchema) {
-    if (!schema) {
-      return true;
-    }
-    if (data.type === 'relationship' && data.inherit) {
-      return !!data.inheritProperty;
-    }
-    return true;
-  },
-});
-
 ajv.addKeyword('cantDeleteInheritedProperties', {
   async: true,
   errors: true,
