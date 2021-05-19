@@ -156,6 +156,7 @@ export {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
+  relatedTo,
   thesauriId1,
   thesauriId2,
 };
