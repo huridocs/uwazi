@@ -115,6 +115,7 @@ describe('csvLoader', () => {
         'select_label',
         'not_defined_type',
         'geolocation_geolocation',
+        'auto_id',
       ]);
     });
 
