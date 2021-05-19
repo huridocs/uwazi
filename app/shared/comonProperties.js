@@ -68,7 +68,7 @@ const allUniqueProperties = templates =>
   }, []);
 
 const getInheritedProperty = (property, properties) =>
-  properties.find(p => property.inheritProperty.toString() === p._id.toString());
+  properties.find(p => property.inherit.property.toString() === p._id.toString());
 
 const textFields = templates =>
   allUniqueProperties(templates).filter(

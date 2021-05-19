@@ -6,10 +6,50 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { updateMapping } from 'api/search/entitiesIndex';
 import { ensure } from 'shared/tsUtils';
 import { ObjectID } from 'mongodb';
+import propertiesHelper from 'shared/comonProperties';
 
 import { validateTemplate } from '../../shared/types/templateSchema';
 import model from './templatesModel';
 import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
+
+const getInheritedProps = async (templates: TemplateSchema[]) => {
+  const properties: PropertySchema[] = propertiesHelper
+    .allUniqueProperties(templates)
+    .filter((p: PropertySchema) => p.inherit?.property);
+
+  return (
+    await model.db.aggregate([
+      {
+        $match: {
+          'properties._id': {
+            $in: properties.map(p => new ObjectID(p.inherit?.property)),
+          },
+        },
+      },
+      {
+        $project: {
+          properties: {
+            $filter: {
+              input: '$properties',
+              as: 'property',
+              cond: {
+                $or: properties.map(p => ({
+                  $eq: ['$$property._id', new ObjectID(p.inherit?.property)],
+                })),
+              },
+            },
+          },
+          _id: 0,
+        },
+      },
+      { $unwind: '$properties' },
+      { $replaceRoot: { newRoot: '$properties' } },
+    ])
+  ).reduce((indexed, prop) => {
+    indexed[prop._id.toString()] = prop;
+    return indexed;
+  }, {});
+};
 
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
@@ -66,11 +106,32 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
   );
 };
 
+const denormalizeInheritedProperties = async (template: TemplateSchema) => {
+  const shouldDenormalize = template.properties?.find(p => p.inherit?.property);
+  if (!shouldDenormalize) {
+    return template.properties;
+  }
+
+  const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
+
+  return template.properties?.map(prop => {
+    if (!prop.inherit?.property) {
+      return prop;
+    }
+
+    const { type } = inheritedProperties[prop.inherit.property];
+    // eslint-disable-next-line no-param-reassign
+    prop.inherit.type = type;
+    return prop;
+  });
+};
+
 export default {
   async save(template: TemplateSchema, language: string, reindex = true) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
