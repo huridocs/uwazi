@@ -239,30 +239,28 @@ describe('search', () => {
 
   it('should filter by templates', async () => {
     userFactory.mock(undefined);
-    await Promise.all([
+    const [
+      template1es,
+      template2es,
+      template1en,
+      allTemplatesEn,
+      onlyMissing,
+      template1AndMissing,
+    ] = await Promise.all([
       search.search({ types: [ids.template1] }, 'es'),
       search.search({ types: [ids.template2] }, 'es'),
       search.search({ types: [ids.template1] }, 'en'),
       search.search({ types: [ids.template1, ids.template2] }, 'en'),
       search.search({ types: ['missing'] }, 'en'),
       search.search({ types: [ids.template1, 'missing'] }, 'en'),
-    ]).then(
-      ([
-        template1es,
-        template2es,
-        template1en,
-        allTemplatesEn,
-        onlyMissing,
-        template1AndMissing,
-      ]) => {
-        expect(template1es.rows.length).toBe(2);
-        expect(template1en.rows.length).toBe(5);
-        expect(template2es.rows.length).toBe(1);
-        expect(allTemplatesEn.rows.length).toBe(6);
-        expect(onlyMissing.rows.length).toBe(2);
-        expect(template1AndMissing.rows.length).toBe(7);
-      }
-    );
+    ]);
+
+    expect(template1es.rows.length).toBe(2);
+    expect(template1en.rows.length).toBe(5);
+    expect(template2es.rows.length).toBe(1);
+    expect(allTemplatesEn.rows.length).toBe(6);
+    expect(onlyMissing.rows.length).toBe(2);
+    expect(template1AndMissing.rows.length).toBe(7);
   });
 
   it('should allow searching only within specific Ids', done => {
