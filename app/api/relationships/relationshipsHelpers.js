@@ -12,7 +12,9 @@ function groupByHubs(references) {
   return Object.keys(hubs).map(key => hubs[key]);
 }
 
-function getEntityReferencesByRelationshipTypes(sharedId, relationTypes) {
+function getAggregatedEntityReferences(sharedId, additionalStages = {}) {
+  const { afterHubLookup, doEntityLookup, final } = additionalStages;
+
   return model.db.aggregate([
     {
       $match: {
@@ -43,37 +45,53 @@ function getEntityReferencesByRelationshipTypes(sharedId, relationTypes) {
     {
       $unwind: '$rightSide',
     },
-    {
-      $match: {
-        'rightSide.template': {
-          $in: relationTypes,
+    ...(afterHubLookup || []),
+    ...(doEntityLookup
+      ? [
+          {
+            $lookup: {
+              from: 'entities',
+              localField: 'rightSide.entity',
+              foreignField: 'sharedId',
+              as: 'rightSide.entityData',
+            },
+          },
+          {
+            $project: {
+              hub: 1,
+              'rightSide._id': 1,
+              'rightSide.entity': 1,
+              'rightSide.template': 1,
+              'rightSide.entityData.template': 1,
+            },
+          },
+        ]
+      : []),
+    ...(final || []),
+  ]);
+}
+
+function getEntityReferencesByRelationshipTypes(sharedId, relationTypes) {
+  return getAggregatedEntityReferences(sharedId, {
+    afterHubLookup: [
+      {
+        $match: {
+          'rightSide.template': {
+            $in: relationTypes,
+          },
         },
       },
-    },
-    {
-      $lookup: {
-        from: 'entities',
-        localField: 'rightSide.entity',
-        foreignField: 'sharedId',
-        as: 'rightSide.entityData',
+    ],
+    doEntityLookup: true,
+    final: [
+      {
+        $group: {
+          _id: '$rightSide.template',
+          references: { $push: '$$ROOT' },
+        },
       },
-    },
-    {
-      $project: {
-        hub: 1,
-        'rightSide._id': 1,
-        'rightSide.entity': 1,
-        'rightSide.template': 1,
-        'rightSide.entityData.template': 1,
-      },
-    },
-    {
-      $group: {
-        _id: '$rightSide.template',
-        references: { $push: '$$ROOT' },
-      },
-    },
-  ]);
+    ],
+  });
 }
 
 function guessRelationshipPropertyHub(sharedId, relationType) {
@@ -164,6 +182,7 @@ class RelationshipCollection extends Array {
 export {
   RelationshipCollection,
   groupByHubs,
+  getAggregatedEntityReferences,
   getEntityReferencesByRelationshipTypes,
   guessRelationshipPropertyHub,
 };

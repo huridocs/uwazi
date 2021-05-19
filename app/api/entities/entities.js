@@ -18,6 +18,7 @@ import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { validateEntity } from 'shared/types/entitySchema';
+import { getAggregatedEntityReferences } from 'api/relationships/relationshipsHelpers';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
@@ -392,8 +393,9 @@ export default {
   },
 
   async updateDenormalizedMetadataInRelatedEntities(entity) {
-    const related = await relationships.getByDocument(entity.sharedId, entity.language);
-    const sharedIds = related.map(r => r.entityData.sharedId);
+    //const related = await relationships.getByDocument(entity.sharedId, entity.language);
+    const related = await getAggregatedEntityReferences(entity.sharedId);
+    const sharedIds = related.map(r => r.entity);
     await this.updateMetdataFromRelationships(sharedIds, entity.language);
   },
 
@@ -559,9 +561,10 @@ export default {
     await Promise.all(
       entities.map(async entityId => {
         const entity = await this.getById(entityId, language);
-        const relations = await relationships.getByDocument(entityId, language);
 
         if (entity && entity.template) {
+          const relations = await getAggregatedEntityReferences(entityId, { doEntityLookup: true });
+
           entity.metadata = entity.metadata || {};
           const template = _templates.find(t => t._id.toString() === entity.template.toString());
 
@@ -569,14 +572,15 @@ export default {
           relationshipProperties.forEach(property => {
             const relationshipsGoingToThisProperty = relations.filter(
               r =>
-                r.template &&
-                r.template.toString() === property.relationType.toString() &&
-                (!property.content || r.entityData.template.toString() === property.content)
+                r.rightSide.template &&
+                r.rightSide.template.toString() === property.relationType.toString() &&
+                (!property.content ||
+                  r.rightSide.entityData.template.toString() === property.content)
             );
 
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
-              value: r.entity,
-              label: r.entityData.title,
+              value: r.rightSide.entity,
+              label: r.rightSide.entityData.title,
             }));
           });
           if (relationshipProperties.length) {
