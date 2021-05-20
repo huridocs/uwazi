@@ -430,12 +430,16 @@ const determineInheritedProperties = templates =>
   templates.reduce((memo, template) => {
     const inheritedProperties = memo;
     template.properties.forEach(property => {
-      if (property.type === 'relationship' && property.inherit) {
+      if (
+        property.type === 'relationship' &&
+        property.inherit &&
+        property.inherit.type === 'geolocation'
+      ) {
         const contentTemplate = templates.find(
           t => t._id.toString() === property.content.toString()
         );
         const inheritedProperty = contentTemplate.properties.find(
-          p => p.type === 'geolocation' && p._id.toString() === property.inheritProperty.toString()
+          p => p._id.toString() === property.inherit.property.toString()
         );
         if (inheritedProperty) {
           inheritedProperties[template._id.toString()] =

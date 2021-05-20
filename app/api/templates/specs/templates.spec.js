@@ -456,8 +456,9 @@ describe('templates', () => {
   });
 
   describe('inherit', () => {
-    fit('should denormalize the inherited property type', async () => {
-      const savedTemplate = await templates.save({
+    let savedTemplate;
+    beforeEach(async () => {
+      savedTemplate = await templates.save({
         name: 'template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
@@ -474,7 +475,9 @@ describe('templates', () => {
           },
         ],
       });
+    });
 
+    it('should denormalize the inherited property type', async () => {
       expect(savedTemplate.properties).toEqual([
         expect.objectContaining({
           inherit: {
@@ -483,6 +486,12 @@ describe('templates', () => {
           },
         }),
       ]);
+    });
+
+    it('should remove denormalized type when removing inheritance', async () => {
+      savedTemplate.properties[0].inherit.property = '';
+      const resavedTemplate = await templates.save(savedTemplate, 'en', false);
+      expect(resavedTemplate.properties[0].inherit).not.toBeDefined();
     });
   });
 
