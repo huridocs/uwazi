@@ -86,13 +86,10 @@ describe('pages', () => {
         await pages.save({ ...pageToUpdateEntityView[0], entityView: true });
         const updatedPages = await pages.get({ sharedId: '3' });
         expect(updatedPages.length).toBe(2);
-        expect(updatedPages).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              entityView: true,
-            }),
-          ])
-        );
+        expect(updatedPages).toEqual([
+          expect.objectContaining({ entityView: true }),
+          expect.objectContaining({ entityView: true }),
+        ]);
       });
     });
   });
