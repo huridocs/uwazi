@@ -22,9 +22,9 @@ const assignUserAndDate = (page: PageType, user?: User) => {
 };
 
 const entityViewSyncing = async (page: PageType) => {
-  const pageInAllLaguangues = await model.get({ sharedId: page.sharedId });
-  const updatedPages = pageInAllLaguangues.map(data => ({
-    ...data,
+  const pageInAllLaguangues = await model.get({ sharedId: page.sharedId }, '_id entityView');
+  const updatedPages = pageInAllLaguangues.map(_id => ({
+    ..._id,
     entityView: page.entityView || false,
   }));
   await model.saveMultiple(updatedPages);
