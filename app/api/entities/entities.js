@@ -74,13 +74,13 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
             elem.type = partner.file ? 'document' : 'entity';
           }
 
-          if (prop.inherit && partner) {
+          if (prop.inherit && prop.inherit.property && partner) {
             const partnerTemplate = allTemplates.find(
               t => t._id.toString() === partner.template.toString()
             );
 
             const inheritedProperty = partnerTemplate.properties.find(
-              p => p._id && p._id.toString() === prop.inheritProperty.toString()
+              p => p._id && p._id.toString() === prop.inherit.property.toString()
             );
 
             elem.inheritedValue = partner.metadata[inheritedProperty.name];

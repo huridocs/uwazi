@@ -168,9 +168,10 @@ export const propertySchema = {
     content: { type: 'string' },
     relationType: { type: 'string' },
     inherit: {
+      additionalProperties: false,
       properties: {
         property: { type: 'string' },
-        type: { type: 'string' },
+        type: { type: 'string', enum: Object.values(propertyTypes) },
       },
     },
     filter: { type: 'boolean' },

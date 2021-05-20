@@ -446,8 +446,10 @@ export const fixtures = {
           filter: true,
           relationType,
           content: templateMetadata1,
-          inherit: true,
-          inheritProperty: multiselect1,
+          inherit: {
+            property: multiselect1,
+            type: 'multiselect',
+          },
         },
         {
           _id: db.id(),
@@ -456,8 +458,10 @@ export const fixtures = {
           filter: true,
           relationType,
           content: templateMetadata1,
-          inherit: true,
-          inheritProperty: dateField,
+          inherit: {
+            property: dateField,
+            type: 'date',
+          },
         },
         {
           _id: db.id(),
@@ -466,8 +470,10 @@ export const fixtures = {
           filter: true,
           relationType,
           content: templateMetadata1,
-          inherit: true,
-          inheritProperty: richTextField,
+          inherit: {
+            property: richTextField,
+            type: 'markdown',
+          },
         },
         {
           _id: db.id(),
@@ -476,8 +482,10 @@ export const fixtures = {
           filter: true,
           relationType,
           content: templateMetadata1,
-          inherit: true,
-          inheritProperty: cityGeolocation,
+          inherit: {
+            property: cityGeolocation,
+            type: 'geolocation',
+          },
         },
       ],
     },
