@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
 import { Translate } from 'app/I18N';
+import t from 'app/I18N/t';
 
 const defaultValue = { lat: '', lon: '', label: '' };
 
@@ -89,7 +90,7 @@ export default class Geolocation extends Component {
         <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false} />
         <div className="form-row">
           <div className="form-group half-width">
-            <label>Latitude</label>
+            <label>{t('System', 'Latitude')}</label>
             <input
               onChange={this.latChange}
               className="form-control"
@@ -100,7 +101,7 @@ export default class Geolocation extends Component {
             />
           </div>
           <div className="form-group half-width">
-            <label>Longitude</label>
+            <label>{t('System', 'Longitude')}</label>
             <input
               onChange={this.lonChange}
               className="form-control"

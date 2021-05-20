@@ -2,6 +2,7 @@
 
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { t } from 'app/I18N';
 
 export default class LinkField extends Component {
   constructor(props) {
@@ -38,7 +39,7 @@ export default class LinkField extends Component {
       <div className="link form-inline">
         <div className="form-row">
           <div className="form-group">
-            <label>Label&nbsp;</label>
+            <label>{t('System', 'Label')}</label>
             <input
               onChange={this.urlChange}
               className="form-control"
@@ -48,7 +49,7 @@ export default class LinkField extends Component {
             />
           </div>
           <div className="form-group">
-            <label>URL&nbsp;</label>
+            <label>{t('System', 'URL')}&nbsp;</label>
             <input
               onChange={this.labelChange}
               className="form-control"

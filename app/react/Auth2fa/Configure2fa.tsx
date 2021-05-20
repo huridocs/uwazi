@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { Component } from 'react';
 import { Dispatch, bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
@@ -8,7 +6,7 @@ import loadable from '@loadable/component';
 
 import { Icon } from 'UI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { t, I18NLink } from 'app/I18N';
+import { t, I18NLink, Translate } from 'app/I18N';
 import { enable2fa as enable2faAction, enable2faType } from './actions/actions';
 import Auth2faAPI from './Auth2faAPI';
 
@@ -128,7 +126,9 @@ class Configure2fa extends Component<Configure2faProps, State> {
                   </ol>
                   <p>
                     {goToAccount('default', 'Cancel')}
-                    <input type="submit" className="btn btn-success" value="Confirm" />
+                    <button type="submit" className="btn btn-success">
+                      <Translate>Confirm</Translate>
+                    </button>
                   </p>
                 </LocalForm>
               </div>
