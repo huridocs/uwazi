@@ -122,8 +122,24 @@ export interface PropertySchema {
   relationType?: string;
   inherit?: {
     property?: string;
-    type?: string;
-    [k: string]: unknown | undefined;
+    type?:
+      | 'date'
+      | 'daterange'
+      | 'geolocation'
+      | 'image'
+      | 'link'
+      | 'markdown'
+      | 'media'
+      | 'multidate'
+      | 'multidaterange'
+      | 'multiselect'
+      | 'nested'
+      | 'numeric'
+      | 'preview'
+      | 'relationship'
+      | 'select'
+      | 'text'
+      | 'generatedid';
   };
   filter?: boolean;
   noLabel?: boolean;

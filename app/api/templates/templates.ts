@@ -48,6 +48,7 @@ const getInheritedProps = async (templates: TemplateSchema[]) => {
       { $replaceRoot: { newRoot: '$properties' } },
     ])
   ).reduce((indexed, prop) => {
+    // eslint-disable-next-line no-param-reassign
     indexed[prop._id.toString()] = prop;
     return indexed;
   }, {});
@@ -151,15 +152,11 @@ const checkAndFillGeneratedIdProperties = async (
 };
 
 const denormalizeInheritedProperties = async (template: TemplateSchema) => {
-  const shouldDenormalize = template.properties?.find(p => p.inherit?.property);
-  if (!shouldDenormalize) {
-    return template.properties;
-  }
-
   const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
 
   return template.properties?.map(prop => {
     if (!prop.inherit?.property) {
+      delete prop.inherit;
       return prop;
     }
 
@@ -232,10 +229,10 @@ export default {
       (iteratedTemplate.properties || []).every(
         iteratedProperty =>
           !iteratedProperty.content ||
-          !iteratedProperty.inheritProperty ||
+          !iteratedProperty.inherit?.property ||
           !(
             iteratedProperty.content.toString() === template.toString() &&
-            iteratedProperty.inheritProperty.toString() === (property || '').toString()
+            iteratedProperty.inherit.property.toString() === (property || '').toString()
           )
       )
     );
