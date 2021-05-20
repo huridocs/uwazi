@@ -17,3 +17,6 @@ export const contents = `<h1>My entity view</h1>
 
 <h4 className="descriptores-title"><Value path="entity.metadata.descriptores.label" /></p></h4>
 <p className="descriptores-content"><Value path="entity.metadata.descriptores.value.0.value" /></p>`;
+
+export const script = `var datasets = window.store.getState().page.datasets.getIn(['currentEntity', 'sharedId']);
+document.getElementById('dataset-content').innerHTML = datasets;`;
