@@ -5,9 +5,11 @@ import errorLog from 'api/log/errorLog';
 import { tenants } from 'api/tenants';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
+import { denormalizeInheritedProperties } from 'api/templates/utils';
 import { elastic } from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
+import { string } from 'prop-types';
 
 export class IndexError extends Error {}
 
@@ -167,7 +169,9 @@ const reindexAll = async (tmpls, searchInstance) => {
 
 const checkMapping = async template => {
   try {
-    await updateMapping([template]);
+    await updateMapping([
+      { ...template, properties: await denormalizeInheritedProperties(template) },
+    ]);
   } catch (e) {
     if (e.meta?.body?.error?.reason?.match(/cannot be changed from type/)) {
       return { error: 'mapping conflict', valid: false };

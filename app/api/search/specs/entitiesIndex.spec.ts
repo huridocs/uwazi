@@ -3,6 +3,8 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import errorLog from 'api/log/errorLog';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
+import templates from 'api/templates';
+import { TemplateSchema } from 'shared/types/templateType';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { search } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
@@ -87,18 +89,16 @@ describe('entitiesIndex', () => {
 
   describe('updateMapping', () => {
     it('should update the mapping provided by the factory', async () => {
-      const templates = [
-        {
-          _id: '123',
-          name: 'test',
-          properties: [
-            { _id: '123', name: 'name', type: 'text' },
-            { name: 'dob', type: 'date' },
-            { name: 'country', type: 'select' },
-          ],
-        },
-      ];
-      await updateMapping(templates);
+      const template = {
+        _id: '123',
+        name: 'test',
+        properties: [
+          { _id: '123', name: 'name', type: 'text' },
+          { name: 'dob', type: 'date' },
+          { name: 'country', type: 'select' },
+        ],
+      };
+      await updateMapping([template]);
       const mapping = await elastic.indices.getMapping();
       const mappedProps = mapping.body[elasticIndex].mappings.properties.metadata.properties;
       expect(mappedProps.name).toMatchSnapshot();
@@ -141,6 +141,45 @@ describe('entitiesIndex', () => {
         valid: false,
       });
     });
+
+    it('should check mapping of new added inherited properties', async () => {
+      const inheritPropId = db.id();
+      const inheritPropNum = db.id();
+      const templateA: TemplateSchema = {
+        name: 'template A',
+        properties: [
+          { _id: inheritPropNum, name: 'num', type: 'numeric', label: 'Numeric' },
+          { _id: inheritPropId, name: 'name', type: 'text', label: 'Name' },
+        ],
+        commonProperties: [{ name: 'title', type: 'text', label: 'Name' }],
+      };
+
+      await templates.save(templateA, 'en');
+
+      const templateB: TemplateSchema = {
+        name: 'template B',
+        properties: [
+          {
+            name: 'relationship',
+            label: 'relationship',
+            type: 'relationship',
+            inherit: { property: inheritPropNum.toString() },
+          },
+        ],
+      };
+      await checkMapping(templateB);
+      templateB.properties = [
+        {
+          name: 'relationship',
+          label: 'relationship',
+          type: 'relationship',
+          inherit: { property: inheritPropId.toString() },
+        },
+      ];
+      const response = await checkMapping(templateB);
+      expect(response).toEqual({ error: 'mapping conflict', valid: false });
+    });
+
     describe('when there is an error other than mapping conflict', () => {
       it('should throw the error', async () => {
         const templateB = {
