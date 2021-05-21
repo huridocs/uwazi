@@ -1,3 +1,6 @@
+/* eslint-disable no-await-in-loop */
+import { ObjectID } from 'mongodb';
+
 export default {
   delta: 41,
 
@@ -8,31 +11,28 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    const cursor = await db.collection('templates').find();
+    const cursor = await db.collection('templates').find({ properties: { $exists: true } });
 
     while (await cursor.hasNext()) {
       const template = await cursor.next();
-      if (!template.properties) {
-        continue;
-      }
       const properties = await Promise.all(
         template.properties.map(async prop => {
           if (prop.inherit) {
             const [inheritedTemplate] = await db
               .collection('templates')
-              .find({ 'properties._id': prop.inheritProperty })
+              .find({ 'properties._id': new ObjectID(prop.inheritProperty) })
               .toArray();
 
             const inheritedProperty = inheritedTemplate.properties.find(
               p => p._id.toString() === prop.inheritProperty.toString()
             );
 
-            prop.inherit = {
+            const { inheritProperty, ...newProp } = prop;
+            newProp.inherit = {
               property: inheritedProperty._id,
               type: inheritedProperty.type,
             };
-
-            delete prop.inheritProperty;
+            return newProp;
           }
 
           return prop;
