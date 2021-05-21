@@ -38,7 +38,7 @@ export default {
           relationType: db.id(),
           type: 'relationship',
           inherit: true,
-          inheritProperty: multiselect,
+          inheritProperty: multiselect.toString(),
         },
         { _id: numeric, name: 'numeric', label: 'Numeric', type: 'numeric' },
       ],
