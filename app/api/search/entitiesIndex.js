@@ -83,7 +83,7 @@ const bulkIndex = async (docs, _action = 'index') => {
 
 const getEntitiesToIndex = async (query, stepBach, limit, select) => {
   const thisQuery = { ...query };
-  thisQuery._id = !thisQuery._id ? { $in: stepBach } : thisQuery._id;
+  thisQuery._id = { $in: stepBach };
   return entities.getUnrestrictedWithDocuments(thisQuery, '+permissions', {
     limit,
     documentsFullText: select && select.includes('+fullText'),
@@ -97,7 +97,7 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async (query, limit) => {
-  const allIds = await entities.getWithoutDocuments(query, '_id', { sort: { _id: 1 } });
+  const allIds = await entities.getWithoutDocuments(query, '_id');
   return [...Array(Math.ceil(allIds.length / limit))].map((_v, i) =>
     allIds.slice(i * limit, (i + 1) * limit)
   );
