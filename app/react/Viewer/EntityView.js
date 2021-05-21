@@ -7,6 +7,7 @@ import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
 import { getPageAssets } from 'app/Pages/utils/getPageAssets';
+import { formater as formatter } from 'app/Metadata';
 
 import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
@@ -34,6 +35,7 @@ export default class Entity extends Component {
         requestParams.set(pageQuery),
         undefined,
         {
+          entity: formatter.prepareMetadata(entity, state.templates, state.thesauris),
           entityRaw: entity,
           template: entityTemplate,
         }

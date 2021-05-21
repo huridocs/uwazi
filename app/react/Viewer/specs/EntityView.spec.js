@@ -7,6 +7,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as pageAssetsUtils from 'app/Pages/utils/getPageAssets';
+import { formater as formatter } from 'app/Metadata';
 
 import EntitiesAPI from '../../Entities/EntitiesAPI';
 import EntityView from '../EntityView';
@@ -14,6 +15,7 @@ import EntityView from '../EntityView';
 describe('EntityView', () => {
   describe('requestState', () => {
     const templates = Immutable.fromJS([{ _id: '1' }, { _id: '2', entityViewPage: 'aViewPage' }]);
+    const thesauri = {};
     const entities = [
       { _id: 1, sharedId: '123', template: '1' },
       { _id: 2, sharedId: 'abc', template: '2' },
@@ -58,6 +60,10 @@ describe('EntityView', () => {
             });
           }
         );
+
+        spyOn(formatter, 'prepareMetadata').and.callFake(
+          entity => `formattedEntity-${entity.sharedId}`
+        );
       });
 
       const expectActionSet = (value, storeLocation, expectedValue) => {
@@ -67,9 +73,9 @@ describe('EntityView', () => {
         });
       };
 
-      it('should append the "entityRaw" and "template" to the page datasets in the store', async () => {
+      it('should append the entity-specific datasets to the page in the store', async () => {
         const request = new RequestParams({ sharedId: 'abc' }, 'headers');
-        const actions = await EntityView.requestState(request, { templates });
+        const actions = await EntityView.requestState(request, { templates, thesauris: thesauri });
 
         expectActionSet(actions[actions.length - 3], 'page/pageView', 'pageViewValues');
         expectActionSet(actions[actions.length - 2], 'page/itemLists', 'itemListsValue');
@@ -77,6 +83,8 @@ describe('EntityView', () => {
         const datasetsActions = actions[actions.length - 1];
 
         expect(datasetsActions.type).toBe('page/datasets/SET');
+        expect(formatter.prepareMetadata).toHaveBeenCalledWith(entities[1], templates, thesauri);
+        expect(datasetsActions.value.entity).toEqual('formattedEntity-abc');
         expect(datasetsActions.value.entityRaw).toEqual(entities[1]);
         expect(datasetsActions.value.template).toEqual(templates.get(1));
       });
