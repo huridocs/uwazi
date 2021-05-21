@@ -1,5 +1,5 @@
 import { TemplateSchema } from 'shared/types/templateType';
-import { propertyMappings } from './mappings';
+import { propertyMappings, relationshipInherit } from './mappings';
 
 export default {
   mapping: (templates: TemplateSchema[], topicClassification: boolean) => {
@@ -43,9 +43,11 @@ export default {
           map.properties.suggestedMetadata.properties[property.name] = { properties: fieldMapping };
 
           if (property.inherit?.type && property.inherit.type !== 'preview') {
-            const inheritMapping = propertyMappings[property.inherit.type]();
-            map.properties.metadata.properties[property.name].properties.inheritedValue = {
-              properties: inheritMapping,
+            map.properties.metadata.properties[property.name] = {
+              properties: relationshipInherit(property.inherit.type),
+            };
+            map.properties.suggestedMetadata.properties[property.name] = {
+              properties: relationshipInherit(property.inherit.type),
             };
           }
 

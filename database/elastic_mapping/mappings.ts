@@ -141,7 +141,18 @@ const propertyMappings = {
   generatedid: textType,
 };
 
+const relationshipInherit = type => ({
+  icon: { type: 'object', enabled: false },
+  label: text,
+  value: id,
+  type: noIndexText,
+  inheritedValue: {
+    properties: propertyMappings[type](),
+  },
+});
+
 export {
+  relationshipInherit,
   propertyMappings,
   text,
   noSorttext,

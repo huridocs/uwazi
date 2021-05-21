@@ -17,6 +17,7 @@ import {
   getUpdatedNames,
   denormalizeInheritedProperties,
 } from './utils';
+import { elastic } from 'api/search';
 
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
