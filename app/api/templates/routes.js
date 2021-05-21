@@ -7,7 +7,7 @@ import { search } from 'api/search';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
-import { generateNamesAndIds } from './utils';
+import { generateNamesAndIds, denormalizeInheritedProperties } from './utils';
 
 export default app => {
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
@@ -110,6 +110,7 @@ export default app => {
   app.post('/api/templates/check_mapping', needsAuthorization(), async (req, res, next) => {
     const template = req.body;
     template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await denormalizeInheritedProperties(template);
     checkMapping(template)
       .then(response => res.json(response))
       .catch(next);

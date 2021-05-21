@@ -32,10 +32,6 @@ export function validateDuplicatedRelationship(property, properties) {
   }, true);
 }
 
-export function validateRequiredInheritproperty(prop) {
-  return !prop || !prop.inherit || Boolean(prop.inheritProperty);
-}
-
 function getLabelRequiredValidator(propertiesArrayKey, propIndex) {
   return template => {
     if (!template[propertiesArrayKey][propIndex]) {
@@ -110,11 +106,6 @@ export default function(properties, commonProperties, templates, id) {
       }
       const prop = template.properties[index];
       return validateDuplicatedRelationship(prop, template.properties);
-    };
-
-    validator[''][`properties.${index}.inheritProperty.required`] = template => {
-      const prop = template.properties[index];
-      return validateRequiredInheritproperty(prop);
     };
   });
 
