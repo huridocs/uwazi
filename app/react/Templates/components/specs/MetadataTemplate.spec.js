@@ -243,7 +243,7 @@ describe('MetadataTemplate', () => {
         };
         spyOn(api, 'validateMapping').and.returnValue({
           error: 'error',
-          valid: validMapping,
+          valid: false,
         });
         spyOn(entitiesApi, 'countByTemplate').and.returnValue(entityCount);
         const component = shallow(<MetadataTemplate {...props} />, { context });

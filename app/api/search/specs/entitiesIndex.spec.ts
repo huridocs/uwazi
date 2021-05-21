@@ -8,6 +8,7 @@ import { search } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
 import { elastic } from '../elastic';
 import { checkMapping, updateMapping, reindexAll } from '../entitiesIndex';
+import elasticMapFactory from '../../../../database/elastic_mapping/elasticMapFactory';
 
 const forceIndexingOfNumberBasedProperty = async () => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -126,7 +127,7 @@ describe('entitiesIndex', () => {
 
       await updateMapping([templateA]);
       let response = await checkMapping(templateB);
-      expect(response).toEqual({ errors: [], valid: true });
+      expect(response).toEqual({ valid: true });
 
       templateB.properties = [
         { name: 'dob', type: 'text', label: 'Date of birth' },
@@ -136,20 +137,26 @@ describe('entitiesIndex', () => {
       response = await checkMapping(templateB);
 
       expect(response).toEqual({
-        errors: [{ name: 'Date of birth' }, { name: 'Country' }],
+        error: 'mapping conflict',
         valid: false,
       });
     });
-
-    describe('when the mapping is empty', () => {
-      it('should throw no errors', async () => {
+    describe('when there is an error other than mapping conflict', () => {
+      it('should throw the error', async () => {
         const templateB = {
           _id: '456',
           name: 'template B',
           properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
         };
         const response = await checkMapping(templateB);
-        expect(response).toEqual({ errors: [], valid: true });
+        expect(response).toEqual({ valid: true });
+      });
+    });
+
+    describe('when the mapping is empty', () => {
+      it('should throw no errors', async () => {
+        spyOn(elasticMapFactory, 'mapping').and.returnValue({ probably_bad_mapping: true });
+        await expect(checkMapping({})).rejects.toThrow();
       });
     });
   });
