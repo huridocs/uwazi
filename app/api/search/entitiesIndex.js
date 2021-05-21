@@ -108,15 +108,14 @@ const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, searchInstance } = options;
   const steps = await getSteps(query, limit);
 
-  if (query._id) {
-    delete query._id;
-  }
+  const { _id: remove, ...queryToIndex } = query;
+
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool
     .for(steps)
     .withConcurrency(10)
     .process(async stepBatch => {
-      const entitiesToIndex = await getEntitiesToIndex(query, stepBatch, limit, select);
+      const entitiesToIndex = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
       if (entitiesToIndex.length > 0) {
         await bulkIndexAndCallback({
           searchInstance,
