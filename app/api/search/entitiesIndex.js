@@ -165,38 +165,16 @@ const reindexAll = async (tmpls, searchInstance) => {
   return indexEntities({ query: {}, searchInstance });
 };
 
-const equalPropMapping = (mapA, mapB) => {
-  if (!mapA || !mapB) {
-    return true;
-  }
-
-  return (
-    Object.keys(mapA.properties).length === Object.keys(mapB.properties).length &&
-    Object.keys(mapA.properties).reduce(
-      (result, propKey) =>
-        result &&
-        mapB.properties[propKey] &&
-        mapA.properties[propKey].type === mapB.properties[propKey].type,
-      true
-    )
-  );
-};
-
 const checkMapping = async template => {
-  const errors = [];
-  const mapping = elasticMapFactory.mapping([template]);
-  const currentMapping = await elastic.indices.getMapping();
-  const elasticIndex = tenants.current().indexName;
-  const mappedProps =
-    currentMapping.body[elasticIndex].mappings.properties.metadata.properties || {};
-  const newMappedProps = mapping.properties.metadata.properties;
-  Object.keys(newMappedProps).forEach(key => {
-    if (!equalPropMapping(mappedProps[key], newMappedProps[key])) {
-      errors.push({ name: template.properties.find(p => p.name === key).label });
+  try {
+    await updateMapping([template]);
+  } catch (e) {
+    if (e.meta?.body?.error?.reason?.match(/cannot be changed from type/)) {
+      return { error: 'mapping conflict', valid: false };
     }
-  });
-
-  return { errors, valid: !errors.length };
+    throw e;
+  }
+  return { valid: true };
 };
 
 export { bulkIndex, indexEntities, updateMapping, checkMapping, reindexAll };
