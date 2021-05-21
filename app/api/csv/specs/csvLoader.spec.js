@@ -78,6 +78,16 @@ describe('csvLoader', () => {
         'original 3': 'valeur 3',
       });
     });
+
+    it('should not update a language that exists in the system but not in csv', async () => {
+      await translations.addLanguage('aa');
+      const [, , , afar] = await translations.get();
+      expect(afar.contexts[0].values).toEqual({
+        'original 1': 'value 1',
+        'original 2': 'value 2',
+        'original 3': 'value 3',
+      });
+    });
   });
 
   describe('load', () => {

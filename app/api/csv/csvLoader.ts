@@ -144,9 +144,7 @@ export class CSVLoader extends EventEmitter {
       const trans = intermidiateTranslation[lang.label];
       const [dbTranslations] = await translations.get({ locale: lang.language });
 
-      const context = dbTranslations.contexts.find(
-        (context: any) => context.id === translationContext
-      );
+      const context = dbTranslations.contexts.find((ctxt: any) => ctxt.id === translationContext);
 
       context.values = trans;
 
