@@ -31,7 +31,8 @@ describe('csvLoader', () => {
   });
 
   describe('load translations', () => {
-    beforeAll(async () => {
+    let csv;
+    beforeEach(async () => {
       await db.clearAllAndLoad(fixtures);
 
       await translations.addLanguage('es');
@@ -42,6 +43,7 @@ describe('csvLoader', () => {
           'original 1': 'original 1',
           'original 2': 'original 2',
           'original 3': 'original 3',
+          'original 4': 'original 4',
         },
         ''
       );
@@ -52,15 +54,14 @@ describe('csvLoader', () => {
 
       const nonExistent = 'Russian';
 
-      const csv = `Key       , English, Spanish, French  , ${nonExistent}  ,
+      csv = `Key       , English, Spanish, French  , ${nonExistent}  ,
                    original 1, value 1, valor 1, valeur 1, 1               ,
                    original 2, value 2, valor 2, valeur 2, 2               ,
                    original 3, value 3, valor 3, valeur 3, 3               ,`;
-
-      await loader.loadTranslations(stream(csv), 'System');
     });
 
     it('should set all translations from csv', async () => {
+      await loader.loadTranslations(stream(csv), 'System');
       const [english, spanish, french] = await translations.get();
       expect(english.contexts[0].values).toEqual({
         'original 1': 'value 1',
@@ -81,11 +82,13 @@ describe('csvLoader', () => {
 
     it('should not update a language that exists in the system but not in csv', async () => {
       await translations.addLanguage('aa');
+      await loader.loadTranslations(stream(csv), 'System');
       const [, , , afar] = await translations.get();
       expect(afar.contexts[0].values).toEqual({
-        'original 1': 'value 1',
-        'original 2': 'value 2',
-        'original 3': 'value 3',
+        'original 1': 'original 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+        'original 4': 'original 4',
       });
     });
   });
