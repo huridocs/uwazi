@@ -164,7 +164,7 @@ EditTranslationForm.propTypes = {
   translationsForm: PropTypes.array,
   settings: PropTypes.object,
   saveTranslations: PropTypes.func,
-  importTranslations: PropTypes.func,
+  importTranslations: PropTypes.func.isRequired,
   resetForm: PropTypes.func,
   formState: PropTypes.object,
 };
