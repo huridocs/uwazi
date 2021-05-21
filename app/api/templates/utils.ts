@@ -2,10 +2,70 @@ import uuid from 'node-uuid';
 import settings from 'api/settings/settings';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { TemplateSchema } from 'shared/types/templateType';
+import propertiesHelper from 'shared/comonProperties';
+import { ObjectID } from 'mongodb';
+import model from './templatesModel';
 
 import { safeName as sharedSafeName } from 'shared/propertyNames';
 
 export const safeName = sharedSafeName;
+
+const getInheritedProps = async (templates: TemplateSchema[]) => {
+  const properties: PropertySchema[] = propertiesHelper
+    .allUniqueProperties(templates)
+    .filter((p: PropertySchema) => p.inherit?.property);
+
+  return (
+    await model.db.aggregate([
+      {
+        $match: {
+          'properties._id': {
+            $in: properties.map(p => new ObjectID(p.inherit?.property)),
+          },
+        },
+      },
+      {
+        $project: {
+          properties: {
+            $filter: {
+              input: '$properties',
+              as: 'property',
+              cond: {
+                $or: properties.map(p => ({
+                  $eq: ['$$property._id', new ObjectID(p.inherit?.property)],
+                })),
+              },
+            },
+          },
+          _id: 0,
+        },
+      },
+      { $unwind: '$properties' },
+      { $replaceRoot: { newRoot: '$properties' } },
+    ])
+  ).reduce((indexed, prop) => {
+    // eslint-disable-next-line no-param-reassign
+    indexed[prop._id.toString()] = prop;
+    return indexed;
+  }, {});
+};
+
+export const denormalizeInheritedProperties = async (template: TemplateSchema) => {
+  const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
+
+  return template.properties?.map(prop => {
+    if (!prop.inherit?.property) {
+      delete prop.inherit;
+      return prop;
+    }
+
+    const { type } = inheritedProperties[prop.inherit.property];
+    // eslint-disable-next-line no-param-reassign
+    prop.inherit.type = type;
+    return prop;
+  });
+};
 
 const generateName = (property: PropertySchema, newNameGeneration: boolean) => {
   const name = property.label ? safeName(property.label, newNameGeneration) : property.name;
