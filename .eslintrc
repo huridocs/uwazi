@@ -9,7 +9,7 @@
   },
 
   "plugins": ["react", "jest", "@typescript-eslint", "prettier"],
-  parser: "@babel/eslint-parser",
+  "parser": "@babel/eslint-parser",
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": false }],
     "indent": "off", // handled by prettier
