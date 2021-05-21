@@ -91,7 +91,7 @@ export default {
     translationInputEs:
       '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > ul > li:nth-child(3) > div:nth-child(3) > div > div > input',
     translationsSaveButton:
-      '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
+      '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button[type="submit"]',
     privateInstance: '#collectionSettings > div:nth-child(8) > div > label',
     templatePropertiesList:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
