@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import path from 'path';
