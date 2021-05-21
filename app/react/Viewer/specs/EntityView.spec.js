@@ -67,7 +67,7 @@ describe('EntityView', () => {
         });
       };
 
-      it('should append the "currentEntity" and "currentTemplate" to the page datasets in the store', async () => {
+      it('should append the "entityRaw" and "template" to the page datasets in the store', async () => {
         const request = new RequestParams({ sharedId: 'abc' }, 'headers');
         const actions = await EntityView.requestState(request, { templates });
 
@@ -77,8 +77,8 @@ describe('EntityView', () => {
         const datasetsActions = actions[actions.length - 1];
 
         expect(datasetsActions.type).toBe('page/datasets/SET');
-        expect(datasetsActions.value.currentEntity).toEqual(entities[1]);
-        expect(datasetsActions.value.currentTemplate).toEqual(templates.get(1));
+        expect(datasetsActions.value.entityRaw).toEqual(entities[1]);
+        expect(datasetsActions.value.template).toEqual(templates.get(1));
       });
     });
   });

@@ -34,8 +34,8 @@ export default class Entity extends Component {
         requestParams.set(pageQuery),
         undefined,
         {
-          currentEntity: entity,
-          currentTemplate: entityTemplate,
+          entityRaw: entity,
+          template: entityTemplate,
         }
       );
 
