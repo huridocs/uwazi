@@ -6,15 +6,25 @@ import React, { Component } from 'react';
 import { createSelector } from 'reselect';
 
 import { Select } from 'app/ReactReduxForms';
+import { Checkbox } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import PropertyConfigOptions from './PropertyConfigOptions';
-import PropertyConfigOption from './PropertyConfigOption';
 import Tip from '../../Layout/Tip';
 
 export class FormConfigRelationship extends Component {
   static contentValidation() {
     return { required: val => val && val.trim() !== '' };
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { inherit: props.showInheritSelect };
+    this.onInheritChange = this.onInheritChange.bind(this);
+  }
+
+  onInheritChange() {
+    this.setState({ inherit: !this.state.inherit });
   }
 
   render() {
@@ -36,7 +46,6 @@ export class FormConfigRelationship extends Component {
     const options = templates.toJS().filter(template => template._id !== templateId);
 
     const labelClass = labelError ? 'form-group has-error' : 'form-group';
-
     return (
       <div>
         <div className={labelClass}>
@@ -73,27 +82,33 @@ export class FormConfigRelationship extends Component {
           />
         </div>
         {showInheritOption && (
-          <PropertyConfigOption
-            label="Inherit property"
-            model={`template.data.properties[${index}].inherit`}
-          >
+          <div>
+            <label className="property-label" htmlFor={`inherit${index}`}>
+              <input
+                id={`inherit${index}`}
+                type="checkbox"
+                checked={this.state.inherit}
+                onChange={this.onInheritChange}
+              />{' '}
+              <Translate>Inherit property</Translate>
+            </label>
             <Tip>
               This property will be inherited from the related entities and shown as metadata of
               this type of entities.
             </Tip>
-          </PropertyConfigOption>
+          </div>
         )}
-        {showInheritSelect && (
+        {this.state.inherit && (
           <div className={inheritPropertyError ? 'form-group has-error' : 'form-group'}>
             <Select
-              model={`template.data.properties[${index}].inheritProperty`}
+              model={`template.data.properties[${index}].inherit.property`}
               options={templateProperties}
               optionsLabel="label"
               optionsValue="_id"
             />
           </div>
         )}
-        {showInheritSelect && inheritSelectPropertyType === 'geolocation' && (
+        {this.state.inherit && inheritSelectPropertyType === 'geolocation' && (
           <div className="geolocation-grouping-alert">
             <Icon icon="info-circle" />
             <p>
@@ -176,8 +191,7 @@ export function mapStateToProps(state, props) {
     ),
 
     showInheritSelect: Boolean(
-      template.formState.properties[props.index].inherit &&
-        template.formState.properties[props.index].inherit.value &&
+      template.formState.properties[props.index].inherit?.property?.value &&
         templateProperties.length
     ),
     inheritSelectPropertyType: getInheritSelectPropertyType(state, props),
