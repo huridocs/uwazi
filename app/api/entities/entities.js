@@ -395,7 +395,7 @@ export default {
   async updateDenormalizedMetadataInRelatedEntities(entity) {
     //const related = await relationships.getByDocument(entity.sharedId, entity.language);
     const related = await getAggregatedEntityReferences(entity.sharedId);
-    const sharedIds = related.map(r => r.entity);
+    const sharedIds = related.map(r => r.rightSide.entity);
     await this.updateMetdataFromRelationships(sharedIds, entity.language);
   },
 
@@ -572,8 +572,8 @@ export default {
           relationshipProperties.forEach(property => {
             const relationshipsGoingToThisProperty = relations.filter(
               r =>
-                r.rightSide.template &&
-                r.rightSide.template.toString() === property.relationType.toString() &&
+                r.template &&
+                r.template.toString() === property.relationType.toString() &&
                 (!property.content ||
                   r.rightSide.entityData.template.toString() === property.content)
             );

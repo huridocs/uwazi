@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
@@ -286,15 +287,16 @@ describe('entities', () => {
     });
 
     describe('when title changes', () => {
-      it('should update title on entities with the entity as relationship', async () => {
+      fit('should update title on entities with the entity as relationship', async () => {
         const doc = {
           _id: shared2,
           sharedId: 'shared2',
           title: 'changedTitle',
         };
-
+        console.log("pre", JSON.stringify(await entities.getById('shared', 'en'), null, 2));
         await entities.save(doc, { language: 'en' });
         let relatedEntity = await entities.getById('shared', 'en');
+        console.log("post", JSON.stringify(relatedEntity, null, 2));
         expect(relatedEntity.metadata.enemies[0].label).toBe('changedTitle');
 
         relatedEntity = await entities.getById('other', 'en');
