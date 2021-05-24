@@ -136,7 +136,7 @@ const getPropertyBasedMarkers = (template, entity) => {
   return extractMarkers({ entity, geolocationProps, metadata, color, type: 'PropertyBased' });
 };
 
-const getInheritedMarkers = (template, entity, templates) => {
+const getInheritedMarkers = (template, entity) => {
   const templateProperties = template.get('properties');
   const color = template.get('color');
   const metadata = entity.get('metadata');

@@ -7,7 +7,6 @@ import React, { Component } from 'react';
 import { createSelector } from 'reselect';
 
 import { Select } from 'app/ReactReduxForms';
-import { Checkbox } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import PropertyConfigOptions from './PropertyConfigOptions';
@@ -42,7 +41,6 @@ export class FormConfigRelationship extends Component {
       relationTypes,
       templateId,
       showInheritOption,
-      showInheritSelect,
       templateProperties,
       inheritSelectPropertyType,
     } = this.props;

@@ -1,7 +1,6 @@
 import getValidator, {
   validateDuplicatedLabel,
   validateDuplicatedRelationship,
-  validateRequiredInheritproperty,
 } from '../ValidateTemplate';
 
 describe('ValidateTemplate', () => {
