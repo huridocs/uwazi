@@ -31,7 +31,6 @@ export class FormConfigRelationship extends Component {
     const {
       index,
       type,
-      inheritPropertyError,
       labelError,
       relationTypeError,
       templates,
@@ -99,7 +98,7 @@ export class FormConfigRelationship extends Component {
           </div>
         )}
         {this.state.inherit && (
-          <div className={inheritPropertyError ? 'form-group has-error' : 'form-group'}>
+          <div className="form-group">
             <Select
               model={`template.data.properties[${index}].inherit.property`}
               options={templateProperties}
@@ -125,7 +124,6 @@ export class FormConfigRelationship extends Component {
 FormConfigRelationship.defaultProps = {
   labelError: false,
   relationTypeError: false,
-  inheritPropertyError: false,
   showInheritOption: false,
   showInheritSelect: false,
   templateId: null,
@@ -140,7 +138,6 @@ FormConfigRelationship.propTypes = {
   type: PropTypes.string.isRequired,
   labelError: PropTypes.bool,
   relationTypeError: PropTypes.bool,
-  inheritPropertyError: PropTypes.bool,
   showInheritOption: PropTypes.bool,
   showInheritSelect: PropTypes.bool,
   templateId: PropTypes.string,
@@ -161,7 +158,7 @@ const getTemplateProperties = createSelector(
 
 const getInheritSelectPropertyType = createSelector(
   getTemplateProperties,
-  (state, props) => state.template.data.properties[props.index].inheritProperty,
+  (state, props) => state.template.data.properties[props.index].inherit.property,
   (templateProperties, inheritedPropertyId) => {
     const inheritedProperty = templateProperties.find(p => p._id === inheritedPropertyId);
     return inheritedProperty && inheritedProperty.type;
@@ -180,10 +177,6 @@ export function mapStateToProps(state, props) {
 
     relationTypeError:
       template.formState.$form.errors[`properties.${props.index}.relationType.required`] &&
-      template.formState.$form.submitFailed,
-
-    inheritPropertyError:
-      template.formState.$form.errors[`properties.${props.index}.inheritProperty.required`] &&
       template.formState.$form.submitFailed,
 
     showInheritOption: Boolean(
