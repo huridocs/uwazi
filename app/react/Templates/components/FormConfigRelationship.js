@@ -158,7 +158,7 @@ const getTemplateProperties = createSelector(
 
 const getInheritSelectPropertyType = createSelector(
   getTemplateProperties,
-  (state, props) => state.template.data.properties[props.index].inherit.property,
+  (state, props) => state.template.data.properties[props.index].inherit?.property,
   (templateProperties, inheritedPropertyId) => {
     const inheritedProperty = templateProperties.find(p => p._id === inheritedPropertyId);
     return inheritedProperty && inheritedProperty.type;
