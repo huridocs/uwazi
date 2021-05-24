@@ -1,5 +1,6 @@
-import { Field } from 'react-redux-form';
+import { Field, actions as formActions } from 'react-redux-form';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -24,6 +25,10 @@ export class FormConfigRelationship extends Component {
   }
 
   onInheritChange() {
+    if (this.state.inherit) {
+      const { index } = this.props;
+      this.props.resetFormValue(`template.data.properties[${index}].inherit.property`);
+    }
     this.setState({ inherit: !this.state.inherit });
   }
 
@@ -142,6 +147,7 @@ FormConfigRelationship.propTypes = {
   showInheritSelect: PropTypes.bool,
   templateId: PropTypes.string,
   inheritSelectPropertyType: PropTypes.string,
+  resetFormValue: PropTypes.func.isRequired,
 };
 
 const getTemplateProperties = createSelector(
@@ -195,4 +201,13 @@ export function mapStateToProps(state, props) {
   };
 }
 
-export default connect(mapStateToProps)(FormConfigRelationship);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      resetFormValue: model => formActions.reset(model),
+    },
+    dispatch
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormConfigRelationship);

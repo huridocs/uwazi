@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import { Select } from 'app/ReactReduxForms';
+import { actions as formActions } from 'react-redux-form';
 import FormConfigRelationship from '../FormConfigRelationship';
 import { renderConnected } from '../../specs/utils/renderConnected.tsx';
 
@@ -102,6 +103,21 @@ describe('FormConfigRelationship', () => {
         });
 
         expect(inheritPropSelect.length).toBe(1);
+      });
+    });
+
+    describe('when unselecting the inherit checkbox', () => {
+      it('should empty the inherit value', () => {
+        spyOn(formActions, 'reset').and.callThrough();
+        storeData.template.formState.properties[0].inherit = {
+          property: { value: 3 },
+        };
+        const component = render();
+        const checkbox = component.find('#inherit0');
+        checkbox.simulate('change');
+        expect(formActions.reset).toHaveBeenLastCalledWith(
+          'template.data.properties[0].inherit.property'
+        );
       });
     });
   });
