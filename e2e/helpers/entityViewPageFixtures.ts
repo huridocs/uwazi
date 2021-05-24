@@ -13,4 +13,7 @@ export const contents = `<h1>My entity view</h1>
 <p className="envio-content"><Value path="entity.metadata.4.value.0.value" /></p>
 
 <h4 className="descripcion-title"><Value path="template.properties.0.label" /></p></h4>
-<p className="descripcion-content"><Value path="entity.metadata.0.value" /></p>`;
+<p className="descripcion-content"><Value path="entity.metadata.0.value" /></p>;
+
+<h4 className="descriptores-title"><Value path="template.properties.3.label" /></p></h4>
+<p className="descriptores-content"><Value path="entity.metadata.3.value.0.value" /></p>`;

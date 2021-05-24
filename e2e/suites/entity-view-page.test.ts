@@ -69,6 +69,9 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.descripcion-title', {
         text: 'Resumen',
       });
+      await expect(page).toMatchElement('.descriptores-title', {
+        text: 'Descriptores',
+      });
     });
 
     it('should display with formated values', async () => {
@@ -77,6 +80,9 @@ describe('Entities', () => {
       });
       await expect(page).toMatchElement('.descripcion-content', {
         text: /(Los hechos del caso).*/g,
+      });
+      await expect(page).toMatchElement('.descriptores-content', {
+        text: 'Derechos reproductivos',
       });
     });
   });
