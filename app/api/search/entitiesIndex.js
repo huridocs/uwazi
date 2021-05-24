@@ -173,7 +173,7 @@ const checkMapping = async template => {
       { ...template, properties: await denormalizeInheritedProperties(template) },
     ]);
   } catch (e) {
-    if (e.meta?.body?.error?.reason?.match(/cannot be changed from type/)) {
+    if (e.meta?.body?.error?.reason?.match(/mapp[ing|er]/)) {
       return { error: 'mapping conflict', valid: false };
     }
     throw e;
