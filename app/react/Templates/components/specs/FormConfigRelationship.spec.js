@@ -90,7 +90,7 @@ describe('FormConfigRelationship', () => {
     });
 
     describe('when clicking the inherit checkbox', () => {
-      fit('should render the select with options', () => {
+      it('should render the select with options', () => {
         const component = render();
         const checkbox = component.find('#inherit0');
         checkbox.simulate('change');

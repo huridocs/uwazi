@@ -7,7 +7,6 @@ import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 import { selectTemplates } from 'app/utils/coreSelectors';
-import propertiesHelper from 'shared/comonProperties';
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
@@ -26,10 +25,8 @@ export const FiltersFromProperties = ({
   <>
     {properties.map(property => {
       let { type } = property;
-      if (property.inherit) {
-        ({ type } = propertiesHelper
-          .allUniqueProperties(templates)
-          .find(p => p._id === property.inheritProperty));
+      if (property.inherit?.property) {
+        type = property.inherit.type;
       }
 
       const commonProps = {
