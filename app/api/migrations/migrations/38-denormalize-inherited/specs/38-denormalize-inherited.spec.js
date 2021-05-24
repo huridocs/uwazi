@@ -50,6 +50,12 @@ describe('migration denormalize-inherited', () => {
         label: 'test_doc 5',
         value: '789ABC',
       },
+      {
+        inheritedType: 'text',
+        inheritedValue: [],
+        label: 'There is only zull',
+        value: 'zull',
+      },
     ]);
   });
 });
