@@ -1,5 +1,5 @@
 import { TemplateSchema } from 'shared/types/templateType';
-import { propertyMappings, relationshipInherit } from './mappings';
+import { propertyMappings } from './mappings';
 
 export default {
   mapping: (templates: TemplateSchema[]) => {
@@ -13,8 +13,6 @@ export default {
         },
       },
     };
-
-    // const inheritedProps = await getInheritedProps(templates);
 
     return templates.reduce(
       (baseMapping: any, template: TemplateSchema) =>
@@ -32,11 +30,12 @@ export default {
           };
 
           if (property.inherit?.type && property.inherit.type !== 'preview') {
-            map.properties.metadata.properties[property.name] = {
-              properties: relationshipInherit(property.inherit.type),
+            map.properties.metadata.properties[property.name].properties.inheritedValue = {
+              properties: propertyMappings[property.inherit.type](),
             };
-            map.properties.suggestedMetadata.properties[property.name] = {
-              properties: relationshipInherit(property.inherit.type),
+
+            map.properties.suggestedMetadata.properties[property.name].properties.inheritedValue = {
+              properties: propertyMappings[property.inherit.type](),
             };
           }
 
