@@ -166,6 +166,13 @@ const entryValues: { [key: string]: EntryValue } = {
     method: Methods.Delete,
     nameField: '_id',
   },
+  'POST/api/entities/permissions': {
+    desc: 'Updated permissions on entity',
+    method: Methods.Update,
+    related: helpers.loadPermissionsData,
+    nameFunc: helpers.entitiesNames,
+    extra: helpers.loadAllowedUsersAndGroups,
+  },
 };
 
 const getSemanticData = async (data: any) => {

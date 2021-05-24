@@ -6,6 +6,8 @@ const firstDocSharedId = 'doc1';
 const firstSemanticSearch = db.id();
 const nonExistentId = db.id();
 const fileId = db.id();
+const userId = db.id();
+const groupId = db.id();
 
 export default {
   activitylogs: [
@@ -40,6 +42,29 @@ export default {
   ],
 
   semanticsearches: [{ _id: firstSemanticSearch, searchTerm: 'foo' }],
+
+  users: [
+    {
+      _id: userId,
+      username: 'User 1',
+    },
+  ],
+  usergroups: [
+    {
+      _id: groupId,
+      name: 'Group 1',
+      members: [{ refId: userId }],
+    },
+  ],
 };
 
-export { firstTemplate, firstDoc, firstDocSharedId, firstSemanticSearch, nonExistentId, fileId };
+export {
+  firstTemplate,
+  firstDoc,
+  firstDocSharedId,
+  firstSemanticSearch,
+  nonExistentId,
+  fileId,
+  userId,
+  groupId,
+};

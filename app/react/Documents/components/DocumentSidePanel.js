@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
@@ -22,6 +23,7 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -33,10 +35,10 @@ export class DocumentSidePanel extends Component {
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
     this.state = { copyFrom: false, copyFromProps: [] };
-
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
+    this.toggleSharing = this.toggleSharing.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -113,6 +115,12 @@ export class DocumentSidePanel extends Component {
     }));
   }
 
+  toggleSharing() {
+    this.setState(currentState => ({
+      sharing: !currentState.sharing,
+    }));
+  }
+
   renderHeader(tab, doc, isEntity) {
     if (this.state.copyFrom) {
       return (
@@ -121,9 +129,12 @@ export class DocumentSidePanel extends Component {
         </div>
       );
     }
-    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
 
-    const summary = connectionsGroups.reduce(
+    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references, hubs } = this.props;
+
+    this.visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
+
+    const summary = this.visibleConnectionGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -309,7 +320,7 @@ export class DocumentSidePanel extends Component {
               />
             </div>
           </ShowIf>
-          <NeedAuthorization roles={['admin', 'editor']}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
             <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
               <div className="sidepanel-footer">
                 <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -319,7 +330,7 @@ export class DocumentSidePanel extends Component {
               </div>
             </ShowIf>
           </NeedAuthorization>
-          <NeedAuthorization roles={['admin', 'editor']}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
             <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
               <div className="sidepanel-footer">
                 <button
@@ -419,6 +430,7 @@ export class DocumentSidePanel extends Component {
                         parentId={doc.get('_id')}
                         parentSharedId={doc.get('sharedId')}
                         storeKey={this.props.storeKey}
+                        entity={jsDoc}
                       />
                     </div>
                   );
@@ -432,7 +444,7 @@ export class DocumentSidePanel extends Component {
                 />
               </TabContent>
               <TabContent for="connections" className="connections">
-                <ConnectionsGroups />
+                <ConnectionsGroups connectionsGroups={this.visibleConnectionGroups} />
               </TabContent>
               <TabContent for="semantic-search-results">
                 <DocumentSemanticSearchResults doc={jsDoc} />
@@ -462,6 +474,7 @@ DocumentSidePanel.defaultProps = {
   EntityForm: () => false,
   raw: false,
   file: {},
+  hubs: Immutable.fromJS([]),
 };
 
 DocumentSidePanel.propTypes = {
@@ -499,6 +512,7 @@ DocumentSidePanel.propTypes = {
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
+  hubs: PropTypes.instanceOf(Immutable.List),
 };
 
 DocumentSidePanel.contextTypes = {
@@ -526,6 +540,7 @@ export const mapStateToProps = (state, ownProps) => {
     defaultLanguage,
     templates: state.templates,
     formData: state[ownProps.storeKey].sidepanel.metadata,
+    hubs: state.relationships.hubs,
   };
 };
 

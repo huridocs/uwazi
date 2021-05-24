@@ -3,7 +3,6 @@
  */
 import 'mutationobserver-shim';
 import React from 'react';
-import Immutable from 'immutable';
 import { ReactWrapper } from 'enzyme';
 import { SidePanel } from 'app/Layout';
 import {
@@ -18,8 +17,8 @@ describe('UserGroupSidePanel', () => {
     _id: 'group1Id',
     name: 'Group 1',
     members: [
-      { _id: 'user1', username: 'martha perez' },
-      { _id: 'user2', username: 'ana johnson' },
+      { refId: 'user1', username: 'martha perez' },
+      { refId: 'user2', username: 'ana johnson' },
     ],
   };
   const defaultProps: UserGroupSidePanelProps = {
@@ -41,12 +40,7 @@ describe('UserGroupSidePanel', () => {
 
   function render(args?: UserGroupSidePanelProps) {
     const props = { ...defaultProps, ...args };
-    const state = {
-      locale: 'es',
-      inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-      translations: Immutable.fromJS([{ _id: 1, locale: 'es', contexts: [] }]),
-    };
-    return renderConnectedMount(UserGroupSidePanel, state, props);
+    return renderConnectedMount(UserGroupSidePanel, {}, props, true);
   }
 
   beforeEach(() => {
@@ -77,6 +71,33 @@ describe('UserGroupSidePanel', () => {
       expect(wrapper.find('#deleteBtn').length).toBe(0);
     });
 
+    it.each<any>([
+      { field: 'name', value: userGroup.name, message: 'Duplicated name' },
+      { field: 'name', value: '', message: 'Name is required' },
+      { field: 'name', value: 'a'.repeat(55), message: 'Name is too long' },
+      { field: 'name', value: 'a', message: 'Name is too short' },
+    ])(
+      'should not save if there is an invalid value %s',
+      ({ field, value, message }, done: jest.DoneCallback) => {
+        const props = { ...defaultProps };
+        const newGroup = { name: 'NEW GROUP', members: [] };
+        props.userGroup = { ...newGroup, [field]: value };
+        const wrapper = render(props);
+        wrapper.find('form').simulate('submit');
+        setImmediate(() => {
+          wrapper.update();
+          const error = wrapper
+            .find({ id: `${field}_field` })
+            .children()
+            .find('div')
+            .at(0);
+          expect(defaultProps.onSave).not.toBeCalled();
+          expect(error.text()).toEqual(message);
+          done();
+        });
+      }
+    );
+
     it.each(['Group 1', ''])(
       'should not save if there is another group with the same name',
       (groupName: string) => {
@@ -92,7 +113,9 @@ describe('UserGroupSidePanel', () => {
   describe('Editing user group', () => {
     it('should show the name of the received group', () => {
       const nameInput = component.find({ id: 'name_field' }).find('input');
-      expect(nameInput.props().value).toEqual(defaultProps.userGroup.name);
+      expect((nameInput.getDOMNode() as HTMLInputElement).value).toEqual(
+        defaultProps.userGroup.name
+      );
     });
 
     it('should show edition labels', () => {
@@ -129,19 +152,19 @@ describe('UserGroupSidePanel', () => {
     });
 
     describe('Saving user group', () => {
-      it('should call the save callback when save button is clicked', () => {
+      it('should call the save callback when save button is clicked', done => {
         const nameInput = component.find({ id: 'name_field' }).find('input');
-        nameInput.simulate('change', { target: { value: 'GROUP 1' } });
+        // @ts-ignore
+        nameInput.instance().value = 'GROUP 1';
+        nameInput.simulate('change');
         component.find('form').simulate('submit');
         setImmediate(() => {
           expect(defaultProps.onSave).toHaveBeenCalledWith({
             _id: 'group1Id',
             name: 'GROUP 1',
-            members: [
-              { _id: 'user1', username: 'martha perez' },
-              { _id: 'user2', username: 'ana johnson' },
-            ],
+            members: [{ refId: 'user2' }, { refId: 'user1' }],
           });
+          done();
         });
       });
     });
@@ -161,21 +184,18 @@ describe('UserGroupSidePanel', () => {
 
     it('should add a checked user to the selected users', () => {
       const selectedUsers = component.find(MultiSelect).props().value;
-      expect(selectedUsers).toEqual(['user2', 'user4', 'user1']);
+      expect(selectedUsers).toEqual(['user1', 'user2', 'user4']);
     });
 
-    it('should save selected users with member properties', () => {
+    it('should save the group with its members', done => {
       component.find('form').simulate('submit');
       setImmediate(() => {
         expect(defaultProps.onSave).toHaveBeenCalledWith({
           _id: 'group1Id',
           name: 'Group 1',
-          members: [
-            { _id: 'user2', username: 'ana johnson' },
-            { _id: 'user4', username: 'john smith' },
-            { _id: 'user1', username: 'martha perez' },
-          ],
+          members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
         });
+        done();
       });
     });
   });

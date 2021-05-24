@@ -183,4 +183,74 @@ describe('documentsReducer', () => {
       });
     });
   });
+
+  describe('REMOVE_DOCUMENTS_SHAREDIDS', () => {
+    it('should remove the documents with the matching sharedIds from the state', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1' },
+          { title: '2', _id: 2, sharedId: 'shared2' },
+          { title: '3', _id: 3, sharedId: 'shared3' },
+        ],
+        totalRows: 3,
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.REMOVE_DOCUMENTS_SHAREDIDS,
+        sharedIds: ['shared2', 'shared3'],
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [{ title: '1', _id: 1, sharedId: 'shared1' }],
+        totalRows: 1,
+      });
+    });
+
+    describe('when the document is not in the list', () => {
+      it('should do nothing', () => {
+        const currentState = Immutable.fromJS({
+          rows: [
+            { title: '1', _id: 1, sharedId: 'shared1' },
+            { title: '2', _id: 2, sharedId: 'shared2' },
+          ],
+          totalRows: 2,
+        });
+        const newState = documentsReducer(currentState, {
+          type: types.REMOVE_DOCUMENTS_SHAREDIDS,
+          sharedIds: ['shared2', 'shared3'],
+        });
+
+        expect(newState.toJS()).toEqual({
+          rows: [{ title: '1', _id: 1, sharedId: 'shared1' }],
+          totalRows: 1,
+        });
+      });
+    });
+  });
+
+  describe('UPDATE_DOCUMENTS_PUBLISHED', () => {
+    it('update the entities with the provided publishing status', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: false },
+          { title: '3', _id: 3, sharedId: 'shared3', published: false },
+        ],
+        totalRows: 3,
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.UPDATE_DOCUMENTS_PUBLISHED,
+        sharedIds: ['shared2', 'shared3'],
+        published: true,
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: true },
+          { title: '3', _id: 3, sharedId: 'shared3', published: true },
+        ],
+        totalRows: 3,
+      });
+    });
+  });
 });

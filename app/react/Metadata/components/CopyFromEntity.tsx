@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 
 import { EntitySchema } from 'shared/types/entityType';
-import { SearchEntities } from './SearchEntities';
-import { FormatMetadata } from '../containers/FormatMetadata';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IImmutable } from 'shared/types/Immutable';
 import comonProperties from 'shared/comonProperties';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import { actions } from 'app/Metadata';
+import { actions, FormatMetadata } from 'app/Metadata';
 import { store } from 'app/store';
+
+import { SearchEntities } from './SearchEntities';
 
 export type CopyFromEntityProps = {
   onSelect: Function;
@@ -43,7 +43,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
     const originalTemplate = this.props.originalEntity.template;
 
     const propsToCopy = comonProperties
-      .comonProperties(templates, [originalTemplate, copyFromTemplateId])
+      .comonProperties(templates, [originalTemplate, copyFromTemplateId], ['generatedid'])
       .map(p => p.name);
 
     this.setState({ selectedEntity, propsToCopy });

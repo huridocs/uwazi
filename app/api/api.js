@@ -18,6 +18,7 @@ export default (app, server) => {
   require('./templates/routes').default(app);
   require('./search/deprecatedRoutes').default(app);
   require('./search/routes').default(app);
+  require('./search.v2/routes').searchRoutes(app);
   require('./topicclassification/routes').default(app);
   require('./thesauri/routes').default(app);
   require('./relationtypes/routes').default(app);
@@ -36,4 +37,5 @@ export default (app, server) => {
   require('./swagger/swaggerconfig').default(app);
   require('./tasks/routes').default(app);
   require('./usergroups/routes').default(app);
+  require('./permissions/routes').permissionRoutes(app);
 };
