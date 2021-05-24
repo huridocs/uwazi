@@ -59,18 +59,6 @@ function getAggregatedEntityReferences(sharedId, additionalStages = {}) {
               as: 'rightSide.entityData',
             },
           },
-          // {
-          //   $project: {
-          //     hub: 1,
-          //     'rightSide._id': 1,
-          //     'rightSide.entity': 1,
-          //     'rightSide.template': 1,
-          //     // 'rightSide.entityData.template': 1,
-          //     // 'rightSide.entityData.title': 1,
-          //     // 'rightSide.entityData.language': 1,
-          //     'rightSide.entityData': 1,
-          //   },
-          // },
         ]
       : []),
     ...(final || []),

@@ -393,9 +393,8 @@ export default {
   },
 
   async updateDenormalizedMetadataInRelatedEntities(entity) {
-    //const related = await relationships.getByDocument(entity.sharedId, entity.language);
     const related = await getAggregatedEntityReferences(entity.sharedId);
-    const sharedIds = related.map(r => r.rightSide.entity);
+    const sharedIds = related.map(r => r.rightSide.entity).filter(id => id !== entity.sharedId);
     await this.updateMetdataFromRelationships(sharedIds, entity.language);
   },
 
@@ -572,16 +571,22 @@ export default {
           relationshipProperties.forEach(property => {
             const relationshipsGoingToThisProperty = relations.filter(
               r =>
-                r.template &&
-                r.template.toString() === property.relationType.toString() &&
+                r.rightSide.template &&
+                r.rightSide.template.toString() === property.relationType.toString() &&
                 (!property.content ||
-                  r.rightSide.entityData.template.toString() === property.content)
+                  r.rightSide.entityData[0].template.toString() === property.content)
             );
 
-            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
-              value: r.rightSide.entity,
-              label: r.rightSide.entityData.title,
-            }));
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => {
+              const entityDataForLanguage = r.rightSide.entityData.find(
+                entityData => entityData.language === language
+              );
+
+              return {
+                value: r.rightSide.entity,
+                label: entityDataForLanguage.title,
+              };
+            });
           });
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);
