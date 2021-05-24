@@ -39,20 +39,45 @@ describe('Entities', () => {
     await expect(page).toMatch('Saved successfully.');
   });
 
-  it('should display the entity in its custom page', async () => {
-    await page.goto(`${host}`);
-    await page.reload();
-    await expect(page).toClick(
-      'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
-    );
-    await expect(page).toMatchElement('h1', {
-      text: 'My entity view',
+  describe('display the entity in custom page', () => {
+    beforeAll(async () => {
+      await page.goto(`${host}`);
+      await page.reload();
+      await expect(page).toClick(
+        'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
+      );
     });
-    await expect(page).toMatchElement('.custom-title', {
-      text: 'Artavia Murillo y otros',
+    it('should display with raw values', async () => {
+      await expect(page).toMatchElement('h1', {
+        text: 'My entity view',
+      });
+      await expect(page).toMatchElement('.custom-title', {
+        text: 'Artavia Murillo y otros',
+      });
+      await expect(page).toMatchElement('.custom-list', {
+        text: 'Costa Rica',
+      });
+      await expect(page).toMatchElement('.raw-creation-date', {
+        text: '1479116602198',
+      });
     });
-    await expect(page).toMatchElement('.custom-list', {
-      text: 'Costa Rica',
+
+    it('should display with values from the template', async () => {
+      await expect(page).toMatchElement('.envio-title', {
+        text: 'Envío a la corte',
+      });
+      await expect(page).toMatchElement('.descripcion-title', {
+        text: 'Resumen',
+      });
+    });
+
+    it('should display with formated values', async () => {
+      await expect(page).toMatchElement('.envio-content', {
+        text: 'Dec 19, 2011',
+      });
+      await expect(page).toMatchElement('.descripcion-content', {
+        text: /(Los hechos del caso).*/g,
+      });
     });
   });
 
