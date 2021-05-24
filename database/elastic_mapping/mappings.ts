@@ -1,3 +1,5 @@
+import { PropertySchema } from "shared/types/commonTypes";
+
 const { USE_ELASTIC_ICU } = process.env;
 let textSortField = {};
 if (USE_ELASTIC_ICU === 'true') {
@@ -147,18 +149,7 @@ const propertyMappings = {
   generatedid: textType,
 };
 
-const relationshipInherit = type => ({
-  icon: { type: 'object', enabled: false },
-  label: text,
-  value: id,
-  type: noIndexText,
-  inheritedValue: {
-    properties: propertyMappings[type](),
-  },
-});
-
 export {
-  relationshipInherit,
   propertyMappings,
   text,
   noSorttext,
