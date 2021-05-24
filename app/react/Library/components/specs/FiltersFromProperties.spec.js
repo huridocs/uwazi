@@ -164,8 +164,7 @@ describe('FiltersFromProperties', () => {
           name: 'countries',
           label: 'Countries',
           type: 'relationship',
-          inherit: true,
-          inheritProperty: '1234',
+          inherit: { property: '1234', type: 'date' },
           options: [{ label: 'option2' }],
         },
       ];
