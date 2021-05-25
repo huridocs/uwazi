@@ -84,11 +84,25 @@ export class EditTranslationForm extends Component {
   render() {
     const contextId = this.props.context;
     let defaultTranslationContext = { values: [] };
+    let importButton;
 
     const translations = this.prepareTranslations.call(this);
     if (translations.length) {
       defaultTranslationContext =
         translations[0].contexts.find(ctx => ctx.id === contextId) || defaultTranslationContext;
+    }
+
+    if (contextId === 'System') {
+      importButton = (
+        <button
+          type="button"
+          className="btn btn-primary import-template"
+          onClick={this.onImportClicked}
+        >
+          <Icon icon="upload" />
+          <span className="btn-label">Import</span>
+        </button>
+      );
     }
 
     const contextKeys = Object.keys(defaultTranslationContext.values);
@@ -131,14 +145,7 @@ export class EditTranslationForm extends Component {
           </div>
           <div className="settings-footer">
             <BackButton to="/settings/translations" />
-            <button
-              type="button"
-              className="btn btn-primary import-template"
-              onClick={this.onImportClicked}
-            >
-              <Icon icon="upload" />
-              <span className="btn-label">Import</span>
-            </button>
+            {importButton}
             <button type="submit" className="btn btn-success save-template">
               <Icon icon="save" />
               <span className="btn-label">{t('System', 'Save')}</span>
