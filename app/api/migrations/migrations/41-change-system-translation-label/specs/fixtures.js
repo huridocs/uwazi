@@ -1,11 +1,12 @@
-import db from 'api/utils/testing_db';
-
 export default {
-  translations: [{
-    contexts: [
+  translations: [
     {
-      id: 'System',
-      label: 'System',
-    }
-  ] }]
+      contexts: [
+        {
+          id: 'System',
+          label: 'System',
+        },
+      ],
+    },
+  ],
 };
