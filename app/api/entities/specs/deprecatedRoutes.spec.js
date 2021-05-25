@@ -84,7 +84,7 @@ describe('entities', () => {
         },
         user,
         language: 'lang',
-        io: {
+        sockets: {
           emitToCurrentTenant: jest.fn((event, thesaurus) => {
             try {
               expect(event).toBe('thesauriChange');
