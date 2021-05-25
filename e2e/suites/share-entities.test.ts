@@ -204,6 +204,7 @@ describe('Share entities', () => {
     await expect(page).toClick('button', { text: 'Edit' });
     await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Edited title');
     await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('div.alert', { text: 'Entity updated' });
     await page.waitFor('.item-document');
     await expect(page).toMatchElement('.item-document .item-info > div > span', {
       text: 'Edited title',
