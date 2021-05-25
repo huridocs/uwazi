@@ -31,6 +31,7 @@ import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { tocService } from './api/toc_generation/tocService';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 mongoose.Promise = Promise;
 
@@ -114,6 +115,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
+      permissionsContext.setCommandContext();
       if (!config.multiTenant && !config.clusterMode) {
         syncWorker.start();
 
