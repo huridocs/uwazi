@@ -395,7 +395,7 @@ export default {
   async updateDenormalizedMetadataInRelatedEntities(entity) {
     const related = await getAggregatedEntityReferences(entity.sharedId);
     const sharedIds = related.map(r => r.rightSide.entity).filter(id => id !== entity.sharedId);
-    await this.updateMetdataFromRelationships(sharedIds, entity.language);
+    await this.updateMetdataFromRelationships(sharedIds, entity.language, true, [entity.sharedId]);
   },
 
   async denormalize(_doc, { user, language }) {
@@ -554,7 +554,7 @@ export default {
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async updateMetdataFromRelationships(entities, language, reindex = true) {
+  async updateMetdataFromRelationships(entities, language, reindex = true, restrictToIds = []) {
     const entitiesToReindex = [];
     const _templates = await templates.get();
     await Promise.all(
@@ -562,7 +562,17 @@ export default {
         const entity = await this.getById(entityId, language);
 
         if (entity && entity.template) {
-          const relations = await getAggregatedEntityReferences(entityId, { doEntityLookup: true });
+          const restrictStage = restrictToIds.length
+            ? {
+                $match: {
+                  'rightSide.entity': { $in: restrictToIds },
+                },
+              }
+            : undefined;
+          const relations = await getAggregatedEntityReferences(entityId, {
+            doEntityLookup: true,
+            afterHubLookup: [restrictStage],
+          });
 
           entity.metadata = entity.metadata || {};
           const template = _templates.find(t => t._id.toString() === entity.template.toString());
