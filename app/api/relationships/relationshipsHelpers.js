@@ -1,4 +1,5 @@
 import errorLog from 'api/log/errorLog';
+import model from './model';
 
 function groupByHubs(references) {
   const hubs = references.reduce((_hubs, reference) => {
@@ -9,6 +10,107 @@ function groupByHubs(references) {
     return _hubs;
   }, []);
   return Object.keys(hubs).map(key => hubs[key]);
+}
+
+function getEntityReferencesByRelationshipTypes(sharedId, relationTypes) {
+  return model.db.aggregate([
+    {
+      $match: {
+        entity: sharedId,
+      },
+    },
+    {
+      $project: {
+        hub: 1,
+      },
+    },
+    {
+      $lookup: {
+        from: 'connections',
+        localField: 'hub',
+        foreignField: 'hub',
+        as: 'rightSide',
+      },
+    },
+    {
+      $project: {
+        hub: 1,
+        'rightSide._id': 1,
+        'rightSide.entity': 1,
+        'rightSide.template': 1,
+      },
+    },
+    {
+      $unwind: '$rightSide',
+    },
+    {
+      $match: {
+        'rightSide.template': {
+          $in: relationTypes,
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: 'entities',
+        localField: 'rightSide.entity',
+        foreignField: 'sharedId',
+        as: 'rightSide.entityData',
+      },
+    },
+    {
+      $project: {
+        hub: 1,
+        'rightSide._id': 1,
+        'rightSide.entity': 1,
+        'rightSide.template': 1,
+        'rightSide.entityData.template': 1,
+      },
+    },
+    {
+      $group: {
+        _id: '$rightSide.template',
+        references: { $push: '$$ROOT' },
+      },
+    },
+  ]);
+}
+
+function guessRelationshipPropertyHub(sharedId, relationType) {
+  return model.db.aggregate([
+    {
+      $match: {
+        entity: sharedId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'connections',
+        localField: 'hub',
+        foreignField: 'hub',
+        as: 'rightSide',
+      },
+    },
+    {
+      $unwind: '$rightSide',
+    },
+    {
+      $match: {
+        'rightSide.entity': { $ne: sharedId },
+      },
+    },
+    {
+      $group: {
+        _id: '$rightSide.hub',
+        templates: { $addToSet: '$rightSide.template' },
+      },
+    },
+    {
+      $match: {
+        $and: [{ 'templates.0': relationType }, { 'templates.1': { $exists: false } }],
+      },
+    },
+  ]);
 }
 
 class RelationshipCollection extends Array {
@@ -59,4 +161,9 @@ class RelationshipCollection extends Array {
   }
 }
 
-export { RelationshipCollection, groupByHubs };
+export {
+  RelationshipCollection,
+  groupByHubs,
+  getEntityReferencesByRelationshipTypes,
+  guessRelationshipPropertyHub,
+};

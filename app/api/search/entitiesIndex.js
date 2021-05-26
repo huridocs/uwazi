@@ -81,9 +81,9 @@ const bulkIndex = async (docs, _action = 'index') => {
   return results;
 };
 
-const getEntitiesToIndex = async (query, stepIndex, limit, select) => {
+const getEntitiesToIndex = async (query, stepBach, limit, select) => {
   const thisQuery = { ...query };
-  thisQuery._id = !thisQuery._id ? { $gte: stepIndex } : thisQuery._id;
+  thisQuery._id = { $in: stepBach };
   return entities.getUnrestrictedWithDocuments(thisQuery, '+permissions', {
     limit,
     documentsFullText: select && select.includes('+fullText'),
@@ -97,12 +97,10 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async (query, limit) => {
-  const allIds = await entities.getWithoutDocuments(query, '_id', { sort: { _id: 1 } });
-  const milestoneIds = [];
-  for (let i = 0; i < allIds.length; i += limit) {
-    milestoneIds.push(allIds[i]);
-  }
-  return milestoneIds;
+  const allIds = await entities.getWithoutDocuments(query, '_id');
+  return [...Array(Math.ceil(allIds.length / limit))].map((_v, i) =>
+    allIds.slice(i * limit, (i + 1) * limit)
+  );
 };
 
 /*eslint max-statements: ["error", 20]*/
@@ -110,12 +108,14 @@ const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, searchInstance } = options;
   const steps = await getSteps(query, limit);
 
+  const { _id: remove, ...queryToIndex } = query;
+
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool
     .for(steps)
     .withConcurrency(10)
-    .process(async stepIndex => {
-      const entitiesToIndex = await getEntitiesToIndex(query, stepIndex, limit, select);
+    .process(async stepBatch => {
+      const entitiesToIndex = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
       if (entitiesToIndex.length > 0) {
         await bulkIndexAndCallback({
           searchInstance,

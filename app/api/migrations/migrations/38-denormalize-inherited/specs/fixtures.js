@@ -1,6 +1,7 @@
 import db from 'api/utils/testing_db';
 const templateId = db.id();
 const templateId2 = db.id();
+const zull = db.id();
 const inheritPropertyId = db.id();
 export default {
   entities: [
@@ -36,7 +37,10 @@ export default {
       title: 'test_doc 4',
       sharedId: '498ABC',
       metadata: {
-        friend: [{ value: '789ABC', label: 'test_doc 5' }],
+        friend: [
+          { value: '789ABC', label: 'test_doc 5' },
+          { value: 'zull', label: 'There is only zull' },
+        ],
       },
       language: 'en',
     },
@@ -55,8 +59,11 @@ export default {
       template: 'whats a template?',
     },
     {
+      _id: zull,
+      sharedId: 'zull',
       title: 'There is only zull',
-      template: templateId,
+      language: 'en',
+      template: templateId2,
     },
   ],
   templates: [
