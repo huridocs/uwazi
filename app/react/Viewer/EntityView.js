@@ -13,6 +13,15 @@ import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
 import * as uiActions from '../Entities/actions/uiActions';
 
+const formatEntity = (entity, templates, thesauris) => {
+  const formattedEntity = formatter.prepareMetadata(entity, templates, thesauris);
+  formattedEntity.metadata = formattedEntity.metadata.reduce(
+    (memo, property) => ({ ...memo, [property.name]: property }),
+    {}
+  );
+  return formattedEntity;
+};
+
 export default class Entity extends Component {
   static async requestState(requestParams, state) {
     const [
@@ -35,7 +44,7 @@ export default class Entity extends Component {
         requestParams.set(pageQuery),
         undefined,
         {
-          entity: formatter.prepareMetadata(entity, state.templates, state.thesauris),
+          entity: formatEntity(entity, state.templates, state.thesauris),
           entityRaw: entity,
           template: entityTemplate,
         }
