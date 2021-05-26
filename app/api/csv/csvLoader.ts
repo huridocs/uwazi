@@ -125,7 +125,6 @@ export class CSVLoader extends EventEmitter {
       (await settings.get()).languages
     ).map((l: LanguageSchema) => ({ label: l.label, language: l.key }));
 
-    // { English: {'original 3': 'value 3', 'original 4': 'value 4'}}
     const intermidiateTranslation: any = {};
 
     await csv(await file.readStream(), this.stopOnError)

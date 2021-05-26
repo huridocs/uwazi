@@ -143,20 +143,6 @@ export default {
       .then(() => 'ok');
   },
 
-  addEntryInLanguage(contextId, key, defaultValue, language) {
-    // eslint-disable-next-line max-statements
-    return this.get({ locale: language }).then(([translation]) => {
-      const context = translation.contexts.find(ctx => ctx.id === contextId);
-      if (!context) {
-        return Promise.resolve();
-      }
-
-      context.values[key] = defaultValue;
-
-      return this.save(translation);
-    });
-  },
-
   addContext(id, contextName, values, type) {
     const translatedValues = [];
     Object.keys(values).forEach(key => {
