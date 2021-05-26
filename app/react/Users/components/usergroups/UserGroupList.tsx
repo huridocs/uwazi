@@ -17,13 +17,13 @@ export const UserGroupList = ({
   handleAddGroup,
   className,
 }: UserGroupListProps) => {
-  const [selectedId, setSelectedId] = useState();
+  const [selectedId, setSelectedId] = useState<string | undefined>('');
   const addGroup = () => {
     setSelectedId(undefined);
     handleAddGroup();
   };
   const selectRow = (userGroup: UserGroupSchema) => {
-    setSelectedId(userGroup._id);
+    setSelectedId(userGroup._id?.toString());
     handleSelect(userGroup);
   };
   return (
