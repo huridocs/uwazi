@@ -12,10 +12,10 @@ export interface UserListProps {
 }
 
 export const UserList = ({ users, handleSelect, handleAddUser, className }: UserListProps) => {
-  const [selectedId, setSelectedId] = useState();
+  const [selectedId, setSelectedId] = useState<string | undefined>();
   const selectRow = (user: UserSchema) => {
     handleSelect(user);
-    setSelectedId(user._id);
+    setSelectedId(user._id?.toString());
   };
   const addUser = () => {
     setSelectedId(undefined);
