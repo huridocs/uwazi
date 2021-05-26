@@ -90,7 +90,7 @@ describe('templates routes', () => {
       const req = {
         body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
         language: 'en',
-        io: mocketSocketIo(),
+        sockets: mocketSocketIo(),
       };
 
       spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
@@ -103,15 +103,18 @@ describe('templates routes', () => {
       expect(response).toBe(aTemplate);
       expect(templates.save).toHaveBeenCalledWith(req.body, req.language, true);
       expect(settings.updateFilterName).toHaveBeenCalledWith(aTemplate._id, aTemplate.name);
-      expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', aTemplate);
-      expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', 'updated settings');
+      expect(req.sockets.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', aTemplate);
+      expect(req.sockets.emitToCurrentTenant).toHaveBeenCalledWith(
+        'updateSettings',
+        'updated settings'
+      );
     });
 
     it('should not emit settings update when settings not modified', async () => {
       const req = {
         body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
         language: 'en',
-        io: mocketSocketIo(),
+        sockets: mocketSocketIo(),
       };
 
       spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
@@ -119,7 +122,7 @@ describe('templates routes', () => {
 
       await routes.post('/api/templates', req);
 
-      expect(req.io.emitToCurrentTenant).not.toHaveBeenCalledWith(
+      expect(req.sockets.emitToCurrentTenant).not.toHaveBeenCalledWith(
         'updateSettings',
         'updated settings'
       );
@@ -165,16 +168,16 @@ describe('templates routes', () => {
       spyOn(templates, 'setAsDefault').and.returnValue(
         Promise.resolve([{ name: 'newDefault' }, { name: 'oldDefault' }])
       );
-      const req = { body: { _id: 'abc1' }, io: mocketSocketIo() };
+      const req = { body: { _id: 'abc1' }, sockets: mocketSocketIo() };
       routes
         .post('/api/templates/setasdefault', req)
         .then(result => {
           expect(result).toEqual({ name: 'newDefault' });
           expect(templates.setAsDefault).toHaveBeenCalledWith('abc1');
-          expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', {
+          expect(req.sockets.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', {
             name: 'newDefault',
           });
-          expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', {
+          expect(req.sockets.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', {
             name: 'oldDefault',
           });
           done();
@@ -185,7 +188,7 @@ describe('templates routes', () => {
 
   describe('/api/templates/check_mapping', () => {
     it('should check if a template is valid vs the current elasticsearch mapping', async () => {
-      const req = { body: { _id: 'abc1', properties: [] }, io: mocketSocketIo() };
+      const req = { body: { _id: 'abc1', properties: [] }, socket: mocketSocketIo() };
       const result = await routes.post('/api/templates/check_mapping', req);
       expect(result).toEqual({ errors: [], valid: true });
     });

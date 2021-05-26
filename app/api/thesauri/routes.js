@@ -52,7 +52,7 @@ const routes = app => {
           });
         }
         res.json(response);
-        req.io.emitToCurrentTenant('thesauriChange', response);
+        req.sockets.emitToCurrentTenant('thesauriChange', response);
       } catch (e) {
         next(e);
       }
@@ -116,7 +116,7 @@ const routes = app => {
         .delete(req.query._id, req.query._rev)
         .then(response => {
           res.json(response);
-          req.io.emitToCurrentTenant('thesauriDelete', response);
+          req.sockets.emitToCurrentTenant('thesauriDelete', response);
         })
         .catch(next);
     }
