@@ -66,15 +66,15 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.envio-title', {
         text: 'Envío a la corte',
       });
+    });
+
+    it('should display with formated values', async () => {
       await expect(page).toMatchElement('.descripcion-title', {
         text: 'Resumen',
       });
       await expect(page).toMatchElement('.descriptores-title', {
         text: 'Descriptores',
       });
-    });
-
-    it('should display with formated values', async () => {
       await expect(page).toMatchElement('.envio-content', {
         text: 'Dec 19, 2011',
       });
