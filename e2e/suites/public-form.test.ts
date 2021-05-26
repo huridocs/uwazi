@@ -64,7 +64,7 @@ describe('Custom home page and styles', () => {
     );
     await expect(page).toClick('span', { text: 'Bahamas' });
     await expect(page).toFill('.captcha input', '42hf');
-    await expect(page).toClick('input[type="submit"]');
+    await expect(page).toClick('button', { text: 'Submit' });
     await expect(page).toClick('.alert.alert-success');
   });
 
