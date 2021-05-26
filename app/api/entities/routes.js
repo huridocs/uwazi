@@ -21,7 +21,7 @@ export default app => {
         })
         .then(template => thesauri.templateToThesauri(template, req.language, req.user))
         .then(templateTransformed => {
-          req.io.emitToCurrentTenant('thesauriChange', templateTransformed);
+          req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
         })
         .catch(next)
   );
