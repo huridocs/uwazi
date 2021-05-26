@@ -1,16 +1,8 @@
-import { EntitySchema } from 'shared/types/entityType';
 import { SearchQuery } from 'shared/types/SearchQueryType';
+import { ElasticHit, SearchResponse } from 'api/search/elasticTypes';
+import { EntitySchema } from 'shared/types/entityType';
 
-interface ElasticSearchResults {
-  _index: string;
-  _type: string;
-  _id: string;
-  _source: EntitySchema;
-  // eslint-disable-next-line camelcase
-  inner_hits?: { fullText: { hits: { hits: [{ highlight: {} }] } } };
-}
-
-function extractFullTextSnippets(hit: ElasticSearchResults) {
+function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
   const fullTextSnippets: { text: string; page: number }[] = [];
 
   if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length > 0) {
@@ -30,8 +22,8 @@ function extractFullTextSnippets(hit: ElasticSearchResults) {
   return { count: fullTextSnippets.length, metadata: [], fullText: fullTextSnippets };
 }
 
-export const mapResults = (entityResults: ElasticSearchResults[], searchQuery: SearchQuery) =>
-  entityResults.map(entityResult => {
+export const mapResults = (entityResults: SearchResponse<EntitySchema>, searchQuery: SearchQuery) =>
+  entityResults.hits.hits.map(entityResult => {
     const entity = entityResult._source;
     entity._id = entityResult._id;
     if (searchQuery.fields && searchQuery.fields.includes('snippets')) {

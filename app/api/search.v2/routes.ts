@@ -49,7 +49,7 @@ const searchRoutes = (app: Application) => {
       const response = await elastic.search({ body: await buildQuery(query, language) });
 
       res.json({
-        data: mapResults(response.body.hits.hits, query),
+        data: mapResults(response.body, query),
         links: {
           self: url,
           first: query.page?.limit ? url : undefined,
