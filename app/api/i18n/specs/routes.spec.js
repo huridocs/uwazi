@@ -39,13 +39,13 @@ describe('i18n translations routes', () => {
       spyOn(translations, 'save').and.returnValue(
         Promise.resolve({ contexts: [], id: 'saved_translations' })
       );
-      const io = mockSocketIo();
+      const sockets = mockSocketIo();
       routes
-        .post('/api/translations', { body: { key: 'my new key' }, io })
+        .post('/api/translations', { body: { key: 'my new key' }, sockets })
         .then(response => {
           expect(translations.save).toHaveBeenCalledWith({ key: 'my new key' });
           expect(response).toEqual({ contexts: [], id: 'saved_translations' });
-          expect(io.emitToCurrentTenant).toHaveBeenCalledWith('translationsChange', {
+          expect(sockets.emitToCurrentTenant).toHaveBeenCalledWith('translationsChange', {
             contexts: [],
             id: 'saved_translations',
           });
@@ -64,13 +64,13 @@ describe('i18n translations routes', () => {
       spyOn(settings, 'setDefaultLanguage').and.returnValue(
         Promise.resolve({ site_name: 'Uwazi' })
       );
-      const io = mockSocketIo();
+      const sockets = mockSocketIo();
       routes
-        .post('/api/translations/setasdeafult', { body: { key: 'fr' }, io })
+        .post('/api/translations/setasdeafult', { body: { key: 'fr' }, sockets })
         .then(response => {
           expect(settings.setDefaultLanguage).toHaveBeenCalledWith('fr');
           expect(response).toEqual({ site_name: 'Uwazi' });
-          expect(io.emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', {
+          expect(sockets.emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', {
             site_name: 'Uwazi',
           });
           done();
