@@ -1,10 +1,53 @@
 import { elastic } from 'api/search';
+import { SearchQuery } from 'shared/types/SearchQueryType';
 
 export const cleanUp = (value: any) => value;
 
-export const searchStringMethod = async (searchString: string | number) => {
+const searchStringMethod = async (searchString: string | number) => {
   const validationResult = await elastic.indices.validateQuery({
     body: { query: { query_string: { query: searchString } } },
   });
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 };
+
+async function extractSearchParams(
+  query: SearchQuery
+): Promise<{
+  searchString?: string | number | undefined;
+  fullTextSearchString?: string;
+  searchMethod: string;
+}> {
+  if (query.filter && query.filter.searchString && typeof query.filter.searchString === 'string') {
+    const { searchString } = query.filter;
+    const searchTypeKey = searchString.includes(':') ? 'searchString' : 'fullTextSearchString';
+    const searchMethod = await searchStringMethod(searchString);
+    return { [searchTypeKey]: searchString, searchMethod };
+  }
+  return {
+    searchString: query.filter?.searchString,
+    searchMethod: 'query_string',
+  };
+}
+
+function snippetsHighlight(query: SearchQuery) {
+  const snippets = query.fields && query.fields.includes('snippets');
+  return snippets
+    ? {
+        highlight: {
+          order: 'score',
+          pre_tags: ['<b>'],
+          post_tags: ['</b>'],
+          encoder: 'html',
+          number_of_fragments: 9999,
+          type: 'fvh',
+          fragment_size: 300,
+          fragmenter: 'span',
+          fields: {
+            'fullText_*': {},
+          },
+        },
+      }
+    : {};
+}
+
+export { extractSearchParams, snippetsHighlight };
