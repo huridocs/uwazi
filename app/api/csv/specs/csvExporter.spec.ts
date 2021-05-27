@@ -3,6 +3,7 @@ import { isArray } from 'util';
 import templates from 'api/templates';
 import translations from 'api/i18n/translations';
 import * as translate from 'shared/translate';
+import moment from 'moment-timezone';
 import CSVExporter, {
   getTypes,
   getTemplatesModels,
@@ -222,17 +223,25 @@ describe('csvExporter', () => {
       expect(formatted).toBe(testTemplates['58ad7d240d44252fee4e61fd'].name);
     });
 
-    it('should return the creation date', () => {
-      spyOn(formatters, 'formatCreationDate').and.returnValue('creationDateValue');
-      const options = {};
-      const formatted = processCommonField(
-        'creationDate',
-        searchResults.rows[0],
-        testTemplates['58ad7d240d44252fee4e61fd'],
-        options
+    describe('creationDate', () => {
+      it.each([
+        { timezone: 'Europe/Madrid', timestamp: 0, expectedDate: '1970-01-01' },
+        { timezone: 'Pacific/Honolulu', timestamp: 0, expectedDate: '1969-12-31' },
+      ])(
+        'should be formated using local time %p',
+        async ({ timezone, timestamp, expectedDate }) => {
+          const options = {};
+          moment.tz.setDefault(timezone);
+          const creationDate = processCommonField(
+            'creationDate',
+            { ...searchResults.rows[0], creationDate: timestamp },
+            testTemplates['58ad7d240d44252fee4e61fd'],
+            options
+          );
+          expect(creationDate).toBe(expectedDate);
+          moment.tz.setDefault();
+        }
       );
-      expect(formatted).toBe('creationDateValue');
-      expect(formatters.formatCreationDate).toHaveBeenCalledWith(searchResults.rows[0], options);
     });
 
     it('should return the geolocation field processed', () => {
