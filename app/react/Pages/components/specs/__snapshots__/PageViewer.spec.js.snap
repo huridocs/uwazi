@@ -2,6 +2,7 @@
 
 exports[`PageViewer render should render the script 1`] = `
 <Script>
-  JSScript
+  var datasets = window.store.getState().page.datasets.toJS();
+    JSScript
 </Script>
 `;
