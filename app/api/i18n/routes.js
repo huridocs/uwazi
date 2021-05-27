@@ -48,7 +48,6 @@ export default app => {
     '/api/translations',
 
     needsAuthorization(),
-    uploadMiddleware(),
     validation.validateRequest(
       Joi.object()
         .keys({
@@ -70,17 +69,15 @@ export default app => {
         .required()
     ),
 
-    async (req, res, next) => {
-      try {
-        translations.save(req.body).then(response => {
-          console.log(response);
+    (req, res, next) => {
+      translations
+        .save(req.body)
+        .then(response => {
           response.contexts = translations.prepareContexts(response.contexts);
-          req.io.emitToCurrentTenant('translationsChange', response);
+          req.sockets.emitToCurrentTenant('translationsChange', response);
           res.json(response);
-        });
-      } catch (e) {
-        next(e);
-      }
+        })
+        .catch(next);
     }
   );
 
