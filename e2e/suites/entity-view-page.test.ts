@@ -88,13 +88,13 @@ describe('Entities', () => {
     });
 
     it('should get the page datasets from the redux store directly', async () => {
-      await expect(page).toMatchElement('#dataset-content', {
+      await expect(page).toMatchElement('#entity-sharedId', {
         text: 'mh5hwf3nzhq6w29',
       });
     });
 
     it('should have access to the page datasets in the store via the datasets var', async () => {
-      await expect(page).toMatchElement('#entity-datasets', {
+      await expect(page).toMatchElement('#entity-datasets-value', {
         text: 'Medida Provisional',
       });
     });
