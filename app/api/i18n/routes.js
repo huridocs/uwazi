@@ -24,19 +24,22 @@ export default app => {
     '/api/translations/import',
     needsAuthorization(),
     uploadMiddleware(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          context: Joi.string().required(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      body: {
+        properties: {
+          context: { type: 'string' },
+        },
+        required: ['context'],
+      },
+    }),
 
     async (req, res, next) => {
       try {
         const { context } = req.body;
         const loader = new CSVLoader();
         const response = await loader.loadTranslations(req.file.path, context);
+        response.contexts = translations.prepareContexts(response.contexts);
+        req.sockets.emitToCurrentTenant('translationsChange', response);
         res.json(response);
       } catch (e) {
         next(e);
@@ -73,6 +76,7 @@ export default app => {
       translations
         .save(req.body)
         .then(response => {
+          console.log(response);
           response.contexts = translations.prepareContexts(response.contexts);
           req.sockets.emitToCurrentTenant('translationsChange', response);
           res.json(response);

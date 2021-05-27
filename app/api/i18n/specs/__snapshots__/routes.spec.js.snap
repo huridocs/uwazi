@@ -19,123 +19,98 @@ Object {
 
 exports[`i18n translations routes POST should have a validation schema 1`] = `
 Object {
-  "alternatives": Array [
-    Object {
-      "children": Object {
-        "__v": Object {
-          "invalids": Array [
-            Infinity,
-            -Infinity,
-          ],
-          "type": "number",
-        },
-        "_id": Object {
-          "invalids": Array [
-            "",
-          ],
-          "rules": Array [
-            Object {
-              "arg": Object {
-                "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
-              },
-              "name": "regex",
-            },
-          ],
-          "type": "string",
-        },
-        "contexts": Object {
-          "flags": Object {
-            "presence": "required",
-            "sparse": false,
+  "children": Object {
+    "__v": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
           },
-          "items": Array [
-            Object {
-              "children": Object {
-                "_id": Object {
-                  "invalids": Array [
-                    "",
-                  ],
-                  "type": "string",
+          "name": "regex",
+        },
+      ],
+      "type": "string",
+    },
+    "contexts": Object {
+      "flags": Object {
+        "presence": "required",
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "label": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "type": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "values": Object {
+              "patterns": Array [
+                Object {
+                  "rule": Object {
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  "schema": Object {
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                  },
                 },
-                "id": Object {
-                  "invalids": Array [
-                    "",
-                  ],
-                  "type": "string",
-                },
-                "label": Object {
-                  "invalids": Array [
-                    "",
-                  ],
-                  "type": "string",
-                },
-                "type": Object {
-                  "invalids": Array [
-                    "",
-                  ],
-                  "type": "string",
-                },
-                "values": Object {
-                  "patterns": Array [
-                    Object {
-                      "rule": Object {
-                        "invalids": Array [
-                          "",
-                        ],
-                        "type": "string",
-                      },
-                      "schema": Object {
-                        "invalids": Array [
-                          "",
-                        ],
-                        "type": "string",
-                      },
-                    },
-                  ],
-                  "type": "object",
-                },
-              },
+              ],
               "type": "object",
             },
-          ],
-          "type": "array",
-        },
-        "locale": Object {
-          "flags": Object {
-            "presence": "required",
           },
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
+          "type": "object",
         },
-      },
+      ],
+      "type": "array",
+    },
+    "locale": Object {
       "flags": Object {
         "presence": "required",
       },
-      "type": "object",
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
     },
-    Object {
-      "children": Object {
-        "context": Object {
-          "flags": Object {
-            "presence": "required",
-          },
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
-        },
-      },
-      "flags": Object {
-        "presence": "required",
-      },
-      "type": "object",
-    },
-  ],
+  },
   "flags": Object {
     "presence": "required",
   },
-  "type": "alternatives",
+  "type": "object",
 }
 `;
