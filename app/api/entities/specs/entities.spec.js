@@ -135,26 +135,22 @@ describe('entities', () => {
       expect(createdDocumentEn.template.toString()).toBe(templateId.toString());
     });
 
-    it('should return the newly created document for the passed language', done => {
+    it('should set default template and default metadata', async () => {
       const doc = {
         title: 'the dark knight',
         fullText: { 0: 'the full text!' },
-        metadata: { data: [{ value: 'should not be here' }] },
       };
       const user = { _id: db.id() };
 
-      entities
-        .save(doc, { user, language: 'en' })
-        .then(createdDocument => {
-          expect(createdDocument._id).toBeDefined();
-          expect(createdDocument.title).toBe(doc.title);
-          expect(createdDocument.user.equals(user._id)).toBe(true);
-          expect(createdDocument.language).toEqual('en');
-          expect(createdDocument.fullText).not.toBeDefined();
-          expect(createdDocument.metadata).not.toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
+      const createdDocument = await entities.save(doc, { user, language: 'en' });
+
+      expect(createdDocument._id).toBeDefined();
+      expect(createdDocument.title).toBe(doc.title);
+      expect(createdDocument.user.equals(user._id)).toBe(true);
+      expect(createdDocument.language).toEqual('en');
+      expect(createdDocument.fullText).not.toBeDefined();
+      expect(createdDocument.metadata).toEqual({});
+      expect(createdDocument.template).toBeDefined();
     });
 
     it('should return updated entity with updated editDate', done => {
@@ -162,7 +158,6 @@ describe('entities', () => {
       const doc = {
         title: 'the dark knight',
         fullText: { 0: 'the full text!' },
-        metadata: { data: [{ value: 'should not be here' }] },
       };
 
       const user = { _id: db.id() };

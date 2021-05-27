@@ -206,11 +206,13 @@ async function createEntity(doc, languages, sharedId) {
       langDoc.language = lang.key;
       langDoc.sharedId = sharedId;
       langDoc.metadata = await denormalizeMetadata(langDoc.metadata, langDoc, template);
+
       langDoc.suggestedMetadata = await denormalizeMetadata(
         langDoc.suggestedMetadata,
         langDoc,
         template
       );
+
       return model.save(langDoc);
     })
   );
@@ -239,11 +241,7 @@ const uniqueMetadataObject = (elem, pos, arr) =>
   elem.value && arr.findIndex(e => e.value === elem.value) === pos;
 
 function sanitize(doc, template) {
-  if (!template) {
-    return Object.assign(doc, { metadata: undefined });
-  }
-
-  if (!doc.metadata) {
+  if (!doc.metadata || !template) {
     return doc;
   }
 
@@ -359,31 +357,35 @@ export default {
     }
 
     const sharedId = doc.sharedId || ID();
-    const [{ languages }, template, [defaultTemplate]] = await Promise.all([
-      settings.get(),
-      this.getEntityTemplate(doc, language),
-      templates.get({ default: true }),
-    ]);
+    const template = await this.getEntityTemplate(doc, language);
     let docTemplate = template;
     doc.editDate = date.currentUTC();
     if (doc.sharedId) {
       await this.updateEntity(this.sanitize(doc, template), template);
     } else {
+      const [{ languages }, [defaultTemplate]] = await Promise.all([
+        settings.get(),
+        templates.get({ default: true }),
+      ]);
+
       if (!doc.template) {
         doc.template = defaultTemplate._id;
-        doc.metadata = {};
         docTemplate = defaultTemplate;
       }
+      doc.metadata = doc.metadata || {};
       await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     }
 
-    const entity = (
-      await this.getUnrestrictedWithDocuments({ sharedId, language }, '+permissions')
-    )[0];
+    const [entity] = await this.getUnrestrictedWithDocuments(
+      { sharedId, language },
+      '+permissions'
+    );
+
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
       await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
+
     if (index) {
       await search.indexEntities({ sharedId }, '+fullText');
     }
