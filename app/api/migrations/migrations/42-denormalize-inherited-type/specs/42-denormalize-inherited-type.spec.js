@@ -13,7 +13,7 @@ describe('migration denormalize-inherited-type', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(41);
+    expect(migration.delta).toBe(42);
   });
 
   it('should denormalize the inherited type', async () => {
@@ -29,16 +29,22 @@ describe('migration denormalize-inherited-type', () => {
       .find({ name: 'template_three' })
       .toArray();
 
-    expect(templateTwo.properties[0].inherit.type).toBe('text');
-    expect(templateTwo.properties[0].inherit.property).toEqual(text);
+    expect(templateTwo.properties[0].inherit).toEqual({
+      property: text,
+      type: 'text',
+    });
     expect(templateTwo.properties[0].inheritProperty).not.toBeDefined();
 
-    expect(templateTwo.properties[1].inherit.type).toBe('multiselect');
-    expect(templateTwo.properties[1].inherit.property).toEqual(multiselect);
+    expect(templateTwo.properties[1].inherit).toEqual({
+      property: multiselect,
+      type: 'multiselect',
+    });
     expect(templateTwo.properties[1].inheritProperty).not.toBeDefined();
 
-    expect(templateThree.properties[1].inherit.type).toBe('numeric');
-    expect(templateThree.properties[1].inherit.property).toEqual(numeric);
+    expect(templateThree.properties[1].inherit).toEqual({
+      property: numeric,
+      type: 'numeric',
+    });
     expect(templateThree.properties[1].inheritProperty).not.toBeDefined();
   });
 });
