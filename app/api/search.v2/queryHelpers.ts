@@ -18,8 +18,15 @@ async function extractSearchParams(
   searchMethod: string;
 }> {
   if (query.filter && query.filter.searchString && typeof query.filter.searchString === 'string') {
-    const { searchString } = query.filter;
-    const searchTypeKey = searchString.includes(':') ? 'searchString' : 'fullTextSearchString';
+    let { searchString } = query.filter;
+    let searchTypeKey = 'searchString';
+    const fullTextGroups = /fullText:\(\s*([^,]*)\)/g.exec(searchString) || [''];
+
+    if (fullTextGroups.length > 1) {
+      searchString = fullTextGroups[1].replace(fullTextGroups[0], '');
+      searchTypeKey = 'fullTextSearchString';
+    }
+
     const searchMethod = await searchStringMethod(searchString);
     return { [searchTypeKey]: searchString, searchMethod };
   }

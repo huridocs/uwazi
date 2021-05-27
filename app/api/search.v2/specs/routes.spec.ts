@@ -75,7 +75,7 @@ describe('entities get searchString', () => {
     it('should return entities that match the searchString', async () => {
       const { body: bodyEn } = await request(app)
         .get('/api/v2/entities')
-        .query({ filter: { searchString: 'title:(search)' } })
+        .query({ filter: { searchString: 'search' } })
         .expect(200);
 
       expect(bodyEn.data).toEqual([

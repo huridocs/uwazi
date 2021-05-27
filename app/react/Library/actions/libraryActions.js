@@ -270,7 +270,7 @@ export function updateEntities(updatedDocs) {
 export function searchSnippets(searchString, sharedId, storeKey) {
   const requestParams = new RequestParams(
     qs.stringify({
-      filter: { sharedId, searchString },
+      filter: { sharedId, searchString: `fullText:(${searchString})` },
       fields: ['snippets'],
     })
   );
