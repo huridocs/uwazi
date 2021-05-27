@@ -21,52 +21,63 @@ export default app => {
   });
 
   app.post(
-    '/api/translations',
-
+    '/api/translations/import',
     needsAuthorization(),
     uploadMiddleware(),
     validation.validateRequest(
-      Joi.alternatives(
-        Joi.object()
-          .keys({
-            _id: Joi.objectId(),
-            __v: Joi.number(),
-            locale: Joi.string().required(),
-            contexts: Joi.array()
-              .required()
-              .items(
-                Joi.object().keys({
-                  _id: Joi.string(),
-                  id: Joi.string(),
-                  label: Joi.string(),
-                  type: Joi.string(),
-                  values: Joi.object().pattern(Joi.string(), Joi.string()),
-                })
-              ),
-          })
-          .required(),
-        Joi.object()
-          .keys({
-            context: Joi.string().required(),
-          })
-          .required()
-      ).required()
+      Joi.object()
+        .keys({
+          context: Joi.string().required(),
+        })
+        .required()
     ),
 
     async (req, res, next) => {
       try {
         const { context } = req.body;
-        if (req.file) {
-          const loader = new CSVLoader();
-          const response = await loader.loadTranslations(req.file.path, context);
+        const loader = new CSVLoader();
+        const response = await loader.loadTranslations(req.file.path, context);
+        res.json(response);
+      } catch (e) {
+        next(e);
+      }
+    }
+  );
+
+  app.post(
+    '/api/translations',
+
+    needsAuthorization(),
+    uploadMiddleware(),
+    validation.validateRequest(
+      Joi.object()
+        .keys({
+          _id: Joi.objectId(),
+          __v: Joi.number(),
+          locale: Joi.string().required(),
+          contexts: Joi.array()
+            .required()
+            .items(
+              Joi.object().keys({
+                _id: Joi.string(),
+                id: Joi.string(),
+                label: Joi.string(),
+                type: Joi.string(),
+                values: Joi.object().pattern(Joi.string(), Joi.string()),
+              })
+            ),
+        })
+        .required()
+    ),
+
+    async (req, res, next) => {
+      try {
+        translations.save(req.body).then(response => {
+          console.log(response);
+          response.contexts = translations.prepareContexts(response.contexts);
+          req.io.emitToCurrentTenant('translationsChange', response);
           res.json(response);
-        } else {
-          translations.save(req.body).then(response => {
-            response.contexts = translations.prepareContexts(response.contexts);
-            req.io.emitToCurrentTenant('translationsChange', response);
-            res.json(response);
-          });
-        }
+        });
       } catch (e) {
         next(e);
       }
