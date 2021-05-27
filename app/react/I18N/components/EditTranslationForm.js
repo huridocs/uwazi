@@ -36,7 +36,6 @@ export class EditTranslationForm extends Component {
     this.props.resetForm();
   }
 
-  // eslint-disable-next-line class-methods-use-this
   onImportClicked() {
     this.fileInputRef.current.click();
   }
