@@ -86,11 +86,11 @@ describe('Entities', () => {
         text: 'Derechos reproductivos',
       });
     });
-  });
 
-  it('should get the page datasets from the redux store', async () => {
-    await expect(page).toMatchElement('#dataset-content', {
-      text: 'mh5hwf3nzhq6w29',
+    it('should get the page datasets from the redux store', async () => {
+      await expect(page).toMatchElement('#dataset-content', {
+        text: 'mh5hwf3nzhq6w29',
+      });
     });
   });
 

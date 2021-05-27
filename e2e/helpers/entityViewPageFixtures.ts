@@ -7,6 +7,8 @@ export const contents = `<h1>My entity view</h1>
   </li>
 </Repeat>
 
+<p id="dataset-content"></p>
+
 <p className="raw-creation-date"><Value path="entityRaw.creationDate" /></p>;
 
 <h4 className="envio-title"><Value path="template.properties.4.label" /></p></h4>
@@ -18,5 +20,5 @@ export const contents = `<h1>My entity view</h1>
 <h4 className="descriptores-title"><Value path="entity.metadata.descriptores.label" /></p></h4>
 <p className="descriptores-content"><Value path="entity.metadata.descriptores.value.0.value" /></p>`;
 
-export const script = `var currentEntitySharedId = window.store.getState().page.datasets.getIn(['currentEntity', 'sharedId']);
+export const script = `var currentEntitySharedId = window.store.getState().page.datasets.getIn(['entity', 'sharedId']);
 document.getElementById('dataset-content').innerHTML = currentEntitySharedId;`;
