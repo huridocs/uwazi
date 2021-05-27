@@ -17,13 +17,16 @@ describe('migration change-system-translation-label', () => {
   });
 
   it('should update system labels to User Interface', async () => {
+    const expectedLabel = 'User Interface';
     await migration.up(testingDB.mongodb);
-    const [translations] = await testingDB.mongodb
+    const [en, es, pt] = await testingDB.mongodb
       .collection('translations')
       .find({})
       .toArray();
 
-    expect(translations.contexts[0].label).toEqual('User Interface');
+    expect(en.contexts[0].label).toEqual(expectedLabel);
+    expect(es.contexts[0].label).toEqual(expectedLabel);
+    expect(pt.contexts[0].label).toEqual(expectedLabel);
   });
 
   it('should not update contexts without system id', async () => {
