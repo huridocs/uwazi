@@ -50,7 +50,7 @@ export default class LinkField extends Component {
           </div>
           <div className="form-group">
             <label>
-              <Translate>Label</Translate>&nbsp;
+              <Translate>URL</Translate>
             </label>
             <input
               onChange={this.labelChange}
