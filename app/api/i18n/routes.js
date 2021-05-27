@@ -76,7 +76,6 @@ export default app => {
       translations
         .save(req.body)
         .then(response => {
-          console.log(response);
           response.contexts = translations.prepareContexts(response.contexts);
           req.sockets.emitToCurrentTenant('translationsChange', response);
           res.json(response);
