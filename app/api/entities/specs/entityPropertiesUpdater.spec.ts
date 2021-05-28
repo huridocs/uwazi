@@ -14,14 +14,16 @@ describe('entity properties updater', () => {
         await populateGeneratedIdBTemplate(templateId);
         const affectedEntities = await entities.get({ template: templateId }, [
           'sharedId',
-          'metadata.autoId.value',
+          'metadata.text',
+          'metadata.autoId',
         ]);
         const generatedIds: { [k: string]: string } = {};
         affectedEntities.forEach(e => {
-          if (!generatedIds[e.sharedId]) generatedIds[e.sharedId] = e.metadata.autoId.value;
-          expect(generatedIds[e.sharedId]).toEqual(e.metadata.autoId.value);
+          if (!generatedIds[e.sharedId]) generatedIds[e.sharedId] = e.metadata.autoId[0].value;
+          expect(generatedIds[e.sharedId]).toEqual(e.metadata.autoId[0].value);
         });
-        const differentIds = affectedEntities.map(e => e.metadata.autoId.value).filter(unique);
+        const differentIds = affectedEntities.map(e => e.metadata.autoId[0].value).filter(unique);
+        expect(affectedEntities[0].metadata.text[0].value).toEqual('test');
         expect(differentIds.length).toBe(2);
       });
     });

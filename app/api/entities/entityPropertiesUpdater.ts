@@ -1,19 +1,26 @@
-import entities from 'api/entities/entities';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { generateID } from 'shared/IDGenerator';
+
 import model from './entitiesModel';
 
-const populateGeneratedIdBTemplate = async (templateId: ObjectIdSchema) => {
-  const entitiesToUpdate = await entities.get({ template: templateId }, 'sharedId');
-  const sharedIds = entitiesToUpdate.map(({ sharedId }) => sharedId);
-
-  const data = await model.get({ sharedId: { $in: sharedIds } });
+const populateGeneratedIdBTemplate = async (templateId: ObjectIdSchema): Promise<any> => {
+  const batchSize = 1000;
+  const sharedIds = (
+    await model.db.aggregate([
+      { $match: { $and: [{ template: templateId }, { 'metadata.autoId': { $exists: false } }] } },
+      { $group: { _id: '$sharedId' } },
+      { $limit: batchSize },
+    ])
+  ).map(g => g._id);
   await Promise.all(
-    data.map(async (d: any) =>
-      model.updateMany({ sharedId: d.sharedId }, { 'metadata.autoId.value': generateID(3, 4, 4) })
+    sharedIds.map(async (sharedId: any) =>
+      model.updateMany({ sharedId }, { 'metadata.autoId': [{ value: generateID(3, 4, 4) }] })
     )
   );
-  console.log(data);
+  if (sharedIds.length >= batchSize) {
+    return populateGeneratedIdBTemplate(templateId);
+  }
+  return Promise.resolve();
 };
 
 export { populateGeneratedIdBTemplate };
