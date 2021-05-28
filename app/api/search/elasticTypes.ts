@@ -15,6 +15,23 @@ interface Explanation {
   details: Explanation[];
 }
 
+export interface ElasticHit<T> {
+  _index: string;
+  _type: string;
+  _id: string;
+  _score: number;
+  _source: T;
+  _version?: number;
+  _explanation?: Explanation;
+  fields?: any;
+  highlight?: any;
+  // eslint-disable-next-line camelcase
+  inner_hits?: { fullText: { hits: { hits: [{ highlight: {} }] } } };
+  // eslint-disable-next-line camelcase
+  matched_queries?: string[];
+  sort?: string[];
+}
+
 export interface SearchResponse<T> {
   took: number;
   // eslint-disable-next-line camelcase
@@ -26,22 +43,7 @@ export interface SearchResponse<T> {
     total: number;
     // eslint-disable-next-line camelcase
     max_score: number;
-    hits: Array<{
-      _index: string;
-      _type: string;
-      _id: string;
-      _score: number;
-      _source: T;
-      _version?: number;
-      _explanation?: Explanation;
-      fields?: any;
-      highlight?: any;
-      // eslint-disable-next-line camelcase
-      inner_hits?: any;
-      // eslint-disable-next-line camelcase
-      matched_queries?: string[];
-      sort?: string[];
-    }>;
+    hits: Array<ElasticHit<T>>;
   };
   aggregations?: Aggregations;
 }
