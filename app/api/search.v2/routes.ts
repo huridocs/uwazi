@@ -7,6 +7,7 @@ import validateRequest from 'api/utils/validateRequest';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
+import { mapResults } from 'api/search.v2/searchResponse';
 import { buildQuery } from './buildQuery';
 
 interface UwaziResponse {
@@ -48,11 +49,7 @@ const searchRoutes = (app: Application) => {
       const response = await elastic.search({ body: await buildQuery(query, language) });
 
       res.json({
-        data: response.body.hits.hits.map(h => {
-          const entity = h._source;
-          entity._id = h._id;
-          return entity;
-        }),
+        data: mapResults(response.body, query),
         links: {
           self: url,
           first: query.page?.limit ? url : undefined,

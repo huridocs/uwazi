@@ -15,7 +15,7 @@ describe('SearchAPI', () => {
       .get(`${APIURL}search?include=%5B%22permissions%22%5D`, {
         body: JSON.stringify(searchResponse),
       })
-      .get(`${APIURL}search_snippets?searchTerm=term&id=id`, {
+      .get(`${APIURL}v2/entities?searchTerm=term&id=id`, {
         body: JSON.stringify(searchResponse),
       })
       .get(`${APIURL}search/list?keys=%5B%221%22%2C%222%22%5D`, {
