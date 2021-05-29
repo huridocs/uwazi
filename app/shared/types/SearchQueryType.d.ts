@@ -7,6 +7,8 @@ export interface SearchQuery {
   };
   filter?: {
     searchString?: string | number;
+    sharedId?: string;
     published?: boolean;
   };
+  fields?: string[];
 }

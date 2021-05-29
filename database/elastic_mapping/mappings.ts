@@ -62,6 +62,10 @@ const textType = () => ({
   value: text,
 });
 
+const markdownType = () => ({
+  value: noSorttext,
+});
+
 const dateType = () => ({
   value: number,
 });
@@ -125,7 +129,7 @@ const propertyMappings = {
   geolocation: geolocationType,
   image: imageType,
   link: linkType,
-  markdown: textType,
+  markdown: markdownType,
   media: imageType,
   multidate: dateType,
   multidaterange: daterangeType,
