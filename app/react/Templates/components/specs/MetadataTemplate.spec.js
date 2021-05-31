@@ -190,7 +190,7 @@ describe('MetadataTemplate', () => {
     describe('when the mapping has con flicts', () => {
       it('should ask for a reindex', async () => {
         spyOn(api, 'validateMapping').and.returnValue({
-          errors: [{ name: 'Date of birth' }],
+          error: 'error',
           valid: false,
         });
         const context = { confirm: jasmine.createSpy('confirm') };
