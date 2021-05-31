@@ -13,7 +13,7 @@ describe('migration change-system-translation-label', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(41);
+    expect(migration.delta).toBe(42);
   });
 
   it('should update system labels to User Interface', async () => {

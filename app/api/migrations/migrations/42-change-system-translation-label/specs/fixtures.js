@@ -7,6 +7,10 @@ export default {
           id: 'System',
           label: 'System',
         },
+        {
+          id: 'other',
+          label: 'Other',
+        },
       ],
     },
     {
@@ -16,6 +20,10 @@ export default {
           id: 'System',
           label: 'ES System',
         },
+        {
+          id: 'otheres',
+          label: 'Other ES',
+        },
       ],
     },
     {
@@ -24,6 +32,10 @@ export default {
         {
           id: 'System',
           label: 'PT System',
+        },
+        {
+          id: 'otherpt',
+          label: 'Other PT',
         },
       ],
     },
