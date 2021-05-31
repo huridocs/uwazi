@@ -129,13 +129,7 @@ export default {
               return Promise.resolve();
             }
             context.values = context.values || [];
-            const value = context.values.find(val => val.key === key);
-            if (value) {
-              const index = context.values.indexOf(value);
-              context.values[index].value = defaultValue;
-            } else {
-              context.values.push({ key, value: defaultValue });
-            }
+            context.values.push({ key, value: defaultValue });
             return this.save(translation);
           })
         )
