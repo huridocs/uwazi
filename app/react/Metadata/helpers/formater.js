@@ -197,7 +197,7 @@ export default {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template
       .get('properties')
-      .find(p => p.get('_id') === property.get('inheritProperty'));
+      .find(p => p.get('_id') === property.getIn(['inherit', 'property']));
 
     const type = inheritedProperty.get('type');
     const methodType = this[type] ? type : 'default';
