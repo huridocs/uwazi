@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   formatters as typeFormatters,
   formatFile,

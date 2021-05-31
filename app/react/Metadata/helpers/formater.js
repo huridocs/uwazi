@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import moment from 'moment';
+import moment from 'moment-timezone';
 import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
@@ -38,7 +38,7 @@ const formatMetadataSortedProperty = (metadata, sortedProperty) =>
 
 const addCreationDate = (result, doc) =>
   result.push({
-    value: moment.utc(doc.creationDate).format('ll'),
+    value: moment(doc.creationDate).format('ll'),
     label: 'Date added',
     name: 'creationDate',
     translateContext: 'System',
@@ -47,7 +47,7 @@ const addCreationDate = (result, doc) =>
 
 const addModificationDate = (result, doc) =>
   result.push({
-    value: moment.utc(doc.editDate).format('ll'),
+    value: moment(doc.editDate).format('ll'),
     label: 'Date modified',
     name: 'editDate',
     translateContext: 'System',

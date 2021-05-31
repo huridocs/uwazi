@@ -4,15 +4,18 @@ import 'react-datepicker/dist/react-datepicker.css';
 import DatePickerComponent from 'react-datepicker';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const removeOffset = (useTimezone, value) => {
   let datePickerValue = null;
+  const miliseconds = value * 1000;
   if (value) {
-    const newValue = moment.utc(value * 1000);
+    const newValue = moment.utc(miliseconds);
 
     if (!useTimezone) {
-      newValue.subtract(moment().utcOffset(), 'minute');
+      // in order to get the system offset for the specific date we
+      // need to create a new not UTC moment object with the original timestamp
+      newValue.subtract(moment(moment(miliseconds)).utcOffset(), 'minutes');
     }
 
     datePickerValue = parseInt(newValue.locale('en').format('x'), 10);
@@ -25,7 +28,9 @@ const addOffset = (useTimezone, endOfDay, value) => {
   const newValue = moment.utc(value);
 
   if (!useTimezone) {
-    newValue.add(moment().utcOffset(), 'minute');
+    // in order to get the proper offset moment has to be initialized with the actual date
+    // without this you always get the "now" moment offset
+    newValue.add(moment(value).utcOffset(), 'minutes');
   }
 
   if (endOfDay) {
