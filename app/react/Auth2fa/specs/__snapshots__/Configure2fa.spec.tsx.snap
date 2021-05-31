@@ -82,11 +82,14 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
             >
               Cancel
             </Connect(I18NLink)>
-            <input
+            <button
               className="btn btn-success"
               type="submit"
-              value="Confirm"
-            />
+            >
+              <Connect(Translate)>
+                Confirm
+              </Connect(Translate)>
+            </button>
           </p>
         </LocalForm>
       </div>
@@ -217,11 +220,14 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
             >
               Cancel
             </Connect(I18NLink)>
-            <input
+            <button
               className="btn btn-success"
               type="submit"
-              value="Confirm"
-            />
+            >
+              <Connect(Translate)>
+                Confirm
+              </Connect(Translate)>
+            </button>
           </p>
         </LocalForm>
       </div>

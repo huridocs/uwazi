@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -216,7 +214,10 @@ class PublicForm extends Component {
             {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
             {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
             {this.renderCaptcha()}
-            <input type="submit" className="btn btn-success" value="Submit" />
+
+            <button type="submit" className="btn btn-success">
+              <Translate>Submit</Translate>
+            </button>
           </div>
         )}
       </LocalForm>
