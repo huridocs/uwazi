@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 const defaultDateFormat = 'YYYY-MM-DD';
@@ -60,4 +60,4 @@ export const formatDocuments = (row: any) =>
 export const formatAttachments = (row: any) =>
   (row.attachments || []).map((item: any) => formatAttachment(item.filename, row._id)).join('|');
 export const formatCreationDate = (row: any, options: FormatterOptions) =>
-  moment.utc(row.creationDate).format(mapFormatToMoment(options.dateFormat || defaultDateFormat));
+  moment(row.creationDate).format(mapFormatToMoment(options.dateFormat || defaultDateFormat));
