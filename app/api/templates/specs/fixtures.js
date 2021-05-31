@@ -111,8 +111,10 @@ export default {
           label: 'Inherit',
           relationtype: relatedTo,
           content: templateToBeInherited,
-          inherit: true,
-          inheritProperty: propertyToBeInherited,
+          inherit: {
+            property: propertyToBeInherited,
+            type: 'text',
+          },
         },
       ],
     },
@@ -135,5 +137,6 @@ export {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
+  relatedTo,
   thesauriId1,
 };
