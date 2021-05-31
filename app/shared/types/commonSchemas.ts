@@ -102,7 +102,15 @@ export const metadataObjectSchema = {
     suggestion_confidence: { type: 'number' },
     suggestion_model: { type: 'string' },
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
-    inheritedValue: { value: propertyValueSchema },
+    inheritedValue: {
+      type: 'array',
+      items: {
+        properties: {
+          value: propertyValueSchema,
+          label: { type: 'string' },
+        },
+      },
+    },
     inheritedType: { type: 'string' },
   },
 };
@@ -147,7 +155,6 @@ export const propertySchema = {
   additionalProperties: false,
   requireOrInvalidContentForSelectFields: true,
   requireRelationTypeForRelationship: true,
-  requireInheritPropertyForInheritingRelationship: true,
   definitions: { objectIdSchema },
   properties: {
     _id: objectIdSchema,
@@ -160,8 +167,13 @@ export const propertySchema = {
     prioritySorting: { type: 'boolean' },
     content: { type: 'string' },
     relationType: { type: 'string' },
-    inherit: { type: 'boolean' },
-    inheritProperty: { type: 'string', minLength: 1 },
+    inherit: {
+      additionalProperties: false,
+      properties: {
+        property: { type: 'string' },
+        type: { type: 'string', enum: Object.values(propertyTypes) },
+      },
+    },
     filter: { type: 'boolean' },
     noLabel: { type: 'boolean' },
     fullWidth: { type: 'boolean' },
