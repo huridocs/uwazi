@@ -1,5 +1,5 @@
 export default {
-  delta: 42,
+  delta: 43,
 
   name: 'change-system-translation-label',
 
