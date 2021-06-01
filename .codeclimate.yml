@@ -25,15 +25,12 @@ checks:
 plugins:
   eslint:
     enabled: true
-    channel: 'eslint-5'
+    channel: 'eslint-7'
     config:
       config: .eslintrc
     checks:
       prettier/prettier:
         enabled: false
-ratings:
-  paths:
-    - app/**
 exclude_patterns:
   - '**/index.js'
   - '**/fixtures.js'
