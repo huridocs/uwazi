@@ -104,6 +104,10 @@ exports[`TemplateCreator Property Options should include document specific optio
                 label="Geolocation"
                 type="geolocation"
               />
+              <Connect(DragSource(PropertyOption))
+                label="Generated ID"
+                type="generatedid"
+              />
             </ul>
             <div
               className="alert alert-warning"
@@ -221,6 +225,10 @@ exports[`TemplateCreator Property Options should include most common options by 
               <Connect(DragSource(PropertyOption))
                 label="Geolocation"
                 type="geolocation"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Generated ID"
+                type="generatedid"
               />
             </ul>
             <div
