@@ -61,5 +61,17 @@ describe('MarkDown', () => {
       const container = component.find(MarkDownViewer);
       expect(container.props().markdown).toBe('# <b>This is a title</b>');
     });
+    it('should not display if the pages is for an entity view', () => {
+      props.showPreview = false;
+      render();
+      const tabLink = component.findWhere(
+        n => n.name() === 'TabLink' && n.prop('to') === 'preview'
+      );
+      const tabContent = component.findWhere(
+        n => n.name() === 'TabContent' && n.prop('for') === 'preview'
+      );
+      expect(tabLink.exists()).toBe(false);
+      expect(tabContent.exists()).toBe(false);
+    });
   });
 });

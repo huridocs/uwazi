@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import PageCreator from 'app/Pages/components/PageCreator';
+import { PageCreator } from 'app/Pages/components/PageCreator';
 import NewPage from '../NewPage';
 
 describe('NewPage', () => {

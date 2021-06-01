@@ -1,5 +1,16 @@
+/* eslint-disable max-lines */
+import React, { Component } from 'react';
+import { DropTarget } from 'react-dnd';
+import { List } from 'immutable';
+import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { actions as formActions, Control, Field, Form } from 'react-redux-form';
+import { Icon } from 'UI';
+
 import { TemplateSchema } from 'shared/types/templateType';
-import ShowIf from 'app/App/ShowIf';
+import { PropertySchema } from 'shared/types/commonTypes';
+
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t } from 'app/I18N';
@@ -14,17 +25,9 @@ import {
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
-import { List } from 'immutable';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { DropTarget } from 'react-dnd';
-import { connect } from 'react-redux';
-import { actions as formActions, Control, Field, Form } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { Icon } from 'UI';
 
-import validator from './ValidateTemplate'; // eslint-disable-line import/no-named-as-default, import/no-named-as-default-member
+import { TemplateAsPageControl } from './TemplateAsPageControl';
+import validator from './ValidateTemplate';
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
@@ -34,15 +37,16 @@ interface MetadataTemplateProps {
   connectDropTarget?: any;
   defaultColor: any;
   properties: PropertySchema[];
+  environment: string;
   relationType?: any;
   savingTemplate: boolean;
   templates?: any;
+  entityViewPage?: string;
   _id?: string;
 }
 
-const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) => {
-  return template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
-};
+const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
+  template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
 
 export class MetadataTemplate extends Component<MetadataTemplateProps> {
   static propTypes: any;
@@ -53,7 +57,10 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
 
   static defaultProps: MetadataTemplateProps = {
     notify,
-    saveTemplate, // eslint-disable-line react/default-props-match-prop-types
+    /* eslint-disable react/default-props-match-prop-types */
+    saveTemplate,
+    environment: 'template',
+    /* eslint-enable react/default-props-match-prop-types */
     savingTemplate: false,
     defaultColor: null,
     properties: [],
@@ -101,7 +108,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
   }
 
   render() {
-    const { connectDropTarget, defaultColor } = this.props;
+    const { connectDropTarget, defaultColor, environment } = this.props;
     const commonProperties = this.props.commonProperties || [];
     return (
       <div>
@@ -136,42 +143,50 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
             )}
           </div>
 
-          <ShowIf if={!this.props.relationType}>
-            {connectDropTarget(
-              <ul className="metadataTemplate-list list-group">
-                {commonProperties.map((config: any, index: number) => {
-                  const localID = config.localID || config._id;
-                  return (
-                    <MetadataProperty
-                      {...config}
-                      key={localID}
-                      localID={localID}
-                      index={index - commonProperties.length}
-                    />
-                  );
-                })}
-                {this.props.properties.map((config: any, index: number) => {
-                  const localID = config.localID || config._id;
-                  return (
-                    <MetadataProperty
-                      _id={config._id}
-                      type={config.type}
-                      inserting={config.inserting}
-                      key={localID}
-                      localID={localID}
-                      index={index}
-                    />
-                  );
-                })}
-                <div className="no-properties">
-                  <span className="no-properties-wrap">
-                    <Icon icon="clone" />
-                    Drag properties here
-                  </span>
-                </div>
-              </ul>
-            )}
-          </ShowIf>
+          {environment === 'template' && (
+            <>
+              <div className="metadataTemplate-pageview">
+                <FormGroup model=".entityViewPage">
+                  <TemplateAsPageControl selectedPage={this.props.entityViewPage || ''} />
+                </FormGroup>
+              </div>
+              {connectDropTarget(
+                <ul className="metadataTemplate-list list-group">
+                  {commonProperties.map((config: any, index: number) => {
+                    const localID = config.localID || config._id;
+                    return (
+                      <MetadataProperty
+                        {...config}
+                        key={localID}
+                        localID={localID}
+                        index={index - commonProperties.length}
+                      />
+                    );
+                  })}
+                  {this.props.properties.map((config: any, index: number) => {
+                    const localID = config.localID || config._id;
+                    return (
+                      <MetadataProperty
+                        _id={config._id}
+                        type={config.type}
+                        inserting={config.inserting}
+                        key={localID}
+                        localID={localID}
+                        index={index}
+                      />
+                    );
+                  })}
+                  <div className="no-properties">
+                    <span className="no-properties-wrap">
+                      <Icon icon="clone" />
+                      Drag properties here
+                    </span>
+                  </div>
+                </ul>
+              )}
+            </>
+          )}
+
           <div className="settings-footer">
             <I18NLink to={this.props.backUrl} className="btn btn-default">
               <Icon icon="arrow-left" directionAware />
@@ -206,6 +221,8 @@ MetadataTemplate.propTypes = {
   commonProperties: PropTypes.array,
   templates: PropTypes.object,
   defaultColor: PropTypes.string,
+  entityViewPage: PropTypes.string,
+  environment: PropTypes.string.isRequired,
 };
 /* eslint-enable react/forbid-prop-types, react/require-default-props */
 
@@ -241,20 +258,27 @@ export const mapStateToProps = (
     templates,
     relationTypes,
   }: {
-    template: { data: { _id: string; commonProperties: any; properties: any }; uiState: any };
+    template: {
+      data: { _id: string; commonProperties: any; properties: any; entityViewPage: string };
+      uiState: any;
+    };
     templates: any;
     relationTypes: any;
   },
+
   props: { relationType?: any }
 ) => {
-  const _templates = props.relationType ? relationTypes : templates;
+  const environment = props.relationType ? 'relationType' : 'template';
+  const _templates = environment === 'relationType' ? relationTypes : templates;
   return {
     _id: template.data._id,
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
+    entityViewPage: template.data.entityViewPage,
     templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate'),
     defaultColor: getTemplateDefaultColor(templates, template),
+    environment,
   };
 };
 

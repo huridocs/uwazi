@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pages Routes (to be updated) DELETE should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "sharedId": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`Pages Routes (to be updated) GET /api/pages should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "sharedId": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;

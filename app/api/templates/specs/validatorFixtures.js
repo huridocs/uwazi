@@ -110,6 +110,20 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title' }],
     },
   ],
+  pages: [
+    {
+      _id: db.id(),
+      title: 'A page for entity view',
+      sharedId: 'aFS2dsSdas',
+      entityView: true,
+    },
+    {
+      _id: db.id(),
+      title: 'A page not for entity view',
+      sharedId: 'iExistButImNotForEntityView',
+      entityView: false,
+    },
+  ],
   relationtypes: [{ _id: relatedTo, name: 'related to' }],
   dictionaries: [
     { _id: thesauriId1, name: 'options' },
