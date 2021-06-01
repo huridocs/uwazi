@@ -1,25 +1,41 @@
 import { browserHistory } from 'react-router';
+import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
 import * as types from 'app/Pages/actions/actionTypes';
 
+import { PageType } from 'shared/types/pageType';
+
+export function loadPages() {
+  return async (dispatch: Dispatch<{}>) => {
+    const pages = await api.get(new RequestParams());
+    dispatch(actions.set('pages', pages));
+  };
+}
+
 export function resetPage() {
-  return dispatch => {
+  return (dispatch: Dispatch<{}>) => {
     dispatch(formActions.reset('page.data'));
     dispatch(formActions.setInitial('page.data'));
   };
 }
 
-export function savePage(data) {
-  return dispatch => {
+export function updateValue(model: string, value: any) {
+  return (dispatch: Dispatch<{}>) => {
+    dispatch(formActions.change(`page.data${model}`, value));
+  };
+}
+
+export function savePage(data: PageType) {
+  return (dispatch: Dispatch<{}>) => {
     dispatch({ type: types.SAVING_PAGE });
     return api
       .save(new RequestParams(data))
-      .then(response => {
+      .then((response: PageType & { _rev: any }) => {
         dispatch(notificationActions.notify('Saved successfully.', 'success'));
         dispatch(
           formActions.merge('page.data', {
@@ -37,8 +53,8 @@ export function savePage(data) {
   };
 }
 
-export function deletePage(page) {
-  return dispatch =>
+export function deletePage(page: PageType) {
+  return (dispatch: Dispatch<{}>) =>
     api.delete(new RequestParams({ sharedId: page.sharedId })).then(() => {
       dispatch(actions.remove('pages', page));
     });

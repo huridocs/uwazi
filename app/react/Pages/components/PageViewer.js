@@ -12,7 +12,7 @@ import Script from './Script';
 
 const { Context } = MDComponents;
 
-export class PageViewer extends Component {
+class PageViewer extends Component {
   render() {
     const { page, itemLists, datasets } = this.props;
     const lists = itemLists.toJS();
@@ -54,4 +54,6 @@ const mapStateToProps = ({ page }) => ({
   itemLists: page.itemLists,
 });
 
-export default connect(mapStateToProps)(PageViewer);
+const container = connect(mapStateToProps)(PageViewer);
+
+export { container as PageViewer };

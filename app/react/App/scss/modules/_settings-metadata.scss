@@ -27,7 +27,23 @@
   }
 }
 
-.metadataTemplate-list {
+.metadataTemplate-pageview {
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  .form-group {
+    div:first-child {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+
+      label {
+        margin-right: 20px;
+      }
+    }
+  }
+}
+.metadataTemplate-pageview > div:nth-child(1) > div:nth-child(1) .metadataTemplate-list {
   padding-bottom: 85px;
   margin: 0;
 }

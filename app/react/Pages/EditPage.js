@@ -3,7 +3,7 @@ import { actions as formActions } from 'react-redux-form';
 
 import RouteHandler from 'app/App/RouteHandler';
 
-import PageCreator from 'app/Pages/components/PageCreator';
+import { PageCreator } from 'app/Pages/components/PageCreator';
 import pagesAPI from './PagesAPI';
 
 export default class EditPage extends RouteHandler {

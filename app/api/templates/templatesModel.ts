@@ -7,6 +7,7 @@ const mongoSchema = new mongoose.Schema(
     color: { type: String, default: '' },
     properties: [new mongoose.Schema({ id: String, content: String }, { strict: false })],
     commonProperties: [new mongoose.Schema({ id: String }, { strict: false })],
+    entityViewPage: { type: String, default: '' },
   },
   {
     emitIndexErrors: true,
