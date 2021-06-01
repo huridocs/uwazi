@@ -9,8 +9,7 @@ export interface MarkDownType {
   htmlOnViewer?: boolean;
   showPreview?: boolean;
 }
-
-export default class MarkDown extends Component<MarkDownType> {
+export class MarkDown extends Component<MarkDownType> {
   render() {
     const { rows = 6, value = '', onChange, showPreview = true } = this.props;
     return (
