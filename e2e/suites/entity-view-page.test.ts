@@ -18,10 +18,7 @@ describe('Entities', () => {
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
     await expect(page).toFill('input[name="page.data.title"]', 'My entity view page');
-    await expect(page).toFill(
-      '.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
-      contents
-    );
+    await expect(page).toFill('.tab-content > textarea', contents);
     await expect(page).toClick('.slider');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
