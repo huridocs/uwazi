@@ -25,17 +25,6 @@
     }
   },
   "plugins": [
-    "@babel/plugin-proposal-class-properties",
-    [
-      "module-resolver",
-      {
-        "alias": {
-          "app": "./app/react",
-          "shared": "./app/shared",
-          "api": "./app/api",
-          "UI": "./app/react/UI"
-        }
-      }
-    ]
+    "@babel/plugin-proposal-class-properties"
   ]
 }
