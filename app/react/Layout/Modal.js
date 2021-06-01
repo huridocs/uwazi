@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactModal from 'react-modal';
+import { Translate } from 'app/I18N';
 
 export default class Modal extends Component {
   render() {
@@ -44,7 +45,9 @@ Title.propTypes = { children: childrenType };
 const Close = ({ onClick }) => (
   <button type="button" className="close" onClick={onClick}>
     <span aria-hidden="true">&times;</span>
-    <span className="sr-only">Close</span>
+    <span className="sr-only">
+      <Translate>Close</Translate>
+    </span>
   </button>
 );
 Close.propTypes = { onClick: PropTypes.func };

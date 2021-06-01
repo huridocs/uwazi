@@ -302,13 +302,9 @@ $c-sidebar: $c-white;
   border-bottom: 1px solid #d7d7dc;
   display: flex;
   flex-flow: row nowrap;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
 
-  div:nth-child(1) {
-    width: 65%;
-  }
-  div:nth-child(2) {
-    width: 35%
-  }
   .filter-buttons {
 
     .clear-button {
