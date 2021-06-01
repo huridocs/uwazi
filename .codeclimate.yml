@@ -24,7 +24,7 @@ checks:
       threshold: 90
 plugins:
   eslint:
-    enabled: true
+    enabled: false
     channel: 'eslint-7'
     config:
       config: .eslintrc
