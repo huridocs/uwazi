@@ -120,3 +120,9 @@ export function saveTemplate(data) {
       });
   };
 }
+
+export function updateValue(model, value) {
+  return dispatch => {
+    dispatch(formActions.change(`template.data${model}`, value));
+  };
+}

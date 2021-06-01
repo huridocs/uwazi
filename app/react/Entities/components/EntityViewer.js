@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
@@ -24,6 +25,7 @@ import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
 import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
+import { PageViewer } from 'app/Pages/components/PageViewer';
 
 import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
@@ -90,11 +92,18 @@ export class EntityViewer extends Component {
   }
 
   render() {
-    const { entity, entityBeingEdited, tab, connectionsGroups, hubs, relationships } = this.props;
+    const {
+      entity,
+      entityBeingEdited,
+      tab: selectedTab,
+      connectionsGroups,
+      hubs,
+      relationships,
+      hasPageView,
+    } = this.props;
 
     const visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
     const { panelOpen, copyFrom, copyFromProps } = this.state;
-    const selectedTab = tab;
     const rawEntity = entity.toJS();
     const summary = visibleConnectionGroups.reduce(
       (summaryData, g) => {
@@ -105,24 +114,32 @@ export class EntityViewer extends Component {
       },
       { totalConnections: 0 }
     );
+
     return (
       <div className="row">
         <Helmet title={entity.get('title') ? entity.get('title') : 'Entity'} />
 
-        <div className="content-header content-header-entity">
-          <div className="content-header-title">
-            <PropertyIcon
-              className="item-icon item-icon-center"
-              data={entity.get('icon')}
-              size="sm"
-            />
-            <h1 className="item-name">{entity.get('title')}</h1>
-            <TemplateLabel template={entity.get('template')} />
+        {selectedTab !== 'page' && (
+          <div className="content-header content-header-entity">
+            <div className="content-header-title">
+              <PropertyIcon
+                className="item-icon item-icon-center"
+                data={entity.get('icon')}
+                size="sm"
+              />
+              <h1 className="item-name">{entity.get('title')}</h1>
+              <TemplateLabel template={entity.get('template')} />
+            </div>
           </div>
-        </div>
+        )}
 
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
           <Tabs selectedTab={selectedTab}>
+            {hasPageView && (
+              <TabContent for="page">
+                <PageViewer />
+              </TabContent>
+            )}
             <TabContent
               for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
             >
@@ -177,7 +194,7 @@ export class EntityViewer extends Component {
           </div>
         </ShowIf>
 
-        <SidePanel className={`entity-connections entity-${this.props.tab}`} open={panelOpen}>
+        <SidePanel className={`entity-connections entity-${selectedTab}`} open={panelOpen}>
           <div className="sidepanel-header">
             <button
               type="button"
@@ -195,6 +212,19 @@ export class EntityViewer extends Component {
               }}
             >
               <ul className="nav nav-tabs">
+                {hasPageView && (
+                  <li>
+                    <TabLink
+                      to="page"
+                      role="button"
+                      tabIndex="0"
+                      aria-label={t('System', 'Page', null, false)}
+                    >
+                      <Icon icon="file-image" />
+                      <span className="tab-link-tooltip">{t('System', 'Page')}</span>
+                    </TabLink>
+                  </li>
+                )}
                 <li>
                   <TabLink
                     to="info"
@@ -230,7 +260,7 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent
-                for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}
+                for={['info', 'connections', 'page'].includes(selectedTab) ? selectedTab : 'none'}
               >
                 <ConnectionsGroups connectionsGroups={visibleConnectionGroups} />
               </TabContent>
@@ -279,6 +309,7 @@ EntityViewer.defaultProps = {
   entityBeingEdited: false,
   tab: 'info',
   hubs: Immutable.fromJS([]),
+  hasPageView: false,
 };
 
 EntityViewer.propTypes = {
@@ -296,6 +327,7 @@ EntityViewer.propTypes = {
   tab: PropTypes.string,
   library: PropTypes.object,
   showTab: PropTypes.func.isRequired,
+  hasPageView: PropTypes.bool,
 };
 
 EntityViewer.contextTypes = {
@@ -307,17 +339,26 @@ const selectRelationTypes = createSelector(
   r => r.toJS()
 );
 
-const mapStateToProps = state => ({
-  entity: state.entityView.entity,
-  relationTypes: selectRelationTypes(state),
-  templates: state.templates,
-  relationships: state.entityView.entity.get('relations'),
-  connectionsGroups: state.relationships.list.connectionsGroups,
-  hubs: state.relationships.hubs,
-  entityBeingEdited: !!state.entityView.entityForm._id,
-  tab: state.entityView.uiState.get('tab'),
-  library: state.library,
-});
+export const mapStateToProps = state => {
+  const entityTemplateId = state.entityView.entity && state.entityView.entity.get('template');
+  const entityTemplate = state.templates.find(template => template.get('_id') === entityTemplateId);
+  const templateWithPageView = entityTemplate.get('entityViewPage');
+  const defaultTab = templateWithPageView ? 'page' : 'info';
+  const { uiState } = state.entityView;
+  return {
+    entity: state.entityView.entity,
+    relationTypes: selectRelationTypes(state),
+    templates: state.templates,
+    relationships: state.entityView.entity.get('relations'),
+    connectionsGroups: state.relationships.list.connectionsGroups,
+    hubs: state.relationships.hubs,
+    entityBeingEdited: !!state.entityView.entityForm._id,
+    tab: uiState.get('userSelectedTab') ? uiState.get('tab') : defaultTab,
+    hasPageView: Boolean(templateWithPageView),
+    // Is this used at all?
+    library: state.library,
+  };
+};
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(

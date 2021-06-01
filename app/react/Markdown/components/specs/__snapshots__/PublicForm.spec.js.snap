@@ -105,11 +105,14 @@ exports[`PublicForm should enable remote captcha 1`] = `
         </li>
       </ul>
     </Connect(FormGroup)>
-    <input
+    <button
       className="btn btn-success"
       type="submit"
-      value="Submit"
-    />
+    >
+      <Connect(Translate)>
+        Submit
+      </Connect(Translate)>
+    </button>
   </div>
 </LocalForm>
 `;
@@ -219,11 +222,14 @@ exports[`PublicForm should render a form 1`] = `
         </li>
       </ul>
     </Connect(FormGroup)>
-    <input
+    <button
       className="btn btn-success"
       type="submit"
-      value="Submit"
-    />
+    >
+      <Connect(Translate)>
+        Submit
+      </Connect(Translate)>
+    </button>
   </div>
 </LocalForm>
 `;
@@ -474,11 +480,14 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
         </li>
       </ul>
     </Connect(FormGroup)>
-    <input
+    <button
       className="btn btn-success"
       type="submit"
-      value="Submit"
-    />
+    >
+      <Connect(Translate)>
+        Submit
+      </Connect(Translate)>
+    </button>
   </div>
 </LocalForm>
 `;

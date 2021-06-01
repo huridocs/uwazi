@@ -85,7 +85,9 @@ export const AttachmentsModalCmp = ({
           disabled={getPercentage !== undefined}
         >
           <Icon icon="times" />
-          <span>Close</span>
+          <span>
+            <Translate>Close</Translate>
+          </span>
         </button>
       </div>
       <div className="attachments-modal__content">

@@ -12,16 +12,21 @@ import api from 'app/Pages/PagesAPI';
 import * as actions from '../pageActions';
 
 describe('Page actions', () => {
-  let dispatch;
+  let dispatch: jasmine.Spy;
+  let apiSave: jasmine.Spy;
 
+  // eslint-disable-next-line max-statements
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'save').and.returnValue(
-      Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' })
-    );
+    apiSave = jasmine
+      .createSpy()
+      .and.returnValue(Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' }));
+    api.save = apiSave;
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
+    spyOn(api, 'get').and.returnValue(Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
+    spyOn(formActions, 'change').and.returnValue('MODEL VALUE UPDATED');
     spyOn(basicActions, 'remove').and.returnValue('PAGE REMOVED');
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
     spyOn(browserHistory, 'push');
@@ -37,16 +42,16 @@ describe('Page actions', () => {
 
   describe('savePage', () => {
     it('should dispatch a saving page and save the data', () => {
-      actions.savePage('data')(dispatch);
+      actions.savePage({ title: 'A title' })(dispatch);
       expect(dispatch.calls.count()).toBe(1);
       expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_PAGE' });
-      expect(api.save).toHaveBeenCalledWith(new RequestParams('data'));
+      expect(api.save).toHaveBeenCalledWith(new RequestParams({ title: 'A title' }));
     });
 
     describe('upon success', () => {
       beforeEach(done => {
         actions
-          .savePage('data')(dispatch)
+          .savePage({ title: 'A title' })(dispatch)
           .then(() => {
             done();
           });
@@ -79,9 +84,9 @@ describe('Page actions', () => {
     });
     describe('on error', () => {
       it('should dispatch page saved', done => {
-        api.save.and.callFake(() => Promise.reject(new Error()));
+        apiSave.and.callFake(async () => Promise.reject(new Error()));
         actions
-          .savePage('data')(dispatch)
+          .savePage({ title: 'A title' })(dispatch)
           .then(() => {
             expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: {} });
             done();
@@ -91,7 +96,7 @@ describe('Page actions', () => {
   });
 
   describe('deletePage', () => {
-    const data = { sharedId: 'page1', _id: 'id' };
+    const data = { sharedId: 'page1', _id: 'id', title: 'A title' };
     it('should delete the page', () => {
       actions.deletePage(data)(dispatch);
       expect(api.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: 'page1' }));
@@ -110,6 +115,23 @@ describe('Page actions', () => {
         expect(basicActions.remove).toHaveBeenCalledWith('pages', data);
         expect(dispatch).toHaveBeenCalledWith('PAGE REMOVED');
       });
+    });
+  });
+
+  describe('updateValue', () => {
+    it('should update the model with the provided value', () => {
+      actions.updateValue('.modelName', 'someValue')(dispatch);
+      expect(formActions.change).toHaveBeenCalledWith('page.data.modelName', 'someValue');
+      expect(dispatch).toHaveBeenCalledWith('MODEL VALUE UPDATED');
+    });
+  });
+
+  describe('loadPages', () => {
+    it('should get the pages', async () => {
+      actions
+        .loadPages()(dispatch)
+        .catch(() => fail('should not fail'));
+      expect(api.get).toHaveBeenCalledWith(new RequestParams());
     });
   });
 });

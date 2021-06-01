@@ -1,9 +1,7 @@
-/** @format */
-
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import React from 'react';
-
 import { shallow } from 'enzyme';
+
 import MarkdownViewer from 'app/Markdown';
 
 import { PageViewer } from '../PageViewer';
@@ -16,17 +14,19 @@ describe('PageViewer', () => {
 
   beforeEach(() => {
     props = {
-      page: Immutable({
+      page: Immutable.fromJS({
         _id: 1,
         title: 'Page 1',
         metadata: /*non-metadata-object*/ { content: 'MarkdownContent', script: 'JSScript' },
       }),
-      itemLists: Immutable([{ item: 'item' }]),
+      itemLists: Immutable.fromJS([{ item: 'item' }]),
+      datasets: Immutable.fromJS({ key: 'value' }),
     };
   });
 
   const render = () => {
-    component = shallow(<PageViewer {...props} />, { context });
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    component = shallow(<PageViewer.WrappedComponent {...props} />, { context });
   };
 
   describe('render', () => {
@@ -39,7 +39,7 @@ describe('PageViewer', () => {
       expect(component.find(MarkdownViewer).props().lists).toEqual([{ item: 'item' }]);
     });
 
-    it('should render the script', () => {
+    it('should render the script, appending the datasets', () => {
       const scriptElement = component.find(Script);
       expect(scriptElement).toMatchSnapshot();
     });

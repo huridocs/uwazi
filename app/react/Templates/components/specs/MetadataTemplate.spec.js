@@ -2,15 +2,18 @@
  * @jest-environment jsdom
  */
 import React, { Component } from 'react';
-import TestUtils from 'react-dom/test-utils';
-import TestBackend from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
-import Immutable from 'immutable';
-import { shallow } from 'enzyme';
 import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
-import { combineReducers, createStore } from 'redux';
+import TestUtils from 'react-dom/test-utils';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import Immutable from 'immutable';
+import thunk from 'redux-thunk';
+import { shallow } from 'enzyme';
+import TestBackend from 'react-dnd-test-backend';
+
 import api from 'app/Templates/TemplatesAPI';
+import pagesApi from 'app/Pages/PagesAPI';
 
 import {
   MetadataTemplate,
@@ -77,6 +80,7 @@ describe('MetadataTemplate', () => {
       templates: Immutable.fromJS({ templates: [] }),
       modals: Immutable.fromJS({}),
     };
+
     const store = createStore(
       combineReducers({
         template: combineReducers({
@@ -88,8 +92,10 @@ describe('MetadataTemplate', () => {
         form: () => initialData.form,
         modals: () => initialData.modals,
       }),
-      initialData
+      initialData,
+      applyMiddleware(thunk)
     );
+
     TestUtils.renderIntoDocument(
       <Provider store={store}>
         <ComponentToRender ref={ref => (result = ref)} {...props} index={1} />
@@ -110,7 +116,10 @@ describe('MetadataTemplate', () => {
       templates: Immutable.fromJS([]),
       saveTemplate: jasmine.createSpy('saveTemplate'),
       defaultColor: '#112233',
+      entityViewPage: 'aPageSharedId',
+      environment: 'template',
     };
+    spyOn(pagesApi, 'get').and.returnValue(Promise.resolve({}));
   });
 
   describe('render()', () => {
@@ -131,6 +140,18 @@ describe('MetadataTemplate', () => {
     it('should render template color field', () => {
       const component = shallow(<MetadataTemplate {...props} />);
       expect(component.find(Control).first()).toMatchSnapshot();
+    });
+
+    it('should render a field with the entityViewPage model', () => {
+      const component = shallow(<MetadataTemplate {...props} />);
+      const field = component.findWhere(n => n.props().model === '.entityViewPage');
+      expect(field).toHaveLength(1);
+    });
+
+    it('should render a component with that receives the entityViewPage prop', () => {
+      const component = shallow(<MetadataTemplate {...props} />);
+      const formComponent = component.findWhere(n => n.props().selectedPage === 'aPageSharedId');
+      expect(formComponent).toHaveLength(1);
     });
 
     describe('when fields is empty', () => {
@@ -174,6 +195,26 @@ describe('MetadataTemplate', () => {
         expect(component.find(MetadataProperty).length).toBe(2);
       });
     });
+
+    describe('enviroment prop', () => {
+      it('should render the template editor when environment is template', () => {
+        props.properties = [
+          { label: 'country', type: 'text', _id: '1' },
+          { label: 'author', type: 'text', _id: '2' },
+        ];
+        const component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find(MetadataProperty).length).toBe(2);
+      });
+      it('should not render the template editor when environment is relationType', () => {
+        props.environment = 'relationType';
+        props.properties = [
+          { label: 'country', type: 'text', _id: '1' },
+          { label: 'author', type: 'text', _id: '2' },
+        ];
+        const component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find(MetadataProperty).length).toBe(0);
+      });
+    });
   });
 
   describe('onSubmit', () => {
@@ -190,7 +231,7 @@ describe('MetadataTemplate', () => {
     describe('when the mapping has con flicts', () => {
       it('should ask for a reindex', async () => {
         spyOn(api, 'validateMapping').and.returnValue({
-          errors: [{ name: 'Date of birth' }],
+          error: 'error',
           valid: false,
         });
         const context = { confirm: jasmine.createSpy('confirm') };

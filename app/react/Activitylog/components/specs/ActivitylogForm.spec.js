@@ -40,7 +40,7 @@ describe('ActivitylogForm', () => {
   it('should load more values when available', () => {
     render();
 
-    const button = component.find('button');
+    const button = component.find('.btn-load-more');
     expect(button.hasClass('disabled')).toBe(false);
 
     button.simulate('click');
@@ -52,7 +52,7 @@ describe('ActivitylogForm', () => {
 
     render();
 
-    const button = component.find('button');
+    const button = component.find('.btn-load-more');
     button.simulate('click');
 
     expect(actions.activitylogSearchMore).not.toHaveBeenCalled();
