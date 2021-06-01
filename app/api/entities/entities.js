@@ -52,13 +52,23 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
           if (dict) {
             const context = getContext(translation, prop.content);
             const flattenValues = dict.values.reduce(
-              (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([dv])),
+              (result, dv) =>
+                dv.values
+                  ? result.concat(dv.values.map(v => ({ ...v, parent: dv })))
+                  : result.concat([dv]),
               []
             );
             const dictElem = flattenValues.find(v => v.id === elem.value);
 
             if (dictElem && dictElem.label) {
               elem.label = translate(context, dictElem.label, dictElem.label);
+            }
+
+            if (dictElem && dictElem.parent) {
+              elem.parent = {
+                value: dictElem.parent.id,
+                label: translate(context, dictElem.parent.label, dictElem.parent.label),
+              };
             }
           }
         }
