@@ -76,6 +76,13 @@ module.exports = production => {
           exclude: /node_modules/,
           options: {
             sourceMap: process.env.BABEL_ENV === 'debug',
+            presets: [['@babel/preset-env', 
+              {
+                "targets": {
+                  "esmodules": true
+                }
+              }
+            ]],
           },
         },
         {
