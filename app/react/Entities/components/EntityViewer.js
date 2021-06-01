@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
