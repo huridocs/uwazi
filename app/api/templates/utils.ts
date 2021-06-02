@@ -1,28 +1,14 @@
 import uuid from 'node-uuid';
-import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { TemplateSchema } from 'shared/types/templateType';
 import propertiesHelper from 'shared/comonProperties';
+import { safeName as sharedSafeName } from 'shared/propertyNames';
 import { ObjectID } from 'mongodb';
 import model from './templatesModel';
 
-const generateNewSafeName = (label: string) =>
-  label
-    .trim()
-    .replace(/[#|\\|/|*|?|"|<|>|=|||\s|:|.]/gi, '_')
-    .replace(/^[_|\-|+|$]/, '')
-    .toLowerCase();
-
-export const safeName = (label: string, newNameGeneration: boolean = false) => {
-  if (newNameGeneration) {
-    return generateNewSafeName(label);
-  }
-  return label
-    .trim()
-    .replace(/[^a-z0-9]/gi, '_')
-    .toLowerCase();
-};
+export const safeName = sharedSafeName;
 
 const getInheritedProps = async (templates: TemplateSchema[]) => {
   const properties: PropertySchema[] = propertiesHelper

@@ -3,6 +3,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Db } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
+import { PageType } from 'shared/types/pageType';
 import { DB } from 'api/odm';
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -24,6 +25,7 @@ export type DBFixture = {
   entities?: EntitySchema[];
   dictionaries?: ThesaurusSchema[];
   usergroups?: UserGroupSchema[];
+  pages?: PageType[];
   [k: string]: any;
 };
 

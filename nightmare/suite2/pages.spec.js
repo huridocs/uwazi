@@ -11,8 +11,7 @@ const localSelectors = {
     '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
   pageTitleInput:
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
-  pageContentsInput:
-    '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content-visible > textarea',
+  pageContentsInput: '.tab-content > textarea',
 };
 
 const nightmare = createNightmare();
@@ -35,10 +34,9 @@ describe('pages path', () => {
         .write(localSelectors.pageTitleInput, 'Page title')
         .write(localSelectors.pageContentsInput, 'Page contents')
         .waitToClick('form > div.settings-footer > button.save-template')
-        .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
-        .getInnerText(
-          'div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type'
-        )
+        .wait('div.panel-body.page-viewer.document-viewer > div.alert-info:nth-child(2)')
+
+        .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert-info:nth-child(2)')
         .then(text => {
           expect(text).toContain('/page');
           expect(text).toContain('(view page)');

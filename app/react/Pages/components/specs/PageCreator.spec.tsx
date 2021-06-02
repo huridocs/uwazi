@@ -1,25 +1,42 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import Immutable from 'immutable';
+import { shallow, ShallowWrapper } from 'enzyme';
 
-import { Form, Field } from 'react-redux-form';
+import { Form, Field, Control } from 'react-redux-form';
 import { MarkDown } from 'app/ReactReduxForms';
-import { PageCreator } from '../PageCreator';
+import { PageCreator, mappedProps } from '../PageCreator';
 
 describe('PageCreator', () => {
-  let component;
-  let props;
+  let component: ShallowWrapper<typeof PageCreator>;
+  let props: mappedProps;
 
   beforeEach(() => {
+    const formState = { title: {}, $form: { errors: {} } };
+    const uiState = Immutable.fromJS({ savingPage: false });
     props = {
-      page: { data: { title: 'Page title', metadata: {} } },
-      formState: { title: {}, $form: { errors: {} } },
+      page: {
+        data: {
+          _id: '',
+          title: 'Page title',
+          metadata: {},
+          language: 'en',
+          sharedId: '',
+          entityView: false,
+        },
+        formState,
+        uiState,
+      },
+      formState,
       savePage: jasmine.createSpy('savePage'),
       resetPage: jasmine.createSpy('deletePage'),
+      updateValue: jasmine.createSpy('updateValue'),
+      savingPage: false,
     };
   });
 
   const render = () => {
-    component = shallow(<PageCreator {...props} />);
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    component = shallow(<PageCreator.WrappedComponent {...props} />);
   };
 
   describe('render', () => {
@@ -65,6 +82,7 @@ describe('PageCreator', () => {
           .parent()
           .props().model
       ).toBe('.metadata.script');
+      expect(component.find(Control).props().model).toBe('.entityView');
     });
 
     describe('when Title is invalid', () => {
@@ -86,7 +104,7 @@ describe('PageCreator', () => {
   describe('on componentWillUnmount', () => {
     beforeEach(() => {
       render();
-      component.instance().componentWillUnmount();
+      component.unmount();
     });
 
     it('should reset the page', () => {

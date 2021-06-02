@@ -1,14 +1,14 @@
 import { TabLink, TabContent } from 'react-tabs-redux';
 import React from 'react';
 
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import MarkDownViewer from 'app/Markdown';
 
-import MarkDown from '../MarkDown';
+import { MarkDown, MarkDownType } from '../MarkDown';
 
 describe('MarkDown', () => {
-  let component;
-  let props;
+  let component: ShallowWrapper<MarkDown>;
+  let props: MarkDownType;
 
   beforeEach(() => {
     props = {
@@ -18,6 +18,7 @@ describe('MarkDown', () => {
   });
 
   const render = () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<MarkDown {...props} />);
   };
 
@@ -60,6 +61,18 @@ describe('MarkDown', () => {
       render();
       const container = component.find(MarkDownViewer);
       expect(container.props().markdown).toBe('# <b>This is a title</b>');
+    });
+    it('should not display if the pages is for an entity view', () => {
+      props.showPreview = false;
+      render();
+      const tabLink = component.findWhere(
+        n => n.name() === 'TabLink' && n.prop('to') === 'preview'
+      );
+      const tabContent = component.findWhere(
+        n => n.name() === 'TabContent' && n.prop('for') === 'preview'
+      );
+      expect(tabLink.exists()).toBe(false);
+      expect(tabContent.exists()).toBe(false);
     });
   });
 });

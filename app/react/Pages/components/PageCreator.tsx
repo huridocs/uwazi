@@ -1,28 +1,46 @@
-import { Form, Field } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { Form, Field, Control } from 'react-redux-form';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
 import React, { Component } from 'react';
 
 import { MarkDown } from 'app/ReactReduxForms';
 import {
   resetPage as resetPageAction,
   savePage as savePageAction,
+  updateValue as updateValueAction,
 } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
 import { BackButton } from 'app/Layout';
-import { Icon } from 'UI';
+import { Icon, ToggleButton } from 'UI';
 
+import { IStore } from 'app/istore';
+import { Translate } from 'app/I18N';
 import validator from './ValidatePage';
 
-export class PageCreator extends Component {
+const mapStateToProps = ({ page }: IStore) => ({
+  page,
+  formState: page.formState,
+  savingPage: page.uiState.get('savingPage'),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators(
+    { resetPage: resetPageAction, savePage: savePageAction, updateValue: updateValueAction },
+    dispatch
+  );
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+export type mappedProps = ConnectedProps<typeof connector>;
+
+class PageCreator extends Component<mappedProps> {
   componentWillUnmount() {
     const { resetPage } = this.props;
     resetPage();
   }
 
   render() {
-    const { formState, page, savePage, savingPage } = this.props;
+    const { formState, page, savePage, updateValue, savingPage } = this.props;
     const backUrl = '/settings/pages';
     const pageUrl = `/page/${page.data.sharedId}`;
 
@@ -47,7 +65,18 @@ export class PageCreator extends Component {
               </div>
             </div>
             <div className="panel-body page-viewer document-viewer">
-              <ShowIf if={Boolean(page.data._id)}>
+              <div className="entity-view">
+                <Translate>Enable this page to be used as an entity view page: </Translate>
+                <Control
+                  model=".entityView"
+                  component={ToggleButton}
+                  checked={Boolean(page.data.entityView)}
+                  onClick={() => {
+                    updateValue('.entityView', !page.data.entityView);
+                  }}
+                />
+              </div>
+              <ShowIf if={Boolean(page.data._id) && !page.data.entityView}>
                 <div className="alert alert-info">
                   <Icon icon="angle-right" /> {pageUrl}
                   <a
@@ -60,7 +89,12 @@ export class PageCreator extends Component {
                   </a>
                 </div>
               </ShowIf>
-              <MarkDown htmlOnViewer model=".metadata.content" rows={18} />
+              <MarkDown
+                htmlOnViewer
+                model=".metadata.content"
+                rows={18}
+                showPreview={!page.data.entityView}
+              />
               <div className="alert alert-info">
                 <Icon icon="info-circle" size="2x" />
                 <div className="force-ltr">
@@ -88,7 +122,9 @@ export class PageCreator extends Component {
               </div>
               <div>
                 <div>
-                  <span className="form-group-label">Page Javascript</span>
+                  <span className="form-group-label">
+                    <Translate>Page Javascript</Translate>
+                  </span>
                 </div>
                 <div className="alert alert-warning">
                   <Icon icon="exclamation-triangle" size="2x" />
@@ -126,20 +162,5 @@ export class PageCreator extends Component {
   }
 }
 
-PageCreator.propTypes = {
-  resetPage: PropTypes.func,
-  savePage: PropTypes.func,
-  page: PropTypes.object,
-  formState: PropTypes.object,
-  savingPage: PropTypes.bool,
-};
-
-function mapStateToProps({ page }) {
-  return { page, formState: page.formState, savingPage: page.uiState.get('savingPage') };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ resetPage: resetPageAction, savePage: savePageAction }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PageCreator);
+const container = connector(PageCreator);
+export { container as PageCreator };

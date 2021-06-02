@@ -1,5 +1,5 @@
 import { NeedAuthorization } from 'app/Auth';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
 import { resetFilters } from 'app/Library/actions/filterActions';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
@@ -46,7 +46,7 @@ export class LibraryFilters extends Component {
                 onClick={this.reset.bind(this)}
               >
                 <Icon icon="times" />
-                &nbsp;Clear Filters
+                &nbsp;<Translate>Clear Filters</Translate>
               </div>
               <button
                 type="button"

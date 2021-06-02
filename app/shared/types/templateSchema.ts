@@ -1,11 +1,14 @@
 import Ajv from 'ajv';
 import { ObjectId } from 'mongodb';
+
 import model from 'api/templates/templatesModel';
+import templates from 'api/templates';
+import pages from 'api/pages';
 import { thesauri } from 'api/thesauri/thesauri';
+
 import { ensure, wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import { getCompatibleTypes } from 'shared/propertyTypes';
-import templates from 'api/templates';
 
 import { TemplateSchema } from './templateType';
 import { PropertySchema } from './commonTypes';
@@ -228,6 +231,43 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
   },
 });
 
+ajv.addKeyword('entityViewPageExistsAndIsEnabled', {
+  async: true,
+  errors: true,
+  type: 'object',
+  async validate(fields: any, template: TemplateSchema) {
+    if (template.entityViewPage) {
+      const page = await pages.get({
+        sharedId: template.entityViewPage,
+      });
+      if (page.length === 0) {
+        throw new Ajv.ValidationError([
+          {
+            keyword: 'entityViewPageExists',
+            schemaPath: '',
+            params: { keyword: 'entityViewPageExists', fields },
+            message: 'The selected page does not exist',
+            dataPath: '.templates',
+          },
+        ]);
+      }
+      if (!page[0].entityView) {
+        throw new Ajv.ValidationError([
+          {
+            keyword: 'entityViewPageIsEnabled',
+            schemaPath: '',
+            params: { keyword: 'entityViewPageIsEnabled', fields },
+            message: 'The selected page is not enabled for entity view',
+            dataPath: '.templates',
+          },
+        ]);
+      }
+      return true;
+    }
+    return true;
+  },
+});
+
 export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
@@ -235,6 +275,7 @@ export const templateSchema = {
   uniqueName: true,
   cantDeleteInheritedProperties: true,
   cantReuseNameWithDifferentType: true,
+  entityViewPageExistsAndIsEnabled: true,
   required: ['name'],
   uniquePropertyFields: ['id', 'name'],
   definitions: { objectIdSchema, propertySchema },
@@ -243,6 +284,7 @@ export const templateSchema = {
     name: { type: 'string', minLength: 1 },
     color: { type: 'string', default: '' },
     default: { type: 'boolean', default: false },
+    entityViewPage: { type: 'string', default: '' },
     commonProperties: {
       type: 'array',
       requireTitleProperty: true,

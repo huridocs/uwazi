@@ -89,7 +89,9 @@ export default class Geolocation extends Component {
         <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false} />
         <div className="form-row">
           <div className="form-group half-width">
-            <label>Latitude</label>
+            <label>
+              <Translate>Latitude</Translate>
+            </label>
             <input
               onChange={this.latChange}
               className="form-control"
@@ -100,7 +102,9 @@ export default class Geolocation extends Component {
             />
           </div>
           <div className="form-group half-width">
-            <label>Longitude</label>
+            <label>
+              <Translate>Longitude</Translate>
+            </label>
             <input
               onChange={this.lonChange}
               className="form-control"

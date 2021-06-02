@@ -15,7 +15,8 @@ Array [
     "type": "entityView/entity/SET",
     "value": Object {
       "_id": 1,
-      "sharedId": "sid",
+      "sharedId": "123",
+      "template": "1",
     },
   },
   Object {
