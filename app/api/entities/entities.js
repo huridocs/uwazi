@@ -396,7 +396,8 @@ export default {
   async updateDenormalizedMetadataInRelatedEntities(entity) {
     const related = await relationships.getByDocument(entity.sharedId, entity.language);
     const sharedIds = related.map(r => r.entityData.sharedId);
-    await this.updateMetdataFromRelationships(sharedIds, entity.language);
+    console.log(sharedIds);
+    await this.updateMetdataFromRelationships(['A1'], entity.language);
   },
 
   async denormalize(_doc, { user, language }) {
