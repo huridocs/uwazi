@@ -7,7 +7,7 @@ const updateRecursively = async (
   templateId: ObjectIdSchema,
   generatedIdProperties: PropertySchema[],
   searchQuery: {}
-): Promise<any> => {
+): Promise<void> => {
   const batchSize = 1000;
   const sharedIds = (
     await model.db.aggregate([
@@ -18,7 +18,7 @@ const updateRecursively = async (
   ).map(g => g._id);
 
   await Promise.all(
-    sharedIds.map(async (sharedId: any) =>
+    sharedIds.map(async (sharedId: string) =>
       model.updateMany(
         {
           sharedId,
@@ -40,10 +40,10 @@ const updateRecursively = async (
   return Promise.resolve();
 };
 
-const populateGeneratedIdBTemplate = async (
+const populateGeneratedIdByTemplate = async (
   templateId: ObjectIdSchema,
   properties: PropertySchema[]
-): Promise<any> => {
+): Promise<void> => {
   const generatedIdProperties = properties.filter(prop => prop.type === 'generatedid');
   const searchQuery = generatedIdProperties.reduce(
     (values, property: PropertySchema) => ({
@@ -54,4 +54,4 @@ const populateGeneratedIdBTemplate = async (
   return updateRecursively(templateId, generatedIdProperties, searchQuery);
 };
 
-export { populateGeneratedIdBTemplate };
+export { populateGeneratedIdByTemplate };

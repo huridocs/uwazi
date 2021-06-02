@@ -1,5 +1,5 @@
 import entities from 'api/entities';
-import { populateGeneratedIdBTemplate } from 'api/entities/entityPropertiesUpdater';
+import { populateGeneratedIdByTemplate } from 'api/entities/entityPropertiesUpdater';
 import db from 'api/utils/testing_db';
 import { fixtures, templateId } from 'api/entities/specs/entityPropertiesUpdaterFixtures';
 import { unique } from 'api/utils/filters';
@@ -11,6 +11,10 @@ describe('entity properties updater', () => {
     await db.setupFixturesAndContext(fixtures);
   });
 
+  afterAll(async () => {
+    await db.disconnect();
+  });
+
   describe('fill generated id fields for entities of a specified template', () => {
     let affectedEntities: EntitySchema[];
     beforeAll(async () => {
@@ -20,7 +24,7 @@ describe('entity properties updater', () => {
         { name: 'autoId1', type: 'generatedid', label: 'Auto Id 1' },
       ];
 
-      await populateGeneratedIdBTemplate(templateId, properties);
+      await populateGeneratedIdByTemplate(templateId, properties);
       affectedEntities = await entities.get({ template: templateId }, [
         'sharedId',
         'metadata.text',

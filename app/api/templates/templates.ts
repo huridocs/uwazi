@@ -8,7 +8,7 @@ import { ensure } from 'shared/tsUtils';
 import { ObjectID } from 'mongodb';
 
 import { validateTemplate } from 'shared/types/templateSchema';
-import { populateGeneratedIdBTemplate } from 'api/entities/entityPropertiesUpdater';
+import { populateGeneratedIdByTemplate } from 'api/entities/entityPropertiesUpdater';
 import model from './templatesModel';
 import {
   generateNamesAndIds,
@@ -109,7 +109,7 @@ const checkAndFillGeneratedIdProperties = async (
         !storedGeneratedIdProps.find(prop => prop.name === newProp.name)
     ) || [];
   if (newGeneratedIdProps.length > 0) {
-    await populateGeneratedIdBTemplate(currentTemplate._id!, newGeneratedIdProps);
+    await populateGeneratedIdByTemplate(currentTemplate._id!, newGeneratedIdProps);
   }
 };
 
