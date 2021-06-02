@@ -11,8 +11,8 @@ describe('Copy from', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
-    await disableTransitions();
     await page.goto(`${host}/library`);
+    await disableTransitions();
   });
 
   it('Should create new entity, copy its metadata from an existing one and save it as new relationship', async () => {
@@ -29,34 +29,30 @@ describe('Copy from', () => {
       text: 'Add entities / documents',
     });
 
-    await page.waitFor(200); // wait for slide animation to end
     await expect(page).toClick('button', {
       text: 'Create Entity',
     });
 
-    await page.waitForSelector('textarea[name="relationships.metadata.title"]');
     await expect(page).toFill('textarea[name="relationships.metadata.title"]', 'Test title');
-    await page.select('select', '58ada34c299e826748545061');
-    await page.waitFor(100); // re-render of the form
+
+    await expect(page).toSelect('select', 'Causa');
+
     await expect(page).toClick('button', {
       text: 'Copy From',
     });
 
-    await page.waitFor(50); // wait for animation
     await expect(page).toFill(
       'aside.connections-metadata div.search-box > div > input',
       'artavia',
       { delay: 100 }
     );
-    await page.waitFor(50); // search delay
     await expect(page).toClick('div.copy-from .item-info', { text: 'Artavia Murillo et al' });
 
     await expect(page).toClick('button', { text: 'Copy Highlighted' });
     await expect(page).toClick('.side-panel button', { text: 'Save' });
-    await page.waitFor(100); // save delay
+    await expect(page).toClick('.alert.alert-success');
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('.item-info', { text: 'Test title' });
-    await page.waitFor(50); // animation
     await expect(page).toMatchElement(
       '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(3) dd',
       {
