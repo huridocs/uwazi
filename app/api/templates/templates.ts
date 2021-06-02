@@ -92,7 +92,7 @@ const removeExcludedPropertiesValues = async (
     .filter(v => v);
 
   if (toRemoveValues.length > 0) {
-    await entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id); // eslint-disable-line consistent-return
+    await entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
   }
 };
 
@@ -181,17 +181,6 @@ export default {
           )
       )
     );
-  },
-
-  _validateSwapPropertyNames(currentTemplate: TemplateSchema, template: TemplateSchema) {
-    (currentTemplate.properties || []).forEach(prop => {
-      const swapingNameWithExistingProperty = (template.properties || []).find(
-        p => p.name === prop.name && p.id !== prop.id
-      );
-      if (swapingNameWithExistingProperty) {
-        throw createError(`Properties can't swap names: ${prop.name}`, 400);
-      }
-    });
   },
 
   async get(query: any = {}) {
