@@ -8,7 +8,7 @@ import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import ImportFileForm from 'app/App/ImportFileForm';
+import { SelectFileButton } from 'app/App/SelectFileButton.tsx';
 
 export class EditTranslationForm extends Component {
   static getDefaultTranslation(translations, languages) {
@@ -23,8 +23,7 @@ export class EditTranslationForm extends Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
-    this.onImportClicked = this.onImportClicked.bind(this);
-    this.InputElement = React.createRef();
+    this.importTranslationsFile = this.importTranslationsFile.bind(this);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -35,8 +34,8 @@ export class EditTranslationForm extends Component {
     this.props.resetForm();
   }
 
-  onImportClicked() {
-    this.InputElement.click();
+  importTranslationsFile(file) {
+    this.props.importTranslations(this.props.context, file);
   }
 
   prepareTranslations() {
@@ -84,14 +83,16 @@ export class EditTranslationForm extends Component {
 
     if (contextId === 'System') {
       importButton = (
-        <button
-          type="button"
-          className="btn btn-primary import-template"
-          onClick={this.onImportClicked}
-        >
-          <Icon icon="upload" />
-          <span className="btn-label">Import</span>
-        </button>
+        <SelectFileButton onFileImported={this.importTranslationsFile}>
+          <button
+            type="button"
+            className="btn btn-primary import-template"
+            onClick={this.onImportClicked}
+          >
+            <Icon icon="upload" />
+            <span className="btn-label">Import</span>
+          </button>
+        </SelectFileButton>
       );
     }
 
@@ -142,12 +143,6 @@ export class EditTranslationForm extends Component {
             </button>
           </div>
         </Form>
-        <ImportFileForm
-          ref={this.importFileFormRef}
-          context={this.props.context}
-          onFileImported={this.props.importTranslations}
-          fileInputRef={el => (this.InputElement = el)}
-        />
       </div>
     );
   }

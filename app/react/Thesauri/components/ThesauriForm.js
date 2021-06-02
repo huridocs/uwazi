@@ -19,6 +19,7 @@ import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 
+import { SelectFileButton } from 'app/App/SelectFileButton.tsx';
 import { ThesauriFormItem } from './ThesauriFormItem';
 
 function sanitizeThesauri(thesaurus) {
@@ -57,10 +58,9 @@ export class ThesauriForm extends Component {
     this.save = this.save.bind(this);
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
-    this.onImportClicked = this.onImportClicked.bind(this);
-    this.import = this.import.bind(this);
-    this.fileInputRef = React.createRef();
-    this.fileFormRef = React.createRef();
+    this.importThesaurusFile = this.importThesaurusFile.bind(this);
+    this.importFileFormRef = React.createRef();
+    this.InputElement = React.createRef();
   }
 
   componentDidMount() {
@@ -87,8 +87,8 @@ export class ThesauriForm extends Component {
     this.props.updateValues(values, groupIndex);
   }
 
-  onImportClicked() {
-    this.fileInputRef.current.click();
+  importThesaurusFile(file) {
+    this.props.importThesaurus(this.props.thesauri, file);
   }
 
   focusIfWasGroup(previousProps) {
@@ -118,15 +118,6 @@ export class ThesauriForm extends Component {
       this.props.thesauri.values[this.props.thesauri.values.length - 1].label !== ''
     ) {
       this.props.addValue();
-    }
-  }
-
-  import() {
-    const file = this.fileInputRef.current.files[0];
-    this.fileFormRef.current.reset();
-    const thes = sanitizeThesauri(this.props.thesauri);
-    if (file) {
-      this.props.importThesaurus(thes, file);
     }
   }
 
@@ -208,14 +199,12 @@ export class ThesauriForm extends Component {
                 <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </button>
-              <button
-                type="button"
-                className="btn btn-primary import-template"
-                onClick={this.onImportClicked}
-              >
-                <Icon icon="upload" />
-                <span className="btn-label">Import</span>
-              </button>
+              <SelectFileButton onFileImported={this.importThesaurusFile}>
+                <button type="button" className="btn btn-primary import-template">
+                  <Icon icon="upload" />
+                  <span className="btn-label">Import</span>
+                </button>
+              </SelectFileButton>
               <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save" />
                 <span className="btn-label">Save</span>
@@ -223,15 +212,6 @@ export class ThesauriForm extends Component {
             </div>
           </div>
         </Form>
-        <form ref={this.fileFormRef} style={{ display: 'none' }}>
-          <input
-            ref={this.fileInputRef}
-            type="file"
-            accept="text/csv"
-            style={{ display: 'none' }}
-            onChange={this.import}
-          />
-        </form>
       </div>
     );
   }
