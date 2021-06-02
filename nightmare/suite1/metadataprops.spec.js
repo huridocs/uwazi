@@ -70,7 +70,7 @@ describe('metadata properties', () => {
       multidaterangeRemoveDateTwo:
         '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(2) > div > button',
       richText:
-        '#metadataForm > div:nth-child(3) > div:nth-child(10) > ul > li.wide > div > div.tab-content-visible > textarea',
+        '#metadataForm > div:nth-child(3) > div:nth-child(10) > ul > li.wide > div.markdownEditor > div > div.tab-content-visible > textarea',
       linkLabel:
         '#metadataForm > div:nth-child(3) > div:nth-child(11) > ul > li.wide > div > div > div:nth-child(1) > input',
       linkUrl:
