@@ -8,6 +8,7 @@ import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
+import ImportFileForm from 'app/App/ImportFileForm';
 
 export class EditTranslationForm extends Component {
   static getDefaultTranslation(translations, languages) {
@@ -23,9 +24,7 @@ export class EditTranslationForm extends Component {
     super(props);
     this.save = this.save.bind(this);
     this.onImportClicked = this.onImportClicked.bind(this);
-    this.import = this.import.bind(this);
-    this.fileInputRef = React.createRef();
-    this.fileFormRef = React.createRef();
+    this.InputElement = React.createRef();
   }
 
   shouldComponentUpdate(nextProps) {
@@ -37,7 +36,7 @@ export class EditTranslationForm extends Component {
   }
 
   onImportClicked() {
-    this.fileInputRef.current.click();
+    this.InputElement.click();
   }
 
   prepareTranslations() {
@@ -62,14 +61,6 @@ export class EditTranslationForm extends Component {
     }
 
     return translationsForm;
-  }
-
-  import() {
-    const file = this.fileInputRef.current.files[0];
-    this.fileFormRef.current.reset();
-    if (file) {
-      this.props.importTranslations(this.props.context, file);
-    }
   }
 
   save(_translations) {
@@ -151,15 +142,12 @@ export class EditTranslationForm extends Component {
             </button>
           </div>
         </Form>
-        <form ref={this.fileFormRef} style={{ display: 'none' }}>
-          <input
-            ref={this.fileInputRef}
-            type="file"
-            accept="text/csv"
-            style={{ display: 'none' }}
-            onChange={this.import}
-          />
-        </form>
+        <ImportFileForm
+          ref={this.importFileFormRef}
+          context={this.props.context}
+          onFileImported={this.props.importTranslations}
+          fileInputRef={el => (this.InputElement = el)}
+        />
       </div>
     );
   }
