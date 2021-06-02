@@ -9,6 +9,7 @@ import { ObjectID } from 'mongodb';
 
 import { validateTemplate } from 'shared/types/templateSchema';
 import { populateGeneratedIdByTemplate } from 'api/entities/entityPropertiesUpdater';
+import { propertyTypes } from 'shared/propertyTypes';
 import model from './templatesModel';
 import {
   generateNamesAndIds,
@@ -100,12 +101,12 @@ const checkAndFillGeneratedIdProperties = async (
   template: TemplateSchema
 ) => {
   const storedGeneratedIdProps =
-    currentTemplate.properties?.filter(prop => prop.type === 'generatedid') || [];
+    currentTemplate.properties?.filter(prop => prop.type === propertyTypes.generatedid) || [];
   const newGeneratedIdProps =
     template.properties?.filter(
       newProp =>
         !newProp._id &&
-        newProp.type === 'generatedid' &&
+        newProp.type === propertyTypes.generatedid &&
         !storedGeneratedIdProps.find(prop => prop.name === newProp.name)
     ) || [];
   if (newGeneratedIdProps.length > 0) {

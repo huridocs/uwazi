@@ -10,6 +10,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
 
 import { attachmentsPath, files } from 'api/files';
+import { propertyTypes } from 'shared/propertyTypes';
 import typeParsers from './typeParsers';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
@@ -18,7 +19,7 @@ const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
     : typeParsers.text(toImportEntity, prop);
 
 const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
-  prop.name ? toImportEntity[prop.name] || prop.type === 'generatedid' : false;
+  prop.name ? toImportEntity[prop.name] || prop.type === propertyTypes.generatedid : false;
 
 const toMetadata = async (
   template: TemplateSchema,

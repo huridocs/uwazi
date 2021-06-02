@@ -5,6 +5,7 @@ import { fixtures, templateId } from 'api/entities/specs/entityPropertiesUpdater
 import { unique } from 'api/utils/filters';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { propertyTypes } from 'shared/propertyTypes';
 
 describe('entity properties updater', () => {
   beforeAll(async () => {
@@ -20,8 +21,8 @@ describe('entity properties updater', () => {
     beforeAll(async () => {
       const properties: PropertySchema[] = [
         { name: 'text', type: 'text', label: 'Text' },
-        { name: 'autoId', type: 'generatedid', label: 'Auto Id' },
-        { name: 'autoId1', type: 'generatedid', label: 'Auto Id 1' },
+        { name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' },
+        { name: 'autoId1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
       ];
 
       await populateGeneratedIdByTemplate(templateId, properties);

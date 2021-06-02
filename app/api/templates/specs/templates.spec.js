@@ -365,7 +365,7 @@ describe('templates', () => {
             _id: templateToBeEditedId,
             name: 'template to be edited',
             commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-            properties: [{ name: 'autoId', type: 'generatedid', label: 'Auto Id' }],
+            properties: [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
           };
           await templates.save(templateToUpdate, 'en');
 

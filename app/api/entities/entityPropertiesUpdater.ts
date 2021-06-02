@@ -1,6 +1,6 @@
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { generateID } from 'shared/IDGenerator';
-
+import { propertyTypes } from 'shared/propertyTypes';
 import model from './entitiesModel';
 
 const updateRecursively = async (
@@ -34,7 +34,7 @@ const updateRecursively = async (
       )
     )
   );
-  if (sharedIds.length >= batchSize) {
+  if (sharedIds.length === batchSize) {
     return updateRecursively(templateId, generatedIdProperties, searchQuery);
   }
   return Promise.resolve();
@@ -44,7 +44,7 @@ const populateGeneratedIdByTemplate = async (
   templateId: ObjectIdSchema,
   properties: PropertySchema[]
 ): Promise<void> => {
-  const generatedIdProperties = properties.filter(prop => prop.type === 'generatedid');
+  const generatedIdProperties = properties.filter(prop => prop.type === propertyTypes.generatedid);
   const searchQuery = generatedIdProperties.reduce(
     (values, property: PropertySchema) => ({
       ...{ ...values, [`metadata.${property.name}`]: { $exists: false } },
