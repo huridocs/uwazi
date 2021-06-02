@@ -17,7 +17,7 @@ import translate, { getContext } from 'shared/translate';
 import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { validateEntity } from 'shared/types/entitySchema';
+import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
