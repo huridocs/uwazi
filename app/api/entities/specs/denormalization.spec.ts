@@ -1,47 +1,47 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import entities from 'api/entities';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectId } from 'mongodb';
 
-function getIdCache() {
-  const map = new Map<string, ObjectIdSchema>();
+function getIdMapper() {
+  const map = new Map<string, ObjectId>();
 
   return function setAndGet(key: string) {
-    if (!map.has(key)) map.set(key, db.id());
+    if (!map.has(key)) map.set(key, db.id() as ObjectId);
 
-    return map.get(key);
+    return map.get(key)!;
   };
 }
 
 describe('getIdCache', () => {
   it('should create a new id', () => {
-    const ids = getIdCache();
+    const ids = getIdMapper();
 
     expect(ids('key')).toBeDefined();
   });
 
   it('should create a different ids', () => {
-    const ids = getIdCache();
+    const ids = getIdMapper();
 
     expect(ids('key1')).not.toEqual(ids('key2'));
   });
 
   it('should cache ids', () => {
-    const ids = getIdCache();
+    const ids = getIdMapper();
 
     expect(ids('key')).toEqual(ids('key'));
   });
 });
 
-const load = async (data: any) => db.setupFixturesAndContext(data);
+const load = async (data: DBFixture) => db.setupFixturesAndContext(data);
 
 afterAll(async () => db.disconnect());
 
 describe('Denormalizing relationships', () => {
   describe('When entities are of different templates', () => {
-    const ids = getIdCache();
+    const ids = getIdMapper();
 
-    it('should create a connection if setting relationship property', async () => {
+    it('should update the title in related entities', async () => {
       const fixtures: DBFixture = {
         templates: [
           {
@@ -102,7 +102,7 @@ describe('Denormalizing relationships', () => {
 
       await entities.save(
         {
-          ...fixtures.entities[1],
+          ...fixtures.entities![1],
           title: 'New title',
         },
         { language: 'en', user: {} },
@@ -111,7 +111,7 @@ describe('Denormalizing relationships', () => {
 
       await entities.save(
         {
-          ...fixtures.entities[2],
+          ...fixtures.entities![2],
           title: 'New title 2',
         },
         { language: 'en', user: {} },
@@ -205,7 +205,7 @@ describe('Denormalizing relationships', () => {
 
       await entities.save(
         {
-          ...fixtures.entities[1],
+          ...fixtures.entities![1],
           metadata: {
             text: [{ value: 'text 1 changed' }],
           },
@@ -216,7 +216,7 @@ describe('Denormalizing relationships', () => {
 
       await entities.save(
         {
-          ...fixtures.entities[2],
+          ...fixtures.entities![2],
           metadata: {
             text: [{ value: 'text 2 changed' }],
           },
@@ -226,8 +226,12 @@ describe('Denormalizing relationships', () => {
       );
 
       const relatedEntity = await entities.getById('A1', 'en');
-      expect(relatedEntity!.metadata!.relationship_property_a![0].inheritedValue[0].value).toBe('text 1 changed');
-      expect(relatedEntity!.metadata!.relationship_property_a![1].inheritedValue[0].value).toBe('text 2 changed');
+      expect(
+        relatedEntity!.metadata!.relationship_property_inherited![0].inheritedValue![0].value
+      ).toBe('text 1 changed');
+      expect(
+        relatedEntity!.metadata!.relationship_property_inherited![1].inheritedValue![0].value
+      ).toBe('text 2 changed');
     });
   });
 });

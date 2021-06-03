@@ -148,6 +148,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
 
+        //Crappy draft code starts
         const [relatedEntity] = await model.get({
           'metadata.relationship_property_inherited.value': entity.sharedId,
         });
@@ -160,7 +161,10 @@ async function updateEntity(entity, _template, unrestricted = false) {
               };
             }
           );
+          model.saveUnrestricted(relatedEntity);
         }
+
+        //Crappy draft code ends
 
         const toSave = { ...entity };
 
