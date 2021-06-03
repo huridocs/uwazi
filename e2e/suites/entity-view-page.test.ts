@@ -3,7 +3,7 @@ import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
-import { contents } from '../helpers/entityViewPageFixtures';
+import { contents, script } from '../helpers/entityViewPageFixtures';
 
 describe('Entities', () => {
   beforeAll(async () => {
@@ -19,6 +19,10 @@ describe('Entities', () => {
     await expect(page).toClick('a', { text: 'Add page' });
     await expect(page).toFill('input[name="page.data.title"]', 'My entity view page');
     await expect(page).toFill('.tab-content > textarea', contents);
+    await expect(page).toFill(
+      '.panel-body > div:nth-child(4) > div:nth-child(3) > textarea:nth-child(1)',
+      script
+    );
     await expect(page).toClick('.slider');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
@@ -80,6 +84,18 @@ describe('Entities', () => {
       });
       await expect(page).toMatchElement('.descriptores-content', {
         text: 'Derechos reproductivos',
+      });
+    });
+
+    it('should get the page datasets from the redux store directly', async () => {
+      await expect(page).toMatchElement('#entity-sharedId', {
+        text: 'mh5hwf3nzhq6w29',
+      });
+    });
+
+    it('should have access to the page datasets in the store via the datasets var', async () => {
+      await expect(page).toMatchElement('#entity-datasets-value', {
+        text: 'Medida Provisional',
       });
     });
   });

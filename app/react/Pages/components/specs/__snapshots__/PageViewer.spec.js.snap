@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PageViewer render should render the script, appending the datasets 1`] = `
+exports[`PageViewer render should render the script 1`] = `
 <Script>
-  JSScript
+  var datasets = window.store.getState().page.datasets.toJS();
+    JSScript
 </Script>
 `;
