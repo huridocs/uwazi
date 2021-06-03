@@ -5,7 +5,6 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { mapStateToProps, ThesauriForm } from 'app/Thesauri/components/ThesauriForm.js';
-import { SelectFileButton } from 'app/App/SelectFileButton';
 
 describe('ThesauriForm', () => {
   let props;
@@ -101,7 +100,6 @@ describe('ThesauriForm', () => {
     //     .simulate('click');
     //   expect(selectFileButtonInstance.show).toHaveBeenCalled();
     // });
-
     // fit('should import thesauri when file is selected and reset file input', () => {
     //   render();
     //   instance.InputElement = { click: jest.fn() };
@@ -113,8 +111,7 @@ describe('ThesauriForm', () => {
     //   component
     //     .find(ImportFileForm)
     //     .first()
-    //     .simulate('fileImported');
-
+    //     .simulate('fileImported
     //   expect(props.importThesaurus).toHaveBeenCalledWith(props.thesauri, file);
     //   expect(instance.fileFormRef.current.reset).toHaveBeenCalled();
     // });
