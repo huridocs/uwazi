@@ -8,6 +8,7 @@ import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import templatesModel from '../app/api/templates';
+import settingsModel from '../app/api/settings';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
 import errorLog from '../app/api/log/errorLog';
 
@@ -83,8 +84,9 @@ const prepareIndex = async () => {
   process.stdout.write(' - Base properties mapping\r\n');
   await request.put(getIndexUrl(), elasticMapping);
   process.stdout.write(' - Custom templates mapping\r\n');
+  const { features } = await settingsModel.get();
   const templates = await templatesModel.get();
-  const templatesMapping = elasticMapFactory.mapping(templates);
+  const templatesMapping = elasticMapFactory.mapping(templates, features.topicClassification);
   await request.put(`${getIndexUrl()}/_mapping`, templatesMapping);
   process.stdout.write(' [done]\n');
 };
