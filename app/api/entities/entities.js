@@ -148,6 +148,20 @@ async function updateEntity(entity, _template, unrestricted = false) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
 
+        const [relatedEntity] = await model.get({
+          'metadata.relationship_property_inherited.value': entity.sharedId,
+        });
+        if (relatedEntity) {
+          relatedEntity.metadata.relationship_property_inherited = relatedEntity.metadata.relationship_property_inherited.map(
+            prop => {
+              return {
+                ...prop,
+                ...(prop.value === entity.sharedId ? { inheritedValue: entity.metadata.text } : {}),
+              };
+            }
+          );
+        }
+
         const toSave = { ...entity };
 
         delete toSave.published;
@@ -382,20 +396,13 @@ export default {
     )[0];
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
-      await this.updateDenormalizedMetadataInRelatedEntities(entity);
+      // await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
     if (index) {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
     return entity;
-  },
-
-  async updateDenormalizedMetadataInRelatedEntities(entity) {
-    const related = await relationships.getByDocument(entity.sharedId, entity.language);
-    const sharedIds = related.map(r => r.entityData.sharedId);
-    console.log(sharedIds);
-    await this.updateMetdataFromRelationships(['A1'], entity.language);
   },
 
   async denormalize(_doc, { user, language }) {
