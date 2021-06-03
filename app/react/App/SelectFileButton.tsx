@@ -6,11 +6,12 @@ export type SelectFileButtonProps = {
 };
 
 export function SelectFileButton({ onFileImported, children }: SelectFileButtonProps) {
+  // @ts-ignore
   const fileInputRef: MutableRefObject<HTMLInputElement> = useRef();
 
   const show = () => {
     if (fileInputRef.current !== null) {
-      fileInputRef.current.click();
+      fileInputRef.current?.click();
     }
   };
 

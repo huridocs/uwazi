@@ -29,6 +29,7 @@ describe('SelectFileButton', () => {
 
   it('should react to click events', () => {
     const mRef = { current: { click: jest.fn() } };
+    // @ts-ignore
     useRef.mockReturnValueOnce(mRef);
     const mountComp = shallow(
       <SelectFileButton onFileImported={jest.fn()}>
