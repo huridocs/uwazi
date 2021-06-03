@@ -39,7 +39,7 @@ describe('PageViewer', () => {
       expect(component.find(MarkdownViewer).props().lists).toEqual([{ item: 'item' }]);
     });
 
-    it('should render the script, appending the datasets', () => {
+    it('should render the script', () => {
       const scriptElement = component.find(Script);
       expect(scriptElement).toMatchSnapshot();
     });
