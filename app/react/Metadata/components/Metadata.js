@@ -40,6 +40,9 @@ export const showByType = (prop, compact) => {
     case 'geolocation':
       result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
       break;
+    case 'select':
+      result = result = prop.parent ? `${prop.parent}: ${prop.value}` : result;
+      break;
     case 'geolocation_group':
       result = <GroupedGeolocationViewer members={prop.members} />;
       break;
@@ -58,7 +61,13 @@ export const showByType = (prop, compact) => {
           const value = showByType(_value, compact);
           return value && value.value ? value : { value };
         });
-        result = <ValueList compact={compact} property={prop} />;
+        result = prop.parent ? (
+          <>
+            <span>{prop.parent}</span> <ValueList compact={compact} property={prop} />
+          </>
+        ) : (
+          <ValueList compact={compact} property={prop} />
+        );
       }
       break;
   }

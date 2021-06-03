@@ -36,6 +36,7 @@ describe('metadata formater', () => {
     let multidaterange;
     let markdown;
     let select;
+    let selectWithCategory;
     let relationship1;
     let relationship2;
     let relationship3;
@@ -63,6 +64,7 @@ describe('metadata formater', () => {
         multidaterange,
         markdown,
         select,
+        selectWithCategory,
         image,
         preview,
         media,
@@ -88,7 +90,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toEqual(18);
+      expect(data.metadata.length).toEqual(19);
     });
 
     it('should process text type', () => {
@@ -102,8 +104,22 @@ describe('metadata formater', () => {
 
     it('should process multiselect type', () => {
       assessBasicProperties(multiselect, ['Multiselect', 'multiselect', 'templateID']);
-      expect(multiselect.value.length).toBe(3);
-      assessMultiValues(multiselect, ['Value 1', 'Value 2', 'Value 5'], true);
+      expect(multiselect.value.length).toBe(4);
+      assessMultiValues(multiselect, [
+        expect.objectContaining({ value: 'Value 1' }),
+        expect.objectContaining({ value: 'Value 2' }),
+        {
+          parent: 'Parent 1',
+          value: [
+            expect.objectContaining({ value: 'Value 5' }),
+            expect.objectContaining({ value: 'Value 6' }),
+          ],
+        },
+        {
+          parent: 'Parent 2',
+          value: [expect.objectContaining({ value: 'Value 7' })],
+        },
+      ]);
     });
 
     it('should process multidate type', () => {
@@ -149,6 +165,20 @@ describe('metadata formater', () => {
 
     it('should process select type', () => {
       assessBasicProperties(select, ['Select', 'select', 'templateID', 'Value 5']);
+    });
+
+    it('should process select with category type', () => {
+      expect(selectWithCategory).toEqual(
+        expect.objectContaining({
+          translateContext: 'templateID',
+          name: 'selectWithCategory',
+          content: 'thesauriId',
+          type: 'select',
+          label: 'selectWithCategory',
+          value: 'Value 5',
+          parent: 'Parent 1',
+        })
+      );
     });
 
     it('should process bound relationship types', () => {

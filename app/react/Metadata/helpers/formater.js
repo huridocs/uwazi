@@ -54,6 +54,26 @@ const addModificationDate = (result, doc) =>
     sortedBy: true,
   });
 
+const groupByParent = options => {
+  return options.reduce((groupedOptions, { parent, ...option }) => {
+    if (!parent) {
+      groupedOptions.push(option);
+      return groupedOptions;
+    }
+
+    const alreadyDefinedOption = groupedOptions.find(o => o.parent === parent);
+    if (alreadyDefinedOption) {
+      alreadyDefinedOption.value.push(option);
+      return groupedOptions;
+    }
+
+    const parentOption = { value: [option], parent: parent };
+    groupedOptions.push(parentOption);
+
+    return groupedOptions;
+  }, []);
+};
+
 const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
   const sortPropertyInMetadata = metadata.find(p => sortedProperty === `metadata.${p.name}`);
   if (
@@ -93,10 +113,12 @@ export default {
   getSelectOptions(option, thesauri) {
     let value = '';
     let icon;
+    let parent;
 
     if (option) {
       value = option.label || option.value;
       icon = option.icon;
+      parent = option.parent?.label;
     }
 
     let url;
@@ -104,7 +126,7 @@ export default {
       url = `/entity/${option.value}`;
     }
 
-    return { value, url, icon };
+    return { value, url, icon, parent };
   },
 
   multimedia(property, [{ value }], type) {
@@ -183,14 +205,16 @@ export default {
 
   select(property, [metadataValue], thesauris) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-    const { value, url, icon } = this.getSelectOptions(metadataValue, thesauri);
-    return { label: property.get('label'), name: property.get('name'), value, icon, url };
+    const { value, url, icon, parent } = this.getSelectOptions(metadataValue, thesauri);
+    return { label: property.get('label'), name: property.get('name'), value, icon, url, parent };
   },
 
   multiselect(property, thesauriValues, thesauris) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
     const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
-    return { label: property.get('label'), name: property.get('name'), value: sortedValues };
+
+    const groupsOptions = groupByParent(sortedValues);
+    return { label: property.get('label'), name: property.get('name'), value: groupsOptions };
   },
 
   // eslint-disable-next-line max-params, max-statements
