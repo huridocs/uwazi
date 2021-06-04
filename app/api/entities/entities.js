@@ -148,24 +148,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
 
-        //Crappy draft code starts
-        const [relatedEntity] = await model.get({
-          'metadata.relationship_property_inherited.value': entity.sharedId,
-        });
-        if (relatedEntity) {
-          relatedEntity.metadata.relationship_property_inherited = relatedEntity.metadata.relationship_property_inherited.map(
-            prop => {
-              return {
-                ...prop,
-                ...(prop.value === entity.sharedId ? { inheritedValue: entity.metadata.text } : {}),
-              };
-            }
-          );
-          model.saveUnrestricted(relatedEntity);
-        }
-
-        //Crappy draft code ends
-
         const toSave = { ...entity };
 
         delete toSave.published;
@@ -174,6 +156,38 @@ async function updateEntity(entity, _template, unrestricted = false) {
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
         }
+
+        //Crappy draft code starts
+        const [relatedEntity] = await model.get({
+          'metadata.relationship.value': entity.sharedId,
+        });
+        if (relatedEntity && toSave.metadata.text) {
+          relatedEntity.metadata.relationship = relatedEntity.metadata.relationship.map(prop => ({
+            ...prop,
+            ...(prop.value === toSave.sharedId ? { inheritedValue: toSave.metadata.text } : {}),
+          }));
+          model.saveUnrestricted(relatedEntity);
+        }
+        if (relatedEntity && toSave.metadata.multiselect) {
+          relatedEntity.metadata.relationship = relatedEntity.metadata.relationship.map(prop => ({
+            ...prop,
+            ...(prop.value === toSave.sharedId
+              ? { inheritedValue: toSave.metadata.multiselect }
+              : {}),
+          }));
+          model.saveUnrestricted(relatedEntity);
+        }
+        if (relatedEntity && toSave.metadata.relationshipB) {
+          relatedEntity.metadata.relationship = relatedEntity.metadata.relationship.map(prop => ({
+            ...prop,
+            ...(prop.value === toSave.sharedId
+              ? { inheritedValue: toSave.metadata.relationshipB }
+              : {}),
+          }));
+          model.saveUnrestricted(relatedEntity);
+        }
+        //Crappy draft code ends
+
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
             entity.suggestedMetadata,
@@ -768,7 +782,12 @@ export default {
   },
 
   /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
-  async renameInMetadata(valueId, changes, propertyContent, { types, restrictLanguage = null }) {
+  async renameInMetadata(
+    valueId,
+    changes,
+    propertyContent /* thesauriId*/,
+    { types, restrictLanguage = null }
+  ) {
     const properties = (await templates.get({ 'properties.content': propertyContent }))
       .reduce((m, t) => m.concat(t.properties), [])
       .filter(p => types.includes(p.type))
@@ -776,9 +795,40 @@ export default {
         p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
       );
 
+    const inheritedProperties = (
+      await templates.get({ 'properties.inherit.property': { $in: properties.map(p => p.id) } })
+    ).reduce((m, t) => m.concat(t.properties), []);
+    // .filter(p => types.includes(p.type))
+    // .filter(
+    //   p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
+    // );
+
     if (!properties.length) {
       return Promise.resolve();
     }
+
+    await Promise.all(
+      inheritedProperties.map(property =>
+        model.updateMany(
+          {
+            language: restrictLanguage,
+            [`metadata.${property.name}.inheritedValue.value`]: valueId,
+          },
+          {
+            $set: Object.keys(changes).reduce(
+              (set, prop) => ({
+                ...set,
+                [`metadata.${property.name}.$.inheritedValue.$[valueObject].${prop}`]: changes[
+                  prop
+                ],
+              }),
+              {}
+            ),
+          },
+          { arrayFilters: [{ 'valueObject.value': valueId }] }
+        )
+      )
+    );
 
     await Promise.all(
       properties.map(property =>
