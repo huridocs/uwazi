@@ -39,7 +39,7 @@ export interface PropertyOrThesaurusSchema
 const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
   properties.reduce<PropertyOrThesaurusSchema[]>((flatProps, p) => {
     if (p.values) {
-      return [...flatProps, ...p.values];
+      return [...flatProps, ...p.values, p];
     }
 
     return [...flatProps, p];

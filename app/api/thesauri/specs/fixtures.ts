@@ -14,7 +14,7 @@ const fixtures: DBFixture = {
       name: 'dictionary 2',
       values: [
         { id: '1', label: 'value 1' },
-        { id: '2', label: 'value 2' },
+        { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
       ],
     },
     {
@@ -95,7 +95,7 @@ const fixtures: DBFixture = {
       metadata: {
         multiselect: [
           { value: '1', label: '1' },
-          { value: '2', label: 'value 2' },
+          { value: '2', label: 'value 2', parent: { label: 'Parent', value: '3' } },
         ],
       },
     },
@@ -122,6 +122,7 @@ const fixtures: DBFixture = {
             { key: 'dictionary 2', value: 'dictionary 2' },
             { key: 'value 1', value: 'value 1' },
             { key: 'value 2', value: 'value 2' },
+            { key: 'Parent', value: 'Parent' },
           ],
         },
       ],

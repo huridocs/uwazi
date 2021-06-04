@@ -58,7 +58,8 @@ describe('thesauri', () => {
         const response = await thesauri.get(dictionaryId);
         expect(response[0].name).toBe('dictionary 2');
         expect(response[0].values[0].label).toBe('value 1');
-        expect(response[0].values[1].label).toBe('value 2');
+        expect(response[0].values[1].label).toBe('Parent');
+        expect(response[0].values[1].values[0].label).toBe('value 2');
       });
     });
   });
@@ -79,7 +80,8 @@ describe('thesauri', () => {
         expect(response.length).toBe(1);
         expect(response[0].name).toBe('dictionary 2');
         expect(response[0].values[0].label).toBe('value 1');
-        expect(response[0].values[1].label).toBe('value 2');
+        expect(response[0].values[1].label).toBe('Parent');
+        expect(response[0].values[1].values[0].label).toBe('value 2');
       });
     });
   });
@@ -255,7 +257,7 @@ describe('thesauri', () => {
           _id: dictionaryId,
           values: [
             { id: '1', label: 'value 1 changed' },
-            { id: '2', label: 'value 2' },
+            { id: '3', label: 'Parent changed', values: [{ id: '2', label: 'value 2' }] },
           ],
         };
 
@@ -272,7 +274,7 @@ describe('thesauri', () => {
           expect.objectContaining({
             multiselect: [
               { value: '1', label: 'value 1 changed' },
-              { value: '2', label: 'value 2' },
+              { value: '2', label: 'value 2', parent: { value: '3', label: 'Parent changed' } },
             ],
           })
         );
@@ -354,9 +356,10 @@ describe('thesauri', () => {
         const allTranslations = await translations.get();
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
         const labels = Object.keys(context.values);
-        expect(labels.length).toBe(4);
+        expect(labels.length).toBe(5);
         expect(labels[0]).toBe('new name');
-        expect(labels[3]).toBe('value 3');
+        expect(labels[3]).toBe('Parent');
+        expect(labels[4]).toBe('value 3');
       });
     });
   });
