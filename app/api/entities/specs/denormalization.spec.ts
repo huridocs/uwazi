@@ -1,40 +1,9 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import entities from 'api/entities';
 
-import { ObjectId } from 'mongodb';
 import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema } from 'shared/types/commonTypes';
 import thesauris from 'api/thesauri';
-
-function getIdMapper() {
-  const map = new Map<string, ObjectId>();
-
-  return function setAndGet(key: string) {
-    if (!map.has(key)) map.set(key, db.id() as ObjectId);
-
-    return map.get(key)!;
-  };
-}
-
-describe('getIdCache', () => {
-  it('should create a new id', () => {
-    const ids = getIdMapper();
-
-    expect(ids('key')).toBeDefined();
-  });
-
-  it('should create a different ids', () => {
-    const ids = getIdMapper();
-
-    expect(ids('key1')).not.toEqual(ids('key2'));
-  });
-
-  it('should cache ids', () => {
-    const ids = getIdMapper();
-
-    expect(ids('key')).toEqual(ids('key'));
-  });
-});
+import { getFixturesFactory } from '../../utils/fixturesFactory';
 
 const load = async (data: DBFixture) =>
   db.setupFixturesAndContext({
@@ -46,42 +15,14 @@ const load = async (data: DBFixture) =>
 afterAll(async () => db.disconnect());
 
 describe('Denormalize relationships', () => {
-  const ids = getIdMapper();
-
-  const entity = (id: string, props = {}): EntitySchema => ({
-    _id: ids(id),
-    sharedId: id,
-    language: 'en',
-    title: id,
-    ...props,
-  });
-
-  const relationshipProp = (name: string, relation: string, props = {}): PropertySchema => ({
-    id: ids(name).toString(),
-    label: name,
-    name,
-    type: 'relationship',
-    relationType: ids('rel1').toString(),
-    content: ids(relation).toString(),
-    ...props,
-  });
-
-  const property = (
-    name: string,
-    type: PropertySchema['type'] = 'text',
-    props = {}
-  ): PropertySchema => ({
-    id: name,
-    label: name,
-    name,
-    type,
-    ...props,
-  });
-
-  const metadataValue = (value: string) => ({ value, label: value });
+  const factory = getFixturesFactory();
 
   const modifyEntity = async (id: string, entityData: EntitySchema) => {
-    await entities.save({ ...entity(id), ...entityData }, { language: 'en', user: {} }, true);
+    await entities.save(
+      { ...factory.entity(id), ...entityData },
+      { language: 'en', user: {} },
+      true
+    );
   };
 
   describe('title and inherited text', () => {
@@ -89,24 +30,24 @@ describe('Denormalize relationships', () => {
       const fixtures: DBFixture = {
         templates: [
           {
-            _id: ids('templateA'),
+            _id: factory.id('templateA'),
             properties: [
-              relationshipProp('relationship', 'templateB', {
-                inherit: { type: 'text', property: ids('text').toString() },
+              factory.relationshipProp('relationship', 'templateB', 'rel1', {
+                inherit: { type: 'text', property: factory.id('text').toString() },
               }),
             ],
           },
-          { _id: ids('templateB'), properties: [property('text')] },
+          { _id: factory.id('templateB'), properties: [factory.property('text')] },
         ],
         entities: [
-          entity('A1', {
-            template: ids('templateA'),
+          factory.entity('A1', {
+            template: factory.id('templateA'),
             metadata: {
-              relationship: [metadataValue('B1'), metadataValue('B2')],
+              relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
             },
           }),
-          entity('B1', { template: ids('templateB') }),
-          entity('B2', { template: ids('templateB') }),
+          factory.entity('B1', { template: factory.id('templateB') }),
+          factory.entity('B2', { template: factory.id('templateB') }),
         ],
       };
 
@@ -141,45 +82,35 @@ describe('Denormalize relationships', () => {
       const fixtures: DBFixture = {
         templates: [
           {
-            _id: ids('templateA'),
+            _id: factory.id('templateA'),
             properties: [
-              relationshipProp('relationship', 'templateB', {
+              factory.relationshipProp('relationship', 'templateB', 'rel1', {
                 inherit: { type: 'multiselect', property: 'multiselect' },
               }),
             ],
           },
           {
-            _id: ids('templateB'),
+            _id: factory.id('templateB'),
             properties: [
-              property('multiselect', 'multiselect', {
-                content: ids('thesauri').toString(),
+              factory.property('multiselect', 'multiselect', {
+                content: factory.id('thesauri').toString(),
               }),
             ],
           },
         ],
-        dictionaries: [
-          {
-            name: 'thesauri',
-            _id: ids('thesauri'),
-            values: [
-              { _id: ids('T1'), id: 'T1', label: 'T1' },
-              { _id: ids('T2'), id: 'T2', label: 'T2' },
-              { _id: ids('T3'), id: 'T3', label: 'T3' },
-            ],
-          },
-        ],
+        dictionaries: [factory.thesauri('thesauri', ['T1', 'T2', 'T3'])],
         entities: [
-          entity('A1', {
-            template: ids('templateA'),
+          factory.entity('A1', {
+            template: factory.id('templateA'),
             metadata: {
-              relationship: [metadataValue('B1'), metadataValue('B2')],
+              relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
             },
           }),
-          entity('B1', {
-            template: ids('templateB'),
-            metadata: { multiselect: [metadataValue('T1')] },
+          factory.entity('B1', {
+            template: factory.id('templateB'),
+            metadata: { multiselect: [factory.metadataValue('T1')] },
           }),
-          entity('B2', { template: ids('templateB') }),
+          factory.entity('B2', { template: factory.id('templateB') }),
         ],
       };
       await load(fixtures);
@@ -218,15 +149,7 @@ describe('Denormalize relationships', () => {
         metadata: { multiselect: [{ value: 'T1' }] },
       });
 
-      await thesauris.save({
-        name: 'thesauri',
-        _id: ids('thesauri'),
-        values: [
-          { _id: ids('T1'), id: 'T1', label: 'new 1' },
-          { _id: ids('T2'), id: 'T2', label: 'T2' },
-          { _id: ids('T3'), id: 'T3', label: 'new 3' },
-        ],
-      });
+      await thesauris.save(factory.thesauri('thesauri', [['T1', 'new 1'], 'T2', ['T3', 'new 3']]));
 
       const relatedEntity = await entities.getById('A1', 'en');
       expect(relatedEntity?.metadata).toEqual({
@@ -250,37 +173,37 @@ describe('Denormalize relationships', () => {
       const fixtures: DBFixture = {
         templates: [
           {
-            _id: ids('templateA'),
+            _id: factory.id('templateA'),
             properties: [
-              relationshipProp('relationship', 'templateB', {
+              factory.relationshipProp('relationship', 'templateB', 'rel1', {
                 inherit: { type: 'multiselect', property: 'multiselect' },
               }),
             ],
           },
           {
-            _id: ids('templateB'),
-            properties: [relationshipProp('relationshipB', 'templateC')],
+            _id: factory.id('templateB'),
+            properties: [factory.relationshipProp('relationshipB', 'templateC', 'rel1')],
           },
           {
-            _id: ids('templateC'),
+            _id: factory.id('templateC'),
             properties: [],
           },
         ],
         entities: [
-          entity('A1', {
-            template: ids('templateA'),
+          factory.entity('A1', {
+            template: factory.id('templateA'),
             metadata: {
-              relationship: [metadataValue('B1'), metadataValue('B2')],
+              relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
             },
           }),
-          entity('B1', {
-            template: ids('templateB'),
-            metadata: { relationshipB: [metadataValue('T1')] },
+          factory.entity('B1', {
+            template: factory.id('templateB'),
+            metadata: { relationshipB: [factory.metadataValue('T1')] },
           }),
-          entity('B2', { template: ids('templateB') }),
+          factory.entity('B2', { template: factory.id('templateB') }),
 
-          entity('C1', { template: ids('templateC') }),
-          entity('C2', { template: ids('templateC') }),
+          factory.entity('C1', { template: factory.id('templateC') }),
+          factory.entity('C2', { template: factory.id('templateC') }),
         ],
       };
       await load(fixtures);
