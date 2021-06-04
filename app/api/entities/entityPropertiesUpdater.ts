@@ -1,6 +1,7 @@
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { generateID } from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
+import { search } from 'api/search';
 import model from './entitiesModel';
 
 const updateRecursively = async (
@@ -34,6 +35,9 @@ const updateRecursively = async (
       )
     )
   );
+
+  await search.indexEntities({ sharedId: { $in: sharedIds } });
+
   if (sharedIds.length === batchSize) {
     return updateRecursively(templateId, generatedIdProperties, searchQuery);
   }
