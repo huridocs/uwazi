@@ -86,7 +86,10 @@ const prepareIndex = async () => {
   process.stdout.write(' - Custom templates mapping\r\n');
   const { features } = await settingsModel.get();
   const templates = await templatesModel.get();
-  const templatesMapping = elasticMapFactory.mapping(templates, features.topicClassification);
+  const templatesMapping = elasticMapFactory.mapping(
+    templates,
+    features?.topicClassification || false
+  );
   await request.put(`${getIndexUrl()}/_mapping`, templatesMapping);
   process.stdout.write(' [done]\n');
 };
