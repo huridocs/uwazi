@@ -9,10 +9,10 @@ import { TemplateSchema } from 'shared/types/templateType';
 import * as entitiesIndex from 'api/search/entitiesIndex';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
-import { validateEntity } from '../../../shared/types/entitySchema';
-import { customErrorMessages } from '../metadataValidators.js';
+import { customErrorMessages } from '../validation/metadataValidators.js';
+import { validateEntity } from '../validateEntity';
 
-describe('entity schema', () => {
+describe('validateEntity', () => {
   beforeEach(async () => {
     spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
     //@ts-ignore
@@ -216,7 +216,7 @@ describe('entity schema', () => {
 
       describe('markdown property', () => {
         it('should fail if value is not a string', async () => {
-          const entity = createEntity({ metadata: { markdown: [{ value: {} }] } });
+          const entity = createEntity({ metadata: { markdown: [{ value: 345 }] } });
           await expectError(
             entity,
             customErrorMessages[propertyTypes.markdown],
@@ -292,12 +292,6 @@ describe('entity schema', () => {
             customErrorMessages[propertyTypes.multidate],
             ".metadata['multidate']"
           );
-          entity = createEntity({ metadata: { multidate: { value: 100 } } });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.multidate],
-            ".metadata['multidate']"
-          );
         });
 
         it('should allow null items', async () => {
@@ -341,17 +335,6 @@ describe('entity schema', () => {
           await testValid(entity);
         });
 
-        it('should fail if from and to are not numbers', async () => {
-          const entity = createEntity({
-            metadata: { daterange: [{ value: { from: 'test', to: 'test' } }] },
-          });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.daterange],
-            ".metadata['daterange']"
-          );
-        });
-
         it('should fail if from is greater than to', async () => {
           const entity = createEntity({
             metadata: { daterange: [{ value: { from: 100, to: 50 } }] },
@@ -367,14 +350,8 @@ describe('entity schema', () => {
       describe('multidaterange property', () => {
         it('should fail if value is not array of date ranges', async () => {
           let entity = createEntity({
-            metadata: { multidaterange: [{ value: { from: 100, to: '200' } }] },
+            metadata: { multidaterange: [{ value: 100 }, { value: 200 }] },
           });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.multidaterange],
-            ".metadata['multidaterange']"
-          );
-          entity = createEntity({ metadata: { multidaterange: [{ value: 100 }, { value: 200 }] } });
           await expectError(
             entity,
             customErrorMessages[propertyTypes.multidaterange],
@@ -396,14 +373,8 @@ describe('entity schema', () => {
       });
 
       describe('select property', () => {
-        it('should fail if value is not a non-empty string', async () => {
-          let entity = createEntity({ metadata: { select: [{ value: 10 }] } });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.select],
-            ".metadata['select']"
-          );
-          entity = createEntity({ metadata: { select: [{ value: ['test'] }] } });
+        it('should fail if value is not string', async () => {
+          const entity = createEntity({ metadata: { select: [{ value: 55 }] } });
           await expectError(
             entity,
             customErrorMessages[propertyTypes.select],
@@ -412,7 +383,7 @@ describe('entity schema', () => {
         });
 
         it('should allow empty string if property is not required', async () => {
-          const entity = createEntity({ metadata: { select: [{ value: '' }] } });
+          const entity = createEntity({ metadata: { markdown: [{ value: '' }] } });
           await testValid(entity);
         });
 
@@ -442,14 +413,8 @@ describe('entity schema', () => {
       });
 
       describe('multiselect property', () => {
-        it('should fail if value is not an array of non-empty strings', async () => {
-          let entity = createEntity({ metadata: { multiselect: ['val1', 10, {}] } });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.multiselect],
-            ".metadata['multiselect']"
-          );
-          entity = createEntity({ metadata: { multiselect: ['one', '', 'two'] } });
+        it('should fail if value is an empty string', async () => {
+          const entity = createEntity({ metadata: { multiselect: [{ value: '' }] } });
           await expectError(
             entity,
             customErrorMessages[propertyTypes.multiselect],
@@ -485,17 +450,9 @@ describe('entity schema', () => {
       });
 
       describe('relationship property', () => {
-        it('should fail if value is not an array of non-empty strings', async () => {
-          let entity = createEntity({
-            metadata: { relationship: [{ value: 'val1' }, { value: 10 }, {}] },
-          });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.relationship],
-            ".metadata['relationship']"
-          );
-          entity = createEntity({
-            metadata: { relationship: [{ value: 'one' }, { value: '' }, { value: 'two' }] },
+        it('should fail if value is empty string', async () => {
+          const entity = createEntity({
+            metadata: { relationship: [{ value: '' }, { value: '' }] },
           });
           await expectError(
             entity,
@@ -527,7 +484,7 @@ describe('entity schema', () => {
 
         it('should not allow foreign ids that do not belong to diferent template', async () => {
           const entity = createEntity({
-            language: '',
+            language: 'es',
             metadata: {
               relationship: [{ value: 'entity1' }, { value: 'entity2' }, { value: 'entity3' }],
             },
@@ -546,7 +503,7 @@ describe('entity schema', () => {
 
       describe('link property', () => {
         it('should fail if value is not an object', async () => {
-          const entity = createEntity({ metadata: { link: ['label', 'url'] } });
+          const entity = createEntity({ metadata: { link: [{ value: 'bad_link' }] } });
           await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
         });
 
@@ -559,15 +516,6 @@ describe('entity schema', () => {
           await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
         });
 
-        it('should fail if label or url is not a string', async () => {
-          let entity = createEntity({
-            metadata: { link: [{ value: { label: 'label', url: 10 } }] },
-          });
-          await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
-          entity = createEntity({ metadata: { link: [{ value: { label: true, url: 'url' } }] } });
-          await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
-        });
-
         it('should be ok if both are empty', async () => {
           const entity = createEntity({ metadata: { link: [{ value: { label: '', url: '' } }] } });
           await testValid(entity);
@@ -577,26 +525,7 @@ describe('entity schema', () => {
       describe('geolocation property', () => {
         it('should fail if value is not an array of lat/lon object', async () => {
           const entity = createEntity({
-            metadata: { geolocation: { value: { lat: 80, lon: 80, label: '' } } },
-          });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.geolocation],
-            ".metadata['geolocation']"
-          );
-        });
-
-        it('should fail if lat or lon are not numbers', async () => {
-          let entity = createEntity({
-            metadata: { geolocation: [{ value: { lat: '', lon: 80, label: '' } }] },
-          });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.geolocation],
-            ".metadata['geolocation']"
-          );
-          entity = createEntity({
-            metadata: { geolocation: [{ value: { lat: 80, lon: '', label: '' } }] },
+            metadata: { geolocation: [{ value: 'bad_geo' }] },
           });
           await expectError(
             entity,
@@ -617,23 +546,6 @@ describe('entity schema', () => {
             metadata: { geolocation: [{ value: { label: undefined, lat: 10, lon: 10 } }] },
           });
           await testValid(entity);
-        });
-
-        it('should fail if lat or lon is missing', async () => {
-          let entity = createEntity({
-            metadata: { geolocation: [{ value: { lon: 80, label: '' } }] },
-          });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.geolocation],
-            ".metadata['geolocation']"
-          );
-          entity = createEntity({ metadata: { geolocation: [{ value: { lat: 80, label: '' } }] } });
-          await expectError(
-            entity,
-            customErrorMessages[propertyTypes.geolocation],
-            ".metadata['geolocation']"
-          );
         });
 
         it('should fail if lat is not within range -90 - 90', async () => {
