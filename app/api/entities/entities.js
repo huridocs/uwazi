@@ -186,6 +186,24 @@ async function updateEntity(entity, _template, unrestricted = false) {
           }));
           model.saveUnrestricted(relatedEntity);
         }
+
+        const [inheritingEntity] = await model.get({
+          'metadata.relationship.inheritedValue.value': entity.sharedId,
+        });
+
+        if (inheritingEntity) {
+          inheritingEntity.metadata.relationship = inheritingEntity.metadata.relationship.map(
+            prop => ({
+              ...prop,
+              inheritedValue: prop.inheritedValue.map(inhe => ({
+                ...inhe,
+                label: inhe.value === toSave.sharedId ? toSave.title : inhe.label,
+              })),
+            })
+          );
+          model.saveUnrestricted(inheritingEntity);
+        }
+
         //Crappy draft code ends
 
         if (entity.suggestedMetadata) {
