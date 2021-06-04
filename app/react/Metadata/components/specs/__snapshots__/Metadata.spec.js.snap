@@ -328,6 +328,84 @@ exports[`Metadata should render string values 1`] = `
 </Fragment>
 `;
 
+exports[`Metadata when passing a prop with multivalue and parents should render the list with the parents too 1`] = `
+<Fragment>
+  <dl
+    className="metadata-type-default metadata-name-name  "
+    key="name_0"
+  >
+    <dt>
+      label
+    </dt>
+    <dd
+      className=""
+    >
+      <span>
+        Parent
+      </span>
+       
+      <ValueList
+        compact={false}
+        property={
+          Object {
+            "label": "label",
+            "name": "name",
+            "parent": "Parent",
+            "value": Array [
+              Object {
+                "value": <React.Fragment>
+                  <span>
+                    Parent
+                  </span>
+                   
+                  <ValueList
+                    compact={false}
+                    property={
+                      Object {
+                        "parent": "Parent",
+                        "value": Array [
+                          Object {
+                            "value": undefined,
+                          },
+                          Object {
+                            "value": undefined,
+                          },
+                        ],
+                      }
+                    }
+                  />
+                </React.Fragment>,
+              },
+              Object {
+                "value": "three",
+              },
+            ],
+          }
+        }
+      />
+    </dd>
+  </dl>
+</Fragment>
+`;
+
+exports[`Metadata when passing a prop with parent should render the parent too 1`] = `
+<Fragment>
+  <dl
+    className="metadata-type-select metadata-name-name  "
+    key="name_0"
+  >
+    <dt>
+      label
+    </dt>
+    <dd
+      className=""
+    >
+      Parent: Child Value
+    </dd>
+  </dl>
+</Fragment>
+`;
+
 exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
 <Fragment>
   <dl
