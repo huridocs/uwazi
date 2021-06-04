@@ -1,5 +1,3 @@
-/** @format */
-
 import model from './entitiesModel';
 import * as endpointSchema from './endpointSchema';
 
