@@ -1,14 +1,14 @@
 import { TabLink, TabContent } from 'react-tabs-redux';
 import React from 'react';
 
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import MarkDownViewer from 'app/Markdown';
 
-import MarkDown from '../MarkDown';
+import { MarkDown, MarkDownType } from '../MarkDown';
 
 describe('MarkDown', () => {
-  let component;
-  let props;
+  let component: ShallowWrapper<MarkDown>;
+  let props: MarkDownType;
 
   beforeEach(() => {
     props = {
@@ -18,6 +18,7 @@ describe('MarkDown', () => {
   });
 
   const render = () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<MarkDown {...props} />);
   };
 
