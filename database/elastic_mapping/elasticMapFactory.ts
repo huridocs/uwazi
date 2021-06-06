@@ -2,7 +2,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { propertyMappings } from './mappings';
 
 export default {
-  mapping: (templates: TemplateSchema[], topictopicClassification: boolean) => {
+  mapping: (templates: TemplateSchema[], topicClassification: boolean) => {
     const baseMappingObject = {
       properties: {
         metadata: {
@@ -27,7 +27,7 @@ export default {
             properties: propertyMappings[property.type](),
           };
           if (
-            topictopicClassification &&
+            topicClassification &&
             (property.type === 'select' || property.type === 'multiselect')
           ) {
             map.properties.suggestedMetadata.properties[property.name] = {
@@ -40,7 +40,7 @@ export default {
               properties: propertyMappings[property.inherit.type](),
             };
             if (
-              topictopicClassification &&
+              topicClassification &&
               (property.type === 'select' || property.type === 'multiselect')
             ) {
               map.properties.suggestedMetadata.properties[
