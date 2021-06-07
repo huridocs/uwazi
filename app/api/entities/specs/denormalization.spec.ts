@@ -25,7 +25,7 @@ describe('Denormalize relationships', () => {
     );
   };
 
-  describe('title and inherited text', () => {
+  describe('title and basic property (text)', () => {
     it('should update title and text property on related entities denormalized properties', async () => {
       const fixtures: DBFixture = {
         templates: [
@@ -35,19 +35,25 @@ describe('Denormalize relationships', () => {
               factory.relationshipProp('relationship', 'templateB', 'rel1', {
                 inherit: { type: 'text', property: factory.id('text').toString() },
               }),
+              factory.relationshipProp('relationship2', 'templateC', 'rel1', {
+                inherit: { type: 'text', property: factory.id('another_text').toString() },
+              }),
             ],
           },
           { _id: factory.id('templateB'), properties: [factory.property('text')] },
+          { _id: factory.id('templateC'), properties: [factory.property('another_text')] },
         ],
         entities: [
           factory.entity('A1', {
             template: factory.id('templateA'),
             metadata: {
               relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
+              relationship2: [factory.metadataValue('C1')],
             },
           }),
           factory.entity('B1', { template: factory.id('templateB') }),
           factory.entity('B2', { template: factory.id('templateB') }),
+          factory.entity('C1', { template: factory.id('templateC') }),
         ],
       };
 
@@ -56,9 +62,15 @@ describe('Denormalize relationships', () => {
         title: 'new Title',
         metadata: { text: [{ value: 'text 1 changed' }] },
       });
+
       await modifyEntity('B2', {
         title: 'new Title 2',
         metadata: { text: [{ value: 'text 2 changed' }] },
+      });
+
+      await modifyEntity('C1', {
+        title: 'new Title C1',
+        metadata: { another_text: [{ value: 'another text changed' }] },
       });
 
       const relatedEntity = await entities.getById('A1', 'en');
@@ -73,6 +85,12 @@ describe('Denormalize relationships', () => {
             inheritedValue: [{ value: 'text 2 changed' }],
           }),
         ],
+        relationship2: [
+          expect.objectContaining({
+            label: 'new Title C1',
+            inheritedValue: [{ value: 'another text changed' }],
+          }),
+        ],
       });
     });
   });
@@ -85,7 +103,7 @@ describe('Denormalize relationships', () => {
             _id: factory.id('templateA'),
             properties: [
               factory.relationshipProp('relationship', 'templateB', 'rel1', {
-                inherit: { type: 'multiselect', property: 'multiselect' },
+                inherit: { type: 'multiselect', property: factory.id('multiselect').toString() },
               }),
             ],
           },
@@ -176,7 +194,7 @@ describe('Denormalize relationships', () => {
             _id: factory.id('templateA'),
             properties: [
               factory.relationshipProp('relationship', 'templateB', 'rel1', {
-                inherit: { type: 'multiselect', property: 'multiselect' },
+                inherit: { type: 'relationship', property: factory.id('relationshipB').toString() },
               }),
             ],
           },
@@ -184,22 +202,14 @@ describe('Denormalize relationships', () => {
             _id: factory.id('templateB'),
             properties: [factory.relationshipProp('relationshipB', 'templateC', 'rel1')],
           },
-          {
-            _id: factory.id('templateC'),
-            properties: [],
-          },
+          { _id: factory.id('templateC'), properties: [] },
         ],
         entities: [
           factory.entity('A1', {
             template: factory.id('templateA'),
-            metadata: {
-              relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
-            },
+            metadata: { relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')] },
           }),
-          factory.entity('B1', {
-            template: factory.id('templateB'),
-            metadata: { relationshipB: [factory.metadataValue('T1')] },
-          }),
+          factory.entity('B1', { template: factory.id('templateB') }),
           factory.entity('B2', { template: factory.id('templateB') }),
 
           factory.entity('C1', { template: factory.id('templateC') }),
@@ -207,17 +217,11 @@ describe('Denormalize relationships', () => {
         ],
       };
       await load(fixtures);
+      await modifyEntity('B1', { metadata: { relationshipB: [{ value: 'C1' }] } });
+      await modifyEntity('B2', { metadata: { relationshipB: [{ value: 'C2' }] } });
     });
 
     it('should update denormalized properties when relationship selected changes', async () => {
-      await modifyEntity('B1', {
-        metadata: { relationshipB: [{ value: 'C1' }] },
-      });
-
-      await modifyEntity('B2', {
-        metadata: { relationshipB: [{ value: 'C2' }] },
-      });
-
       const relatedEntity = await entities.getById('A1', 'en');
       expect(relatedEntity?.metadata).toEqual({
         relationship: [
@@ -232,8 +236,6 @@ describe('Denormalize relationships', () => {
     });
 
     it('should update denormalized properties when relationship inherited label changes', async () => {
-      await modifyEntity('B1', { metadata: { relationshipB: [{ value: 'C1' }] } });
-      await modifyEntity('B2', { metadata: { relationshipB: [{ value: 'C2' }] } });
       await modifyEntity('C1', { title: 'new C1' });
       await modifyEntity('C2', { title: 'new C2' });
 
