@@ -93,6 +93,96 @@ describe('Denormalize relationships', () => {
         ],
       });
     });
+
+    fit('should update title and text property denormalized on related entities from 2 different templates', async () => {
+      const fixtures: DBFixture = {
+        templates: [
+          {
+            _id: factory.id('templateA'),
+            properties: [factory.property('text')],
+          },
+          {
+            _id: factory.id('templateB'),
+            properties: [
+              factory.relationshipProp('relationship_b', 'templateA', 'rel1', {
+                inherit: { type: 'text', property: factory.id('text').toString() },
+              }),
+            ],
+          },
+          {
+            _id: factory.id('templateC'),
+            properties: [
+              factory.relationshipProp('relationship_c', 'templateA', 'rel1', {
+                inherit: { type: 'text', property: factory.id('text').toString() },
+              }),
+            ],
+          },
+        ],
+        entities: [
+          factory.entity('A1', {
+            template: factory.id('templateA'),
+          }),
+          factory.entity('B1', {
+            template: factory.id('templateB'),
+            metadata: {
+              relationship_b: [factory.metadataValue('A1')],
+            },
+          }),
+          factory.entity('B2', {
+            template: factory.id('templateB'),
+            metadata: {
+              relationship_b: [factory.metadataValue('A1')],
+            },
+          }),
+          factory.entity('C1', {
+            template: factory.id('templateC'),
+            metadata: {
+              relationship_c: [factory.metadataValue('A1')],
+            },
+          }),
+        ],
+      };
+
+      await load(fixtures);
+
+      await modifyEntity('A1', {
+        title: 'new A1',
+        metadata: { text: [{ value: 'text 1 changed' }] },
+      });
+
+      const [relatedB1, relatedB2, relatedC] = [
+        await entities.getById('B1', 'en'),
+        await entities.getById('B2', 'en'),
+        await entities.getById('C1', 'en'),
+      ];
+
+      expect(relatedB1?.metadata).toEqual({
+        relationship_b: [
+          expect.objectContaining({
+            label: 'new A1',
+            inheritedValue: [{ value: 'text 1 changed' }],
+          }),
+        ],
+      });
+
+      expect(relatedB2?.metadata).toEqual({
+        relationship_b: [
+          expect.objectContaining({
+            label: 'new A1',
+            inheritedValue: [{ value: 'text 1 changed' }],
+          }),
+        ],
+      });
+
+      expect(relatedC?.metadata).toEqual({
+        relationship_c: [
+          expect.objectContaining({
+            label: 'new A1',
+            inheritedValue: [{ value: 'text 1 changed' }],
+          }),
+        ],
+      });
+    });
   });
 
   describe('inherited select/multiselect (thesauri)', () => {
