@@ -158,51 +158,55 @@ async function updateEntity(entity, _template, unrestricted = false) {
         }
 
         //Crappy draft code starts
-        const [relatedEntity] = await model.get({
-          'metadata.relationship.value': entity.sharedId,
-        });
-        if (relatedEntity && toSave.metadata.text) {
-          relatedEntity.metadata.relationship = relatedEntity.metadata.relationship.map(prop => ({
-            ...prop,
-            ...(prop.value === toSave.sharedId ? { inheritedValue: toSave.metadata.text } : {}),
-          }));
-          model.saveUnrestricted(relatedEntity);
-        }
-        if (relatedEntity && toSave.metadata.multiselect) {
-          relatedEntity.metadata.relationship = relatedEntity.metadata.relationship.map(prop => ({
-            ...prop,
-            ...(prop.value === toSave.sharedId
-              ? { inheritedValue: toSave.metadata.multiselect }
-              : {}),
-          }));
-          model.saveUnrestricted(relatedEntity);
-        }
-        if (relatedEntity && toSave.metadata.relationshipB) {
-          relatedEntity.metadata.relationship = relatedEntity.metadata.relationship.map(prop => ({
-            ...prop,
-            ...(prop.value === toSave.sharedId
-              ? { inheritedValue: toSave.metadata.relationshipB }
-              : {}),
-          }));
-          model.saveUnrestricted(relatedEntity);
-        }
-
-        const [inheritingEntity] = await model.get({
-          'metadata.relationship.inheritedValue.value': entity.sharedId,
-        });
-
-        if (inheritingEntity) {
-          inheritingEntity.metadata.relationship = inheritingEntity.metadata.relationship.map(
-            prop => ({
-              ...prop,
-              inheritedValue: prop.inheritedValue.map(inhe => ({
-                ...inhe,
-                label: inhe.value === toSave.sharedId ? toSave.title : inhe.label,
-              })),
-            })
+        const fullEntity = { ...currentDoc, ...toSave };
+        const properties = (await templates.get({ 'properties.content': template._id.toString(), 'properties.inherit': {$exists: true} }))
+          .reduce((m, t) => m.concat(t.properties), [])
+          .filter(
+            p => template._id?.toString() === p.content?.toString()
           );
-          model.saveUnrestricted(inheritingEntity);
+
+        const [property] = properties;
+        // console.log(properties);
+        // console.log(template.properties);
+        const [ toUpdateProp ] = template.properties
+          .filter(
+            p => p._id.toString() === property?.inherit?.property
+          );
+
+        if (toUpdateProp && fullEntity.metadata[toUpdateProp.name]) {
+          await this.renameInMetadata(
+            fullEntity.sharedId,
+            {
+              inheritedValue: fullEntity.metadata[toUpdateProp.name],
+              /// is this needed ?
+              label: fullEntity.title,
+              icon: fullEntity.icon,
+              /// ??
+            },
+            fullEntity.template,
+            {
+              types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
+              restrictLanguage: fullEntity.language,
+            }
+          );
         }
+
+
+        // if (toUpdateProp && fullEntity.metadata[toUpdateProp.name]) {
+        //   await this.renameInMetadata(
+        //     fullEntity.sharedId,
+        //     {
+        //       inheritedValue: fullEntity.metadata[toUpdateProp.name],
+        //       label: fullEntity.title,
+        //       icon: fullEntity.icon,
+        //     },
+        //     fullEntity.template,
+        //     {
+        //       types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
+        //       restrictLanguage: fullEntity.language,
+        //     }
+        //   );
+        // }
 
         //Crappy draft code ends
 
@@ -800,18 +804,16 @@ export default {
   },
 
   /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
-  async renameInMetadata(
-    valueId,
-    changes,
-    propertyContent /* thesauriId*/,
-    { types, restrictLanguage = null }
-  ) {
+  async renameInMetadata(valueId, changes, propertyContent, { types, restrictLanguage = null }) {
     const properties = (await templates.get({ 'properties.content': propertyContent }))
       .reduce((m, t) => m.concat(t.properties), [])
       .filter(p => types.includes(p.type))
       .filter(
         p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
       );
+
+    // console.log(JSON.stringify(await templates.get(), null, ' '));
+    // console.log(JSON.stringify(properties, null, ' '));
 
     const inheritedProperties = (
       await templates.get({ 'properties.inherit.property': { $in: properties.map(p => p.id) } })
@@ -821,6 +823,7 @@ export default {
     //   p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
     // );
 
+    // console.log(JSON.stringify(inheritedProperties, null, ' '));
     if (!properties.length) {
       return Promise.resolve();
     }

@@ -33,6 +33,7 @@ export function getFixturesFactory() {
       relation: string,
       props = {}
     ): PropertySchema => ({
+      _id: idMapper(name),
       id: idMapper(name).toString(),
       label: name,
       name,
@@ -46,7 +47,7 @@ export function getFixturesFactory() {
       name: string,
       type: PropertySchema['type'] = 'text',
       props = {}
-    ): PropertySchema => ({ id: name, label: name, name, type, ...props }),
+    ): PropertySchema => ({ _id: idMapper(name), id: idMapper(name).toString(), label: name, name, type, ...props }),
 
     metadataValue: (value: string) => ({ value, label: value }),
 
