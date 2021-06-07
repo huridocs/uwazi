@@ -2,9 +2,6 @@ import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
 import { propertyTypes } from 'shared/propertyTypes';
 
 const validateSingleWrappedValue = validationFn => value => {
-  if (!Array.isArray(value)) {
-    return false;
-  }
   if (value.length !== 1) {
     return !value.length;
   }

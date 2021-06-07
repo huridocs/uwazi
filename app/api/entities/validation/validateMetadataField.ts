@@ -1,14 +1,14 @@
 import Ajv from 'ajv';
 import { isUndefined, isNull } from 'util';
 import { ensure } from 'shared/tsUtils';
-import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
 import { propertyTypes } from 'shared/propertyTypes';
 import entities from 'api/entities';
 import thesauris from 'api/thesauri';
+import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
-import { EntitySchema } from './entityType';
-import { PropertySchema, MetadataObjectSchema } from './commonTypes';
-import { ThesaurusSchema, ThesaurusValueSchema } from './thesaurusType';
+import { validators, customErrorMessages } from './metadataValidators';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
