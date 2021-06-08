@@ -73,7 +73,6 @@ export class EditTranslationForm extends Component {
   render() {
     const contextId = this.props.context;
     let defaultTranslationContext = { values: [] };
-    let importButton;
 
     const translations = this.prepareTranslations.call(this);
     if (translations.length) {
@@ -81,8 +80,8 @@ export class EditTranslationForm extends Component {
         translations[0].contexts.find(ctx => ctx.id === contextId) || defaultTranslationContext;
     }
 
-    if (contextId === 'System') {
-      importButton = (
+    const importButton =
+      contextId === 'System' ? (
         <SelectFileButton onFileImported={this.importTranslationsFile}>
           <button
             type="button"
@@ -93,8 +92,9 @@ export class EditTranslationForm extends Component {
             <span className="btn-label">Import</span>
           </button>
         </SelectFileButton>
+      ) : (
+        false
       );
-    }
 
     const contextKeys = Object.keys(defaultTranslationContext.values);
 
