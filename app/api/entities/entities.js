@@ -348,6 +348,7 @@ const reindexEntitiesByTemplate = async (template, options) => {
   if (options.reindex && (options.generatedIdAdded || templateHasRelationShipProperty)) {
     return search.indexEntities({ template: template._id });
   }
+  return Promise.resolve();
 };
 
 export default {
