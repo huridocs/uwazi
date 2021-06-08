@@ -210,20 +210,14 @@ describe('Denormalize relationships', () => {
           },
         ],
         entities: [
-          factory.entity('A1', {
-            template: factory.id('templateA'),
-          }),
+          factory.entity('A1', { template: factory.id('templateA') }),
           factory.entity('B1', {
             template: factory.id('templateB'),
-            metadata: {
-              relationship_b: [factory.metadataValue('A1')],
-            },
+            metadata: { relationship_b: [factory.metadataValue('A1')] },
           }),
           factory.entity('C1', {
             template: factory.id('templateC'),
-            metadata: {
-              relationship_c: [factory.metadataValue('A1')],
-            },
+            metadata: { relationship_c: [factory.metadataValue('A1')] },
           }),
         ],
       };
@@ -332,6 +326,12 @@ describe('Denormalize relationships', () => {
         metadata: { multiselect: [{ value: 'T1' }] },
       });
 
+      await modifyEntity('A1', {
+        metadata: {
+          relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
+        },
+      });
+
       await thesauris.save(factory.thesauri('thesauri', [['T1', 'new 1'], 'T2', ['T3', 'new 3']]));
 
       const relatedEntity = await entities.getById('A1', 'en');
@@ -372,7 +372,12 @@ describe('Denormalize relationships', () => {
         entities: [
           factory.entity('A1', {
             template: factory.id('templateA'),
-            metadata: { relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')] },
+            metadata: {
+              relationship: [
+                { value: 'B1', inheritedValue: [{ value: 'C1' }] },
+                { value: 'B2', inheritedValue: [{ value: 'C2' }] },
+              ],
+            },
           }),
           factory.entity('B1', { template: factory.id('templateB') }),
           factory.entity('B2', { template: factory.id('templateB') }),
@@ -384,6 +389,9 @@ describe('Denormalize relationships', () => {
       await load(fixtures);
       await modifyEntity('B1', { metadata: { relationshipB: [{ value: 'C1' }] } });
       await modifyEntity('B2', { metadata: { relationshipB: [{ value: 'C2' }] } });
+      // await modifyEntity('A1', {
+      //   metadata: { relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')] },
+      // });
     });
 
     it('should update denormalized properties when relationship selected changes', async () => {

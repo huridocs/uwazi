@@ -21,6 +21,7 @@ import { validateEntity } from 'shared/types/entitySchema';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
+import { updateTransitiveDenormalization, updateDenormalization } from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -145,7 +146,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
           (entity.icon && !currentDoc.icon) ||
           (entity.icon && currentDoc.icon && currentDoc.icon._id !== entity.icon._id)
         ) {
-          await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
+          // await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
 
         const toSave = { ...entity };
@@ -158,57 +159,52 @@ async function updateEntity(entity, _template, unrestricted = false) {
         }
 
         //Crappy draft code starts
+
+        // entidad(title entidadC) <- entidadB <- entidadC;
+        // entidad(title thesauri) <- entidadB <- thesauri;
+
+        // entidadB(title && inherited prop) <- entidadA;
+        // entidadC(title && inherited prop) <- entidadA;
+
+        // entidad(thesauriValue) <- thesauri;
+
         const fullEntity = { ...currentDoc, ...toSave };
-        const properties = (await templates.get({ 'properties.content': template._id.toString(), 'properties.inherit': {$exists: true} }))
+
+        const properties = (
+          await templates.get({
+            'properties.content': template._id.toString(),
+            'properties.inherit': { $exists: true },
+          })
+        )
           .reduce((m, t) => m.concat(t.properties), [])
-          .filter(
-            p => template._id?.toString() === p.content?.toString()
-          );
+          .filter(p => template._id?.toString() === p.content?.toString());
 
-        const [property] = properties;
-        // console.log(properties);
-        // console.log(template.properties);
-        const [ toUpdateProp ] = template.properties
-          .filter(
-            p => p._id.toString() === property?.inherit?.property
-          );
+        const inheritIds = properties.map(p => p.inherit?.property);
+        const toUpdateProps = template.properties.filter(p =>
+          inheritIds.includes(p._id.toString())
+        );
 
-        if (toUpdateProp && fullEntity.metadata[toUpdateProp.name]) {
-          await this.renameInMetadata(
-            fullEntity.sharedId,
+        await updateTransitiveDenormalization(
+          { id: fullEntity.sharedId, language: fullEntity.language },
+          { label: fullEntity.title, icon: fullEntity.icon },
+          await templates.esteNombreEsUnAskoCambiar(template._id.toString())
+        );
+
+        await toUpdateProps.reduce(async (prev, prop) => {
+          await prev;
+          return updateDenormalization(
+            { id: fullEntity.sharedId, language: fullEntity.language },
             {
-              inheritedValue: fullEntity.metadata[toUpdateProp.name],
-              /// is this needed ?
+              inheritedValue: fullEntity.metadata[prop.name],
               label: fullEntity.title,
               icon: fullEntity.icon,
-              /// ??
             },
-            fullEntity.template,
-            {
-              types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
-              restrictLanguage: fullEntity.language,
-            }
+            properties.filter(p => {
+              return prop.id === p.inherit?.property;
+            })
           );
-        }
-
-
-        // if (toUpdateProp && fullEntity.metadata[toUpdateProp.name]) {
-        //   await this.renameInMetadata(
-        //     fullEntity.sharedId,
-        //     {
-        //       inheritedValue: fullEntity.metadata[toUpdateProp.name],
-        //       label: fullEntity.title,
-        //       icon: fullEntity.icon,
-        //     },
-        //     fullEntity.template,
-        //     {
-        //       types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
-        //       restrictLanguage: fullEntity.language,
-        //     }
-        //   );
-        // }
-
-        //Crappy draft code ends
+        }, Promise.resolve());
+        ////Crappy draft code ends
 
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
@@ -804,103 +800,74 @@ export default {
   },
 
   /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
-  async renameInMetadata(valueId, changes, propertyContent, { types, restrictLanguage = null }) {
-    const properties = (await templates.get({ 'properties.content': propertyContent }))
-      .reduce((m, t) => m.concat(t.properties), [])
-      .filter(p => types.includes(p.type))
-      .filter(
-        p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
-      );
+  // async renameInMetadata(
+  //   valueId,
+  //   changes,
+  //   propertyContent,
+  //   { types, restrictLanguage = null, props }
+  // ) {
+  //   let properties = props || [];
 
-    // console.log(JSON.stringify(await templates.get(), null, ' '));
-    // console.log(JSON.stringify(properties, null, ' '));
+  //   if (!properties.length) {
+  //     return Promise.resolve();
+  //   }
 
-    const inheritedProperties = (
-      await templates.get({ 'properties.inherit.property': { $in: properties.map(p => p.id) } })
-    ).reduce((m, t) => m.concat(t.properties), []);
-    // .filter(p => types.includes(p.type))
-    // .filter(
-    //   p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
-    // );
+  //   await Promise.all(
+  //     properties.map(property =>
+  //       model.updateMany(
+  //         { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
+  //         {
+  //           $set: Object.keys(changes).reduce(
+  //             (set, prop) => ({
+  //               ...set,
+  //               [`metadata.${property.name}.$[valueObject].${prop}`]: changes[prop],
+  //             }),
+  //             {}
+  //           ),
+  //         },
+  //         { arrayFilters: [{ 'valueObject.value': valueId }] }
+  //       )
+  //     )
+  //   );
 
-    // console.log(JSON.stringify(inheritedProperties, null, ' '));
-    if (!properties.length) {
-      return Promise.resolve();
-    }
-
-    await Promise.all(
-      inheritedProperties.map(property =>
-        model.updateMany(
-          {
-            language: restrictLanguage,
-            [`metadata.${property.name}.inheritedValue.value`]: valueId,
-          },
-          {
-            $set: Object.keys(changes).reduce(
-              (set, prop) => ({
-                ...set,
-                [`metadata.${property.name}.$.inheritedValue.$[valueObject].${prop}`]: changes[
-                  prop
-                ],
-              }),
-              {}
-            ),
-          },
-          { arrayFilters: [{ 'valueObject.value': valueId }] }
-        )
-      )
-    );
-
-    await Promise.all(
-      properties.map(property =>
-        model.updateMany(
-          { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
-          {
-            $set: Object.keys(changes).reduce(
-              (set, prop) => ({
-                ...set,
-                [`metadata.${property.name}.$[valueObject].${prop}`]: changes[prop],
-              }),
-              {}
-            ),
-          },
-          { arrayFilters: [{ 'valueObject.value': valueId }] }
-        )
-      )
-    );
-
-    return search.indexEntities({
-      $and: [
-        {
-          language: restrictLanguage,
-        },
-        {
-          $or: properties.map(property => ({ [`metadata.${property.name}.value`]: valueId })),
-        },
-      ],
-    });
-  },
+  //   return search.indexEntities({
+  //     $and: [
+  //       {
+  //         language: restrictLanguage,
+  //       },
+  //       {
+  //         $or: properties.map(property => ({ [`metadata.${property.name}.value`]: valueId })),
+  //       },
+  //     ],
+  //   });
+  // },
 
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-    await this.renameInMetadata(valueId, { label: newLabel }, thesaurusId, {
-      types: [propertyTypes.select, propertyTypes.multiselect],
-      restrictLanguage: language,
-    });
-  },
+    // await this.renameInMetadata(valueId, { label: newLabel }, thesaurusId, {
+    //   types: [propertyTypes.select, propertyTypes.multiselect],
+    //   restrictLanguage: language,
+    // });
 
-  /** Propagate the title change of a related entity to all entity metadata. */
-  async renameRelatedEntityInMetadata(relatedEntity) {
-    await this.renameInMetadata(
-      relatedEntity.sharedId,
-      { label: relatedEntity.title, icon: relatedEntity.icon },
-      relatedEntity.template,
-      {
-        types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
-        restrictLanguage: relatedEntity.language,
-      }
+    await updateTransitiveDenormalization(
+      { id: valueId, language },
+      { label: newLabel },
+      await templates.esteNombreEsUnAskoCambiar(thesaurusId.toString())
     );
   },
+
+  // /** Propagate the title change of a related entity to all entity metadata. */
+  // async renameRelatedEntityInMetadata(relatedEntity) {
+  //   await this.renameInMetadata(
+  //     relatedEntity.sharedId,
+  //     { label: relatedEntity.title, icon: relatedEntity.icon },
+  //     relatedEntity.template,
+  //     {
+  //       types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
+  //       restrictLanguage: relatedEntity.language,
+  //     }
+  //   );
+  // },
 
   async createThumbnail(entity) {
     const filePath = filesystem.uploadsPath(entity.file.filename);

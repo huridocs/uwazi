@@ -67,6 +67,16 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
 };
 
 export default {
+  async esteNombreEsUnAskoCambiar(contentId: string) {
+    const properties = (await model.get({ 'properties.content': contentId }))
+      .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
+      .filter(p => contentId === p.content?.toString());
+
+    return (
+      await model.get({ 'properties.inherit.property': { $in: properties.map(p => p.id) } })
+    ).reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), []);
+  },
+
   async save(template: TemplateSchema, language: string, reindex = true) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
