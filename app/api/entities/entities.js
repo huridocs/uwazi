@@ -341,6 +341,15 @@ const withDocuments = (entities, documentsFullText, withPdfInfo) =>
     })
   );
 
+const reindexEntitiesByTemplate = async (template, options) => {
+  const templateHasRelationShipProperty = !template.properties?.find(
+    p => p.type === propertyTypes.relationship
+  );
+  if (options.reindex && (options.generatedIdAdded || templateHasRelationShipProperty)) {
+    return search.indexEntities({ template: template._id });
+  }
+};
+
 export default {
   denormalizeMetadata,
   sanitize,
@@ -628,14 +637,7 @@ export default {
     if (actions.$unset || actions.$rename) {
       await model.updateMany({ template: template._id }, actions);
     }
-
-    const templateHasRelationShipProperty = !template.properties?.find(
-      p => p.type === propertyTypes.relationship
-    );
-    if (options.reindex && (options.generatedIdAdded || templateHasRelationShipProperty)) {
-      return search.indexEntities({ template: template._id });
-    }
-
+    await reindexEntitiesByTemplate(template, options);
     return this.bulkUpdateMetadataFromRelationships(
       { template: template._id, language },
       language,
