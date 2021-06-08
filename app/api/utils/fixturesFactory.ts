@@ -19,11 +19,11 @@ export function getFixturesFactory() {
   return Object.freeze({
     id: idMapper,
 
-    entity: (id: string, props = {}): EntitySchema => ({
-      _id: idMapper(id),
+    entity: (id: string, props = {}, language?: string): EntitySchema => ({
+      _id: idMapper(language ? `${id}-${language}` : id),
       sharedId: id,
-      language: 'en',
-      title: id,
+      language: language || 'en',
+      title: language ? `${id}-${language}` : id,
       ...props,
     }),
 
@@ -47,7 +47,14 @@ export function getFixturesFactory() {
       name: string,
       type: PropertySchema['type'] = 'text',
       props = {}
-    ): PropertySchema => ({ _id: idMapper(name), id: idMapper(name).toString(), label: name, name, type, ...props }),
+    ): PropertySchema => ({
+      _id: idMapper(name),
+      id: idMapper(name).toString(),
+      label: name,
+      name,
+      type,
+      ...props,
+    }),
 
     metadataValue: (value: string) => ({ value, label: value }),
 

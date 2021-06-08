@@ -9,8 +9,11 @@ import { getFixturesFactory } from '../../utils/fixturesFactory';
 const load = async (data: DBFixture) =>
   db.setupFixturesAndContext({
     ...data,
-    settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }] }],
-    translations: [{ locale: 'en', contexts: [] }],
+    settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+    translations: [
+      { locale: 'en', contexts: [] },
+      { locale: 'es', contexts: [] },
+    ],
   });
 
 afterAll(async () => db.disconnect());
@@ -18,16 +21,16 @@ afterAll(async () => db.disconnect());
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
 
-  const modifyEntity = async (id: string, entityData: EntitySchema) => {
+  const modifyEntity = async (id: string, entityData: EntitySchema, language?: string) => {
     await entities.save(
-      { ...factory.entity(id), ...entityData },
-      { language: 'en', user: {} },
+      { ...factory.entity(id, entityData, language) },
+      { language: language || 'en', user: {} },
       true
     );
   };
 
   describe('title and basic property (text)', () => {
-    it('should update title and text property on related entities denormalized properties', async () => {
+    it('should update title, icon and text property on related entities denormalized properties', async () => {
       const fixtures: DBFixture = {
         templates: [
           {
@@ -52,7 +55,10 @@ describe('Denormalize relationships', () => {
               relationship2: [factory.metadataValue('C1')],
             },
           }),
-          factory.entity('B1', { template: factory.id('templateB') }),
+          factory.entity('B1', {
+            template: factory.id('templateB'),
+            icon: { _id: 'icon_id', label: 'icon_label', type: 'icon_type' },
+          }),
           factory.entity('B2', { template: factory.id('templateB') }),
           factory.entity('C1', { template: factory.id('templateC') }),
         ],
@@ -79,6 +85,7 @@ describe('Denormalize relationships', () => {
         relationship: [
           expect.objectContaining({
             label: 'new Title',
+            icon: { _id: 'icon_id', label: 'icon_label', type: 'icon_type' },
             inheritedValue: [{ value: 'text 1 changed' }],
           }),
           expect.objectContaining({
@@ -420,6 +427,97 @@ describe('Denormalize relationships', () => {
           }),
           expect.objectContaining({
             inheritedValue: [expect.objectContaining({ value: 'C2', label: 'new C2' })],
+          }),
+        ],
+      });
+    });
+  });
+
+  describe('languages', () => {
+    it('should denormalize the title and a simple property in the correct language', async () => {
+      await load({
+        templates: [
+          {
+            _id: factory.id('templateA'),
+            properties: [
+              factory.relationshipProp('relationship', 'templateB', 'rel1', {
+                inherit: { type: 'text', property: factory.id('text').toString() },
+              }),
+            ],
+          },
+          {
+            _id: factory.id('templateB'),
+            properties: [factory.property('text')],
+          },
+        ],
+        entities: [
+          factory.entity('A1', {
+            template: factory.id('templateA'),
+            metadata: {
+              relationship: [factory.metadataValue('B1')],
+            },
+          }),
+          factory.entity(
+            'A1',
+            {
+              template: factory.id('templateA'),
+              metadata: {
+                relationship: [factory.metadataValue('B1')],
+              },
+            },
+            'es'
+          ),
+          factory.entity('B1', {
+            template: factory.id('templateB'),
+          }),
+          factory.entity(
+            'B1',
+            {
+              sharedId: 'B1',
+              language: 'es',
+              template: factory.id('templateB'),
+            },
+            'es'
+          ),
+        ],
+      });
+
+      await modifyEntity('B1', { metadata: { text: [{ value: 'text' }] } });
+      await modifyEntity('B1', { metadata: { text: [{ value: 'texto' }] } }, 'es');
+
+      await modifyEntity(
+        'B1',
+        {
+          metadata: { text: [{ value: 'nuevo texto para ES' }] },
+        },
+        'es'
+      );
+
+      const relatedEn = await entities.getById('A1', 'en');
+      const relatedEs = await entities.getById('A1', 'es');
+
+      expect(relatedEn?.metadata).toEqual({
+        relationship: [
+          expect.objectContaining({
+            value: 'B1',
+            inheritedValue: [
+              {
+                value: 'text',
+              },
+            ],
+          }),
+        ],
+      });
+
+      expect(relatedEs?.metadata).toEqual({
+        relationship: [
+          expect.objectContaining({
+            value: 'B1',
+            inheritedValue: [
+              {
+                value: 'nuevo texto para ES',
+              },
+            ],
           }),
         ],
       });
