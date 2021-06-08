@@ -8,7 +8,7 @@ import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { SelectFileButton } from 'app/App/SelectFileButton.tsx';
+import { SelectFileButton } from 'app/App/SelectFileButton';
 
 export class EditTranslationForm extends Component {
   static getDefaultTranslation(translations, languages) {
