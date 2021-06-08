@@ -7,7 +7,7 @@ import formatter from 'app/Metadata/helpers/formater';
 import { safeName } from 'shared/propertyNames';
 import { showByType } from 'app/Metadata/components/Metadata';
 
-export interface CurrentEntityProps {
+export interface EntityDataProps {
   value?: string;
   propertyName?: string;
 }
@@ -22,7 +22,7 @@ const mapStateToProps = ({ entityView, templates, thesauris, settings }: IStore)
 const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
-type ComponentProps = CurrentEntityProps & MappedProps;
+type ComponentProps = EntityDataProps & MappedProps;
 
 const extractRootProperty = (formattedEntity: any, property: string) => formattedEntity[property];
 
@@ -39,13 +39,13 @@ const extractMetadataProperty = (
 
 const logError = (err: any, value?: string, propertyName?: string) => {
   /* eslint-disable no-console */
-  console.log('Error on CurrentEntity: ');
+  console.log('Error on EntityData: ');
   console.log('value: ', value, '; propertyName: ', propertyName);
   console.log(err);
   /* eslint-enable no-console */
 };
 
-const CurrentEntity = ({
+const EntityData = ({
   entity,
   templates,
   thesauri,
@@ -74,5 +74,5 @@ const CurrentEntity = ({
   return output;
 };
 
-const container = connector(CurrentEntity);
-export { container as CurrentEntity };
+const container = connector(EntityData);
+export { container as EntityData };
