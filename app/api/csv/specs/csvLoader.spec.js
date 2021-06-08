@@ -131,6 +131,14 @@ describe('csvLoader', () => {
       expect(textValues).toEqual(['title1', 'title2', 'title3']);
     });
 
+    it('should generate an id when the template has a property with generatedid type', () => {
+      expect(imported[0].metadata).toEqual(
+        expect.objectContaining({
+          auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
+        })
+      );
+    });
+
     it('should emit event after each entity has been imported', () => {
       expect(events).toEqual(['title1', 'title2', 'title3']);
     });

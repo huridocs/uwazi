@@ -85,53 +85,6 @@ describe('ThesauriForm', () => {
     });
   });
 
-  describe('import', () => {
-    // it('should open file dialog when import button is clicked', () => {
-    //   render();
-    //   const selectFileButtonInstance = component
-    //     .find(SelectFileButton)
-    //     .first()
-    //     // .dive()
-    //     .instance();
-    //   selectFileButtonInstance.show = jest.fn();
-    //   component
-    //     .find(SelectFileButton)
-    //     .first()
-    //     .simulate('click');
-    //   expect(selectFileButtonInstance.show).toHaveBeenCalled();
-    // });
-    // fit('should import thesauri when file is selected and reset file input', () => {
-    //   render();
-    //   instance.InputElement = { click: jest.fn() };
-    //   const file = { name: 'file.csv' };
-    //   component
-    //     .find('.import-template')
-    //     .first()
-    //     .simulate('click');
-    //   component
-    //     .find(ImportFileForm)
-    //     .first()
-    //     .simulate('fileImported
-    //   expect(props.importThesaurus).toHaveBeenCalledWith(props.thesauri, file);
-    //   expect(instance.fileFormRef.current.reset).toHaveBeenCalled();
-    // });
-    // it('should not import thesauri if no file was selected', () => {
-    //   render();
-    //   instance.fileInputRef.current = {
-    //     files: [],
-    //   };
-    //   instance.fileFormRef.current = {
-    //     reset: jest.fn(),
-    //   };
-    //   component
-    //     .find('input[type="file"]')
-    //     .first()
-    //     .simulate('change');
-    //   expect(props.importThesaurus).not.toHaveBeenCalled();
-    //   expect(instance.fileFormRef.current.reset).toHaveBeenCalled();
-    // });
-  });
-
   describe('on props update', () => {
     it('should add an empty value at the end of the thesauri and at the end of groups when there is none', () => {
       render();
