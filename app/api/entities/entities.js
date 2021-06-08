@@ -599,8 +599,7 @@ export default {
     template,
     currentTemplate,
     language,
-    reindex = true,
-    generatedIdAdded = false
+    options = { reindex: true, generatedIdAdded: false }
   ) {
     const actions = { $rename: {}, $unset: {} };
     template.properties = await generateNamesAndIds(template.properties);
@@ -631,8 +630,9 @@ export default {
     }
 
     if (
-      (generatedIdAdded || !template.properties.find(p => p.type === propertyTypes.relationship)) &&
-      reindex
+      options.reindex &&
+      (options.generatedIdAdded ||
+        !template.properties?.find(p => p.type === propertyTypes.relationship))
     ) {
       return search.indexEntities({ template: template._id });
     }
@@ -641,7 +641,7 @@ export default {
       { template: template._id, language },
       language,
       200,
-      reindex
+      options.reindex
     );
   },
 

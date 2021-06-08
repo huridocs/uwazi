@@ -165,13 +165,10 @@ export default {
     await removeExcludedPropertiesValues(currentTemplate, template);
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
-    await entities.updateMetadataProperties(
-      template,
-      currentTemplate,
-      language,
+    await entities.updateMetadataProperties(template, currentTemplate, language, {
       reindex,
-      generatedIdAdded
-    );
+      generatedIdAdded,
+    });
     return savedTemplate;
   },
 

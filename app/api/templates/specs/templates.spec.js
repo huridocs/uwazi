@@ -259,13 +259,10 @@ describe('templates', () => {
         templates
           .save(toSave, 'en')
           .then(() => {
-            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(
-              toSave,
-              template,
-              'en',
-              true,
-              false
-            );
+            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en', {
+              reindex: true,
+              generatedIdAdded: false,
+            });
             done();
           })
           .catch(catchErrors(done));
