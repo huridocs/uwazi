@@ -19,7 +19,7 @@ import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 
-import { SelectFileButton } from 'app/App/SelectFileButton.tsx';
+import { SelectFileButton } from 'app/App/SelectFileButton';
 import { ThesauriFormItem } from './ThesauriFormItem';
 
 function sanitizeThesauri(thesaurus) {
