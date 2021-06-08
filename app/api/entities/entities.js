@@ -629,11 +629,10 @@ export default {
       await model.updateMany({ template: template._id }, actions);
     }
 
-    if (
-      options.reindex &&
-      (options.generatedIdAdded ||
-        !template.properties?.find(p => p.type === propertyTypes.relationship))
-    ) {
+    const templateHasRelationShipProperty = !template.properties?.find(
+      p => p.type === propertyTypes.relationship
+    );
+    if (options.reindex && (options.generatedIdAdded || templateHasRelationShipProperty)) {
       return search.indexEntities({ template: template._id });
     }
 
