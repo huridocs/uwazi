@@ -263,7 +263,8 @@ describe('templates', () => {
               toSave,
               template,
               'en',
-              true
+              true,
+              false
             );
             done();
           })

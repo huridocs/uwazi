@@ -8,8 +8,8 @@ import { ensure } from 'shared/tsUtils';
 import { ObjectID } from 'mongodb';
 
 import { validateTemplate } from 'shared/types/templateSchema';
-import { populateGeneratedIdByTemplate } from 'api/entities/entityPropertiesUpdater';
 import { propertyTypes } from 'shared/propertyTypes';
+import { populateGeneratedIdByTemplate } from 'api/entities/entityPropertiesUpdater';
 import model from './templatesModel';
 import {
   generateNamesAndIds,
@@ -112,6 +112,7 @@ const checkAndFillGeneratedIdProperties = async (
   if (newGeneratedIdProps.length > 0) {
     await populateGeneratedIdByTemplate(currentTemplate._id!, newGeneratedIdProps);
   }
+  return newGeneratedIdProps.length > 0;
 };
 
 export default {
@@ -162,9 +163,15 @@ export default {
     const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
     await updateTranslation(currentTemplate, template);
     await removeExcludedPropertiesValues(currentTemplate, template);
-    await checkAndFillGeneratedIdProperties(currentTemplate, template);
+    const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
-    await entities.updateMetadataProperties(template, currentTemplate, language, reindex);
+    await entities.updateMetadataProperties(
+      template,
+      currentTemplate,
+      language,
+      reindex,
+      generatedIdAdded
+    );
     return savedTemplate;
   },
 

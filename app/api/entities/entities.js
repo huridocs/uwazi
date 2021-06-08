@@ -595,7 +595,13 @@ export default {
   },
 
   /** Handle property deletion and renames. */
-  async updateMetadataProperties(template, currentTemplate, language, reindex = true) {
+  async updateMetadataProperties(
+    template,
+    currentTemplate,
+    language,
+    reindex = true,
+    generatedIdAdded = false
+  ) {
     const actions = { $rename: {}, $unset: {} };
     template.properties = await generateNamesAndIds(template.properties);
     template.properties.forEach(property => {
@@ -624,7 +630,10 @@ export default {
       await model.updateMany({ template: template._id }, actions);
     }
 
-    if (!template.properties.find(p => p.type === propertyTypes.relationship) && reindex) {
+    if (
+      (generatedIdAdded || !template.properties.find(p => p.type === propertyTypes.relationship)) &&
+      reindex
+    ) {
       return search.indexEntities({ template: template._id });
     }
 

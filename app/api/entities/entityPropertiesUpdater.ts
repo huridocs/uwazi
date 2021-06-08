@@ -1,7 +1,8 @@
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { generateID } from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
-import { search } from 'api/search';
+//@ts-ignore
+import PromisePool from '@supercharge/promise-pool';
 import model from './entitiesModel';
 
 const updateRecursively = async (
@@ -18,12 +19,14 @@ const updateRecursively = async (
     ])
   ).map(g => g._id);
 
+  if (sharedIds.length === 0) {
+    return Promise.resolve();
+  }
+
   await Promise.all(
     sharedIds.map(async (sharedId: string) =>
       model.updateMany(
-        {
-          sharedId,
-        },
+        { sharedId },
         {
           ...generatedIdProperties.reduce(
             (values, property: PropertySchema) => ({
@@ -35,8 +38,6 @@ const updateRecursively = async (
       )
     )
   );
-
-  await search.indexEntities({ sharedId: { $in: sharedIds } });
 
   if (sharedIds.length === batchSize) {
     return updateRecursively(templateId, generatedIdProperties, searchQuery);
@@ -55,7 +56,15 @@ const populateGeneratedIdByTemplate = async (
     }),
     {}
   );
-  return updateRecursively(templateId, generatedIdProperties, searchQuery);
+  const stepSize = 5000;
+  const entitiesQty = await model.count({ template: templateId });
+  const steps = Array(Math.floor(entitiesQty / stepSize) || 1);
+  return new PromisePool()
+    .for(steps)
+    .withConcurrency(Math.min(5, steps.length))
+    .process(async () => {
+      await updateRecursively(templateId, generatedIdProperties, searchQuery);
+    });
 };
 
 export { populateGeneratedIdByTemplate };
