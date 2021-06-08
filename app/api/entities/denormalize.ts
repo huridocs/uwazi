@@ -45,7 +45,7 @@ export const updateDenormalization = async (
           $set: Object.keys(changes).reduce(
             (set, prop) => ({
               ...set,
-              [`metadata.${property.name}.$[valueObject].${prop}`]: changes[prop],
+              [`metadata.${property.name}.$[valueObject].${prop}`]: changes[<keyof Changes>prop],
             }),
             {}
           ),
