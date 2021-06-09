@@ -165,7 +165,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
           const properties = (
             await templates.get({
               'properties.content': template._id.toString(),
-              'properties.inherit': { $exists: true },
+              // 'properties.inherit': { $exists: true },
             })
           )
             .reduce((m, t) => m.concat(t.properties), [])
@@ -197,7 +197,19 @@ async function updateEntity(entity, _template, unrestricted = false) {
             );
           }, Promise.resolve());
 
+          //await search.indexEntities({
+          //  $and: [
+          //    {
+          //      language: fullEntity.language
+          //    },
+          //    {
+          //      $or: properties.map(property => ({ [`metadata.${property.name}.value`]: fullEntity.sharedId })),
+          //    },
+          //  ],
+          //});
+
         }
+
         ////Crappy draft code ends
 
         if (entity.suggestedMetadata) {
