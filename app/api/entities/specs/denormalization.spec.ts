@@ -7,6 +7,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import thesauris from 'api/thesauri';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
+import relationship from '../../csv/typeParsers/relationship';
 
 const load = async (data: DBFixture, index?: string) =>
   db.setupFixturesAndContext(
@@ -175,6 +176,47 @@ describe('Denormalize relationships', () => {
 
       expect(relatedC?.metadata?.relationship_c).toMatchObject([
         { label: 'new A1', inheritedValue: [{ value: 'text 2 changed' }] },
+      ]);
+    });
+  });
+
+  describe('when the relationship property has no content', () => {
+    it('should denormalize the title on related entities', async () => {
+      const fixtures: DBFixture = {
+        templates: [
+          factory.template('templateA', [
+            factory.relationshipProp('relationship', '', { content: '' }),
+          ]),
+          factory.template('templateB'),
+          factory.template('templateC'),
+        ],
+        entities: [
+          factory.entity('A1', 'templateA', {
+            relationship: [factory.metadataValue('B1'), factory.metadataValue('C1')],
+          }),
+          factory.entity('B1', 'templateB'),
+          factory.entity('C1', 'templateC'),
+        ],
+      };
+
+      await load(fixtures);
+
+      await modifyEntity('A1', {
+        metadata: { relationship: [factory.metadataValue('B1'), factory.metadataValue('C1')] },
+      });
+
+      await modifyEntity('B1', { title: 'new B1' });
+      await modifyEntity('C1', { title: 'new C1' });
+
+      const relatedEntity = await entities.getById('A1', 'en');
+
+      expect(relatedEntity?.metadata?.relationship).toMatchObject([
+        {
+          label: 'new B1',
+        },
+        {
+          label: 'new C1',
+        },
       ]);
     });
   });

@@ -171,6 +171,23 @@ async function updateEntity(entity, _template, unrestricted = false) {
             .reduce((m, t) => m.concat(t.properties), [])
             .filter(p => template._id?.toString() === p.content?.toString());
 
+          const propertiesAny = (
+            await templates.get({
+              'properties.content': '',
+            })
+          )
+            .reduce((m, t) => m.concat(t.properties), [])
+            .filter(p => p.content?.toString() === '');
+
+          await updateDenormalization(
+            { id: fullEntity.sharedId, language: fullEntity.language },
+            {
+              label: fullEntity.title,
+              icon: fullEntity.icon,
+            },
+            propertiesAny
+          );
+
           const inheritIds = properties.map(p => p.inherit?.property);
           const toUpdateProps = template.properties.filter(p =>
             inheritIds.includes(p._id.toString())
