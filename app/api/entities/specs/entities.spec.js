@@ -252,33 +252,6 @@ describe('entities', () => {
       });
     });
 
-    describe('when title changes', () => {
-      xit('should index entities changed after propagating label change', async () => {
-        const doc = {
-          _id: shared2,
-          sharedId: 'shared2',
-          title: 'changedTitle',
-        };
-
-        search.indexEntities.and.callThrough();
-
-        await entities.save(doc, { language: 'en' });
-
-        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-
-        expect(documentsToIndex).toEqual([
-          expect.objectContaining({
-            sharedId: 'shared',
-            language: 'en',
-          }),
-          expect.objectContaining({
-            sharedId: 'other',
-            language: 'en',
-          }),
-        ]);
-      });
-    });
-
     describe('when published/template/generatedToc property changes', () => {
       it('should replicate the change for all the languages and ignore the published field', done => {
         const doc = {
