@@ -181,7 +181,7 @@ describe('Denormalize relationships', () => {
   });
 
   describe('when the relationship property has no content', () => {
-    it('should denormalize the title on related entities', async () => {
+    it('should denormalize and index the title on related entities', async () => {
       const fixtures: DBFixture = {
         templates: [
           factory.template('templateA', [
@@ -199,7 +199,7 @@ describe('Denormalize relationships', () => {
         ],
       };
 
-      await load(fixtures);
+      await load(fixtures, 'index_denormalization');
 
       await modifyEntity('A1', {
         metadata: { relationship: [factory.metadataValue('B1'), factory.metadataValue('C1')] },
@@ -211,6 +211,20 @@ describe('Denormalize relationships', () => {
       const relatedEntity = await entities.getById('A1', 'en');
 
       expect(relatedEntity?.metadata?.relationship).toMatchObject([
+        {
+          label: 'new B1',
+        },
+        {
+          label: 'new C1',
+        },
+      ]);
+
+      await elasticTesting.refresh();
+      const results = await elasticTesting.getIndexedEntities();
+
+      const [A1] = results.filter(r => r.sharedId === 'A1');
+
+      expect(A1?.metadata?.relationship).toMatchObject([
         {
           label: 'new B1',
         },
