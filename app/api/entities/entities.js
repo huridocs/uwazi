@@ -171,7 +171,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
             .reduce((m, t) => m.concat(t.properties), [])
             .filter(p => template._id?.toString() === p.content?.toString());
 
-          const propertiesAny = (
+          const propertiesWithoutContent = (
             await templates.get({
               'properties.content': '',
             })
@@ -185,7 +185,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
               label: fullEntity.title,
               icon: fullEntity.icon,
             },
-            propertiesAny
+            propertiesWithoutContent
           );
 
           const inheritIds = properties.map(p => p.inherit?.property);
@@ -216,7 +216,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
             );
           }, Promise.resolve());
 
-          if (properties.length || transitiveProperties.length) {
+          if (properties.length || propertiesWithoutContent.length || transitiveProperties.length) {
             await search.indexEntities({
               $and: [
                 {
@@ -224,7 +224,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
                 },
                 {
                   $or: [
-                    ...properties.map(property => ({
+                    ...[...properties, ...propertiesWithoutContent].map(property => ({
                       [`metadata.${property.name}.value`]: fullEntity.sharedId,
                     })),
                     ...transitiveProperties.map(property => ({
