@@ -73,7 +73,11 @@ export default {
       .filter(p => contentId === p.content?.toString());
 
     return (
-      await model.get({ 'properties.inherit.property': { $in: properties.map(p => p.id) } })
+      await model.get({
+        'properties.inherit.property': {
+          $in: properties.map(p => p._id?.toString()).filter(v => v),
+        },
+      })
     ).reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), []);
   },
 

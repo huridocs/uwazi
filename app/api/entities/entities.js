@@ -141,16 +141,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
-        if (
-          (entity.title && currentDoc.title !== entity.title) ||
-          (entity.icon && !currentDoc.icon) ||
-          (entity.icon && currentDoc.icon && currentDoc.icon._id !== entity.icon._id)
-        ) {
-          await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
-        }
-
         const toSave = { ...entity };
-
         delete toSave.published;
         delete toSave.permissions;
 
@@ -201,10 +192,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
                 icon: fullEntity.icon,
               },
               properties.filter(p => {
-                return prop.id === p.inherit?.property;
+                return prop._id.toString() === p.inherit?.property;
               })
             );
           }, Promise.resolve());
+
         }
         ////Crappy draft code ends
 
@@ -801,52 +793,8 @@ export default {
     ]);
   },
 
-  /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
-  async renameInMetadata(
-    valueId,
-    changes,
-    propertyContent,
-    { types, restrictLanguage = null, props }
-  ) {
-    let properties = props || [];
-
-    if (!properties.length) {
-      return Promise.resolve();
-    }
-
-    await Promise.all(
-      properties.map(property =>
-        model.updateMany(
-          { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
-          {
-            $set: Object.keys(changes).reduce(
-              (set, prop) => ({
-                ...set,
-                [`metadata.${property.name}.$[valueObject].${prop}`]: changes[prop],
-              }),
-              {}
-            ),
-          },
-          { arrayFilters: [{ 'valueObject.value': valueId }] }
-        )
-      )
-    );
-
-    return search.indexEntities({
-      $and: [
-        {
-          language: restrictLanguage,
-        },
-        {
-          $or: properties.map(property => ({ [`metadata.${property.name}.value`]: valueId })),
-        },
-      ],
-    });
-  },
-
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-
     const properties = (
       await templates.get({
         'properties.content': thesaurusId,
@@ -865,19 +813,6 @@ export default {
       { id: valueId, language },
       { label: newLabel },
       await templates.esteNombreEsUnAskoCambiar(thesaurusId.toString())
-    );
-  },
-
-  // /** Propagate the title change of a related entity to all entity metadata. */
-  async renameRelatedEntityInMetadata(relatedEntity) {
-    await this.renameInMetadata(
-      relatedEntity.sharedId,
-      { label: relatedEntity.title, icon: relatedEntity.icon },
-      relatedEntity.template,
-      {
-        types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
-        restrictLanguage: relatedEntity.language,
-      }
     );
   },
 

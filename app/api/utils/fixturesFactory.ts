@@ -19,6 +19,11 @@ export function getFixturesFactory() {
   return Object.freeze({
     id: idMapper,
 
+    template: (name: string, properties: PropertySchema[]) => ({
+      _id: idMapper(name),
+      properties,
+    }),
+
     entity: (id: string, props = {}, language?: string): EntitySchema => ({
       _id: idMapper(language ? `${id}-${language}` : id),
       sharedId: id,
@@ -27,21 +32,20 @@ export function getFixturesFactory() {
       ...props,
     }),
 
-    relationshipProp: (
-      name: string,
-      content: string,
-      relation: string,
-      props = {}
-    ): PropertySchema => ({
-      _id: idMapper(name),
-      id: idMapper(name).toString(),
-      label: name,
-      name,
-      type: 'relationship',
-      relationType: idMapper(relation).toString(),
-      content: idMapper(content).toString(),
-      ...props,
-    }),
+    inherit(name: string, content: string, property: string, props = {}): PropertySchema {
+      return this.relationshipProp(name, content, {
+        inherit: { property: idMapper(property).toString() },
+        ...props,
+      });
+    },
+
+    relationshipProp(name: string, content: string, props = {}): PropertySchema {
+      return this.property(name, 'relationship', {
+        relationType: idMapper('rel1').toString(),
+        content: idMapper(content).toString(),
+        ...props,
+      });
+    },
 
     property: (
       name: string,
@@ -49,7 +53,7 @@ export function getFixturesFactory() {
       props = {}
     ): PropertySchema => ({
       _id: idMapper(name),
-      id: idMapper(name).toString(),
+      id: name,
       label: name,
       name,
       type,
