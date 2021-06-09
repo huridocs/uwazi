@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema, MetadataSchema } from 'shared/types/commonTypes';
 
 export function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -19,18 +19,28 @@ export function getFixturesFactory() {
   return Object.freeze({
     id: idMapper,
 
-    template: (name: string, properties: PropertySchema[]) => ({
+    template: (name: string, properties: PropertySchema[] = []) => ({
       _id: idMapper(name),
       properties,
     }),
 
-    entity: (id: string, props = {}, language?: string): EntitySchema => ({
-      _id: idMapper(language ? `${id}-${language}` : id),
-      sharedId: id,
-      language: language || 'en',
-      title: language ? `${id}-${language}` : id,
-      ...props,
-    }),
+    entity: (
+      id: string,
+      template?: string,
+      metadata: MetadataSchema = {},
+      props: EntitySchema = { language: 'en' }
+    ): EntitySchema => {
+      const language = props.language || 'en';
+      return {
+        _id: idMapper(`${id}-${language}`),
+        sharedId: id,
+        title: `${id}`,
+        ...(template ? { template: idMapper(template) } : {}),
+        metadata,
+        language,
+        ...props,
+      };
+    },
 
     inherit(name: string, content: string, property: string, props = {}): PropertySchema {
       return this.relationshipProp(name, content, {

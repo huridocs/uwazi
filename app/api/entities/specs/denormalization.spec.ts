@@ -7,22 +7,25 @@ import thesauris from 'api/thesauri';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 
 const load = async (data: DBFixture) =>
-  db.setupFixturesAndContext({
-    ...data,
-    settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
-    translations: [
-      { locale: 'en', contexts: [] },
-      { locale: 'es', contexts: [] },
-    ],
-  });
+  db.setupFixturesAndContext(
+    {
+      ...data,
+      settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+      translations: [
+        { locale: 'en', contexts: [] },
+        { locale: 'es', contexts: [] },
+      ],
+    },
+    // 'elastic-denormalize-spec-index'
+  );
 
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
 
-  const modifyEntity = async (id: string, entityData: EntitySchema, language?: string) => {
+  const modifyEntity = async (id: string, entityData: EntitySchema, language: string = 'en') => {
     await entities.save(
-      { ...factory.entity(id, entityData, language) },
-      { language: language || 'en', user: {} },
+      { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language },
+      { language, user: {} },
       true
     );
   };
@@ -41,23 +44,25 @@ describe('Denormalize relationships', () => {
           factory.template('templateC', [factory.property('another_text')]),
         ],
         entities: [
-          factory.entity('A1', {
-            template: factory.id('templateA'),
-            metadata: {
-              relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
-              relationship2: [factory.metadataValue('C1')],
-            },
+          factory.entity('A1', 'templateA', {
+            relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
+            relationship2: [factory.metadataValue('C1')],
           }),
-          factory.entity('B1', {
-            template: factory.id('templateB'),
-            icon: { _id: 'icon_id', label: 'icon_label', type: 'icon_type' },
-          }),
-          factory.entity('B2', { template: factory.id('templateB') }),
-          factory.entity('C1', { template: factory.id('templateC') }),
+          factory.entity(
+            'B1',
+            'templateB',
+            {},
+            {
+              icon: { _id: 'icon_id', label: 'icon_label', type: 'icon_type' },
+            }
+          ),
+          factory.entity('B2', 'templateB'),
+          factory.entity('C1', 'templateC'),
         ],
       };
 
       await load(fixtures);
+
       await modifyEntity('B1', {
         title: 'new Title',
         metadata: { text: [{ value: 'text 1 changed' }] },
@@ -103,25 +108,10 @@ describe('Denormalize relationships', () => {
           factory.template('templateC', [factory.inherit('relationship_c', 'templateA', 'text')]),
         ],
         entities: [
-          factory.entity('A1', { template: factory.id('templateA') }),
-          factory.entity('B1', {
-            template: factory.id('templateB'),
-            metadata: {
-              relationship_b: [factory.metadataValue('A1')],
-            },
-          }),
-          factory.entity('B2', {
-            template: factory.id('templateB'),
-            metadata: {
-              relationship_b: [factory.metadataValue('A1')],
-            },
-          }),
-          factory.entity('C1', {
-            template: factory.id('templateC'),
-            metadata: {
-              relationship_c: [factory.metadataValue('A1')],
-            },
-          }),
+          factory.entity('A1', 'templateA'),
+          factory.entity('B1', 'templateB', { relationship_b: [factory.metadataValue('A1')] }),
+          factory.entity('B2', 'templateB', { relationship_b: [factory.metadataValue('A1')] }),
+          factory.entity('C1', 'templateC', { relationship_c: [factory.metadataValue('A1')] }),
         ],
       };
 
@@ -159,15 +149,9 @@ describe('Denormalize relationships', () => {
           factory.template('templateC', [factory.inherit('relationship_c', 'templateA', 'text2')]),
         ],
         entities: [
-          factory.entity('A1', { template: factory.id('templateA') }),
-          factory.entity('B1', {
-            template: factory.id('templateB'),
-            metadata: { relationship_b: [factory.metadataValue('A1')] },
-          }),
-          factory.entity('C1', {
-            template: factory.id('templateC'),
-            metadata: { relationship_c: [factory.metadataValue('A1')] },
-          }),
+          factory.entity('A1', 'templateA'),
+          factory.entity('B1', 'templateB', { relationship_b: [factory.metadataValue('A1')] }),
+          factory.entity('C1', 'templateC', { relationship_c: [factory.metadataValue('A1')] }),
         ],
       };
 
@@ -208,17 +192,13 @@ describe('Denormalize relationships', () => {
         ],
         dictionaries: [factory.thesauri('thesauri', ['T1', 'T2', 'T3'])],
         entities: [
-          factory.entity('A1', {
-            template: factory.id('templateA'),
-            metadata: {
-              relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
-            },
+          factory.entity('A1', 'templateA', {
+            relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
           }),
-          factory.entity('B1', {
-            template: factory.id('templateB'),
-            metadata: { multiselect: [factory.metadataValue('T1')] },
+          factory.entity('B1', 'templateB', {
+            multiselect: [factory.metadataValue('T1')],
           }),
-          factory.entity('B2', { template: factory.id('templateB') }),
+          factory.entity('B2', 'templateB'),
         ],
       };
       await load(fixtures);
@@ -286,28 +266,19 @@ describe('Denormalize relationships', () => {
             factory.inherit('relationship', 'templateB', 'relationshipB'),
           ]),
           factory.template('templateB', [factory.relationshipProp('relationshipB', 'templateC')]),
-          factory.template('templateC', []),
+          factory.template('templateC'),
         ],
         entities: [
-          factory.entity('A1', {
-            template: factory.id('templateA'),
-            metadata: {
-              relationship: [{ value: 'B1' }, { value: 'B2' }],
-            },
-          }),
-          factory.entity('B1', { template: factory.id('templateB') }),
-          factory.entity('B2', { template: factory.id('templateB') }),
-
-          factory.entity('C1', { template: factory.id('templateC') }),
-          factory.entity('C2', { template: factory.id('templateC') }),
+          factory.entity('A1', 'templateA', { relationship: [{ value: 'B1' }, { value: 'B2' }] }),
+          factory.entity('B1', 'templateB'),
+          factory.entity('B2', 'templateB'),
+          factory.entity('C1', 'templateC'),
+          factory.entity('C2', 'templateC'),
         ],
       };
       await load(fixtures);
       await modifyEntity('B1', { metadata: { relationshipB: [{ value: 'C1' }] } });
       await modifyEntity('B2', { metadata: { relationshipB: [{ value: 'C2' }] } });
-      // await modifyEntity('A1', {
-      //   metadata: { relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')] },
-      // });
     });
 
     it('should update denormalized properties when relationship selected changes', async () => {
@@ -334,55 +305,64 @@ describe('Denormalize relationships', () => {
     it('should denormalize the title and a simple property in the correct language', async () => {
       await load({
         templates: [
-          factory.template('templateA', [factory.inherit('relationship', 'templateB', 'text')]),
-          factory.template('templateB', [factory.property('text')]),
+          factory.template('templateA', [
+            factory.inherit('relationshipA', 'templateB', 'relationshipB'),
+          ]),
+          factory.template('templateB', [factory.inherit('relationshipB', 'templateC', 'text')]),
+          factory.template('templateC', [factory.property('text')]),
         ],
         entities: [
-          factory.entity('A1', {
-            template: factory.id('templateA'),
-            metadata: {
-              relationship: [factory.metadataValue('B1')],
-            },
-          }),
+          factory.entity('A1', 'templateA', { relationshipA: [factory.metadataValue('B1')] }),
           factory.entity(
             'A1',
-            {
-              template: factory.id('templateA'),
-              metadata: {
-                relationship: [factory.metadataValue('B1')],
-              },
-            },
-            'es'
+            'templateA',
+            { relationshipA: [factory.metadataValue('B1')] },
+            { language: 'es' }
           ),
-          factory.entity('B1', {
-            template: factory.id('templateB'),
-          }),
+          factory.entity('B1', 'templateB', { relationshipB: [factory.metadataValue('C1')] }),
           factory.entity(
             'B1',
-            {
-              sharedId: 'B1',
-              language: 'es',
-              template: factory.id('templateB'),
-            },
-            'es'
+            'templateB',
+            { relationshipB: [factory.metadataValue('C1')] },
+            { language: 'es' }
           ),
+          factory.entity('C1', 'templateC'),
+          factory.entity('C1', 'templateC', {}, { language: 'es' }),
         ],
       });
 
-      await modifyEntity('B1', { metadata: { text: [{ value: 'text' }] } });
-      await modifyEntity('B1', { metadata: { text: [{ value: 'texto' }] } }, 'es');
+      /// generate inherited values !
+      await modifyEntity('B1', { relationshipB: [factory.metadataValue('C1')] }, 'en');
+      await modifyEntity('B1', { relationshipB: [factory.metadataValue('C1')] }, 'es');
 
-      await modifyEntity('B1', { metadata: { text: [{ value: 'nuevo texto para ES' }] } }, 'es');
+      await modifyEntity('A1', { relationshipA: [factory.metadataValue('B1')] }, 'en');
+      await modifyEntity('A1', { relationshipA: [factory.metadataValue('B1')] }, 'es');
 
-      const relatedEn = await entities.getById('A1', 'en');
-      const relatedEs = await entities.getById('A1', 'es');
+      await modifyEntity('C1', { metadata: { text: [{ value: 'text' }] } });
+      await modifyEntity('C1', { metadata: { text: [{ value: 'texto' }] } }, 'es');
+      /// generate inherited values !
 
-      expect(relatedEn?.metadata?.relationship).toMatchObject([
-        { value: 'B1', inheritedValue: [{ value: 'text' }] },
+      await modifyEntity('C1', { title: 'new Es title', metadata: { text: [{ value: 'nuevo texto para ES' }] } }, 'es');
+
+      const relatedEn = await entities.getById('B1', 'en');
+      const relatedEs = await entities.getById('B1', 'es');
+
+      expect(relatedEn?.metadata?.relationshipB).toMatchObject([
+        { value: 'C1', inheritedValue: [{ value: 'text' }] },
+      ]);
+      expect(relatedEs?.metadata?.relationshipB).toMatchObject([
+        { value: 'C1', inheritedValue: [{ value: 'nuevo texto para ES' }] },
       ]);
 
-      expect(relatedEs?.metadata?.relationship).toMatchObject([
-        { value: 'B1', inheritedValue: [{ value: 'nuevo texto para ES' }] },
+      const transitiveEn = await entities.getById('A1', 'en');
+      const transitiveEs = await entities.getById('A1', 'es');
+
+      expect(transitiveEn?.metadata?.relationshipA).toMatchObject([
+        { value: 'B1', inheritedValue: [{ label: 'C1' }] },
+      ]);
+
+      expect(transitiveEs?.metadata?.relationshipA).toMatchObject([
+        { value: 'B1', inheritedValue: [{ label: 'new Es title' }] },
       ]);
     });
   });
