@@ -1,12 +1,14 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import db, { DBFixture } from 'api/utils/testing_db';
 import entities from 'api/entities';
 
 import { EntitySchema } from 'shared/types/entityType';
 import thesauris from 'api/thesauri';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 
-const load = async (data: DBFixture) =>
+const load = async (data: DBFixture, index?: string) =>
   db.setupFixturesAndContext(
     {
       ...data,
@@ -16,7 +18,7 @@ const load = async (data: DBFixture) =>
         { locale: 'es', contexts: [] },
       ],
     },
-    // 'elastic-denormalize-spec-index'
+    index
   );
 
 describe('Denormalize relationships', () => {
@@ -301,37 +303,41 @@ describe('Denormalize relationships', () => {
     });
   });
 
-  describe('languages', () => {
-    it('should denormalize the title and a simple property in the correct language', async () => {
-      await load({
-        templates: [
-          factory.template('templateA', [
-            factory.inherit('relationshipA', 'templateB', 'relationshipB'),
-          ]),
-          factory.template('templateB', [factory.inherit('relationshipB', 'templateC', 'text')]),
-          factory.template('templateC', [factory.property('text')]),
-        ],
-        entities: [
-          factory.entity('A1', 'templateA', { relationshipA: [factory.metadataValue('B1')] }),
-          factory.entity(
-            'A1',
-            'templateA',
-            { relationshipA: [factory.metadataValue('B1')] },
-            { language: 'es' }
-          ),
-          factory.entity('B1', 'templateB', { relationshipB: [factory.metadataValue('C1')] }),
-          factory.entity(
-            'B1',
-            'templateB',
-            { relationshipB: [factory.metadataValue('C1')] },
-            { language: 'es' }
-          ),
-          factory.entity('C1', 'templateC'),
-          factory.entity('C1', 'templateC', {}, { language: 'es' }),
-        ],
-      });
+  describe('languages and indexation', () => {
+    beforeEach(async () => {
+      await load(
+        {
+          templates: [
+            factory.template('templateA', [
+              factory.inherit('relationshipA', 'templateB', 'relationshipB'),
+            ]),
+            factory.template('templateB', [factory.inherit('relationshipB', 'templateC', 'text')]),
+            factory.template('templateC', [factory.property('text')]),
+          ],
+          entities: [
+            factory.entity('A1', 'templateA', { relationshipA: [factory.metadataValue('B1')] }),
+            factory.entity(
+              'A1',
+              'templateA',
+              { relationshipA: [factory.metadataValue('B1')] },
+              { language: 'es' }
+            ),
+            factory.entity('B1', 'templateB', { relationshipB: [factory.metadataValue('C1')] }),
+            factory.entity(
+              'B1',
+              'templateB',
+              { relationshipB: [factory.metadataValue('C1')] },
+              { language: 'es' }
+            ),
+            factory.entity('C1', 'templateC'),
+            factory.entity('C1', 'templateC', {}, { language: 'es' }),
+          ],
+        },
+        'index_denormalization'
+      );
 
       /// generate inherited values !
+
       await modifyEntity('B1', { relationshipB: [factory.metadataValue('C1')] }, 'en');
       await modifyEntity('B1', { relationshipB: [factory.metadataValue('C1')] }, 'es');
 
@@ -340,28 +346,43 @@ describe('Denormalize relationships', () => {
 
       await modifyEntity('C1', { metadata: { text: [{ value: 'text' }] } });
       await modifyEntity('C1', { metadata: { text: [{ value: 'texto' }] } }, 'es');
+
       /// generate inherited values !
+    });
 
-      await modifyEntity('C1', { title: 'new Es title', metadata: { text: [{ value: 'nuevo texto para ES' }] } }, 'es');
+    it('should index the correct entities on a simple relationship', async () => {
+      await modifyEntity(
+        'C1',
+        { title: 'new Es title', metadata: { text: [{ value: 'nuevo texto para ES' }] } },
+        'es'
+      );
 
-      const relatedEn = await entities.getById('B1', 'en');
-      const relatedEs = await entities.getById('B1', 'es');
+      await elasticTesting.refresh();
+      const results = await elasticTesting.getIndexedEntities();
 
-      expect(relatedEn?.metadata?.relationshipB).toMatchObject([
-        { value: 'C1', inheritedValue: [{ value: 'text' }] },
+      const [B1en, B1es] = results.filter(r => r.sharedId === 'B1');
+
+      expect(B1en.metadata?.relationshipB).toMatchObject([
+        { value: 'C1', label: 'C1', inheritedValue: [{ value: 'text' }] },
       ]);
-      expect(relatedEs?.metadata?.relationshipB).toMatchObject([
-        { value: 'C1', inheritedValue: [{ value: 'nuevo texto para ES' }] },
+      expect(B1es.metadata?.relationshipB).toMatchObject([
+        { value: 'C1', label: 'new Es title', inheritedValue: [{ value: 'nuevo texto para ES' }] },
       ]);
+    });
 
-      const transitiveEn = await entities.getById('A1', 'en');
-      const transitiveEs = await entities.getById('A1', 'es');
+    it('should index the correct entities on a transitive relationship', async () => {
+      await modifyEntity('C1', { title: 'new Es title' }, 'es');
 
-      expect(transitiveEn?.metadata?.relationshipA).toMatchObject([
+      await elasticTesting.refresh();
+      const results = await elasticTesting.getIndexedEntities();
+
+      const [A1en, A1es] = results.filter(r => r.sharedId === 'A1');
+
+      expect(A1en?.metadata?.relationshipA).toMatchObject([
         { value: 'B1', inheritedValue: [{ label: 'C1' }] },
       ]);
 
-      expect(transitiveEs?.metadata?.relationshipA).toMatchObject([
+      expect(A1es?.metadata?.relationshipA).toMatchObject([
         { value: 'B1', inheritedValue: [{ label: 'new Es title' }] },
       ]);
     });

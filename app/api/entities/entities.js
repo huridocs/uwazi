@@ -176,10 +176,14 @@ async function updateEntity(entity, _template, unrestricted = false) {
             inheritIds.includes(p._id.toString())
           );
 
+          const transitiveProperties = await templates.esteNombreEsUnAskoCambiar(
+            template._id.toString()
+          );
+
           await updateTransitiveDenormalization(
             { id: fullEntity.sharedId, language: fullEntity.language },
             { label: fullEntity.title, icon: fullEntity.icon },
-            await templates.esteNombreEsUnAskoCambiar(template._id.toString())
+            transitiveProperties
           );
 
           await toUpdateProps.reduce(async (prev, prop) => {
@@ -191,23 +195,29 @@ async function updateEntity(entity, _template, unrestricted = false) {
                 label: fullEntity.title,
                 icon: fullEntity.icon,
               },
-              properties.filter(p => {
-                return prop._id.toString() === p.inherit?.property;
-              })
+              properties.filter(p => prop._id.toString() === p.inherit?.property)
             );
           }, Promise.resolve());
 
-          //await search.indexEntities({
-          //  $and: [
-          //    {
-          //      language: fullEntity.language
-          //    },
-          //    {
-          //      $or: properties.map(property => ({ [`metadata.${property.name}.value`]: fullEntity.sharedId })),
-          //    },
-          //  ],
-          //});
-
+          if (properties.length || transitiveProperties.length) {
+            await search.indexEntities({
+              $and: [
+                {
+                  language: fullEntity.language,
+                },
+                {
+                  $or: [
+                    ...properties.map(property => ({
+                      [`metadata.${property.name}.value`]: fullEntity.sharedId,
+                    })),
+                    ...transitiveProperties.map(property => ({
+                      [`metadata.${property.name}.inheritedValue.value`]: fullEntity.sharedId,
+                    })),
+                  ],
+                },
+              ],
+            });
+          }
         }
 
         ////Crappy draft code ends
@@ -817,11 +827,7 @@ export default {
       .reduce((m, t) => m.concat(t.properties), [])
       .filter(p => thesaurusId === p.content?.toString());
 
-    await updateDenormalization(
-      { id: valueId, language },
-      { label: newLabel },
-      properties
-    );
+    await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
 
     await updateTransitiveDenormalization(
       { id: valueId, language },
