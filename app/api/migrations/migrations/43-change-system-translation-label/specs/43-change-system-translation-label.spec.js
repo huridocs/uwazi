@@ -36,22 +36,13 @@ describe('migration change-system-translation-label', () => {
   });
 
   it('should not update contexts without system id', async () => {
-    const context = {
-      id: 'somecontext',
-      label: 'System',
-    };
-
-    await testingDB.clearAllAndLoad({
-      translations: [{ contexts: [{ ...context }] }],
-    });
-
     await migration.up(testingDB.mongodb);
 
-    const [translations] = await testingDB.mongodb
+    const [enTranslations] = await testingDB.mongodb
       .collection('translations')
-      .find({})
+      .find({ locale: 'en' })
       .toArray();
 
-    expect(translations.contexts[0].label).toEqual('System');
+    expect(enTranslations.contexts[0].label).toEqual('User Interface');
   });
 });
