@@ -83,11 +83,7 @@ export class EditTranslationForm extends Component {
     const importButton =
       contextId === 'System' ? (
         <SelectFileButton onFileImported={this.importTranslationsFile}>
-          <button
-            type="button"
-            className="btn btn-primary import-template"
-            onClick={this.onImportClicked}
-          >
+          <button type="button" className="btn btn-primary import-template">
             <Icon icon="upload" />
             <span className="btn-label">
               <Translate>Import</Translate>
