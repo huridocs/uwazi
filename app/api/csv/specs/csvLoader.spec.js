@@ -4,10 +4,10 @@ import entities from 'api/entities';
 import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
-import settings from 'api/settings';
+// import settings from 'api/settings';
 
 import { CSVLoader } from '../csvLoader';
-import fixtures, { template1Id } from './fixtures';
+import fixtures, { template1Id } from './csvLoaderFixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
 
@@ -48,10 +48,8 @@ describe('csvLoader', () => {
         },
         ''
       );
-      await settings.addLanguage({ key: 'es', label: 'Spanish' });
 
       await translations.addLanguage('fr');
-      await settings.addLanguage({ key: 'fr', label: 'French' });
 
       const nonExistent = 'Russian';
 
