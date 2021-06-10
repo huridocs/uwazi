@@ -185,7 +185,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
               label: fullEntity.title,
               icon: fullEntity.icon,
             },
-            propertiesWithoutContent
+            propertiesWithoutContent.concat(properties)
           );
 
           const inheritIds = properties.map(p => p.inherit?.property);

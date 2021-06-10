@@ -36,6 +36,33 @@ describe('Denormalize relationships', () => {
   afterAll(async () => db.disconnect());
 
   describe('title and basic property (text)', () => {
+    it('should update denormalized title and icon', async () => {
+      const fixtures: DBFixture = {
+        templates: [
+          factory.template('templateA', [
+            factory.relationshipProp('relationship', 'templateB', 'text'),
+          ]),
+          factory.template('templateB', [factory.property('text')]),
+        ],
+        entities: [
+          factory.entity('A1', 'templateA', {
+            relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
+          }),
+          factory.entity('B1', 'templateB', {}, { icon: { _id: 'icon_id' } }),
+          factory.entity('B2', 'templateB'),
+        ],
+      };
+
+      await load(fixtures);
+      await modifyEntity('B1', { title: 'new Title' });
+      await modifyEntity('B2', { title: 'new Title 2' });
+
+      const relatedEntity = await entities.getById('A1', 'en');
+      expect(relatedEntity?.metadata).toMatchObject({
+        relationship: [{ label: 'new Title', icon: { _id: 'icon_id' } }, { label: 'new Title 2' }],
+      });
+    });
+
     it('should update title, icon and text property on related entities denormalized properties', async () => {
       const fixtures: DBFixture = {
         templates: [
