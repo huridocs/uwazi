@@ -7,7 +7,6 @@ import { EntitySchema } from 'shared/types/entityType';
 import thesauris from 'api/thesauri';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
-import relationship from '../../csv/typeParsers/relationship';
 
 const load = async (data: DBFixture, index?: string) =>
   db.setupFixturesAndContext(
@@ -286,7 +285,7 @@ describe('Denormalize relationships', () => {
           factory.entity('B2', 'templateB'),
         ],
       };
-      await load(fixtures);
+      await load(fixtures, 'index_denormalize');
     });
 
     it('should update denormalized properties when thesauri selected changes', async () => {
@@ -312,7 +311,7 @@ describe('Denormalize relationships', () => {
       ]);
     });
 
-    it('should update denormalized properties when thesauri label changes', async () => {
+    it('should update and index denormalized properties when thesauri label changes', async () => {
       await modifyEntity('B1', {
         metadata: { multiselect: [{ value: 'T2' }, { value: 'T3' }] },
       });
@@ -328,8 +327,12 @@ describe('Denormalize relationships', () => {
 
       await thesauris.save(factory.thesauri('thesauri', [['T1', 'new 1'], 'T2', ['T3', 'new 3']]));
 
-      const relatedEntity = await entities.getById('A1', 'en');
-      expect(relatedEntity?.metadata?.relationship).toMatchObject([
+      await elasticTesting.refresh();
+      const results = await elasticTesting.getIndexedEntities();
+
+      const A1 = results.find(r => r.sharedId === 'A1');
+
+      expect(A1?.metadata?.relationship).toMatchObject([
         {
           inheritedValue: [
             { value: 'T2', label: 'T2' },
@@ -487,4 +490,52 @@ describe('Denormalize relationships', () => {
       ]);
     });
   });
+
+  // describe('properties value changes that are independent of language', () => {
+  //   beforeEach(async () => {
+  //     await load(
+  //       {
+  //         templates: [
+  //           factory.template('templateA', [
+  //             factory.inherit('relationshipA', 'templateB', 'relationshipB'),
+  //           ]),
+  //           factory.template('templateB', [
+  //             factory.inherit('relationshipMulti', 'templateC', 'multiselect'),
+  //             factory.inherit('relationshipSimple', 'templateC', 'select'),
+  //           ]),
+  //           factory.template('templateC', [
+  //             factory.property('multiselect', 'multiselect', {
+  //               content: factory.id('thesauri').toString(),
+  //             }),
+  //             factory.property('select', 'select', {
+  //               content: factory.id('thesauri').toString(),
+  //             })
+  //           ]),
+  //         ],
+  //         entities: [
+  //           factory.entity('A1', 'templateA', { relationshipA: [factory.metadataValue('B1')] }),
+  //           factory.entity(
+  //             'A1',
+  //             'templateA',
+  //             { relationshipA: [factory.metadataValue('B1')] },
+  //             { language: 'es' }
+  //           ),
+  //           factory.entity('B1', 'templateB', { relationshipB: [factory.metadataValue('C1')] }),
+  //           factory.entity(
+  //             'B1',
+  //             'templateB',
+  //             { relationshipB: [factory.metadataValue('C1')] },
+  //             { language: 'es' }
+  //           ),
+  //           factory.entity('C1', 'templateC'),
+  //           factory.entity('C1', 'templateC', {}, { language: 'es' }),
+  //         ],
+  //       },
+  //       'index_denormalization'
+  //     );
+  // });
+
+  // it('should denormalize the changes for all the languages', async () => {
+
+  // });
 });
