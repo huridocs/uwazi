@@ -164,34 +164,14 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
           const properties = (
             await templates.get({
-              'properties.content': template._id.toString(),
-              // 'properties.inherit': { $exists: true },
+              $or: [
+                { 'properties.content': template._id.toString() },
+                { 'properties.content': '' },
+              ],
             })
           )
             .reduce((m, t) => m.concat(t.properties), [])
-            .filter(p => template._id?.toString() === p.content?.toString());
-
-          const propertiesWithoutContent = (
-            await templates.get({
-              'properties.content': '',
-            })
-          )
-            .reduce((m, t) => m.concat(t.properties), [])
-            .filter(p => p.content?.toString() === '');
-
-          await updateDenormalization(
-            { id: fullEntity.sharedId, language: fullEntity.language },
-            {
-              label: fullEntity.title,
-              icon: fullEntity.icon,
-            },
-            propertiesWithoutContent.concat(properties)
-          );
-
-          const inheritIds = properties.map(p => p.inherit?.property);
-          const toUpdateProps = template.properties.filter(p =>
-            inheritIds.includes(p._id.toString())
-          );
+            .filter(p => template._id?.toString() === p.content?.toString() || p.content === '');
 
           const transitiveProperties = await templates.esteNombreEsUnAskoCambiar(
             template._id.toString()
@@ -203,20 +183,25 @@ async function updateEntity(entity, _template, unrestricted = false) {
             transitiveProperties
           );
 
-          await toUpdateProps.reduce(async (prev, prop) => {
+          await properties.reduce(async (prev, prop) => {
             await prev;
+            const inheritProperty = template.properties.find(
+              p => prop.inherit?.property === p._id.toString()
+            );
             return updateDenormalization(
               { id: fullEntity.sharedId, language: fullEntity.language },
               {
-                inheritedValue: fullEntity.metadata[prop.name],
+                ...(inheritProperty
+                  ? { inheritedValue: fullEntity.metadata[inheritProperty.name] }
+                  : {}),
                 label: fullEntity.title,
                 icon: fullEntity.icon,
               },
-              properties.filter(p => prop._id.toString() === p.inherit?.property)
+              [prop]
             );
           }, Promise.resolve());
 
-          if (properties.length || propertiesWithoutContent.length || transitiveProperties.length) {
+          if (properties.length || transitiveProperties.length) {
             await search.indexEntities({
               $and: [
                 {
@@ -224,7 +209,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
                 },
                 {
                   $or: [
-                    ...[...properties, ...propertiesWithoutContent].map(property => ({
+                    ...properties.map(property => ({
                       [`metadata.${property.name}.value`]: fullEntity.sharedId,
                     })),
                     ...transitiveProperties.map(property => ({
