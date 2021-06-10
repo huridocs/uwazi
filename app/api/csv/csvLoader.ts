@@ -145,7 +145,11 @@ export class CSVLoader extends EventEmitter {
 
       const context = dbTranslations.contexts.find((ctxt: any) => ctxt.id === translationContext);
 
-      context.values = trans;
+      if (trans) {
+        Object.keys(trans).forEach(transKey => {
+          context.values[transKey] = trans[transKey];
+        });
+      }
 
       return translations.save(dbTranslations);
     }, Promise.resolve());

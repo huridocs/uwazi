@@ -44,7 +44,6 @@ describe('csvLoader', () => {
           'original 1': 'original 1',
           'original 2': 'original 2',
           'original 3': 'original 3',
-          'original 4': 'original 4',
         },
         ''
       );
@@ -87,7 +86,6 @@ describe('csvLoader', () => {
         'original 1': 'original 1',
         'original 2': 'original 2',
         'original 3': 'original 3',
-        'original 4': 'original 4',
       });
     });
 
@@ -102,6 +100,22 @@ describe('csvLoader', () => {
       expect(english.contexts[0].values).toEqual({
         'newKey 1': 'value 1',
         'newKey 2': 'value 2',
+        'original 1': 'original 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+      });
+    });
+    it('should not remove translations that are not in the csv', async () => {
+      const localCsv = `Key, English,
+                        original 1, value 1`;
+
+      await loader.loadTranslations(stream(localCsv), 'System');
+
+      const [english] = await translations.get();
+      expect(english.contexts[0].values).toEqual({
+        'original 1': 'value 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
       });
     });
   });
