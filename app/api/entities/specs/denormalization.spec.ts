@@ -453,7 +453,7 @@ describe('Denormalize relationships', () => {
       /// generate inherited values !
     });
 
-    it('should index the correct entities on a simple relationship', async () => {
+    fit('should index the correct entities on a simple relationship', async () => {
       await modifyEntity(
         'C1',
         { title: 'new Es title', metadata: { text: [{ value: 'nuevo texto para ES' }] } },
@@ -491,51 +491,63 @@ describe('Denormalize relationships', () => {
     });
   });
 
-  // describe('properties value changes that are independent of language', () => {
-  //   beforeEach(async () => {
-  //     await load(
-  //       {
-  //         templates: [
-  //           factory.template('templateA', [
-  //             factory.inherit('relationshipA', 'templateB', 'relationshipB'),
-  //           ]),
-  //           factory.template('templateB', [
-  //             factory.inherit('relationshipMulti', 'templateC', 'multiselect'),
-  //             factory.inherit('relationshipSimple', 'templateC', 'select'),
-  //           ]),
-  //           factory.template('templateC', [
-  //             factory.property('multiselect', 'multiselect', {
-  //               content: factory.id('thesauri').toString(),
-  //             }),
-  //             factory.property('select', 'select', {
-  //               content: factory.id('thesauri').toString(),
-  //             })
-  //           ]),
-  //         ],
-  //         entities: [
-  //           factory.entity('A1', 'templateA', { relationshipA: [factory.metadataValue('B1')] }),
-  //           factory.entity(
-  //             'A1',
-  //             'templateA',
-  //             { relationshipA: [factory.metadataValue('B1')] },
-  //             { language: 'es' }
-  //           ),
-  //           factory.entity('B1', 'templateB', { relationshipB: [factory.metadataValue('C1')] }),
-  //           factory.entity(
-  //             'B1',
-  //             'templateB',
-  //             { relationshipB: [factory.metadataValue('C1')] },
-  //             { language: 'es' }
-  //           ),
-  //           factory.entity('C1', 'templateC'),
-  //           factory.entity('C1', 'templateC', {}, { language: 'es' }),
-  //         ],
-  //       },
-  //       'index_denormalization'
-  //     );
-  // });
+  describe('when changing a multiselect in one language', () => {
+    beforeEach(async () => {
+      await load(
+        {
+          templates: [
+            factory.template('templateA', [
+              factory.inherit('relationshipA', 'templateB', 'multiselect'),
+            ]),
+            factory.template('templateB', [
+              factory.property('multiselect', 'multiselect', {
+                content: factory.id('thesauri').toString(),
+              }),
+            ]),
+          ],
+          dictionaries: [factory.thesauri('thesauri', ['T1', 'T2', 'T3'])],
+          entities: [
+            factory.entity('A1', 'templateA', { relationshipA: [factory.metadataValue('B1')] }),
+            factory.entity(
+              'A1',
+              'templateA',
+              { relationshipA: [factory.metadataValue('B1')] },
+              { language: 'es' }
+            ),
+            factory.entity('B1', 'templateB', {
+              multiselect: [factory.metadataValue('T1')],
+            }),
+            factory.entity(
+              'B1',
+              'templateB',
+              {
+                multiselect: [factory.metadataValue('T1')],
+              },
+              { language: 'es' }
+            ),
+          ],
+        },
+        'index_denormalization'
+      );
+    });
 
-  // it('should denormalize the changes for all the languages', async () => {
+    it('should denormalize the VALUE for all the languages', async () => {
+      await modifyEntity('B1', {
+        metadata: { multiselect: [{ value: 'T1' }, { value: 'T2' }] },
+      });
 
-  // });
+      await elasticTesting.refresh();
+      const results = await elasticTesting.getIndexedEntities();
+
+      const [A1en, A1es] = results.filter(r => r.sharedId === 'A1');
+
+      expect(A1en?.metadata?.relationshipA).toMatchObject([
+        { value: 'B1', inheritedValue: [{ value: 'T1' }, { value: 'T2' }] },
+      ]);
+
+      expect(A1es?.metadata?.relationshipA).toMatchObject([
+        { value: 'B1', inheritedValue: [{ value: 'T1' }, { value: 'T2' }] },
+      ]);
+    });
+  });
 });

@@ -9,7 +9,7 @@ interface Changes {
 
 interface Params {
   id: string;
-  language: string;
+  language?: string;
 }
 
 export const updateTransitiveDenormalization = async (
@@ -40,7 +40,7 @@ export const updateDenormalization = async (
   Promise.all(
     properties.map(async property =>
       model.updateMany(
-        { language, [`metadata.${property.name}.value`]: id },
+        { ...(language ? { language } : {}), [`metadata.${property.name}.value`]: id },
         {
           $set: Object.keys(changes).reduce(
             (set, prop) => ({
