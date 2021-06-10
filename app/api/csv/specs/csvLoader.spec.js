@@ -84,7 +84,7 @@ describe('csvLoader', () => {
     it('should not update a language that exists in the system but not in csv', async () => {
       await translations.addLanguage('aa');
       await loader.loadTranslations(stream(csv), 'System');
-      const [, , , afar] = await translations.get();
+      const [afar] = await translations.get({ locale: 'aa' });
       expect(afar.contexts[0].values).toEqual({
         'original 1': 'original 1',
         'original 2': 'original 2',
