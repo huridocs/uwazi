@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { Field, Form } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { t, actions } from 'app/I18N';
+import { t, actions, Translate } from 'app/I18N';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
@@ -89,7 +89,9 @@ export class EditTranslationForm extends Component {
             onClick={this.onImportClicked}
           >
             <Icon icon="upload" />
-            <span className="btn-label">Import</span>
+            <span className="btn-label">
+              <Translate>Import</Translate>
+            </span>
           </button>
         </SelectFileButton>
       ) : (

@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 
 import { SelectFileButton } from 'app/App/SelectFileButton';
 import { ThesauriFormItem } from './ThesauriFormItem';
@@ -202,7 +203,9 @@ export class ThesauriForm extends Component {
               <SelectFileButton onFileImported={this.importThesaurusFile}>
                 <button type="button" className="btn btn-primary import-template">
                   <Icon icon="upload" />
-                  <span className="btn-label">Import</span>
+                  <span className="btn-label">
+                    <Translate>Import</Translate>
+                  </span>
                 </button>
               </SelectFileButton>
               <button type="submit" className="btn btn-success save-template">
