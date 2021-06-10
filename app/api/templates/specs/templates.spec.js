@@ -9,7 +9,7 @@ import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
 import { propertyTypes } from 'shared/propertyTypes';
-import * as entityPropertiesUpdater from 'api/entities/entityPropertiesUpdater';
+import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 import templates from '../templates';
 
 import fixtures, {
@@ -350,7 +350,7 @@ describe('templates', () => {
 
     describe('generatedId', () => {
       const populateGeneratedIdByTemplateSpy = jest
-        .spyOn(entityPropertiesUpdater, 'populateGeneratedIdByTemplate')
+        .spyOn(generatedIdPropertyAutoFiller, 'populateGeneratedIdByTemplate')
         .mockImplementation(() => Promise.resolve());
 
       afterEach(() => {
