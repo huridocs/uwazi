@@ -1,15 +1,17 @@
 import entities from 'api/entities';
-import { populateGeneratedIdByTemplate } from 'api/entities/entityPropertiesUpdater';
 import db from 'api/utils/testing_db';
-import { fixtures, templateId } from 'api/entities/specs/entityPropertiesUpdaterFixtures';
+import { fixtures, templateId } from 'api/templates/specs/generatedIdPropertyAutoFillerFixtures';
 import { unique } from 'api/utils/filters';
-import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { propertyTypes } from 'shared/propertyTypes';
+import { TemplateSchema } from 'shared/types/templateType';
+import { elastic } from 'api/search';
+import { elasticTesting } from 'api/utils/elastic_testing';
+import templates from '../templates';
 
-describe('entity properties updater', () => {
+describe('generatedId property auto filler', () => {
   beforeAll(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await db.setupFixturesAndContext(fixtures, 'generated_id_auto_filler_index');
   });
 
   afterAll(async () => {
@@ -19,41 +21,50 @@ describe('entity properties updater', () => {
   describe('fill generated id fields for entities of a specified template', () => {
     let affectedEntities: EntitySchema[];
     beforeAll(async () => {
-      const properties: PropertySchema[] = [
-        { name: 'text', type: 'text', label: 'Text' },
-        { name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' },
-        { name: 'autoId1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
-      ];
-
-      await populateGeneratedIdByTemplate(templateId, properties);
-      affectedEntities = await entities.get({ template: templateId }, [
-        'sharedId',
-        'metadata.text',
-        'metadata.autoId',
-        'metadata.autoId1',
-      ]);
+      const templateToUpdate: TemplateSchema = {
+        _id: templateId,
+        name: 'template',
+        commonProperties: [{ id: 'title', name: 'title', label: 'title', type: 'text' }],
+        properties: [
+          { id: 'text', name: 'text', type: 'text', label: 'Text' },
+          { name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' },
+          { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
+        ],
+      };
+      await templates.save(templateToUpdate, 'en', true);
+      affectedEntities = await entities.get({ template: templateId });
     });
     it('should assign the same value to all entities with the same sharedId', async () => {
       const generatedIds: { [k: string]: string } = {};
       affectedEntities.forEach(e => {
         const sharedId = e.sharedId as string;
         if (!generatedIds[sharedId]) {
-          generatedIds[sharedId] = e.metadata!.autoId![0].value as string;
+          generatedIds[sharedId] = e.metadata!.auto_id![0].value as string;
         }
-        expect(generatedIds[sharedId]).toEqual(e.metadata!.autoId![0].value);
+        expect(generatedIds[sharedId]).toEqual(e.metadata!.auto_id![0].value);
       });
     });
     it('should assign different values across sharedIds', async () => {
       const differentAutoId = affectedEntities
-        .map(e => e.metadata!.autoId![0].value)
+        .map(e => e.metadata!.auto_id![0].value)
         .filter(unique);
       expect(differentAutoId.length).toBe(2);
       const differentAutoId1 = affectedEntities
-        .map(e => e.metadata!.autoId1![0].value)
+        .map(e => e.metadata!.auto_id_1![0].value)
         .filter(unique);
       expect(differentAutoId1.length).toBe(2);
-
       expect(affectedEntities[0].metadata!.text![0].value).toEqual('test');
+    });
+    it('should reindex updated templates', async () => {
+      await elastic.indices.refresh();
+      const indexedEntities: EntitySchema[] = await elasticTesting.getIndexedEntities();
+      expect(indexedEntities[0].metadata).toEqual(
+        expect.objectContaining({
+          text: [{ value: 'test' }],
+          auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
+          auto_id_1: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
+        })
+      );
     });
   });
 });
