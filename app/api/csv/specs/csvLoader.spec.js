@@ -160,7 +160,7 @@ describe('csvLoader', () => {
     });
 
     describe('metadata parsing', () => {
-      it('should parse metadata properties by type using typeParsers', async () => {
+      it('should parse metadata properties by type using typeParsers', () => {
         const textValues = imported.map(i => i.metadata.text_label[0].value);
         expect(textValues).toEqual(['text value 1', 'text value 2', 'text value 3']);
 
