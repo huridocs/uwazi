@@ -189,7 +189,12 @@ async function updateEntity(entity, _template, unrestricted = false) {
               p => prop.inherit?.property === p._id.toString()
             );
             return updateDenormalization(
-              { id: fullEntity.sharedId, language: fullEntity.language },
+              {
+                id: fullEntity.sharedId,
+                ...(!FIELD_TYPES_TO_SYNC.includes(prop.type)
+                  ? { language: fullEntity.language }
+                  : {}),
+              },
               {
                 ...(inheritProperty
                   ? { inheritedValue: fullEntity.metadata[inheritProperty.name] }
@@ -203,20 +208,25 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
           if (properties.length || transitiveProperties.length) {
             await search.indexEntities({
-              $and: [
-                {
-                  language: fullEntity.language,
-                },
-                {
-                  $or: [
-                    ...properties.map(property => ({
+              $or: [
+                ...properties.map(property => ({
+                  $and: [
+                    {
+                      ...(!FIELD_TYPES_TO_SYNC.includes(property.type)
+                        ? { language: fullEntity.language }
+                        : {}),
+                    },
+                    {
                       [`metadata.${property.name}.value`]: fullEntity.sharedId,
-                    })),
-                    ...transitiveProperties.map(property => ({
-                      [`metadata.${property.name}.inheritedValue.value`]: fullEntity.sharedId,
-                    })),
+                    },
                   ],
-                },
+                })),
+                ...transitiveProperties.map(property => ({
+                  $and: [
+                    { language: fullEntity.language },
+                    { [`metadata.${property.name}.inheritedValue.value`]: fullEntity.sharedId },
+                  ],
+                })),
               ],
             });
           }
