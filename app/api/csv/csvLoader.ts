@@ -125,14 +125,14 @@ export class CSVLoader extends EventEmitter {
       (await settings.get()).languages
     ).map((l: LanguageSchema) => ({ label: l.label, language: l.key }));
 
-    const intermidiateTranslation: any = {};
+    const intermediateTranslation: { [k: string]: { [k: string]: string } } = {};
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(
         async (row: CSVRow, _index: number): Promise<void> => {
           Object.keys(row).forEach(lang => {
-            intermidiateTranslation[lang] = intermidiateTranslation[lang] || {};
-            intermidiateTranslation[lang][row.Key] = row[lang];
+            intermediateTranslation[lang] = intermediateTranslation[lang] || {};
+            intermediateTranslation[lang][row.Key] = row[lang];
           });
         }
       )
@@ -140,7 +140,7 @@ export class CSVLoader extends EventEmitter {
 
     return availableLanguages.reduce(async (prev, lang) => {
       await prev;
-      const trans = intermidiateTranslation[lang.label];
+      const trans = intermediateTranslation[lang.label];
       const [dbTranslations] = await translations.get({ locale: lang.language });
 
       const context = dbTranslations.contexts.find((ctxt: any) => ctxt.id === translationContext);
