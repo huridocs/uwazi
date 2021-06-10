@@ -829,11 +829,32 @@ export default {
 
     await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
 
+    const transitiveProps = await templates.esteNombreEsUnAskoCambiar(thesaurusId.toString());
     await updateTransitiveDenormalization(
       { id: valueId, language },
       { label: newLabel },
-      await templates.esteNombreEsUnAskoCambiar(thesaurusId.toString())
+      transitiveProps
     );
+
+    if (properties.length || transitiveProps.length) {
+      await search.indexEntities({
+        $and: [
+          {
+            language,
+          },
+          {
+            $or: [
+              ...properties.map(property => ({
+                [`metadata.${property.name}.value`]: valueId,
+              })),
+              ...transitiveProps.map(property => ({
+                [`metadata.${property.name}.inheritedValue.value`]: valueId,
+              })),
+            ],
+          },
+        ],
+      });
+    }
   },
 
   async createThumbnail(entity) {
