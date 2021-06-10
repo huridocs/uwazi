@@ -9,7 +9,7 @@ import { ObjectID } from 'mongodb';
 
 import { validateTemplate } from 'shared/types/templateSchema';
 import { propertyTypes } from 'shared/propertyTypes';
-import { populateGeneratedIdByTemplate } from 'api/entities/entityPropertiesUpdater';
+import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import model from './templatesModel';
 import {
   generateNamesAndIds,

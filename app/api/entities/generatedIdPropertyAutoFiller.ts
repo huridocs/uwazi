@@ -56,6 +56,7 @@ const populateGeneratedIdByTemplate = async (
     }),
     {}
   );
+
   const stepSize = 5000;
   const entitiesQty = await model.count({ template: templateId });
   const steps = Array(Math.floor(entitiesQty / stepSize) || 1);

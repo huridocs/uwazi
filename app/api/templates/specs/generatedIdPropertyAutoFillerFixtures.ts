@@ -3,6 +3,19 @@ import db, { DBFixture } from 'api/utils/testing_db';
 const templateId = db.id();
 
 const fixtures: DBFixture = {
+  settings: [
+    {
+      languages: [{ key: 'en', default: true }, { key: 'es' }, { key: 'pt' }],
+    },
+  ],
+  templates: [
+    {
+      _id: templateId,
+      name: 'template',
+      commonProperties: [{ id: 'title', name: 'title', label: 'title', type: 'text' }],
+      properties: [{ id: 'text', name: 'text', type: 'text', label: 'Text' }],
+    },
+  ],
   entities: [
     {
       _id: db.id(),
@@ -35,7 +48,7 @@ const fixtures: DBFixture = {
       _id: db.id(),
       title: 'entity2 pr',
       sharedId: 'ent2',
-      language: 'pr',
+      language: 'pt',
       published: false,
       template: templateId,
       metadata: { text: [{ value: 'test' }] },
