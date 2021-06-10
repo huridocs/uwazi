@@ -23,9 +23,9 @@ export const updateTransitiveDenormalization = async (
         { language, [`metadata.${property.name}.inheritedValue.value`]: id },
         {
           ...(changes.icon
-            ? { [`metadata.${property.name}.$.inheritedValue.$[valueObject].icon`]: changes.icon }
+            ? { [`metadata.${property.name}.$[].inheritedValue.$[valueObject].icon`]: changes.icon }
             : {}),
-          [`metadata.${property.name}.$.inheritedValue.$[valueObject].label`]: changes.label,
+          [`metadata.${property.name}.$[].inheritedValue.$[valueObject].label`]: changes.label,
         },
         { arrayFilters: [{ 'valueObject.value': id }] }
       )

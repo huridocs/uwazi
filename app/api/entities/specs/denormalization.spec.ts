@@ -144,7 +144,7 @@ describe('Denormalize relationships', () => {
       ]);
     });
 
-    it('should update title and 2 differente text properties denormalized on related entities', async () => {
+    it('should update title and 2 different text properties denormalized on related entities', async () => {
       const fixtures: DBFixture = {
         templates: [
           factory.template('templateA', [factory.property('text1'), factory.property('text2')]),
@@ -325,9 +325,13 @@ describe('Denormalize relationships', () => {
           ]),
           factory.template('templateB', [factory.relationshipProp('relationshipB', 'templateC')]),
           factory.template('templateC'),
+          factory.template('templateD', [
+            factory.inherit('relationshipD', 'templateA', 'relationship'),
+          ]),
         ],
         entities: [
           factory.entity('A1', 'templateA', { relationship: [{ value: 'B1' }, { value: 'B2' }] }),
+          factory.entity('A2', 'templateA', { relationship: [{ value: 'B1' }, { value: 'B2' }] }),
           factory.entity('B1', 'templateB'),
           factory.entity('B2', 'templateB'),
           factory.entity('C1', 'templateC'),
@@ -336,14 +340,21 @@ describe('Denormalize relationships', () => {
       };
       await load(fixtures);
       await modifyEntity('B1', { metadata: { relationshipB: [{ value: 'C1' }] } });
-      await modifyEntity('B2', { metadata: { relationshipB: [{ value: 'C2' }] } });
+      await modifyEntity('B2', { metadata: { relationshipB: [{ value: 'C2' }, { value: 'C1' }] } });
+      await modifyEntity('A1', { metadata: { relationship: [{ value: 'B1' }, { value: 'B2' }] } });
+      await modifyEntity('A2', { metadata: { relationship: [{ value: 'B1' }, { value: 'B2' }] } });
     });
 
     it('should update denormalized properties when relationship selected changes', async () => {
       const relatedEntity = await entities.getById('A1', 'en');
       expect(relatedEntity?.metadata?.relationship).toMatchObject([
         { inheritedValue: [{ value: 'C1', label: 'C1' }] },
-        { inheritedValue: [{ value: 'C2', label: 'C2' }] },
+        {
+          inheritedValue: [
+            { value: 'C2', label: 'C2' },
+            { value: 'C1', label: 'C1' },
+          ],
+        },
       ]);
     });
 
@@ -352,9 +363,15 @@ describe('Denormalize relationships', () => {
       await modifyEntity('C2', { title: 'new C2' });
 
       const relatedEntity = await entities.getById('A1', 'en');
+
       expect(relatedEntity?.metadata?.relationship).toMatchObject([
         { inheritedValue: [{ value: 'C1', label: 'new C1' }] },
-        { inheritedValue: [{ value: 'C2', label: 'new C2' }] },
+        {
+          inheritedValue: [
+            { value: 'C2', label: 'new C2' },
+            { value: 'C1', label: 'new C1' },
+          ],
+        },
       ]);
     });
   });
