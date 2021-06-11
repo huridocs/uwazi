@@ -13,6 +13,7 @@ import { shallow } from 'enzyme';
 import TestBackend from 'react-dnd-test-backend';
 
 import api from 'app/Templates/TemplatesAPI';
+import entitiesApi from 'app/Entities/EntitiesAPI';
 import pagesApi from 'app/Pages/PagesAPI';
 
 import {
@@ -220,6 +221,7 @@ describe('MetadataTemplate', () => {
   describe('onSubmit', () => {
     it('should trim the properties labels and then call props.saveTemplate', async () => {
       spyOn(api, 'validateMapping').and.returnValue({ errors: [], valid: true });
+      spyOn(entitiesApi, 'countByTemplate').and.returnValue(100);
       const component = shallow(<MetadataTemplate {...props} />);
       const template = { properties: [{ label: ' trim me please ' }] };
       await component.instance().onSubmit(template);
@@ -228,21 +230,39 @@ describe('MetadataTemplate', () => {
       });
     });
 
-    describe('when the mapping has con flicts', () => {
-      it('should ask for a reindex', async () => {
+    describe('confirmation of saving', () => {
+      let context;
+      const template = { properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }] };
+
+      async function submitTemplate(validMapping = true, entityCount = 100) {
+        context = {
+          confirm: jasmine.createSpy('confirm'),
+        };
         spyOn(api, 'validateMapping').and.returnValue({
           error: 'error',
-          valid: false,
+          valid: validMapping,
         });
-        const context = { confirm: jasmine.createSpy('confirm') };
-
+        spyOn(entitiesApi, 'countByTemplate').and.returnValue(entityCount);
         const component = shallow(<MetadataTemplate {...props} />, { context });
-        const template = { properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }] };
         await component.instance().onSubmit(template);
-        context.confirm.calls.mostRecent().args[0].accept();
-        expect(props.saveTemplate).toHaveBeenCalledWith({
-          properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
-          reindex: true,
+      }
+
+      describe('when the mapping has conflicts', () => {
+        it('should ask for a reindex', async () => {
+          await submitTemplate(false);
+          context.confirm.calls.mostRecent().args[0].accept();
+          expect(props.saveTemplate).toHaveBeenCalledWith({
+            properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+            reindex: true,
+          });
+        });
+
+        describe('when there is a quite amount of entities from the template', () => {
+          it('should ask for a reindex', async () => {
+            await submitTemplate(true, 50000);
+            context.confirm.calls.mostRecent().args[0].cancel();
+            expect(props.saveTemplate).not.toHaveBeenCalled();
+          });
         });
       });
     });

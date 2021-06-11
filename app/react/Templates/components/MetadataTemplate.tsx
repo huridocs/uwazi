@@ -21,6 +21,7 @@ import {
   inserted,
   saveTemplate,
   validateMapping,
+  countByTemplate,
 } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
@@ -66,6 +67,22 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     properties: [],
   };
 
+  confirmation = {
+    templateConflict: {
+      title: 'Template conflict',
+      key: 'Mapping conflict error',
+      text: `The template has changed and the mappings are not compatible,
+        your entire collection must be re-indexed. This process may take several minutes,
+        do you want to continue?`,
+    },
+    largeNumberOfEntities: {
+      title: 'Lengthy reindex process',
+      key: 'Lengthy reindex process',
+      text: `The template has changed and the associated entities will be re-indexed,
+      this process may take several minutes, do you want to continue?`,
+    },
+  };
+
   constructor(props: MetadataTemplateProps) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
@@ -79,32 +96,37 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
       prop.label = _prop.label.trim();
       return prop;
     });
-
     const mappingValidation = await validateMapping(template);
     if (!mappingValidation.valid) {
-      this.context.confirm({
-        accept: () => {
-          template.reindex = true;
-          return this.props.saveTemplate(template);
-        },
-        title: t('System', 'Template conflict', null, false),
-        message: t(
-          'System',
-          'Mapping conflict error',
-          `The template have changed and the mappings are not compatible,
-        all your collection must be reindexed. This process may take several minutes,
-        do you want to continue?`,
-          false
-        ),
-      });
-      return;
+      return this.confirmAndSaveTemplate(template, 'templateConflict');
     }
-
+    const entitiesCountOfTemplate = await countByTemplate(template);
+    const lengthyReindexFloorCount = 30000;
+    if (entitiesCountOfTemplate >= lengthyReindexFloorCount) {
+      return this.confirmAndSaveTemplate(template, 'largeNumberOfEntities');
+    }
     this.props.saveTemplate(template);
   };
 
   onSubmitFailed() {
     this.props.notify(t('System', 'The template contains errors', null, false), 'danger');
+  }
+
+  confirmAndSaveTemplate(
+    template: TemplateSchema,
+    confirmationKey: 'templateConflict' | 'largeNumberOfEntities'
+  ) {
+    return this.context.confirm({
+      accept: () => this.props.saveTemplate({ ...template, reindex: true }),
+      cancel: () => {},
+      title: t('System', this.confirmation[confirmationKey].title, null, false),
+      message: t(
+        'System',
+        this.confirmation[confirmationKey].key,
+        this.confirmation[confirmationKey].text,
+        false
+      ),
+    });
   }
 
   render() {
