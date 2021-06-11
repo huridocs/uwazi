@@ -2,6 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import { pathFunction, fileExists } from 'api/files';
 import { createError } from '.';
 
+const checkFilePath = async (fileName: string, filePath: string) => {
+  if (!fileName || !(await fileExists(filePath))) {
+    throw createError('file not found', 404);
+  }
+};
+
 const staticFilesMiddleware = (pathFunctions: pathFunction[]) => async (
   req: Request,
   res: Response,
@@ -14,9 +20,7 @@ const staticFilesMiddleware = (pathFunctions: pathFunction[]) => async (
     return current;
   }, Promise.resolve(pathFunctions[0]));
   try {
-    if (!req.params.fileName || !(await fileExists(pathToUse(req.params.fileName)))) {
-      throw createError('file not found', 404);
-    }
+    await checkFilePath(req.params.fileName, pathToUse(req.params.fileName));
     res.sendFile(pathToUse(req.params.fileName));
   } catch (e) {
     next();
