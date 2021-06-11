@@ -89,22 +89,6 @@ describe('csvLoader', () => {
       });
     });
 
-    it('should add new translation keys from csv', async () => {
-      const localCsv = `Key,      English,
-                        newKey 1, value 1,
-                        newKey 2, value 2,`;
-
-      await loader.loadTranslations(stream(localCsv), 'System');
-
-      const [english] = await translations.get();
-      expect(english.contexts[0].values).toEqual({
-        'newKey 1': 'value 1',
-        'newKey 2': 'value 2',
-        'original 1': 'original 1',
-        'original 2': 'original 2',
-        'original 3': 'original 3',
-      });
-    });
     it('should not remove translations that are not in the csv', async () => {
       const localCsv = `Key, English,
                         original 1, value 1`;
