@@ -21,7 +21,7 @@ import { validateEntity } from 'shared/types/entitySchema';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
-import { updateTransitiveDenormalization, updateDenormalization } from './denormalize';
+import { denormalizeRelated, updateTransitiveDenormalization, updateDenormalization } from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -149,90 +149,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
         }
 
-        //Crappy draft code starts
-
-        // entidad(title entidadC) <- entidadB <- entidadC;
-        // entidad(title thesauri) <- entidadB <- thesauri;
-
-        // entidadB(title && inherited prop) <- entidadA;
-        // entidadC(title && inherited prop) <- entidadA;
-
-        // entidad(thesauriValue) <- thesauri;
-
         if (template._id) {
           const fullEntity = { ...currentDoc, ...toSave };
-
-          const properties = (
-            await templates.get({
-              $or: [
-                { 'properties.content': template._id.toString() },
-                { 'properties.content': '' },
-              ],
-            })
-          )
-            .reduce((m, t) => m.concat(t.properties), [])
-            .filter(p => template._id?.toString() === p.content?.toString() || p.content === '');
-
-          const transitiveProperties = await templates.esteNombreEsUnAskoCambiar(
-            template._id.toString()
-          );
-
-          await updateTransitiveDenormalization(
-            { id: fullEntity.sharedId, language: fullEntity.language },
-            { label: fullEntity.title, icon: fullEntity.icon },
-            transitiveProperties
-          );
-
-          await properties.reduce(async (prev, prop) => {
-            await prev;
-            const inheritProperty = template.properties.find(
-              p => prop.inherit?.property === p._id.toString()
-            );
-            return updateDenormalization(
-              {
-                id: fullEntity.sharedId,
-                ...(!FIELD_TYPES_TO_SYNC.includes(prop.type)
-                  ? { language: fullEntity.language }
-                  : {}),
-              },
-              {
-                ...(inheritProperty
-                  ? { inheritedValue: fullEntity.metadata[inheritProperty.name] }
-                  : {}),
-                label: fullEntity.title,
-                icon: fullEntity.icon,
-              },
-              [prop]
-            );
-          }, Promise.resolve());
-
-          if (properties.length || transitiveProperties.length) {
-            await search.indexEntities({
-              $or: [
-                ...properties.map(property => ({
-                  $and: [
-                    {
-                      ...(!FIELD_TYPES_TO_SYNC.includes(property.type)
-                        ? { language: fullEntity.language }
-                        : {}),
-                    },
-                    {
-                      [`metadata.${property.name}.value`]: fullEntity.sharedId,
-                    },
-                  ],
-                })),
-                ...transitiveProperties.map(property => ({
-                  $and: [
-                    { language: fullEntity.language },
-                    { [`metadata.${property.name}.inheritedValue.value`]: fullEntity.sharedId },
-                  ],
-                })),
-              ],
-            });
-          }
+          await denormalizeRelated(fullEntity, template);
         }
 
-        ////Crappy draft code ends
 
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(

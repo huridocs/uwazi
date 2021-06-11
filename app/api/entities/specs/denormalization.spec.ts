@@ -453,7 +453,7 @@ describe('Denormalize relationships', () => {
       /// generate inherited values !
     });
 
-    fit('should index the correct entities on a simple relationship', async () => {
+    it('should index the correct entities on a simple relationship', async () => {
       await modifyEntity(
         'C1',
         { title: 'new Es title', metadata: { text: [{ value: 'nuevo texto para ES' }] } },
