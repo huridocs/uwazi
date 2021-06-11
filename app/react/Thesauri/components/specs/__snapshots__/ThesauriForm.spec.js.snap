@@ -137,7 +137,9 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
             <span
               className="btn-label"
             >
-              Import
+              <Connect(Translate)>
+                Import
+              </Connect(Translate)>
             </span>
           </button>
         </SelectFileButton>
