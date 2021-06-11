@@ -4,7 +4,6 @@ import entities from 'api/entities';
 import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
-// import settings from 'api/settings';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './csvLoaderFixtures';
