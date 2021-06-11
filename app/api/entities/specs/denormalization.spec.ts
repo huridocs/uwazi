@@ -463,12 +463,13 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
-      const [B1en, B1es] = results.filter(r => r.sharedId === 'B1');
+      const B1en = results.find(r => r.sharedId === 'B1' && r.language === 'en');
+      const B1es = results.find(r => r.sharedId === 'B1' && r.language === 'es');
 
-      expect(B1en.metadata?.relationshipB).toMatchObject([
+      expect(B1en?.metadata?.relationshipB).toMatchObject([
         { value: 'C1', label: 'C1', inheritedValue: [{ value: 'text' }] },
       ]);
-      expect(B1es.metadata?.relationshipB).toMatchObject([
+      expect(B1es?.metadata?.relationshipB).toMatchObject([
         { value: 'C1', label: 'new Es title', inheritedValue: [{ value: 'nuevo texto para ES' }] },
       ]);
     });
@@ -479,7 +480,8 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
-      const [A1en, A1es] = results.filter(r => r.sharedId === 'A1');
+      const A1en = results.find(r => r.sharedId === 'A1' && r.language === 'en');
+      const A1es = results.find(r => r.sharedId === 'A1' && r.language === 'es');
 
       expect(A1en?.metadata?.relationshipA).toMatchObject([
         { value: 'B1', inheritedValue: [{ label: 'C1' }] },
@@ -539,7 +541,8 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
-      const [A1en, A1es] = results.filter(r => r.sharedId === 'A1');
+      const A1en = results.find(r => r.sharedId === 'A1' && r.language === 'en');
+      const A1es = results.find(r => r.sharedId === 'A1' && r.language === 'es');
 
       expect(A1en?.metadata?.relationshipA).toMatchObject([
         { value: 'B1', inheritedValue: [{ value: 'T1' }, { value: 'T2' }] },

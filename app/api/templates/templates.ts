@@ -67,7 +67,17 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
 };
 
 export default {
-  async esteNombreEsUnAskoCambiar(contentId: string) {
+  async propsThatNeedDenormalization(templateId: string) {
+    return (
+      await model.get({
+        $or: [{ 'properties.content': templateId }, { 'properties.content': '' }],
+      })
+    )
+      .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
+      .filter(p => templateId === p.content?.toString() || p.content === '');
+  },
+
+  async propsThatNeedInheritDenormalization(contentId: string) {
     const properties = (await model.get({ 'properties.content': contentId }))
       .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
       .filter(p => contentId === p.content?.toString());
