@@ -21,7 +21,11 @@ import { validateEntity } from 'shared/types/entitySchema';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
-import { denormalizeRelated, updateTransitiveDenormalization, updateDenormalization } from './denormalize';
+import {
+  denormalizeRelated,
+  updateTransitiveDenormalization,
+  updateDenormalization,
+} from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -149,18 +153,16 @@ async function updateEntity(entity, _template, unrestricted = false) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
         }
 
-        if (template._id) {
-          const fullEntity = { ...currentDoc, ...toSave };
-          await denormalizeRelated(fullEntity, template);
-        }
-
-
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
             entity.suggestedMetadata,
             entity,
             template
           );
+        }
+        if (template._id) {
+          const fullEntity = { ...currentDoc, ...toSave };
+          await denormalizeRelated(fullEntity, template);
         }
         return saveFunc(toSave);
       }
@@ -188,6 +190,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
       if (typeof entity.generatedToc !== 'undefined') {
         d.generatedToc = entity.generatedToc;
       }
+
+      if (template._id) {
+        await denormalizeRelated(d, template);
+      }
+
       return saveFunc(d);
     })
   );
@@ -762,7 +769,7 @@ export default {
 
     await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
 
-    const transitiveProps = await templates.esteNombreEsUnAskoCambiar(thesaurusId.toString());
+    const transitiveProps = await templates.propsThatNeedInheritDenormalization(thesaurusId.toString());
     await updateTransitiveDenormalization(
       { id: valueId, language },
       { label: newLabel },
