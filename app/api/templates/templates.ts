@@ -84,7 +84,7 @@ export default {
 
     return (
       await model.get({
-        'properties.inherit.property': {
+        'properties.inheritProperty': {
           $in: properties.map(p => p._id?.toString()).filter(v => v),
         },
       })

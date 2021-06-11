@@ -82,7 +82,7 @@ export const denormalizeRelated = async (
   await Promise.all(
     properties.map(async prop => {
       const inheritProperty = (template.properties || []).find(
-        p => prop.inherit?.property === p._id?.toString()
+        p => prop.inheritProperty === p._id?.toString()
       );
       return updateDenormalization(
         {

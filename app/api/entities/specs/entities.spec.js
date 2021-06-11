@@ -15,7 +15,6 @@ import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
-  shared2,
   templateId,
   templateChangingNames,
   syncPropertiesEntityId,
