@@ -232,9 +232,12 @@ describe('MetadataTemplate', () => {
 
     describe('confirmation of saving', () => {
       let context;
-      const template = { properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }] };
+      const templateWithId = {
+        _id: 'template1',
+        properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+      };
 
-      async function submitTemplate(validMapping = true, entityCount = 100) {
+      async function submitTemplate(templateToSubmit, validMapping = true, entityCount = 100) {
         context = {
           confirm: jasmine.createSpy('confirm'),
         };
@@ -244,24 +247,31 @@ describe('MetadataTemplate', () => {
         });
         spyOn(entitiesApi, 'countByTemplate').and.returnValue(entityCount);
         const component = shallow(<MetadataTemplate {...props} />, { context });
-        await component.instance().onSubmit(template);
+        await component.instance().onSubmit(templateToSubmit);
       }
 
       describe('when the mapping has conflicts', () => {
         it('should ask for a reindex', async () => {
-          await submitTemplate(false);
+          await submitTemplate(templateWithId, false);
           context.confirm.calls.mostRecent().args[0].accept();
           expect(props.saveTemplate).toHaveBeenCalledWith({
-            properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+            ...templateWithId,
             reindex: true,
           });
         });
 
         describe('when there is a quite amount of entities from the template', () => {
           it('should ask for a reindex', async () => {
-            await submitTemplate(true, 50000);
+            await submitTemplate(templateWithId, true, 50000);
             context.confirm.calls.mostRecent().args[0].cancel();
             expect(props.saveTemplate).not.toHaveBeenCalled();
+          });
+        });
+
+        describe('when it is a new template', () => {
+          it('should not check for the number of entities', async () => {
+            await submitTemplate({ properties: templateWithId.properties }, true, null);
+            expect(entitiesApi.countByTemplate).not.toHaveBeenCalled();
           });
         });
       });

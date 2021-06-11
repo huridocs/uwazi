@@ -100,10 +100,12 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     if (!mappingValidation.valid) {
       return this.confirmAndSaveTemplate(template, 'templateConflict');
     }
-    const entitiesCountOfTemplate = await countByTemplate(template);
-    const lengthyReindexFloorCount = 30000;
-    if (entitiesCountOfTemplate >= lengthyReindexFloorCount) {
-      return this.confirmAndSaveTemplate(template, 'largeNumberOfEntities');
+    if (template._id) {
+      const entitiesCountOfTemplate = await countByTemplate(template);
+      const lengthyReindexFloorCount = 30000;
+      if (entitiesCountOfTemplate >= lengthyReindexFloorCount) {
+        return this.confirmAndSaveTemplate(template, 'largeNumberOfEntities');
+      }
     }
     this.props.saveTemplate(template);
   };
