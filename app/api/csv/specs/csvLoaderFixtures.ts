@@ -86,12 +86,47 @@ export default {
     {
       _id: db.id(),
       locale: 'en',
-      contexts: [],
+      contexts: [
+        {
+          id: 'System',
+          label: 'System',
+          values: [
+            { key: 'original 1', value: 'original 1' },
+            { key: 'original 2', value: 'original 2' },
+            { key: 'original 3', value: 'original 3' },
+          ],
+        },
+      ],
     },
     {
       _id: db.id(),
       locale: 'es',
-      contexts: [],
+      contexts: [
+        {
+          id: 'System',
+          label: 'System',
+          values: [
+            { key: 'original 1', value: 'original 1' },
+            { key: 'original 2', value: 'original 2' },
+            { key: 'original 3', value: 'original 3' },
+          ],
+        },
+      ],
+    },
+    {
+      _id: db.id(),
+      locale: 'fr',
+      contexts: [
+        {
+          id: 'System',
+          label: 'System',
+          values: [
+            { key: 'original 1', value: 'original 1' },
+            { key: 'original 2', value: 'original 2' },
+            { key: 'original 3', value: 'original 3' },
+          ],
+        },
+      ],
     },
   ],
 };

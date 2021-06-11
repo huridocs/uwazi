@@ -35,20 +35,6 @@ describe('csvLoader', () => {
     beforeEach(async () => {
       await db.clearAllAndLoad(fixtures);
 
-      await translations.addLanguage('es');
-      await translations.addContext(
-        'System',
-        'System',
-        {
-          'original 1': 'original 1',
-          'original 2': 'original 2',
-          'original 3': 'original 3',
-        },
-        ''
-      );
-
-      await translations.addLanguage('fr');
-
       const nonExistent = 'Russian';
 
       csv = `Key       , English, Spanish, French  , ${nonExistent}  ,
