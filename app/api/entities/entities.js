@@ -763,13 +763,14 @@ export default {
       })
     )
       .reduce((m, t) => m.concat(t.properties), [])
-      .filter(p => thesaurusId === p.content.toString());
+      .filter(p => p.content && thesaurusId === p.content.toString());
 
     await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
 
     const transitiveProps = await templates.propsThatNeedInheritDenormalization(
       thesaurusId.toString()
     );
+
     await updateTransitiveDenormalization(
       { id: valueId, language },
       { label: newLabel },

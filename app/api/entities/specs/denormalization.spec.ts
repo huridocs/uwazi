@@ -272,6 +272,7 @@ describe('Denormalize relationships', () => {
             factory.property('multiselect', 'multiselect', {
               content: factory.id('thesauri').toString(),
             }),
+            factory.property('property_without_content'),
           ]),
         ],
         dictionaries: [factory.thesauri('thesauri', ['T1', 'T2', 'T3'])],
