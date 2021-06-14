@@ -87,6 +87,24 @@ describe('csvLoader', () => {
         'original 3': 'original 3',
       });
     });
+    it('should not import empty language translations', async () => {
+      const localCsv = `Key, English, Spanish
+                        original 1,, sp value 1`;
+
+      await loader.loadTranslations(stream(localCsv), 'System');
+
+      const [english, spanish] = await translations.get();
+      expect(english.contexts[0].values).toEqual({
+        'original 1': 'original 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+      });
+      expect(spanish.contexts[0].values).toEqual({
+        'original 1': 'sp value 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+      });
+    });
   });
 
   describe('load', () => {
