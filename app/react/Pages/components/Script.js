@@ -1,4 +1,7 @@
+import { actions } from 'app/BasicReducer';
+
 import { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 class Script extends Component {
@@ -27,12 +30,13 @@ class Script extends Component {
   }
 
   appendScript() {
-    const { children } = this.props;
-    if (children) {
+    const { children, scriptRendered } = this.props;
+    if (children && scriptRendered === false) {
       const s = document.createElement('script');
       s.src = `data:text/javascript,(function(){${encodeURIComponent(`\n\n${children}\n\n`)}})()`;
       document.body.appendChild(s);
       this.setState({ scriptElement: s });
+      this.props.dispatch(actions.setIn('page/pageView', 'scriptRendered', true));
     }
   }
 
@@ -50,10 +54,14 @@ class Script extends Component {
 
 Script.defaultProps = {
   children: '',
+  scriptRendered: null,
 };
 
 Script.propTypes = {
   children: PropTypes.string,
+  scriptRendered: PropTypes.bool,
 };
 
-export default Script;
+const container = connect()(Script);
+
+export default container;
