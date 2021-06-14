@@ -15,17 +15,22 @@ interface Changes {
 interface Params {
   id: string;
   language?: string;
+  template?: string;
 }
 
 export const updateDenormalization = async (
-  { id, language }: Params,
+  { id, language, template }: Params,
   changes: Changes,
   properties: PropertySchema[]
 ) =>
   Promise.all(
     properties.map(async property =>
       model.updateMany(
-        { ...(language ? { language } : {}), [`metadata.${property.name}.value`]: id },
+        {
+          ...(template ? { template } : {}),
+          ...(language ? { language } : {}),
+          [`metadata.${property.name}.value`]: id,
+        },
         {
           $set: Object.keys(changes).reduce(
             (set, prop) => ({
@@ -68,7 +73,7 @@ export const denormalizeRelated = async (
     throw new Error('denormalization requires an entity with title, sharedId and language');
   }
 
-  const transitiveProperties = await templates.propsThatNeedInheritDenormalization(
+  const transitiveProperties = await templates.propsThatNeedTransitiveDenormalization(
     template._id.toString()
   );
   const properties = await templates.propsThatNeedDenormalization(template._id.toString());
@@ -89,6 +94,7 @@ export const denormalizeRelated = async (
           // @ts-ignore we have a sharedId guard, why ts does not like this ? bug ?
           id: entity.sharedId,
           language: entity.language,
+          template: prop.template,
         },
         {
           ...(inheritProperty ? { inheritedValue: entity.metadata?.[inheritProperty.name] } : {}),

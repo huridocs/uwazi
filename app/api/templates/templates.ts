@@ -72,12 +72,22 @@ export default {
       await model.get({
         $or: [{ 'properties.content': templateId }, { 'properties.content': '' }],
       })
-    )
-      .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
-      .filter(p => templateId === p.content?.toString() || p.content === '');
+    ).reduce<{ [k: string]: string | undefined }[]>(
+      (m, t) =>
+        m.concat(
+          t.properties
+            ?.filter(p => templateId === p.content?.toString() || p.content === '')
+            .map(p => ({
+              name: p.name,
+              inheritProperty: p.inheritProperty,
+              template: t._id,
+            })) || []
+        ),
+      []
+    );
   },
 
-  async propsThatNeedInheritDenormalization(contentId: string) {
+  async propsThatNeedTransitiveDenormalization(contentId: string) {
     const properties = (await model.get({ 'properties.content': contentId }))
       .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
       .filter(p => contentId === p.content?.toString());

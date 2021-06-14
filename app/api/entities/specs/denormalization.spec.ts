@@ -132,15 +132,20 @@ describe('Denormalize relationships', () => {
     it('should update title and text property denormalized on related entities from 2 different templates', async () => {
       const fixtures: DBFixture = {
         templates: [
-          factory.template('templateA', [factory.property('text')]),
-          factory.template('templateB', [factory.inherit('relationship_b', 'templateA', 'text')]),
-          factory.template('templateC', [factory.inherit('relationship_c', 'templateA', 'text')]),
+          factory.template('templateA', [
+            factory.property('text'),
+            factory.property('another_text'),
+          ]),
+          factory.template('templateB', [factory.inherit('relationship', 'templateA', 'text')]),
+          factory.template('templateC', [
+            factory.inherit('relationship', 'templateA', 'another_text'),
+          ]),
         ],
         entities: [
           factory.entity('A1', 'templateA'),
-          factory.entity('B1', 'templateB', { relationship_b: [factory.metadataValue('A1')] }),
-          factory.entity('B2', 'templateB', { relationship_b: [factory.metadataValue('A1')] }),
-          factory.entity('C1', 'templateC', { relationship_c: [factory.metadataValue('A1')] }),
+          factory.entity('B1', 'templateB', { relationship: [factory.metadataValue('A1')] }),
+          factory.entity('B2', 'templateB', { relationship: [factory.metadataValue('A1')] }),
+          factory.entity('C1', 'templateC', { relationship: [factory.metadataValue('A1')] }),
         ],
       };
 
@@ -148,7 +153,10 @@ describe('Denormalize relationships', () => {
 
       await modifyEntity('A1', {
         title: 'new A1',
-        metadata: { text: [{ value: 'text 1 changed' }] },
+        metadata: {
+          text: [{ value: 'text changed' }],
+          another_text: [{ value: 'another_text changed' }],
+        },
       });
 
       const [relatedB1, relatedB2, relatedC] = [
@@ -157,16 +165,16 @@ describe('Denormalize relationships', () => {
         await entities.getById('C1', 'en'),
       ];
 
-      expect(relatedB1?.metadata?.relationship_b).toMatchObject([
-        { label: 'new A1', inheritedValue: [{ value: 'text 1 changed' }] },
+      expect(relatedB1?.metadata?.relationship).toMatchObject([
+        { label: 'new A1', inheritedValue: [{ value: 'text changed' }] },
       ]);
 
-      expect(relatedB2?.metadata?.relationship_b).toMatchObject([
-        { label: 'new A1', inheritedValue: [{ value: 'text 1 changed' }] },
+      expect(relatedB2?.metadata?.relationship).toMatchObject([
+        { label: 'new A1', inheritedValue: [{ value: 'text changed' }] },
       ]);
 
-      expect(relatedC?.metadata?.relationship_c).toMatchObject([
-        { label: 'new A1', inheritedValue: [{ value: 'text 1 changed' }] },
+      expect(relatedC?.metadata?.relationship).toMatchObject([
+        { label: 'new A1', inheritedValue: [{ value: 'another_text changed' }] },
       ]);
     });
 

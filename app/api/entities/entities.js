@@ -767,7 +767,7 @@ export default {
 
     await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
 
-    const transitiveProps = await templates.propsThatNeedInheritDenormalization(
+    const transitiveProps = await templates.propsThatNeedTransitiveDenormalization(
       thesaurusId.toString()
     );
 
