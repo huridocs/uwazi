@@ -19,9 +19,10 @@ const staticFilesMiddleware = (pathFunctions: pathFunction[]) => async (
     }
     return current;
   }, Promise.resolve(pathFunctions[0]));
+  const path = pathToUse(req.params.fileName);
   try {
-    await checkFilePath(req.params.fileName, pathToUse(req.params.fileName));
-    res.sendFile(pathToUse(req.params.fileName));
+    await checkFilePath(req.params.fileName, path);
+    res.sendFile(path);
   } catch (e) {
     next();
   }
