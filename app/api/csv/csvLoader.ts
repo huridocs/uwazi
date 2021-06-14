@@ -147,7 +147,7 @@ export class CSVLoader extends EventEmitter {
 
       if (trans) {
         Object.keys(trans).forEach(transKey => {
-          if (context.values[transKey]) {
+          if (context.values[transKey] && trans[transKey] !== '') {
             context.values[transKey] = trans[transKey];
           }
         });

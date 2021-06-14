@@ -43,6 +43,6 @@ describe('migration change-system-translation-label', () => {
       .find({ locale: 'en' })
       .toArray();
 
-    expect(enTranslations.contexts[0].label).toEqual('User Interface');
+    expect(enTranslations.contexts[1].label).toEqual('Other');
   });
 });
