@@ -59,6 +59,10 @@ const entryValues: { [key: string]: EntryValue } = {
     idField: '_id',
     nameField: 'name',
   },
+  'POST/api/translations/import': {
+    desc: 'Uploaded translations csv',
+    method: Methods.Update,
+  },
   'POST/api/entities': {
     desc: 'Created entity / document',
     method: Methods.Create,
