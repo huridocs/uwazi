@@ -113,6 +113,7 @@
     "joi-objectid": "^2.0.0",
     "json-schema-to-typescript": "^9.1.1",
     "jvent": "1.0.2",
+    "lodash": "^4.17.21",
     "mark.js": "^8.11.1",
     "markdown-it": "11.0.0",
     "markdown-it-container": "3.0.0",
