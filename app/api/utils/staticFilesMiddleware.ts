@@ -24,7 +24,7 @@ const staticFilesMiddleware = (pathFunctions: pathFunction[]) => async (
     await checkFilePath(req.params.fileName, path);
     res.sendFile(path);
   } catch (e) {
-    next();
+    next(e);
   }
 };
 
