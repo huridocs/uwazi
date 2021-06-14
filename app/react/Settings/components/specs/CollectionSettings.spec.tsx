@@ -83,7 +83,7 @@ describe('Collection settings', () => {
   describe('allow public sharing', () => {
     const getPublicSharingStatus = () =>
       component
-        .find('SettingsFormElement[label="Private Instance"]')
+        .find('SettingsFormElement[label="Private instance"]')
         .children()
         .props().checked;
 
