@@ -60,7 +60,7 @@ const entryValues: { [key: string]: EntryValue } = {
     nameField: 'name',
   },
   'POST/api/translations/import': {
-    desc: 'Uploaded translations csv',
+    desc: 'Imported translations from file',
     method: Methods.Update,
   },
   'POST/api/entities': {
