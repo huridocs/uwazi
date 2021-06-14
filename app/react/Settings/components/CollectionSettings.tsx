@@ -128,7 +128,7 @@ const CollectionSettings = ({
           </div>
         </SettingsFormElement>
 
-        <SettingsFormElement label="Private Instance" tip={tips.publicSharing}>
+        <SettingsFormElement label="Private instance" tip={tips.publicSharing}>
           <ToggleButton
             checked={Boolean(watch('private'))}
             onClick={() => {
