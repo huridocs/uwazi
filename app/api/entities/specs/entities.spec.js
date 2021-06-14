@@ -15,7 +15,6 @@ import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
-  shared2,
   templateId,
   templateChangingNames,
   syncPropertiesEntityId,
@@ -249,98 +248,6 @@ describe('entities', () => {
             done();
           })
           .catch(catchErrors(done));
-      });
-    });
-
-    describe('when icon changes', () => {
-      it('should update icon on entities with the entity as relationship', async () => {
-        const doc = {
-          _id: shared2,
-          sharedId: 'shared2',
-          icon: {
-            _id: 'changedIcon',
-          },
-        };
-
-        await entities.save(doc, { language: 'en' });
-        let relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.enemies[0].icon._id).toBe('changedIcon');
-
-        relatedEntity = await entities.getById('other', 'en');
-        expect(relatedEntity.metadata.enemies[1].icon._id).toBe('changedIcon');
-        expect(relatedEntity.metadata.enemies[0].icon).toBe(null);
-        expect(relatedEntity.metadata.enemies[2].icon).toBe(null);
-
-        const updatedDoc = {
-          _id: shared2,
-          sharedId: 'shared2',
-          icon: {
-            _id: 'changedIconAgain',
-          },
-        };
-
-        await entities.save(updatedDoc, { language: 'en' });
-        relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.enemies[0].icon._id).toBe('changedIconAgain');
-      });
-    });
-
-    describe('when title changes', () => {
-      it('should update title on entities with the entity as relationship', async () => {
-        const doc = {
-          _id: shared2,
-          sharedId: 'shared2',
-          title: 'changedTitle',
-        };
-
-        await entities.save(doc, { language: 'en' });
-        let relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.enemies[0].label).toBe('changedTitle');
-
-        relatedEntity = await entities.getById('other', 'en');
-        expect(relatedEntity.metadata.enemies[1].label).toBe('changedTitle');
-        expect(relatedEntity.metadata.enemies[0].label).toBe('shouldNotChange');
-        expect(relatedEntity.metadata.enemies[2].label).toBe('shouldNotChange1');
-      });
-
-      it('should not change related labels on other languages', async () => {
-        const doc = {
-          _id: shared2,
-          sharedId: 'shared2',
-          title: 'changedTitle',
-        };
-
-        await entities.save(doc, { language: 'en' });
-
-        const relatedEntity = await entities.getById('other', 'es');
-
-        expect(relatedEntity.metadata.enemies[0].label).toBe('translated1');
-        expect(relatedEntity.metadata.enemies[1].label).toBe('translated2');
-      });
-
-      it('should index entities changed after propagating label change', async () => {
-        const doc = {
-          _id: shared2,
-          sharedId: 'shared2',
-          title: 'changedTitle',
-        };
-
-        search.indexEntities.and.callThrough();
-
-        await entities.save(doc, { language: 'en' });
-
-        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-
-        expect(documentsToIndex).toEqual([
-          expect.objectContaining({
-            sharedId: 'shared',
-            language: 'en',
-          }),
-          expect.objectContaining({
-            sharedId: 'other',
-            language: 'en',
-          }),
-        ]);
       });
     });
 

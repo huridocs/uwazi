@@ -67,6 +67,40 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
 };
 
 export default {
+  async propsThatNeedDenormalization(templateId: string) {
+    return (
+      await model.get({
+        $or: [{ 'properties.content': templateId }, { 'properties.content': '' }],
+      })
+    ).reduce<{ [k: string]: string | undefined }[]>(
+      (m, t) =>
+        m.concat(
+          t.properties
+            ?.filter(p => templateId === p.content?.toString() || p.content === '')
+            .map(p => ({
+              name: p.name,
+              inheritProperty: p.inheritProperty,
+              template: t._id,
+            })) || []
+        ),
+      []
+    );
+  },
+
+  async propsThatNeedTransitiveDenormalization(contentId: string) {
+    const properties = (await model.get({ 'properties.content': contentId }))
+      .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
+      .filter(p => contentId === p.content?.toString());
+
+    return (
+      await model.get({
+        'properties.inheritProperty': {
+          $in: properties.map(p => p._id?.toString()).filter(v => v),
+        },
+      })
+    ).reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), []);
+  },
+
   async save(template: TemplateSchema, language: string, reindex = true) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
