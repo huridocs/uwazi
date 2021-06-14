@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { BackButton } from 'app/Layout';
