@@ -21,6 +21,11 @@ import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
+import {
+  denormalizeRelated,
+  updateTransitiveDenormalization,
+  updateDenormalization,
+} from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -140,28 +145,24 @@ async function updateEntity(entity, _template, unrestricted = false) {
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
-        if (
-          (entity.title && currentDoc.title !== entity.title) ||
-          (entity.icon && !currentDoc.icon) ||
-          (entity.icon && currentDoc.icon && currentDoc.icon._id !== entity.icon._id)
-        ) {
-          await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
-        }
-
         const toSave = { ...entity };
-
         delete toSave.published;
         delete toSave.permissions;
 
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
         }
+
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
             entity.suggestedMetadata,
             entity,
             template
           );
+        }
+        if (template._id) {
+          const fullEntity = { ...currentDoc, ...toSave };
+          await denormalizeRelated(fullEntity, template);
         }
         return saveFunc(toSave);
       }
@@ -189,6 +190,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
       if (typeof entity.generatedToc !== 'undefined') {
         d.generatedToc = entity.generatedToc;
       }
+
+      if (template._id) {
+        await denormalizeRelated(d, template);
+      }
+
       return saveFunc(d);
     })
   );
@@ -383,7 +389,7 @@ export default {
 
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
-      await this.updateDenormalizedMetadataInRelatedEntities(entity);
+      // await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
 
     if (index) {
@@ -391,12 +397,6 @@ export default {
     }
 
     return entity;
-  },
-
-  async updateDenormalizedMetadataInRelatedEntities(entity) {
-    const related = await relationships.getByDocument(entity.sharedId, entity.language);
-    const sharedIds = related.map(r => r.entityData.sharedId);
-    await this.updateMetdataFromRelationships(sharedIds, entity.language);
   },
 
   async denormalize(_doc, { user, language }) {
@@ -757,68 +757,47 @@ export default {
     ]);
   },
 
-  /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
-  async renameInMetadata(valueId, changes, propertyContent, { types, restrictLanguage = null }) {
-    const properties = (await templates.get({ 'properties.content': propertyContent }))
-      .reduce((m, t) => m.concat(t.properties), [])
-      .filter(p => types.includes(p.type))
-      .filter(
-        p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
-      );
-
-    if (!properties.length) {
-      return Promise.resolve();
-    }
-
-    await Promise.all(
-      properties.map(property =>
-        model.updateMany(
-          { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
-          {
-            $set: Object.keys(changes).reduce(
-              (set, prop) => ({
-                ...set,
-                [`metadata.${property.name}.$[valueObject].${prop}`]: changes[prop],
-              }),
-              {}
-            ),
-          },
-          { arrayFilters: [{ 'valueObject.value': valueId }] }
-        )
-      )
-    );
-
-    return search.indexEntities({
-      $and: [
-        {
-          language: restrictLanguage,
-        },
-        {
-          $or: properties.map(property => ({ [`metadata.${property.name}.value`]: valueId })),
-        },
-      ],
-    });
-  },
-
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-    await this.renameInMetadata(valueId, { label: newLabel }, thesaurusId, {
-      types: [propertyTypes.select, propertyTypes.multiselect],
-      restrictLanguage: language,
-    });
-  },
+    const properties = (
+      await templates.get({
+        'properties.content': thesaurusId,
+      })
+    )
+      .reduce((m, t) => m.concat(t.properties), [])
+      .filter(p => p.content && thesaurusId === p.content.toString());
 
-  /** Propagate the title change of a related entity to all entity metadata. */
-  async renameRelatedEntityInMetadata(relatedEntity) {
-    await this.renameInMetadata(
-      relatedEntity.sharedId,
-      { label: relatedEntity.title, icon: relatedEntity.icon },
-      relatedEntity.template,
-      {
-        types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
-        restrictLanguage: relatedEntity.language,
-      }
+    await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
+
+    const transitiveProps = await templates.propsThatNeedTransitiveDenormalization(
+      thesaurusId.toString()
     );
+
+    await updateTransitiveDenormalization(
+      { id: valueId, language },
+      { label: newLabel },
+      transitiveProps
+    );
+
+    if (properties.length || transitiveProps.length) {
+      await search.indexEntities({
+        $and: [
+          {
+            language,
+          },
+          {
+            $or: [
+              ...properties.map(property => ({
+                [`metadata.${property.name}.value`]: valueId,
+              })),
+              ...transitiveProps.map(property => ({
+                [`metadata.${property.name}.inheritedValue.value`]: valueId,
+              })),
+            ],
+          },
+        ],
+      });
+    }
   },
 
   async createThumbnail(entity) {
