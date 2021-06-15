@@ -8,9 +8,7 @@ class Script extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      scriptElement: null,
-    };
+    this.scriptElement = null;
   }
 
   componentDidMount() {
@@ -21,6 +19,8 @@ class Script extends Component {
     const { children } = this.props;
     if (children !== prevProps.children) {
       this.removeScript();
+      this.appendScript();
+    } else if (this.scriptElement === null) {
       this.appendScript();
     }
   }
@@ -35,15 +35,15 @@ class Script extends Component {
       const s = document.createElement('script');
       s.src = `data:text/javascript,(function(){${encodeURIComponent(`\n\n${children}\n\n`)}})()`;
       document.body.appendChild(s);
-      this.setState({ scriptElement: s });
+      this.scriptElement = s;
       this.props.dispatch(actions.setIn('page/pageView', 'scriptRendered', true));
     }
   }
 
   removeScript() {
-    if (this.state.scriptElement) {
-      this.state.scriptElement.remove();
-      this.setState({ scriptElement: null });
+    if (this.scriptElement) {
+      this.scriptElement.remove();
+      this.scriptElement = null;
     }
   }
 
