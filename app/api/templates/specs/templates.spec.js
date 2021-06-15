@@ -367,7 +367,10 @@ describe('templates', () => {
           };
           await templates.save(templateToUpdate, 'en');
 
-          expect(populateGeneratedIdByTemplateSpy).toHaveBeenCalled();
+          expect(populateGeneratedIdByTemplateSpy).toHaveBeenCalledWith(
+            templateToBeEditedId,
+            templateToUpdate.properties
+          );
         });
       });
       describe('when there are no new properties with generatedId type', () => {

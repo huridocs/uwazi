@@ -261,10 +261,20 @@ describe('MetadataTemplate', () => {
         });
 
         describe('when there is a quite amount of entities from the template', () => {
-          it('should ask for a reindex', async () => {
+          it('should ask for a reindex but do not do it if the user cancels it', async () => {
             await submitTemplate(templateWithId, true, 50000);
             context.confirm.calls.mostRecent().args[0].cancel();
             expect(props.saveTemplate).not.toHaveBeenCalled();
+          });
+
+          it('should ask for a reindex and do it if the user accepts it', async () => {
+            await submitTemplate(templateWithId, true, 50000);
+            context.confirm.calls.mostRecent().args[0].accept();
+            expect(props.saveTemplate).toHaveBeenCalledWith({
+              _id: templateWithId._id,
+              properties: templateWithId.properties,
+              reindex: true,
+            });
           });
         });
 

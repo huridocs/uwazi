@@ -348,10 +348,10 @@ const withDocuments = (entities, documentsFullText, withPdfInfo) =>
   );
 
 const reindexEntitiesByTemplate = async (template, options) => {
-  const templateHasRelationShipProperty = !template.properties?.find(
+  const templateHasRelationShipProperty = template.properties?.find(
     p => p.type === propertyTypes.relationship
   );
-  if (options.reindex && (options.generatedIdAdded || templateHasRelationShipProperty)) {
+  if (options.reindex && (options.generatedIdAdded || !templateHasRelationShipProperty)) {
     return search.indexEntities({ template: template._id });
   }
   return Promise.resolve();

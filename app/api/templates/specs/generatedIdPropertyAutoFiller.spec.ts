@@ -58,13 +58,19 @@ describe('generatedId property auto filler', () => {
     it('should reindex updated templates', async () => {
       await elastic.indices.refresh();
       const indexedEntities: EntitySchema[] = await elasticTesting.getIndexedEntities();
-      expect(indexedEntities[0].metadata).toEqual(
-        expect.objectContaining({
-          text: [{ value: 'test' }],
-          auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
-          auto_id_1: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
-        })
-      );
+      const updatedEntities = indexedEntities.filter(e => e.template === templateId.toString());
+      expect(indexedEntities.length).toBe(5);
+      expect(updatedEntities.length).toBe(4);
+
+      updatedEntities.forEach(entity => {
+        expect(entity.metadata).toEqual(
+          expect.objectContaining({
+            text: [{ value: 'test' }],
+            auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
+            auto_id_1: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
+          })
+        );
+      });
     });
   });
 });
