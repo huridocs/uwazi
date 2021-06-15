@@ -61,7 +61,8 @@
     "lodash": "^4.17.20",
     "bl": "^4.0.3",
     "trim": "0.0.3",
-    "url-parse": "1.5.0"
+    "url-parse": "1.5.0",
+    "normalize-url": "6.0.1"
   },
   "dependencies": {
     "@babel/register": "7.11.5",
@@ -260,15 +261,15 @@
     "jest-extended": "0.11.5",
     "jest-image-snapshot": "^4.1.0",
     "jest-puppeteer": "4.4.0",
-    "mini-css-extract-plugin": "^0.11.2",
+    "mini-css-extract-plugin": "^1.6.0",
     "mongodb-memory-server": "^6.7.5",
     "mutationobserver-shim": "^0.3.7",
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.0.0",
     "nightmare-upload": "^0.1.1",
     "node-sass": "4.14.1",
-    "nodemon": "^2.0.4",
-    "optimize-css-assets-webpack-plugin": "5.0.4",
+    "nodemon": "^2.0.7",
+    "optimize-css-assets-webpack-plugin": "^6.0.0",
     "plop": "^2.7.4",
     "prettier": "1.19.1",
     "puppeteer": "^5.3.1",
