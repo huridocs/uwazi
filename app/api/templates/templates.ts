@@ -9,12 +9,7 @@ import { ObjectID } from 'mongodb';
 
 import { validateTemplate } from '../../shared/types/templateSchema';
 import model from './templatesModel';
-import {
-  generateNamesAndIds,
-  getDeletedProperties,
-  getUpdatedNames,
-  denormalizeInheritedProperties,
-} from './utils';
+import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
 
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
@@ -84,7 +79,7 @@ export default {
             ?.filter(p => templateId === p.content?.toString() || p.content === '')
             .map(p => ({
               name: p.name,
-              inheritProperty: p.inherit?.property,
+              inheritProperty: p.inheritProperty,
               template: t._id,
             })) || []
         ),
@@ -99,7 +94,7 @@ export default {
 
     return (
       await model.get({
-        'properties.inherit.property': {
+        'properties.inheritProperty': {
           $in: properties.map(p => p._id?.toString()).filter(v => v),
         },
       })
@@ -110,7 +105,6 @@ export default {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = await generateNamesAndIds(template.properties);
-    template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
@@ -134,7 +128,6 @@ export default {
     if (!template._id) {
       return;
     }
-
     const current = await this.getById(ensure(template._id));
 
     const currentTemplate = ensure<TemplateSchema>(current);
@@ -193,10 +186,10 @@ export default {
       (iteratedTemplate.properties || []).every(
         iteratedProperty =>
           !iteratedProperty.content ||
-          !iteratedProperty.inherit?.property ||
+          !iteratedProperty.inheritProperty ||
           !(
             iteratedProperty.content.toString() === template.toString() &&
-            iteratedProperty.inherit.property.toString() === (property || '').toString()
+            iteratedProperty.inheritProperty.toString() === (property || '').toString()
           )
       )
     );

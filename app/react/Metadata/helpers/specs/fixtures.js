@@ -106,12 +106,7 @@ export const templates = Immutable.fromJS([
     properties: [
       { name: 'text', type: 'text', label: 'Text', showInCard: true },
       { name: 'date', type: 'date', label: 'Date' },
-      {
-        name: 'multiselect',
-        content: 'thesauriId',
-        type: 'multiselect',
-        label: 'Multiselect',
-      },
+      { name: 'multiselect', content: 'thesauriId', type: 'multiselect', label: 'Multiselect' },
       { name: 'multidate', type: 'multidate', label: 'Multi Date' },
       { name: 'daterange', type: 'daterange', label: 'Date Range' },
       { name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range' },
@@ -150,7 +145,8 @@ export const templates = Immutable.fromJS([
       },
       {
         name: 'relationship3',
-        inherit: { property: '123', type: 'text' },
+        inherit: true,
+        inheritProperty: '123',
         type: 'relationship',
         label: 'Relationship 3',
         content: 'template2',
@@ -158,7 +154,8 @@ export const templates = Immutable.fromJS([
       },
       {
         name: 'relationship4',
-        inherit: { property: '456', type: 'geolocation' },
+        inherit: true,
+        inheritProperty: '456',
         type: 'relationship',
         label: 'Relationship 4',
         content: 'template2',

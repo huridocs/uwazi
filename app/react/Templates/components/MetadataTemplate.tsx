@@ -82,20 +82,15 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
 
     const mappingValidation = await validateMapping(template);
     if (!mappingValidation.valid) {
+      const fields = mappingValidation.errors.map((e: any) => e.name);
       this.context.confirm({
         accept: () => {
           template.reindex = true;
           return this.props.saveTemplate(template);
         },
-        title: t('System', 'Template conflict', null, false),
-        message: t(
-          'System',
-          'Mapping conflict error',
-          `The template have changed and the mappings are not compatible,
-        all your collection must be reindexed. This process may take several minutes,
-        do you want to continue?`,
-          false
-        ),
+        title: 'Template conflict',
+        message: `The field or fields [${fields}] have been previously used for a different type of data,
+         in order to reuse those names, all your collection must be reindexed. This process may take several minutes, do you want to continue? `,
       });
       return;
     }
