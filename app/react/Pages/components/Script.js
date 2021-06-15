@@ -60,6 +60,7 @@ Script.defaultProps = {
 Script.propTypes = {
   children: PropTypes.string,
   scriptRendered: PropTypes.bool,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const container = connect()(Script);
