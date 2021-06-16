@@ -7,14 +7,11 @@ import { updateMapping } from 'api/search/entitiesIndex';
 import { ensure } from 'shared/tsUtils';
 import { ObjectID } from 'mongodb';
 
-import { validateTemplate } from '../../shared/types/templateSchema';
+import { validateTemplate } from 'shared/types/templateSchema';
+import { propertyTypes } from 'shared/propertyTypes';
+import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import model from './templatesModel';
-import {
-  generateNamesAndIds,
-  getDeletedProperties,
-  getUpdatedNames,
-  denormalizeInheritedProperties,
-} from './utils';
+import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
 
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
@@ -71,6 +68,48 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
   );
 };
 
+const removeExcludedPropertiesValues = async (
+  currentTemplate: TemplateSchema,
+  template: TemplateSchema
+) => {
+  const currentTemplateContentProperties = (currentTemplate.properties || []).filter(
+    p => p.content
+  );
+  const templateContentProperties = (template.properties || []).filter(p => p.content);
+  const toRemoveValues = currentTemplateContentProperties
+    .map(prop => {
+      const sameProperty = templateContentProperties.find(p => p.id === prop.id);
+      if (sameProperty && sameProperty.content !== prop.content) {
+        return sameProperty.name;
+      }
+      return null;
+    })
+    .filter(v => v);
+
+  if (toRemoveValues.length > 0) {
+    await entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
+  }
+};
+
+const checkAndFillGeneratedIdProperties = async (
+  currentTemplate: TemplateSchema,
+  template: TemplateSchema
+) => {
+  const storedGeneratedIdProps =
+    currentTemplate.properties?.filter(prop => prop.type === propertyTypes.generatedid) || [];
+  const newGeneratedIdProps =
+    template.properties?.filter(
+      newProp =>
+        !newProp._id &&
+        newProp.type === propertyTypes.generatedid &&
+        !storedGeneratedIdProps.find(prop => prop.name === newProp.name)
+    ) || [];
+  if (newGeneratedIdProps.length > 0) {
+    await populateGeneratedIdByTemplate(currentTemplate._id!, newGeneratedIdProps);
+  }
+  return newGeneratedIdProps.length > 0;
+};
+
 export default {
   async propsThatNeedDenormalization(templateId: string) {
     return (
@@ -84,7 +123,7 @@ export default {
             ?.filter(p => templateId === p.content?.toString() || p.content === '')
             .map(p => ({
               name: p.name,
-              inheritProperty: p.inherit?.property,
+              inheritProperty: p.inheritProperty,
               template: t._id,
             })) || []
         ),
@@ -99,7 +138,7 @@ export default {
 
     return (
       await model.get({
-        'properties.inherit.property': {
+        'properties.inheritProperty': {
           $in: properties.map(p => p._id?.toString()).filter(v => v),
         },
       })
@@ -110,7 +149,6 @@ export default {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = await generateNamesAndIds(template.properties);
-    template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
@@ -134,7 +172,6 @@ export default {
     if (!template._id) {
       return;
     }
-
     const current = await this.getById(ensure(template._id));
 
     const currentTemplate = ensure<TemplateSchema>(current);
@@ -150,41 +187,16 @@ export default {
   },
 
   async _update(template: TemplateSchema, language: string, reindex = true) {
-    let _currentTemplate: TemplateSchema;
-    return this.getById(ensure(template._id))
-      .then(async current => {
-        const currentTemplate = ensure<TemplateSchema>(current);
-        return Promise.all([currentTemplate, updateTranslation(currentTemplate, template)]);
-      })
-      .then(([current]) => {
-        const currentTemplate = ensure<TemplateSchema>(current);
-        _currentTemplate = currentTemplate;
-        const currentTemplateContentProperties = (currentTemplate.properties || []).filter(
-          p => p.content
-        );
-        const templateContentProperties = (template.properties || []).filter(p => p.content);
-
-        const toRemoveValues = currentTemplateContentProperties
-          .map(prop => {
-            const sameProperty = templateContentProperties.find(p => p.id === prop.id);
-            if (sameProperty && sameProperty.content !== prop.content) {
-              return sameProperty.name;
-            }
-            return null;
-          })
-          .filter(v => v);
-
-        if (toRemoveValues.length === 0) {
-          return;
-        }
-        return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id); // eslint-disable-line consistent-return
-      })
-      .then(async () => model.save(template))
-      .then(async savedTemplate =>
-        entities
-          .updateMetadataProperties(template, _currentTemplate, language, reindex)
-          .then(() => savedTemplate)
-      );
+    const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
+    await updateTranslation(currentTemplate, template);
+    await removeExcludedPropertiesValues(currentTemplate, template);
+    const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
+    const savedTemplate = model.save(template);
+    await entities.updateMetadataProperties(template, currentTemplate, language, {
+      reindex,
+      generatedIdAdded,
+    });
+    return savedTemplate;
   },
 
   async canDeleteProperty(template: ObjectID, property: ObjectID | string | undefined) {
@@ -193,24 +205,13 @@ export default {
       (iteratedTemplate.properties || []).every(
         iteratedProperty =>
           !iteratedProperty.content ||
-          !iteratedProperty.inherit?.property ||
+          !iteratedProperty.inheritProperty ||
           !(
             iteratedProperty.content.toString() === template.toString() &&
-            iteratedProperty.inherit.property.toString() === (property || '').toString()
+            iteratedProperty.inheritProperty.toString() === (property || '').toString()
           )
       )
     );
-  },
-
-  _validateSwapPropertyNames(currentTemplate: TemplateSchema, template: TemplateSchema) {
-    (currentTemplate.properties || []).forEach(prop => {
-      const swapingNameWithExistingProperty = (template.properties || []).find(
-        p => p.name === prop.name && p.id !== prop.id
-      );
-      if (swapingNameWithExistingProperty) {
-        throw createError(`Properties can't swap names: ${prop.name}`, 400);
-      }
-    });
   },
 
   async get(query: any = {}) {

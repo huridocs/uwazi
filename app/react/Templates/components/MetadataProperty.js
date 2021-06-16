@@ -14,6 +14,7 @@ import { createSelector } from 'reselect';
 import FormConfigInput from './FormConfigInput';
 import FormConfigSelect from './FormConfigSelect';
 import FormConfigRelationship from './FormConfigRelationship';
+import FormConfigRelationshipFilter from './FormConfigRelationshipFilter';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
 import FormConfigMultimedia from './FormConfigMultimedia';
@@ -45,6 +46,9 @@ export class MetadataProperty extends Component {
     }
     if (type === 'relationship') {
       defaultInput = <FormConfigRelationship index={index} type={type} />;
+    }
+    if (type === 'relationshipfilter') {
+      defaultInput = <FormConfigRelationshipFilter index={index} type={type} />;
     }
     if (type === 'select' || type === 'multiselect') {
       defaultInput = <FormConfigSelect index={index} type={type} />;
