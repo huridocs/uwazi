@@ -19,7 +19,6 @@ import fixtures, {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
-  relatedTo,
   thesauriId1,
   thesauriId2,
 } from './fixtures.js';
@@ -485,46 +484,6 @@ describe('templates', () => {
       } catch (err) {
         expect(err.message).toContain('Invalid ID');
       }
-    });
-  });
-
-  describe('inherit', () => {
-    let savedTemplate;
-    beforeEach(async () => {
-      savedTemplate = await templates.save({
-        name: 'template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [
-          {
-            type: propertyTypes.relationship,
-            content: templateToBeInherited.toString(),
-            relationType: relatedTo.toString(),
-            name: 'new inherit',
-            label: 'New Inherit',
-            inherit: {
-              property: propertyToBeInherited.toString(),
-              type: 'this should not be saved',
-            },
-          },
-        ],
-      });
-    });
-
-    it('should denormalize the inherited property type', async () => {
-      expect(savedTemplate.properties).toEqual([
-        expect.objectContaining({
-          inherit: {
-            property: propertyToBeInherited.toString(),
-            type: 'text',
-          },
-        }),
-      ]);
-    });
-
-    it('should remove denormalized type when removing inheritance', async () => {
-      savedTemplate.properties[0].inherit.property = '';
-      const resavedTemplate = await templates.save(savedTemplate, 'en', false);
-      expect(resavedTemplate.properties[0].inherit).not.toBeDefined();
     });
   });
 
