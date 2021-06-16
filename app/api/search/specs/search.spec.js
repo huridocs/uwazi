@@ -237,30 +237,35 @@ describe('search', () => {
     });
   });
 
-  it('should filter by templates', async () => {
+  it('should filter by templates', done => {
     userFactory.mock(undefined);
-    const [
-      template1es,
-      template2es,
-      template1en,
-      allTemplatesEn,
-      onlyMissing,
-      template1AndMissing,
-    ] = await Promise.all([
+    Promise.all([
       search.search({ types: [ids.template1] }, 'es'),
       search.search({ types: [ids.template2] }, 'es'),
       search.search({ types: [ids.template1] }, 'en'),
       search.search({ types: [ids.template1, ids.template2] }, 'en'),
       search.search({ types: ['missing'] }, 'en'),
       search.search({ types: [ids.template1, 'missing'] }, 'en'),
-    ]);
-
-    expect(template1es.rows.length).toBe(2);
-    expect(template1en.rows.length).toBe(5);
-    expect(template2es.rows.length).toBe(1);
-    expect(allTemplatesEn.rows.length).toBe(6);
-    expect(onlyMissing.rows.length).toBe(2);
-    expect(template1AndMissing.rows.length).toBe(7);
+    ])
+      .then(
+        ([
+          template1es,
+          template2es,
+          template1en,
+          allTemplatesEn,
+          onlyMissing,
+          template1AndMissing,
+        ]) => {
+          expect(template1es.rows.length).toBe(2);
+          expect(template1en.rows.length).toBe(3);
+          expect(template2es.rows.length).toBe(1);
+          expect(allTemplatesEn.rows.length).toBe(4);
+          expect(onlyMissing.rows.length).toBe(2);
+          expect(template1AndMissing.rows.length).toBe(5);
+          done();
+        }
+      )
+      .catch(catchErrors(done));
   });
 
   it('should allow searching only within specific Ids', done => {
@@ -323,87 +328,6 @@ describe('search', () => {
     expect(unpublishedAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
   });
 
-  describe('filtering by metadata inheritValue', () => {
-    it('should filter by select / multiselect', async () => {
-      const [spain, egypt, both, bothAnd] = await Promise.all([
-        search.search(
-          { types: [ids.template1], filters: { relationshipcountry: { values: ['SpainID'] } } },
-          'en'
-        ),
-        search.search(
-          { types: [ids.template1], filters: { relationshipcountry: { values: ['EgyptID'] } } },
-          'en'
-        ),
-        search.search(
-          {
-            types: [ids.template1],
-            filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'] } },
-          },
-          'en'
-        ),
-        search.search(
-          {
-            types: [ids.template1],
-            filters: { relationshipcountry: { values: ['EgyptID', 'SpainID'], and: true } },
-          },
-          'en'
-        ),
-      ]);
-
-      expect(spain.rows.length).toBe(1);
-      expect(egypt.rows.length).toBe(2);
-      expect(both.rows.length).toBe(2);
-      expect(bothAnd.rows.length).toBe(1);
-    });
-
-    it('should filter by range values', async () => {
-      const [spain, egypt, both] = await Promise.all([
-        search.search(
-          {
-            types: [ids.template1],
-            filters: { relationshipdate: { from: 15, to: 25 } },
-          },
-          'en'
-        ),
-        search.search(
-          { types: [ids.template1], filters: { relationshipdate: { from: 25, to: 45 } } },
-          'en'
-        ),
-        search.search(
-          { types: [ids.template1], filters: { relationshipdate: { from: 15, to: 45 } } },
-          'en'
-        ),
-      ]);
-
-      expect(spain.rows.length).toBe(1);
-      expect(egypt.rows.length).toBe(2);
-      expect(both.rows.length).toBe(2);
-    });
-
-    it('should filter by text values', async () => {
-      const [singleMatch, multipleMatch] = await Promise.all([
-        search.search(
-          {
-            types: [ids.template1],
-            filters: { relationshiptext: 'kawans' },
-          },
-          'en'
-        ),
-
-        search.search(
-          {
-            types: [ids.template1],
-            filters: { relationshiptext: 'chow' },
-          },
-          'en'
-        ),
-      ]);
-
-      expect(singleMatch.rows.length).toBe(1);
-      expect(multipleMatch.rows.length).toBe(2);
-    });
-  });
-
   it('should filter by daterange metadata', async () => {
     let entities = await search.search(
       {
@@ -460,7 +384,7 @@ describe('search', () => {
     it('should only get entities with geolocation fields ', done => {
       userFactory.mock(undefined);
       search.search({ searchTerm: '', geolocation: true }, 'en').then(entities => {
-        expect(entities.rows.length).toBe(4);
+        expect(entities.rows.length).toBe(3);
         done();
       });
     });
@@ -514,18 +438,6 @@ describe('search', () => {
       const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
       expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
       expect(template1UnpubishedAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(0);
-    });
-  });
-
-  describe('inherit aggregations', () => {
-    it('should return aggregations based on inheritValue', async () => {
-      const allAggregations = await search.search({ allAggregations: true }, 'en');
-
-      const template1Aggs = allAggregations.aggregations.all.relationshipcountry.buckets;
-      expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
-      expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
-      const europeBucket = template1Aggs.find(a => a.key === 'EuropeID');
-      expect(europeBucket.values.find(a => a.key === 'GermanyID').filtered.doc_count).toBe(1);
     });
   });
 
@@ -922,7 +834,7 @@ describe('search', () => {
       };
 
       const { rows } = await search.search(query, 'en');
-      expect(rows.length).toBe(15);
+      expect(rows.length).toBe(13);
     });
   });
 

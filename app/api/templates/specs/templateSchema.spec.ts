@@ -142,6 +142,18 @@ describe('template schema', () => {
         await testInvalid();
       });
 
+      it('invalid if inherited relationship properties do not specify field to inherit', async () => {
+        template.properties = [];
+        template.properties.push(
+          makeProperty('foo', 'relationship', {
+            content: 'content',
+            relationType: 'rel1',
+            inherit: true,
+          })
+        );
+        await testInvalid();
+      });
+
       it('invalid if different table with the same name already exists', async () => {
         template.name = 'DuplicateName';
         await testInvalid();

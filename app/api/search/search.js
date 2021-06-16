@@ -26,27 +26,38 @@ function processFilters(filters, properties) {
 
     let { type } = property;
     let value = filters[filterName];
-
-    if (property.inherit) {
-      ({ type } = propertiesHelper.getInheritedProperty(property, properties));
-    }
-
-    if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
+    if (['text', 'markdown', 'generatedid'].includes(property.type) && typeof value === 'string') {
       value = value.toLowerCase();
     }
-    if (['date', 'multidate', 'numeric'].includes(type)) {
+    if (['date', 'multidate', 'numeric'].includes(property.type)) {
       type = 'range';
     }
-    if (['select', 'multiselect', 'relationship'].includes(type)) {
+    if (['select', 'multiselect', 'relationship'].includes(property.type)) {
       type = 'multiselect';
     }
-    if (type === 'multidaterange' || type === 'daterange') {
+    if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'daterange';
     }
 
-    if (['multidaterange', 'daterange', 'date', 'multidate'].includes(type)) {
+    if (['multidaterange', 'daterange', 'date', 'multidate'].includes(property.type)) {
       value.from = date.descriptionToTimestamp(value.from);
       value.to = date.descriptionToTimestamp(value.to);
+    }
+
+    if (property.type === 'relationshipfilter') {
+      return [
+        ...res,
+        {
+          ...property,
+          value,
+          suggested,
+          type,
+          filters: property.filters.map(f => ({
+            ...f,
+            name: `${f.name}.value`,
+          })),
+        },
+      ];
     }
 
     return [
@@ -56,30 +67,22 @@ function processFilters(filters, properties) {
         value,
         suggested,
         type,
-        name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
+        name: `${property.name}.value`,
       },
     ];
   }, []);
 }
 
-function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
-  return propertiesToBeAggregated
-    .filter(property => {
-      const type = property.inherit
-        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).type
-        : property.type;
-
-      return (
-        type === 'select' || type === 'multiselect' || type === 'relationship' || type === 'nested'
-      );
-    })
-    .map(property => ({
-      ...property,
-      name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
-      content: property.inherit
-        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).content
-        : property.content,
-    }));
+function aggregationProperties(properties) {
+  return properties
+    .filter(
+      property =>
+        property.type === 'select' ||
+        property.type === 'multiselect' ||
+        property.type === 'relationship' ||
+        property.type === 'nested'
+    )
+    .map(property => ({ ...property, name: `${property.name}.value` }));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -156,9 +159,8 @@ function searchGeolocation(documentsQuery, templates) {
 
       if (prop.type === 'relationship' && prop.inherit) {
         const contentTemplate = templates.find(t => t._id.toString() === prop.content.toString());
-        const inheritedProperty = propertiesHelper.getInheritedProperty(
-          prop,
-          contentTemplate.properties
+        const inheritedProperty = contentTemplate.properties.find(
+          p => p._id.toString() === prop.inheritProperty.toString()
         );
         if (inheritedProperty.type === 'geolocation') {
           geolocationProperties.push(`${prop.name}`);
@@ -178,7 +180,7 @@ function searchGeolocation(documentsQuery, templates) {
 
 const _sanitizeAgregationNames = aggregations =>
   Object.keys(aggregations).reduce((allAggregations, key) => {
-    const sanitizedKey = key.replace('.inheritedValue.value', '').replace('.value', '');
+    const sanitizedKey = key.replace('.value', '');
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 
@@ -252,11 +254,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
-    let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
-
-    if (property.inherit) {
-      property = propertiesHelper.getInheritedProperty(property, properties);
-    }
+    const property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
@@ -279,7 +277,6 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       .filter(item => item);
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
-
     if (dictionary && dictionary.values.find(v => v.values)) {
       denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
         denormalizedAggregation,
@@ -430,16 +427,12 @@ const determineInheritedProperties = templates =>
   templates.reduce((memo, template) => {
     const inheritedProperties = memo;
     template.properties.forEach(property => {
-      if (
-        property.type === 'relationship' &&
-        property.inherit &&
-        property.inherit.type === 'geolocation'
-      ) {
+      if (property.type === 'relationship' && property.inherit) {
         const contentTemplate = templates.find(
           t => t._id.toString() === property.content.toString()
         );
         const inheritedProperty = contentTemplate.properties.find(
-          p => p._id.toString() === property.inherit.property.toString()
+          p => p.type === 'geolocation' && p._id.toString() === property.inheritProperty.toString()
         );
         if (inheritedProperty) {
           inheritedProperties[template._id.toString()] =
@@ -638,7 +631,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = aggregationProperties(properties, allUniqueProps);
+  const aggregations = aggregationProperties(properties);
 
   const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
   // this is where the query filters are built
@@ -803,7 +796,6 @@ const search = {
       .filter(o => o.results);
 
     const filteredOptions = filterOptions(searchTerm, options);
-
     return {
       options: filteredOptions.slice(0, preloadOptionsLimit),
       count: filteredOptions.length,
