@@ -22,7 +22,7 @@ export function importThesaurus(thesaurus, file) {
     try {
       const headers = {
         Accept: 'application/json',
-        'X-Request-With': 'XMLHttpRequest',
+        'X-Requested-With': 'XMLHttpRequest',
       };
       const fields = {
         thesauri: JSON.stringify(thesaurus),

@@ -90,7 +90,8 @@ export class ThesauriForm extends Component {
   }
 
   importThesaurusFile(file) {
-    this.props.importThesaurus(this.props.thesauri, file);
+    const thes = sanitizeThesauri(this.props.thesauri);
+    this.props.importThesaurus(thes, file);
   }
 
   focusIfWasGroup(previousProps) {
