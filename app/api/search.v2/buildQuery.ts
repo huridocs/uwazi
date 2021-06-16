@@ -3,11 +3,12 @@ import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
 import { cleanUp, extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
 
+const defaultFields = ['title', 'template', 'sharedId', 'language'];
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
   const { searchString, fullTextSearchString, searchMethod } = await extractSearchParams(query);
   return {
     _source: {
-      includes: ['title', 'template', 'sharedId', 'language', 'documents._id'],
+      includes: query.fields || defaultFields,
     },
     query: {
       bool: {
