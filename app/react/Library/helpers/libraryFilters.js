@@ -26,6 +26,7 @@ export function populateOptions(filters, thesauris) {
 
 function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedProps = []) {
   let properties = comonProperties.comonFilters(templates, query.types, forcedProps);
+
   if (!query.types || !query.types.length) {
     properties = comonProperties.defaultFilters(templates, forcedProps);
   }
@@ -40,7 +41,16 @@ function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedPro
     unpublished = false,
     allAggregations = false,
   } = query;
+  properties = properties.map(property => {
+    let defaultValue = {};
 
+    if (['text', 'markdown', 'generatedid'].includes(property.type)) {
+      defaultValue = '';
+    }
+
+    filters[property.name] = filters[property.name] ? filters[property.name] : defaultValue;
+    return property;
+  });
   return {
     properties,
     search: {

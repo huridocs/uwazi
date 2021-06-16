@@ -6,12 +6,12 @@ import React from 'react';
 import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
-import { selectTemplates } from 'app/utils/coreSelectors';
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
+import RelationshipFilter from './RelationshipFilter';
 
 export const FiltersFromProperties = ({
   onChange,
@@ -19,16 +19,10 @@ export const FiltersFromProperties = ({
   translationContext,
   modelPrefix = '',
   storeKey,
-  templates,
   ...props
 }) => (
   <>
     {properties.map(property => {
-      let { type } = property;
-      if (property.inherit?.property) {
-        type = property.inherit.type;
-      }
-
       const commonProps = {
         model: `.filters${modelPrefix}.${property.name}`,
         label: t(translationContext, property.label),
@@ -56,11 +50,22 @@ export const FiltersFromProperties = ({
 
       let filter = <TextFilter {...commonProps} />;
 
-      if (type === 'numeric') {
+      if (property.type === 'relationshipfilter') {
+        filter = (
+          <RelationshipFilter
+            {...commonProps}
+            storeKey={props.storeKey}
+            translationContext={translationContext}
+            property={property}
+          />
+        );
+      }
+
+      if (property.type === 'numeric') {
         filter = <NumberRangeFilter {...commonProps} />;
       }
 
-      if (['select', 'multiselect', 'relationship'].includes(type)) {
+      if (['select', 'multiselect', 'relationship'].includes(property.type)) {
         filter = (
           <SelectFilter
             {...commonProps}
@@ -74,17 +79,17 @@ export const FiltersFromProperties = ({
         );
       }
 
-      if (type === 'nested') {
+      if (property.type === 'nested') {
         filter = (
           <NestedFilter {...commonProps} property={property} aggregations={props.aggregations} />
         );
       }
 
       if (
-        type === 'date' ||
-        type === 'multidate' ||
-        type === 'multidaterange' ||
-        type === 'daterange'
+        property.type === 'date' ||
+        property.type === 'multidate' ||
+        property.type === 'multidaterange' ||
+        property.type === 'daterange'
       ) {
         filter = <DateFilter {...commonProps} format={props.dateFormat} />;
       }
@@ -102,7 +107,6 @@ FiltersFromProperties.defaultProps = {
 };
 
 FiltersFromProperties.propTypes = {
-  templates: PropTypes.array.isRequired,
   onChange: PropTypes.func,
   dateFormat: PropTypes.string,
   modelPrefix: PropTypes.string,
@@ -117,7 +121,6 @@ export function mapStateToProps(state, props) {
     dateFormat: state.settings.collection.get('dateFormat'),
     aggregations: state[props.storeKey].aggregations,
     storeKey: props.storeKey,
-    templates: selectTemplates(state),
   };
 }
 
