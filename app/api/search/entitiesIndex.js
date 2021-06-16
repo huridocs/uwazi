@@ -2,9 +2,9 @@ import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
+import { tenants } from 'api/tenants';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
-import { denormalizeInheritedProperties } from 'api/templates/utils';
 import { elastic } from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
@@ -165,18 +165,38 @@ const reindexAll = async (tmpls, searchInstance) => {
   return indexEntities({ query: {}, searchInstance });
 };
 
-const checkMapping = async template => {
-  try {
-    await updateMapping([
-      { ...template, properties: await denormalizeInheritedProperties(template) },
-    ]);
-  } catch (e) {
-    if (e.meta?.body?.error?.reason?.match(/mapp[ing|er]/)) {
-      return { error: 'mapping conflict', valid: false };
-    }
-    throw e;
+const equalPropMapping = (mapA, mapB) => {
+  if (!mapA || !mapB) {
+    return true;
   }
-  return { valid: true };
+
+  return (
+    Object.keys(mapA.properties).length === Object.keys(mapB.properties).length &&
+    Object.keys(mapA.properties).reduce(
+      (result, propKey) =>
+        result &&
+        mapB.properties[propKey] &&
+        mapA.properties[propKey].type === mapB.properties[propKey].type,
+      true
+    )
+  );
+};
+
+const checkMapping = async template => {
+  const errors = [];
+  const mapping = elasticMapFactory.mapping([template]);
+  const currentMapping = await elastic.indices.getMapping();
+  const elasticIndex = tenants.current().indexName;
+  const mappedProps =
+    currentMapping.body[elasticIndex].mappings.properties.metadata.properties || {};
+  const newMappedProps = mapping.properties.metadata.properties;
+  Object.keys(newMappedProps).forEach(key => {
+    if (!equalPropMapping(mappedProps[key], newMappedProps[key])) {
+      errors.push({ name: template.properties.find(p => p.name === key).label });
+    }
+  });
+
+  return { errors, valid: !errors.length };
 };
 
 export { bulkIndex, indexEntities, updateMapping, checkMapping, reindexAll };

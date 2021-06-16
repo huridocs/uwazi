@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RelationshipFilter should render a text filter field with a label and passing the model 1`] = `
+<ul
+  className="search__filter is-active"
+>
+  <li>
+    <label>
+      label
+    </label>
+  </li>
+  <li
+    className="wide"
+  >
+    <Connect(FiltersFromProperties)
+      modelPrefix=".name"
+      onChange={[Function]}
+      properties={
+        Array [
+          Object {
+            "name": "text",
+          },
+        ]
+      }
+      storeKey="storeKey"
+      translationContext="context"
+    />
+  </li>
+</ul>
+`;

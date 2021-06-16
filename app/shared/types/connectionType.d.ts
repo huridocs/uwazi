@@ -59,32 +59,8 @@ export interface ConnectionSchema {
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
             inheritedValue?: {
-              value?:
-                | null
-                | string
-                | number
-                | boolean
-                | {
-                    label?: string | null;
-                    url?: string | null;
-                  }
-                | {
-                    from?: number | null;
-                    to?: number | null;
-                  }
-                | {
-                    label?: string;
-                    lat: number;
-                    lon: number;
-                  }
-                | {
-                    label?: string;
-                    lat: number;
-                    lon: number;
-                  }[];
-              label?: string;
               [k: string]: unknown | undefined;
-            }[];
+            };
             inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]
@@ -121,32 +97,8 @@ export interface ConnectionSchema {
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
             inheritedValue?: {
-              value?:
-                | null
-                | string
-                | number
-                | boolean
-                | {
-                    label?: string | null;
-                    url?: string | null;
-                  }
-                | {
-                    from?: number | null;
-                    to?: number | null;
-                  }
-                | {
-                    label?: string;
-                    lat: number;
-                    lon: number;
-                  }
-                | {
-                    label?: string;
-                    lat: number;
-                    lon: number;
-                  }[];
-              label?: string;
               [k: string]: unknown | undefined;
-            }[];
+            };
             inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]
