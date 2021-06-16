@@ -98,6 +98,20 @@ describe('library helper', () => {
       expect(state.search.order).toBe('order');
       expect(state.search.sort).toBe('sort');
     });
+
+    it('should populate filters with default values when they are not set', () => {
+      const query = {
+        searchTerm: 'searchTerm',
+        types: ['1'],
+        filters: {},
+      };
+
+      const state = libraryHelper.URLQueryToState(query, templates);
+      expect(state.search.filters.country).toEqual({});
+      expect(state.search.filters.language).toBe('');
+      expect(state.search.filters.rich).toBe('');
+      expect(state.search.filters.id).toBe('');
+    });
   });
 
   describe('populateOptions', () => {

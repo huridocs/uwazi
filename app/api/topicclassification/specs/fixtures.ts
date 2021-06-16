@@ -18,15 +18,9 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: propertyTypes.text }],
       default: true,
       properties: [
-        { _id: db.id(), name: 'date', label: 'Date', type: propertyTypes.date },
-        { _id: db.id(), name: 'text', label: 'Recommendation', type: propertyTypes.markdown },
-        {
-          _id: db.id(),
-          name: 'movies',
-          label: 'Movies',
-          type: propertyTypes.multiselect,
-          content: moviesId,
-        },
+        { name: 'date', label: 'Date', type: propertyTypes.date },
+        { name: 'text', label: 'Recommendation', type: propertyTypes.markdown },
+        { name: 'movies', label: 'Movies', type: propertyTypes.multiselect, content: moviesId },
       ],
     },
   ],

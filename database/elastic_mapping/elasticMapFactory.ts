@@ -22,23 +22,9 @@ export default {
             return map;
           }
 
-          map.properties.metadata.properties[property.name] = {
-            properties: propertyMappings[property.type](),
-          };
-          map.properties.suggestedMetadata.properties[property.name] = {
-            properties: propertyMappings[property.type](),
-          };
-
-          if (property.inherit?.type && property.inherit.type !== 'preview') {
-            map.properties.metadata.properties[property.name].properties.inheritedValue = {
-              properties: propertyMappings[property.inherit.type](),
-            };
-
-            map.properties.suggestedMetadata.properties[property.name].properties.inheritedValue = {
-              properties: propertyMappings[property.inherit.type](),
-            };
-          }
-
+          const fieldMapping = propertyMappings[property.type]();
+          map.properties.metadata.properties[property.name] = { properties: fieldMapping };
+          map.properties.suggestedMetadata.properties[property.name] = { properties: fieldMapping };
           return map;
         }, baseMapping),
       baseMappingObject
