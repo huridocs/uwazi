@@ -45,21 +45,18 @@ describe('entities get searchString', () => {
           _id: entity1en.toString(),
           title: 'title to search',
           sharedId: 'entity1SharedId',
-          language: 'en',
           template: 'template1',
         },
         {
           _id: entity2en.toString(),
           title: 'title does not match',
           sharedId: 'entity2SharedId',
-          language: 'en',
           template: 'template1',
         },
         {
           _id: entity3en.toString(),
           sharedId: 'entity3SharedId',
           title: 'title to search 2',
-          language: 'en',
           template: 'template1',
         },
       ]);
@@ -71,6 +68,7 @@ describe('entities get searchString', () => {
       const { body } = await request(app)
         .get('/api/v2/entities')
         .set('content-language', 'es')
+        .query({ fields: ['title', 'sharedId', 'language'] })
         .expect(200);
 
       expect(body.data).toEqual([
