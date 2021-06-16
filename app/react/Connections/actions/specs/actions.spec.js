@@ -41,7 +41,10 @@ describe('Connections actions', () => {
       it('should search for connections', () => {
         actions.immediateSearch(store.dispatch, 'term');
         const expectedParams = new RequestParams(
-          qs.stringify({ filter: { searchString: 'title:(term)' } })
+          qs.stringify({
+            filter: { searchString: 'title:(term)' },
+            fields: ['title', 'template', 'sharedId', 'documents._id'],
+          })
         );
         expect(api.get).toHaveBeenCalledWith('v2/entities', expectedParams);
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_CONNECTIONS' });
@@ -91,7 +94,12 @@ describe('Connections actions', () => {
 
         expect(api.get).toHaveBeenCalledWith(
           'v2/entities',
-          new RequestParams(qs.stringify({ filter: { searchString: 'title:(term)' } }))
+          new RequestParams(
+            qs.stringify({
+              filter: { searchString: 'title:(term)' },
+              fields: ['title', 'template', 'sharedId', 'documents._id'],
+            })
+          )
         );
         jasmine.clock().uninstall();
       });
@@ -101,7 +109,12 @@ describe('Connections actions', () => {
   describe('startNewConnection', () => {
     it('should perform an immediate empty search', () => {
       actions.startNewConnection('type', 'sourceId')(store.dispatch);
-      expect(api.get).toHaveBeenCalledWith('v2/entities', new RequestParams(''));
+      const expectedParams = new RequestParams(
+        qs.stringify({
+          fields: ['title', 'template', 'sharedId', 'documents._id'],
+        })
+      );
+      expect(api.get).toHaveBeenCalledWith('v2/entities', expectedParams);
     });
 
     it('should restore default search term and open the panel', done => {
