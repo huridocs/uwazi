@@ -178,7 +178,7 @@ function searchGeolocation(documentsQuery, templates) {
 
 const _sanitizeAgregationNames = aggregations =>
   Object.keys(aggregations).reduce((allAggregations, key) => {
-    const sanitizedKey = key.replace('.value', '');
+    const sanitizedKey = key.replace('.inheritedValue.value', '').replace('.value', '');
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 

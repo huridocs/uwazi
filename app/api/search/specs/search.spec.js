@@ -237,7 +237,7 @@ describe('search', () => {
     });
   });
 
-  it('should filter by templates', done => {
+  it('should filter by templates', async () => {
     userFactory.mock(undefined);
     const [
       template1es,
@@ -253,27 +253,6 @@ describe('search', () => {
       search.search({ types: [ids.template1, ids.template2] }, 'en'),
       search.search({ types: ['missing'] }, 'en'),
       search.search({ types: [ids.template1, 'missing'] }, 'en'),
-    ])
-      .then(
-        ([
-          template1es,
-          template2es,
-          template1en,
-          allTemplatesEn,
-          onlyMissing,
-          template1AndMissing,
-        ]) => {
-          expect(template1es.rows.length).toBe(2);
-          expect(template1en.rows.length).toBe(3);
-          expect(template2es.rows.length).toBe(1);
-          expect(allTemplatesEn.rows.length).toBe(4);
-          expect(onlyMissing.rows.length).toBe(2);
-          expect(template1AndMissing.rows.length).toBe(5);
-          done();
-        }
-      )
-      .catch(catchErrors(done));
-=======
     ]);
 
     expect(template1es.rows.length).toBe(2);
@@ -282,7 +261,6 @@ describe('search', () => {
     expect(allTemplatesEn.rows.length).toBe(6);
     expect(onlyMissing.rows.length).toBe(2);
     expect(template1AndMissing.rows.length).toBe(7);
->>>>>>> 06895cfd3 (minor fixes)
   });
 
   it('should allow searching only within specific Ids', done => {
@@ -944,7 +922,7 @@ describe('search', () => {
       };
 
       const { rows } = await search.search(query, 'en');
-      expect(rows.length).toBe(13);
+      expect(rows.length).toBe(15);
     });
   });
 

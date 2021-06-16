@@ -247,7 +247,7 @@ export const fixtures = {
     },
     //metadata filters
     {
-      _id: db.id(),
+      _id: entity1,
       sharedId: 'metadata1',
       template: templateMetadata1,
       language: 'en',
@@ -427,11 +427,12 @@ export const fixtures = {
     {
       _id: template1,
       properties: [
-        { name: 'date', type: 'date', filter: true },
-        { name: 'multidate', type: 'multidate', filter: true },
-        { name: 'daterange', type: 'daterange', filter: true },
-        { name: 'multidaterange', type: 'multidaterange', filter: true },
+        { _id: db.id(), name: 'date', type: 'date', filter: true },
+        { _id: db.id(), name: 'multidate', type: 'multidate', filter: true },
+        { _id: db.id(), name: 'daterange', type: 'daterange', filter: true },
+        { _id: db.id(), name: 'multidaterange', type: 'multidaterange', filter: true },
         {
+          _id: db.id(),
           name: 'relationship',
           type: 'relationship',
           filter: true,
@@ -492,15 +493,17 @@ export const fixtures = {
     {
       _id: templateMetadata1,
       properties: [
-        { name: 'field1', type: 'text', filter: true },
-        { name: 'field2', type: 'text', filter: true },
+        { _id: db.id(), name: 'field1', type: 'text', filter: true },
+        { _id: db.id(), name: 'field2', type: 'text', filter: true },
         {
+          _id: db.id(),
           name: 'select1',
           type: 'select',
           filter: true,
           content: countriesDictionaryID.toString(),
         },
         {
+          _id: multiselect1,
           name: 'multiselect1',
           type: 'multiselect',
           filter: true,
@@ -509,6 +512,7 @@ export const fixtures = {
         { _id: db.id(), name: 'daterange', type: 'daterange', filter: true },
         { _id: dateField, name: 'dateToBeInherited', type: 'date', filter: true },
         {
+          _id: db.id(),
           name: 'nestedField_nested',
           type: 'nested',
           nestedProperties: ['nested1', 'nested2'],
@@ -516,6 +520,7 @@ export const fixtures = {
         },
         { _id: cityGeolocation, name: 'city_geolocation', type: 'geolocation', filter: true },
         {
+          _id: db.id(),
           name: 'groupedDictionary',
           type: 'multiselect',
           filter: true,
