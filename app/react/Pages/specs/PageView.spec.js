@@ -22,7 +22,7 @@ describe('PageView', () => {
     instance = component.instance();
     spyOn(assetsUtils, 'getPageAssets').and.returnValue(
       Promise.resolve({
-        pageView: {},
+        pageView: 'pageViewValues',
         itemLists: 'itemListsValues',
         datasets: 'datasetsValues',
       })
@@ -78,7 +78,7 @@ describe('PageView', () => {
       const stateActions = await PageView.requestState(request);
       expect(assetsUtils.getPageAssets).toHaveBeenCalledWith(request);
       expect(stateActions).toEqual([
-        { type: 'page/pageView/SET', value: { scriptRendered: false } },
+        { type: 'page/pageView/SET', value: 'pageViewValues' },
         { type: 'page/itemLists/SET', value: 'itemListsValues' },
         { type: 'page/datasets/SET', value: 'datasetsValues' },
       ]);

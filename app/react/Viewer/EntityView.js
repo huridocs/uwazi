@@ -49,7 +49,6 @@ export default class Entity extends Component {
           template: entityTemplate,
         }
       );
-      pageView.scriptRendered = false;
 
       const pageActions = [
         actions.set('page/pageView', pageView),
