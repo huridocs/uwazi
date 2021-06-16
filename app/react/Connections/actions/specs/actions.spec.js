@@ -31,7 +31,6 @@ describe('Connections actions', () => {
       if (url === 'relationships/bulk') {
         return Promise.resolve({ status: 200, json: 'bulkResponse(ArrayOfTwo)' });
       }
-
       return Promise.reject('Unexpected url');
     });
   });
@@ -82,16 +81,13 @@ describe('Connections actions', () => {
     describe('search', () => {
       it('should update the state searchTerm and debounce server searching the term', () => {
         jasmine.clock().install();
-
         actions.search('term', 'basic')(store.dispatch);
         expect(store.getActions()).toContainEqual({
           type: 'connections/searchTerm/SET',
           value: 'term',
         });
         expect(api.get).not.toHaveBeenCalled();
-
         jasmine.clock().tick(400);
-
         expect(api.get).toHaveBeenCalledWith(
           'v2/entities',
           new RequestParams(
@@ -158,7 +154,6 @@ describe('Connections actions', () => {
 
   describe('saveConnection', () => {
     let connection;
-
     beforeEach(() => {
       connection = {
         sourceDocument: 'sourceId',
@@ -189,7 +184,6 @@ describe('Connections actions', () => {
           ],
         ],
       });
-
       actions.saveConnection(connection)(store.dispatch, getState);
       expect(store.getActions()).toEqual([{ type: 'CREATING_CONNECTION' }]);
       expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedParams);
@@ -200,7 +194,6 @@ describe('Connections actions', () => {
         selectionRectangles: [{ top: 28, left: 12, height: 13, width: 84 }],
         text: 'target text',
       };
-
       const expectedParams = new RequestParams({
         delete: [],
         save: [
@@ -224,7 +217,6 @@ describe('Connections actions', () => {
           ],
         ],
       });
-
       actions.saveConnection(connection)(store.dispatch, getState);
       expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedParams);
     });
