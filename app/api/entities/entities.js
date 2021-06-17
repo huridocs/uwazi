@@ -161,8 +161,24 @@ async function updateEntity(entity, _template, unrestricted = false) {
             template
           );
         }
-        if (template._id) {
-          const fullEntity = { ...currentDoc, ...toSave };
+
+        const fullEntity = { ...currentDoc, ...toSave };
+
+        const changed =
+          currentDoc.icon?._id !== fullEntity.icon?._id ||
+          currentDoc.title !== fullEntity.title ||
+          !(
+            Object.keys(currentDoc.metadata || {}).every(
+              key =>
+                (currentDoc.metadata || {})[key].every(
+                  (elem, i) => elem.value === fullEntity.metadata[key][i].value
+                ) && (currentDoc.metadata || {})[key].length === fullEntity.metadata[key].length
+            ) &&
+            Object.keys(currentDoc.metadata || {}).length ===
+              Object.keys(fullEntity.metadata || {}).length
+          );
+
+        if (template._id && changed) {
           //soy la entidad que estas cambiando
           // EN TITLE {title: 'Peru new'}
           await denormalizeRelated(fullEntity, template);
@@ -194,7 +210,20 @@ async function updateEntity(entity, _template, unrestricted = false) {
         d.generatedToc = entity.generatedToc;
       }
 
-      if (template._id) {
+      const changed =
+        currentDoc.icon?._id !== d.icon?._id ||
+        !Object.keys(currentDoc.metadata || {}).every(
+          key =>
+            !['select', 'multiselect', 'relationship'].includes(
+              template.properties.find(p => p.name === key)?.type
+            ) ||
+            ((currentDoc.metadata || {})[key].every(
+              (elem, i) => elem.value === d.metadata[key][i].value
+            ) &&
+              (currentDoc.metadata || {})[key].length === d.metadata[key].length)
+        );
+
+      if (template._id && changed) {
         //soy la entidad que estas cambiando
         // EN TITLE {}
         await denormalizeRelated(d, template);
