@@ -3,11 +3,12 @@ import express, { Application } from 'express';
 import { setupTestUploadedPaths, uploadsPath, writeFile, attachmentsPath } from 'api/files';
 import { staticFilesMiddleware } from '../staticFilesMiddleware';
 import { testingTenants } from '../testingTenants';
+import errorHandlingMiddleware from '../error_handling_middleware';
 
 describe('static file middleware', () => {
   const app: Application = express();
   app.get('/static-files/:fileName', staticFilesMiddleware([uploadsPath, attachmentsPath]));
-
+  app.use(errorHandlingMiddleware);
   beforeEach(async () => {
     testingTenants.mockCurrentTenant({ name: 'default' });
     await setupTestUploadedPaths();

@@ -1,5 +1,4 @@
 const { USE_ELASTIC_ICU } = process.env;
-// eslint-disable-next-line import/no-mutable-exports
 let textSortField = {};
 if (USE_ELASTIC_ICU === 'true') {
   textSortField = { type: 'icu_collation_keyword', numeric: true };
@@ -20,9 +19,6 @@ const text = {
 const noSorttext = {
   type: 'text',
   analyzer: 'tokenizer',
-  fields: {
-    raw: { type: 'text' },
-  },
   term_vector: 'with_positions_offsets',
 };
 
@@ -120,12 +116,6 @@ const relationshipType = () => ({
   label: text,
   value: id,
   type: noIndexText,
-  // inheritedValue: {
-  //   properties: {
-  //     value: id,
-  //     label: { type: 'keyword' },
-  //   },
-  // },
 });
 
 const nestedType = () => ({

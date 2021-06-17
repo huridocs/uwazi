@@ -79,13 +79,13 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
             elem.type = partner.file ? 'document' : 'entity';
           }
 
-          if (prop.inherit && prop.inherit.property && partner) {
+          if (prop.inherit && partner) {
             const partnerTemplate = allTemplates.find(
               t => t._id.toString() === partner.template.toString()
             );
 
             const inheritedProperty = partnerTemplate.properties.find(
-              p => p._id && p._id.toString() === prop.inherit.property.toString()
+              p => p._id && p._id.toString() === prop.inheritProperty.toString()
             );
 
             elem.inheritedValue = partner.metadata[inheritedProperty.name];
@@ -347,6 +347,16 @@ const withDocuments = (entities, documentsFullText, withPdfInfo) =>
     })
   );
 
+const reindexEntitiesByTemplate = async (template, options) => {
+  const templateHasRelationShipProperty = template.properties?.find(
+    p => p.type === propertyTypes.relationship
+  );
+  if (options.reindex && (options.generatedIdAdded || !templateHasRelationShipProperty)) {
+    return search.indexEntities({ template: template._id });
+  }
+  return Promise.resolve();
+};
+
 export default {
   denormalizeMetadata,
   sanitize,
@@ -595,7 +605,12 @@ export default {
   },
 
   /** Handle property deletion and renames. */
-  async updateMetadataProperties(template, currentTemplate, language, reindex = true) {
+  async updateMetadataProperties(
+    template,
+    currentTemplate,
+    language,
+    options = { reindex: true, generatedIdAdded: false }
+  ) {
     const actions = { $rename: {}, $unset: {} };
     template.properties = await generateNamesAndIds(template.properties);
     template.properties.forEach(property => {
@@ -623,16 +638,12 @@ export default {
     if (actions.$unset || actions.$rename) {
       await model.updateMany({ template: template._id }, actions);
     }
-
-    if (!template.properties.find(p => p.type === propertyTypes.relationship) && reindex) {
-      return search.indexEntities({ template: template._id });
-    }
-
+    await reindexEntitiesByTemplate(template, options);
     return this.bulkUpdateMetadataFromRelationships(
       { template: template._id, language },
       language,
       200,
-      reindex
+      options.reindex
     );
   },
 
