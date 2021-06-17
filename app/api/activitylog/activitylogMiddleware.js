@@ -17,7 +17,6 @@ export const IGNORED_ENDPOINTS = [
   '/api/sync/upload',
 ];
 export const BODY_REQUIRED_ENDPOINTS = [
-  '/api/translations/import',
   '/api/files/upload/document',
   '/api/files/upload/custom',
   '/api/attachments/upload',
