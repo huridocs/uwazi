@@ -25,6 +25,7 @@ import {
   denormalizeRelated,
   updateTransitiveDenormalization,
   updateDenormalization,
+  reindexByMetadataValue,
 } from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
@@ -162,6 +163,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
         }
         if (template._id) {
           const fullEntity = { ...currentDoc, ...toSave };
+          //soy la entidad que estas cambiando
+          // EN TITLE {title: 'Peru new'}
           await denormalizeRelated(fullEntity, template);
         }
         return saveFunc(toSave);
@@ -192,6 +195,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
       }
 
       if (template._id) {
+        //soy la entidad que estas cambiando
+        // EN TITLE {}
         await denormalizeRelated(d, template);
       }
 
@@ -769,46 +774,14 @@ export default {
   },
 
   /** Propagate the change of a thesaurus label to all entity metadata. */
-  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-    const properties = (
-      await templates.get({
-        'properties.content': thesaurusId,
-      })
-    )
-      .reduce((m, t) => m.concat(t.properties), [])
-      .filter(p => p.content && thesaurusId === p.content.toString());
-
-    await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
-
-    const transitiveProps = await templates.propsThatNeedTransitiveDenormalization(
-      thesaurusId.toString()
+  async renameThesaurusInMetadata(value, newLabel, thesaurusId, language) {
+    const updates = await templates.denormalizationUpdates(thesaurusId.toString());
+    await Promise.all(
+      updates.map(async update =>
+        updateDenormalization({ value, language, ...update }, { label: newLabel })
+      )
     );
-
-    await updateTransitiveDenormalization(
-      { id: valueId, language },
-      { label: newLabel },
-      transitiveProps
-    );
-
-    if (properties.length || transitiveProps.length) {
-      await search.indexEntities({
-        $and: [
-          {
-            language,
-          },
-          {
-            $or: [
-              ...properties.map(property => ({
-                [`metadata.${property.name}.value`]: valueId,
-              })),
-              ...transitiveProps.map(property => ({
-                [`metadata.${property.name}.inheritedValue.value`]: valueId,
-              })),
-            ],
-          },
-        ],
-      });
-    }
+    await reindexByMetadataValue(value, language, updates);
   },
 
   async createThumbnail(entity) {

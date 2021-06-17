@@ -13,6 +13,13 @@ import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyA
 import model from './templatesModel';
 import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
 
+export interface DenormalizationUpdate {
+  propertyName: string;
+  template?: string;
+  inheritProperty?: string;
+  transitive?: boolean;
+}
+
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
   await Promise.all(
@@ -110,39 +117,61 @@ const checkAndFillGeneratedIdProperties = async (
   return newGeneratedIdProps.length > 0;
 };
 
-export default {
-  async propsThatNeedDenormalization(templateId: string) {
-    return (
-      await model.get({
-        $or: [{ 'properties.content': templateId }, { 'properties.content': '' }],
-      })
-    ).reduce<{ [k: string]: string | undefined }[]>(
+const uniqueBy = (updates: DenormalizationUpdate[]) => {
+  const tmp = updates.reduce<{ [key: string]: DenormalizationUpdate }>((memo, update) => {
+    memo[update.propertyName + update.inheritProperty] = update;
+    return memo;
+  }, {});
+
+  return Object.values(tmp);
+};
+
+const calculateUpdates = (
+  templates: TemplateSchema[],
+  contentIds: string[],
+  transitive: boolean = false
+) =>
+  uniqueBy(
+    templates.reduce<DenormalizationUpdate[]>(
       (m, t) =>
         m.concat(
           t.properties
-            ?.filter(p => templateId === p.content?.toString() || p.content === '')
-            .map(p => ({
-              name: p.name,
+            ?.filter(p =>
+              contentIds.includes(transitive ? p.inheritProperty : p.content?.toString())
+            )
+            .map<DenormalizationUpdate>(p => ({
+              propertyName: p.name,
               inheritProperty: p.inheritProperty,
-              template: t._id,
+              template: t._id?.toString(),
+              transitive,
             })) || []
         ),
       []
-    );
-  },
+    )
+  );
 
-  async propsThatNeedTransitiveDenormalization(contentId: string) {
+export default {
+  async denormalizationUpdates(contentId: string) {
     const properties = (await model.get({ 'properties.content': contentId }))
       .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
       .filter(p => contentId === p.content?.toString());
 
-    return (
+    return calculateUpdates(
       await model.get({
-        'properties.inheritProperty': {
-          $in: properties.map(p => p._id?.toString()).filter(v => v),
-        },
-      })
-    ).reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), []);
+        $or: [{ 'properties.content': contentId }, { 'properties.content': '' }],
+      }),
+      [contentId, '']
+    ).concat(
+      calculateUpdates(
+        await model.get({
+          'properties.inheritProperty': {
+            $in: properties.map(p => p._id?.toString()).filter(v => v),
+          },
+        }),
+        properties.map(p => p._id?.toString()).filter(v => v),
+        true
+      )
+    );
   },
 
   async save(template: TemplateSchema, language: string, reindex = true) {
