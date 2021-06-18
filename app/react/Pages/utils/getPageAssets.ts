@@ -65,6 +65,7 @@ const getPageAssets = async (
     dataSets,
     listsData.searchs,
   ]);
+  pageView.scriptRendered = false;
 
   const itemLists = searchParams.map((p, index) => ({
     params: p,
