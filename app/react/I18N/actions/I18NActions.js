@@ -56,7 +56,10 @@ export function importTranslations(context, file) {
         context,
       };
       await httpRequest('translations/import', fields, headers, file);
-      notifications.notify(t(context, 'Translations imported', null, false), 'success')(dispatch);
+      notifications.notify(
+        t(context, 'Translations imported. Reload the page to see changes', null, false),
+        'success'
+      )(dispatch);
     } catch (e) {
       notifications.notify(t(context, e.error, null, false), 'danger')(dispatch);
     }
