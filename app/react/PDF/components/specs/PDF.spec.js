@@ -8,7 +8,7 @@ import PDFJS from '../../PDFJS';
 import PDF from '../PDF';
 import PDFPage from '../PDFPage.js';
 
-const legacyCharacterMapUrl = "/legacy_character_maps/"
+const legacyCharacterMapUrl = '/legacy_character_maps/';
 
 describe('PDF', () => {
   let component;
