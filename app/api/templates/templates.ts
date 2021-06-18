@@ -142,7 +142,7 @@ const calculateUpdates = (
             .map<DenormalizationUpdate>(p => ({
               propertyName: p.name,
               inheritProperty: p.inheritProperty,
-              template: t._id?.toString(),
+              ...(p.inheritProperty ? { template: t._id?.toString() } : {}),
               transitive,
             })) || []
         ),
@@ -151,14 +151,25 @@ const calculateUpdates = (
   );
 
 export default {
-  async denormalizationUpdates(contentId: string) {
-    const properties = (await model.get({ 'properties.content': contentId }))
+  async denormalizationUpdates(contentId: string, metadataThatChanged = [], titleIconChanged = false) {
+    if (metadataThatChanged.length === 0 && !titleIconChanged) {
+      return [];
+    }
+
+    let properties = (await model.get({ 'properties.content': contentId }))
       .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
       .filter(p => contentId === p.content?.toString());
 
+    if (!titleIconChanged) {
+      properties = ['none']
+    }
+
     return calculateUpdates(
       await model.get({
-        $or: [{ 'properties.content': contentId }, { 'properties.content': '' }],
+        $and: [
+          { $or: [{ 'properties.content': contentId }, { 'properties.content': '' }] },
+          ...(metadataThatChanged.length && !titleIconChanged ? [{ 'properties.inheritProperty': { $in: metadataThatChanged } }] : [])
+        ],
       }),
       [contentId, '']
     ).concat(

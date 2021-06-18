@@ -164,27 +164,67 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
         const fullEntity = { ...currentDoc, ...toSave };
 
-        const changed =
-          currentDoc.icon?._id !== fullEntity.icon?._id ||
-          currentDoc.title !== fullEntity.title ||
-          !(
-            Object.keys(currentDoc.metadata || {}).every(
-              key =>
-                (currentDoc.metadata || {})[key].every(
-                  (elem, i) => elem.value === fullEntity.metadata[key][i].value
-                ) && (currentDoc.metadata || {})[key].length === fullEntity.metadata[key].length
-            ) &&
-            Object.keys(currentDoc.metadata || {}).length ===
-              Object.keys(fullEntity.metadata || {}).length
-          );
+        // const changed =
+        //   currentDoc.icon?._id !== fullEntity.icon?._id ||
+        //   currentDoc.title !== fullEntity.title ||
+        //   !(
+        //     Object.keys(currentDoc.metadata || {}).every(
+        //       key =>
+        //         (currentDoc.metadata || {})[key].every(
+        //           (elem, i) =>
+        //             JSON.stringify(elem.value) === JSON.stringify(fullEntity.metadata[key][i].value)
+        //         ) && (currentDoc.metadata || {})[key].length === fullEntity.metadata[key].length
+        //     ) &&
+        //     Object.keys(currentDoc.metadata || {}).length ===
+        //       Object.keys(fullEntity.metadata || {}).length
+        //   );
 
-        if (template._id && changed) {
-          //soy la entidad que estas cambiando
-          // EN TITLE {title: 'Peru new'}
-          await denormalizeRelated(fullEntity, template);
+        const diff = Object.keys(fullEntity.metadata || {}).reduce(
+          (theDiff, key) => {
+            const thisChanged =
+              (fullEntity.metadata || {})[key].every(
+                (elem, i) =>
+                  JSON.stringify(elem.value) !==
+                  JSON.stringify(currentDoc?.metadata?.[key]?.[i]?.value)
+              ) || (currentDoc.metadata || {})[key].length !== fullEntity.metadata[key].length;
+
+            if (thisChanged) {
+              theDiff.metadata = theDiff.metadata || {};
+              // theDiff['original_' + key] = currentDoc.metadata[key]
+              theDiff.metadata[key] = fullEntity.metadata[key];
+            }
+            return theDiff;
+          },
+          {
+            ...(currentDoc.title !== fullEntity.title ? { title: fullEntity.title } : {}),
+            ...(currentDoc.icon?._id !== fullEntity.icon?._id ? { icon: fullEntity.icon } : {}),
+          }
+        );
+
+        // console.log(JSON.stringify(diff, null, ' '));
+
+        const diffPropNames = Object.keys(diff.metadata || {});
+        const metadataPropsThatChanged = template.properties
+          .filter(p => diffPropNames.includes(p.name))
+          .map(p => p._id.toString());
+
+        const titleIconChanged = !!(diff.title || diff.icon);
+
+        // console.log(JSON.stringify(diff, null, ' '));
+        // console.log(JSON.stringify(fullEntity, null, ' '));
+
+        if (template._id) {
+          await denormalizeRelated(
+            fullEntity,
+            template,
+            metadataPropsThatChanged,
+            titleIconChanged
+          );
         }
         return saveFunc(toSave);
       }
+
+      const currentDocLang = JSON.parse(JSON.stringify(d));
 
       if (entity.metadata) {
         d.metadata = d.metadata || entity.metadata;
@@ -210,23 +250,36 @@ async function updateEntity(entity, _template, unrestricted = false) {
         d.generatedToc = entity.generatedToc;
       }
 
-      const changed =
-        currentDoc.icon?._id !== d.icon?._id ||
-        !Object.keys(currentDoc.metadata || {}).every(
-          key =>
-            !['select', 'multiselect', 'relationship'].includes(
-              template.properties.find(p => p.name === key)?.type
-            ) ||
-            ((currentDoc.metadata || {})[key].every(
-              (elem, i) => elem.value === d.metadata[key][i].value
-            ) &&
-              (currentDoc.metadata || {})[key].length === d.metadata[key].length)
-        );
+      const diff = Object.keys(d.metadata || {}).reduce(
+        (theDiff, key) => {
+          const thisChanged =
+            (d.metadata || {})[key].every(
+              (elem, i) =>
+                JSON.stringify(elem.value) !==
+                JSON.stringify(currentDocLang?.metadata?.[key]?.[i]?.value)
+            ) || (currentDocLang.metadata || {})[key].length !== d.metadata[key].length;
 
-      if (template._id && changed) {
-        //soy la entidad que estas cambiando
-        // EN TITLE {}
-        await denormalizeRelated(d, template);
+          if (thisChanged) {
+            theDiff.metadata = theDiff.metadata || {};
+            theDiff.metadata[key] = d.metadata[key];
+          }
+          return theDiff;
+        },
+        {
+          ...(currentDoc.title !== d.title ? { title: d.title } : {}),
+          ...(currentDoc.icon?._id !== d.icon?._id ? { icon: d.icon } : {}),
+        }
+      );
+
+      const diffPropNames = Object.keys(diff.metadata || {});
+      const metadataPropsThatChanged = template.properties
+        .filter(p => diffPropNames.includes(p.name))
+        .map(p => p._id.toString());
+
+      const titleIconChanged = !!(diff.title || diff.icon);
+
+      if (template._id) {
+        await denormalizeRelated(d, template, metadataPropsThatChanged, titleIconChanged);
       }
 
       return saveFunc(d);
@@ -804,7 +857,7 @@ export default {
 
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(value, newLabel, thesaurusId, language) {
-    const updates = await templates.denormalizationUpdates(thesaurusId.toString());
+    const updates = await templates.denormalizationUpdates(thesaurusId.toString(), [], true);
     await Promise.all(
       updates.map(async update =>
         updateDenormalization({ value, language, ...update }, { label: newLabel })

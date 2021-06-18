@@ -67,19 +67,26 @@ export const reindexByMetadataValue = async (
 
 export const denormalizeRelated = async (
   entity: WithId<EntitySchema>,
-  template: WithId<TemplateSchema>
+  template: WithId<TemplateSchema>,
+  metadataPropsThatChanged: string[],
+  titleIconChanged: boolean,
 ) => {
   if (!entity.title || !entity.language || !entity.sharedId) {
     throw new Error('denormalization requires an entity with title, sharedId and language');
   }
 
-  const updates = await templates.denormalizationUpdates(template._id.toString());
+  // console.log(metadataPropsThatChanged);
+  // console.log(titleIconChanged);
+  const updates = await templates.denormalizationUpdates(template._id.toString(), metadataPropsThatChanged, titleIconChanged);
+
+  // console.log(updates);
 
   await Promise.all(
     updates.map(async update => {
       const inheritProperty = (template.properties || []).find(
         p => update.inheritProperty === p._id?.toString()
       );
+
       return updateDenormalization(
         {
           // @ts-ignore we have a sharedId guard, why ts does not like this ? bug ?
