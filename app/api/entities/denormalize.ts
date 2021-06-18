@@ -1,10 +1,133 @@
 import { EntitySchema } from 'shared/types/entityType';
-import templates, { DenormalizationUpdate } from 'api/templates/templates';
+import { DenormalizationUpdate } from 'api/templates/templates';
 import { search } from 'api/search';
 import { TemplateSchema } from 'shared/types/templateType';
 import { WithId } from 'api/odm';
 
+import { PropertySchema } from 'shared/types/commonTypes';
+import templatesModel from 'api/templates/templatesModel';
 import model from './entitiesModel';
+
+export function getMetadataChanges(
+  previous: EntitySchema,
+  current: EntitySchema,
+  template: TemplateSchema
+) {
+  const diff = Object.keys(previous.metadata || {}).reduce<EntitySchema>(
+    (_theDiff, key) => {
+      const theDiff = { ..._theDiff };
+      const thisChanged =
+        (previous?.metadata || {})[key]?.every(
+          (elem, i) =>
+            JSON.stringify(elem.value) !== JSON.stringify(current?.metadata?.[key]?.[i]?.value)
+        ) || (current?.metadata || {})?.[key]?.length !== previous.metadata?.[key]?.length;
+
+      if (thisChanged) {
+        theDiff.metadata = theDiff.metadata || {};
+        theDiff.metadata[key] = previous.metadata?.[key];
+      }
+      return theDiff;
+    },
+    {
+      ...(current.title !== previous.title ? { title: previous.title } : {}),
+      ...(current.icon?._id !== previous.icon?._id ? { icon: previous.icon } : {}),
+    }
+  );
+
+  const diffPropNames = Object.keys(diff.metadata || {});
+  const metadataPropsThatChanged = template.properties
+    ?.filter(p => diffPropNames.includes(p.name))
+    .map(p => p._id?.toString());
+
+  const titleIconChanged = !!(diff.title || diff.icon);
+
+  return { metadataPropsThatChanged, titleIconChanged };
+}
+
+const uniqueBy = (updates: DenormalizationUpdate[]) => {
+  const tmp = updates.reduce<{ [key: string]: DenormalizationUpdate }>(
+    (memo, update) => ({ ...memo, [update.propertyName + update.inheritProperty]: update }),
+    {}
+  );
+
+  return Object.values(tmp);
+};
+
+const calculateUpdates = (
+  templates: TemplateSchema[],
+  contentIds: string[],
+  transitive: boolean = false
+) =>
+  uniqueBy(
+    templates.reduce<DenormalizationUpdate[]>(
+      (m, t) =>
+        m.concat(
+          t.properties
+            ?.filter(p =>
+              contentIds.includes(
+                transitive ? p.inheritProperty || '' : p.content?.toString() || ''
+              )
+            )
+            .map<DenormalizationUpdate>(p => ({
+              propertyName: p.name,
+              inheritProperty: p.inheritProperty,
+              ...(p.inheritProperty ? { template: t._id?.toString() } : {}),
+              transitive,
+            })) || []
+        ),
+      []
+    )
+  );
+
+interface DenomalizationOptions {
+  metadataPropsThatChanged?: string[];
+  titleIconChanged?: boolean;
+}
+
+export async function denormalizationUpdates(
+  contentId: string,
+  { metadataPropsThatChanged, titleIconChanged }: DenomalizationOptions = {
+    metadataPropsThatChanged: [],
+    titleIconChanged: false,
+  }
+) {
+  if (metadataPropsThatChanged?.length === 0 && !titleIconChanged) {
+    return [];
+  }
+
+  let properties: PropertySchema[] = (await templatesModel.get({ 'properties.content': contentId }))
+    .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
+    .filter(p => contentId === p.content?.toString());
+
+  if (!titleIconChanged) {
+    // @ts-ignore refactor so ['none'] is not needed?
+    properties = ['none'];
+  }
+
+  return calculateUpdates(
+    await templatesModel.get({
+      $and: [
+        { $or: [{ 'properties.content': contentId }, { 'properties.content': '' }] },
+        ...(metadataPropsThatChanged?.length && !titleIconChanged
+          ? [{ 'properties.inheritProperty': { $in: metadataPropsThatChanged } }]
+          : []),
+      ],
+    }),
+    [contentId, '']
+  ).concat(
+    calculateUpdates(
+      await templatesModel.get({
+        'properties.inheritProperty': {
+          $in: properties.map(p => p._id?.toString()).filter(v => v),
+        },
+      }),
+      properties
+        .map<string | undefined>(p => p._id?.toString())
+        .filter<string>(<(v: string | undefined) => v is string>(v => !!v)),
+      true
+    )
+  );
+}
 
 interface Changes {
   label: string;
@@ -68,8 +191,7 @@ export const reindexByMetadataValue = async (
 export const denormalizeRelated = async (
   entity: WithId<EntitySchema>,
   template: WithId<TemplateSchema>,
-  metadataPropsThatChanged: string[],
-  titleIconChanged: boolean,
+  options: DenomalizationOptions
 ) => {
   if (!entity.title || !entity.language || !entity.sharedId) {
     throw new Error('denormalization requires an entity with title, sharedId and language');
@@ -77,7 +199,7 @@ export const denormalizeRelated = async (
 
   // console.log(metadataPropsThatChanged);
   // console.log(titleIconChanged);
-  const updates = await templates.denormalizationUpdates(template._id.toString(), metadataPropsThatChanged, titleIconChanged);
+  const updates = await denormalizationUpdates(template._id.toString(), options);
 
   // console.log(updates);
 
@@ -93,7 +215,7 @@ export const denormalizeRelated = async (
           value: entity.sharedId,
           // @ts-ignore we have a sharedId guard, why ts does not like this ? bug ?
           language: entity.language,
-          propertyName: update.propertyName,
+          //propertyName: update.propertyName, WAS THIS NEEDED?
           ...update,
         },
         {

@@ -117,74 +117,7 @@ const checkAndFillGeneratedIdProperties = async (
   return newGeneratedIdProps.length > 0;
 };
 
-const uniqueBy = (updates: DenormalizationUpdate[]) => {
-  const tmp = updates.reduce<{ [key: string]: DenormalizationUpdate }>((memo, update) => {
-    memo[update.propertyName + update.inheritProperty] = update;
-    return memo;
-  }, {});
-
-  return Object.values(tmp);
-};
-
-const calculateUpdates = (
-  templates: TemplateSchema[],
-  contentIds: string[],
-  transitive: boolean = false
-) =>
-  uniqueBy(
-    templates.reduce<DenormalizationUpdate[]>(
-      (m, t) =>
-        m.concat(
-          t.properties
-            ?.filter(p =>
-              contentIds.includes(transitive ? p.inheritProperty : p.content?.toString())
-            )
-            .map<DenormalizationUpdate>(p => ({
-              propertyName: p.name,
-              inheritProperty: p.inheritProperty,
-              ...(p.inheritProperty ? { template: t._id?.toString() } : {}),
-              transitive,
-            })) || []
-        ),
-      []
-    )
-  );
-
 export default {
-  async denormalizationUpdates(contentId: string, metadataThatChanged = [], titleIconChanged = false) {
-    if (metadataThatChanged.length === 0 && !titleIconChanged) {
-      return [];
-    }
-
-    let properties = (await model.get({ 'properties.content': contentId }))
-      .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
-      .filter(p => contentId === p.content?.toString());
-
-    if (!titleIconChanged) {
-      properties = ['none']
-    }
-
-    return calculateUpdates(
-      await model.get({
-        $and: [
-          { $or: [{ 'properties.content': contentId }, { 'properties.content': '' }] },
-          ...(metadataThatChanged.length && !titleIconChanged ? [{ 'properties.inheritProperty': { $in: metadataThatChanged } }] : [])
-        ],
-      }),
-      [contentId, '']
-    ).concat(
-      calculateUpdates(
-        await model.get({
-          'properties.inheritProperty': {
-            $in: properties.map(p => p._id?.toString()).filter(v => v),
-          },
-        }),
-        properties.map(p => p._id?.toString()).filter(v => v),
-        true
-      )
-    );
-  },
-
   async save(template: TemplateSchema, language: string, reindex = true) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];

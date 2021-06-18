@@ -21,12 +21,7 @@ import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
-import {
-  denormalizeRelated,
-  updateTransitiveDenormalization,
-  updateDenormalization,
-  reindexByMetadataValue,
-} from './denormalize';
+import { denormalizeRelated, getMetadataChanges } from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -164,66 +159,15 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
         const fullEntity = { ...currentDoc, ...toSave };
 
-        // const changed =
-        //   currentDoc.icon?._id !== fullEntity.icon?._id ||
-        //   currentDoc.title !== fullEntity.title ||
-        //   !(
-        //     Object.keys(currentDoc.metadata || {}).every(
-        //       key =>
-        //         (currentDoc.metadata || {})[key].every(
-        //           (elem, i) =>
-        //             JSON.stringify(elem.value) === JSON.stringify(fullEntity.metadata[key][i].value)
-        //         ) && (currentDoc.metadata || {})[key].length === fullEntity.metadata[key].length
-        //     ) &&
-        //     Object.keys(currentDoc.metadata || {}).length ===
-        //       Object.keys(fullEntity.metadata || {}).length
-        //   );
-
-        const diff = Object.keys(fullEntity.metadata || {}).reduce(
-          (theDiff, key) => {
-            const thisChanged =
-              (fullEntity.metadata || {})[key].every(
-                (elem, i) =>
-                  JSON.stringify(elem.value) !==
-                  JSON.stringify(currentDoc?.metadata?.[key]?.[i]?.value)
-              ) || (currentDoc.metadata || {})[key].length !== fullEntity.metadata[key].length;
-
-            if (thisChanged) {
-              theDiff.metadata = theDiff.metadata || {};
-              // theDiff['original_' + key] = currentDoc.metadata[key]
-              theDiff.metadata[key] = fullEntity.metadata[key];
-            }
-            return theDiff;
-          },
-          {
-            ...(currentDoc.title !== fullEntity.title ? { title: fullEntity.title } : {}),
-            ...(currentDoc.icon?._id !== fullEntity.icon?._id ? { icon: fullEntity.icon } : {}),
-          }
-        );
-
-        // console.log(JSON.stringify(diff, null, ' '));
-
-        const diffPropNames = Object.keys(diff.metadata || {});
-        const metadataPropsThatChanged = template.properties
-          .filter(p => diffPropNames.includes(p.name))
-          .map(p => p._id.toString());
-
-        const titleIconChanged = !!(diff.title || diff.icon);
-
-        // console.log(JSON.stringify(diff, null, ' '));
-        // console.log(JSON.stringify(fullEntity, null, ' '));
+        const denormalizeOptions = getMetadataChanges(fullEntity, currentDoc, template);
 
         if (template._id) {
-          await denormalizeRelated(
-            fullEntity,
-            template,
-            metadataPropsThatChanged,
-            titleIconChanged
-          );
+          await denormalizeRelated(fullEntity, template, denormalizeOptions);
         }
         return saveFunc(toSave);
       }
 
+      // TODO change so this is no needed. Should create a new object insted of modifying d.
       const currentDocLang = JSON.parse(JSON.stringify(d));
 
       if (entity.metadata) {
@@ -250,36 +194,10 @@ async function updateEntity(entity, _template, unrestricted = false) {
         d.generatedToc = entity.generatedToc;
       }
 
-      const diff = Object.keys(d.metadata || {}).reduce(
-        (theDiff, key) => {
-          const thisChanged =
-            (d.metadata || {})[key].every(
-              (elem, i) =>
-                JSON.stringify(elem.value) !==
-                JSON.stringify(currentDocLang?.metadata?.[key]?.[i]?.value)
-            ) || (currentDocLang.metadata || {})[key].length !== d.metadata[key].length;
-
-          if (thisChanged) {
-            theDiff.metadata = theDiff.metadata || {};
-            theDiff.metadata[key] = d.metadata[key];
-          }
-          return theDiff;
-        },
-        {
-          ...(currentDoc.title !== d.title ? { title: d.title } : {}),
-          ...(currentDoc.icon?._id !== d.icon?._id ? { icon: d.icon } : {}),
-        }
-      );
-
-      const diffPropNames = Object.keys(diff.metadata || {});
-      const metadataPropsThatChanged = template.properties
-        .filter(p => diffPropNames.includes(p.name))
-        .map(p => p._id.toString());
-
-      const titleIconChanged = !!(diff.title || diff.icon);
+      const denormalizeOptions = getMetadataChanges(d, currentDocLang, template);
 
       if (template._id) {
-        await denormalizeRelated(d, template, metadataPropsThatChanged, titleIconChanged);
+        await denormalizeRelated(d, template, denormalizeOptions);
       }
 
       return saveFunc(d);
@@ -853,17 +771,6 @@ export default {
       propertyTypes.multiselect,
       propertyTypes.relationship,
     ]);
-  },
-
-  /** Propagate the change of a thesaurus label to all entity metadata. */
-  async renameThesaurusInMetadata(value, newLabel, thesaurusId, language) {
-    const updates = await templates.denormalizationUpdates(thesaurusId.toString(), [], true);
-    await Promise.all(
-      updates.map(async update =>
-        updateDenormalization({ value, language, ...update }, { label: newLabel })
-      )
-    );
-    await reindexByMetadataValue(value, language, updates);
   },
 
   async createThumbnail(entity) {
