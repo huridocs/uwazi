@@ -503,12 +503,9 @@ $item-padding: 15px;
   padding: 0 $item-padding;
   font-size: $f-size-sm;
 
-  span {
-    display: inherit;
-  }
-
   div {
     white-space: nowrap;
+    margin-left: auto;
   }
 
   .btn,
@@ -525,6 +522,7 @@ $item-padding: 15px;
     overflow: hidden;
     margin-right: 8px;
     text-overflow: ellipsis;
+    max-width: 65%;
   }
 
   .property-help {
