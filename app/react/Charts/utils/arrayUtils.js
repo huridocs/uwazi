@@ -96,6 +96,8 @@ const formatDataForChart = (data, _property, formatOptions) => {
     categories = limitMaxCategories(sortedCategories, maxCategories, aggregateOthers);
   }
 
+  console.log('formatDataForChart categories: ', categories);
+
   return categories
     .map(item => {
       if (item.others && item.filtered.doc_count) {
