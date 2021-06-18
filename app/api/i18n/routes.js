@@ -38,8 +38,9 @@ export default app => {
         const { context } = req.body;
         const loader = new CSVLoader();
         const response = await loader.loadTranslations(req.file.path, context);
-        response.contexts = translations.prepareContexts(response.contexts);
-        req.sockets.emitToCurrentTenant('translationsChange', response);
+        response.forEach(translation => {
+          req.sockets.emitToCurrentTenant('translationsChange', translation);
+        });
         res.json(response);
       } catch (e) {
         next(e);

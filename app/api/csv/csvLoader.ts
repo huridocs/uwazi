@@ -138,7 +138,7 @@ export class CSVLoader extends EventEmitter {
       )
       .read();
 
-    return availableLanguages.reduce(async (prev, lang) => {
+    await availableLanguages.reduce(async (prev, lang) => {
       await prev;
       const trans = intermediateTranslation[lang.label];
       const [dbTranslations] = await translations.get({ locale: lang.language });
@@ -155,5 +155,7 @@ export class CSVLoader extends EventEmitter {
 
       return translations.save(dbTranslations);
     }, Promise.resolve());
+
+    return translations.get();
   }
 }
