@@ -8,6 +8,8 @@ import PDFJS from '../../PDFJS';
 import PDF from '../PDF';
 import PDFPage from '../PDFPage.js';
 
+const legacyCharacterMapUrl = "/legacy_character_maps/"
+
 describe('PDF', () => {
   let component;
   let instance;
@@ -40,7 +42,11 @@ describe('PDF', () => {
   describe('on instance', () => {
     it('should get the pdf with pdfjs', done => {
       render();
-      expect(PDFJS.getDocument).toHaveBeenCalledWith(props.file);
+      expect(PDFJS.getDocument).toHaveBeenCalledWith({
+        cMapPacked: true,
+        cMapUrl: legacyCharacterMapUrl,
+        url: props.file,
+      });
       setTimeout(() => {
         expect(instance.setState).toHaveBeenCalledWith({ pdf: pdfObject });
         done();
