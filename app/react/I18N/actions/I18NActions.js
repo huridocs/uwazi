@@ -55,11 +55,9 @@ export function importTranslations(context, file) {
       const fields = {
         context,
       };
-      await httpRequest('translations/import', fields, headers, file);
-      notifications.notify(
-        t(context, 'Translations imported. Reload the page to see changes', null, false),
-        'success'
-      )(dispatch);
+      const translations = await httpRequest('translations/import', fields, headers, file);
+      await dispatch(formActions.load('translationsForm', translations));
+      notifications.notify(t(context, 'Translations imported.', null, false), 'success')(dispatch);
     } catch (e) {
       notifications.notify(t(context, e.error, null, false), 'danger')(dispatch);
     }
