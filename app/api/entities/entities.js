@@ -167,40 +167,39 @@ async function updateEntity(entity, _template, unrestricted = false) {
         return saveFunc(toSave);
       }
 
-      // TODO change so this is no needed. Should create a new object insted of modifying d.
-      const currentDocLang = JSON.parse(JSON.stringify(d));
+      const toSave = { ...d };
 
-      if (entity.metadata) {
-        d.metadata = d.metadata || entity.metadata;
-        toSyncProperties.forEach(p => {
-          d.metadata[p] = entity.metadata[p] || [];
-        });
-        d.metadata = await denormalizeMetadata(d.metadata, d, template);
-      }
-
-      if (entity.suggestedMetadata) {
-        d.suggestedMetadata = d.suggestedMetadata || entity.suggestedMetadata;
-        toSyncProperties.forEach(p => {
-          d.suggestedMetadata[p] = entity.suggestedMetadata[p] || [];
-        });
-        d.suggestedMetadata = await denormalizeMetadata(d.suggestedMetadata, d, template);
-      }
+      await ['metadata', 'suggestedMetadata'].reduce(async (prev, metadataParent) => {
+        await prev;
+        if (entity[metadataParent]) {
+          // TODO should clone metadata too? Answer: looks like YES
+          toSave[metadataParent] = { ...toSave[metadataParent] } || entity[metadataParent];
+          toSyncProperties.forEach(p => {
+            toSave[metadataParent][p] = entity[metadataParent][p] || [];
+          });
+          toSave[metadataParent] = await denormalizeMetadata(
+            toSave[metadataParent],
+            toSave,
+            template
+          );
+        }
+      }, Promise.resolve());
 
       if (typeof entity.template !== 'undefined') {
-        d.template = entity.template;
+        toSave.template = entity.template;
       }
 
       if (typeof entity.generatedToc !== 'undefined') {
-        d.generatedToc = entity.generatedToc;
+        toSave.generatedToc = entity.generatedToc;
       }
 
-      const denormalizeOptions = getMetadataChanges(d, currentDocLang, template);
+      const denormalizeOptions = getMetadataChanges(toSave, d, template);
 
       if (template._id) {
-        await denormalizeRelated(d, template, denormalizeOptions);
+        await denormalizeRelated(toSave, template, denormalizeOptions);
       }
 
-      return saveFunc(d);
+      return saveFunc(toSave);
     })
   );
 }
