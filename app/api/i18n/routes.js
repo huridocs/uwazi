@@ -6,7 +6,9 @@ import { validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
 import pages from 'api/pages';
+import { CSVLoader } from 'api/csv';
 
+import { uploadMiddleware } from 'api/files';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
@@ -19,10 +21,37 @@ export default app => {
   });
 
   app.post(
+    '/api/translations/import',
+    needsAuthorization(),
+    uploadMiddleware(),
+    validation.validateRequest({
+      body: {
+        properties: {
+          context: { type: 'string' },
+        },
+        required: ['context'],
+      },
+    }),
+
+    async (req, res, next) => {
+      try {
+        const { context } = req.body;
+        const loader = new CSVLoader();
+        const response = await loader.loadTranslations(req.file.path, context);
+        response.forEach(translation => {
+          req.sockets.emitToCurrentTenant('translationsChange', translation);
+        });
+        res.json(response);
+      } catch (e) {
+        next(e);
+      }
+    }
+  );
+
+  app.post(
     '/api/translations',
 
     needsAuthorization(),
-
     validation.validateRequest(
       Joi.object()
         .keys({

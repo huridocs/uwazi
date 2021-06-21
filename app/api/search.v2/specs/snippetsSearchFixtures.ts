@@ -1,10 +1,12 @@
 import db, { testingDB, DBFixture } from 'api/utils/testing_db';
 
-export const fixturesSnippetsSearch: DBFixture = {
+const entity1enId = testingDB.id();
+
+const fixturesSnippetsSearch: DBFixture = {
   settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
   entities: [
     {
-      _id: testingDB.id(),
+      _id: entity1enId,
       sharedId: 'entity1SharedId',
       title: 'entity with a document',
       language: 'en',
@@ -80,3 +82,5 @@ export const fixturesSnippetsSearch: DBFixture = {
     },
   ],
 };
+
+export { fixturesSnippetsSearch, entity1enId };
