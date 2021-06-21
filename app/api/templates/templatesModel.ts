@@ -4,6 +4,7 @@ import { TemplateSchema } from '../../shared/types/templateType';
 
 const mongoSchema = new mongoose.Schema(
   {
+    name: String,
     color: { type: String, default: '' },
     properties: [new mongoose.Schema({ id: String, content: String }, { strict: false })],
     commonProperties: [new mongoose.Schema({ id: String }, { strict: false })],

@@ -1,6 +1,5 @@
-import { Field, actions as formActions } from 'react-redux-form';
+import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -10,6 +9,7 @@ import { Select } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import PropertyConfigOptions from './PropertyConfigOptions';
+import PropertyConfigOption from './PropertyConfigOption';
 import Tip from '../../Layout/Tip';
 
 export class FormConfigRelationship extends Component {
@@ -17,30 +17,18 @@ export class FormConfigRelationship extends Component {
     return { required: val => val && val.trim() !== '' };
   }
 
-  constructor(props) {
-    super(props);
-    this.state = { inherit: props.showInheritSelect };
-    this.onInheritChange = this.onInheritChange.bind(this);
-  }
-
-  onInheritChange() {
-    if (this.state.inherit) {
-      const { index } = this.props;
-      this.props.resetFormValue(`template.data.properties[${index}].inherit.property`);
-    }
-    this.setState({ inherit: !this.state.inherit });
-  }
-
   render() {
     const {
       index,
       type,
+      inheritPropertyError,
       labelError,
       relationTypeError,
       templates,
       relationTypes,
       templateId,
       showInheritOption,
+      showInheritSelect,
       templateProperties,
       inheritSelectPropertyType,
     } = this.props;
@@ -48,6 +36,7 @@ export class FormConfigRelationship extends Component {
     const options = templates.toJS().filter(template => template._id !== templateId);
 
     const labelClass = labelError ? 'form-group has-error' : 'form-group';
+
     return (
       <div>
         <div className={labelClass}>
@@ -84,33 +73,27 @@ export class FormConfigRelationship extends Component {
           />
         </div>
         {showInheritOption && (
-          <div>
-            <label className="property-label" htmlFor={`inherit${index}`}>
-              <input
-                id={`inherit${index}`}
-                type="checkbox"
-                checked={this.state.inherit}
-                onChange={this.onInheritChange}
-              />{' '}
-              <Translate>Inherit property</Translate>
-            </label>
+          <PropertyConfigOption
+            label="Inherit property"
+            model={`template.data.properties[${index}].inherit`}
+          >
             <Tip>
               This property will be inherited from the related entities and shown as metadata of
               this type of entities.
             </Tip>
-          </div>
+          </PropertyConfigOption>
         )}
-        {this.state.inherit && (
-          <div className="form-group">
+        {showInheritSelect && (
+          <div className={inheritPropertyError ? 'form-group has-error' : 'form-group'}>
             <Select
-              model={`template.data.properties[${index}].inherit.property`}
+              model={`template.data.properties[${index}].inheritProperty`}
               options={templateProperties}
               optionsLabel="label"
               optionsValue="_id"
             />
           </div>
         )}
-        {this.state.inherit && inheritSelectPropertyType === 'geolocation' && (
+        {showInheritSelect && inheritSelectPropertyType === 'geolocation' && (
           <div className="geolocation-grouping-alert">
             <Icon icon="info-circle" />
             <p>
@@ -127,6 +110,7 @@ export class FormConfigRelationship extends Component {
 FormConfigRelationship.defaultProps = {
   labelError: false,
   relationTypeError: false,
+  inheritPropertyError: false,
   showInheritOption: false,
   showInheritSelect: false,
   templateId: null,
@@ -141,11 +125,11 @@ FormConfigRelationship.propTypes = {
   type: PropTypes.string.isRequired,
   labelError: PropTypes.bool,
   relationTypeError: PropTypes.bool,
+  inheritPropertyError: PropTypes.bool,
   showInheritOption: PropTypes.bool,
   showInheritSelect: PropTypes.bool,
   templateId: PropTypes.string,
   inheritSelectPropertyType: PropTypes.string,
-  resetFormValue: PropTypes.func.isRequired,
 };
 
 const getTemplateProperties = createSelector(
@@ -162,7 +146,7 @@ const getTemplateProperties = createSelector(
 
 const getInheritSelectPropertyType = createSelector(
   getTemplateProperties,
-  (state, props) => state.template.data.properties[props.index].inherit?.property,
+  (state, props) => state.template.data.properties[props.index].inheritProperty,
   (templateProperties, inheritedPropertyId) => {
     const inheritedProperty = templateProperties.find(p => p._id === inheritedPropertyId);
     return inheritedProperty && inheritedProperty.type;
@@ -183,12 +167,17 @@ export function mapStateToProps(state, props) {
       template.formState.$form.errors[`properties.${props.index}.relationType.required`] &&
       template.formState.$form.submitFailed,
 
+    inheritPropertyError:
+      template.formState.$form.errors[`properties.${props.index}.inheritProperty.required`] &&
+      template.formState.$form.submitFailed,
+
     showInheritOption: Boolean(
       template.formState.properties[props.index].content && templateProperties.length
     ),
 
     showInheritSelect: Boolean(
-      template.formState.properties[props.index].inherit?.property?.value &&
+      template.formState.properties[props.index].inherit &&
+        template.formState.properties[props.index].inherit.value &&
         templateProperties.length
     ),
     inheritSelectPropertyType: getInheritSelectPropertyType(state, props),
@@ -199,13 +188,4 @@ export function mapStateToProps(state, props) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    {
-      resetFormValue: model => formActions.reset(model),
-    },
-    dispatch
-  );
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(FormConfigRelationship);
+export default connect(mapStateToProps)(FormConfigRelationship);

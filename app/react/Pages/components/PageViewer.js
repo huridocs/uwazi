@@ -17,6 +17,7 @@ class PageViewer extends Component {
     const { page, itemLists, datasets } = this.props;
     const lists = itemLists.toJS();
     const originalText = page.getIn(['metadata', 'content']) || '';
+    const scriptRendered = page.getIn(['scriptRendered']);
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
@@ -32,7 +33,7 @@ class PageViewer extends Component {
             <Footer />
           </div>
         </main>
-        <Script>{scriptCode}</Script>
+        <Script scriptRendered={scriptRendered}>{scriptCode}</Script>
       </div>
     );
   }

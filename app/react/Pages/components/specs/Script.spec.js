@@ -19,14 +19,22 @@ const newScript = {
 describe('PageCreator', () => {
   let component;
   let props;
+  let context;
 
   beforeEach(() => {
-    props = {};
+    props = { scriptRendered: false };
     document.body.innerHTML = '';
+    context = {
+      store: {
+        getState: () => ({}),
+        dispatch: jasmine.createSpy('dispatch'),
+        subscribe: jasmine.createSpy('subscribe'),
+      },
+    };
   });
 
   const render = () => {
-    component = shallow(<Script {...props} />);
+    component = shallow(<Script {...props} />, { context }).dive();
   };
 
   const testScriptTag = (amount, content = null, index = null) => {

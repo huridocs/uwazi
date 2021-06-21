@@ -265,10 +265,8 @@ export default {
           type: 'relationship',
           relationType: relationType1,
           content: template2,
-          inherit: {
-            property: template2Metadata1,
-            type: 'geolocation',
-          },
+          inherit: true,
+          inheritProperty: template2Metadata1,
         },
         {
           _id: db.id(),
@@ -276,10 +274,8 @@ export default {
           type: 'relationship',
           relationType: relationType1,
           content: template1,
-          inherit: {
-            property: template1Metadata1,
-            type: 'geolocation',
-          },
+          inherit: true,
+          inheritProperty: template1Metadata1,
         },
       ],
     },
@@ -292,10 +288,8 @@ export default {
           type: 'relationship',
           relationType: relationType1,
           content: template1,
-          inherit: {
-            property: template1Metadata2,
-            type: 'geolocation',
-          },
+          inherit: true,
+          inheritProperty: template1Metadata2,
         },
       ],
     },

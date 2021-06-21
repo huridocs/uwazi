@@ -9,7 +9,7 @@ import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
 import { propertyTypes } from 'shared/propertyTypes';
-
+import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 import templates from '../templates';
 
 import fixtures, {
@@ -19,8 +19,8 @@ import fixtures, {
   swapTemplate,
   templateToBeInherited,
   propertyToBeInherited,
-  relatedTo,
   thesauriId1,
+  thesauriId2,
 } from './fixtures.js';
 
 describe('templates', () => {
@@ -126,8 +126,8 @@ describe('templates', () => {
           name: 'changed',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
-            { id: '1', type: 'select', content: thesauriId1.toString(), label: 'select3' },
-            { id: '2', type: 'multiselect', content: thesauriId1.toString(), label: 'multiselect' },
+            { id: '1', type: 'select', content: thesauriId2.toString(), label: 'select3' },
+            { id: '2', type: 'multiselect', content: thesauriId2.toString(), label: 'multiselect' },
           ],
         };
 
@@ -258,12 +258,10 @@ describe('templates', () => {
         templates
           .save(toSave, 'en')
           .then(() => {
-            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(
-              toSave,
-              template,
-              'en',
-              true
-            );
+            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en', {
+              reindex: true,
+              generatedIdAdded: false,
+            });
             done();
           })
           .catch(catchErrors(done));
@@ -348,6 +346,40 @@ describe('templates', () => {
           .catch(done.fail);
       });
     });
+
+    describe('generatedId', () => {
+      const populateGeneratedIdByTemplateSpy = jest
+        .spyOn(generatedIdPropertyAutoFiller, 'populateGeneratedIdByTemplate')
+        .mockImplementation(() => Promise.resolve());
+
+      afterEach(() => {
+        populateGeneratedIdByTemplateSpy.mockReset();
+      });
+
+      describe('when there is a new property with generatedId type', () => {
+        it('should call populateGeneratedIdBTemplate to auto-fill values', async () => {
+          const templateToUpdate = {
+            _id: templateToBeEditedId,
+            name: 'template to be edited',
+            commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+            properties: [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
+          };
+          await templates.save(templateToUpdate, 'en');
+
+          expect(populateGeneratedIdByTemplateSpy).toHaveBeenCalledWith(
+            templateToBeEditedId,
+            templateToUpdate.properties
+          );
+        });
+      });
+      describe('when there are no new properties with generatedId type', () => {
+        it('should not call populateGeneratedIdBTemplate to auto-fill values', async () => {
+          const [storedTemplate] = await templates.get({ _id: templateWithContents });
+          await templates.save(storedTemplate, 'en');
+          expect(populateGeneratedIdByTemplateSpy).not.toHaveBeenCalled();
+        });
+      });
+    });
   });
 
   describe('delete', () => {
@@ -414,7 +446,7 @@ describe('templates', () => {
   describe('countByThesauri()', () => {
     it('should return number of templates using a thesauri', done => {
       templates
-        .countByThesauri('thesauri1')
+        .countByThesauri(thesauriId1.toString())
         .then(result => {
           expect(result).toBe(3);
           done();
@@ -452,46 +484,6 @@ describe('templates', () => {
       } catch (err) {
         expect(err.message).toContain('Invalid ID');
       }
-    });
-  });
-
-  describe('inherit', () => {
-    let savedTemplate;
-    beforeEach(async () => {
-      savedTemplate = await templates.save({
-        name: 'template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [
-          {
-            type: propertyTypes.relationship,
-            content: templateToBeInherited.toString(),
-            relationType: relatedTo.toString(),
-            name: 'new inherit',
-            label: 'New Inherit',
-            inherit: {
-              property: propertyToBeInherited.toString(),
-              type: 'this should not be saved',
-            },
-          },
-        ],
-      });
-    });
-
-    it('should denormalize the inherited property type', async () => {
-      expect(savedTemplate.properties).toEqual([
-        expect.objectContaining({
-          inherit: {
-            property: propertyToBeInherited.toString(),
-            type: 'text',
-          },
-        }),
-      ]);
-    });
-
-    it('should remove denormalized type when removing inheritance', async () => {
-      savedTemplate.properties[0].inherit.property = '';
-      const resavedTemplate = await templates.save(savedTemplate, 'en', false);
-      expect(resavedTemplate.properties[0].inherit).not.toBeDefined();
     });
   });
 

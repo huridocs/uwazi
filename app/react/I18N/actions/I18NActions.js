@@ -3,6 +3,7 @@ import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import { httpRequest } from 'shared/superagent';
 import t from '../t';
 import I18NApi from '../I18NApi';
 
@@ -41,6 +42,25 @@ export function saveTranslations(translations) {
         notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
       }
     );
+  };
+}
+
+export function importTranslations(context, file) {
+  return async dispatch => {
+    try {
+      const headers = {
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      };
+      const fields = {
+        context,
+      };
+      const translations = await httpRequest('translations/import', fields, headers, file);
+      await dispatch(formActions.load('translationsForm', translations));
+      notifications.notify(t(context, 'Translations imported.', null, false), 'success')(dispatch);
+    } catch (e) {
+      notifications.notify(t(context, e.error, null, false), 'danger')(dispatch);
+    }
   };
 }
 
