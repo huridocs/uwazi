@@ -1,13 +1,12 @@
-import superagent from 'superagent';
 import { actions as formActions } from 'react-redux-form';
 import { t } from 'app/I18N';
 import ID from 'shared/uniqueID';
 import * as types from 'app/Thesauri/actions/actionTypes';
-import { APIURL } from 'app/config';
 import api from 'app/Thesauri/ThesauriAPI';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { advancedSort } from 'app/utils/advancedSort';
 import { RequestParams } from 'app/utils/RequestParams';
+import { httpRequest } from 'shared/superagent';
 
 export function saveThesaurus(thesaurus) {
   return dispatch =>
@@ -19,27 +18,24 @@ export function saveThesaurus(thesaurus) {
 }
 
 export function importThesaurus(thesaurus, file) {
-  return dispatch =>
-    new Promise(resolve =>
-      superagent
-        .post(`${APIURL}thesauris`)
-        .set('Accept', 'application/json')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .field('thesauri', JSON.stringify(thesaurus))
-        .attach('file', file, file.name)
-        .on('response', response => {
-          const data = JSON.parse(response.text);
-          if (response.status === 200) {
-            dispatch({ type: types.THESAURI_SAVED });
-            notifications.notify(t('System', 'Data imported', null, false), 'success')(dispatch);
-            dispatch(formActions.change('thesauri.data', data));
-          } else {
-            notifications.notify(t('System', data.error, null, false), 'danger')(dispatch);
-          }
-          resolve();
-        })
-        .end()
-    );
+  return async dispatch => {
+    try {
+      const headers = {
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      };
+      const fields = {
+        thesauri: JSON.stringify(thesaurus),
+      };
+
+      const data = await httpRequest('thesauris', fields, headers, file);
+      dispatch({ type: types.THESAURI_SAVED });
+      notifications.notify(t('System', 'Data imported', null, false), 'success')(dispatch);
+      dispatch(formActions.change('thesauri.data', data));
+    } catch (e) {
+      notifications.notify(t('System', e.error, null, false), 'danger')(dispatch);
+    }
+  };
 }
 
 export function sortValues() {

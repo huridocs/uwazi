@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { Field, Form } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { t, actions } from 'app/I18N';
+import { t, actions, Translate } from 'app/I18N';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
+import { SelectFileButton } from 'app/App/SelectFileButton';
 
 export class EditTranslationForm extends Component {
   static getDefaultTranslation(translations, languages) {
@@ -22,6 +23,7 @@ export class EditTranslationForm extends Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
+    this.importTranslationsFile = this.importTranslationsFile.bind(this);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -30,6 +32,10 @@ export class EditTranslationForm extends Component {
 
   componentWillUnmount() {
     this.props.resetForm();
+  }
+
+  importTranslationsFile(file) {
+    this.props.importTranslations(this.props.context, file);
   }
 
   prepareTranslations() {
@@ -74,6 +80,20 @@ export class EditTranslationForm extends Component {
         translations[0].contexts.find(ctx => ctx.id === contextId) || defaultTranslationContext;
     }
 
+    const importButton =
+      contextId === 'System' ? (
+        <SelectFileButton onFileImported={this.importTranslationsFile}>
+          <button type="button" className="btn btn-primary import-template">
+            <Icon icon="upload" />
+            <span className="btn-label">
+              <Translate>Import</Translate>
+            </span>
+          </button>
+        </SelectFileButton>
+      ) : (
+        false
+      );
+
     const contextKeys = Object.keys(defaultTranslationContext.values);
 
     const contextName = defaultTranslationContext.label;
@@ -114,6 +134,7 @@ export class EditTranslationForm extends Component {
           </div>
           <div className="settings-footer">
             <BackButton to="/settings/translations" />
+            {importButton}
             <button type="submit" className="btn btn-success save-template">
               <Icon icon="save" />
               <span className="btn-label">{t('System', 'Save')}</span>
@@ -130,6 +151,7 @@ EditTranslationForm.propTypes = {
   translationsForm: PropTypes.array,
   settings: PropTypes.object,
   saveTranslations: PropTypes.func,
+  importTranslations: PropTypes.func.isRequired,
   resetForm: PropTypes.func,
   formState: PropTypes.object,
 };
@@ -144,7 +166,11 @@ export function mapStateToProps({ translationsForm, translationsFormState, setti
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    { saveTranslations: actions.saveTranslations, resetForm: actions.resetForm },
+    {
+      saveTranslations: actions.saveTranslations,
+      resetForm: actions.resetForm,
+      importTranslations: actions.importTranslations,
+    },
     dispatch
   );
 }

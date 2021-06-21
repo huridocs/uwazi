@@ -1,11 +1,12 @@
+/* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
 
-import { CSVLoader } from 'api/csv';
-import fixtures, { template1Id } from './fixtures';
+import { CSVLoader } from '../csvLoader';
+import fixtures, { template1Id } from './csvLoaderFixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
 
@@ -29,6 +30,83 @@ describe('csvLoader', () => {
     });
   });
 
+  describe('load translations', () => {
+    let csv;
+    beforeEach(async () => {
+      await db.clearAllAndLoad(fixtures);
+
+      const nonExistent = 'Russian';
+
+      csv = `Key       , English, Spanish, French  , ${nonExistent}  ,
+                   original 1, value 1, valor 1, valeur 1, 1               ,
+                   original 2, value 2, valor 2, valeur 2, 2               ,
+                   original 3, value 3, valor 3, valeur 3, 3               ,`;
+    });
+
+    it('should set all translations from csv', async () => {
+      await loader.loadTranslations(stream(csv), 'System');
+      const [english, spanish, french] = await translations.get();
+      expect(english.contexts[0].values).toEqual({
+        'original 1': 'value 1',
+        'original 2': 'value 2',
+        'original 3': 'value 3',
+      });
+      expect(spanish.contexts[0].values).toEqual({
+        'original 1': 'valor 1',
+        'original 2': 'valor 2',
+        'original 3': 'valor 3',
+      });
+      expect(french.contexts[0].values).toEqual({
+        'original 1': 'valeur 1',
+        'original 2': 'valeur 2',
+        'original 3': 'valeur 3',
+      });
+    });
+
+    it('should not update a language that exists in the system but not in csv', async () => {
+      await translations.addLanguage('aa');
+      await loader.loadTranslations(stream(csv), 'System');
+      const [afar] = await translations.get({ locale: 'aa' });
+      expect(afar.contexts[0].values).toEqual({
+        'original 1': 'original 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+      });
+    });
+
+    it('should not remove translations that are not in the csv', async () => {
+      const localCsv = `Key, English,
+                        original 1, value 1`;
+
+      await loader.loadTranslations(stream(localCsv), 'System');
+
+      const [english] = await translations.get();
+      expect(english.contexts[0].values).toEqual({
+        'original 1': 'value 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+      });
+    });
+    it('should not import empty language translations', async () => {
+      const localCsv = `Key, English, Spanish
+                        original 1,, sp value 1`;
+
+      await loader.loadTranslations(stream(localCsv), 'System');
+
+      const [english, spanish] = await translations.get();
+      expect(english.contexts[0].values).toEqual({
+        'original 1': 'original 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+      });
+      expect(spanish.contexts[0].values).toEqual({
+        'original 1': 'sp value 1',
+        'original 2': 'original 2',
+        'original 3': 'original 3',
+      });
+    });
+  });
+
   describe('load', () => {
     let imported;
     const events = [];
@@ -44,12 +122,20 @@ describe('csvLoader', () => {
         throw loader.errors()[Object.keys(loader.errors())[0]];
       }
 
-      imported = await entities.get();
+      imported = await entities.get({ language: 'en' });
     });
 
     it('should load title', () => {
       const textValues = imported.map(i => i.title);
       expect(textValues).toEqual(['title1', 'title2', 'title3']);
+    });
+
+    it('should generate an id when the template has a property with generatedid type', () => {
+      expect(imported[0].metadata).toEqual(
+        expect.objectContaining({
+          auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
+        })
+      );
     });
 
     it('should emit event after each entity has been imported', () => {
@@ -66,14 +152,6 @@ describe('csvLoader', () => {
         'geolocation_geolocation',
         'auto_id',
       ]);
-    });
-
-    it('should generate an id when the template has a property with generatedid type', () => {
-      expect(imported[0].metadata).toEqual(
-        expect.objectContaining({
-          auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
-        })
-      );
     });
 
     it('should ignore properties not configured in the template', () => {
