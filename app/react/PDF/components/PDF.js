@@ -7,6 +7,9 @@ import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
 import PDFPage from './PDFPage.js';
 
+const cMapUrl = '/legacy_character_maps/';
+const cMapPacked = true;
+
 class PDF extends Component {
   static getDerivedStateFromProps(props, state) {
     if (state.filename !== null && state.filename !== props.filename) {
@@ -89,7 +92,11 @@ class PDF extends Component {
 
   loadDocument(file) {
     if (isClient) {
-      PDFJS.getDocument(file).promise.then(pdf => {
+      PDFJS.getDocument({
+        url: file,
+        cMapUrl,
+        cMapPacked,
+      }).promise.then(pdf => {
         if (this._isMounted) {
           this.setState({ pdf });
         }
