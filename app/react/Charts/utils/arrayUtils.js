@@ -96,9 +96,7 @@ const formatDataForChart = (data, _property, formatOptions) => {
     categories = limitMaxCategories(sortedCategories, maxCategories, aggregateOthers);
   }
 
-  console.log('formatDataForChart categories: ', categories);
-
-  return categories
+  const formatedValues = categories
     .map(item => {
       if (item.others && item.filtered.doc_count) {
         return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
@@ -108,6 +106,14 @@ const formatDataForChart = (data, _property, formatOptions) => {
         return null;
       }
 
+      if (item.values) {
+        return item.values.map(value => ({
+          id: value.key,
+          label: labelsMap[value.label] || t(formatOptions.context, value.label, null, false),
+          results: value.doc_count,
+        }));
+      }
+
       return {
         id: item.key,
         label: labelsMap[item.label] || t(formatOptions.context, item.label, null, false),
@@ -115,6 +121,8 @@ const formatDataForChart = (data, _property, formatOptions) => {
       };
     })
     .filter(i => !!i);
+
+  return [].concat(...formatedValues);
 };
 
 export default {

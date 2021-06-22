@@ -77,8 +77,6 @@ class BarChartComponent extends Component {
         labelsMap: shortLabels,
       });
 
-      console.log('BarChart formattedData: ', formattedData);
-
       output = (
         <ResponsiveContainer height={320}>
           <BarChart height={300} data={formattedData} layout={layout}>
