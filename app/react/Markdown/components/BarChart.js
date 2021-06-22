@@ -57,6 +57,7 @@ class BarChartComponent extends Component {
       data,
       classname,
       context,
+      deaggregate,
       colors,
     } = this.props;
     let output = <Loader />;
@@ -70,6 +71,7 @@ class BarChartComponent extends Component {
       const formattedData = arrayUtils.formatDataForChart(data, property, {
         excludeZero: Boolean(excludeZero),
         context,
+        deaggregate: Boolean(deaggregate),
         maxCategories,
         aggregateOthers,
         pluckCategories,
@@ -106,6 +108,7 @@ class BarChartComponent extends Component {
 
 BarChartComponent.defaultProps = {
   context: 'System',
+  deaggregate: false,
   excludeZero: false,
   layout: 'horizontal',
   maxCategories: '0',
@@ -121,6 +124,7 @@ BarChartComponent.defaultProps = {
 BarChartComponent.propTypes = {
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
+  deaggregate: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   excludeZero: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   classname: PropTypes.string,
   layout: PropTypes.string,
