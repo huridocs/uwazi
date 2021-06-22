@@ -106,7 +106,7 @@ const formatDataForChart = (data, _property, formatOptions) => {
         return null;
       }
 
-      if (item.values) {
+      if (item.values && formatOptions.deaggregate) {
         return item.values.map(value => ({
           id: value.key,
           label: labelsMap[value.label] || t(formatOptions.context, value.label, null, false),
