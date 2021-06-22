@@ -4,7 +4,7 @@ import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { searchRoutes } from 'api/search.v2/routes';
 import { testingDB } from 'api/utils/testing_db';
-import { fixturesSnippetsSearch } from 'api/search.v2/specs/snippetsSearchFixtures';
+import { fixturesSnippetsSearch, entity1enId } from 'api/search.v2/specs/snippetsSearchFixtures';
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -87,6 +87,33 @@ describe('searchSnippets', () => {
           fullText: [{ page: 2, text: expect.stringContaining('<b>searched:term</b>') }],
         },
       }),
+    ];
+    expect(body.data).toEqual(expected);
+  });
+
+  it('should return snippets in conjunction with other fields asked', async () => {
+    const { body } = await request(app)
+      .get('/api/v2/entities')
+      .query(
+        qs.stringify({
+          filter: { sharedId: 'entity1SharedId', searchString: 'fullText:(searched)' },
+          fields: ['title', 'template', 'snippets'],
+        })
+      )
+      .expect(200);
+    const expected = [
+      {
+        _id: entity1enId.toString(),
+        title: 'entity with a document',
+        snippets: {
+          count: 2,
+          metadata: [],
+          fullText: [
+            { page: 2, text: expect.stringContaining('<b>searched</b>') },
+            { page: 4, text: expect.stringContaining('<b>searched</b>') },
+          ],
+        },
+      },
     ];
     expect(body.data).toEqual(expected);
   });

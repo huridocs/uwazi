@@ -14,6 +14,7 @@ export function immediateSearch(dispatch, searchString, connectionType) {
   const requestParams = new RequestParams(
     qs.stringify({
       filter: { searchString: searchString ? `title:(${searchString})` : undefined },
+      fields: ['title', 'template', 'sharedId', 'documents._id'],
     })
   );
 

@@ -172,6 +172,7 @@ const routes = (
     <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
     <Route path="entity/:sharedId" component={ViewerRoute} onEnter={onEnter} />
     <Route path="page/:sharedId" component={PageView} onEnter={onEnter} />
+    <Route path="page/:sharedId/:slug" component={PageView} onEnter={onEnter} />
     <Route
       path="semanticsearch/:searchId"
       component={SemanticSearchResultsView}
