@@ -13,13 +13,6 @@ import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyA
 import model from './templatesModel';
 import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
 
-export interface DenormalizationUpdate {
-  propertyName: string;
-  template?: string;
-  inheritProperty?: string;
-  transitive?: boolean;
-}
-
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
   await Promise.all(

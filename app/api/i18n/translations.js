@@ -1,6 +1,5 @@
 import thesauri from 'api/thesauri/thesauri';
 import settings from 'api/settings/settings';
-
 import model from './translationsModel.js';
 
 function prepareContexts(contexts) {

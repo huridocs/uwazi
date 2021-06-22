@@ -4,11 +4,7 @@ import { preloadOptionsLimit } from 'shared/config';
 import templates from 'api/templates/templates';
 import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
-import {
-  updateDenormalization,
-  reindexByMetadataValue,
-  denormalizationUpdates,
-} from 'api/entities/denormalize';
+import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
 
@@ -70,18 +66,6 @@ const updateTranslation = (current, thesauri) => {
   );
 };
 
-async function renameThesaurusInMetadata(value, newLabel, thesaurusId, language) {
-  const updates = await denormalizationUpdates(thesaurusId.toString(), {
-    titleIconChanged: true,
-  });
-  await Promise.all(
-    updates.map(async entry =>
-      updateDenormalization({ value, language, ...entry }, { label: newLabel })
-    )
-  );
-  await reindexByMetadataValue(value, language, updates);
-}
-
 async function updateOptionsInEntities(current, thesauri) {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
@@ -96,7 +80,7 @@ async function updateOptionsInEntities(current, thesauri) {
   const defaultLanguage = (await settings.get()).languages.find(lang => lang.default).key;
   await Promise.all(
     Object.entries(updatedIds).map(([updatedId, newLabel]) =>
-      renameThesaurusInMetadata(updatedId, newLabel, thesauri._id, defaultLanguage)
+      denormalizeThesauriLabelInMetadata(updatedId, newLabel, thesauri._id, defaultLanguage)
     )
   );
 }
@@ -190,7 +174,9 @@ const thesauri = {
       .then(() => ({ ok: true }));
   },
 
-  renameThesaurusInMetadata,
+  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
+    return denormalizeThesauriLabelInMetadata(valueId, newLabel, thesaurusId, language);
+  },
 };
 
 export default thesauri;

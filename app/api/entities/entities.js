@@ -21,7 +21,7 @@ import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
-import { denormalizeRelated, getMetadataChanges } from './denormalize';
+import { denormalizeRelated } from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -159,10 +159,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
         const fullEntity = { ...currentDoc, ...toSave };
 
-        const denormalizeOptions = getMetadataChanges(fullEntity, currentDoc, template);
-
         if (template._id) {
-          await denormalizeRelated(fullEntity, template, denormalizeOptions);
+          await denormalizeRelated(fullEntity, template, currentDoc);
         }
         return saveFunc(toSave);
       }
@@ -192,10 +190,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
         toSave.generatedToc = entity.generatedToc;
       }
 
-      const denormalizeOptions = getMetadataChanges(toSave, d, template);
-
       if (template._id) {
-        await denormalizeRelated(toSave, template, denormalizeOptions);
+        await denormalizeRelated(toSave, template, d);
       }
 
       return saveFunc(toSave);
