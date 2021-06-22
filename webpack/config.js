@@ -107,6 +107,7 @@ module.exports = production => {
         patterns: [
           { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
           { from: 'node_modules/flag-icon-css/flags/4x3/', to: 'flags/4x3/' },
+          { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
         ],
       }),
     ],

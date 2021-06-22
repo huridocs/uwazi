@@ -41,14 +41,24 @@ describe('entities get searchString', () => {
         .expect(200);
 
       expect(body.data).toEqual([
-        expect.objectContaining({
+        {
           _id: entity1en.toString(),
           title: 'title to search',
           sharedId: 'entity1SharedId',
-          language: 'en',
-        }),
-        expect.objectContaining({ _id: entity2en.toString(), title: 'title does not match' }),
-        expect.objectContaining({ _id: entity3en.toString(), title: 'title to search 2' }),
+          template: 'template1',
+        },
+        {
+          _id: entity2en.toString(),
+          title: 'title does not match',
+          sharedId: 'entity2SharedId',
+          template: 'template1',
+        },
+        {
+          _id: entity3en.toString(),
+          sharedId: 'entity3SharedId',
+          title: 'title to search 2',
+          template: 'template1',
+        },
       ]);
 
       expect(body.links.self).toBe('/api/v2/entities');
@@ -58,6 +68,7 @@ describe('entities get searchString', () => {
       const { body } = await request(app)
         .get('/api/v2/entities')
         .set('content-language', 'es')
+        .query({ fields: ['title', 'sharedId', 'language'] })
         .expect(200);
 
       expect(body.data).toEqual([
@@ -119,6 +130,31 @@ describe('entities get searchString', () => {
         expect.objectContaining({ _id: entity2en.toString() }),
       ]);
     });
+
+    it('should return only the requested fields', async () => {
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query({ fields: ['sharedId', 'language'] });
+      expect(body.data).toEqual([
+        {
+          _id: entity1en.toString(),
+          sharedId: 'entity1SharedId',
+          language: 'en',
+        },
+        { _id: entity2en.toString(), sharedId: 'entity2SharedId', language: 'en' },
+        { _id: entity3en.toString(), sharedId: 'entity3SharedId', language: 'en' },
+      ]);
+    });
+
+    it.each([3, null, ''])(
+      'should throw an error is a field is not a string',
+      async invalidField => {
+        await request(app)
+          .get('/api/v2/entities')
+          .query({ fields: ['sharedId', 'language', invalidField] })
+          .expect(400);
+      }
+    );
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {

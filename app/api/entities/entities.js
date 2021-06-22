@@ -17,7 +17,7 @@ import translate, { getContext } from 'shared/translate';
 import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { validateEntity } from 'shared/types/entitySchema';
+import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
@@ -347,6 +347,16 @@ const withDocuments = (entities, documentsFullText, withPdfInfo) =>
     })
   );
 
+const reindexEntitiesByTemplate = async (template, options) => {
+  const templateHasRelationShipProperty = template.properties?.find(
+    p => p.type === propertyTypes.relationship
+  );
+  if (options.reindex && (options.generatedIdAdded || !templateHasRelationShipProperty)) {
+    return search.indexEntities({ template: template._id });
+  }
+  return Promise.resolve();
+};
+
 export default {
   denormalizeMetadata,
   sanitize,
@@ -595,7 +605,12 @@ export default {
   },
 
   /** Handle property deletion and renames. */
-  async updateMetadataProperties(template, currentTemplate, language, reindex = true) {
+  async updateMetadataProperties(
+    template,
+    currentTemplate,
+    language,
+    options = { reindex: true, generatedIdAdded: false }
+  ) {
     const actions = { $rename: {}, $unset: {} };
     template.properties = await generateNamesAndIds(template.properties);
     template.properties.forEach(property => {
@@ -623,16 +638,12 @@ export default {
     if (actions.$unset || actions.$rename) {
       await model.updateMany({ template: template._id }, actions);
     }
-
-    if (!template.properties.find(p => p.type === propertyTypes.relationship) && reindex) {
-      return search.indexEntities({ template: template._id });
-    }
-
+    await reindexEntitiesByTemplate(template, options);
     return this.bulkUpdateMetadataFromRelationships(
       { template: template._id, language },
       language,
       200,
-      reindex
+      options.reindex
     );
   },
 

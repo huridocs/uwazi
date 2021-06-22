@@ -31,7 +31,7 @@ export const customFavIcon = (
 );
 
 export const publicSharing = (
-  <>Check to make this instance private (only logged users access the data)</>
+  <>Check to make this instance private (only logged-in users can access the data)</>
 );
 
 export const cookiePolicy = (

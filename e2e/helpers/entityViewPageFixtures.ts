@@ -7,6 +7,8 @@ export const contents = `<h1>My entity view</h1>
   </li>
 </Repeat>
 
+<p id="entity-sharedId"></p>
+
 <p className="raw-creation-date"><Value path="entityRaw.creationDate" /></p>;
 
 <h4 className="envio-title"><Value path="template.properties.4.label" /></p></h4>
@@ -16,4 +18,10 @@ export const contents = `<h1>My entity view</h1>
 <p className="descripcion-content"><Value path="entity.metadata.resumen.value" /></p>;
 
 <h4 className="descriptores-title"><Value path="entity.metadata.descriptores.label" /></p></h4>
-<p className="descriptores-content"><Value path="entity.metadata.descriptores.value.0.value" /></p>`;
+<p className="descriptores-content"><Value path="entity.metadata.descriptores.value.0.value" /></p>
+
+<p id="entity-datasets-value"><p>`;
+
+export const script = `var currentEntitySharedId = window.store.getState().page.datasets.getIn(['entity', 'sharedId']);
+document.getElementById('entity-sharedId').innerHTML = currentEntitySharedId;
+document.getElementById('entity-datasets-value').innerHTML = datasets.entity.documentType;`;

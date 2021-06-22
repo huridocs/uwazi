@@ -91,7 +91,7 @@ export default {
     translationInputEs:
       '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > ul > li:nth-child(3) > div:nth-child(3) > div > div > input',
     translationsSaveButton:
-      '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
+      '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button[type="submit"]',
     privateInstance: '#collectionSettings > div:nth-child(8) > div > label',
     templatePropertiesList:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
@@ -349,7 +349,7 @@ export default {
       firstSighting:
         '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > input',
       whoIsHe:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content-visible > textarea',
+        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div.markdownEditor > div > div.tab-content-visible > textarea',
     },
     viewer: {
       title:

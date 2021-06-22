@@ -6,6 +6,7 @@ import { notificationActions } from 'app/Notifications';
 import api from 'app/Templates/TemplatesAPI';
 import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
+import entitiesApi from 'app/Entities/EntitiesAPI';
 
 export function resetTemplate() {
   return dispatch => {
@@ -125,4 +126,8 @@ export function updateValue(model, value) {
   return dispatch => {
     dispatch(formActions.change(`template.data${model}`, value));
   };
+}
+
+export function countByTemplate(template) {
+  return entitiesApi.countByTemplate(new RequestParams({ templateId: template._id }));
 }

@@ -9,6 +9,7 @@ const relatedTo = db.id();
 const templateToBeInherited = db.id();
 const propertyToBeInherited = db.id();
 const thesauriId1 = db.id();
+const thesauriId2 = db.id();
 export default {
   templates: [
     {
@@ -34,7 +35,12 @@ export default {
       _id: db.id(),
       name: 'thesauri template',
       properties: [
-        { type: propertyTypes.select, content: 'thesauri1', label: 'select', name: 'select' },
+        {
+          type: propertyTypes.select,
+          content: thesauriId1.toString(),
+          label: 'select',
+          name: 'select',
+        },
         { type: propertyTypes.relationship, content: templateToBeDeleted, label: 'select2' },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
@@ -43,7 +49,12 @@ export default {
       _id: db.id(),
       name: 'thesauri template 2',
       properties: [
-        { type: propertyTypes.select, content: 'thesauri1', label: 'select2', name: 'select2' },
+        {
+          type: propertyTypes.select,
+          content: thesauriId1.toString(),
+          label: 'select2',
+          name: 'select2',
+        },
         { type: propertyTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
@@ -71,16 +82,23 @@ export default {
         {
           id: '1',
           type: propertyTypes.select,
-          content: 'thesauri1',
+          content: thesauriId1.toString(),
           label: 'select3',
           name: 'select3',
         },
         {
           id: '2',
           type: propertyTypes.multiselect,
-          content: 'thesauri2',
+          content: thesauriId1.toString(),
           label: 'select4',
           name: 'select4',
+        },
+        {
+          _id: db.id(),
+          id: '95fc3307-7078-41a5-95b5-9c535d629c54',
+          type: propertyTypes.generatedid,
+          label: 'Generated Id',
+          name: 'generated_id',
         },
       ],
     },
@@ -125,7 +143,10 @@ export default {
       languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
-  dictionaries: [{ _id: thesauriId1, name: 'options' }],
+  dictionaries: [
+    { _id: thesauriId1, name: 'options' },
+    { _id: thesauriId2, name: 'options' },
+  ],
 };
 
 export {
@@ -136,4 +157,5 @@ export {
   templateToBeInherited,
   propertyToBeInherited,
   thesauriId1,
+  thesauriId2,
 };

@@ -572,6 +572,7 @@ describe('entities', () => {
         })
         .catch(catchErrors(done));
     });
+
     it('should sanitize daterange, removing non valid dates', done => {
       const doc1 = {
         _id: batmanFinishesId,

@@ -17,6 +17,6 @@ export const SearchQuerySchema = {
         published: { type: 'boolean' },
       },
     },
-    fields: { type: 'array', items: { type: 'string' } },
+    fields: { type: 'array', items: { type: 'string', minlength: 1 } },
   },
 };
