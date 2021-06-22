@@ -172,8 +172,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
       await ['metadata', 'suggestedMetadata'].reduce(async (prev, metadataParent) => {
         await prev;
         if (entity[metadataParent]) {
-          // TODO should clone metadata too? Answer: looks like YES
-          toSave[metadataParent] = { ...toSave[metadataParent] } || entity[metadataParent];
+          toSave[metadataParent] = { ...(toSave[metadataParent] || entity[metadataParent]) };
           toSyncProperties.forEach(p => {
             toSave[metadataParent][p] = entity[metadataParent][p] || [];
           });
