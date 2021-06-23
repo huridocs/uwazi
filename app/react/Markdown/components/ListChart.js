@@ -10,7 +10,6 @@ import { arrayUtils } from 'app/Charts';
 import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';
 
-// eslint-disable-next-line max-statements
 export const ListChartComponent = props => {
   const { excludeZero, property, data, classname, context, scatter, colors } = props;
   const sliceColors = colors.split(',');
