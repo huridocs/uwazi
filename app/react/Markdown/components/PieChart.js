@@ -19,6 +19,7 @@ export const PieChartComponent = props => {
     data,
     classname,
     context,
+    scatter,
     colors,
     maxCategories,
     pluckCategories,
@@ -31,6 +32,7 @@ export const PieChartComponent = props => {
     const formattedData = arrayUtils.sortValues(
       arrayUtils.formatDataForChart(data, property, {
         context,
+        scatter,
         excludeZero: true,
         maxCategories,
         aggregateOthers,
@@ -67,6 +69,7 @@ export const PieChartComponent = props => {
 
 PieChartComponent.defaultProps = {
   context: 'System',
+  scatter: false,
   innerRadius: '0',
   outerRadius: '105',
   classname: '',
@@ -85,6 +88,7 @@ PieChartComponent.propTypes = {
   aggregateOthers: PropTypes.string,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
+  scatter: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   classname: PropTypes.string,
   colors: PropTypes.string,
   showLabel: PropTypes.string,
