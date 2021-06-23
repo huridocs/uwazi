@@ -11,6 +11,8 @@ const titles = {
   relationConflict:
     'Relationship properties with the same label but different relationship types are not allowed.',
   typeConflict: 'Properties with the same label but incompatible types are not allowed.',
+  inheritConflict:
+    'Properties with the same label but incompatible inherited types are not allowed.',
 };
 
 export interface TemplateProperty {
@@ -21,6 +23,8 @@ export interface TemplateProperty {
   relationConflict: boolean;
   contentConflict: boolean;
   type: PropertySchema['type'];
+  inheritConflict: boolean;
+  inheritType: string | undefined;
 }
 
 export interface SimilarPropertiesProps {
@@ -32,8 +36,14 @@ export class SimilarProperty extends Component<SimilarPropertiesProps> {
     const typeIcon = this.props.templateProperty.type as keyof typeof Icons;
     const typeToShow =
       this.props.templateProperty.type[0].toUpperCase() + this.props.templateProperty.type.slice(1);
+    const inheritTypeToShow = this.props.templateProperty.inheritType
+      ? this.props.templateProperty.inheritType[0].toUpperCase() +
+        this.props.templateProperty.inheritType.slice(1)
+      : '';
     const invalidType =
-      this.props.templateProperty.typeConflict || this.props.templateProperty.relationConflict;
+      this.props.templateProperty.typeConflict ||
+      this.props.templateProperty.relationConflict ||
+      this.props.templateProperty.inheritConflict;
     const invalidThesauri =
       this.props.templateProperty.contentConflict && this.props.templateProperty.thesaurusName;
     return (
@@ -47,12 +57,16 @@ export class SimilarProperty extends Component<SimilarPropertiesProps> {
           })}
           {...(this.props.templateProperty.typeConflict && { title: titles.typeConflict })}
           {...(this.props.templateProperty.relationConflict && { title: titles.relationConflict })}
+          {...(this.props.templateProperty.inheritConflict && { title: titles.inheritConflict })}
         >
           {invalidType && <Icon icon="exclamation-triangle" />}
+          &nbsp;
           <Icon icon={Icons[typeIcon] || 'fa fa-font'} />
+          &nbsp;
           {typeToShow}
           {this.props.templateProperty.relationTypeName &&
             ` (${this.props.templateProperty.relationTypeName})`}
+          {inheritTypeToShow && ` (Inherit: ${inheritTypeToShow})`}
         </td>
         <td
           className={this.props.templateProperty.contentConflict ? 'conflict' : ''}

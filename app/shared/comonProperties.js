@@ -1,5 +1,10 @@
 function sameProperty(prop1, prop2) {
-  return prop1.name === prop2.name && prop1.type === prop2.type && prop1.content === prop2.content;
+  return (
+    prop1.name === prop2.name &&
+    prop1.type === prop2.type &&
+    prop1.content === prop2.content &&
+    prop1.inherit?.property === prop2.inherit?.property
+  );
 }
 
 function templateHasProperty(template, property) {
