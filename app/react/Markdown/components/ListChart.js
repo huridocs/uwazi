@@ -11,7 +11,7 @@ import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';
 
 export const ListChartComponent = props => {
-  const { excludeZero, property, data, classname, context, colors } = props;
+  const { excludeZero, property, data, classname, context, scatter, colors } = props;
   const sliceColors = colors.split(',');
 
   let output = <Loader />;
@@ -21,6 +21,7 @@ export const ListChartComponent = props => {
       arrayUtils.formatDataForChart(data, property, {
         excludeZero: Boolean(excludeZero),
         context,
+        scatter,
       })
     );
     let query = { filters: {} };
@@ -71,6 +72,7 @@ export const ListChartComponent = props => {
 ListChartComponent.defaultProps = {
   context: 'System',
   excludeZero: false,
+  scatter: false,
   classname: '',
   colors: '#ffcc00,#ffd633,#ffe066,#ffeb99,#fff5cc',
   data: null,
@@ -80,6 +82,7 @@ ListChartComponent.defaultProps = {
 ListChartComponent.propTypes = {
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
+  scatter: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   classname: PropTypes.string,
   colors: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
