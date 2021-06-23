@@ -54,6 +54,7 @@ export default (app: Application) => {
       Joi.object()
         .keys({
           sharedId: Joi.string(),
+          slug: Joi.string(),
         })
         .required(),
       'query'
