@@ -107,12 +107,16 @@ const formatDataForChart = (data, _property, formatOptions) => {
       }
 
       if (item.values && formatOptions.scatter) {
-        return item.values.map(value => ({
+        const flatValues = item.values.map(value => ({
           id: value.key,
           label: labelsMap[value.label] || t(formatOptions.context, value.label, null, false),
           results: value.doc_count,
           parent: item.label,
         }));
+        if (formatOptions.excludeZero) {
+          return flatValues.filter(value => value.results !== 0);
+        }
+        return flatValues;
       }
 
       return {
