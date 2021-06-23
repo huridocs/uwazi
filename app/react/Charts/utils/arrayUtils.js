@@ -106,11 +106,12 @@ const formatDataForChart = (data, _property, formatOptions) => {
         return null;
       }
 
-      if (item.values && formatOptions.deaggregate) {
+      if (item.values && formatOptions.scatter) {
         return item.values.map(value => ({
           id: value.key,
           label: labelsMap[value.label] || t(formatOptions.context, value.label, null, false),
           results: value.doc_count,
+          parent: item.label,
         }));
       }
 
