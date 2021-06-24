@@ -10,13 +10,35 @@ import { arrayUtils } from 'app/Charts';
 import PieChartLabel from './PieChartLabel';
 import markdownDatasets from '../markdownDatasets';
 
-const formatLabelsWithParent = data => {
-  const formatted = data.map(value => ({
-    id: value.id,
-    label: `${value.parent} - ${value.label}`,
-    results: value.results,
-  }));
-  return formatted;
+const formatData = (data, property, options) => {
+  const {
+    formatted,
+    scatter,
+    excludeZero,
+    maxCategories,
+    aggregateOthers,
+    pluckCategories,
+  } = options;
+  let formattedData = arrayUtils.sortValues(
+    arrayUtils.formatDataForChart(data, property, {
+      formatted,
+      scatter,
+      excludeZero,
+      maxCategories,
+      aggregateOthers,
+      pluckCategories,
+    })
+  );
+
+  if (scatter) {
+    formattedData = formattedData.map(value => ({
+      id: value.id,
+      label: `${value.parent} - ${value.label}`,
+      results: value.results,
+    }));
+  }
+
+  return formattedData;
 };
 
 export const PieChartComponent = props => {
@@ -38,18 +60,15 @@ export const PieChartComponent = props => {
 
   if (data) {
     const aggregateOthers = props.aggregateOthers === 'true';
-    let formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, {
-        context,
-        scatter,
-        excludeZero: true,
-        maxCategories,
-        aggregateOthers,
-        pluckCategories: JSON.parse(pluckCategories),
-      })
-    );
 
-    if (scatter) formattedData = formatLabelsWithParent(formattedData);
+    const formattedData = formatData(data, property, {
+      context,
+      scatter,
+      excludeZero: true,
+      maxCategories,
+      aggregateOthers,
+      pluckCategories: JSON.parse(pluckCategories),
+    });
 
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
