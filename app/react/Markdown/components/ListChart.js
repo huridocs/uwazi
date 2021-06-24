@@ -46,7 +46,7 @@ export const ListChartComponent = props => {
                 <span>{item.results}</span>
               </div>
               <span className="list-label">
-                {scatter ? `${item.parent}-${item.label}` : item.label}
+                {scatter ? `${item.parent} - ${item.label}` : item.label}
               </span>
             </div>
           );
