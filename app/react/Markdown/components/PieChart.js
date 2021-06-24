@@ -48,9 +48,9 @@ export const PieChartComponent = props => {
         pluckCategories: JSON.parse(pluckCategories),
       })
     );
-    if (scatter) {
-      formattedData = formatLabelsWithParent(formattedData);
-    }
+
+    if (scatter) formattedData = formatLabelsWithParent(formattedData);
+
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
     output = (
