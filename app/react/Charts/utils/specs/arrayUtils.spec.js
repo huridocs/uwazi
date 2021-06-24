@@ -2,6 +2,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { t } from 'app/I18N';
+import {
+  dataWithNestedValues,
+  expectNestedResult,
+  expectNestedResultWithNoZeros,
+} from './fixtures/arrayUtilsFixtures';
 import colorScheme from '../colorScheme';
 import arrayUtils from '../arrayUtils';
 
@@ -66,12 +71,14 @@ describe('Array Utils', () => {
         { key: 'missing', label: 'No value', filtered: { doc_count: 0 } },
         { key: 'any', label: 'Any', filtered: { doc_count: -672 } },
       ]);
+
       property = 'prop';
 
       options = {
         context: 'contextId',
         excludeZero: false,
         maxCategories: 0,
+        scatter: false,
         aggregateOthers: 'false',
       };
     });
@@ -88,6 +95,23 @@ describe('Array Utils', () => {
 
     it('should aggregate filtered results for each category sorted in descending order (default)', () => {
       expectResults([{ id2: ['Val 2', 5] }, { id3: ['Val 3', 4] }, { id1: ['Val 1', 3] }]);
+    });
+
+    it('should return nested thesauri flattened if the scatter format option is true', () => {
+      options.scatter = true;
+      data = dataWithNestedValues;
+      expect(formatDataForChart(dataWithNestedValues, property, options)).toEqual(
+        expectNestedResult
+      );
+    });
+
+    it('should return nested thesauri flattened, with no zero results, if the scatter and exludeZero options are true', () => {
+      options.scatter = true;
+      options.excludeZero = true;
+      data = dataWithNestedValues;
+      expect(formatDataForChart(dataWithNestedValues, property, options)).toEqual(
+        expectNestedResultWithNoZeros
+      );
     });
 
     it('should omit results without labels', () => {

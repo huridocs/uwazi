@@ -96,6 +96,19 @@ const formatDataForChart = (data, _property, formatOptions) => {
     categories = limitMaxCategories(sortedCategories, maxCategories, aggregateOthers);
   }
 
+  const formatForNestedValues = (category, options) => {
+    const flatValues = category.values.map(value => ({
+      id: value.key,
+      label: labelsMap[value.label] || t(options.context, value.label, null, false),
+      results: value.doc_count,
+      parent: category.label,
+    }));
+    if (options.excludeZero) {
+      return flatValues.filter(value => value.results !== 0);
+    }
+    return flatValues;
+  };
+
   const formatedValues = categories
     .map(item => {
       if (item.others && item.filtered.doc_count) {
@@ -107,16 +120,7 @@ const formatDataForChart = (data, _property, formatOptions) => {
       }
 
       if (item.values && formatOptions.scatter) {
-        const flatValues = item.values.map(value => ({
-          id: value.key,
-          label: labelsMap[value.label] || t(formatOptions.context, value.label, null, false),
-          results: value.doc_count,
-          parent: item.label,
-        }));
-        if (formatOptions.excludeZero) {
-          return flatValues.filter(value => value.results !== 0);
-        }
-        return flatValues;
+        return formatForNestedValues(item, formatOptions);
       }
 
       return {
