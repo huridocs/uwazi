@@ -10,6 +10,15 @@ import { arrayUtils } from 'app/Charts';
 import PieChartLabel from './PieChartLabel';
 import markdownDatasets from '../markdownDatasets';
 
+const formatLabelsWithParent = data => {
+  const formatted = data.map(value => ({
+    id: value.id,
+    label: `${value.parent} - ${value.label}`,
+    results: value.results,
+  }));
+  return formatted;
+};
+
 export const PieChartComponent = props => {
   const {
     showLabel,
@@ -29,7 +38,7 @@ export const PieChartComponent = props => {
 
   if (data) {
     const aggregateOthers = props.aggregateOthers === 'true';
-    const formattedData = arrayUtils.sortValues(
+    let formattedData = arrayUtils.sortValues(
       arrayUtils.formatDataForChart(data, property, {
         context,
         scatter,
@@ -39,6 +48,9 @@ export const PieChartComponent = props => {
         pluckCategories: JSON.parse(pluckCategories),
       })
     );
+    if (scatter) {
+      formattedData = formatLabelsWithParent(formattedData);
+    }
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
     output = (
