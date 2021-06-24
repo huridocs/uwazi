@@ -10,6 +10,7 @@ import fixtures, {
   nonExistentId,
 } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
+import * as activityLogBuilderExports from '../activityLogBuilder';
 import { typeParsers } from '../migrationsParser';
 
 jest.mock('../migrationsParser', () => ({
@@ -1150,6 +1151,27 @@ describe('Activitylog Parser', () => {
           }),
         });
         expect(beautified).toEqual({ action: 'RAW' });
+      });
+    });
+
+    describe('on any unhandled buildActivityEntry error', () => {
+      it('should wrap the error and input in RAW.', async () => {
+        jest.spyOn(activityLogBuilderExports, 'buildActivityEntry').mockImplementation(() => {
+          throw Error;
+        });
+        const semanticData = await getSemanticData({
+          method: 'POST',
+          url: '/api/documents',
+          body: '{"title":"New Document"}',
+        });
+        expect(semanticData).toEqual(
+          expect.objectContaining({
+            action: 'WARNING',
+            description: 'The Activity log encountered an error in building the entry',
+            extra: 'POST: /api/documents',
+          })
+        );
+        activityLogBuilderExports.buildActivityEntry.mockRestore();
       });
     });
   });

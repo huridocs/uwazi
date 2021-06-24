@@ -52,7 +52,7 @@ export const loadEntity = async data => {
 
 export const loadFile = async data => {
   const [file] = await files.get({ _id: data._id });
-  return { ...data, file, title: file ? file.originalname : `id: ${data._id}` }; // file.originalname ? file.originalname : undefined };
+  return { ...data, file, title: file ? file.originalname : `id: ${data._id}` };
 };
 
 export const extraTemplate = data =>
