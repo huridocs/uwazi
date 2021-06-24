@@ -84,6 +84,20 @@ const formatPayload = data =>
     formatter: () => <span style={{ color: '#333' }}>{item.name}</span>,
   }));
 
+const formatForNestedValues = (category, options) => {
+  const { labelsMap = {}, excludeZero } = options;
+  const flatValues = category.values.map(value => ({
+    id: value.key,
+    label: labelsMap[value.label] || t(options.context, value.label, null, false),
+    results: value.doc_count,
+    parent: category.label,
+  }));
+  if (excludeZero) {
+    return flatValues.filter(value => value.results !== 0);
+  }
+  return flatValues;
+};
+
 const formatDataForChart = (data, _property, formatOptions) => {
   const { maxCategories, aggregateOthers = false, labelsMap = {}, sort } = formatOptions;
 
@@ -96,42 +110,29 @@ const formatDataForChart = (data, _property, formatOptions) => {
     categories = limitMaxCategories(sortedCategories, maxCategories, aggregateOthers);
   }
 
-  const formatForNestedValues = (category, options) => {
-    const flatValues = category.values.map(value => ({
-      id: value.key,
-      label: labelsMap[value.label] || t(options.context, value.label, null, false),
-      results: value.doc_count,
-      parent: category.label,
-    }));
-    if (options.excludeZero) {
-      return flatValues.filter(value => value.results !== 0);
-    }
-    return flatValues;
-  };
+  return [].concat(
+    ...categories
+      .map(item => {
+        if (item.others && item.filtered.doc_count) {
+          return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
+        }
 
-  const formatedValues = categories
-    .map(item => {
-      if (item.others && item.filtered.doc_count) {
-        return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
-      }
+        if (!item.label) {
+          return null;
+        }
 
-      if (!item.label) {
-        return null;
-      }
+        if (item.values && formatOptions.scatter) {
+          return formatForNestedValues(item, formatOptions);
+        }
 
-      if (item.values && formatOptions.scatter) {
-        return formatForNestedValues(item, formatOptions);
-      }
-
-      return {
-        id: item.key,
-        label: labelsMap[item.label] || t(formatOptions.context, item.label, null, false),
-        results: item.filtered.doc_count,
-      };
-    })
-    .filter(i => !!i);
-
-  return [].concat(...formatedValues);
+        return {
+          id: item.key,
+          label: labelsMap[item.label] || t(formatOptions.context, item.label, null, false),
+          results: item.filtered.doc_count,
+        };
+      })
+      .filter(i => !!i)
+  );
 };
 
 export default {
