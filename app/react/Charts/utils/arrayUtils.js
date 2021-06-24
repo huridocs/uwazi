@@ -85,12 +85,12 @@ const formatPayload = data =>
   }));
 
 const formatForNestedValues = (category, options) => {
-  const { labelsMap = {}, excludeZero } = options;
+  const { labelsMap = {}, excludeZero, context } = options;
   const flatValues = category.values.map(value => ({
     id: value.key,
-    label: labelsMap[value.label] || t(options.context, value.label, null, false),
+    label: labelsMap[value.label] || t(context, value.label, null, false),
     results: value.doc_count,
-    parent: category.label,
+    parent: labelsMap[category.label] || t(context, category.label, null, false),
   }));
   if (excludeZero) {
     return flatValues.filter(value => value.results !== 0);
