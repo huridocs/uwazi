@@ -2,6 +2,7 @@
 /*global browser*/
 
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
+import _ from 'lodash';
 import { host } from '../config';
 
 expect.extend({ toMatchImageSnapshot });
@@ -12,7 +13,11 @@ export async function displayGraph() {
     .split('/')
     .pop();
 
-  const pageUrl = `${host}/page/${pageID}`;
+  const pageTitle = await page.$eval('.template-name > div > input', input =>
+    input.getAttribute('value')
+  );
+
+  const pageUrl = `${host}/page/${pageID}/${_.kebabCase(pageTitle || '')}`;
 
   await expect(page).toClick('a', { text: '(view page)' });
 
