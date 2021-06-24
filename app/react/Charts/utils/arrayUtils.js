@@ -89,7 +89,7 @@ const formatForNestedValues = (category, options) => {
   const flatValues = category.values.map(value => ({
     id: value.key,
     label: labelsMap[value.label] || t(context, value.label, null, false),
-    results: value.doc_count,
+    results: value.filtered.doc_count,
     parent: labelsMap[category.label] || t(context, category.label, null, false),
   }));
   if (excludeZero) {
