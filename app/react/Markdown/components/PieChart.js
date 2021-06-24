@@ -11,26 +11,9 @@ import PieChartLabel from './PieChartLabel';
 import markdownDatasets from '../markdownDatasets';
 
 const formatData = (data, property, options) => {
-  const {
-    formatted,
-    scatter,
-    excludeZero,
-    maxCategories,
-    aggregateOthers,
-    pluckCategories,
-  } = options;
-  let formattedData = arrayUtils.sortValues(
-    arrayUtils.formatDataForChart(data, property, {
-      formatted,
-      scatter,
-      excludeZero,
-      maxCategories,
-      aggregateOthers,
-      pluckCategories,
-    })
-  );
+  let formattedData = arrayUtils.sortValues(arrayUtils.formatDataForChart(data, property, options));
 
-  if (scatter) {
+  if (options.scatter) {
     formattedData = formattedData.map(value => ({
       id: value.id,
       label: `${value.parent} - ${value.label}`,

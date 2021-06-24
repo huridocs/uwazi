@@ -99,7 +99,7 @@ const formatForNestedValues = (category, options) => {
 };
 
 const formatDataForChart = (data, _property, formatOptions) => {
-  const { maxCategories, aggregateOthers = false, labelsMap = {}, sort } = formatOptions;
+  const { maxCategories, aggregateOthers = false, labelsMap = {}, sort, context } = formatOptions;
 
   const relevantCategories = determineRelevantCategories(data.toJS(), formatOptions);
   const sortedCategories = sortData(relevantCategories, sort);
@@ -127,7 +127,7 @@ const formatDataForChart = (data, _property, formatOptions) => {
 
         return {
           id: item.key,
-          label: labelsMap[item.label] || t(formatOptions.context, item.label, null, false),
+          label: labelsMap[item.label] || t(context, item.label, null, false),
           results: item.filtered.doc_count,
         };
       })
