@@ -93,10 +93,20 @@ const getProperty = (
 const getMethod = (value: string | undefined, isRootProperty: boolean) => {
   let method: Function = () => {};
 
-  if (value) {
-    method = isRootProperty ? extractRootProperty : extractMetadataProperty;
-  } else {
-    method = isRootProperty ? extractRootLabel : extractMetadataLabel;
+  if (value && isRootProperty) {
+    method = extractRootProperty;
+  }
+
+  if (value && !isRootProperty) {
+    method = extractMetadataProperty;
+  }
+
+  if (!value && isRootProperty) {
+    method = extractRootLabel;
+  }
+
+  if (!value && !isRootProperty) {
+    method = extractMetadataLabel;
   }
 
   return method;
