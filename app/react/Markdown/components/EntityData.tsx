@@ -90,14 +90,7 @@ const getProperty = (
   return property;
 };
 
-const prepareData = (
-  value?: EntityDataProps['value'],
-  propertyName?: EntityDataProps['propertyName']
-) => {
-  const property = getProperty(value, propertyName);
-
-  const isRootProperty = rootProperties.includes(property);
-
+const getMethod = (value: string | undefined, isRootProperty: boolean) => {
   let method: Function = () => {};
 
   if (value) {
@@ -105,6 +98,17 @@ const prepareData = (
   } else {
     method = isRootProperty ? extractRootLabel : extractMetadataLabel;
   }
+
+  return method;
+};
+
+const prepareData = (
+  value?: EntityDataProps['value'],
+  propertyName?: EntityDataProps['propertyName']
+) => {
+  const property = getProperty(value, propertyName);
+  const isRootProperty = rootProperties.includes(property);
+  const method = getMethod(value, isRootProperty);
 
   return { method, property };
 };
