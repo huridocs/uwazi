@@ -1,30 +1,29 @@
-import { ObjectId } from 'mongodb';
 import templates from './templates';
 
 const SHOULD_NOT_TRIGGER_REINDEX = [
   'name',
   'color',
-  'property.filter',
-  'property.defaultfilter',
-  'property.noLabel',
-  'property.showIncard',
-  'property.required',
+  'properties.filter',
+  'properties.defaultfilter',
+  'properties.noLabel',
+  'properties.showInCard',
+  'properties.required',
+  'commonProperties.PROPERTY_DELETED',
+  'properties.PROPERTY_DELETED',
 ];
 
 function compareTemplateProperties(updatedProperties, originalProperties) {
   const changedProps = [];
   originalProperties.forEach(originalProperty => {
-    // console.log('iterating original properties: ', originalProperty);
-    const updatedProperty = updatedProperties.find(
-      prop => prop._id === ObjectId(originalProperty._id).toString()
-    );
+    const updatedProperty = updatedProperties.find(prop => prop.name === originalProperty.name);
 
     if (!updatedProperty) {
       changedProps.push('PROPERTY_DELETED');
       return;
     }
 
-    Object.keys(originalProperty).forEach(originalKey => {
+    Object.keys(updatedProperty).forEach(originalKey => {
+      // console.log(updatedProperty[originalKey] !== originalProperty[originalKey], originalKey);
       if (updatedProperty[originalKey] !== originalProperty[originalKey] && originalKey !== '_id') {
         changedProps.push(originalKey);
       }
@@ -44,14 +43,13 @@ function checkIfFilterConditionsMet(changedProperties) {
 }
 
 export async function checkIfReindex(updatedTemplate) {
-  console.log(updatedTemplate);
   if (updatedTemplate._id) {
     const changedProperties = [];
     const [originalTemplate] = await templates.get({ _id: updatedTemplate._id });
-    const originalKeys = Object.keys(originalTemplate);
+    const updatedKeys = Object.keys(updatedTemplate);
 
     // Compare shallow object properties
-    originalKeys.forEach(key => {
+    updatedKeys.forEach(key => {
       if (Array.isArray(updatedTemplate[key])) {
         // Is a list of properties
         const props = compareTemplateProperties(updatedTemplate[key], originalTemplate[key]);
@@ -64,9 +62,7 @@ export async function checkIfReindex(updatedTemplate) {
         changedProperties.push(key);
       }
     });
-    console.log(changedProperties);
     return checkIfFilterConditionsMet(changedProperties);
   }
   return false;
 }
-
