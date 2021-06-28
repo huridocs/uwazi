@@ -142,10 +142,10 @@ describe('BarChart Markdown component', () => {
 
       expectLabels(component, ['label2', 'L1', 'label3', 'L4']);
 
-      const { labelFormatter } = component.find(Tooltip).props();
+      const { formatter } = component.find(Tooltip).props();
 
-      expect(labelFormatter('L1')).toBe('label1');
-      expect(labelFormatter('non existing label')).toBe('non existing label');
+      expect(formatter('L1')).toBe('label1');
+      expect(formatter('non existing label')).toBe('non existing label');
     });
   });
 
