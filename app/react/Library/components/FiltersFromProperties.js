@@ -24,10 +24,7 @@ export const FiltersFromProperties = ({
 }) => (
   <>
     {properties.map(property => {
-      let { type } = property;
-      if (property.inherit?.property) {
-        type = property.inherit.type;
-      }
+      const { type } = property.inherit?.property ? property.inherit : property;
 
       const commonProps = {
         model: `.filters${modelPrefix}.${property.name}`,
@@ -102,7 +99,7 @@ FiltersFromProperties.defaultProps = {
 };
 
 FiltersFromProperties.propTypes = {
-  templates: PropTypes.array.isRequired,
+  templates: PropTypes.instanceOf(Array).isRequired,
   onChange: PropTypes.func,
   dateFormat: PropTypes.string,
   modelPrefix: PropTypes.string,

@@ -80,9 +80,9 @@ describe('FormConfigRelationship', () => {
       const component = render();
       const selects = component.find(Select);
 
-      const inheritPropSelect = selects.findWhere(select => {
-        return select.props().model.match('inherit.property');
-      });
+      const inheritPropSelect = selects.findWhere(select =>
+        select.props().model.match('inherit.property')
+      );
 
       expect(inheritPropSelect.length).toBe(1);
 
@@ -98,9 +98,9 @@ describe('FormConfigRelationship', () => {
 
         const selects = component.find(Select);
 
-        const inheritPropSelect = selects.findWhere(select => {
-          return select.props().model.match('inherit.property');
-        });
+        const inheritPropSelect = selects.findWhere(select =>
+          select.props().model.match('inherit.property')
+        );
 
         expect(inheritPropSelect.length).toBe(1);
       });

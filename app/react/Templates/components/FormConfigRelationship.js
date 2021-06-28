@@ -28,7 +28,7 @@ export class FormConfigRelationship extends Component {
       const { index } = this.props;
       this.props.resetFormValue(`template.data.properties[${index}].inherit.property`);
     }
-    this.setState({ inherit: !this.state.inherit });
+    this.setState(prevState => ({ inherit: !prevState.inherit }));
   }
 
   render() {
