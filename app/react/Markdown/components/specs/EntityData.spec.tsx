@@ -66,35 +66,35 @@ describe('EntityData Markdown', () => {
     component = renderConnectedMount(() => innerComponent, state);
   };
 
-  describe('root properties', () => {
+  describe('root properties Values', () => {
     it('should print title and root dates from root of entity', () => {
-      render(<EntityData value="title" />);
+      render(<EntityData value-of="title" />);
       expect(component.html()).toBe('Entity 1');
 
-      render(<EntityData value="creationDate" />);
+      render(<EntityData value-of="creationDate" />);
       expect(component.html()).toBe('1234');
     });
   });
 
-  describe('metadata properties', () => {
+  describe('metadata property Values', () => {
     it('should print formatted metadata properties (sanitizing names)', () => {
-      render(<EntityData value="description" />);
+      render(<EntityData value-of="description" />);
       expect(component.html()).toBe('A long description');
 
-      render(<EntityData value="date" />);
+      render(<EntityData value-of="date" />);
       expect(component.html()).toBe('Jul 13, 1977');
 
-      render(<EntityData value="Main Image" />);
+      render(<EntityData value-of="Main Image" />);
       expect(component.html()).toContain('src="https://www.google.com"');
     });
   });
 
-  describe('propertyNames (labels)', () => {
+  describe('labels (property names)', () => {
     it('should print translated labels (sanitizing names)', () => {
-      render(<EntityData propertyName="title" />);
+      render(<EntityData label-of="title" />);
       expect(component.html()).toContain('Title translated');
 
-      render(<EntityData propertyName="Main Image" />);
+      render(<EntityData label-of="Main Image" />);
       expect(component.html()).toContain('Main Image translated');
     });
   });
@@ -105,16 +105,16 @@ describe('EntityData Markdown', () => {
       expect(component.html()).toEqual('');
       expect(consoleLogSpy).toHaveBeenCalledWith('Error on EntityData: ');
       expect(consoleLogSpy.calls.all()[2].args[0].message).toBe(
-        '"value" or "propertyName" must be provided.'
+        '"value-of" or "label-of" must be provided.'
       );
     });
 
     it('should fail if both value and propertyName are provided', () => {
-      render(<EntityData value="something" propertyName="something else" />);
+      render(<EntityData value-of="something" label-of="something else" />);
       expect(component.html()).toEqual('');
       expect(consoleLogSpy).toHaveBeenCalledWith('Error on EntityData: ');
       expect(consoleLogSpy.calls.all()[2].args[0].message).toBe(
-        'Can\'t provide both "value" and "propertyName".'
+        'Can\'t provide both "value-of" and "label-of".'
       );
     });
   });

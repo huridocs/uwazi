@@ -20,8 +20,8 @@ export const contents = `<h1>My entity view</h1>
 <h4 className="descriptores-title"><Value path="entity.metadata.descriptores.label" /></h4>
 <p className="descriptores-content"><Value path="entity.metadata.descriptores.value.0.value" /></p>
 
-<h4 className="EntityData-label"><EntityData propertyName="title" /></h4>
-<p className="EntityData-title"><EntityData value="title" /></p>
+<h4 className="EntityData-label"><EntityData label-of="title" /></h4>
+<p className="EntityData-title"><EntityData value-of="title" /></p>
 
 <p id="entity-datasets-value"><p>`;
 

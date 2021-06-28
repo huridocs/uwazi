@@ -11,8 +11,8 @@ import { IImmutable } from 'shared/types/Immutable';
 import { ensure } from 'shared/tsUtils';
 
 export interface EntityDataProps {
-  value?: string;
-  propertyName?: string;
+  'value-of'?: string;
+  'label-of'?: string;
 }
 
 interface Options {
@@ -65,47 +65,47 @@ const extractMetadataLabel = ({ formattedEntity, property, newNameGeneration }: 
   return <Translate context={propertyData.translateContext}>{propertyData.label}</Translate>;
 };
 
-const logError = (err: any, value?: string, propertyName?: string) => {
+const logError = (err: any, propValueOf?: string, propLabelOf?: string) => {
   /* eslint-disable no-console */
   console.log('Error on EntityData: ');
-  console.log('value: ', value, '; propertyName: ', propertyName);
+  console.log('value-of: ', propValueOf, '; label-of: ', propLabelOf);
   console.log(err);
   /* eslint-enable no-console */
 };
 
 const getProperty = (
-  value?: EntityDataProps['value'],
-  propertyName?: EntityDataProps['propertyName']
+  propValueOf?: EntityDataProps['value-of'],
+  propLabelOf?: EntityDataProps['label-of']
 ) => {
-  if (value && propertyName) {
-    throw new Error('Can\'t provide both "value" and "propertyName".');
+  if (propValueOf && propLabelOf) {
+    throw new Error('Can\'t provide both "value-of" and "label-of".');
   }
 
-  const property = value || propertyName;
+  const property = propValueOf || propLabelOf;
 
   if (!property) {
-    throw new Error('"value" or "propertyName" must be provided.');
+    throw new Error('"value-of" or "label-of" must be provided.');
   }
 
   return property;
 };
 
-const getMethod = (value: string | undefined, isRootProperty: boolean) => {
+const getMethod = (propValueOf: string | undefined, isRootProperty: boolean) => {
   let method: Function = () => {};
 
-  if (value && isRootProperty) {
+  if (propValueOf && isRootProperty) {
     method = extractRootProperty;
   }
 
-  if (value && !isRootProperty) {
+  if (propValueOf && !isRootProperty) {
     method = extractMetadataProperty;
   }
 
-  if (!value && isRootProperty) {
+  if (!propValueOf && isRootProperty) {
     method = extractRootLabel;
   }
 
-  if (!value && !isRootProperty) {
+  if (!propValueOf && !isRootProperty) {
     method = extractMetadataLabel;
   }
 
@@ -113,12 +113,12 @@ const getMethod = (value: string | undefined, isRootProperty: boolean) => {
 };
 
 const prepareData = (
-  value?: EntityDataProps['value'],
-  propertyName?: EntityDataProps['propertyName']
+  propValueOf?: EntityDataProps['value-of'],
+  propLabelOf?: EntityDataProps['label-of']
 ) => {
-  const property = getProperty(value, propertyName);
+  const property = getProperty(propValueOf, propLabelOf);
   const isRootProperty = rootProperties.includes(property);
-  const method = getMethod(value, isRootProperty);
+  const method = getMethod(propValueOf, isRootProperty);
 
   return { method, property };
 };
@@ -127,8 +127,8 @@ const EntityData = ({
   entity,
   templates,
   thesauri,
-  value,
-  propertyName,
+  'value-of': propValueOf,
+  'label-of': propLabelOf,
   settings,
 }: ComponentProps) => {
   const newNameGeneration = settings.collection.get('newNameGeneration') || false;
@@ -136,11 +136,11 @@ const EntityData = ({
   let output = <></>;
 
   try {
-    const { property, method } = prepareData(value, propertyName);
+    const { property, method } = prepareData(propValueOf, propLabelOf);
     const template = templates.find(t => t?.get('_id') === entity.get('template'));
     output = <>{method({ formattedEntity, property, newNameGeneration, template })}</>;
   } catch (err) {
-    logError(err, value, propertyName);
+    logError(err, propValueOf, propLabelOf);
   }
 
   return output;
