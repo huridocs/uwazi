@@ -84,7 +84,7 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
               p => p._id && p._id.toString() === prop.inheritProperty.toString()
             );
 
-            elem.inheritedValue = partner.metadata[inheritedProperty.name];
+            elem.inheritedValue = partner.metadata[inheritedProperty.name] || [];
             elem.inheritedType = inheritedProperty.type;
           }
         }

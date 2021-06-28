@@ -303,6 +303,7 @@ describe('Denormalize relationships', () => {
             multiselect: [factory.metadataValue('T1')],
           }),
           factory.entity('B2', 'templateB'),
+          factory.entity('entityWithNoValueSelected', 'templateB'),
         ],
       };
       await load(fixtures, 'index_denormalize');
@@ -331,7 +332,7 @@ describe('Denormalize relationships', () => {
       ]);
     });
 
-    it('should update and index denormalized properties when thesauri label changes', async () => {
+    it('should update and index denormalized properties when thesauri label changes (should ignore null inheritedValues)', async () => {
       await modifyEntity('B1', {
         metadata: { multiselect: [{ value: 'T2' }, { value: 'T3' }] },
       });
@@ -341,7 +342,11 @@ describe('Denormalize relationships', () => {
 
       await modifyEntity('A1', {
         metadata: {
-          relationship: [factory.metadataValue('B1'), factory.metadataValue('B2')],
+          relationship: [
+            factory.metadataValue('B1'),
+            factory.metadataValue('B2'),
+            factory.metadataValue('entityWithNoValueSelected'),
+          ],
         },
       });
 
@@ -361,6 +366,9 @@ describe('Denormalize relationships', () => {
         },
         {
           inheritedValue: [{ value: 'T1', label: 'new 1' }],
+        },
+        {
+          inheritedValue: [],
         },
       ]);
     });
