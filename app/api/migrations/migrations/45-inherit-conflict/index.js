@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
 export default {
-  delta: 43,
+  delta: 45,
 
   name: 'inherit-conflict',
 
