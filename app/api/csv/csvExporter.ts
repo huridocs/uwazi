@@ -195,7 +195,8 @@ export const processEntity = (
       return '';
     }
 
-    return formatters[templateProperty.type](row.metadata[header.name] || [], options);
+    const formatter = formatters[templateProperty.type] || formatters.default;
+    return formatter(row.metadata[header.name] || [], options);
   });
 };
 
