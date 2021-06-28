@@ -24,7 +24,7 @@ export interface TemplateProperty {
   contentConflict: boolean;
   type: PropertySchema['type'];
   inheritConflict: boolean;
-  inheritType: string | undefined;
+  inheritType?: string;
 }
 
 export interface SimilarPropertiesProps {
