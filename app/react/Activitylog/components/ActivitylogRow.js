@@ -20,7 +20,7 @@ const label = method => {
       return <span className="badge btn-color-12">{method}</span>;
     case 'WARNING':
       return (
-        <span className="badge btn-color-3">
+        <span className="badge btn-color-13">
           {method} <Icon icon="exclamation-triangle" />
         </span>
       );
