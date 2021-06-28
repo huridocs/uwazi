@@ -2,7 +2,7 @@
 import { ObjectID } from 'mongodb';
 
 export default {
-  delta: 42,
+  delta: 45,
 
   name: 'denormalize-inherited-type',
 
