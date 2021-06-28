@@ -145,31 +145,24 @@ describe('csvExporter typeFormatters', () => {
   });
 
   describe('URLs', () => {
-    it('should return the correct IMAGE url', () => {
-      testSimple('image.jpg', typeFormatters.image, 'image.jpg');
-    });
-
     it('should return the correct LINK value', () => {
       testSimple({ label: 'UWAZI', url: 'uwazi.io' }, typeFormatters.link, 'UWAZI|uwazi.io');
     });
+  });
 
-    it('should return the correct MEDIA value', () => {
-      testSimple('media_url', typeFormatters.media, 'media_url');
-    });
+  describe('default formatter', () => {
+    it.each(['image.jpg', 'text', 'markdown', 'media_url'])(
+      'should return a plain value for fields without a special format like %s',
+      fieldValue => {
+        testSimple(fieldValue, typeFormatters.default, fieldValue);
+      }
+    );
   });
 
   describe('SIMPLE', () => {
     it('should return the correct NUMERIC value', () => {
       testSimple(1234, typeFormatters.numeric, 1234);
       testSimple(0, typeFormatters.numeric, 0);
-    });
-
-    it('should return the correct TEXT value', () => {
-      testSimple('text', typeFormatters.text, 'text');
-    });
-
-    it('should return the correct MARKDOWN value', () => {
-      testSimple('markdown', typeFormatters.markdown, 'markdown');
     });
   });
 
