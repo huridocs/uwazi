@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Map } from 'immutable';
+
+import { Icon } from 'app/UI';
 import DescriptionWrapper from './DescriptionWrapper';
 
 const label = method => {
@@ -16,6 +18,12 @@ const label = method => {
       return <span className="badge btn-color-17">{method}</span>;
     case 'MIGRATE':
       return <span className="badge btn-color-12">{method}</span>;
+    case 'WARNING':
+      return (
+        <span className="badge btn-color-13">
+          {method} <Icon icon="exclamation-triangle" />
+        </span>
+      );
     default:
       return <span className="badge btn-color-17">{method}</span>;
   }
