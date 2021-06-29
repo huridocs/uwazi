@@ -1,5 +1,1 @@
-/** @format */
-
-import thesauri from './thesauri.js';
-
-export default thesauri;
+export { default } from './thesauri.js';
