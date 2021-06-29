@@ -22,6 +22,12 @@ const graphs = {
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
 };
 
+const insertChart = async (chart, chartName) => {
+  await expect(page).toFill('input[name="page.data.title"]', chartName);
+  await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
+  await page.type(localSelectors.pageContentsInput, chart);
+};
+
 const savePage = async () => {
   await expect(page).toMatchElement('button', { text: 'Save' });
   await expect(page).toClick('button', { text: 'Save' });
@@ -75,9 +81,7 @@ describe('Graphs in Page ', () => {
 
     it('should navigate back to the edit page and insert a Pie chart graph', async () => {
       await page.goBack();
-      await expect(page).toFill('input[name="page.data.title"]', 'Pie chart graph');
-      await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
-      await page.type(localSelectors.pageContentsInput, graphs.pieChart);
+      await insertChart(graphs.pieChart, 'Pie chart graph');
       await savePage();
     });
 
@@ -98,9 +102,7 @@ describe('Graphs in Page ', () => {
 
     it('should navigate back to the edit page and insert a List chart graph', async () => {
       await page.goBack();
-      await expect(page).toFill('input[name="page.data.title"]', 'List chart graph');
-      await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
-      await page.type(localSelectors.pageContentsInput, graphs.listChart);
+      await insertChart(graphs.listChart, 'List chart graph');
       await savePage();
     });
 
@@ -151,6 +153,7 @@ describe('Graphs in Page ', () => {
       await expect(page).toFill('input[name="page.data.title"]', 'Pie chart with nested graph');
       await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
       await page.type(localSelectors.pageContentsInput, graphs.pieChartScatter);
+      await insertChart(graphs.pieChartScatter, 'Pie chart with nested graph');
       await savePage();
     });
 
@@ -171,9 +174,7 @@ describe('Graphs in Page ', () => {
 
     it('should navigate back to the edit page and insert a List chart graph', async () => {
       await page.goBack();
-      await expect(page).toFill('input[name="page.data.title"]', 'List chart with nested graph');
-      await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
-      await page.type(localSelectors.pageContentsInput, graphs.listChartScatter);
+      await insertChart(graphs.listChartScatter, 'List chart with nested graph');
       await savePage();
     });
 
