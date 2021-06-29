@@ -225,10 +225,10 @@ describe('BarChart Markdown component', () => {
   });
 
   describe('when passing scatter parameter', () => {
-    fit('should display nested values with a composed label', () => {
+    it('should display nested values with a composed label', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(dataWithNestedValues);
 
-      const component = renderComponent({ scatter: 'true' });
+      const component = renderComponent({ scatter: 'true', context: 'nested' });
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       expect(component).toMatchSnapshot();
