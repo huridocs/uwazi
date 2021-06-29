@@ -11,6 +11,7 @@ import { Pie, Tooltip } from 'recharts';
 import { dataWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
 import { mapStateToProps, PieChartComponent } from '../PieChart.js';
 import markdownDatasets from '../../markdownDatasets';
+import { nestedThesauris } from './fixture/nestedThesauri';
 
 describe('PieChart Markdown component', () => {
   const state = {
@@ -26,43 +27,7 @@ describe('PieChart Markdown component', () => {
           { id: 'id8', label: 'label8' },
         ],
       },
-      {
-        _id: 'nested',
-        values: [
-          {
-            label: 'Nest A',
-            id: 'v8rjiuewdlo',
-            values: [
-              {
-                key: 'zlel1nllvs',
-                label: 'A1',
-              },
-              {
-                key: '7pu7fcxl8eg',
-                label: 'A2',
-              },
-              {
-                key: 'ipqlonrw89k',
-                label: 'A3',
-              },
-            ],
-          },
-          {
-            label: 'Nest B',
-            id: 'rtaunx7j1t',
-            values: [
-              {
-                key: 'jpw985bxwwg',
-                label: 'B1',
-              },
-              {
-                key: 'cbe3spt1k8o',
-                label: 'B2',
-              },
-            ],
-          },
-        ],
-      },
+      nestedThesauris,
     ]),
   };
 

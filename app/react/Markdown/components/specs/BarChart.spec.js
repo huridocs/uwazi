@@ -10,6 +10,7 @@ import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 import BarChartComponent, { mapStateToProps } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
 import { dataWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import { nestedThesauris } from './fixture/nestedThesauri';
 
 describe('BarChart Markdown component', () => {
   const state = {
@@ -23,43 +24,7 @@ describe('BarChart Markdown component', () => {
           { id: 'id4', label: 'label4' },
         ],
       },
-      {
-        _id: 'nested',
-        values: [
-          {
-            label: 'Nest A',
-            id: 'v8rjiuewdlo',
-            values: [
-              {
-                key: 'zlel1nllvs',
-                label: 'A1',
-              },
-              {
-                key: '7pu7fcxl8eg',
-                label: 'A2',
-              },
-              {
-                key: 'ipqlonrw89k',
-                label: 'A3',
-              },
-            ],
-          },
-          {
-            label: 'Nest B',
-            id: 'rtaunx7j1t',
-            values: [
-              {
-                key: 'jpw985bxwwg',
-                label: 'B1',
-              },
-              {
-                key: 'cbe3spt1k8o',
-                label: 'B2',
-              },
-            ],
-          },
-        ],
-      },
+      nestedThesauris,
     ]),
   };
 
