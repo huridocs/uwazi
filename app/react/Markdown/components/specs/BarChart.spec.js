@@ -9,6 +9,7 @@ import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
 import BarChartComponent, { mapStateToProps } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
+import { dataWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
 
 describe('BarChart Markdown component', () => {
   const state = {
@@ -20,6 +21,43 @@ describe('BarChart Markdown component', () => {
           { id: 'id2', label: 'label2' },
           { id: 'id3', label: 'label3' },
           { id: 'id4', label: 'label4' },
+        ],
+      },
+      {
+        _id: 'nested',
+        values: [
+          {
+            label: 'Nest A',
+            id: 'v8rjiuewdlo',
+            values: [
+              {
+                key: 'zlel1nllvs',
+                label: 'A1',
+              },
+              {
+                key: '7pu7fcxl8eg',
+                label: 'A2',
+              },
+              {
+                key: 'ipqlonrw89k',
+                label: 'A3',
+              },
+            ],
+          },
+          {
+            label: 'Nest B',
+            id: 'rtaunx7j1t',
+            values: [
+              {
+                key: 'jpw985bxwwg',
+                label: 'B1',
+              },
+              {
+                key: 'cbe3spt1k8o',
+                label: 'B2',
+              },
+            ],
+          },
         ],
       },
     ]),
@@ -183,6 +221,17 @@ describe('BarChart Markdown component', () => {
       component.find(Cell).forEach((cell, index) => {
         expect(cell.prop('fill')).toBe(colors[index % 2]);
       });
+    });
+  });
+
+  describe('when passing scatter parameter', () => {
+    fit('should display nested values with a composed label', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(dataWithNestedValues);
+
+      const component = renderComponent({ scatter: 'true' });
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
     });
   });
 });
