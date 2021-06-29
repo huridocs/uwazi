@@ -29,45 +29,74 @@ describe('reindex', () => {
 
       expect(reindex).toEqual(false);
     });
-    it('should not reindex if use as filter is checked', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.properties[0].filter = true;
+    describe('Properties', () => {
+      it('should not reindex if use as filter is checked', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].filter = true;
 
-      const reindex = await checkIfReindex(template);
+        const reindex = await checkIfReindex(template);
 
-      expect(reindex).toEqual(false);
+        expect(reindex).toEqual(false);
+      });
+      it('should not reindex if default filter is checked', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].defaultfilter = true;
+
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
+      it('should not reindex if hide label is checked', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].noLabel = true;
+
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
+      it('should not reindex if show in card is checked', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].showInCard = true;
+
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
+      it('should not reindex if required property is checked', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].required = true;
+
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
     });
-    it('should not reindex if default filter is checked', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.properties[0].defaultfilter = true;
+    describe('commonProperties', () => {
+      it('should not reindex if priority sorting hass changed', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.commonProperties[0].prioritySorting = true;
 
-      const reindex = await checkIfReindex(template);
+        const reindex = await checkIfReindex(template);
 
-      expect(reindex).toEqual(false);
+        expect(reindex).toEqual(false);
+      });
     });
-    it('should not reindex if hide label is checked', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.properties[0].noLabel = true;
+  });
 
+  describe('Reindex', () => {
+    it('should reindex if a property has been deleted', async () => {
+      const [template] = await templates.get({ _id: templateWithContents });
+      template.properties = [template.properties[1], template.properties[2]];
       const reindex = await checkIfReindex(template);
 
-      expect(reindex).toEqual(false);
+      expect(reindex).toEqual(true);
     });
-    it('should not reindex if show in card is checked', async () => {
+    it('should reindex if commonProperty has been deleted', async () => {
       const [template] = await templates.get({ _id: templateWithContents });
-      template.properties[0].showInCard = true;
-
+      template.commonProperties = [];
       const reindex = await checkIfReindex(template);
 
-      expect(reindex).toEqual(false);
-    });
-    it('should not reindex if required property is checked', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.properties[0].required = true;
-
-      const reindex = await checkIfReindex(template);
-
-      expect(reindex).toEqual(false);
+      expect(reindex).toEqual(true);
     });
   });
 });

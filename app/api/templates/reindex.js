@@ -8,8 +8,12 @@ const SHOULD_NOT_TRIGGER_REINDEX = [
   'properties.noLabel',
   'properties.showInCard',
   'properties.required',
-  'commonProperties.PROPERTY_DELETED',
-  'properties.PROPERTY_DELETED',
+  'commonProperties.filter',
+  'commonProperties.defaultfilter',
+  'commonProperties.noLabel',
+  'commonProperties.showInCard',
+  'commonProperties.required',
+  'commonProperties.prioritySorting',
 ];
 
 function compareTemplateProperties(updatedProperties, originalProperties) {
@@ -23,7 +27,6 @@ function compareTemplateProperties(updatedProperties, originalProperties) {
     }
 
     Object.keys(updatedProperty).forEach(originalKey => {
-      // console.log(updatedProperty[originalKey] !== originalProperty[originalKey], originalKey);
       if (updatedProperty[originalKey] !== originalProperty[originalKey] && originalKey !== '_id') {
         changedProps.push(originalKey);
       }
