@@ -189,7 +189,17 @@ const getSemanticData = async (data: any) => {
     extra: () => `${data.method}: ${data.url}`,
     method: 'RAW',
   };
-  const activityEntry = await buildActivityEntry(entryValue, data);
+  let activityEntry;
+  try {
+    activityEntry = await buildActivityEntry(entryValue, data);
+  } catch (e) {
+    activityEntry = {
+      action: 'WARNING',
+      description: 'The Activity log encountered an error in building the entry',
+      extra: `${data.method}: ${data.url}`,
+      errorStack: e.stack,
+    };
+  }
   return { ...activityEntry };
 };
 

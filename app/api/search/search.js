@@ -160,9 +160,9 @@ function searchGeolocation(documentsQuery, templates) {
       if (prop.type === 'relationship' && prop.inherit) {
         const contentTemplate = templates.find(t => t._id.toString() === prop.content.toString());
         const inheritedProperty = contentTemplate.properties.find(
-          p => p._id.toString() === prop.inheritProperty.toString()
+          p => p._id.toString() === prop.inheritProperty?.toString()
         );
-        if (inheritedProperty.type === 'geolocation') {
+        if (inheritedProperty?.type === 'geolocation') {
           geolocationProperties.push(`${prop.name}`);
         }
       }
