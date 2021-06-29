@@ -8,6 +8,8 @@ const SHOULD_NOT_TRIGGER_REINDEX = [
   'properties.noLabel',
   'properties.showInCard',
   'properties.required',
+  'properties.style',
+  'properties.fullWidth',
   'commonProperties.filter',
   'commonProperties.defaultfilter',
   'commonProperties.noLabel',

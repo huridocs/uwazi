@@ -70,6 +70,22 @@ describe('reindex', () => {
 
         expect(reindex).toEqual(false);
       });
+      it('should not reindex if image full width is checked', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].fullWidth = true;
+
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
+      it('should not reindex if image style is changed', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].style = 'cover';
+
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
     });
     describe('commonProperties', () => {
       it('should not reindex if priority sorting has changed', async () => {
