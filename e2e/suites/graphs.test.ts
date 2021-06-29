@@ -22,7 +22,7 @@ const graphs = {
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
 };
 
-const insertChart = async (chart, chartName) => {
+const insertChart = async (chart: string, chartName: string) => {
   await expect(page).toFill('input[name="page.data.title"]', chartName);
   await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
   await page.type(localSelectors.pageContentsInput, chart);
