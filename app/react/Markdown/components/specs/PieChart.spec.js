@@ -8,6 +8,7 @@ import Immutable from 'immutable';
 
 import { Pie, Tooltip } from 'recharts';
 
+import { dataWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
 import { mapStateToProps, PieChartComponent } from '../PieChart.js';
 import markdownDatasets from '../../markdownDatasets';
 
@@ -23,6 +24,43 @@ describe('PieChart Markdown component', () => {
           { id: 'id6', label: 'label6' },
           { id: 'id7', label: 'label7' },
           { id: 'id8', label: 'label8' },
+        ],
+      },
+      {
+        _id: 'nested',
+        values: [
+          {
+            label: 'Nest A',
+            id: 'v8rjiuewdlo',
+            values: [
+              {
+                key: 'zlel1nllvs',
+                label: 'A1',
+              },
+              {
+                key: '7pu7fcxl8eg',
+                label: 'A2',
+              },
+              {
+                key: 'ipqlonrw89k',
+                label: 'A3',
+              },
+            ],
+          },
+          {
+            label: 'Nest B',
+            id: 'rtaunx7j1t',
+            values: [
+              {
+                key: 'jpw985bxwwg',
+                label: 'B1',
+              },
+              {
+                key: 'cbe3spt1k8o',
+                label: 'B2',
+              },
+            ],
+          },
         ],
       },
     ]),
@@ -177,6 +215,29 @@ describe('PieChart Markdown component', () => {
       const labels = ['label1', 'label3'];
       const expectedLabels = labels.map(label => expect.objectContaining({ label }));
       expect(component.find(Pie).props().data).toEqual(expectedLabels);
+    });
+  });
+
+  describe('when passing scatter', () => {
+    it('should display nested values with a composed label', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(dataWithNestedValues);
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      const component = shallow(
+        <PieChartComponent
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="nested"
+          scatter="true"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, {
+        prop1: 'propValue',
+      });
+      expect(component).toMatchSnapshot();
     });
   });
 });
