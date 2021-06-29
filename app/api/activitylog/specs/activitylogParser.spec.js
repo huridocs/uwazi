@@ -10,6 +10,7 @@ import fixtures, {
   nonExistentId,
 } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
+import * as activityLogBuilderExports from '../activityLogBuilder';
 import { typeParsers } from '../migrationsParser';
 
 jest.mock('../migrationsParser', () => ({
@@ -480,6 +481,35 @@ describe('Activitylog Parser', () => {
             }
           );
         });
+
+        it('should beautify as UPDATE and specify the context updated, with language key if it is unknown', async () => {
+          const data = {
+            _id: 'txId',
+            locale: 'unknown',
+            contexts: [
+              {
+                _id: 'abcd',
+                id: 'ctx123',
+                label: 'ctxLbl',
+                type: 'Connection',
+                values: { wordKey: 'word value' },
+              },
+            ],
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/translations',
+              body: JSON.stringify(data),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated translations',
+              name: 'in ctxLbl (ctx123)',
+              extra: 'in unknown',
+            }
+          );
+        });
       });
       describe('method:DELETE /languages', () => {
         it('should beautify as DELETE with language name', async () => {
@@ -833,6 +863,22 @@ describe('Activitylog Parser', () => {
             }
           );
         });
+
+        it('should beautify as CREATE, and report unassigned it template is not in db.', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/public',
+              body: `{"entity":"{\\"title\\":\\"My entity\\",\\"template\\":\\"${nonExistentId.toString()}\\"}"}`,
+            },
+            {
+              action: 'CREATE',
+              description: 'Created entity coming from a public form',
+              name: 'My entity',
+              extra: 'of type (unassigned)',
+            }
+          );
+        });
       });
       describe('POST /api/remotepublic', () => {
         it('should beautify as CREATE', async () => {
@@ -926,6 +972,24 @@ describe('Activitylog Parser', () => {
               action: 'UPDATE',
               description: 'Updated file',
               name: 'Pdf info, My File',
+            }
+          );
+        });
+        it('should not break if file is missing from the database.', async () => {
+          const body = {
+            _id: nonExistentId,
+            toc: [{ range: { start: 9, end: 35 }, label: 'Content1' }],
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated file',
+              name: `ToC, id: ${nonExistentId.toString()}`,
             }
           );
         });
@@ -1027,6 +1091,29 @@ describe('Activitylog Parser', () => {
             }
           );
         });
+
+        it("should not break when user and group id's are missing", async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/entities/permissions',
+              body: JSON.stringify({
+                ids: [firstDocSharedId],
+                permissions: [
+                  { refId: nonExistentId, type: 'group', level: 'read' },
+                  { refId: nonExistentId, type: 'user', level: 'write' },
+                  { refId: 'public', type: 'public', level: 'read' },
+                ],
+              }),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated permissions on entity',
+              name: 'My Doc',
+              extra: ` with permissions for USERS: ${nonExistentId.toString()} - write; GROUPS: ${nonExistentId.toString()} - read; PUBLIC`,
+            }
+          );
+        });
       });
     });
 
@@ -1064,6 +1151,27 @@ describe('Activitylog Parser', () => {
           }),
         });
         expect(beautified).toEqual({ action: 'RAW' });
+      });
+    });
+
+    describe('on any unhandled buildActivityEntry error', () => {
+      it('should wrap the error and input in RAW.', async () => {
+        jest.spyOn(activityLogBuilderExports, 'buildActivityEntry').mockImplementation(() => {
+          throw Error;
+        });
+        const semanticData = await getSemanticData({
+          method: 'POST',
+          url: '/api/documents',
+          body: '{"title":"New Document"}',
+        });
+        expect(semanticData).toEqual(
+          expect.objectContaining({
+            action: 'WARNING',
+            description: 'The Activity log encountered an error in building the entry',
+            extra: 'POST: /api/documents',
+          })
+        );
+        activityLogBuilderExports.buildActivityEntry.mockRestore();
       });
     });
   });

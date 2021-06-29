@@ -37,6 +37,12 @@ const DescriptionWrapper = props => {
                 <td>Body</td>
                 <td className="tdbody">{entry.get('body')}</td>
               </tr>
+              {entry.getIn(['semantic', 'errorStack']) && (
+                <tr>
+                  <td>Error</td>
+                  <td className="tdbody">{entry.getIn(['semantic', 'errorStack'])}</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

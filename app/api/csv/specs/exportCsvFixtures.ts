@@ -58,6 +58,13 @@ export const templates: any = {
         name: 'geolocation_geolocation',
         id: 'e9b810a9-8f25-442f-b521-616f3f3bbcdd',
       },
+      {
+        _id: '60da5278f8b5527ea723d7cf',
+        id: '465c107f-1c2d-4a93-a60d-849d1fc804c2',
+        name: 'autoid',
+        type: 'generatedid',
+        label: 'AutoId',
+      },
     ],
   },
   '58ad7d240d44252fee4e61fb': {
@@ -123,6 +130,7 @@ export const searchResults: SearchResults = {
         geolocation_geolocation: [
           { value: { lon: 2.154785156250431, label: '', lat: 45.974236866039696 } },
         ],
+        autoid: [{ value: 'FTF8988-8015' }],
       },
       attachments: [],
       documents: [
@@ -183,6 +191,6 @@ export const searchResults: SearchResults = {
   },
 };
 
-export const csvExample = `Title,Date added,Template,company,Nemesis,Costume,Super powers,Allies,Sidekick,Planets conquered,DOB,Geolocation,Documents,Attachments,Published
-Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,,"tricky weapons|fly",,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,,Published
-Scarecrow,2017-01-05,Super Villian,,,Black,"create chaos|tricky weapons",,Man-bat,39,1941-09-23,,,/api/attachments/download?_id=58ad7d250d44252fee4e62f0&file=filename.pdf,Published`;
+export const csvExample = `Title,Date added,Template,company,Nemesis,Costume,Super powers,Allies,AutoId,Sidekick,Planets conquered,DOB,Geolocation,Documents,Attachments,Published
+Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,,"tricky weapons|fly",,FTF8988-8015,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,,Published
+Scarecrow,2017-01-05,Super Villian,,,Black,"create chaos|tricky weapons",,,Man-bat,39,1941-09-23,,,/api/attachments/download?_id=58ad7d250d44252fee4e62f0&file=filename.pdf,Published`;
