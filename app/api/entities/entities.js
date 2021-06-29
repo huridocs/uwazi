@@ -21,11 +21,7 @@ import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
-import {
-  denormalizeRelated,
-  updateTransitiveDenormalization,
-  updateDenormalization,
-} from './denormalize';
+import { denormalizeRelated } from './denormalize';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -88,7 +84,7 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
               p => p._id && p._id.toString() === prop.inheritProperty.toString()
             );
 
-            elem.inheritedValue = partner.metadata[inheritedProperty.name];
+            elem.inheritedValue = partner.metadata[inheritedProperty.name] || [];
             elem.inheritedType = inheritedProperty.type;
           }
         }
@@ -160,42 +156,45 @@ async function updateEntity(entity, _template, unrestricted = false) {
             template
           );
         }
+
+        const fullEntity = { ...currentDoc, ...toSave };
+
         if (template._id) {
-          const fullEntity = { ...currentDoc, ...toSave };
-          await denormalizeRelated(fullEntity, template);
+          await denormalizeRelated(fullEntity, template, currentDoc);
         }
         return saveFunc(toSave);
       }
 
-      if (entity.metadata) {
-        d.metadata = d.metadata || entity.metadata;
-        toSyncProperties.forEach(p => {
-          d.metadata[p] = entity.metadata[p] || [];
-        });
-        d.metadata = await denormalizeMetadata(d.metadata, d, template);
-      }
+      const toSave = { ...d };
 
-      if (entity.suggestedMetadata) {
-        d.suggestedMetadata = d.suggestedMetadata || entity.suggestedMetadata;
-        toSyncProperties.forEach(p => {
-          d.suggestedMetadata[p] = entity.suggestedMetadata[p] || [];
-        });
-        d.suggestedMetadata = await denormalizeMetadata(d.suggestedMetadata, d, template);
-      }
+      await ['metadata', 'suggestedMetadata'].reduce(async (prev, metadataParent) => {
+        await prev;
+        if (entity[metadataParent]) {
+          toSave[metadataParent] = { ...(toSave[metadataParent] || entity[metadataParent]) };
+          toSyncProperties.forEach(p => {
+            toSave[metadataParent][p] = entity[metadataParent][p] || [];
+          });
+          toSave[metadataParent] = await denormalizeMetadata(
+            toSave[metadataParent],
+            toSave,
+            template
+          );
+        }
+      }, Promise.resolve());
 
       if (typeof entity.template !== 'undefined') {
-        d.template = entity.template;
+        toSave.template = entity.template;
       }
 
       if (typeof entity.generatedToc !== 'undefined') {
-        d.generatedToc = entity.generatedToc;
+        toSave.generatedToc = entity.generatedToc;
       }
 
       if (template._id) {
-        await denormalizeRelated(d, template);
+        await denormalizeRelated(toSave, template, d);
       }
 
-      return saveFunc(d);
+      return saveFunc(toSave);
     })
   );
 }
@@ -766,49 +765,6 @@ export default {
       propertyTypes.multiselect,
       propertyTypes.relationship,
     ]);
-  },
-
-  /** Propagate the change of a thesaurus label to all entity metadata. */
-  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-    const properties = (
-      await templates.get({
-        'properties.content': thesaurusId,
-      })
-    )
-      .reduce((m, t) => m.concat(t.properties), [])
-      .filter(p => p.content && thesaurusId === p.content.toString());
-
-    await updateDenormalization({ id: valueId, language }, { label: newLabel }, properties);
-
-    const transitiveProps = await templates.propsThatNeedTransitiveDenormalization(
-      thesaurusId.toString()
-    );
-
-    await updateTransitiveDenormalization(
-      { id: valueId, language },
-      { label: newLabel },
-      transitiveProps
-    );
-
-    if (properties.length || transitiveProps.length) {
-      await search.indexEntities({
-        $and: [
-          {
-            language,
-          },
-          {
-            $or: [
-              ...properties.map(property => ({
-                [`metadata.${property.name}.value`]: valueId,
-              })),
-              ...transitiveProps.map(property => ({
-                [`metadata.${property.name}.inheritedValue.value`]: valueId,
-              })),
-            ],
-          },
-        ],
-      });
-    }
   },
 
   async createThumbnail(entity) {

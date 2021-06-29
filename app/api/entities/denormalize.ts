@@ -1,127 +1,244 @@
 import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema } from 'shared/types/commonTypes';
-import templates from 'api/templates/templates';
 import { search } from 'api/search';
 import { TemplateSchema } from 'shared/types/templateType';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { WithId } from 'api/odm';
+import { isString } from 'util';
 
+import templates from 'api/templates';
 import model from './entitiesModel';
 
-interface Changes {
-  label: string;
-  icon?: EntitySchema['icon'];
+interface DenormalizationUpdate {
+  propertyName: string;
+  filterPath: string;
+  valuePath: string;
+  template?: string;
+  inheritProperty?: string;
 }
 
-interface Params {
-  id: string;
-  language?: string;
+interface PropWithTemplate extends PropertySchema {
   template?: string;
 }
 
-export const updateDenormalization = async (
-  { id, language, template }: Params,
-  changes: Changes,
-  properties: PropertySchema[]
+const metadataChanged = (
+  newMetadata: MetadataObjectSchema[] = [],
+  oldMetadata: MetadataObjectSchema[] = []
 ) =>
-  Promise.all(
-    properties.map(async property =>
-      model.updateMany(
-        {
-          ...(template ? { template } : {}),
-          ...(language ? { language } : {}),
-          [`metadata.${property.name}.value`]: id,
-        },
-        {
-          $set: Object.keys(changes).reduce(
-            (set, prop) => ({
-              ...set,
-              [`metadata.${property.name}.$[valueObject].${prop}`]: changes[<keyof Changes>prop],
-            }),
-            {}
-          ),
-        },
-        { arrayFilters: [{ 'valueObject.value': id }] }
-      )
-    )
+  newMetadata.every(
+    (elem, index) => JSON.stringify(elem.value) !== JSON.stringify(oldMetadata[index]?.value)
+  ) || newMetadata.length !== oldMetadata.length;
+
+const diffEntities = (newEntity: EntitySchema, oldEntity: EntitySchema) =>
+  Object.keys(newEntity.metadata || {}).reduce<EntitySchema>(
+    (theDiff, key) => {
+      if (metadataChanged(newEntity?.metadata?.[key], oldEntity?.metadata?.[key])) {
+        // eslint-disable-next-line no-param-reassign
+        theDiff.metadata = theDiff.metadata || {};
+        // eslint-disable-next-line no-param-reassign
+        theDiff.metadata[key] = newEntity.metadata?.[key];
+      }
+      return theDiff;
+    },
+    {
+      ...(newEntity.title !== oldEntity.title ? { title: oldEntity.title } : {}),
+      ...(newEntity.icon?._id !== oldEntity.icon?._id ? { icon: oldEntity.icon } : {}),
+    }
   );
 
-export const updateTransitiveDenormalization = async (
-  { id, language }: Params,
-  changes: Changes,
-  properties: PropertySchema[]
-) =>
-  Promise.all(
-    properties.map(async property =>
-      model.updateMany(
-        { language, [`metadata.${property.name}.inheritedValue.value`]: id },
-        {
-          ...(changes.icon
-            ? { [`metadata.${property.name}.$[].inheritedValue.$[valueObject].icon`]: changes.icon }
-            : {}),
-          [`metadata.${property.name}.$[].inheritedValue.$[valueObject].label`]: changes.label,
-        },
-        { arrayFilters: [{ 'valueObject.value': id }] }
-      )
-    )
+function getPropertiesThatChanged(entityDiff: EntitySchema, template: TemplateSchema) {
+  const diffPropNames = Object.keys(entityDiff.metadata || {});
+  const metadataPropsThatChanged = (template.properties || [])
+    .filter(p => diffPropNames.includes(p.name))
+    .map(p => p._id?.toString())
+    .filter(isString);
+
+  if (entityDiff.title) {
+    metadataPropsThatChanged.push('label');
+  }
+  if (entityDiff.icon) {
+    metadataPropsThatChanged.push('icon');
+  }
+  return metadataPropsThatChanged;
+}
+
+const uniqueByNameAndInheritProperty = (updates: DenormalizationUpdate[]) =>
+  Object.values(
+    updates.reduce<{
+      [key: string]: DenormalizationUpdate;
+    }>((memo, update) => ({ ...memo, [update.propertyName + update.inheritProperty]: update }), {})
   );
 
-export const denormalizeRelated = async (
-  entity: WithId<EntitySchema>,
-  template: WithId<TemplateSchema>
+const oneJumpRelatedProps = async (contentId: string) => {
+  const anyEntityOrDocument = '';
+  const contentIds = [contentId, anyEntityOrDocument];
+  return (await templates.get({ 'properties.content': { $in: contentIds } })).reduce<
+    PropWithTemplate[]
+  >(
+    (props, template) =>
+      props.concat(
+        (template.properties || [])
+          .filter(p => contentIds.includes(p.content?.toString() || ''))
+          .map(p => ({
+            ...p,
+            template: template._id.toString(),
+          }))
+      ),
+    []
+  );
+};
+
+const oneJumpUpdates = async (
+  contentId: string,
+  metadataPropsThatChanged: string[],
+  titleOrIconChanged: boolean
 ) => {
-  if (!entity.title || !entity.language || !entity.sharedId) {
+  let updates = (await oneJumpRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
+    propertyName: p.name,
+    inheritProperty: p.inheritProperty,
+    ...(p.inheritProperty ? { template: p.template } : {}),
+    filterPath: `metadata.${p.name}.value`,
+    valuePath: `metadata.${p.name}`,
+  }));
+
+  if (metadataPropsThatChanged?.length && !titleOrIconChanged) {
+    updates = updates.filter(u => metadataPropsThatChanged.includes(u.inheritProperty || ''));
+  }
+  return updates;
+};
+
+const twoJumpsRelatedProps = async (contentId: string) => {
+  const properties: PropertySchema[] = (await templates.get({ 'properties.content': contentId }))
+    .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
+    .filter(p => contentId === p.content?.toString());
+
+  const contentIds = properties
+    .map<string | undefined>(p => p._id?.toString())
+    .filter<string>(<(v: string | undefined) => v is string>(v => !!v));
+
+  return (await templates.get({ 'properties.inheritProperty': { $in: contentIds } })).reduce<
+    PropWithTemplate[]
+  >(
+    (props, template) =>
+      props.concat(
+        (template.properties || []).filter(p => contentIds.includes(p.inheritProperty || ''))
+      ),
+    []
+  );
+};
+
+const twoJumpUpdates = async (contentId: string) =>
+  (await twoJumpsRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
+    propertyName: p.name,
+    inheritProperty: p.inheritProperty,
+    filterPath: `metadata.${p.name}.inheritedValue.value`,
+    valuePath: `metadata.${p.name}.$[].inheritedValue`,
+  }));
+
+async function denormalizationUpdates(contentId: string, templatePropertiesThatChanged: string[]) {
+  const titleOrIconChanged =
+    templatePropertiesThatChanged.includes('label') ||
+    templatePropertiesThatChanged.includes('icon');
+
+  const metadataPropsThatChanged = templatePropertiesThatChanged.filter(
+    v => !['icon', 'label'].includes(v)
+  );
+
+  return uniqueByNameAndInheritProperty([
+    ...(await oneJumpUpdates(contentId, metadataPropsThatChanged, titleOrIconChanged)),
+    ...(titleOrIconChanged ? await twoJumpUpdates(contentId) : []),
+  ]);
+}
+
+const reindexUpdates = async (
+  value: string,
+  language: string,
+  updates: DenormalizationUpdate[]
+) => {
+  if (updates.length) {
+    await search.indexEntities({
+      $and: [{ language }, { $or: updates.map(update => ({ [update.filterPath]: value })) }],
+    });
+  }
+};
+
+const denormalizeRelated = async (
+  newEntity: WithId<EntitySchema>,
+  template: WithId<TemplateSchema>,
+  existingEntity: EntitySchema = {}
+) => {
+  if (!newEntity.title || !newEntity.language || !newEntity.sharedId) {
     throw new Error('denormalization requires an entity with title, sharedId and language');
   }
 
-  const transitiveProperties = await templates.propsThatNeedTransitiveDenormalization(
-    template._id.toString()
-  );
-  const properties = await templates.propsThatNeedDenormalization(template._id.toString());
+  const entityDiff = diffEntities(newEntity, existingEntity);
+  const templatePropertiesThatChanged = getPropertiesThatChanged(entityDiff, template);
+  if (templatePropertiesThatChanged.length === 0) {
+    return false;
+  }
 
-  await updateTransitiveDenormalization(
-    { id: entity.sharedId, language: entity.language },
-    { label: entity.title, icon: entity.icon },
-    transitiveProperties
+  const updates = await denormalizationUpdates(
+    template._id.toString(),
+    templatePropertiesThatChanged
   );
 
   await Promise.all(
-    properties.map(async prop => {
+    updates.map(async update => {
       const inheritProperty = (template.properties || []).find(
-        p => prop.inheritProperty === p._id?.toString()
+        p => update.inheritProperty === p._id?.toString()
       );
-      return updateDenormalization(
+
+      return model.updateMany(
         {
-          // @ts-ignore we have a sharedId guard, why ts does not like this ? bug ?
-          id: entity.sharedId,
-          language: entity.language,
-          template: prop.template,
+          [update.filterPath]: newEntity.sharedId,
+          language: newEntity.language,
+          ...(update.template ? { template: update.template } : {}),
         },
         {
-          ...(inheritProperty ? { inheritedValue: entity.metadata?.[inheritProperty.name] } : {}),
-          label: entity.title,
-          icon: entity.icon,
+          $set: {
+            [`${update.valuePath}.$[valueIndex].label`]: newEntity.title,
+            [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
+            ...(inheritProperty
+              ? {
+                  [`${update.valuePath}.$[valueIndex].inheritedValue`]: newEntity.metadata?.[
+                    inheritProperty.name
+                  ],
+                }
+              : {}),
+          },
         },
-        [prop]
+        { arrayFilters: [{ 'valueIndex.value': newEntity.sharedId }] }
       );
     })
   );
 
-  if (properties.length || transitiveProperties.length) {
-    await search.indexEntities({
-      $and: [
-        { language: entity.language },
-        {
-          $or: [
-            ...properties.map(property => ({
-              [`metadata.${property.name}.value`]: entity.sharedId,
-            })),
-            ...transitiveProperties.map(property => ({
-              [`metadata.${property.name}.inheritedValue.value`]: entity.sharedId,
-            })),
-          ],
-        },
-      ],
-    });
-  }
-  ////Crappy draft code ends
+  return reindexUpdates(newEntity.sharedId, newEntity.language, updates);
 };
+
+const denormalizeThesauriLabelInMetadata = async (
+  valueId: string,
+  newLabel: string,
+  thesaurusId: string,
+  language: string
+) => {
+  const updates = await denormalizationUpdates(thesaurusId.toString(), ['label']);
+  await Promise.all(
+    updates.map(async entry =>
+      model.updateMany(
+        {
+          [entry.filterPath]: valueId,
+          language,
+          ...(entry.template ? { template: entry.template } : {}),
+        },
+        {
+          $set: {
+            [`${entry.valuePath}.$[valueIndex].label`]: newLabel,
+          },
+        },
+        { arrayFilters: [{ 'valueIndex.value': valueId }] }
+      )
+    )
+  );
+  await reindexUpdates(valueId, language, updates);
+};
+
+export { denormalizeRelated, denormalizeThesauriLabelInMetadata };
