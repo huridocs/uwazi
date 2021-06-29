@@ -124,6 +124,7 @@ describe('Graphs in Page ', () => {
         localSelectors.pageContentsInput,
         el => el.textContent
       );
+      await expect(page).toFill('input[name="page.data.title"]', 'Bar chart with nested graph');
       expect(pageContentsInput).toContain('<Dataset />');
 
       await page.type(localSelectors.pageContentsInput, graphs.barChartScatter);
@@ -147,7 +148,7 @@ describe('Graphs in Page ', () => {
 
     it('should navigate back to the edit page and insert a Pie chart graph', async () => {
       await page.goBack();
-      await expect(page).toFill('input[name="page.data.title"]', 'Pie chart graph');
+      await expect(page).toFill('input[name="page.data.title"]', 'Pie chart with nested graph');
       await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
       await page.type(localSelectors.pageContentsInput, graphs.pieChartScatter);
       await savePage();
@@ -170,7 +171,7 @@ describe('Graphs in Page ', () => {
 
     it('should navigate back to the edit page and insert a List chart graph', async () => {
       await page.goBack();
-      await expect(page).toFill('input[name="page.data.title"]', 'List chart graph');
+      await expect(page).toFill('input[name="page.data.title"]', 'List chart with nested graph');
       await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
       await page.type(localSelectors.pageContentsInput, graphs.listChartScatter);
       await savePage();
