@@ -40,7 +40,8 @@ const rootProperties = ['title', 'creationDate', 'editDate'];
 const getPropertyData = ({ formattedEntity, propertyName, newNameGeneration }: Options) =>
   formattedEntity.metadata.find((p: any) => p.name === safeName(propertyName, newNameGeneration));
 
-const extractRootProperty = ({ formattedEntity, propertyName }: Options) => formattedEntity[propertyName];
+const extractRootProperty = ({ formattedEntity, propertyName }: Options) =>
+  formattedEntity[propertyName];
 
 const extractMetadataProperty = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
   const propertyData = formattedEntity.metadata.find(
