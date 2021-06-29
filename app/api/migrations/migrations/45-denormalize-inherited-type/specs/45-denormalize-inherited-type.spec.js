@@ -13,7 +13,7 @@ describe('migration denormalize-inherited-type', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(44);
+    expect(migration.delta).toBe(45);
   });
 
   it('should denormalize the inherited type', async () => {

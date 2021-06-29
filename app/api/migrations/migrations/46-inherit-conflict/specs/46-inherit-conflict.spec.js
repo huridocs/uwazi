@@ -13,7 +13,7 @@ describe('migration inherit-conflict', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(45);
+    expect(migration.delta).toBe(46);
   });
 
   it('should disable inherit for any conflicting property', async () => {
