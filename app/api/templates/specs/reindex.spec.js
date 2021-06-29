@@ -72,7 +72,7 @@ describe('reindex', () => {
       });
     });
     describe('commonProperties', () => {
-      it('should not reindex if priority sorting hass changed', async () => {
+      it('should not reindex if priority sorting has changed', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.commonProperties[0].prioritySorting = true;
 
@@ -84,19 +84,37 @@ describe('reindex', () => {
   });
 
   describe('Reindex', () => {
-    it('should reindex if a property has been deleted', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.properties = [template.properties[1], template.properties[2]];
-      const reindex = await checkIfReindex(template);
+    describe('Property', () => {
+      it('should reindex if a property has been deleted', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties = [template.properties[1], template.properties[2]];
+        const reindex = await checkIfReindex(template);
 
-      expect(reindex).toEqual(true);
+        expect(reindex).toEqual(true);
+      });
+      it('should reindex when a property name has been changed', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].name = 'New property name';
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(true);
+      });
     });
-    it('should reindex if commonProperty has been deleted', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.commonProperties = [];
-      const reindex = await checkIfReindex(template);
+    describe('commonProperty', () => {
+      it('should reindex if a commonProperty has been deleted', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.commonProperties = [];
+        const reindex = await checkIfReindex(template);
 
-      expect(reindex).toEqual(true);
+        expect(reindex).toEqual(true);
+      });
+      it('should reindex if commonProperty name has changed', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.commonProperties[0].name = 'New name';
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(true);
+      });
     });
   });
 });
