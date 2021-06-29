@@ -14,11 +14,11 @@ describe('EntityData Markdown', () => {
     Readonly<{}>,
     React.Component<{}, {}, any>
   >;
-  let consoleLogSpy: jasmine.Spy;
+  let consoleErrorSpy: jasmine.Spy;
 
   beforeEach(() => {
-    consoleLogSpy = jasmine.createSpy('consoleLogSpy');
-    spyOn(console, 'log').and.callFake(consoleLogSpy);
+    consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
+    spyOn(console, 'error').and.callFake(consoleErrorSpy);
   });
 
   const render = (innerComponent: any) => {
@@ -103,8 +103,8 @@ describe('EntityData Markdown', () => {
     it('should fail if no value or propertyName is provided', () => {
       render(<EntityData />);
       expect(component.html()).toEqual('');
-      expect(consoleLogSpy).toHaveBeenCalledWith('Error on EntityData: ');
-      expect(consoleLogSpy.calls.all()[2].args[0].message).toBe(
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error on EntityData: ');
+      expect(consoleErrorSpy.calls.all()[2].args[0].message).toBe(
         '"value-of" or "label-of" must be provided.'
       );
     });
@@ -112,8 +112,8 @@ describe('EntityData Markdown', () => {
     it('should fail if both value and propertyName are provided', () => {
       render(<EntityData value-of="something" label-of="something else" />);
       expect(component.html()).toEqual('');
-      expect(consoleLogSpy).toHaveBeenCalledWith('Error on EntityData: ');
-      expect(consoleLogSpy.calls.all()[2].args[0].message).toBe(
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error on EntityData: ');
+      expect(consoleErrorSpy.calls.all()[2].args[0].message).toBe(
         'Can\'t provide both "value-of" and "label-of".'
       );
     });

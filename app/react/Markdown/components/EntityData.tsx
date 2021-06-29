@@ -17,16 +17,17 @@ export interface EntityDataProps {
 
 interface Options {
   formattedEntity: any;
-  property: string;
+  propertyName: string;
   newNameGeneration: boolean;
   template?: IImmutable<ClientTemplateSchema>;
 }
 
 const mapStateToProps = ({ entityView, templates, thesauris, settings }: IStore) => ({
   entity: entityView.entity,
+  template: templates.find(t => t?.get('_id') === entityView.entity.get('template')),
   templates,
   thesauri: thesauris,
-  settings,
+  newNameGeneration: settings.collection.get('newNameGeneration') || false,
 });
 
 const connector = connect(mapStateToProps);
@@ -36,40 +37,40 @@ type ComponentProps = EntityDataProps & MappedProps;
 
 const rootProperties = ['title', 'creationDate', 'editDate'];
 
-const getPropertyData = ({ formattedEntity, property, newNameGeneration }: Options) =>
-  formattedEntity.metadata.find((p: any) => p.name === safeName(property, newNameGeneration));
+const getPropertyData = ({ formattedEntity, propertyName, newNameGeneration }: Options) =>
+  formattedEntity.metadata.find((p: any) => p.name === safeName(propertyName, newNameGeneration));
 
-const extractRootProperty = ({ formattedEntity, property }: Options) => formattedEntity[property];
+const extractRootProperty = ({ formattedEntity, propertyName }: Options) => formattedEntity[propertyName];
 
-const extractMetadataProperty = ({ formattedEntity, property, newNameGeneration }: Options) => {
+const extractMetadataProperty = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
   const propertyData = formattedEntity.metadata.find(
-    (p: any) => p.name === safeName(property, newNameGeneration)
+    (p: any) => p.name === safeName(propertyName, newNameGeneration)
   );
   return showByType(propertyData, false);
 };
 
-const extractRootLabel = ({ property, template: _template }: Options) => {
+const extractRootLabel = ({ propertyName, template: _template }: Options) => {
   const template = ensure<IImmutable<ClientTemplateSchema>>(_template);
   const term =
     template
       .get('commonProperties')
-      ?.find(p => p?.get('name') === property)
+      ?.find(p => p?.get('name') === propertyName)
       .get('label') || '';
 
-  const context = property === 'title' ? template.get('_id') : 'System';
+  const context = propertyName === 'title' ? template.get('_id') : 'System';
   return <Translate context={context}>{term}</Translate>;
 };
 
-const extractMetadataLabel = ({ formattedEntity, property, newNameGeneration }: Options) => {
-  const propertyData = getPropertyData({ formattedEntity, property, newNameGeneration });
+const extractMetadataLabel = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
+  const propertyData = getPropertyData({ formattedEntity, propertyName, newNameGeneration });
   return <Translate context={propertyData.translateContext}>{propertyData.label}</Translate>;
 };
 
 const logError = (err: any, propValueOf?: string, propLabelOf?: string) => {
   /* eslint-disable no-console */
-  console.log('Error on EntityData: ');
-  console.log('value-of: ', propValueOf, '; label-of: ', propLabelOf);
-  console.log(err);
+  console.error('Error on EntityData: ');
+  console.error('value-of: ', propValueOf, '; label-of: ', propLabelOf);
+  console.error(err);
   /* eslint-enable no-console */
 };
 
@@ -116,29 +117,28 @@ const prepareData = (
   propValueOf?: EntityDataProps['value-of'],
   propLabelOf?: EntityDataProps['label-of']
 ) => {
-  const property = getProperty(propValueOf, propLabelOf);
-  const isRootProperty = rootProperties.includes(property);
-  const method = getMethod(propValueOf, isRootProperty);
+  const propertyName = getProperty(propValueOf, propLabelOf);
+  const isRootProperty = rootProperties.includes(propertyName);
+  const renderMethod = getMethod(propValueOf, isRootProperty);
 
-  return { method, property };
+  return { renderMethod, propertyName };
 };
 
 const EntityData = ({
   entity,
+  template,
   templates,
   thesauri,
   'value-of': propValueOf,
   'label-of': propLabelOf,
-  settings,
+  newNameGeneration,
 }: ComponentProps) => {
-  const newNameGeneration = settings.collection.get('newNameGeneration') || false;
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauri);
   let output = <></>;
 
   try {
-    const { property, method } = prepareData(propValueOf, propLabelOf);
-    const template = templates.find(t => t?.get('_id') === entity.get('template'));
-    output = <>{method({ formattedEntity, property, newNameGeneration, template })}</>;
+    const { propertyName, renderMethod } = prepareData(propValueOf, propLabelOf);
+    output = <>{renderMethod({ formattedEntity, propertyName, newNameGeneration, template })}</>;
   } catch (err) {
     logError(err, propValueOf, propLabelOf);
   }
