@@ -321,17 +321,29 @@ export class DocumentSidePanel extends Component {
             </div>
           </ShowIf>
           <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
-            <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
+            {this.props.tab === 'toc' && this.props.tocBeingEdited && (
               <div className="sidepanel-footer">
+                <button
+                  type="button"
+                  className="edit-toc btn btn-primary"
+                  onClick={this.props.leaveEditMode}
+                >
+                  <Icon icon="times" />
+                  <span className="btn-label">
+                    <Translate>Cancel</Translate>
+                  </span>
+                </button>
                 <button type="submit" form="tocForm" className="edit-toc btn btn-success">
                   <Icon icon="save" />
-                  <span className="btn-label">Save</span>
+                  <span className="btn-label">
+                    <Translate>Save</Translate>
+                  </span>
                 </button>
               </div>
-            </ShowIf>
+            )}
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
-            <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
+            {this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly && (
               <div className="sidepanel-footer">
                 <button
                   onClick={() => this.props.editToc(this.props.file.toc || [])}
@@ -344,7 +356,7 @@ export class DocumentSidePanel extends Component {
                   <Translate>Mark as Reviewed</Translate>
                 </ReviewTocButton>
               </div>
-            </ShowIf>
+            )}
           </NeedAuthorization>
 
           <div className="sidepanel-body">
@@ -500,6 +512,7 @@ DocumentSidePanel.propTypes = {
   tocForm: PropTypes.array,
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
+  leaveEditMode: PropTypes.func,
   searchSnippets: PropTypes.func,
   getDocumentReferences: PropTypes.func,
   removeFromToc: PropTypes.func,
