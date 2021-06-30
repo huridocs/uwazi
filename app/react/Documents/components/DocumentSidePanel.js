@@ -487,6 +487,7 @@ DocumentSidePanel.defaultProps = {
   raw: false,
   file: {},
   hubs: Immutable.fromJS([]),
+  leaveEditMode: () => {},
 };
 
 DocumentSidePanel.propTypes = {
