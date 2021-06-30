@@ -1,4 +1,4 @@
-export const nestedThesauris = {
+export const nestedThesauri = {
   _id: 'nested',
   values: [
     {

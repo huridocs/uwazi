@@ -9,8 +9,8 @@ import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
 import BarChartComponent, { mapStateToProps } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
-import { dataWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
-import { nestedThesauris } from './fixture/nestedThesauri';
+import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('BarChart Markdown component', () => {
   const state = {
@@ -24,7 +24,7 @@ describe('BarChart Markdown component', () => {
           { id: 'id4', label: 'label4' },
         ],
       },
-      nestedThesauris,
+      nestedThesauri,
     ]),
   };
 
@@ -191,7 +191,7 @@ describe('BarChart Markdown component', () => {
 
   describe('when passing scatter parameter', () => {
     it('should display nested values with a composed label', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(dataWithNestedValues);
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(aggregationWithNestedValues);
 
       const component = renderComponent({ scatter: 'true', context: 'nested' });
 

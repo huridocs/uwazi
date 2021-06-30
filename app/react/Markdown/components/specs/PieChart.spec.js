@@ -8,10 +8,10 @@ import Immutable from 'immutable';
 
 import { Pie, Tooltip } from 'recharts';
 
-import { dataWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
 import { mapStateToProps, PieChartComponent } from '../PieChart.js';
 import markdownDatasets from '../../markdownDatasets';
-import { nestedThesauris } from './fixture/nestedThesauri';
+import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('PieChart Markdown component', () => {
   const state = {
@@ -27,7 +27,7 @@ describe('PieChart Markdown component', () => {
           { id: 'id8', label: 'label8' },
         ],
       },
-      nestedThesauris,
+      nestedThesauri,
     ]),
   };
 
@@ -185,7 +185,7 @@ describe('PieChart Markdown component', () => {
 
   describe('when passing scatter', () => {
     it('should display nested values with a composed label', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(dataWithNestedValues);
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(aggregationWithNestedValues);
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       const component = shallow(
