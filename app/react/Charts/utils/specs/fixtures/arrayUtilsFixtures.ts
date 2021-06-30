@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-const dataWithNestedValues = Immutable.fromJS([
+const aggregationWithNestedValues = Immutable.fromJS([
   {
     key: 'd2ieurwgjv',
     doc_count: 4,
@@ -117,4 +117,4 @@ const expectNestedResultWithNoZeros = [
   },
 ];
 
-export { dataWithNestedValues, expectNestedResult, expectNestedResultWithNoZeros };
+export { aggregationWithNestedValues, expectNestedResult, expectNestedResultWithNoZeros };

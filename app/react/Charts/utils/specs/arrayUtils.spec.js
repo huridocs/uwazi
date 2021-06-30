@@ -3,7 +3,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { t } from 'app/I18N';
 import {
-  dataWithNestedValues,
+  aggregationWithNestedValues,
   expectNestedResult,
   expectNestedResultWithNoZeros,
 } from './fixtures/arrayUtilsFixtures';
@@ -99,8 +99,7 @@ describe('Array Utils', () => {
 
     it('should return nested thesauri flattened if the scatter format option is true', () => {
       options.scatter = true;
-      data = dataWithNestedValues;
-      expect(formatDataForChart(dataWithNestedValues, property, options)).toEqual(
+      expect(formatDataForChart(aggregationWithNestedValues, property, options)).toEqual(
         expectNestedResult
       );
     });
@@ -108,8 +107,7 @@ describe('Array Utils', () => {
     it('should return nested thesauri flattened, with no zero results, if the scatter and exludeZero options are true', () => {
       options.scatter = true;
       options.excludeZero = true;
-      data = dataWithNestedValues;
-      expect(formatDataForChart(dataWithNestedValues, property, options)).toEqual(
+      expect(formatDataForChart(aggregationWithNestedValues, property, options)).toEqual(
         expectNestedResultWithNoZeros
       );
     });
