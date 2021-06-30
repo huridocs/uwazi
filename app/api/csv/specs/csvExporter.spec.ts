@@ -95,11 +95,12 @@ describe('csvExporter', () => {
         'Sidekick',
         'Planets conquered',
         'DOB',
+        'AutoId',
       ].forEach(label => {
         expect(headersLabels).toContain(label);
       });
 
-      expect(headers.length).toBe(8);
+      expect(headers.length).toBe(9);
     });
 
     it('prependCommonHeaders should add entries tagged with common at the beginning', () => {
