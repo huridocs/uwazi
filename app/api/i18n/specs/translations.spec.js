@@ -1,9 +1,7 @@
-/** @format */
-
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
-import entities from 'api/entities';
 
+import thesauri from 'api/thesauri/thesauri.js';
 import fixtures, {
   entityTemplateId,
   documentTemplateId,
@@ -176,7 +174,7 @@ describe('translations', () => {
 
     describe('when saving a dictionary context', () => {
       it('should propagate translation changes to entities denormalized label', async () => {
-        spyOn(entities, 'renameThesaurusInMetadata').and.returnValue(Promise.resolve());
+        spyOn(thesauri, 'renameThesaurusInMetadata').and.returnValue(Promise.resolve());
         await translations.save({
           _id: englishTranslation,
           locale: 'en',
@@ -195,7 +193,7 @@ describe('translations', () => {
           ],
         });
 
-        expect(entities.renameThesaurusInMetadata).toHaveBeenLastCalledWith(
+        expect(thesauri.renameThesaurusInMetadata).toHaveBeenLastCalledWith(
           'age id',
           'Age changed',
           dictionaryId,
