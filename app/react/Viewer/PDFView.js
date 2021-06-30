@@ -9,6 +9,7 @@ import { isClient, events } from 'app/utils';
 import { toUrlParams } from 'shared/JSONRequest';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
+import { leaveEditMode } from 'app/Viewer/actions/documentActions';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
@@ -51,6 +52,10 @@ class PDFView extends Component {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
     }
+  }
+
+  componentWillUnmount() {
+    this.context.store.dispatch(leaveEditMode());
   }
 
   onDocumentReady(doc) {

@@ -13,8 +13,11 @@ import Viewer from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
+import { leaveEditMode } from 'app/Viewer/actions/documentActions';
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
+
+jest.mock('app/Viewer/actions/documentActions');
 
 describe('PDFView', () => {
   let component;
@@ -247,6 +250,13 @@ describe('PDFView', () => {
       component.update();
       instance.changeBrowserHistoryPage(16);
       expect(browserHistory.push).toHaveBeenCalledWith('pathname?page=16');
+    });
+  });
+
+  describe('onunmount', () => {
+    it('should leave edit mode', () => {
+      component.unmount();
+      expect(leaveEditMode).toHaveBeenCalled();
     });
   });
 });
