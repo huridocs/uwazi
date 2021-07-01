@@ -92,37 +92,23 @@ const getProperty = (
   return property;
 };
 
-const getMethod = (propValueOf: string | undefined, isRootProperty: boolean) => {
+const getMethod = (
+  propValueOf: string | undefined,
+  propLabelOf: string | undefined,
+  propertyName: string
+) => {
+  const isRootProperty = rootProperties.includes(propertyName);
   let method: Function = () => {};
 
-  if (propValueOf && isRootProperty) {
-    method = extractRootProperty;
+  if (propValueOf) {
+    method = isRootProperty ? extractRootProperty : extractMetadataProperty;
   }
 
-  if (propValueOf && !isRootProperty) {
-    method = extractMetadataProperty;
-  }
-
-  if (!propValueOf && isRootProperty) {
-    method = extractRootLabel;
-  }
-
-  if (!propValueOf && !isRootProperty) {
-    method = extractMetadataLabel;
+  if (propLabelOf) {
+    method = isRootProperty ? extractRootLabel : extractMetadataLabel;
   }
 
   return method;
-};
-
-const prepareData = (
-  propValueOf?: EntityDataProps['value-of'],
-  propLabelOf?: EntityDataProps['label-of']
-) => {
-  const propertyName = getProperty(propValueOf, propLabelOf);
-  const isRootProperty = rootProperties.includes(propertyName);
-  const renderMethod = getMethod(propValueOf, isRootProperty);
-
-  return { renderMethod, propertyName };
 };
 
 const EntityData = ({
@@ -138,7 +124,8 @@ const EntityData = ({
   let output = <></>;
 
   try {
-    const { propertyName, renderMethod } = prepareData(propValueOf, propLabelOf);
+    const propertyName = getProperty(propValueOf, propLabelOf);
+    const renderMethod = getMethod(propValueOf, propLabelOf, propertyName);
     output = <>{renderMethod({ formattedEntity, propertyName, newNameGeneration, template })}</>;
   } catch (err) {
     logError(err, propValueOf, propLabelOf);
