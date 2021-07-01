@@ -5,7 +5,7 @@ import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
-import { clearInput, selectDate, scrollTo } from '../helpers/formActions';
+import { clearInput, selectDate, scrollTo, waitForNavigation } from '../helpers/formActions';
 
 describe('Metadata Properties', () => {
   beforeAll(async () => {
@@ -16,7 +16,7 @@ describe('Metadata Properties', () => {
 
   it('should log in as admin then click the settings nav button.', async () => {
     await adminLogin();
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await waitForNavigation(expect(page).toClick('a', { text: 'Account settings' }));
     expect(page.url()).toBe(`${host}/en/settings/account`);
   });
 

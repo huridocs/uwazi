@@ -1,3 +1,5 @@
+import { Response } from 'puppeteer';
+
 export const scrollTo = async (selector: string): Promise<void> => {
   await page.evaluate(str => document.querySelector(str)?.scrollIntoView(), selector);
 };
@@ -11,3 +13,6 @@ export const clearInput = async (selector: string): Promise<void> => {
   await expect(page).toClick(selector, { clickCount: 3 });
   await page.keyboard.press('Backspace');
 };
+
+export const waitForNavigation = async (action: Promise<void>): Promise<[void, Response]> =>
+  Promise.all([action, page.waitForNavigation()]);
