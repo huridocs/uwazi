@@ -1,25 +1,11 @@
 /* eslint-disable max-statements */
-// import { ExpectTimingActions } from 'expect-puppeteer';
 
 import { adminLogin, logout } from '../helpers/login';
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
-
-const scrollTo = async (selector: string): Promise<void> => {
-  await page.evaluate(str => document.querySelector(str)?.scrollIntoView(), selector);
-};
-
-const selectDate = async (selector: string, value: string, options?: any): Promise<void> => {
-  await expect(page).toFill(selector, value, options);
-  await expect(page).toClick('.react-datepicker__day--selected');
-};
-
-const clearInput = async (selector: string): Promise<void> => {
-  await expect(page).toClick(selector, { clickCount: 3 });
-  await page.keyboard.press('Backspace');
-};
+import { clearInput, selectDate, scrollTo } from '../helpers/formActions';
 
 describe('Metadata Properties', () => {
   beforeAll(async () => {
