@@ -24,7 +24,6 @@ interface Options {
 
 const mapStateToProps = ({ entityView, templates, thesauris, settings }: IStore) => ({
   entity: entityView.entity,
-  template: templates.find(t => t?.get('_id') === entityView.entity.get('template')),
   templates,
   thesauri: thesauris,
   newNameGeneration: settings.collection.get('newNameGeneration') || false,
@@ -92,28 +91,18 @@ const getProperty = (
   return property;
 };
 
-const getMethod = (
-  propValueOf: string | undefined,
-  propLabelOf: string | undefined,
-  propertyName: string
-) => {
+const getMethod = (propValueOf: string | undefined, propertyName: string) => {
   const isRootProperty = rootProperties.includes(propertyName);
-  let method: Function = () => {};
 
   if (propValueOf) {
-    method = isRootProperty ? extractRootProperty : extractMetadataProperty;
+    return isRootProperty ? extractRootProperty : extractMetadataProperty;
   }
 
-  if (propLabelOf) {
-    method = isRootProperty ? extractRootLabel : extractMetadataLabel;
-  }
-
-  return method;
+  return isRootProperty ? extractRootLabel : extractMetadataLabel;
 };
 
 const EntityData = ({
   entity,
-  template,
   templates,
   thesauri,
   'value-of': propValueOf,
@@ -121,11 +110,12 @@ const EntityData = ({
   newNameGeneration,
 }: ComponentProps) => {
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauri);
+  const template = templates.find(t => t?.get('_id') === entity.get('template'));
   let output = <></>;
 
   try {
     const propertyName = getProperty(propValueOf, propLabelOf);
-    const renderMethod = getMethod(propValueOf, propLabelOf, propertyName);
+    const renderMethod = getMethod(propValueOf, propertyName);
     output = <>{renderMethod({ formattedEntity, propertyName, newNameGeneration, template })}</>;
   } catch (err) {
     logError(err, propValueOf, propLabelOf);
