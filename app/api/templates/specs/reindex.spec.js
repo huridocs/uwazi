@@ -1,8 +1,14 @@
 import db from 'api/utils/testing_db';
+import { search } from 'api/search';
 import templates from '../templates';
 import { checkIfReindex } from '../reindex';
 import fixtures, { templateWithContents } from './fixtures';
-import { search } from 'api/search';
+
+const getAndUpdateTemplate = async props => {
+  const [template] = await templates.get({ _id: templateWithContents });
+  Object.keys(props).forEach(key => (template[key] = props[key]));
+  return template;
+};
 
 describe('reindex', () => {
   beforeEach(async () => {
@@ -16,87 +22,72 @@ describe('reindex', () => {
 
   describe('Not Reindex', () => {
     it('should not reindex if name has changed', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.name = 'Updated name';
-
+      const template = getAndUpdateTemplate({ name: 'Updated name' });
       const reindex = await checkIfReindex(template);
 
       expect(reindex).toEqual(false);
     });
     it('should not reindex if color has changed', async () => {
-      const [template] = await templates.get({ _id: templateWithContents });
-      template.color = '#222222';
-
+      const template = getAndUpdateTemplate({ color: '#222222' });
       const reindex = await checkIfReindex(template);
 
       expect(reindex).toEqual(false);
       expect(search.bulkIndex).not.toHaveBeenCalled();
     });
     describe('Properties', () => {
-      it('should not reindex if use as filter is checked', async () => {
+      const getAndUpdateTemplateProps = async props => {
         const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].filter = true;
-
+        Object.keys(props).forEach(key => (template.properties[0][key] = props[key]));
+        return template;
+      };
+      it('should not reindex if use as filter is checked', async () => {
+        const template = await getAndUpdateTemplateProps({ filter: true });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if default filter is checked', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].defaultfilter = true;
-
+        const template = await getAndUpdateTemplateProps({ defaultfilter: true });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if hide label is checked', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].noLabel = true;
-
+        const template = await getAndUpdateTemplateProps({ noLabel: true });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if show in card is checked', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].showInCard = true;
-
+        const template = await getAndUpdateTemplateProps({ showInCard: true });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if required property is checked', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].required = true;
-
+        const template = await getAndUpdateTemplateProps({ required: true });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
       });
       it('should not reindex if image full width is checked', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].fullWidth = true;
-
+        const template = await getAndUpdateTemplateProps({ fullWidth: true });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
       });
       it('should not reindex if image style is changed', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].style = 'cover';
-
+        const template = await getAndUpdateTemplateProps({ style: 'cover' });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
       });
       it('should not reindex if nested properties is changed', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].nestedProperties = ['something'];
-
+        const template = await getAndUpdateTemplateProps({ nestedProperties: ['something'] });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
