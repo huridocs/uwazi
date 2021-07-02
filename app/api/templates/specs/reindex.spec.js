@@ -6,7 +6,9 @@ import fixtures, { templateWithContents } from './fixtures';
 
 const getAndUpdateTemplate = async props => {
   const [template] = await templates.get({ _id: templateWithContents });
-  Object.keys(props).forEach(key => (template[key] = props[key]));
+  Object.keys(props).forEach(key => {
+    template[key] = props[key];
+  });
   return template;
 };
 
@@ -37,7 +39,9 @@ describe('reindex', () => {
     describe('Properties', () => {
       const getAndUpdateTemplateProps = async props => {
         const [template] = await templates.get({ _id: templateWithContents });
-        Object.keys(props).forEach(key => (template.properties[0][key] = props[key]));
+        Object.keys(props).forEach(key => {
+          template.properties[0][key] = props[key];
+        });
         return template;
       };
       it('should not reindex if use as filter is checked', async () => {
