@@ -86,6 +86,14 @@ describe('reindex', () => {
 
         expect(reindex).toEqual(false);
       });
+      it('should not reindex if nested properties is changed', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0].nestedProperties = ['something'];
+
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
     });
     describe('commonProperties', () => {
       it('should not reindex if priority sorting has changed', async () => {

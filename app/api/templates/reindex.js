@@ -10,6 +10,8 @@ const SHOULD_NOT_TRIGGER_REINDEX = [
   'properties.required',
   'properties.style',
   'properties.fullWidth',
+  'properties.nestedProperties',
+  'properties.localID',
   'commonProperties.filter',
   'commonProperties.defaultfilter',
   'commonProperties.noLabel',
@@ -67,6 +69,7 @@ export async function checkIfReindex(updatedTemplate) {
         changedProperties.push(key);
       }
     });
+    console.log(changedProperties);
     return checkIfFilterConditionsMet(changedProperties);
   }
   return false;
