@@ -319,9 +319,9 @@ $c-sidebar: $c-white;
       border-radius: 2px;
     }
 
-    @media(min-width: 1020px) {
+    @media(max-width: 1020px) {
       .push-right {
-        margin-left: 30px;
+        margin-right: 30px;
       }
     }
   }
