@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
@@ -28,19 +27,25 @@ describe('thesauri', () => {
 
   describe('get()', () => {
     it('should return all thesauri including entity templates as options', async () => {
-      const dictionaries = await thesauri.get(null, 'es');
-      expect(dictionaries.length).toBe(6);
-      expect(dictionaries[0].name).toBe('dictionary');
-      expect(dictionaries[1].name).toBe('dictionary 2');
-      expect(dictionaries[4].name).toBe('entityTemplate');
-      expect(dictionaries[4].values).toEqual([
-        {
-          id: 'sharedId',
-          label: 'spanish entity',
-          icon: { type: 'Icon' },
-        },
-      ]);
-      expect(dictionaries[4].type).toBe('template');
+      search.indexEntities.and.callThrough();
+      const elasticIndex = 'thesauri.spec.elastic.index';
+      await db.clearAllAndLoad(fixtures, elasticIndex);
+      const thesaurus = await thesauri.get(null, 'es');
+
+      expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
+      expect(thesaurus[1]).toMatchObject({ name: 'dictionary 2' });
+
+      expect(thesaurus[4]).toMatchObject({
+        name: 'entityTemplate',
+        values: [{ label: 'spanish entity' }],
+        optionsCount: 3,
+      });
+
+      expect(thesaurus[5]).toMatchObject({
+        name: 'documentTemplate',
+        values: [{ label: 'document' }, { label: 'document 2' }],
+        optionsCount: 2,
+      });
     });
 
     it('should return all thesauri including unpublished documents if user', async () => {
