@@ -69,7 +69,6 @@ export async function checkIfReindex(updatedTemplate) {
         changedProperties.push(key);
       }
     });
-    console.log(changedProperties);
     return checkIfFilterConditionsMet(changedProperties);
   }
   return false;

@@ -2,10 +2,12 @@ import db from 'api/utils/testing_db';
 import templates from '../templates';
 import { checkIfReindex } from '../reindex';
 import fixtures, { templateWithContents } from './fixtures';
+import { search } from 'api/search';
 
 describe('reindex', () => {
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures, 'reindex');
+    await db.setupFixturesAndContext(fixtures);
+    spyOn(search, 'bulkIndex').and.returnValue({});
   });
 
   afterAll(async () => {
@@ -28,6 +30,7 @@ describe('reindex', () => {
       const reindex = await checkIfReindex(template);
 
       expect(reindex).toEqual(false);
+      expect(search.bulkIndex).not.toHaveBeenCalled();
     });
     describe('Properties', () => {
       it('should not reindex if use as filter is checked', async () => {
@@ -37,6 +40,7 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if default filter is checked', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
@@ -45,6 +49,7 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if hide label is checked', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
@@ -53,6 +58,7 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if show in card is checked', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
@@ -61,6 +67,7 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if required property is checked', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
