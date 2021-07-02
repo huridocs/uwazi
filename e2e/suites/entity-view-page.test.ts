@@ -5,7 +5,7 @@ import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 import { contents, script } from '../helpers/entityViewPageFixtures';
 
-describe('Entities', () => {
+describe('Entity Page view', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
@@ -48,7 +48,7 @@ describe('Entities', () => {
         'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
       );
     });
-    it('should display with raw values', async () => {
+    it('should display raw values', async () => {
       await expect(page).toMatchElement('h1', {
         text: 'My entity view',
       });
@@ -63,13 +63,13 @@ describe('Entities', () => {
       });
     });
 
-    it('should display with values from the template', async () => {
+    it('should display values from the template', async () => {
       await expect(page).toMatchElement('.envio-title', {
         text: 'Envío a la corte',
       });
     });
 
-    it('should display with formated values', async () => {
+    it('should display formated values', async () => {
       await expect(page).toMatchElement('.descripcion-title', {
         text: 'Resumen',
       });
@@ -84,6 +84,15 @@ describe('Entities', () => {
       });
       await expect(page).toMatchElement('.descriptores-content', {
         text: 'Derechos reproductivos',
+      });
+    });
+
+    it('should display EntityData values', async () => {
+      await expect(page).toMatchElement('.EntityData-label', {
+        text: 'Title',
+      });
+      await expect(page).toMatchElement('.EntityData-title', {
+        text: 'Artavia Murillo y otros',
       });
     });
 

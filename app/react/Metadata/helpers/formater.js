@@ -193,6 +193,7 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
+  // eslint-disable-next-line max-params, max-statements
   inherit(property, propValue = [], thesauris, options, templates) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template
@@ -213,6 +214,8 @@ export default {
             templates
           );
         }
+
+        return null;
       })
       .filter(v => v);
     let propType = 'inherit';
@@ -227,6 +230,8 @@ export default {
     return {
       translateContext: template.get('_id'),
       ...inheritedProperty.toJS(),
+      name: property.get('name'),
+      inheritedName: inheritedProperty.get('name'),
       value,
       label: property.get('label'),
       type: propType,

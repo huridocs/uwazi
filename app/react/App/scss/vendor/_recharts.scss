@@ -9,6 +9,12 @@
   opacity: 0.1 !important;
 }
 
+.recharts-default-tooltip {
+  .recharts-tooltip-item-value {
+    white-space: break-spaces !important;
+  }
+}
+
 .recharts-legend-item {
   cursor: pointer;
 }
