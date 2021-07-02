@@ -57,6 +57,7 @@ class BarChartComponent extends Component {
       data,
       classname,
       context,
+      scatter,
       colors,
     } = this.props;
     let output = <Loader />;
@@ -70,6 +71,7 @@ class BarChartComponent extends Component {
       const formattedData = arrayUtils.formatDataForChart(data, property, {
         excludeZero: Boolean(excludeZero),
         context,
+        scatter: Boolean(scatter),
         maxCategories,
         aggregateOthers,
         pluckCategories,
@@ -84,7 +86,15 @@ class BarChartComponent extends Component {
             {this.Y()}
 
             <CartesianGrid strokeDasharray="2 4" />
-            <Tooltip labelFormatter={value => shortLabelsFlipped[value] || value} />
+            <Tooltip
+              formatter={(value, _name, props) => {
+                if (scatter) {
+                  const { parent } = props.payload;
+                  return shortLabelsFlipped[value] || [value, `\r\n${parent}`];
+                }
+                return shortLabelsFlipped[value] || value;
+              }}
+            />
             <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
               {formattedData.map((_entry, index) => (
                 <Cell
@@ -106,6 +116,7 @@ class BarChartComponent extends Component {
 
 BarChartComponent.defaultProps = {
   context: 'System',
+  scatter: false,
   excludeZero: false,
   layout: 'horizontal',
   maxCategories: '0',
@@ -121,6 +132,7 @@ BarChartComponent.defaultProps = {
 BarChartComponent.propTypes = {
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
+  scatter: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   excludeZero: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   classname: PropTypes.string,
   layout: PropTypes.string,

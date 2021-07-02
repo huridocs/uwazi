@@ -140,3 +140,127 @@ exports[`ListChart Markdown component when excludeZero should render without zer
   </ul>
 </div>
 `;
+
+exports[`ListChart Markdown component when passing scatter parameter should display nested values with a composed label 1`] = `
+<div
+  className="ListChart custom-class"
+>
+  <ul>
+    <li
+      key="ipqlonrw89k"
+    >
+      <div>
+        <div
+          className="list-bullet"
+          style={
+            Object {
+              "backgroundColor": "#ffcc00",
+            }
+          }
+        >
+          <span>
+            3
+          </span>
+        </div>
+        <span
+          className="list-label"
+        >
+          Nest A - A3
+        </span>
+      </div>
+    </li>
+    <li
+      key="7pu7fcxl8eg"
+    >
+      <div>
+        <div
+          className="list-bullet"
+          style={
+            Object {
+              "backgroundColor": "#ffd633",
+            }
+          }
+        >
+          <span>
+            1
+          </span>
+        </div>
+        <span
+          className="list-label"
+        >
+          Nest A - A2
+        </span>
+      </div>
+    </li>
+    <li
+      key="jpw985bxwwg"
+    >
+      <div>
+        <div
+          className="list-bullet"
+          style={
+            Object {
+              "backgroundColor": "#ffe066",
+            }
+          }
+        >
+          <span>
+            1
+          </span>
+        </div>
+        <span
+          className="list-label"
+        >
+          Nest B - B1
+        </span>
+      </div>
+    </li>
+    <li
+      key="zlel1nllvs"
+    >
+      <div>
+        <div
+          className="list-bullet"
+          style={
+            Object {
+              "backgroundColor": "#ffeb99",
+            }
+          }
+        >
+          <span>
+            0
+          </span>
+        </div>
+        <span
+          className="list-label"
+        >
+          Nest A - A1
+        </span>
+      </div>
+    </li>
+    <li
+      key="cbe3spt1k8o"
+    >
+      <div>
+        <div
+          className="list-bullet"
+          style={
+            Object {
+              "backgroundColor": "#fff5cc",
+            }
+          }
+        >
+          <span>
+            0
+          </span>
+        </div>
+        <span
+          className="list-label"
+        >
+          Nest B - B2
+        </span>
+      </div>
+    </li>
+  </ul>
+</div>
+`;
