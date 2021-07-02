@@ -95,7 +95,7 @@ describe('Metadata Properties', () => {
 
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert-success');
-  }, 60000);
+  });
 
   it('should have all the values correctly saved.', async () => {
     await expect(page).toMatchElement('.metadata-type-text', { text: 'demo text' });
@@ -119,7 +119,7 @@ describe('Metadata Properties', () => {
     const link = await (await linkMetaData?.getProperty('href'))?.jsonValue();
     expect(linkText).toBe('Huridocs');
     expect(link).toBe('https://www.huridocs.org/');
-  }, 60000);
+  });
 
   it('should be able to remove all the values from properties.', async () => {
     await expect(page).toClick('button.edit-metadata.btn svg');
@@ -153,7 +153,7 @@ describe('Metadata Properties', () => {
 
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert-success');
-  }, 60000);
+  });
 
   it('should not have metadata.', async () => {
     const metadataDivs = await page.$$('div.metadata.tab-content-visible div.view > dl');
