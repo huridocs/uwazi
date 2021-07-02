@@ -39,7 +39,12 @@ export class LibraryFilters extends Component {
           <div className="sidepanel-title">
             <div>{t('System', 'Filters configuration')}</div>
             <div className="filter-buttons">
-              <div className="clear-button push-right" onClick={this.reset.bind(this)}>
+              <div
+                className={`clear-button push-right ${
+                  this.props.sidePanelMode === 'unpinned-mode' ? '' : 'remove-margin'
+                }`}
+                onClick={this.reset.bind(this)}
+              >
                 <Icon icon="times" />
                 &nbsp;<Translate>Clear Filters</Translate>
               </div>
