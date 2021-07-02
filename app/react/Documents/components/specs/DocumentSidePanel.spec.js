@@ -168,8 +168,10 @@ describe('DocumentSidePanel', () => {
         expectToCValuesAreTheProvidedInProps();
       });
       describe('toc edition', () => {
-        it('should show Edit button if edition is not active', () => {
+        beforeEach(() => {
           props.tab = 'toc';
+        });
+        it('should show Edit button if edition is not active', () => {
           props.tocBeingEdited = false;
           render();
           const editTocButtons = component.find('.edit-toc');
@@ -177,13 +179,20 @@ describe('DocumentSidePanel', () => {
           expect(editTocButtons.at(0).text()).toContain('Edit');
         });
         it('should show Cancel and Save buttons if edition is active', () => {
-          props.tab = 'toc';
           props.tocBeingEdited = true;
           render();
           const editTocButtons = component.find('.edit-toc span');
           expect(editTocButtons.length).toBe(2);
           expect(editTocButtons.at(0).props().children.props.children).toContain('Cancel');
           expect(editTocButtons.at(1).props().children.props.children).toContain('Save');
+        });
+        it('should leave edit mode after canceling edition', () => {
+          props.tocBeingEdited = true;
+          props.leaveEditMode = jest.fn();
+          render();
+          const cancelTocButton = component.find('.edit-toc').at(0);
+          cancelTocButton.simulate('click');
+          expect(props.leaveEditMode).toHaveBeenCalled();
         });
       });
     });

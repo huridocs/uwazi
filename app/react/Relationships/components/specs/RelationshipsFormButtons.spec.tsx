@@ -108,7 +108,7 @@ describe('RelationshipsFormButtons', () => {
     );
   });
 
-  describe('unmount', () => {
+  describe('componentWillUnmount', () => {
     it('should change edition mode to false', () => {
       render(editorUser, { editing: true });
       component.unmount();

@@ -253,7 +253,7 @@ describe('PDFView', () => {
     });
   });
 
-  describe('onunmount', () => {
+  describe('componentWillUnmount', () => {
     it('should leave edit mode', () => {
       component.unmount();
       expect(leaveEditMode).toHaveBeenCalled();
