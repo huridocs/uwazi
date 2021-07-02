@@ -8,8 +8,10 @@ import Immutable from 'immutable';
 
 import { Pie, Tooltip } from 'recharts';
 
+import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
 import { mapStateToProps, PieChartComponent } from '../PieChart.js';
 import markdownDatasets from '../../markdownDatasets';
+import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('PieChart Markdown component', () => {
   const state = {
@@ -25,6 +27,7 @@ describe('PieChart Markdown component', () => {
           { id: 'id8', label: 'label8' },
         ],
       },
+      nestedThesauri,
     ]),
   };
 
@@ -177,6 +180,29 @@ describe('PieChart Markdown component', () => {
       const labels = ['label1', 'label3'];
       const expectedLabels = labels.map(label => expect.objectContaining({ label }));
       expect(component.find(Pie).props().data).toEqual(expectedLabels);
+    });
+  });
+
+  describe('when passing scatter', () => {
+    it('should display nested values with a composed label', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(aggregationWithNestedValues);
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      const component = shallow(
+        <PieChartComponent
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="nested"
+          scatter="true"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, {
+        prop1: 'propValue',
+      });
+      expect(component).toMatchSnapshot();
     });
   });
 });
