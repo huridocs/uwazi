@@ -33,7 +33,7 @@ describe('Metadata Properties', () => {
     await expect(page).toFill('input[name="template.data.name"]', 'All props');
 
     const propertyAddButtons = await page.$$('.property-options-list li button');
-    //intentionaly leaving geolocation and the fields after out of the test.
+    //intentionaly leaving the last fields out of the test: geolocation, violated articles (nested), generated id.
     for (let propIndex = 0; propIndex < 14; propIndex += 1) {
       // eslint-disable-next-line no-await-in-loop
       await propertyAddButtons[propIndex].click();
