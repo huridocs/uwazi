@@ -51,7 +51,7 @@ describe('RelationshipsFormButtons', () => {
       _id: 'entity1',
       permissions: [{ refId: collaboratorUser._id, level: AccessLevels.WRITE }],
     }),
-    edit: () => {},
+    edit: jasmine.createSpy('edit'),
     save: () => {},
     searchResults: {},
   };
@@ -106,5 +106,13 @@ describe('RelationshipsFormButtons', () => {
         ).toEqual('Save');
       }
     );
+  });
+
+  describe('unmount', () => {
+    it('should change edition mode to false', () => {
+      render(editorUser, { editing: true });
+      component.unmount();
+      expect(defaultProps.edit).toHaveBeenCalledWith(false, {}, defaultProps.parentEntity);
+    });
   });
 });
