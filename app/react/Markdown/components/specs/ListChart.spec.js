@@ -5,6 +5,8 @@ import Immutable from 'immutable';
 
 import { mapStateToProps, ListChartComponent } from '../ListChart.js';
 import markdownDatasets from '../../markdownDatasets';
+import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('ListChart Markdown component', () => {
   const state = {
@@ -17,6 +19,7 @@ describe('ListChart Markdown component', () => {
           { id: 'id3', label: 'label3' },
         ],
       },
+      nestedThesauri,
     ]),
   };
 
@@ -67,6 +70,26 @@ describe('ListChart Markdown component', () => {
           property="prop1"
           classname="custom-class"
           context="tContext"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('when passing scatter parameter', () => {
+    it('should display nested values with a composed label', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(aggregationWithNestedValues);
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      const component = shallow(
+        <ListChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="nested"
+          scatter="true"
         />
       );
 
