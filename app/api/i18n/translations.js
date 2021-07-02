@@ -1,7 +1,5 @@
-import entities from 'api/entities/entities';
 import thesauri from 'api/thesauri/thesauri';
 import settings from 'api/settings/settings';
-
 import model from './translationsModel.js';
 
 function prepareContexts(contexts) {
@@ -63,7 +61,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
 
       return Promise.all(
         changesMathingDictionaryId.map(change =>
-          entities.renameThesaurusInMetadata(
+          thesauri.renameThesaurusInMetadata(
             change.id,
             change.value,
             context.id,

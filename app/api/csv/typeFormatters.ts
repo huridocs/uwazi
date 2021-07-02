@@ -41,18 +41,15 @@ export const formatters: {
       : '',
   geolocation: field =>
     field[0] && field[0].value ? `${(<any>field[0].value).lat}|${(<any>field[0].value).lon}` : '',
-  image: field => (field[0] && field[0].value ? <string>field[0].value : ''),
   link: field =>
     field[0] && field[0].value ? `${(<any>field[0].value).label}|${(<any>field[0].value).url}` : '',
-  media: field => (field[0] && field[0].value ? <string>field[0].value : ''),
   multidate: (field, options) => field.map(item => formatters.date([item], options)).join('|'),
   multidaterange: (field, options) =>
     field.map(item => formatters.daterange([item], options)).join('|'),
   numeric: field =>
     field[0] && (field[0].value || field[0].value === 0) ? <string>field[0].value : '',
   relationship: field => field.map(relationship => relationship.label).join('|'),
-  text: field => (field[0] && field[0].value ? <string>field[0].value : ''),
-  markdown: field => (field[0] && field[0].value ? <string>field[0].value : ''),
+  default: field => (field[0] && field[0].value ? <string>field[0].value : ''),
 };
 
 export const formatDocuments = (row: any) =>
