@@ -479,6 +479,128 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
 </div>
 `;
 
+exports[`PieChart Markdown component when passing scatter should display nested values with a composed label 1`] = `
+<div
+  className="PieChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={222}
+    width="100%"
+  >
+    <PieChart
+      barCategoryGap="10%"
+      barGap={4}
+      cx="50%"
+      cy="50%"
+      endAngle={360}
+      height={222}
+      innerRadius={0}
+      layout="centric"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      outerRadius="80%"
+      reverseStackOrder={false}
+      stackOffset="none"
+      startAngle={0}
+      width={222}
+    >
+      <Pie
+        animationBegin={400}
+        animationDuration={1500}
+        animationEasing="ease"
+        blendStroke={false}
+        cx="50%"
+        cy="50%"
+        data={
+          Array [
+            Object {
+              "id": "ipqlonrw89k",
+              "label": "Nest A - A3",
+              "results": 3,
+            },
+            Object {
+              "id": "7pu7fcxl8eg",
+              "label": "Nest A - A2",
+              "results": 1,
+            },
+            Object {
+              "id": "jpw985bxwwg",
+              "label": "Nest B - B1",
+              "results": 1,
+            },
+          ]
+        }
+        dataKey="results"
+        endAngle={360}
+        fill="#8884d8"
+        hide={false}
+        innerRadius="0"
+        isAnimationActive={true}
+        labelLine={false}
+        legendType="rect"
+        minAngle={0}
+        nameKey="label"
+        outerRadius="105"
+        paddingAngle={0}
+        startAngle={0}
+        stroke="#fff"
+      >
+        <Cell
+          fill="#ffcc00"
+          key="0"
+        />
+        <Cell
+          fill="#ffd633"
+          key="1"
+        />
+        <Cell
+          fill="#ffe066"
+          key="2"
+        />
+      </Pie>
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
+`;
+
 exports[`PieChart Markdown component when prop show label should use pieChartLabel 1`] = `
 <PieChartLabel
   cx={0}
