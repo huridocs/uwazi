@@ -193,6 +193,7 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
+  // eslint-disable-next-line max-params, max-statements
   inherit(property, propValue = [], thesauris, options, templates) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template
@@ -202,19 +203,13 @@ export default {
     const type = inheritedProperty.get('type');
     const methodType = this[type] ? type : 'default';
 
-    let value = propValue
-      .map(v => {
-        if (v && v.inheritedValue) {
-          return this[methodType](
-            inheritedProperty,
-            v.inheritedValue,
-            thesauris,
-            options,
-            templates
-          );
-        }
-      })
-      .filter(v => v);
+    let value = propValue.map(v => {
+      if (v && v.inheritedValue) {
+        return this[methodType](inheritedProperty, v.inheritedValue, thesauris, options, templates);
+      }
+
+      return {};
+    });
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
       const templateThesauris = thesauris.find(
@@ -227,6 +222,8 @@ export default {
     return {
       translateContext: template.get('_id'),
       ...inheritedProperty.toJS(),
+      name: property.get('name'),
+      inheritedName: inheritedProperty.get('name'),
       value,
       label: property.get('label'),
       type: propType,
