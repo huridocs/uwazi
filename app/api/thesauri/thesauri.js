@@ -77,10 +77,30 @@ async function updateOptionsInEntities(current, thesauri) {
   );
 
   const updatedIds = getUpdatedNames(currentProperties, newProperties, 'label', 'id');
+  const toUpdate = [];
+  Object.keys(updatedIds).forEach(id => {
+    const option = newProperties.find(o => o.id === id);
+
+    if (option.values?.length) {
+      option.values.forEach(o => {
+        toUpdate.push({ id: o.id, label: o.label, parent: { id, label: updatedIds[id] } });
+      });
+      return;
+    }
+
+    toUpdate.push({ id, label: updatedIds[id] });
+  });
+
   const defaultLanguage = (await settings.get()).languages.find(lang => lang.default).key;
   await Promise.all(
-    Object.entries(updatedIds).map(([updatedId, newLabel]) =>
-      denormalizeThesauriLabelInMetadata(updatedId, newLabel, thesauri._id, defaultLanguage)
+    toUpdate.map(option =>
+      denormalizeThesauriLabelInMetadata(
+        option.id,
+        option.label,
+        thesauri._id,
+        defaultLanguage,
+        option.parent
+      )
     )
   );
 }

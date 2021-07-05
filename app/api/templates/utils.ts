@@ -52,7 +52,6 @@ export function getUpdatedNames(
   outKey: 'name' | 'label' = prop
 ) {
   const propertiesWithNewName: { [k: string]: string | undefined } = {};
-
   flattenProperties(oldProperties).forEach(property => {
     const newProperty = flattenProperties(newProperties).find(p => p.id === property.id);
     if (newProperty && newProperty[prop] !== property[prop]) {

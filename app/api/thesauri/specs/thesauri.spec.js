@@ -1,4 +1,4 @@
-/** @format */
+/* eslint-disable max-lines */
 
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
@@ -257,7 +257,7 @@ describe('thesauri', () => {
           _id: dictionaryId,
           values: [
             { id: '1', label: 'value 1 changed' },
-            { id: '3', label: 'Parent changed', values: [{ id: '2', label: 'value 2' }] },
+            { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
           ],
         };
 
@@ -274,6 +274,36 @@ describe('thesauri', () => {
           expect.objectContaining({
             multiselect: [
               { value: '1', label: 'value 1 changed' },
+              { value: '2', label: 'value 2', parent: { value: '3', label: 'Parent' } },
+            ],
+          })
+        );
+      });
+
+      it('should update labels on entities with the thesauri values', async () => {
+        const thesaurus = {
+          name: 'dictionary 2',
+          _id: dictionaryId,
+          values: [
+            { id: '1', label: 'value 1' },
+            { id: '3', label: 'Parent changed', values: [{ id: '2', label: 'value 2' }] },
+          ],
+        };
+
+        await thesauri.save(thesaurus);
+
+        const changedEntities = await entities.get({ language: 'es' });
+
+        expect(changedEntities[0].metadata).toEqual(
+          expect.objectContaining({
+            multiselect: [{ value: '1', label: 'value 1' }],
+          })
+        );
+
+        expect(changedEntities[1].metadata).toEqual(
+          expect.objectContaining({
+            multiselect: [
+              { value: '1', label: 'value 1' },
               { value: '2', label: 'value 2', parent: { value: '3', label: 'Parent changed' } },
             ],
           })

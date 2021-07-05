@@ -70,7 +70,7 @@ const fixtures: DBFixture = {
       language: 'es',
       template: testingDB.id(entityTemplateId),
       metadata: {
-        multiselect: [{ value: '1', label: '1' }],
+        multiselect: [{ value: '1', label: 'value 1' }],
       },
     },
     {
@@ -81,7 +81,7 @@ const fixtures: DBFixture = {
       template: testingDB.id(entityTemplateId),
       icon: { type: 'Icon' },
       metadata: {
-        multiselect: [{ value: '1', label: '1' }],
+        multiselect: [{ value: '1', label: 'value 1' }],
       },
     },
     {
@@ -94,7 +94,7 @@ const fixtures: DBFixture = {
       published: true,
       metadata: {
         multiselect: [
-          { value: '1', label: '1' },
+          { value: '1', label: 'value 1' },
           { value: '2', label: 'value 2', parent: { label: 'Parent', value: '3' } },
         ],
       },
