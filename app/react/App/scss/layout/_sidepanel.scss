@@ -318,10 +318,13 @@ $c-sidebar: $c-white;
       cursor: pointer;
       border-radius: 2px;
     }
-
-    @media(min-width: 1020px) {
-      .push-right {
-        margin-left: 30px;
+    .push-left {
+      margin-right: 25px;
+    }
+    
+    @media (min-width: 1030px) {
+      .remove-margin {
+        margin-right: 0px;
       }
     }
   }
