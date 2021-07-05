@@ -378,18 +378,15 @@ describe('thesauri', () => {
 
   describe('update', () => {
     describe('when the name of thesaurus is updated', () => {
-      it('should update the translations', async () => {
+      it('should update the translations key', async () => {
         const data = { ...fixtures.dictionaries[1], name: 'new name' };
         const response = await thesauri.save(data);
         data.values.push({ id: '3', label: 'value 3' });
         await thesauri.save(data);
         const allTranslations = await translations.get();
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
-        const labels = Object.keys(context.values);
-        expect(labels.length).toBe(5);
-        expect(labels[0]).toBe('new name');
-        expect(labels[3]).toBe('Parent');
-        expect(labels[4]).toBe('value 3');
+
+        expect(context.values['new name']).toBe('dictionary 2');
       });
     });
   });
