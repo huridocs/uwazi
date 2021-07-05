@@ -280,7 +280,7 @@ describe('thesauri', () => {
         );
       });
 
-      it('should update labels on entities with the thesauri values', async () => {
+      it('should update parent label on entities with child values', async () => {
         const thesaurus = {
           name: 'dictionary 2',
           _id: dictionaryId,
