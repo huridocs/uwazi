@@ -40,7 +40,7 @@ export class LibraryFilters extends Component {
             <div>{t('System', 'Filters configuration')}</div>
             <div className="filter-buttons">
               <div
-                className={`clear-button push-right ${
+                className={`clear-button push-left ${
                   this.props.sidePanelMode === 'unpinned-mode' ? '' : 'remove-margin'
                 }`}
                 onClick={this.reset.bind(this)}
