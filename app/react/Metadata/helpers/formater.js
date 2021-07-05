@@ -54,8 +54,8 @@ const addModificationDate = (result, doc) =>
     sortedBy: true,
   });
 
-const groupByParent = options => {
-  return options.reduce((groupedOptions, { parent, ...option }) => {
+const groupByParent = options =>
+  options.reduce((groupedOptions, { parent, ...option }) => {
     if (!parent) {
       groupedOptions.push(option);
       return groupedOptions;
@@ -67,12 +67,11 @@ const groupByParent = options => {
       return groupedOptions;
     }
 
-    const parentOption = { value: [option], parent: parent };
+    const parentOption = { value: [option], parent };
     groupedOptions.push(parentOption);
 
     return groupedOptions;
   }, []);
-};
 
 const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
   const sortPropertyInMetadata = metadata.find(p => sortedProperty === `metadata.${p.name}`);

@@ -41,7 +41,7 @@ export const showByType = (prop, compact) => {
       result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
       break;
     case 'select':
-      result = result = prop.parent ? `${prop.parent}: ${prop.value}` : result;
+      result = prop.parent ? `${prop.parent}: ${prop.value}` : result;
       break;
     case 'geolocation_group':
       result = <GroupedGeolocationViewer members={prop.members} />;
