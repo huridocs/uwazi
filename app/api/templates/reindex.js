@@ -22,6 +22,11 @@ const SHOULD_NOT_TRIGGER_REINDEX = [
 
 function compareTemplateProperties(updatedProperties, originalProperties) {
   const changedProps = [];
+
+  if (updatedProperties.length !== originalProperties.length) {
+    changedProps.push('PROPERTY_ADDED');
+  }
+
   originalProperties.forEach(originalProperty => {
     const updatedProperty = updatedProperties.find(prop => prop.name === originalProperty.name);
 

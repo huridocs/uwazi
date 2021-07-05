@@ -3,6 +3,7 @@ import { search } from 'api/search';
 import templates from '../templates';
 import { checkIfReindex } from '../reindex';
 import fixtures, { templateWithContents } from './fixtures';
+import { propertyTypes } from 'shared/propertyTypes';
 
 const getAndUpdateTemplate = async props => {
   const [template] = await templates.get({ _id: templateWithContents });
@@ -121,6 +122,14 @@ describe('reindex', () => {
       it('should reindex when a property name has been changed', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.properties[0].name = 'New property name';
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(true);
+      });
+      it('has a new property added', async () => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties.push({ type: propertyTypes.text, label: 'text' });
+
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(true);
