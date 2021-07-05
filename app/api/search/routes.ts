@@ -5,8 +5,9 @@ export default (app: Application) => {
   app.get('/api/search/lookup', (req: Request, res: Response, next: NextFunction) => {
     const { query } = req;
     const templates: [] = query.templates ? JSON.parse(query.templates) : [];
+    const unpublished = query.unpublished === 'true' || false;
     search
-      .autocomplete(query.searchTerm, req.language, templates, query.unpublished || false)
+      .autocomplete(query.searchTerm, req.language, templates, unpublished)
       .then(response => res.json(response))
       .catch(next);
   });
