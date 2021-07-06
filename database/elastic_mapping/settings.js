@@ -18,6 +18,9 @@ const settings = {
         filter: ['lowercase', 'asciifolding'],
         char_filter: ['remove_annotation'],
       },
+      title_sayt: {
+        tokenizer: 'title_sayt',
+      },
       tokenizer: {
         tokenizer: 'standard',
         filter: ['lowercase', 'asciifolding'],
@@ -25,6 +28,14 @@ const settings = {
       string_sorter: {
         tokenizer: 'keyword',
         filter: ['lowercase', 'asciifolding', 'trim'],
+      },
+    },
+    tokenizer: {
+      title_sayt: {
+        type: 'ngram',
+        min_gram: 3,
+        max_gram: 4,
+        token_chars: ['letter', 'digit'],
       },
     },
   },
