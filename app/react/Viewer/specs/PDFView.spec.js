@@ -2,22 +2,19 @@
  * @jest-environment jsdom
  */
 
-import React from 'react';
 import { fromJS } from 'immutable';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
 import { browserHistory } from 'react-router';
-import { shallow } from 'enzyme';
 import PDFView from 'app/Viewer/PDFView';
 import Viewer from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
-import { leaveEditMode } from 'app/Viewer/actions/documentActions';
+import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import * as documentActions from 'app/Viewer/actions/documentActions';
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
-
-jest.mock('app/Viewer/actions/documentActions');
 
 describe('PDFView', () => {
   let component;
@@ -27,7 +24,8 @@ describe('PDFView', () => {
 
   const render = () => {
     RouteHandler.renderedFromServer = true;
-    component = shallow(<PDFView {...props} />, { context });
+    component = renderConnected(PDFView, props, context.store);
+    component.setContext({ ...component.context(), ...context });
     instance = component.instance();
   };
 
@@ -39,6 +37,7 @@ describe('PDFView', () => {
         dispatch: dispatch.and.callFake(action =>
           typeof action === 'function' ? action(dispatch) : action
         ),
+        subscribe: jasmine.createSpy('subscribe'),
       },
     };
 
@@ -255,8 +254,10 @@ describe('PDFView', () => {
 
   describe('componentWillUnmount', () => {
     it('should leave edit mode', () => {
+      spyOn(documentActions, 'leaveEditMode').and.returnValue({ type: 'LEAVING_EDIT_MODE' });
+      render();
       component.unmount();
-      expect(leaveEditMode).toHaveBeenCalled();
+      expect(documentActions.leaveEditMode).toHaveBeenCalled();
     });
   });
 });
