@@ -44,11 +44,7 @@ const getInheritedProps = async (templates: TemplateSchema[]) => {
       { $unwind: '$properties' },
       { $replaceRoot: { newRoot: '$properties' } },
     ])
-  ).reduce((indexed, prop) => {
-    // eslint-disable-next-line no-param-reassign
-    indexed[prop._id.toString()] = prop;
-    return indexed;
-  }, {});
+  ).reduce((indexed, prop) => ({ ...indexed, [prop._id.toString()]: prop }), {});
 };
 
 export const denormalizeInheritedProperties = async (template: TemplateSchema) => {

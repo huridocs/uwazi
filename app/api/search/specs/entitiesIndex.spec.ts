@@ -180,8 +180,8 @@ describe('entitiesIndex', () => {
       expect(response).toEqual({ error: 'mapping conflict', valid: false });
     });
 
-    describe('when there is an error other than mapping conflict', () => {
-      it('should throw the error', async () => {
+    describe('when the mapping is empty', () => {
+      it('should throw no errors', async () => {
         const templateB = {
           _id: '456',
           name: 'template B',
@@ -192,8 +192,8 @@ describe('entitiesIndex', () => {
       });
     });
 
-    describe('when the mapping is empty', () => {
-      it('should throw no errors', async () => {
+    describe('when there is an error other than mapping conflict', () => {
+      it('should throw the error', async () => {
         spyOn(elasticMapFactory, 'mapping').and.returnValue({ probably_bad_mapping: true });
         await expect(checkMapping({})).rejects.toThrow();
       });

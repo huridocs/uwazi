@@ -143,7 +143,7 @@ describe('template schema', () => {
         await testInvalid();
       });
 
-      it('invalid if different table with the same name already exists', async () => {
+      it('invalid if different template with the same name already exists', async () => {
         template.name = 'DuplicateName';
         await testInvalid();
       });
