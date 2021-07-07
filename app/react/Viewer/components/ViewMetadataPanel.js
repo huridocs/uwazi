@@ -10,7 +10,13 @@ import { deleteDocument } from 'app/Viewer/actions/documentActions';
 import modals from 'app/Modals';
 
 import { closePanel } from '../actions/uiActions';
-import { saveToc, editToc, removeFromToc, indentTocElement } from '../actions/documentActions';
+import {
+  saveToc,
+  editToc,
+  leaveEditMode,
+  removeFromToc,
+  indentTocElement,
+} from '../actions/documentActions';
 import DocumentForm from '../containers/DocumentForm';
 
 export const mapStateToProps = state => {
@@ -59,6 +65,7 @@ function mapDispatchToProps(dispatch) {
       deleteDocument,
       saveToc,
       editToc,
+      leaveEditMode,
       removeFromToc,
       indentTocElement,
       showTab: tab => actionCreators.set('viewer.sidepanel.tab', tab),

@@ -198,6 +198,20 @@ describe('documentActions', () => {
     });
   });
 
+  describe('leaveEditMode', () => {
+    it('should turn off edition flags', () => {
+      const store = mockStore({
+        documentViewer: {
+          documentViewer: { tocBeingEdited: true },
+        },
+      });
+      store.dispatch(actions.leaveEditMode());
+      expect(store.getActions()[0].type).toBe('documentViewer/tocBeingEdited/SET');
+      expect(store.getActions()[0].value).toBe(false);
+      expect(store.getActions()[1].type).toBe('rrf/reset');
+      expect(store.getActions()[1].model).toBe('documentViewer.sidepanel.metadata');
+    });
+  });
   describe('async actions', () => {
     beforeEach(() => {
       mockID();
