@@ -1,9 +1,9 @@
 import db from 'api/utils/testing_db';
 import { search } from 'api/search';
+import { propertyTypes } from 'shared/propertyTypes';
 import templates from '../templates';
 import { checkIfReindex } from '../reindex';
 import fixtures, { templateWithContents } from './fixtures';
-import { propertyTypes } from 'shared/propertyTypes';
 
 const getAndUpdateTemplate = async props => {
   const [template] = await templates.get({ _id: templateWithContents });
@@ -15,8 +15,8 @@ const getAndUpdateTemplate = async props => {
 
 describe('reindex', () => {
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
-    spyOn(search, 'bulkIndex').and.returnValue({});
+    await db.setupFixturesAndContext(fixtures, 'reindex');
+    spyOn(search, 'indexEntities').and.returnValue({});
   });
 
   afterAll(async () => {
@@ -31,7 +31,7 @@ describe('reindex', () => {
       expect(reindex).toEqual(false);
 
       await templates.save(template, 'en', reindex);
-      expect(search.bulkIndex).not.toHaveBeenCalled();
+      expect(search.indexEntities).not.toHaveBeenCalled();
     });
     it('should not reindex if color has changed', async () => {
       const template = await getAndUpdateTemplate({ color: '#222222' });
@@ -40,7 +40,7 @@ describe('reindex', () => {
       expect(reindex).toEqual(false);
 
       await templates.save(template, 'en', reindex);
-      expect(search.bulkIndex).not.toHaveBeenCalled();
+      expect(search.indexEntities).not.toHaveBeenCalled();
     });
     describe('Properties', () => {
       const getAndUpdateTemplateProps = async props => {
@@ -57,7 +57,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if default filter is checked', async () => {
         const template = await getAndUpdateTemplateProps({ defaultfilter: true });
@@ -66,7 +66,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if hide label is checked', async () => {
         const template = await getAndUpdateTemplateProps({ noLabel: true });
@@ -75,7 +75,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if show in card is checked', async () => {
         const template = await getAndUpdateTemplateProps({ showInCard: true });
@@ -84,7 +84,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if required property is checked', async () => {
         const template = await getAndUpdateTemplateProps({ required: true });
@@ -93,7 +93,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if image full width is checked', async () => {
         const template = await getAndUpdateTemplateProps({ fullWidth: true });
@@ -102,7 +102,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if image style is changed', async () => {
         const template = await getAndUpdateTemplateProps({ style: 'cover' });
@@ -111,7 +111,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if nested properties is changed', async () => {
         const template = await getAndUpdateTemplateProps({ nestedProperties: ['something'] });
@@ -120,7 +120,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
     });
     describe('commonProperties', () => {
@@ -133,7 +133,7 @@ describe('reindex', () => {
         expect(reindex).toEqual(false);
 
         await templates.save(template, 'en', reindex);
-        expect(search.bulkIndex).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
     });
   });
@@ -146,6 +146,9 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(true);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.indexEntities).toHaveBeenCalled();
       });
       it('should reindex when a property name has been changed', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
