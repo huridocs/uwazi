@@ -25,16 +25,21 @@ describe('reindex', () => {
 
   describe('Not Reindex', () => {
     it('should not reindex if name has changed', async () => {
-      const template = getAndUpdateTemplate({ name: 'Updated name' });
+      const template = await getAndUpdateTemplate({ name: 'Updated name' });
       const reindex = await checkIfReindex(template);
 
       expect(reindex).toEqual(false);
+
+      await templates.save(template, 'en', reindex);
+      expect(search.bulkIndex).not.toHaveBeenCalled();
     });
     it('should not reindex if color has changed', async () => {
-      const template = getAndUpdateTemplate({ color: '#222222' });
+      const template = await getAndUpdateTemplate({ color: '#222222' });
       const reindex = await checkIfReindex(template);
 
       expect(reindex).toEqual(false);
+
+      await templates.save(template, 'en', reindex);
       expect(search.bulkIndex).not.toHaveBeenCalled();
     });
     describe('Properties', () => {
@@ -50,6 +55,8 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if default filter is checked', async () => {
@@ -57,6 +64,8 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if hide label is checked', async () => {
@@ -64,6 +73,8 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if show in card is checked', async () => {
@@ -71,6 +82,8 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
         expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if required property is checked', async () => {
@@ -78,24 +91,36 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if image full width is checked', async () => {
         const template = await getAndUpdateTemplateProps({ fullWidth: true });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if image style is changed', async () => {
         const template = await getAndUpdateTemplateProps({ style: 'cover' });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
       it('should not reindex if nested properties is changed', async () => {
         const template = await getAndUpdateTemplateProps({ nestedProperties: ['something'] });
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
     });
     describe('commonProperties', () => {
@@ -106,6 +131,9 @@ describe('reindex', () => {
         const reindex = await checkIfReindex(template);
 
         expect(reindex).toEqual(false);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.bulkIndex).not.toHaveBeenCalled();
       });
     });
   });

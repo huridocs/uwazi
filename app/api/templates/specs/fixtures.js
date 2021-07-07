@@ -77,9 +77,10 @@ export default {
     {
       _id: templateWithContents,
       name: 'content template',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }],
       properties: [
         {
+          _id: db.id(),
           id: '1',
           type: propertyTypes.select,
           content: thesauriId1.toString(),
@@ -87,6 +88,7 @@ export default {
           name: 'select3',
         },
         {
+          _id: db.id(),
           id: '2',
           type: propertyTypes.multiselect,
           content: thesauriId1.toString(),
