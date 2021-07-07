@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet';
 import { browserHistory } from 'react-router';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -9,6 +10,8 @@ import { isClient, events } from 'app/utils';
 import { toUrlParams } from 'shared/JSONRequest';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
+import { leaveEditMode } from 'app/Viewer/actions/documentActions';
+import { bindActionCreators } from 'redux';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
@@ -51,6 +54,10 @@ class PDFView extends Component {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
     }
+  }
+
+  componentWillUnmount() {
+    this.props.leaveEditMode();
   }
 
   onDocumentReady(doc) {
@@ -115,6 +122,15 @@ PDFView.contextTypes = {
 PDFView.propTypes = {
   location: PropTypes.instanceOf(Object).isRequired,
   entity: PropTypes.instanceOf(Object).isRequired,
+  leaveEditMode: PropTypes.func,
 };
 
-export default PDFView;
+PDFView.defaultProps = {
+  leaveEditMode: () => {},
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ leaveEditMode }, dispatch);
+}
+
+export default connect(null, mapDispatchToProps)(PDFView);
