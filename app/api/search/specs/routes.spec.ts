@@ -4,9 +4,12 @@ import { Application } from 'express';
 import db from 'api/utils/testing_db';
 
 import { setUpApp } from 'api/utils/testingRoutes';
+// @ts-ignore
 import searchRoutes from 'api/search/routes.ts';
 
 import { fixtures, ids, fixturesTimeOut } from './fixtures_elastic';
+import { UserInContextMockFactory } from '../../utils/testingUserInContext';
+import { UserRole } from 'shared/types/userSchema';
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -66,6 +69,47 @@ describe('Search routes', () => {
         .query({ searchTerm: 'unpublished', unpublished: true });
 
       expect(res.body.options.length).toBe(1);
+    });
+
+    describe('permissions', () => {
+      const userContextMocker = new UserInContextMockFactory();
+
+      afterAll(() => {
+        userContextMocker.mockEditorUser();
+      });
+
+      it("should not return unpublished if there's no logged-in user", async () => {
+        userContextMocker.mock(undefined);
+        const res: SuperTestResponse = await request(app)
+          .get('/api/search/lookup')
+          .set('content-language', 'es')
+          .query({ searchTerm: 'unpublished', unpublished: true });
+
+        expect(res.body.options.length).toBe(0);
+      });
+
+      it('should return only return unpublished if the logged user has permissions on the entity', async () => {
+        const collabUser = {
+          _id: 'collabId',
+          role: UserRole.COLLABORATOR,
+          username: 'collabUser',
+          email: 'collab@test.com',
+        };
+        new UserInContextMockFactory().mock(collabUser);
+        let res: SuperTestResponse = await request(app)
+          .get('/api/search/lookup')
+          .set('content-language', 'es')
+          .query({ searchTerm: 'unpublished', unpublished: true });
+
+        expect(res.body.options.length).toBe(0);
+
+        res = await request(app)
+          .get('/api/search/lookup')
+          .set('content-language', 'es')
+          .query({ searchTerm: 'with permissions but not published', unpublished: true });
+
+        expect(res.body.options.length).toBe(1);
+      });
     });
   });
 

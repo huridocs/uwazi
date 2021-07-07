@@ -803,38 +803,33 @@ const search = {
   },
 
   async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
-    const publishedFilter = includeUnpublished ? undefined : { term: { published: true } };
-
-    const body = {
-      _source: {
-        include: ['title', 'template', 'sharedId', 'icon'],
-      },
-      from: 0,
-      size: preloadOptionsSearch,
-      query: {
-        bool: {
-          must: [
-            {
-              multi_match: {
-                query: searchTerm,
-                type: 'bool_prefix',
-                fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram'],
-              },
-            },
-          ],
-          filter: [publishedFilter, { term: { language } }],
-        },
-      },
-      sort: [],
-    };
+    const queryBuilder = documentQueryBuilder()
+      .include(['title', 'template', 'sharedId', 'icon'])
+      .language(language)
+      .limit(preloadOptionsSearch)
+      .filterByPermissions(!includeUnpublished);
 
     if (templates.length) {
-      body.query.bool.must.push({
-        terms: {
-          template: templates,
-        },
-      });
+      queryBuilder.filterByTemplate(templates);
     }
+
+    if (includeUnpublished) {
+      queryBuilder.includeUnpublished();
+    }
+
+    const body = queryBuilder.query();
+
+    body.query.bool.must = [
+      {
+        multi_match: {
+          query: searchTerm,
+          type: 'bool_prefix',
+          fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram'],
+        },
+      },
+    ];
+
+    delete body.aggregations;
 
     const response = await elastic.search({ body });
 
