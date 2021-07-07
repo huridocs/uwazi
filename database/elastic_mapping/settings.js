@@ -20,6 +20,7 @@ const settings = {
       },
       title_sayt: {
         tokenizer: 'title_sayt',
+        filter: ['lowercase', 'asciifolding'],
       },
       tokenizer: {
         tokenizer: 'standard',
