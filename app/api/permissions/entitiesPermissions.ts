@@ -127,7 +127,11 @@ export const entitiesPermissions = {
 
   get: async (sharedIds: string[]) => {
     const entitiesPermissionsData = (
-      await entities.get({ sharedId: { $in: sharedIds } }, { permissions: 1, published: 1 })
+      await entities.get(
+        { sharedId: { $in: sharedIds } },
+        { permissions: 1, published: 1 },
+        { withoutDocuments: true }
+      )
     ).map((entity: EntitySchema) => ({
       permissions: entity.permissions || [],
       published: !!entity.published,

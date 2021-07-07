@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
@@ -23,6 +24,7 @@ import fixtures, {
   uploadId1,
   uploadId2,
   unpublishedDocId,
+  entityGetTestTemplateId,
 } from './fixtures.js';
 
 describe('entities', () => {
@@ -668,6 +670,28 @@ describe('entities', () => {
   });
 
   describe('get', () => {
+    const checkEntityGetResult = (entity, title, documentFilenames, attachmentFilenames) => {
+      expect(entity.title).toBe(title);
+
+      if (documentFilenames !== null) {
+        expect(entity.documents.length).toBe(documentFilenames.length);
+        entity.documents.forEach((element, index) => {
+          expect(element.filename).toBe(documentFilenames[index]);
+        });
+      } else {
+        expect(entity).not.toHaveProperty('documents');
+      }
+
+      if (attachmentFilenames !== null) {
+        expect(entity.attachments.length).toBe(attachmentFilenames.length);
+        entity.attachments.forEach((element, index) => {
+          expect(element.filename).toBe(attachmentFilenames[index]);
+        });
+      } else {
+        expect(entity).not.toHaveProperty('attachments');
+      }
+    };
+
     it('should return matching entities for the conditions', done => {
       const sharedId = 'shared1';
 
@@ -681,6 +705,31 @@ describe('entities', () => {
           done();
         })
         .catch(catchErrors(done));
+    });
+
+    it('should return documents and attachments properly, when requested.', async () => {
+      const result = await entities.get({ template: entityGetTestTemplateId });
+      checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
+      checkEntityGetResult(result[1], 'TitleB', [], []);
+      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name']);
+    });
+
+    it('should return documents and attachments properly while using a select clause in the query.', async () => {
+      const result = await entities.get({ template: entityGetTestTemplateId }, { title: 1 });
+      checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
+      checkEntityGetResult(result[1], 'TitleB', [], []);
+      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name']);
+    });
+
+    it('should not return documents and attachments, when not requested.', async () => {
+      const result = await entities.get(
+        { template: entityGetTestTemplateId },
+        {},
+        { withoutDocuments: true }
+      );
+      checkEntityGetResult(result[0], 'TitleA', null, null);
+      checkEntityGetResult(result[1], 'TitleB', null, null);
+      checkEntityGetResult(result[2], 'TitleC', null, null);
     });
   });
 

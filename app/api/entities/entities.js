@@ -332,19 +332,29 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
   }
 };
 
-const withDocuments = (entities, documentsFullText, withPdfInfo) =>
-  Promise.all(
-    entities.map(async entity => {
-      const entityFiles = await files.get(
-        { entity: entity.sharedId },
-        (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-      );
-
-      entity.documents = entityFiles.filter(f => f.type === 'document');
-      entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-      return entity;
-    })
+const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
+  const sharedIds = entities.map(entity => entity.sharedId);
+  const allFiles = await files.get(
+    { entity: { $in: sharedIds } },
+    (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
   );
+  const idFileMap = new Map();
+  allFiles.forEach(file => {
+    if (idFileMap.has(file.entity)) {
+      idFileMap.get(file.entity).push(file);
+    } else {
+      idFileMap.set(file.entity, [file]);
+    }
+  });
+  const result = entities.map(entity => {
+    const entityFiles = idFileMap.has(entity.sharedId) ? idFileMap.get(entity.sharedId) : [];
+
+    entity.documents = entityFiles.filter(f => f.type === 'document');
+    entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+    return entity;
+  });
+  return result;
+};
 
 const reindexEntitiesByTemplate = async (template, options) => {
   const templateHasRelationShipProperty = template.properties?.find(
@@ -473,10 +483,19 @@ export default {
   },
 
   async get(query, select, options = {}) {
-    const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
-    const entities = await model.get(query, select, restOfOptions);
+    const { withoutDocuments, documentsFullText, withPdfInfo, ...restOfOptions } = options;
+    let extendedSelect;
+    if (select && !withoutDocuments) {
+      if (typeof select === 'string') {
+        extendedSelect = select.includes('+sharedId') ? select : `${select} +sharedId`;
+      } else {
+        extendedSelect = { ...select };
+        extendedSelect.sharedId = 1;
+      }
+    }
+    const entities = await model.get(query, extendedSelect, restOfOptions);
 
-    return withDocuments(entities, documentsFullText, withPdfInfo);
+    return !withoutDocuments ? withDocuments(entities, documentsFullText, withPdfInfo) : entities;
   },
 
   async getWithRelationships(query, select, pagination) {
