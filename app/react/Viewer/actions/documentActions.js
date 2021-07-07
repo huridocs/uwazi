@@ -136,6 +136,13 @@ export function editToc(toc) {
   };
 }
 
+export function leaveEditMode() {
+  return dispatch => {
+    dispatch(actions.set('documentViewer/tocBeingEdited', false));
+    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
+  };
+}
+
 export function removeFromToc(tocElement) {
   return (dispatch, getState) => {
     const state = getState();
