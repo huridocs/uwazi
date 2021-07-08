@@ -715,7 +715,7 @@ describe('entities', () => {
     });
 
     it('should return documents and attachments properly while using a select clause in the query.', async () => {
-      const result = await entities.get({ template: entityGetTestTemplateId }, { title: 1 });
+      const result = await entities.get({ template: entityGetTestTemplateId }, { title: true });
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
       checkEntityGetResult(result[1], 'TitleB', [], []);
       checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name']);
@@ -731,6 +731,10 @@ describe('entities', () => {
       checkEntityGetResult(result[1], 'TitleB', null, null);
       checkEntityGetResult(result[2], 'TitleC', null, null);
     });
+
+    // it('should call model.get with a properly extended select.', () => {
+    //   fail('TODO');
+    // });
   });
 
   describe('denormalize', () => {

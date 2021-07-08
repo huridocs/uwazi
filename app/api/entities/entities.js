@@ -333,26 +333,60 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
 };
 
 const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
-  const sharedIds = entities.map(entity => entity.sharedId);
-  const allFiles = await files.get(
-    { entity: { $in: sharedIds } },
-    (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-  );
-  const idFileMap = new Map();
-  allFiles.forEach(file => {
-    if (idFileMap.has(file.entity)) {
-      idFileMap.get(file.entity).push(file);
-    } else {
-      idFileMap.set(file.entity, [file]);
-    }
-  });
-  const result = entities.map(entity => {
-    const entityFiles = idFileMap.has(entity.sharedId) ? idFileMap.get(entity.sharedId) : [];
+  // entities.forEach(entity => {
+  //   if (entity.sharedId === undefined) {
+  //     throw new Error(`Missing sharedId on entity: ${JSON.stringify(entity)}`);
+  //   }
+  // });
 
-    entity.documents = entityFiles.filter(f => f.type === 'document');
-    entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-    return entity;
-  });
+  // // console.log(entities);
+  // const sharedIds = entities.map(entity => entity.sharedId);
+  // // console.log(sharedIds);
+  // const allFiles = await files.get(
+  //   { entity: { $in: sharedIds } },
+  //   (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
+  // );
+  // // console.log(allFiles);
+  // const idFileMap = new Map();
+  // allFiles.forEach(file => {
+  //   if (idFileMap.has(file.entity)) {
+  //     idFileMap.get(file.entity).push(file);
+  //   } else {
+  //     idFileMap.set(file.entity, [file]);
+  //   }
+  // });
+  // // console.log(idFileMap);
+  // const result = entities.map(entity => {
+  //   const entityFiles = idFileMap.has(entity.sharedId) ? idFileMap.get(entity.sharedId) : [];
+
+  //   entity.documents = entityFiles.filter(f => f.type === 'document');
+  //   entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+  //   return entity;
+  // });
+  // console.log(result);
+
+  //old version:
+  const result = await Promise.all(
+    entities.map(async entity => {
+      const entityFiles = await files.get(
+        { entity: entity.sharedId },
+        (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
+      );
+
+      entity.documents = entityFiles.filter(f => f.type === 'document');
+      entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+      return entity;
+    })
+  );
+
+  // console.log('--------------result');
+  // result.forEach((res) => {
+  //   console.log(res);
+  //   res.metadata?.relationship?.forEach((rel) => {console.log(rel);})
+  //   res.documents.forEach((doc) => {console.log(doc);})
+  //   res.attachments.forEach((att) => {console.log(att);})
+  // });
+  // console.log(result);
   return result;
 };
 
@@ -364,6 +398,19 @@ const reindexEntitiesByTemplate = async (template, options) => {
     return search.indexEntities({ template: template._id });
   }
   return Promise.resolve();
+};
+
+const extendSelect = select => {
+  if (!select) {
+    return select;
+  }
+  if (typeof select === 'string') {
+    return select.includes('+') ? `${select} +sharedId` : `${select} sharedId`;
+  }
+  if (Array.isArray(select)) {
+    return select.concat(['sharedId']);
+  }
+  return Object.keys(select).length > 0 ? { sharedId: 1, ...select } : select;
 };
 
 export default {
@@ -473,7 +520,13 @@ export default {
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
-    const entities = await model.getUnrestricted(query, select, restOfOptions);
+    // console.log(query);
+    // console.log(select);
+    // console.log(options);
+    const extendedSelect = extendSelect(select);
+    // console.log(extendedSelect);
+    const entities = await model.getUnrestricted(query, extendedSelect, restOfOptions);
+    // console.log(entities);
 
     return withDocuments(entities, documentsFullText, withPdfInfo);
   },
@@ -483,19 +536,19 @@ export default {
   },
 
   async get(query, select, options = {}) {
+    // console.log(query);
+    // console.log(select);
+    // console.log(options);
     const { withoutDocuments, documentsFullText, withPdfInfo, ...restOfOptions } = options;
-    let extendedSelect;
-    if (select && !withoutDocuments) {
-      if (typeof select === 'string') {
-        extendedSelect = select.includes('+sharedId') ? select : `${select} +sharedId`;
-      } else {
-        extendedSelect = { ...select };
-        extendedSelect.sharedId = 1;
-      }
-    }
+    const extendedSelect = withoutDocuments ? select : extendSelect(select);
+    // const extendedSelect = select;
+    // console.log(extendedSelect);
+    // console.log(Object.keys(extendedSelect).length);
     const entities = await model.get(query, extendedSelect, restOfOptions);
-
+    // const entities = await model.get(query, select, restOfOptions);
+    // console.log(entities);
     return !withoutDocuments ? withDocuments(entities, documentsFullText, withPdfInfo) : entities;
+    // return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
   async getWithRelationships(query, select, pagination) {
