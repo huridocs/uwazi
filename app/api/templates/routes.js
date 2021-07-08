@@ -14,9 +14,10 @@ export default app => {
   // eslint-disable-next-line max-statements
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
+      const { reindex: fullReindex } = req.body.reindex;
       delete req.body.reindex;
 
-      const reindex = await checkIfReindex(req.body);
+      const reindex = fullReindex ? false : await checkIfReindex(req.body);
       const response = await templates.save(req.body, req.language, reindex);
       req.sockets.emitToCurrentTenant('templateChange', response);
       const updatedSettings = await settings.updateFilterName(
@@ -27,7 +28,7 @@ export default app => {
         req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
       }
 
-      if (req.body.reindex) {
+      if (fullReindex) {
         const allTemplates = await templates.get();
         reindexAll(allTemplates, search);
       }
