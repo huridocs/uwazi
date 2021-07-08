@@ -887,12 +887,7 @@ describe('search', () => {
     it('should filter by unpublished', async () => {
       const { options } = await search.autocomplete('unpublished', 'es');
       expect(options.length).toBe(0);
-      const { options: optionsUnpublished } = await search.autocomplete(
-        'unpublished',
-        'es',
-        [],
-        true
-      );
+      const { options: optionsUnpublished } = await search.autocomplete('unpublished', 'es', []);
       expect(optionsUnpublished.length).toBe(1);
     });
   });

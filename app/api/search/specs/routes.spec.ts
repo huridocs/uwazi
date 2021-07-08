@@ -59,13 +59,13 @@ describe('Search routes', () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/search/lookup')
         .set('content-language', 'es')
-        .query({ searchTerm: 'unpublished' });
+        .query({ searchTerm: 'unpublished', unpublished: 'false' });
       expect(res.body.options.length).toBe(0);
 
       res = await request(app)
         .get('/api/search/lookup')
         .set('content-language', 'es')
-        .query({ searchTerm: 'unpublished', unpublished: true });
+        .query({ searchTerm: 'unpublished' });
 
       expect(res.body.options.length).toBe(1);
     });
