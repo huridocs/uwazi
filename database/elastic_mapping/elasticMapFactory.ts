@@ -39,16 +39,6 @@ export default {
             map.properties.metadata.properties[property.name].properties.inheritedValue = {
               properties: propertyMappings[property.inherit.type](),
             };
-            if (
-              topicClassification &&
-              (property.type === 'select' || property.type === 'multiselect')
-            ) {
-              map.properties.suggestedMetadata.properties[
-                property.name
-              ].properties.inheritedValue = {
-                properties: propertyMappings[property.inherit.type](),
-              };
-            }
           }
           return map;
         }, baseMapping),
