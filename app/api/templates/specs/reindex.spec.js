@@ -144,7 +144,6 @@ describe('reindex', () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.properties = [template.properties[1], template.properties[2]];
         const reindex = await checkIfReindex(template);
-
         expect(reindex).toEqual(true);
 
         await templates.save(template, 'en', reindex);
@@ -154,16 +153,20 @@ describe('reindex', () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.properties[0].name = 'New property name';
         const reindex = await checkIfReindex(template);
-
         expect(reindex).toEqual(true);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.indexEntities).toHaveBeenCalled();
       });
       it('has a new property added', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.properties.push({ type: propertyTypes.text, label: 'text' });
 
         const reindex = await checkIfReindex(template);
-
         expect(reindex).toEqual(true);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.indexEntities).toHaveBeenCalled();
       });
     });
     describe('commonProperty', () => {
@@ -171,15 +174,19 @@ describe('reindex', () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.commonProperties = [];
         const reindex = await checkIfReindex(template);
-
         expect(reindex).toEqual(true);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.indexEntities).toHaveBeenCalled();
       });
       it('should reindex if commonProperty name has changed', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.commonProperties[0].name = 'New name';
         const reindex = await checkIfReindex(template);
-
         expect(reindex).toEqual(true);
+
+        await templates.save(template, 'en', reindex);
+        expect(search.indexEntities).toHaveBeenCalled();
       });
     });
   });
