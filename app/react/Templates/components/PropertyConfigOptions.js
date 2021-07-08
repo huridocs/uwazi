@@ -21,7 +21,7 @@ class PropertyConfigOptions extends Component {
           label="Required property"
           model={`template.data.properties[${index}].required`}
         >
-          <Tip>You won&#39;t be able to publish a document if this property is empty.</Tip>
+          <Tip>You won&#39;t be able to publish an entity if this property is empty.</Tip>
         </PropertyConfigOption>
         <PropertyConfigOption
           label="Show in cards"
@@ -38,7 +38,7 @@ class PropertyConfigOptions extends Component {
             >
               <Tip>
                 This property will be used for filtering the library results. When properties match
-                in equal name and field type with other document types, they will be combined for
+                in equal name and field type with other entity types, they will be combined for
                 filtering.
               </Tip>
             </PropertyConfigOption>
@@ -49,7 +49,7 @@ class PropertyConfigOptions extends Component {
                   model={`template.data.properties[${index}].defaultfilter`}
                 >
                   <Tip>
-                    Use this property as a default filter in the library. When there are no document
+                    Use this property as a default filter in the library. When there are no entity
                     types selected, this property will show as a default filter for your collection.
                   </Tip>
                 </PropertyConfigOption>
