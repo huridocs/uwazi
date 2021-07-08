@@ -10,7 +10,7 @@ const getAndUpdateTemplate = async props => {
   Object.keys(props).forEach(key => {
     template[key] = props[key];
   });
-  return template;
+  return { reindex: await checkIfReindex(template), template };
 };
 
 describe('reindex', () => {
@@ -25,8 +25,7 @@ describe('reindex', () => {
 
   describe('Not Reindex', () => {
     it('should not reindex if name has changed', async () => {
-      const template = await getAndUpdateTemplate({ name: 'Updated name' });
-      const reindex = await checkIfReindex(template);
+      const { reindex, template } = await getAndUpdateTemplate({ name: 'Updated name' });
 
       expect(reindex).toEqual(false);
 
@@ -34,8 +33,7 @@ describe('reindex', () => {
       expect(search.indexEntities).not.toHaveBeenCalled();
     });
     it('should not reindex if color has changed', async () => {
-      const template = await getAndUpdateTemplate({ color: '#222222' });
-      const reindex = await checkIfReindex(template);
+      const { reindex, template } = await getAndUpdateTemplate({ color: '#222222' });
 
       expect(reindex).toEqual(false);
 
@@ -48,11 +46,10 @@ describe('reindex', () => {
         Object.keys(props).forEach(key => {
           template.properties[0][key] = props[key];
         });
-        return template;
+        return { reindex: await checkIfReindex(template), template };
       };
       it('should not reindex if use as filter is checked', async () => {
-        const template = await getAndUpdateTemplateProps({ filter: true });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ filter: true });
 
         expect(reindex).toEqual(false);
 
@@ -60,8 +57,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if default filter is checked', async () => {
-        const template = await getAndUpdateTemplateProps({ defaultfilter: true });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ defaultfilter: true });
 
         expect(reindex).toEqual(false);
 
@@ -69,8 +65,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if hide label is checked', async () => {
-        const template = await getAndUpdateTemplateProps({ noLabel: true });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ noLabel: true });
 
         expect(reindex).toEqual(false);
 
@@ -78,8 +73,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if show in card is checked', async () => {
-        const template = await getAndUpdateTemplateProps({ showInCard: true });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ showInCard: true });
 
         expect(reindex).toEqual(false);
 
@@ -87,8 +81,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if required property is checked', async () => {
-        const template = await getAndUpdateTemplateProps({ required: true });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ required: true });
 
         expect(reindex).toEqual(false);
 
@@ -96,8 +89,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if image full width is checked', async () => {
-        const template = await getAndUpdateTemplateProps({ fullWidth: true });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ fullWidth: true });
 
         expect(reindex).toEqual(false);
 
@@ -105,8 +97,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if image style is changed', async () => {
-        const template = await getAndUpdateTemplateProps({ style: 'cover' });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ style: 'cover' });
 
         expect(reindex).toEqual(false);
 
@@ -114,8 +105,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if nested properties is changed', async () => {
-        const template = await getAndUpdateTemplateProps({ nestedProperties: ['something'] });
-        const reindex = await checkIfReindex(template);
+        const { reindex, template } = await getAndUpdateTemplateProps({ nestedProperties: ['something'] });
 
         expect(reindex).toEqual(false);
 
