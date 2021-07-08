@@ -810,19 +810,16 @@ const search = {
     };
   },
 
-  async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
+  async autocomplete(searchTerm, language, templates = []) {
     const queryBuilder = documentQueryBuilder()
       .include(['title', 'template', 'sharedId', 'icon'])
       .language(language)
       .limit(preloadOptionsSearch)
-      .filterByPermissions(!includeUnpublished);
+      .filterByPermissions()
+      .includeUnpublished();
 
     if (templates.length) {
       queryBuilder.filterByTemplate(templates);
-    }
-
-    if (includeUnpublished) {
-      queryBuilder.includeUnpublished();
     }
 
     const body = queryBuilder.query();

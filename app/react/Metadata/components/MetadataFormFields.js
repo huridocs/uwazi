@@ -49,7 +49,7 @@ export class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris, attachments, unpublished } = this.props;
+    const { dateFormat, version, entityThesauris, attachments } = this.props;
     const propertyType = property.type;
     const plainAttachments = attachments.toJS();
 
@@ -114,11 +114,7 @@ export class MetadataFormFields extends Component {
 
         return (
           <LookupMultiSelect
-            lookup={getSuggestions.bind(
-              null,
-              property.content ? [property.content] : [],
-              unpublished
-            )}
+            lookup={getSuggestions.bind(null, property.content ? [property.content] : [])}
             model={_model}
             optionsValue="id"
             options={thesauri}
@@ -253,7 +249,6 @@ MetadataFormFields.defaultProps = {
   entityThesauris: Immutable.fromJS({}),
   attachments: Immutable.fromJS([]),
   highlightedProps: [],
-  unpublished: false,
 };
 
 MetadataFormFields.propTypes = {
@@ -267,10 +262,8 @@ MetadataFormFields.propTypes = {
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   attachments: PropTypes.instanceOf(Immutable.List),
-  unpublished: PropTypes.bool,
 };
 
-// eslint-disable-next-line max-statements
 export const mapStateToProps = (state, ownProps) => {
   const { storeKey } = ownProps;
 
@@ -295,7 +288,6 @@ export const mapStateToProps = (state, ownProps) => {
     dateFormat: state.settings.collection.get('dateFormat'),
     entityThesauris: state.entityThesauris,
     attachments,
-    unpublished: state.library.search.includeUnpublished,
   };
 };
 
