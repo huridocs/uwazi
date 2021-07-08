@@ -170,18 +170,9 @@ describe('reindex', () => {
       });
     });
     describe('commonProperty', () => {
-      it('should reindex if a commonProperty has been deleted', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.commonProperties = [];
-        const reindex = await checkIfReindex(template);
-        expect(reindex).toEqual(true);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).toHaveBeenCalled();
-      });
       it('should reindex if commonProperty name has changed', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
-        template.commonProperties[0].name = 'New name';
+        template.commonProperties[0].label = 'Label Changed';
         const reindex = await checkIfReindex(template);
         expect(reindex).toEqual(true);
 
