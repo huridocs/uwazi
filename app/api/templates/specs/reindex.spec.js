@@ -105,7 +105,9 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
       it('should not reindex if nested properties is changed', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ nestedProperties: ['something'] });
+        const { reindex, template } = await getAndUpdateTemplateProps({
+          nestedProperties: ['something'],
+        });
 
         expect(reindex).toEqual(false);
 
