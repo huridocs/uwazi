@@ -11,6 +11,8 @@ const titles = {
   relationConflict:
     'Relationship properties with the same label but different relationship types are not allowed.',
   typeConflict: 'Properties with the same label but incompatible types are not allowed.',
+  inheritConflict:
+    'Properties with the same label but incompatible inherited types are not allowed.',
 };
 
 export interface TemplateProperty {
@@ -21,46 +23,68 @@ export interface TemplateProperty {
   relationConflict: boolean;
   contentConflict: boolean;
   type: PropertySchema['type'];
+  inheritConflict: boolean;
+  inheritType?: string;
 }
 
 export interface SimilarPropertiesProps {
   templateProperty: TemplateProperty;
 }
 
+const inheritTypeToShow = (prop: TemplateProperty) =>
+  prop.inheritType ? prop.inheritType[0].toUpperCase() + prop.inheritType.slice(1) : '';
+
+const invalidType = (prop: TemplateProperty) =>
+  prop.typeConflict || prop.relationConflict || prop.inheritConflict;
+
+const typeToShow = (prop: TemplateProperty) => prop.type[0].toUpperCase() + prop.type.slice(1);
+
+const title = (prop: TemplateProperty) => {
+  if (prop.inheritConflict) {
+    return titles.inheritConflict;
+  }
+  if (prop.relationConflict) {
+    return titles.relationConflict;
+  }
+  if (prop.typeConflict) {
+    return titles.typeConflict;
+  }
+  return '';
+};
+
+const contentTitle = (prop: TemplateProperty) =>
+  prop.contentConflict ? titles.contentConflict : '';
+
 export class SimilarProperty extends Component<SimilarPropertiesProps> {
   render() {
-    const typeIcon = this.props.templateProperty.type as keyof typeof Icons;
-    const typeToShow =
-      this.props.templateProperty.type[0].toUpperCase() + this.props.templateProperty.type.slice(1);
-    const invalidType =
-      this.props.templateProperty.typeConflict || this.props.templateProperty.relationConflict;
-    const invalidThesauri =
-      this.props.templateProperty.contentConflict && this.props.templateProperty.thesaurusName;
+    const { templateProperty } = this.props;
+    const typeIcon = templateProperty.type as keyof typeof Icons;
+    const invalidThesauri = templateProperty.contentConflict && templateProperty.thesaurusName;
     return (
       <tr className="property-atributes is-active">
         <td>
-          <Icon icon="file" /> {this.props.templateProperty.template}
+          <Icon icon="file" /> {templateProperty.template}
         </td>
         <td
-          {...(invalidType && {
-            className: 'conflict',
-          })}
-          {...(this.props.templateProperty.typeConflict && { title: titles.typeConflict })}
-          {...(this.props.templateProperty.relationConflict && { title: titles.relationConflict })}
+          className={invalidType(templateProperty) ? 'conflict' : ''}
+          title={title(templateProperty)}
         >
-          {invalidType && <Icon icon="exclamation-triangle" />}
+          {invalidType(templateProperty) && <Icon icon="exclamation-triangle" />}
+          &nbsp;
           <Icon icon={Icons[typeIcon] || 'fa fa-font'} />
-          {typeToShow}
-          {this.props.templateProperty.relationTypeName &&
-            ` (${this.props.templateProperty.relationTypeName})`}
+          &nbsp;
+          {typeToShow(templateProperty)}
+          {templateProperty.relationTypeName && ` (${templateProperty.relationTypeName})`}
+          {inheritTypeToShow(templateProperty) &&
+            ` (Inherit: ${inheritTypeToShow(templateProperty)})`}
         </td>
         <td
-          className={this.props.templateProperty.contentConflict ? 'conflict' : ''}
-          {...(this.props.templateProperty.contentConflict && { title: titles.contentConflict })}
+          className={templateProperty.contentConflict ? 'conflict' : ''}
+          title={contentTitle(templateProperty)}
         >
           {invalidThesauri && <Icon icon="exclamation-triangle" />}
-          {this.props.templateProperty.thesaurusName && <Icon icon="book" />}
-          {this.props.templateProperty.thesaurusName}
+          {templateProperty.thesaurusName && <Icon icon="book" />}
+          {templateProperty.thesaurusName}
         </td>
       </tr>
     );

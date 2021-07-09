@@ -113,20 +113,6 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
   },
 });
 
-ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
-  errors: false,
-  type: 'object',
-  validate(schema: any, data: TemplateSchema) {
-    if (!schema) {
-      return true;
-    }
-    if (data.type === 'relationship' && data.inherit) {
-      return !!data.inheritProperty;
-    }
-    return true;
-  },
-});
-
 ajv.addKeyword('cantDeleteInheritedProperties', {
   async: true,
   errors: true,
@@ -181,6 +167,7 @@ async function getPropertiesWithSameNameAndDifferentKind(template: TemplateSchem
           { content: { $ne: property.content } },
           { type: { $ne: property.type } },
           { relationtype: { $ne: property.relationType } },
+          { 'inherit.type': { $ne: property.inherit?.type } },
         ],
       },
     ],
@@ -199,7 +186,8 @@ function filterInconsistentProperties(template: TemplateSchema, allProperties: P
           p.name === property.name &&
           (p.content !== property.content ||
             !getCompatibleTypes(property.type).includes(p.type) ||
-            p.relationType !== property.relationType)
+            p.relationType !== property.relationType ||
+            p.inherit?.type !== property.inherit?.type)
       );
 
       if (matches && !propertyNames.includes(ensure(property.name))) {
@@ -235,7 +223,7 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
           schemaPath: '',
           params: { keyword: 'cantReuseNameWithDifferentType' },
           message:
-            'Entered label is already in use on another property with a different type or thesaurus',
+            'Entered label is already in use on another property with a different type, thesaurus or inherit',
           dataPath: `.properties.${property}`,
         }))
       );

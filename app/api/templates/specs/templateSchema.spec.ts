@@ -71,6 +71,7 @@ describe('template schema', () => {
       });
     });
 
+    // eslint-disable-next-line max-statements
     describe('invalid cases', () => {
       it('invalid if commonProperties is empty', async () => {
         //@ts-ignore
@@ -142,20 +143,19 @@ describe('template schema', () => {
         await testInvalid();
       });
 
-      it('invalid if inherited relationship properties do not specify field to inherit', async () => {
-        template.properties = [];
-        template.properties.push(
-          makeProperty('foo', 'relationship', {
-            content: 'content',
-            relationType: 'rel1',
-            inherit: true,
-          })
-        );
+      it('invalid if different template with the same name already exists', async () => {
+        template.name = 'DuplicateName';
         await testInvalid();
       });
 
-      it('invalid if different table with the same name already exists', async () => {
-        template.name = 'DuplicateName';
+      it('invalid if relationship property inherits something different', async () => {
+        template.properties = [];
+        template.properties.push({
+          name: 'relationship',
+          label: 'relationship',
+          type: 'relationship',
+          content: templateToBeInherited.toString(),
+        });
         await testInvalid();
       });
     });

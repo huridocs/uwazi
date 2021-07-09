@@ -412,8 +412,10 @@ export default {
           name: 'enemies',
           relationType: relationType4,
           content: templateId.toString(),
-          inherit: true,
-          inheritProperty: inheritedProperty,
+          inherit: {
+            property: inheritedProperty,
+            type: 'text',
+          },
         },
         { _id: db.id(), type: 'nested', name: 'field_nested' },
         { _id: db.id(), type: 'numeric', name: 'numeric' },
