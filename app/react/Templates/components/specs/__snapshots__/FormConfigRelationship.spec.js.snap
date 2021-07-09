@@ -83,6 +83,7 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
     />
   </div>
   <Connect(PropertyConfigOptions)
+    canBeFilter={true}
     index={0}
     type="relationship"
   />
@@ -172,6 +173,7 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
     />
   </div>
   <Connect(PropertyConfigOptions)
+    canBeFilter={true}
     index={0}
     type="relationship"
   />
