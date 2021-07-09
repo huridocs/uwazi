@@ -58,7 +58,7 @@ describe('FormConfigRelationship', () => {
   });
 
   describe('when use as filter is selected', () => {
-    fit('should show the default filter option', () => {
+    it('should show the default filter option', () => {
       storeData.template.data.properties[0].filter = true;
 
       const component = render();
