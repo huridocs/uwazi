@@ -52,6 +52,11 @@ export const doc = {
         inheritedValue: [{ value: { lat: 13, lon: 7 } }],
       },
       {
+        value: 'linkedEntityWithoutGeolocationValue',
+        label: 'Entity without value',
+        inheritedValue: null,
+      },
+      {
         value: 'linkedEntity2',
         label: 'Entity 2 Title',
         inheritedValue: [{ value: { lat: 5, lon: 10, label: 'exisitng label' } }],

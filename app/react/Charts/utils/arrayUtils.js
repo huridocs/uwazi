@@ -84,8 +84,22 @@ const formatPayload = data =>
     formatter: () => <span style={{ color: '#333' }}>{item.name}</span>,
   }));
 
+const formatForNestedValues = (category, options) => {
+  const { labelsMap = {}, excludeZero, context } = options;
+  const flatValues = category.values.map(value => ({
+    id: value.key,
+    label: labelsMap[value.label] || t(context, value.label, null, false),
+    results: value.filtered.doc_count,
+    parent: labelsMap[category.label] || t(context, category.label, null, false),
+  }));
+  if (excludeZero) {
+    return flatValues.filter(value => value.results !== 0);
+  }
+  return flatValues;
+};
+
 const formatDataForChart = (data, _property, formatOptions) => {
-  const { maxCategories, aggregateOthers = false, labelsMap = {}, sort } = formatOptions;
+  const { maxCategories, aggregateOthers = false, labelsMap = {}, sort, context } = formatOptions;
 
   const relevantCategories = determineRelevantCategories(data.toJS(), formatOptions);
   const sortedCategories = sortData(relevantCategories, sort);
@@ -96,23 +110,29 @@ const formatDataForChart = (data, _property, formatOptions) => {
     categories = limitMaxCategories(sortedCategories, maxCategories, aggregateOthers);
   }
 
-  return categories
-    .map(item => {
-      if (item.others && item.filtered.doc_count) {
-        return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
-      }
+  return [].concat(
+    ...categories
+      .map(item => {
+        if (item.others && item.filtered.doc_count) {
+          return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
+        }
 
-      if (!item.label) {
-        return null;
-      }
+        if (!item.label) {
+          return null;
+        }
 
-      return {
-        id: item.key,
-        label: labelsMap[item.label] || t(formatOptions.context, item.label, null, false),
-        results: item.filtered.doc_count,
-      };
-    })
-    .filter(i => !!i);
+        if (item.values && formatOptions.scatter) {
+          return formatForNestedValues(item, formatOptions);
+        }
+
+        return {
+          id: item.key,
+          label: labelsMap[item.label] || t(context, item.label, null, false),
+          results: item.filtered.doc_count,
+        };
+      })
+      .filter(i => !!i)
+  );
 };
 
 export default {
