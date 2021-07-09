@@ -14,7 +14,7 @@ export default app => {
   // eslint-disable-next-line max-statements
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
-      const { reindex: fullReindex } = req.body.reindex;
+      const { reindex: fullReindex } = req.body;
       delete req.body.reindex;
 
       const reindex = fullReindex ? false : await checkIfReindex(req.body);
