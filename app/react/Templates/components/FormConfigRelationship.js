@@ -58,7 +58,7 @@ export class FormConfigRelationship extends Component {
     const canBeFilter =
       !this.state.inherit ||
       (this.state.inherit &&
-        !['image', 'markdown', 'preview', 'media', 'link'].includes(inheritSelectPropertyType));
+        !['image', 'geolocation', 'preview', 'media', 'link'].includes(inheritSelectPropertyType));
     return (
       <div>
         <div className={labelClass}>
