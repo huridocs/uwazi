@@ -333,51 +333,45 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
 };
 
 const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
-  // entities.forEach(entity => {
-  //   if (entity.sharedId === undefined) {
-  //     throw new Error(`Missing sharedId on entity: ${JSON.stringify(entity)}`);
-  //   }
-  // });
-
-  // // console.log(entities);
-  // const sharedIds = entities.map(entity => entity.sharedId);
-  // // console.log(sharedIds);
-  // const allFiles = await files.get(
-  //   { entity: { $in: sharedIds } },
-  //   (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-  // );
-  // // console.log(allFiles);
-  // const idFileMap = new Map();
-  // allFiles.forEach(file => {
-  //   if (idFileMap.has(file.entity)) {
-  //     idFileMap.get(file.entity).push(file);
-  //   } else {
-  //     idFileMap.set(file.entity, [file]);
-  //   }
-  // });
-  // // console.log(idFileMap);
-  // const result = entities.map(entity => {
-  //   const entityFiles = idFileMap.has(entity.sharedId) ? idFileMap.get(entity.sharedId) : [];
-
-  //   entity.documents = entityFiles.filter(f => f.type === 'document');
-  //   entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-  //   return entity;
-  // });
-  // console.log(result);
+  // console.log(entities);
+  const sharedIds = entities.map(entity => entity.sharedId);
+  // console.log(sharedIds);
+  const allFiles = await files.get(
+    { entity: { $in: sharedIds } },
+    (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
+  );
+  // console.log(allFiles);
+  const idFileMap = new Map();
+  allFiles.forEach(file => {
+    if (idFileMap.has(file.entity)) {
+      idFileMap.get(file.entity).push(file);
+    } else {
+      idFileMap.set(file.entity, [file]);
+    }
+  });
+  // console.log(idFileMap);
+  const result = entities.map(entity => {
+    const entityFiles = idFileMap.has(entity.sharedId)
+      ? idFileMap.get(entity.sharedId).map(file => ({ ...file }))
+      : [];
+    entity.documents = entityFiles.filter(f => f.type === 'document');
+    entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+    return entity;
+  });
 
   //old version:
-  const result = await Promise.all(
-    entities.map(async entity => {
-      const entityFiles = await files.get(
-        { entity: entity.sharedId },
-        (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-      );
+  // result = await Promise.all(
+  //   entities.map(async entity => {
+  //     const entityFiles = await files.get(
+  //       { entity: entity.sharedId },
+  //       (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
+  //     );
 
-      entity.documents = entityFiles.filter(f => f.type === 'document');
-      entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-      return entity;
-    })
-  );
+  //     entity.documents = entityFiles.filter(f => f.type === 'document');
+  //     entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+  //     return entity;
+  //   })
+  // );
 
   // console.log('--------------result');
   // result.forEach((res) => {
@@ -386,7 +380,7 @@ const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
   //   res.documents.forEach((doc) => {console.log(doc);})
   //   res.attachments.forEach((att) => {console.log(att);})
   // });
-  // console.log(result);
+  // console.log(JSON.stringify(result[1], null, 4));
   return result;
 };
 
@@ -520,10 +514,10 @@ export default {
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
+    const extendedSelect = extendSelect(select);
     // console.log(query);
     // console.log(select);
     // console.log(options);
-    const extendedSelect = extendSelect(select);
     // console.log(extendedSelect);
     const entities = await model.getUnrestricted(query, extendedSelect, restOfOptions);
     // console.log(entities);
