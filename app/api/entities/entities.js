@@ -333,14 +333,11 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
 };
 
 const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
-  // console.log(entities);
   const sharedIds = entities.map(entity => entity.sharedId);
-  // console.log(sharedIds);
   const allFiles = await files.get(
     { entity: { $in: sharedIds } },
     (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
   );
-  // console.log(allFiles);
   const idFileMap = new Map();
   allFiles.forEach(file => {
     if (idFileMap.has(file.entity)) {
@@ -349,7 +346,6 @@ const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
       idFileMap.set(file.entity, [file]);
     }
   });
-  // console.log(idFileMap);
   const result = entities.map(entity => {
     const entityFiles = idFileMap.has(entity.sharedId)
       ? idFileMap.get(entity.sharedId).map(file => ({ ...file }))
@@ -358,29 +354,6 @@ const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
     entity.attachments = entityFiles.filter(f => f.type === 'attachment');
     return entity;
   });
-
-  //old version:
-  // result = await Promise.all(
-  //   entities.map(async entity => {
-  //     const entityFiles = await files.get(
-  //       { entity: entity.sharedId },
-  //       (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-  //     );
-
-  //     entity.documents = entityFiles.filter(f => f.type === 'document');
-  //     entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-  //     return entity;
-  //   })
-  // );
-
-  // console.log('--------------result');
-  // result.forEach((res) => {
-  //   console.log(res);
-  //   res.metadata?.relationship?.forEach((rel) => {console.log(rel);})
-  //   res.documents.forEach((doc) => {console.log(doc);})
-  //   res.attachments.forEach((att) => {console.log(att);})
-  // });
-  // console.log(JSON.stringify(result[1], null, 4));
   return result;
 };
 
@@ -515,13 +488,7 @@ export default {
   async getUnrestrictedWithDocuments(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const extendedSelect = extendSelect(select);
-    // console.log(query);
-    // console.log(select);
-    // console.log(options);
-    // console.log(extendedSelect);
     const entities = await model.getUnrestricted(query, extendedSelect, restOfOptions);
-    // console.log(entities);
-
     return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
@@ -530,19 +497,10 @@ export default {
   },
 
   async get(query, select, options = {}) {
-    // console.log(query);
-    // console.log(select);
-    // console.log(options);
     const { withoutDocuments, documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
-    // const extendedSelect = select;
-    // console.log(extendedSelect);
-    // console.log(Object.keys(extendedSelect).length);
     const entities = await model.get(query, extendedSelect, restOfOptions);
-    // const entities = await model.get(query, select, restOfOptions);
-    // console.log(entities);
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText, withPdfInfo);
-    // return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
   async getWithRelationships(query, select, pagination) {

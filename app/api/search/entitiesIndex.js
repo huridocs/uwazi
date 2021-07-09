@@ -44,11 +44,8 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
 
 const bulkIndex = async (docs, _action = 'index') => {
   const body = [];
-  // console.log(JSON.stringify(docs.slice(0, 2), null, 4));
   // eslint-disable-next-line max-statements
   docs.forEach(doc => {
-    // if (doc.title==='Batman finishes en'){console.log(JSON.stringify(doc, null, 4));}
-    // if (doc.title==='Batman finishes es'){console.log(JSON.stringify(doc, null, 4));}
     let docBody = { documents: [], ...doc };
     docBody.fullText = 'entity';
     const id = doc._id.toString();
@@ -76,8 +73,6 @@ const bulkIndex = async (docs, _action = 'index') => {
     }
   });
 
-  // console.log(JSON.stringify(body, null, 4));
-
   const results = await elastic.bulk({ body });
   if (results.body.items) {
     handleErrors(results.body.items.filter(f => f.index.error));
@@ -97,7 +92,6 @@ const getEntitiesToIndex = async (query, stepBach, limit, select) => {
 
 const bulkIndexAndCallback = async assets => {
   const { searchInstance, entitiesToIndex, batchCallback, totalRows } = assets;
-  // console.log(JSON.stringify(entitiesToIndex[1], null, 4));
   await searchInstance.bulkIndex(entitiesToIndex, 'index');
   return batchCallback(entitiesToIndex.length, totalRows);
 };
