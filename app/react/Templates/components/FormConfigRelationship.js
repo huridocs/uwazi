@@ -21,14 +21,21 @@ export class FormConfigRelationship extends Component {
     super(props);
     this.state = { inherit: props.showInheritSelect };
     this.onInheritChange = this.onInheritChange.bind(this);
+    this.onInheritTypeChange = this.onInheritTypeChange.bind(this);
   }
 
   onInheritChange() {
+    const { index } = this.props;
     if (this.state.inherit) {
-      const { index } = this.props;
       this.props.resetFormValue(`template.data.properties[${index}].inherit.property`);
     }
+    this.props.resetFormValue(`template.data.properties[${index}].filter`);
     this.setState(prevState => ({ inherit: !prevState.inherit }));
+  }
+
+  onInheritTypeChange() {
+    const { index } = this.props;
+    this.props.resetFormValue(`template.data.properties[${index}].filter`);
   }
 
   render() {
@@ -48,6 +55,10 @@ export class FormConfigRelationship extends Component {
     const options = templates.toJS().filter(template => template._id !== templateId);
 
     const labelClass = labelError ? 'form-group has-error' : 'form-group';
+    const canBeFilter =
+      !this.state.inherit ||
+      (this.state.inherit &&
+        !['image', 'markdown', 'preview', 'media', 'link'].includes(inheritSelectPropertyType));
     return (
       <div>
         <div className={labelClass}>
@@ -105,6 +116,7 @@ export class FormConfigRelationship extends Component {
             <Select
               model={`template.data.properties[${index}].inherit.property`}
               options={templateProperties}
+              onChange={this.onInheritTypeChange}
               optionsLabel="label"
               optionsValue="_id"
             />
@@ -118,7 +130,7 @@ export class FormConfigRelationship extends Component {
             </p>
           </div>
         )}
-        <PropertyConfigOptions index={index} type={type} />
+        <PropertyConfigOptions canBeFilter={canBeFilter} index={index} type={type} />
       </div>
     );
   }

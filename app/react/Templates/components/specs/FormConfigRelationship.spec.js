@@ -58,7 +58,7 @@ describe('FormConfigRelationship', () => {
   });
 
   describe('when use as filter is selected', () => {
-    it('should show the default filter option', () => {
+    fit('should show the default filter option', () => {
       storeData.template.data.properties[0].filter = true;
 
       const component = render();
@@ -115,9 +115,10 @@ describe('FormConfigRelationship', () => {
         const component = render();
         const checkbox = component.find('#inherit0');
         checkbox.simulate('change');
-        expect(formActions.reset).toHaveBeenLastCalledWith(
+        expect(formActions.reset).toHaveBeenCalledWith(
           'template.data.properties[0].inherit.property'
         );
+        expect(formActions.reset).toHaveBeenCalledWith('template.data.properties[0].filter');
       });
     });
   });

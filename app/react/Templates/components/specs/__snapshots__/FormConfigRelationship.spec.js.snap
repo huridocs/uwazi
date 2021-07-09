@@ -261,6 +261,7 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
     />
   </div>
   <Connect(PropertyConfigOptions)
+    canBeFilter={true}
     index={0}
     type="relationship"
   />
