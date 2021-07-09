@@ -8,7 +8,8 @@ import pagesAPI from './PagesAPI';
 
 export default class EditPage extends RouteHandler {
   static async requestState(requestParams) {
-    const [page] = await pagesAPI.get(requestParams);
+    const page = await pagesAPI.getById(requestParams);
+
     return [formActions.load('page.data', page)];
   }
 

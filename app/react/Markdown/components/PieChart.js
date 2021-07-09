@@ -10,6 +10,20 @@ import { arrayUtils } from 'app/Charts';
 import PieChartLabel from './PieChartLabel';
 import markdownDatasets from '../markdownDatasets';
 
+const formatData = (data, property, options) => {
+  let formattedData = arrayUtils.sortValues(arrayUtils.formatDataForChart(data, property, options));
+
+  if (options.scatter) {
+    formattedData = formattedData.map(value => ({
+      id: value.id,
+      label: `${value.parent} - ${value.label}`,
+      results: value.results,
+    }));
+  }
+
+  return formattedData;
+};
+
 export const PieChartComponent = props => {
   const {
     showLabel,
@@ -19,6 +33,7 @@ export const PieChartComponent = props => {
     data,
     classname,
     context,
+    scatter,
     colors,
     maxCategories,
     pluckCategories,
@@ -28,15 +43,16 @@ export const PieChartComponent = props => {
 
   if (data) {
     const aggregateOthers = props.aggregateOthers === 'true';
-    const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, {
-        context,
-        excludeZero: true,
-        maxCategories,
-        aggregateOthers,
-        pluckCategories: JSON.parse(pluckCategories),
-      })
-    );
+
+    const formattedData = formatData(data, property, {
+      context,
+      scatter,
+      excludeZero: true,
+      maxCategories,
+      aggregateOthers,
+      pluckCategories: JSON.parse(pluckCategories),
+    });
+
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
     output = (
@@ -67,6 +83,7 @@ export const PieChartComponent = props => {
 
 PieChartComponent.defaultProps = {
   context: 'System',
+  scatter: false,
   innerRadius: '0',
   outerRadius: '105',
   classname: '',
@@ -85,6 +102,7 @@ PieChartComponent.propTypes = {
   aggregateOthers: PropTypes.string,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
+  scatter: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   classname: PropTypes.string,
   colors: PropTypes.string,
   showLabel: PropTypes.string,
