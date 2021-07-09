@@ -1,8 +1,10 @@
+/* eslint-disable max-lines */
 import { testingDB } from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
@@ -138,7 +140,10 @@ describe('permissions', () => {
         new UserInContextMockFactory().mockEditorUser();
 
         await entitiesPermissions.set(permissionsData);
-        let storedEntities = await entities.get({ sharedId: 'shared1' }, '+permissions');
+        let storedEntities: EntityWithFilesSchema[] = await entities.get(
+          { sharedId: 'shared1' },
+          '+permissions'
+        );
 
         storedEntities.forEach(entity => {
           expect(entity.permissions).toEqual(permissionsData.permissions);
