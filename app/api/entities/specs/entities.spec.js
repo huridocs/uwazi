@@ -732,9 +732,22 @@ describe('entities', () => {
       checkEntityGetResult(result[2], 'TitleC', null, null);
     });
 
-    // it('should call model.get with a properly extended select.', () => {
-    //   fail('TODO');
-    // });
+    it.each([
+      [undefined, undefined],
+      ['title', 'title sharedId'],
+      ['+title', '+title +sharedId'],
+      [['title'], ['title', 'sharedId']],
+      [{}, {}],
+      [{ title: 1 }, { title: 1, sharedId: 1 }],
+    ])(
+      'should call model.get with a properly extended select: %s -> %s',
+      async (select, extended) => {
+        const entitesModelGet = jest.spyOn(entitiesModel, 'get');
+        await entities.get({ template: entityGetTestTemplateId }, select);
+        expect(entitesModelGet).toBeCalledWith({ template: entityGetTestTemplateId }, extended, {});
+        entitesModelGet.mockRestore();
+      }
+    );
   });
 
   describe('denormalize', () => {

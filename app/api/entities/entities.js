@@ -547,7 +547,7 @@ export default {
     const entities = await model.get(query, extendedSelect, restOfOptions);
     // const entities = await model.get(query, select, restOfOptions);
     // console.log(entities);
-    return !withoutDocuments ? withDocuments(entities, documentsFullText, withPdfInfo) : entities;
+    return withoutDocuments ? entities : withDocuments(entities, documentsFullText, withPdfInfo);
     // return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
