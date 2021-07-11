@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
-
+import { Select } from 'app/ReactReduxForms';
+import { actions as formActions } from 'react-redux-form';
 import FormConfigRelationship from '../FormConfigRelationship';
 import { renderConnected } from '../../specs/utils/renderConnected.tsx';
 
@@ -39,11 +40,6 @@ describe('FormConfigRelationship', () => {
     };
   });
 
-  it('should render fields with the correct datas', () => {
-    const component = render();
-    expect(component).toMatchSnapshot();
-  });
-
   describe('when the fields are invalid and dirty or the form is submited', () => {
     it('should render the label with errors', () => {
       storeData.template.formState.$form.errors['properties.0.label.required'] = true;
@@ -67,6 +63,63 @@ describe('FormConfigRelationship', () => {
 
       const component = render();
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('when check as inherit', () => {
+    beforeEach(() => {
+      templates = [
+        { _id: 3, name: 'Judge', type: 'template', properties: [{ name: 'text', type: 'text' }] },
+      ];
+      storeData.templates = Immutable.fromJS(templates);
+    });
+    it('should render a select with the possible options', () => {
+      storeData.template.formState.properties[0].inherit = {
+        property: { value: 3 },
+      };
+      const component = render();
+      const selects = component.find(Select);
+
+      const inheritPropSelect = selects.findWhere(select =>
+        select.props().model.match('inherit.property')
+      );
+
+      expect(inheritPropSelect.length).toBe(1);
+
+      const checkbox = component.find('#inherit0');
+      expect(checkbox.props().checked).toBe(true);
+    });
+
+    describe('when clicking the inherit checkbox', () => {
+      it('should render the select with options', () => {
+        const component = render();
+        const checkbox = component.find('#inherit0');
+        checkbox.simulate('change');
+
+        const selects = component.find(Select);
+
+        const inheritPropSelect = selects.findWhere(select =>
+          select.props().model.match('inherit.property')
+        );
+
+        expect(inheritPropSelect.length).toBe(1);
+      });
+    });
+
+    describe('when unselecting the inherit checkbox', () => {
+      it('should empty the inherit value', () => {
+        spyOn(formActions, 'reset').and.callThrough();
+        storeData.template.formState.properties[0].inherit = {
+          property: { value: 3 },
+        };
+        const component = render();
+        const checkbox = component.find('#inherit0');
+        checkbox.simulate('change');
+        expect(formActions.reset).toHaveBeenCalledWith(
+          'template.data.properties[0].inherit.property'
+        );
+        expect(formActions.reset).toHaveBeenCalledWith('template.data.properties[0].filter');
+      });
     });
   });
 });
