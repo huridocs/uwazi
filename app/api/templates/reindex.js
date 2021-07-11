@@ -55,26 +55,31 @@ function checkIfFilterConditionsMet(changedProperties) {
   return shouldReindex;
 }
 
+function compareShallowProperties(updatedTemplate, originalTemplate, updatedKeys) {
+  const changedProperties = [];
+  updatedKeys.forEach(key => {
+    if (Array.isArray(updatedTemplate[key])) {
+      // Is a list of properties
+      const props = compareTemplateProperties(updatedTemplate[key], originalTemplate[key]);
+      props.forEach(propsKey => {
+        changedProperties.push(`${key}.${propsKey}`);
+      });
+      return;
+    }
+    if (updatedTemplate[key] !== originalTemplate[key] && key !== '_id') {
+      changedProperties.push(key);
+    }
+  });
+  return changedProperties;
+}
+
 export async function checkIfReindex(updatedTemplate) {
   if (updatedTemplate._id) {
-    const changedProperties = [];
+    let changedProperties = [];
     const [originalTemplate] = await templates.get({ _id: updatedTemplate._id });
     const updatedKeys = Object.keys(updatedTemplate);
 
-    // Compare shallow object properties
-    updatedKeys.forEach(key => {
-      if (Array.isArray(updatedTemplate[key])) {
-        // Is a list of properties
-        const props = compareTemplateProperties(updatedTemplate[key], originalTemplate[key]);
-        props.forEach(propsKey => {
-          changedProperties.push(`${key}.${propsKey}`);
-        });
-        return;
-      }
-      if (updatedTemplate[key] !== originalTemplate[key] && key !== '_id') {
-        changedProperties.push(key);
-      }
-    });
+    changedProperties = compareShallowProperties(updatedTemplate, originalTemplate, updatedKeys);
     return checkIfFilterConditionsMet(changedProperties);
   }
   return false;
