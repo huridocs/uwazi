@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
@@ -33,6 +34,14 @@ const relationType4 = db.id();
 const uploadId1 = db.id();
 const uploadId2 = db.id();
 const inheritedProperty = db.id();
+
+const entityGetTestTemplateId = db.id();
+const entityGetTestEntityIdA = db.id();
+const entityGetTestEntityIdB = db.id();
+const entityGetTestEntityIdC = db.id();
+const entityGetTestFileId1 = db.id();
+const entityGetTestFileId2 = db.id();
+const entityGetTestFileId3 = db.id();
 
 const permissions = [{ refId: 'userId', level: AccessLevels.WRITE, type: PermissionType.USER }];
 
@@ -110,6 +119,28 @@ export default {
       filename: '123.pdf',
       language: 'es',
       fullText: { 1: 'text' },
+    },
+    // files to test entity.get
+    {
+      _id: entityGetTestFileId1,
+      entity: 'entityGetTestEntityIdC',
+      filename: 'file1.name',
+      language: 'en',
+      type: 'attachment',
+    },
+    {
+      _id: entityGetTestFileId2,
+      entity: 'entityGetTestEntityIdA',
+      filename: 'file2.name',
+      language: 'en',
+      type: 'document',
+    },
+    {
+      _id: entityGetTestFileId3,
+      entity: 'entityGetTestEntityIdC',
+      filename: 'file3.name',
+      language: 'en',
+      type: 'document',
     },
   ],
   entities: [
@@ -381,6 +412,43 @@ export default {
       language: 'es',
       permissions,
     },
+    // docs for testing entities.get
+    {
+      _id: entityGetTestEntityIdA,
+      sharedId: 'entityGetTestEntityIdA',
+      type: 'entity',
+      template: entityGetTestTemplateId,
+      language: 'en',
+      title: 'TitleA',
+      published: true,
+      metadata: {
+        some_property: [{ value: 'value1' }],
+      },
+    },
+    {
+      _id: entityGetTestEntityIdB,
+      sharedId: 'entityGetTestEntityIdB',
+      type: 'entity',
+      template: entityGetTestTemplateId,
+      language: 'en',
+      title: 'TitleB',
+      published: true,
+      metadata: {
+        some_property: [{ value: 'value2' }],
+      },
+    },
+    {
+      _id: entityGetTestEntityIdC,
+      sharedId: 'entityGetTestEntityIdC',
+      type: 'entity',
+      template: entityGetTestTemplateId,
+      language: 'en',
+      title: 'TitleC',
+      published: true,
+      metadata: {
+        some_property: [{ value: 'value3' }],
+      },
+    },
   ],
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
@@ -476,6 +544,11 @@ export default {
         { _id: db.id(), id: '3', type: 'text', name: 'property3' },
       ],
     },
+    {
+      _id: entityGetTestTemplateId,
+      name: 'entityGetTestTemplate',
+      properties: [{ _id: db.id(), id: '1', type: 'text', name: 'some_property' }],
+    },
   ],
   connections: [
     { _id: referenceId, entity: 'shared', template: null, hub: hub1, entityData: {} },
@@ -554,4 +627,5 @@ export {
   uploadId1,
   uploadId2,
   permissions,
+  entityGetTestTemplateId,
 };
