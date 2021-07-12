@@ -20,6 +20,7 @@ describe('SimilarProperty', () => {
         typeConflict: false,
         relationConflict: false,
         contentConflict: false,
+        inheritConflict: false,
       },
     };
     render(props);
@@ -27,7 +28,7 @@ describe('SimilarProperty', () => {
     expect(typeCell.length).toBe(0);
     const cells = component.find('td');
     expect(cells.get(0).props.children[2]).toBe('template 1');
-    expect(cells.get(1).props.children[2]).toBe('Relationship');
+    expect(cells.get(1).props.children[4]).toBe('Relationship');
     expect(cells.get(2).props.children[2]).toBe('entity 1');
     const warningIcon = component.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.length).toBe(0);
@@ -41,12 +42,13 @@ describe('SimilarProperty', () => {
         typeConflict: true,
         relationConflict: false,
         contentConflict: false,
+        inheritConflict: false,
       },
     };
     render(props);
     const typeCell = component.find('.conflict');
     expect(typeCell.props().title).not.toBeUndefined();
-    expect(typeCell.get(0).props.children[2]).toBe('Text');
+    expect(typeCell.get(0).props.children[4]).toBe('Text');
     const warningIcon = typeCell.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.get(0)).not.toBeUndefined();
   });
@@ -60,13 +62,14 @@ describe('SimilarProperty', () => {
         typeConflict: false,
         relationConflict: true,
         contentConflict: false,
+        inheritConflict: false,
       },
     };
     render(props);
     const typeCell = component.find('.conflict');
     expect(typeCell.props().title).not.toBeUndefined();
-    expect(typeCell.get(0).props.children[2]).toBe('Text');
-    expect(typeCell.get(0).props.children[3]).toBe(' (related)');
+    expect(typeCell.get(0).props.children[4]).toBe('Text');
+    expect(typeCell.get(0).props.children[5]).toBe(' (related)');
     const warningIcon = typeCell.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.get(0)).not.toBeUndefined();
   });
@@ -80,12 +83,35 @@ describe('SimilarProperty', () => {
         typeConflict: false,
         relationConflict: false,
         contentConflict: true,
+        inheritConflict: false,
       },
     };
     render(props);
     const typeCell = component.find('.conflict');
     expect(typeCell.props().title).not.toBeUndefined();
     expect(typeCell.get(0).props.children[2]).toBe('thesaurus 1');
+    const warningIcon = typeCell.find({ icon: 'exclamation-triangle' });
+    expect(warningIcon.get(0)).not.toBeUndefined();
+  });
+
+  it('should alert about a conflict with inherited property', () => {
+    const props: SimilarPropertiesProps = {
+      templateProperty: {
+        template: 'template 1',
+        type: 'relationship',
+        thesaurusName: 'thesaurus 1',
+        typeConflict: false,
+        relationConflict: false,
+        contentConflict: false,
+        inheritConflict: true,
+        inheritType: 'text',
+      },
+    };
+
+    render(props);
+    const typeCell = component.find('.conflict');
+    expect(typeCell.props().title).not.toBeUndefined();
+    expect(typeCell.get(0).props.children[4]).toBe('Relationship');
     const warningIcon = typeCell.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.get(0)).not.toBeUndefined();
   });

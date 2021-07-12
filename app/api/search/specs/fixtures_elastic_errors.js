@@ -64,7 +64,7 @@ export const fixtures = {
   templates: [
     {
       _id: templateIndexProblems,
-      properties: [{ name: 'text_field', type: 'text', filter: true }],
+      properties: [{ _id: db.id(), name: 'text_field', type: 'text', filter: true }],
     },
   ],
   settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],

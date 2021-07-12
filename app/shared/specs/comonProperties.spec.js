@@ -10,6 +10,7 @@ describe('comonProperties', () => {
         { name: 'date', filter: true, type: 'text', defaultfilter: true },
         { name: 'language', filter: true, type: 'text' },
         { name: 'id', filter: false, type: 'generatedid' },
+        { name: 'friends', relationType: '4', type: 'relationship' },
       ],
     },
     {
@@ -19,6 +20,7 @@ describe('comonProperties', () => {
         { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
         { name: 'language', filter: false, type: 'text', required: true },
         { name: 'id', filter: false, type: 'generatedid' },
+        { name: 'friends', relationType: '4', type: 'relationship' },
       ],
     },
     {
@@ -26,7 +28,12 @@ describe('comonProperties', () => {
       properties: [
         { name: 'author', filter: false, type: 'markdown' },
         { name: 'country', filter: true, type: 'text' },
-        { name: 'friend', relationType: '4', type: 'relationshipfilter' },
+        {
+          name: 'friends',
+          relationType: '4',
+          type: 'relationship',
+          inherit: { property: '234', type: 'text' },
+        },
       ],
     },
   ];
@@ -55,6 +62,7 @@ describe('comonProperties', () => {
           { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
           { name: 'language', filter: false, type: 'text', required: true },
           { name: 'id', filter: false, type: 'generatedid' },
+          { name: 'friends', relationType: '4', type: 'relationship' },
         ]);
       });
 

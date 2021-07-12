@@ -19,7 +19,9 @@ const formatProperty = (prop: FormattedMetadataValue) => {
   if (!prop?.value) {
     return undefined;
   }
-  if (['date', 'daterange', 'numeric', 'select', 'text', undefined].includes(prop.type)) {
+  if (
+    ['date', 'daterange', 'numeric', 'select', 'text', 'generatedid', undefined].includes(prop.type)
+  ) {
     return prop.value;
   }
 
