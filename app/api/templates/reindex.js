@@ -47,10 +47,14 @@ function compareTemplateProperties(updatedProperties, originalProperties) {
 }
 function checkIfFilterConditionsMet(changedProperties) {
   let shouldReindex = false;
-  changedProperties.forEach(property => {
+  changedProperties.every(property => {
     if (!SHOULD_NOT_TRIGGER_REINDEX.includes(property)) {
       shouldReindex = true;
     }
+    if (shouldReindex) {
+      return false;
+    }
+    return true;
   });
   return shouldReindex;
 }
