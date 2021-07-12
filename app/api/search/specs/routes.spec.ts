@@ -55,19 +55,12 @@ describe('Search routes', () => {
       expect(res.body.count).toBe(3);
     });
 
-    it('should filter by unpublished', async () => {
-      let res: SuperTestResponse = await request(app)
-        .get('/api/search/lookup')
-        .set('content-language', 'es')
-        .query({ searchTerm: 'unpublished', unpublished: 'false' });
-      expect(res.body.options.length).toBe(0);
-
-      res = await request(app)
+    it('should include unpublished entities', async () => {
+      const res = await request(app)
         .get('/api/search/lookup')
         .set('content-language', 'es')
         .query({ searchTerm: 'unpublished' });
-
-      expect(res.body.options.length).toBe(1);
+      expect(res.body.options.length).toBe(2);
     });
 
     describe('permissions', () => {
