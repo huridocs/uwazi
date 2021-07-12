@@ -78,8 +78,11 @@ async function updateOptionsInEntities(current, thesauri) {
 
   const updatedIds = getUpdatedNames(currentProperties, newProperties, 'label', 'id');
   const toUpdate = [];
+
   Object.keys(updatedIds).forEach(id => {
-    const option = newProperties.find(o => o.id === id);
+    const option = newProperties
+      .reduce((flattendedOptions, o) => Array.concat(flattendedOptions, [o, ...o.values]), [])
+      .find(o => o.id === id);
 
     if (option.values?.length) {
       option.values.forEach(o => {
