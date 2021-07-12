@@ -44,9 +44,7 @@ export function getFixturesFactory() {
 
     inherit(name: string, content: string, property: string, props = {}): PropertySchema {
       return this.relationshipProp(name, content, {
-        inherit: true,
-        inheritProperty: idMapper(property).toString(),
-        // inherit: { property: idMapper(property).toString() },
+        inherit: { property: idMapper(property).toString() },
         ...props,
       });
     },

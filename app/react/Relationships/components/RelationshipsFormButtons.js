@@ -15,6 +15,10 @@ export class RelationshipsFormButtons extends Component {
     this.edit = this.edit.bind(this);
   }
 
+  componentWillUnmount() {
+    this.edit(false)();
+  }
+
   edit(value) {
     return () => {
       this.props.edit(value, this.props.searchResults, this.props.parentEntity);

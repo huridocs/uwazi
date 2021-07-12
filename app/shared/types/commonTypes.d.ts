@@ -120,8 +120,27 @@ export interface PropertySchema {
   prioritySorting?: boolean;
   content?: string;
   relationType?: string;
-  inherit?: boolean;
-  inheritProperty?: string;
+  inherit?: {
+    property?: string;
+    type?:
+      | 'date'
+      | 'daterange'
+      | 'geolocation'
+      | 'image'
+      | 'link'
+      | 'markdown'
+      | 'media'
+      | 'multidate'
+      | 'multidaterange'
+      | 'multiselect'
+      | 'nested'
+      | 'numeric'
+      | 'preview'
+      | 'relationship'
+      | 'select'
+      | 'text'
+      | 'generatedid';
+  };
   filter?: boolean;
   noLabel?: boolean;
   fullWidth?: boolean;

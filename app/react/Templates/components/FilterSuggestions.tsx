@@ -14,6 +14,14 @@ interface MatchedProperty {
 }
 
 class SharedProperties extends Component<FilterSuggestionsProps> {
+  static findProperty(id: string | undefined, templates: TemplateSchema[]) {
+    return templates.reduce(
+      (found: PropertySchema | undefined, template) =>
+        found || template.properties?.find((p: PropertySchema) => p._id === id),
+      undefined
+    );
+  }
+
   getRelationTypeName(relationTypeId: string | undefined) {
     const relationType = relationTypeId
       ? this.props.relationTypes.toJS().find((r: any) => r._id === relationTypeId)
@@ -43,13 +51,20 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
   }
 
   render() {
-    const { type, content, relationType } = this.props;
-
+    const { type, content, relationType, inherit, label, templates } = this.props;
+    const _templates = templates.toJS();
+    const inheritedProperty = SharedProperties.findProperty(inherit?.property, _templates);
     const similarProperties: TemplateProperty[] = this.findSameLabelProperties(
-      this.props.label,
-      this.props.templates.toJS()
+      label,
+      _templates
     ).map((propertyMatch: MatchedProperty) => {
       const { property } = propertyMatch;
+
+      const otherInheritedProperty = SharedProperties.findProperty(
+        property.inherit?.property,
+        _templates
+      );
+
       return {
         ...propertyMatch,
         typeConflict: !getCompatibleTypes(type).includes(property.type),
@@ -58,6 +73,8 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
         type: property.type,
         relationTypeName: this.getRelationTypeName(property.relationType),
         thesaurusName: this.getThesauriName(property.content),
+        inheritConflict: inheritedProperty?.type !== otherInheritedProperty?.type,
+        inheritType: otherInheritedProperty?.type,
       } as TemplateProperty;
     });
 
@@ -69,6 +86,8 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
       typeConflict: false,
       contentConflict: false,
       relationConflict: false,
+      inheritConflict: false,
+      inheritType: inheritedProperty?.type,
     };
 
     const templatesWithSameLabelProperties = [thisProperty, ...similarProperties];
@@ -119,6 +138,7 @@ export type FilterSuggestionsProps = {
   relationTypes: IImmutable<[]>;
   content: string;
   relationType: string;
+  inherit: { property: string } | undefined;
 };
 
 export function mapStateToProps(state: any, props: FilterSuggestionsProps) {
@@ -135,6 +155,7 @@ export function mapStateToProps(state: any, props: FilterSuggestionsProps) {
     label: propertySchemaElement.label,
     content: propertySchemaElement.content,
     relationType: propertySchemaElement.relationType,
+    inherit: propertySchemaElement.inherit,
   };
 }
 

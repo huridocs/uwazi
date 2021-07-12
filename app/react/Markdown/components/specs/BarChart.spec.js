@@ -9,6 +9,8 @@ import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
 import BarChartComponent, { mapStateToProps } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
+import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('BarChart Markdown component', () => {
   const state = {
@@ -22,6 +24,7 @@ describe('BarChart Markdown component', () => {
           { id: 'id4', label: 'label4' },
         ],
       },
+      nestedThesauri,
     ]),
   };
 
@@ -142,10 +145,10 @@ describe('BarChart Markdown component', () => {
 
       expectLabels(component, ['label2', 'L1', 'label3', 'L4']);
 
-      const { labelFormatter } = component.find(Tooltip).props();
+      const { formatter } = component.find(Tooltip).props();
 
-      expect(labelFormatter('L1')).toBe('label1');
-      expect(labelFormatter('non existing label')).toBe('non existing label');
+      expect(formatter('L1')).toBe('label1');
+      expect(formatter('non existing label')).toBe('non existing label');
     });
   });
 
@@ -183,6 +186,17 @@ describe('BarChart Markdown component', () => {
       component.find(Cell).forEach((cell, index) => {
         expect(cell.prop('fill')).toBe(colors[index % 2]);
       });
+    });
+  });
+
+  describe('when passing scatter parameter', () => {
+    it('should display nested values with a composed label', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(aggregationWithNestedValues);
+
+      const component = renderComponent({ scatter: 'true', context: 'nested' });
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
     });
   });
 });
