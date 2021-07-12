@@ -670,26 +670,22 @@ describe('entities', () => {
   });
 
   describe('get', () => {
+    const checkFilenames = (expectedFilenames, entity, property) => {
+      if (expectedFilenames !== null) {
+        expect(entity[property].length).toBe(expectedFilenames.length);
+        entity[property].forEach((element, index) => {
+          expect(element.filename).toBe(expectedFilenames[index]);
+        });
+      } else {
+        expect(entity).not.toHaveProperty(property);
+      }
+    };
+
     const checkEntityGetResult = (entity, title, documentFilenames, attachmentFilenames) => {
       expect(entity.title).toBe(title);
 
-      if (documentFilenames !== null) {
-        expect(entity.documents.length).toBe(documentFilenames.length);
-        entity.documents.forEach((element, index) => {
-          expect(element.filename).toBe(documentFilenames[index]);
-        });
-      } else {
-        expect(entity).not.toHaveProperty('documents');
-      }
-
-      if (attachmentFilenames !== null) {
-        expect(entity.attachments.length).toBe(attachmentFilenames.length);
-        entity.attachments.forEach((element, index) => {
-          expect(element.filename).toBe(attachmentFilenames[index]);
-        });
-      } else {
-        expect(entity).not.toHaveProperty('attachments');
-      }
+      checkFilenames(documentFilenames, entity, 'documents');
+      checkFilenames(attachmentFilenames, entity, 'attachments');
     };
 
     it('should return matching entities for the conditions', done => {
