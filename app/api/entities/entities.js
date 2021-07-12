@@ -347,6 +347,9 @@ const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
     }
   });
   const result = entities.map(entity => {
+    // intentionally passing copies
+    // consumers of the result do not handle it immutably (sometimes even delete data)
+    // changes result in possibly breaking side-effects when file objects are shared between entities
     const entityFiles = idFileMap.has(entity.sharedId)
       ? idFileMap.get(entity.sharedId).map(file => ({ ...file }))
       : [];
