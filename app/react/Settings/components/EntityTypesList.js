@@ -43,7 +43,7 @@ export class EntityTypesList extends Component {
           accept: () => {},
           noCancel: true,
           title: `Can not delete template: ${template.name}`,
-          message: 'This template type has associated entities',
+          message: 'This template has associated entities',
         });
       });
   }
