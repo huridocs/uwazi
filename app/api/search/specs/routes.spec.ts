@@ -60,7 +60,7 @@ describe('Search routes', () => {
         .get('/api/search/lookup')
         .set('content-language', 'es')
         .query({ searchTerm: 'unpublished' });
-      expect(res.body.options.length).toBe(2);
+      expect(res.body.options.length).toBe(1);
     });
 
     describe('permissions', () => {
