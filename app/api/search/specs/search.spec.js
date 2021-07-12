@@ -845,7 +845,7 @@ describe('search', () => {
       'es',
       editorUser
     );
-    expect(rows.length).toBe(5);
+    expect(rows.length).toBe(6);
   });
 
   it('should not include unpublished documents if no user', async () => {
@@ -885,7 +885,6 @@ describe('search', () => {
     });
 
     it('should filter by unpublished', async () => {
-      userFactory.mock(undefined);
       const { options } = await search.autocomplete('unpublished', 'es');
       expect(options.length).toBe(0);
       const { options: optionsUnpublished } = await search.autocomplete(
