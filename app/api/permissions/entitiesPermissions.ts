@@ -2,7 +2,7 @@ import entities from 'api/entities/entities';
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { unique } from 'api/utils/filters';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import {
   AccessLevels,
   PermissionType,
@@ -96,7 +96,7 @@ export const entitiesPermissions = {
 
     const user = permissionsContext.getUserInContext();
 
-    const currentEntities = await entities.get(
+    const currentEntities: EntityWithFilesSchema[] = await entities.get(
       { sharedId: { $in: permissionsData.ids } },
       { published: 1, permissions: 1 }
     );
@@ -126,8 +126,12 @@ export const entitiesPermissions = {
   },
 
   get: async (sharedIds: string[]) => {
-    const entitiesPermissionsData = (
-      await entities.get({ sharedId: { $in: sharedIds } }, { permissions: 1, published: 1 })
+    const entitiesPermissionsData: { permissions: PermissionSchema[]; published: boolean }[] = (
+      await entities.get(
+        { sharedId: { $in: sharedIds } },
+        { permissions: 1, published: 1 },
+        { withoutDocuments: true }
+      )
     ).map((entity: EntitySchema) => ({
       permissions: entity.permissions || [],
       published: !!entity.published,
