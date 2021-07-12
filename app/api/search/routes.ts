@@ -6,7 +6,7 @@ export default (app: Application) => {
     const { query } = req;
     const templates: [] = query.templates ? JSON.parse(query.templates) : [];
     search
-      .autocomplete(query.searchTerm, req.language, templates, unpublished)
+      .autocomplete(query.searchTerm, req.language, templates)
       .then(response => res.json(response))
       .catch(next);
   });
