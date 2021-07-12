@@ -12,7 +12,6 @@ export class UploadsHeader extends Component {
     return (
       <div className="content-header">
         <div className="content-header-title">
-          <h1 className="item-name">{t('System', 'My Entities')}</h1>
           <button type="button" className="btn btn-success btn-xs" onClick={this.props.newEntity}>
             <Icon icon="plus" /> {t('System', 'New entity')}
           </button>

@@ -1,7 +1,7 @@
 .content {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   @media print {
     display: block;
@@ -13,39 +13,26 @@
   line-height: 1.8em;
   background: $c-white;
   border-bottom: 1px solid $c-grey-light;
-  
-  @media(min-width: 1024px) {
+
+  @media (min-width: 1024px) {
     display: -webkit-flex;
     display: flex;
     min-height: $header-height;
     line-height: $header-height;
   }
-  
 }
 .content-header-title {
   display: -webkit-flex;
   display: flex;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
   -webkit-align-items: center;
   align-items: center;
   padding: 15px;
   height: $header-height;
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     padding: 0 15px;
     width: calc(100% - 400px);
-  }
-  h1 {
-    margin: 0;
-    font-size: $f-size;
-    flex-grow: 1;
-    @media(min-width: 1024px) {
-      display: inline-block;
-      line-height: $header-height;
-      white-space: nowrap !important;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
   }
 
   .large {
@@ -68,7 +55,7 @@
   }
 }
 .content-header-tabs {
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     width: 400px;
   }
 }
@@ -79,7 +66,7 @@
   z-index: 4;
 }
 
-@media(min-width: 1024px) {
+@media (min-width: 1024px) {
   .main-wrapper {
     position: relative;
     min-height: 100%;
