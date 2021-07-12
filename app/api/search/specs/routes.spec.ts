@@ -4,12 +4,11 @@ import { Application } from 'express';
 import db from 'api/utils/testing_db';
 
 import { setUpApp } from 'api/utils/testingRoutes';
-// @ts-ignore
-import searchRoutes from 'api/search/routes.ts';
+import searchRoutes from 'api/search/routes';
 
+import { UserRole } from 'shared/types/userSchema';
 import { fixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
-import { UserRole } from 'shared/types/userSchema';
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -88,7 +87,7 @@ describe('Search routes', () => {
         expect(res.body.options.length).toBe(0);
       });
 
-      it('should return only return unpublished if the logged user has permissions on the entity', async () => {
+      it('should only return unpublished if the logged user has permissions on the entity', async () => {
         const collabUser = {
           _id: 'collabId',
           role: UserRole.COLLABORATOR,
