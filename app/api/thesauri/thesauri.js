@@ -81,7 +81,7 @@ async function updateOptionsInEntities(current, thesauri) {
 
   Object.keys(updatedIds).forEach(id => {
     const option = newProperties
-      .reduce((flattendedOptions, o) => Array.concat(flattendedOptions, [o, ...o.values]), [])
+      .reduce((flattendedOptions, o) => flattendedOptions.concat([o, ...(o.values || [])]), [])
       .find(o => o.id === id);
 
     if (option.values?.length) {
