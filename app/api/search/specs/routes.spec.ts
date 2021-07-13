@@ -75,7 +75,7 @@ describe('Search routes', () => {
         const res: SuperTestResponse = await request(app)
           .get('/api/search/lookup')
           .set('content-language', 'es')
-          .query({ searchTerm: 'unpublished', unpublished: true });
+          .query({ searchTerm: 'unpublished' });
 
         expect(res.body.options.length).toBe(0);
       });
@@ -91,7 +91,7 @@ describe('Search routes', () => {
         let res: SuperTestResponse = await request(app)
           .get('/api/search/lookup')
           .set('content-language', 'es')
-          .query({ searchTerm: 'unpublished', unpublished: true });
+          .query({ searchTerm: 'unpublished' });
 
         expect(res.body.options.length).toBe(0);
 
