@@ -12,6 +12,7 @@ import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 import blankState from './helpers/blankState';
 import { QuickLabelHeader } from './components/QuickLabelHeader';
+import ImportPanel from 'app/Uploads/components/ImportPanel';
 
 export class LibraryLayoutBase extends Component {
   render() {
@@ -38,6 +39,7 @@ export class LibraryLayoutBase extends Component {
           <FeatureToggleSemanticSearch>
             <SemanticSearchPanel storeKey="library" />
           </FeatureToggleSemanticSearch>
+          <ImportPanel />
         </div>
       </div>
     );
