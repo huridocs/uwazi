@@ -768,6 +768,20 @@ describe('entities', () => {
       ]);
       expect(denormalized.metadata.enemies[0].inheritedType).toBe('text');
     });
+
+    it('should denormalize thesauri categories as parents', async () => {
+      const entity = {
+        template: templateId,
+        title: 'Thesauri categories test',
+        language: 'en',
+        metadata: {
+          select: [{ value: 'town1' }],
+          multiselect: [{ value: 'country_one' }, { value: 'town2' }],
+        },
+      };
+      const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
+      expect(denormalized.metadata.select[0].parent).toEqual({ value: 'towns', label: 'Towns' });
+    });
   });
 
   describe('countByTemplate', () => {

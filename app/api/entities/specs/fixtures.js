@@ -569,6 +569,14 @@ export default {
       values: [
         { _id: db.id(), id: 'country_one', label: 'Country1' },
         { _id: db.id(), id: 'country_two', label: 'Country2' },
+        {
+          id: 'towns',
+          label: 'Towns',
+          values: [
+            { id: 'town1', label: 'Town1' },
+            { id: 'town2', label: 'Town2' },
+          ],
+        },
       ],
     },
   ],
@@ -581,6 +589,9 @@ export default {
           values: [
             { key: 'Country1', value: 'Country1' },
             { key: 'Country2', value: 'Country2' },
+            { key: 'towns', value: 'Towns' },
+            { key: 'town1', value: 'Town1' },
+            { key: 'town2', value: 'Town2' },
           ],
         },
       ],
@@ -593,6 +604,9 @@ export default {
           values: [
             { key: 'Country1', value: 'Pais1' },
             { key: 'Country2', value: 'Pais2' },
+            { key: 'towns', value: 'Ciudades' },
+            { key: 'town1', value: 'Ciudad1' },
+            { key: 'town2', value: 'Ciudad2' },
           ],
         },
       ],
