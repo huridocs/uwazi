@@ -40,12 +40,12 @@ export function closeImportProgress() {
   };
 }
 
-export function newEntity() {
+export function newEntity(storeKey = 'uploads') {
   return async (dispatch, getState) => {
     const newEntityMetadata = { title: '', type: 'entity' };
     dispatch(
       metadata.actions.loadInReduxForm(
-        'uploads.sidepanel.metadata',
+        `${storeKey}.sidepanel.metadata`,
         newEntityMetadata,
         getState().templates.toJS()
       )
