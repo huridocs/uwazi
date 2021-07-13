@@ -20,7 +20,6 @@ class Footer extends Component {
                 Uwazi is developed by{' '}
                 <img src="/public/huridocs-logo.svg" title="uwazi" alt="uwazi" />
               </p>
-              <p> team members located all over the world.</p>
             </div>
             <a href="https://www.uwazi.io/" target="_blank" className="footer-logo">
               <img src="/public/logo.svg" title="uwazi" alt="uwazi" />
