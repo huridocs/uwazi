@@ -1,13 +1,14 @@
 import uuid from 'node-uuid';
-import settings from 'api/settings/settings';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { TemplateSchema } from 'shared/types/templateType';
-import propertiesHelper from 'shared/comonProperties';
 import { ObjectID } from 'mongodb';
-import model from './templatesModel';
 
+import settings from 'api/settings/settings';
+import propertiesHelper from 'shared/comonProperties';
 import { safeName as sharedSafeName } from 'shared/propertyNames';
+import { ensure } from 'shared/tsUtils';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import model from './templatesModel';
 
 export const safeName = sharedSafeName;
 
@@ -134,4 +135,13 @@ export function getDeletedProperties(
   return flattenProperties(oldProperties)
     .filter(notIncludedIn(flattenProperties(newProperties)))
     .map(property => property[prop]);
+}
+
+export function getDeletedCommonProperties(
+  oldCommonProperties: PropertySchema[],
+  newCommonProperties: PropertySchema[]
+) {
+  const oldTitle = ensure<PropertySchema>(oldCommonProperties.find(p => p.name === 'title'));
+  const newTitle = ensure<PropertySchema>(newCommonProperties.find(p => p.name === 'title'));
+  return oldTitle.label !== newTitle.label && oldTitle.label !== 'Title' ? [oldTitle.label] : [];
 }
