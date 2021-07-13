@@ -21,12 +21,19 @@ describe('TableCell', () => {
     return cells.at(0);
   }
 
-  it('should render a text content as value passed', () => {
-    const title = 'Title 1';
-    props.content = { label: 'Title', type: 'text', name: 'title', value: title };
-    const cellContent = renderContent();
-    expect(cellContent.props().children).toBe(title);
-  });
+  it.each`
+    label       | type             | name         | value
+    ${'Title'}  | ${'text'}        | ${'title'}   | ${'Title 1'}
+    ${'Date'}   | ${'date'}        | ${'date'}    | ${'May 20, 2019'}
+    ${'AutoId'} | ${'generatedid'} | ${'auto_id'} | ${'XYZ-1234'}
+  `(
+    'should render a plain content with the passed value for $type',
+    ({ label, type, name, value }) => {
+      props.content = { label, type, name, value };
+      const cellContent = renderContent();
+      expect(cellContent.props().children).toBe(value);
+    }
+  );
 
   it('should render a date with as value passed', () => {
     const formattedPropertyDate = 'May 20, 2019';

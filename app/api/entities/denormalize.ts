@@ -94,8 +94,8 @@ const oneJumpUpdates = async (
 ) => {
   let updates = (await oneJumpRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
     propertyName: p.name,
-    inheritProperty: p.inheritProperty,
-    ...(p.inheritProperty ? { template: p.template } : {}),
+    inheritProperty: p.inherit?.property,
+    ...(p.inherit?.property ? { template: p.template } : {}),
     filterPath: `metadata.${p.name}.value`,
     valuePath: `metadata.${p.name}`,
   }));
@@ -115,12 +115,12 @@ const twoJumpsRelatedProps = async (contentId: string) => {
     .map<string | undefined>(p => p._id?.toString())
     .filter<string>(<(v: string | undefined) => v is string>(v => !!v));
 
-  return (await templates.get({ 'properties.inheritProperty': { $in: contentIds } })).reduce<
+  return (await templates.get({ 'properties.inherit.property': { $in: contentIds } })).reduce<
     PropWithTemplate[]
   >(
     (props, template) =>
       props.concat(
-        (template.properties || []).filter(p => contentIds.includes(p.inheritProperty || ''))
+        (template.properties || []).filter(p => contentIds.includes(p.inherit?.property || ''))
       ),
     []
   );
@@ -129,7 +129,7 @@ const twoJumpsRelatedProps = async (contentId: string) => {
 const twoJumpUpdates = async (contentId: string) =>
   (await twoJumpsRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
     propertyName: p.name,
-    inheritProperty: p.inheritProperty,
+    inheritProperty: p.inherit?.property,
     filterPath: `metadata.${p.name}.inheritedValue.value`,
     valuePath: `metadata.${p.name}.$[].inheritedValue`,
   }));

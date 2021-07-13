@@ -12,7 +12,7 @@ describe('EditPage', () => {
   let context;
 
   beforeEach(() => {
-    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve([page]));
+    spyOn(PagesAPI, 'getById').and.returnValue(Promise.resolve(page));
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<EditPage />, { context });
@@ -28,7 +28,7 @@ describe('EditPage', () => {
       const request = { data };
       const actions = await EditPage.requestState(request);
 
-      expect(PagesAPI.get).toHaveBeenCalledWith(request);
+      expect(PagesAPI.getById).toHaveBeenCalledWith(request);
       expect(actions).toMatchSnapshot();
     });
   });

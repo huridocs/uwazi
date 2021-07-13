@@ -34,8 +34,10 @@ export default {
           label: 'Inherit',
           relationtype: relatedTo,
           content: templateToBeInherited,
-          inherit: true,
-          inheritProperty: propertyToBeInherited,
+          inherit: {
+            property: propertyToBeInherited,
+            type: propertyTypes.text,
+          },
         },
       ],
     },

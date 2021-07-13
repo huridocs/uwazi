@@ -5,7 +5,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import entities from 'api/entities';
 import thesauris from 'api/thesauri';
 import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 import { validators, customErrorMessages } from './metadataValidators';
@@ -97,7 +97,7 @@ const validateRelationshipForeignIds = async (
   if (value && property.type === propertyTypes.relationship) {
     const valueIds = value.map(v => v.value);
 
-    const entityIds = (
+    const entityIds: string[] = (
       await entities.getUnrestrictedWithDocuments(
         {
           sharedId: { $in: valueIds },
@@ -105,7 +105,7 @@ const validateRelationshipForeignIds = async (
         },
         { sharedId: 1 }
       )
-    ).map(v => v.sharedId);
+    ).map((v: EntityWithFilesSchema) => v.sharedId);
 
     const diff = value.filter(v => !entityIds.includes(String(v.value)));
 

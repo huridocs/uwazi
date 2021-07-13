@@ -85,13 +85,13 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
             elem.type = partner.file ? 'document' : 'entity';
           }
 
-          if (prop.inherit && partner) {
+          if (prop.inherit && prop.inherit.property && partner) {
             const partnerTemplate = allTemplates.find(
               t => t._id.toString() === partner.template.toString()
             );
 
             const inheritedProperty = partnerTemplate.properties.find(
-              p => p._id && p._id.toString() === prop.inheritProperty.toString()
+              p => p._id && p._id.toString() === prop.inherit.property.toString()
             );
 
             elem.inheritedValue = partner.metadata[inheritedProperty.name] || [];
@@ -342,19 +342,33 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
   }
 };
 
-const withDocuments = (entities, documentsFullText, withPdfInfo) =>
-  Promise.all(
-    entities.map(async entity => {
-      const entityFiles = await files.get(
-        { entity: entity.sharedId },
-        (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-      );
-
-      entity.documents = entityFiles.filter(f => f.type === 'document');
-      entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-      return entity;
-    })
+const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
+  const sharedIds = entities.map(entity => entity.sharedId);
+  const allFiles = await files.get(
+    { entity: { $in: sharedIds } },
+    (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
   );
+  const idFileMap = new Map();
+  allFiles.forEach(file => {
+    if (idFileMap.has(file.entity)) {
+      idFileMap.get(file.entity).push(file);
+    } else {
+      idFileMap.set(file.entity, [file]);
+    }
+  });
+  const result = entities.map(entity => {
+    // intentionally passing copies
+    // consumers of the result do not handle it immutably (sometimes even delete data)
+    // changes result in possibly breaking side-effects when file objects are shared between entities
+    const entityFiles = idFileMap.has(entity.sharedId)
+      ? idFileMap.get(entity.sharedId).map(file => ({ ...file }))
+      : [];
+    entity.documents = entityFiles.filter(f => f.type === 'document');
+    entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+    return entity;
+  });
+  return result;
+};
 
 const reindexEntitiesByTemplate = async (template, options) => {
   const templateHasRelationShipProperty = template.properties?.find(
@@ -364,6 +378,19 @@ const reindexEntitiesByTemplate = async (template, options) => {
     return search.indexEntities({ template: template._id });
   }
   return Promise.resolve();
+};
+
+const extendSelect = select => {
+  if (!select) {
+    return select;
+  }
+  if (typeof select === 'string') {
+    return select.includes('+') ? `${select} +sharedId` : `${select} sharedId`;
+  }
+  if (Array.isArray(select)) {
+    return select.concat(['sharedId']);
+  }
+  return Object.keys(select).length > 0 ? { sharedId: 1, ...select } : select;
 };
 
 export default {
@@ -473,8 +500,8 @@ export default {
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
-    const entities = await model.getUnrestricted(query, select, restOfOptions);
-
+    const extendedSelect = extendSelect(select);
+    const entities = await model.getUnrestricted(query, extendedSelect, restOfOptions);
     return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
@@ -483,10 +510,10 @@ export default {
   },
 
   async get(query, select, options = {}) {
-    const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
-    const entities = await model.get(query, select, restOfOptions);
-
-    return withDocuments(entities, documentsFullText, withPdfInfo);
+    const { withoutDocuments, documentsFullText, withPdfInfo, ...restOfOptions } = options;
+    const extendedSelect = withoutDocuments ? select : extendSelect(select);
+    const entities = await model.get(query, extendedSelect, restOfOptions);
+    return withoutDocuments ? entities : withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
   async getWithRelationships(query, select, pagination) {
