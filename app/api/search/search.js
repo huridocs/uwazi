@@ -829,7 +829,7 @@ const search = {
         multi_match: {
           query: searchTerm,
           type: 'bool_prefix',
-          fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram'],
+          fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram', 'title.sayt_ngram'],
         },
       },
     ];

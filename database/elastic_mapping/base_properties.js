@@ -27,7 +27,12 @@ const properties = {
     analyzer: 'other',
     fields: {
       sort: textSortField,
-      sayt: { type: 'search_as_you_type', analyzer: 'title_sayt' },
+      sayt: { type: 'search_as_you_type' },
+      sayt_ngram: {
+        type: 'search_as_you_type',
+        analyzer: 'title_sayt',
+        search_analyzer: 'standard',
+      },
     },
     term_vector: 'with_positions_offsets',
   },
