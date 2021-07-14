@@ -35,7 +35,7 @@ const settings = {
       title_sayt: {
         type: 'ngram',
         min_gram: 3,
-        max_gram: 3,
+        max_gram: 4,
         token_chars: ['letter', 'digit'],
       },
     },
