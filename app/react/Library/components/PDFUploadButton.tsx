@@ -62,7 +62,7 @@ const PDFUploadButtonComponent = ({
   uploadDocument,
   unselectAllDocuments,
 }: PDFUploadButtonProps) => (
-  <label htmlFor="pdf-upload-button" className="btn btn-success share-btn">
+  <label htmlFor="pdf-upload-button" className="btn btn-success">
     <Icon icon="cloud-upload-alt" />
     <span className="btn-label">
       <Translate>Upload PDF(s) to create</Translate>
