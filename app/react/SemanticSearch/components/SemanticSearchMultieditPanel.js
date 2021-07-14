@@ -92,7 +92,7 @@ export class SemanticSearchMultieditPanel extends Component {
         <div className="alert alert-warning">
           <Icon icon="exclamation-triangle" size="2x" />
           <p>
-            Warning: you are editing multiple files. Fields marked with a{' '}
+            Warning: you are editing multiple entities. Fields marked with a{' '}
             <Icon icon="exclamation-triangle" /> will be updated with the same value.
           </p>
         </div>

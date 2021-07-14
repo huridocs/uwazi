@@ -203,14 +203,14 @@ export class FiltersForm extends Component {
                     <Icon icon="info-circle" size="2x" />
                     <div className="force-ltr">
                       <p>
-                        By default, users can filter the documents or entities in the library based
-                        on the types of documents/entities you have defined. However, you can
-                        configure how these document/entity types will be displayed:
+                        By default, users can filter the entities in the library based on the types
+                        you have defined. However, you can configure how these entity types will be
+                        displayed:
                       </p>
                       <ul>
                         <li>
-                          drag and drop each document/entity type into the window in order to
-                          configure their order
+                          drag and drop each entity type into the window in order to configure their
+                          order
                         </li>
                         <li>
                           select &quot;Create group&quot; below to group filters under a label e.g
@@ -229,7 +229,7 @@ export class FiltersForm extends Component {
                 <div className="col-sm-3">
                   <div className="FiltersForm-constructor">
                     <div>
-                      <i>{t('System', 'Document and entity types')}</i>
+                      <i>{t('System', 'Entity types')}</i>
                     </div>
                     <DragAndDropContainer
                       id="inactive"

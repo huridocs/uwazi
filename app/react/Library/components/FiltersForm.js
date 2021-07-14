@@ -92,10 +92,7 @@ export class FiltersForm extends Component {
               <div className="blank-state">
                 <Icon icon="times" />
                 <h4>{t('System', 'No common filters')}</h4>
-                <p>
-                  The combination of document and entity types doesn&#39;t have any filters in
-                  common.
-                </p>
+                <p>The combination of entity types doesn&#39;t have any filters in common.</p>
                 <a
                   href="https://github.com/huridocs/uwazi/wiki/Filter"
                   target="_blank"

@@ -75,10 +75,10 @@ export class Menu extends Component {
               <I18NLink
                 to={this.libraryUrl()}
                 className="menuNav-btn btn btn-default public-documents"
-                aria-label={t('System', 'Public documents', null, false)}
+                aria-label={t('System', 'Public entities', null, false)}
               >
                 <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
-                <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
+                <span className="tab-link-tooltip">{t('System', 'Public entities')}</span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
@@ -86,12 +86,12 @@ export class Menu extends Component {
                 <I18NLink
                   to={this.uploadsUrl()}
                   className="menuNav-btn btn btn-default private-documents"
-                  aria-label={t('System', 'Private documents', null, false)}
+                  aria-label={t('System', 'Private entities', null, false)}
                 >
                   <span>
                     <Icon icon="cloud-upload-alt" />
                   </span>
-                  <span className="tab-link-tooltip">{t('System', 'Private documents')}</span>
+                  <span className="tab-link-tooltip">{t('System', 'Private entities')}</span>
                 </I18NLink>
               </li>
             </NeedAuthorization>

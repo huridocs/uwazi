@@ -39,7 +39,7 @@ export class FormConfigNested extends Component {
             <span className="property-help">
               <Icon icon="question-circle" />
               <div className="property-description">
-                You won&#39;t be able to publish a document if this property is empty.
+                You won&#39;t be able to publish an entity if this property is empty.
               </div>
             </span>
           </label>

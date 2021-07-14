@@ -21,7 +21,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -62,7 +62,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -87,7 +87,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -98,7 +98,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -140,7 +140,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -165,7 +165,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -196,7 +196,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -221,7 +221,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -252,7 +252,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -277,7 +277,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -308,7 +308,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -333,7 +333,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -364,7 +364,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -389,7 +389,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -400,7 +400,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -442,7 +442,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -467,7 +467,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -478,7 +478,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -520,7 +520,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -545,7 +545,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -556,7 +556,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -598,7 +598,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -623,7 +623,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -634,7 +634,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -676,7 +676,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       icon="question-circle"
       position=""
     >
-      You won't be able to publish a document if this property is empty.
+      You won't be able to publish an entity if this property is empty.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -701,7 +701,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
   </div>

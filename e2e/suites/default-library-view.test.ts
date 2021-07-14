@@ -25,8 +25,8 @@ describe('Entities', () => {
     );
   });
 
-  it('Should click the Public Documents button and show the table', async () => {
-    await expect(page).toClick('a', { text: 'Public documents' });
+  it('Should click the Public entities button and show the table', async () => {
+    await expect(page).toClick('a', { text: 'Public entities' });
     await page.waitForSelector('.tableview-wrapper');
     await expect(page.url()).toMatch('library/table');
   });

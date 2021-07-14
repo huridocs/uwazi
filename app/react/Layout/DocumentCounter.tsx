@@ -30,7 +30,7 @@ export const DocumentCounter = (props: EntityCounterProps) => {
       )}
       <b> {entityListCount} </b> <Translate>shown of</Translate>
       {totalEntitiesValue}
-      <Translate>documents</Translate>
+      <Translate>entities</Translate>
     </>
   );
   const connectionsCounter = (
@@ -52,7 +52,7 @@ export const DocumentCounter = (props: EntityCounterProps) => {
         </>
       )}
       , <b>{totalEntitiesValue} </b>
-      <Translate>documents</Translate>
+      <Translate>entities</Translate>
     </>
   );
 

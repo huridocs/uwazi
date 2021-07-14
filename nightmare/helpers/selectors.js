@@ -269,7 +269,7 @@ export default {
     firstDocument:
       '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1)',
     newEntityButtom:
-      '#app > div.content > div > div > div.content-header > div > button:nth-child(2)',
+      '#app > div.content > div > div > div.content-header > div > button:nth-child(1)',
     saveButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     shareButton:

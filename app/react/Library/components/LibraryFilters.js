@@ -73,14 +73,14 @@ export class LibraryFilters extends Component {
                     <Icon icon={['far', 'square']} className="checkbox-empty" />
                     <Icon icon="check" className="checkbox-checked" />
                   </span>
-                  <span className="multiselectItem-name">Include unpublished documents</span>
+                  <span className="multiselectItem-name">Include unpublished entities</span>
                 </label>
               </Field>
             )}
             {this.props.unpublished && (
               <div className="nested-selector multiselectItem">
                 <label className="multiselectItem-label">
-                  <span>Showing only unpublished documents.</span>
+                  <span>Showing only unpublished entities.</span>
                 </label>
               </div>
             )}
