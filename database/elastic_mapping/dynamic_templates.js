@@ -74,6 +74,7 @@ const dynamicTemplates = [
       match: '*',
       mapping: {
         index: false,
+        enabled: false,
       },
     },
   },
