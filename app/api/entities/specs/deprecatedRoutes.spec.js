@@ -1,4 +1,5 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import documentRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -12,6 +13,7 @@ describe('entities', () => {
 
   beforeEach(done => {
     routes = instrumentRoutes(documentRoutes);
+    spyOn(search, 'countPerTemplate').and.returnValue(Promise.resolve({ templateCount: 0 }));
     db.clearAllAndLoad(fixtures)
       .then(done)
       .catch(catchErrors(done));
@@ -89,7 +91,9 @@ describe('entities', () => {
             try {
               expect(event).toBe('thesauriChange');
               expect(thesaurus).toBe('templateTransformed');
-              expect(thesauri.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user);
+              expect(thesauri.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user, {
+                templateCount: 0,
+              });
               done();
             } catch (err) {
               done.fail(err);

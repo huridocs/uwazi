@@ -1,6 +1,7 @@
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 
 const entityTemplateId = '589af97080fc0b23471d67f3';
+const documentTemplate = testingDB.id();
 const dictionaryId = '589af97080fc0b23471d67f4';
 const dictionaryIdToTranslate = '589af97080fc0b23471d67f5';
 const dictionaryWithValueGroups = testingDB.id();
@@ -61,7 +62,7 @@ const fixtures: DBFixture = {
         },
       ],
     },
-    { _id: testingDB.id(), name: 'documentTemplate', properties: [{}] },
+    { _id: documentTemplate, name: 'documentTemplate', properties: [{}] },
   ],
   entities: [
     {
@@ -107,6 +108,22 @@ const fixtures: DBFixture = {
       language: 'es',
       template: testingDB.id(entityTemplateId),
       published: false,
+    },
+    {
+      _id: testingDB.id(),
+      title: 'document',
+      sharedId: 'documentSharedId',
+      language: 'es',
+      template: documentTemplate,
+      published: true,
+    },
+    {
+      _id: testingDB.id(),
+      title: 'document 2',
+      sharedId: 'documentSharedId 2',
+      language: 'es',
+      template: documentTemplate,
+      published: true,
     },
   ],
   settings: [{ _id: testingDB.id(), languages: [{ key: 'es', default: true }] }],

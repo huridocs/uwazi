@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import objectId from 'joi-objectid';
+import { search } from 'api/search';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
@@ -19,7 +20,14 @@ export default app => {
           res.json(response);
           return templates.getById(response.template);
         })
-        .then(template => thesauri.templateToThesauri(template, req.language, req.user))
+        .then(async template =>
+          thesauri.templateToThesauri(
+            template,
+            req.language,
+            req.user,
+            await search.countPerTemplate(req.language)
+          )
+        )
         .then(templateTransformed => {
           req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
         })
