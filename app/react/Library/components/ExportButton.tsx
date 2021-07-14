@@ -57,7 +57,7 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
           className={`btn btn-primary btn-export ${this.props.processing ? 'btn-disabled' : ''}`}
         >
           {!this.props.processing ? (
-            <Icon icon="export-csv" transform="right-0.075 up-0.1" />
+            <Icon icon="export-csv" transform="up-0.1" />
           ) : (
             <Icon icon="spinner" spin />
           )}
