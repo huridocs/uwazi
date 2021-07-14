@@ -44,13 +44,11 @@ describe('Search routes', () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: '[]' });
-
       expect(res.body.options.length).toBe(4);
 
       res = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: JSON.stringify([ids.template1]) });
-
       expect(res.body.options.length).toBe(3);
       expect(res.body.count).toBe(3);
     });
@@ -61,6 +59,19 @@ describe('Search routes', () => {
         .set('content-language', 'es')
         .query({ searchTerm: 'unpublished' });
       expect(res.body.options.length).toBe(1);
+    });
+
+    it('should search by the parts of a word', async () => {
+      let res = await request(app)
+        .get('/api/search/lookup')
+        .set('content-language', 'es')
+        .query({ searchTerm: 'she' });
+      expect(res.body.options.length).toBe(3);
+      res = await request(app)
+        .get('/api/search/lookup')
+        .set('content-language', 'es')
+        .query({ searchTerm: 'shed' });
+      expect(res.body.options.length).toBe(2);
     });
 
     describe('permissions', () => {

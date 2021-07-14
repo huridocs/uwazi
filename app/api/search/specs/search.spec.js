@@ -888,6 +888,14 @@ describe('search', () => {
       const { options } = await search.autocomplete('unpublished', 'es');
       expect(options.length).toBe(1);
     });
+
+    it('should search by the parts of a word', async () => {
+      const { options } = await search.autocomplete('she', 'es');
+      expect(options.length).toBe(3);
+
+      const { options: withLongerSearch } = await search.autocomplete('shed', 'es');
+      expect(withLongerSearch.length).toBe(2);
+    });
   });
 
   describe('customFilters', () => {
