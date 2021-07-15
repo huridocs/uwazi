@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
+import ImportPanel from 'app/Uploads/components/ImportPanel';
 import blankState from './helpers/blankState';
 import { QuickLabelHeader } from './components/QuickLabelHeader';
-import ImportPanel from 'app/Uploads/components/ImportPanel';
 
 export class LibraryLayoutBase extends Component {
   render() {
