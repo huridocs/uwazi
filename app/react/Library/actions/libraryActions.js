@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import * as types from 'app/Library/actions/actionTypes';
 import qs from 'qs';
 import { notificationActions } from 'app/Notifications';
@@ -162,6 +164,33 @@ export function processFilters(readOnlySearch, filters, limit, from) {
     filters: {},
     ...readOnlySearch,
   };
+
+  // if (search.published && search.restricted) {
+  //   search.includeUnpublished = true;
+  //   search.unpublished = false;
+  // }
+
+  // if (search.published && !search.restricted) {
+  //   search.includeUnpublished = false;
+  //   search.unpublished = false;
+  // }
+
+  // if (!search.published && search.restricted) {
+  //   search.includeUnpublished = false;
+  //   search.unpublished = true; //
+  // }
+
+  // if (!search.published && !search.restricted) {
+  //   search.includeUnpublished = false;
+  //   search.unpublished = false;
+  // }
+
+  search.includeUnpublished = search.published && search.restricted;
+  search.unpublished = !search.published && search.restricted;
+
+  delete search.published;
+  delete search.restricted;
+
   search.filters = {};
 
   filters.properties.forEach(property => {
