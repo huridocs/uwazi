@@ -50,8 +50,8 @@ function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedPro
       sort,
       order,
       userSelectedSorting,
-      includeUnpublished,
-      unpublished,
+      published: !unpublished,
+      restricted: (!includeUnpublished && unpublished) || (includeUnpublished && !unpublished),
       allAggregations,
     },
   };
