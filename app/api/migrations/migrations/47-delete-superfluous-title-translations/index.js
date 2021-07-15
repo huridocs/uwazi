@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+import { ObjectId } from 'mongodb';
 
 export default {
   delta: 47,
@@ -18,7 +19,9 @@ export default {
       await Promise.all(
         translation.contexts.map(async context => {
           if (context.type === 'Entity') {
-            const template = await db.collection('templates').findOne({ _id: context.id });
+            const template = await db
+              .collection('templates')
+              .findOne({ _id: ObjectId(context.id) });
 
             const templateLabelSet = new Set([
               template.name,

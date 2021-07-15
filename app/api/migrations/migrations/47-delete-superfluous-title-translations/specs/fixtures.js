@@ -18,7 +18,7 @@ export const fourthNewTitle = 'Fourth New Title';
 const commonContexts = [
   //context for the unchanged template - correct
   {
-    id: defaultTemplateId,
+    id: defaultTemplateId.toString(),
     label: defaultTemplateName,
     type: 'Entity',
     values: [
@@ -34,7 +34,7 @@ const commonContexts = [
   },
   //context for the template changed once - correct
   {
-    id: templateChangedOnceId,
+    id: templateChangedOnceId.toString(),
     label: templateChangedOnceName,
     type: 'Entity',
     values: [
@@ -54,7 +54,7 @@ const commonContexts = [
   },
   //context for a template changed multiple times - correct
   {
-    id: templateChangedCorrectlyId,
+    id: templateChangedCorrectlyId.toString(),
     label: templateChangedCorrectlyName,
     type: 'Entity',
     values: [
@@ -74,7 +74,7 @@ const commonContexts = [
   },
   //context for a template with properties and other translations
   {
-    id: templateComplexId,
+    id: templateComplexId.toString(),
     label: templateComplexName,
     type: 'Entity',
     values: [
