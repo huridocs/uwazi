@@ -14,12 +14,10 @@ import { Icon } from 'UI';
 import { hideFilters } from 'app/Entities/actions/uiActions';
 import { LibrarySidePanelButtons } from 'app/Library/components/LibrarySidePanelButtons';
 
-function toggleIncludeUnpublished(storeKey) {
+function toggleByPublishStatus(storeKey, key) {
   return (dispatch, getState) => {
     const { search } = getState()[storeKey];
-    dispatch(
-      formActions.change(`${storeKey}.search.includeUnpublished`, !search.includeUnpublished)
-    );
+    dispatch(formActions.change(`${storeKey}.search.${key}`, !search[key]));
     dispatch(searchDocuments({}, storeKey));
   };
 }
@@ -61,29 +59,42 @@ export class LibraryFilters extends Component {
             </div>
           </div>
           <NeedAuthorization>
-            {!this.props.unpublished && (
-              <Field
-                model={`${this.props.storeKey}.search.includeUnpublished`}
-                className="nested-selector multiselectItem"
-                onClick={() => this.props.toggleIncludeUnpublished(this.props.storeKey)}
-              >
-                <input type="checkbox" className="multiselectItem-input" id="includeUnpublished" />
-                <label className="multiselectItem-label">
-                  <span className="multiselectItem-icon">
-                    <Icon icon={['far', 'square']} className="checkbox-empty" />
-                    <Icon icon="check" className="checkbox-checked" />
-                  </span>
-                  <span className="multiselectItem-name">Include unpublished entities</span>
-                </label>
-              </Field>
-            )}
-            {this.props.unpublished && (
-              <div className="nested-selector multiselectItem">
-                <label className="multiselectItem-label">
-                  <span>Showing only unpublished entities.</span>
-                </label>
-              </div>
-            )}
+            <Field
+              model={`${this.props.storeKey}.search.includeUnpublished`}
+              className="nested-selector multiselectItem admin-filter"
+              onClick={() =>
+                this.props.toggleByPublishStatus(this.props.storeKey, 'includeUnpublished')
+              }
+            >
+              <input type="checkbox" className="multiselectItem-input" id="published" />
+              <label className="multiselectItem-label">
+                <span className="multiselectItem-icon">
+                  <Icon icon={['far', 'square']} className="checkbox-empty" />
+                  <Icon icon="check" className="checkbox-checked" />
+                </span>
+                <span className="multiselectItem-name">
+                  <Icon icon="globe-africa" />
+                  Published
+                </span>
+              </label>
+            </Field>
+            <Field
+              model={`${this.props.storeKey}.search.unpublished`}
+              className="nested-selector multiselectItem admin-filter"
+              onClick={() => this.props.toggleByPublishStatus(this.props.storeKey, 'unpublished')}
+            >
+              <input type="checkbox" className="multiselectItem-input" id="restricted" />
+              <label className="multiselectItem-label">
+                <span className="multiselectItem-icon">
+                  <Icon icon={['far', 'square']} className="checkbox-empty" />
+                  <Icon icon="check" className="checkbox-checked" />
+                </span>
+                <span className="multiselectItem-name">
+                  <Icon icon="lock" />
+                  Restricted
+                </span>
+              </label>
+            </Field>
           </NeedAuthorization>
 
           <FiltersForm storeKey={this.props.storeKey} />
@@ -95,20 +106,22 @@ export class LibraryFilters extends Component {
 
 LibraryFilters.defaultProps = {
   open: false,
-  unpublished: false,
   storeKey: 'library',
   sidePanelMode: '',
   hideFilters: () => {},
+  unpublished: false,
+  includeUnpublished: false,
 };
 
 LibraryFilters.propTypes = {
   resetFilters: PropTypes.func.isRequired,
-  toggleIncludeUnpublished: PropTypes.func.isRequired,
+  toggleByPublishStatus: PropTypes.func.isRequired,
   open: PropTypes.bool,
-  unpublished: PropTypes.bool,
   storeKey: PropTypes.string,
   sidePanelMode: PropTypes.string,
   hideFilters: PropTypes.func,
+  unpublished: PropTypes.bool,
+  includeUnpublished: PropTypes.bool,
 };
 
 export function mapStateToProps(state, props) {
@@ -117,12 +130,13 @@ export function mapStateToProps(state, props) {
   return {
     open: noDocumentSelected && isFilterShown,
     unpublished: (state[props.storeKey].search || {}).unpublished,
+    includeUnpublished: (state[props.storeKey].search || {}).includeUnpublished,
   };
 }
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
-    { resetFilters, toggleIncludeUnpublished, hideFilters },
+    { resetFilters, toggleByPublishStatus, hideFilters },
     wrapDispatch(dispatch, props.storeKey)
   );
 }
