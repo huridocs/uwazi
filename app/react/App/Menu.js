@@ -21,11 +21,6 @@ export class Menu extends Component {
     return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(params)}`;
   }
 
-  uploadsUrl() {
-    const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
-    return `/uploads/${encodeSearch(params)}`;
-  }
-
   render() {
     const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
@@ -81,20 +76,6 @@ export class Menu extends Component {
                 <span className="tab-link-tooltip">{t('System', 'Public entities')}</span>
               </I18NLink>
             </li>
-            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-              <li className="menuNav-item">
-                <I18NLink
-                  to={this.uploadsUrl()}
-                  className="menuNav-btn btn btn-default private-documents"
-                  aria-label={t('System', 'Private entities', null, false)}
-                >
-                  <span>
-                    <Icon icon="cloud-upload-alt" />
-                  </span>
-                  <span className="tab-link-tooltip">{t('System', 'Private entities')}</span>
-                </I18NLink>
-              </li>
-            </NeedAuthorization>
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
               <li className="menuNav-item">
                 <I18NLink
