@@ -14,9 +14,18 @@ import { Icon } from 'UI';
 import { hideFilters } from 'app/Entities/actions/uiActions';
 import { LibrarySidePanelButtons } from 'app/Library/components/LibrarySidePanelButtons';
 
-function toggleByPublishStatus(storeKey, key) {
+function togglePublished(storeKey, key) {
   return (dispatch, getState) => {
     const { search } = getState()[storeKey];
+
+    // OPTION 1
+    // if (key === 'published' && search.published && !search.restricted) return;
+
+    // OPTION 2
+    // if (key === 'published' && search.published && !search.restricted) {
+    //   dispatch(formActions.change(`${storeKey}.search.restricted`, true));
+    // }
+
     dispatch(formActions.change(`${storeKey}.search.${key}`, !search[key]));
     dispatch(searchDocuments({}, storeKey));
   };
@@ -60,11 +69,9 @@ export class LibraryFilters extends Component {
           </div>
           <NeedAuthorization>
             <Field
-              model={`${this.props.storeKey}.search.includeUnpublished`}
+              model={`${this.props.storeKey}.search.published`}
               className="nested-selector multiselectItem admin-filter"
-              onClick={() =>
-                this.props.toggleByPublishStatus(this.props.storeKey, 'includeUnpublished')
-              }
+              onClick={() => this.props.togglePublished(this.props.storeKey, 'published')}
             >
               <input type="checkbox" className="multiselectItem-input" id="published" />
               <label className="multiselectItem-label">
@@ -79,9 +86,9 @@ export class LibraryFilters extends Component {
               </label>
             </Field>
             <Field
-              model={`${this.props.storeKey}.search.unpublished`}
+              model={`${this.props.storeKey}.search.restricted`}
               className="nested-selector multiselectItem admin-filter"
-              onClick={() => this.props.toggleByPublishStatus(this.props.storeKey, 'unpublished')}
+              onClick={() => this.props.togglePublished(this.props.storeKey, 'restricted')}
             >
               <input type="checkbox" className="multiselectItem-input" id="restricted" />
               <label className="multiselectItem-label">
@@ -115,7 +122,7 @@ LibraryFilters.defaultProps = {
 
 LibraryFilters.propTypes = {
   resetFilters: PropTypes.func.isRequired,
-  toggleByPublishStatus: PropTypes.func.isRequired,
+  togglePublished: PropTypes.func.isRequired,
   open: PropTypes.bool,
   storeKey: PropTypes.string,
   sidePanelMode: PropTypes.string,
@@ -136,7 +143,7 @@ export function mapStateToProps(state, props) {
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
-    { resetFilters, toggleByPublishStatus, hideFilters },
+    { resetFilters, togglePublished, hideFilters },
     wrapDispatch(dispatch, props.storeKey)
   );
 }
