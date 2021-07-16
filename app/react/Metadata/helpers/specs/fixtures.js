@@ -19,7 +19,9 @@ export const doc = {
     multiselect: [
       { value: 'value1', label: 'Value 1' },
       { value: 'value2', label: 'Value 2' },
-      { value: 'value5', label: 'Value 5' },
+      { value: 'value5', label: 'Value 5', parent: { value: 'parent1', label: 'Parent 1' } },
+      { value: 'value6', label: 'Value 6', parent: { value: 'parent1', label: 'Parent 1' } },
+      { value: 'value7', label: 'Value 7', parent: { value: 'parent2', label: 'Parent 2' } },
     ],
     multidate: [{ value: 10 }, { value: 1000000 }],
     daterange: [{ value: { from: 10, to: 1000000 } }],
@@ -29,6 +31,9 @@ export const doc = {
     ],
     markdown: [{ value: 'markdown content' }],
     select: [{ value: 'value5', label: 'Value 5' }],
+    selectWithCategory: [
+      { value: 'value5', label: 'Value 5', parent: { value: 'parent1', label: 'Parent 1' } },
+    ],
     image: [{ value: 'imageURL' }],
     media: [{ value: 'mediaURL' }],
     relationship1: [
@@ -122,6 +127,12 @@ export const templates = Immutable.fromJS([
       { name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range' },
       { name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true },
       { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
+      {
+        name: 'selectWithCategory',
+        content: 'thesauriId',
+        type: 'select',
+        label: 'selectWithCategory',
+      },
       {
         name: 'image',
         type: 'image',

@@ -47,7 +47,7 @@ describe('Metadata Properties', () => {
   });
 
   it('should create an entity filling all the props.', async () => {
-    await expect(page).toClick('a', { text: 'Private documents' });
+    await expect(page).toClick('a', { text: 'Private entities' });
     await expect(page).toClick('span', { text: 'New entity' });
     await expect(page).toFill(
       'textarea[name="uploads.sidepanel.metadata.title"]',

@@ -855,6 +855,21 @@ const search = {
     const templates = await templatesModel.get();
     return updateMapping(templates);
   },
+
+  async countPerTemplate(language) {
+    const queryBuilder = documentQueryBuilder()
+      .language(language)
+      .includeUnpublished()
+      .limit(0);
+
+    return (
+      await elastic.search({ body: queryBuilder.query() })
+    ).body.aggregations.all._types.buckets.reduce((map, bucket) => {
+      // eslint-disable-next-line no-param-reassign
+      map[bucket.key] = bucket.filtered.doc_count;
+      return map;
+    }, {});
+  },
 };
 
 export { search };
