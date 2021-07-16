@@ -44,7 +44,7 @@ describe('Search routes', () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: '[]' });
-      expect(res.body.options.length).toBe(4);
+      expect(res.body.options.length).toBe(5);
 
       res = await request(app)
         .get('/api/search/lookup')
