@@ -81,7 +81,7 @@ export class LibraryFilters extends Component {
                 </span>
                 <span className="multiselectItem-name">
                   <Icon icon="globe-africa" />
-                  Published
+                  <Translate>Published</Translate>
                 </span>
               </label>
             </Field>
@@ -98,7 +98,7 @@ export class LibraryFilters extends Component {
                 </span>
                 <span className="multiselectItem-name">
                   <Icon icon="lock" />
-                  Restricted
+                  <Translate>Restricted</Translate>
                 </span>
               </label>
             </Field>
