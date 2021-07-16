@@ -109,8 +109,8 @@ class PageCreator extends Component<mappedProps> {
                   </a>{' '}
                   syntax to create page content
                   <br />
-                  You can also embed advanced components like maps, charts and document lists in
-                  your page.&nbsp;
+                  You can also embed advanced components like maps, charts and entity lists in your
+                  page.&nbsp;
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
