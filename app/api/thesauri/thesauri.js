@@ -5,6 +5,7 @@ import templates from 'api/templates/templates';
 import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
 import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
+import { search } from 'api/search';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
 
@@ -143,7 +144,7 @@ const thesauri = {
     return { values };
   },
 
-  async templateToThesauri(template, language, user) {
+  async templateToThesauri(template, language, user, countPerTemplate) {
     const onlyPublished = !user;
     const _entities = await entities.getByTemplate(
       template._id,
@@ -151,9 +152,11 @@ const thesauri = {
       onlyPublished,
       preloadOptionsLimit
     );
-    const optionsCount = await entities.countByTemplate(template._id, language);
     const values = this.entitiesToThesauri(_entities);
-    return Object.assign(template, values, { type: 'template', optionsCount });
+    return Object.assign(template, values, {
+      type: 'template',
+      optionsCount: countPerTemplate[template._id.toString()],
+    });
   },
 
   getById(id) {
@@ -169,15 +172,20 @@ const thesauri = {
     const dictionaries = await model.get(query);
     const allTemplates = await templates.get(query);
 
-    const processedTemplates = await Promise.all(
-      allTemplates.map(result =>
-        this.templateToThesauri(result, language, user).then(
-          templateTransformedInThesauri => templateTransformedInThesauri
-        )
-      )
-    );
+    if (allTemplates.length && language) {
+      const templateCount = await search.countPerTemplate(language);
 
-    return dictionaries.concat(processedTemplates);
+      const processedTemplates = await Promise.all(
+        allTemplates.map(result =>
+          this.templateToThesauri(result, language, user, templateCount).then(
+            templateTransformedInThesauri => templateTransformedInThesauri
+          )
+        )
+      );
+      return dictionaries.concat(processedTemplates);
+    }
+
+    return dictionaries;
   },
 
   dictionaries(query) {

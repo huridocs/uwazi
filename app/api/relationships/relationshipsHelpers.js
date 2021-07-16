@@ -113,39 +113,40 @@ function guessRelationshipPropertyHub(sharedId, relationType) {
   ]);
 }
 
-class RelationshipCollection extends Array {
-  removeOtherLanguageTextReferences(connectedDocuments) {
-    return this.filter(r => {
-      if (r.filename) {
-        const filename = connectedDocuments[r.entity].file
-          ? connectedDocuments[r.entity].file.filename
-          : '';
-        return r.filename === filename;
-      }
-      return true;
-    });
-  }
+function removeOtherLanguageTextReferences(relationshipArray, connectedDocuments) {
+  return relationshipArray.filter(r => {
+    if (r.filename) {
+      const filename = connectedDocuments[r.entity].file
+        ? connectedDocuments[r.entity].file.filename
+        : '';
+      return r.filename === filename;
+    }
+    return true;
+  });
+}
 
-  removeOrphanHubsOf(sharedId) {
-    const hubs = groupByHubs(this).filter(h => h.map(r => r.entity).includes(sharedId));
-    return new RelationshipCollection(...Array.prototype.concat(...hubs));
-  }
+function removeOrphanHubsOf(relationshipArray, sharedId) {
+  const hubs = groupByHubs(relationshipArray).filter(h => h.map(r => r.entity).includes(sharedId));
+  return Array.prototype.concat(...hubs);
+}
 
-  removeSingleHubs() {
-    const hubRelationshipsCount = this.reduce((data, r) => {
-      data[r.hub.toString()] = data[r.hub.toString()] ? data[r.hub.toString()] + 1 : 1; //eslint-disable-line no-param-reassign
-      return data;
-    }, {});
+function removeSingleHubs(relationshipArray) {
+  const hubRelationshipsCount = relationshipArray.reduce((data, r) => {
+    data[r.hub.toString()] = data[r.hub.toString()] ? data[r.hub.toString()] + 1 : 1; //eslint-disable-line no-param-reassign
+    return data;
+  }, {});
 
-    return this.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
-  }
+  return relationshipArray.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
+}
 
-  withConnectedData(connectedDocuments) {
-    return this.map(relationship => ({
+function withConnectedData(relationshipArray, connectedDocuments) {
+  return relationshipArray
+    .map(relationship => ({
       template: null,
       entityData: connectedDocuments[relationship.entity],
       ...relationship,
-    })).filter(relationship => {
+    }))
+    .filter(relationship => {
       if (!relationship.entityData) {
         errorLog.error(
           `There's a connection to entity: ${relationship.entity} on hub: ${relationship.hub}, but no entity data.`
@@ -154,15 +155,33 @@ class RelationshipCollection extends Array {
       }
       return true;
     });
-  }
+}
 
-  removeUnpublished() {
-    return this.filter(relationship => relationship.entityData.published);
+function removeUnpublished(relationshipArray) {
+  return relationshipArray.filter(relationship => relationship.entityData.published);
+}
+
+function processRelationshipCollection(
+  relationshipArray,
+  connectedDocuments,
+  sharedId,
+  unpublished
+) {
+  let relationshipsCollection = removeOtherLanguageTextReferences(
+    relationshipArray,
+    connectedDocuments
+  );
+  relationshipsCollection = withConnectedData(relationshipsCollection, connectedDocuments);
+  relationshipsCollection = removeSingleHubs(relationshipsCollection);
+  relationshipsCollection = removeOrphanHubsOf(relationshipsCollection, sharedId);
+  if (!unpublished) {
+    relationshipsCollection = removeUnpublished(relationshipsCollection);
   }
+  return relationshipsCollection;
 }
 
 export {
-  RelationshipCollection,
+  processRelationshipCollection,
   groupByHubs,
   getEntityReferencesByRelationshipTypes,
   guessRelationshipPropertyHub,

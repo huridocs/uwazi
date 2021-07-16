@@ -810,19 +810,16 @@ const search = {
     };
   },
 
-  async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
+  async autocomplete(searchTerm, language, templates = []) {
     const queryBuilder = documentQueryBuilder()
       .include(['title', 'template', 'sharedId', 'icon'])
       .language(language)
       .limit(preloadOptionsSearch)
-      .filterByPermissions(!includeUnpublished);
+      .filterByPermissions()
+      .includeUnpublished();
 
     if (templates.length) {
       queryBuilder.filterByTemplate(templates);
-    }
-
-    if (includeUnpublished) {
-      queryBuilder.includeUnpublished();
     }
 
     const body = queryBuilder.query();
@@ -832,7 +829,7 @@ const search = {
         multi_match: {
           query: searchTerm,
           type: 'bool_prefix',
-          fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram'],
+          fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram', 'title.sayt_ngram'],
         },
       },
     ];
@@ -854,6 +851,21 @@ const search = {
   async updateTemplatesMapping() {
     const templates = await templatesModel.get();
     return updateMapping(templates);
+  },
+
+  async countPerTemplate(language) {
+    const queryBuilder = documentQueryBuilder()
+      .language(language)
+      .includeUnpublished()
+      .limit(0);
+
+    return (
+      await elastic.search({ body: queryBuilder.query() })
+    ).body.aggregations.all._types.buckets.reduce((map, bucket) => {
+      // eslint-disable-next-line no-param-reassign
+      map[bucket.key] = bucket.filtered.doc_count;
+      return map;
+    }, {});
   },
 };
 

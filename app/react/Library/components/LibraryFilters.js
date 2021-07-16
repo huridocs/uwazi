@@ -67,41 +67,31 @@ export class LibraryFilters extends Component {
               </button>
             </div>
           </div>
-          <NeedAuthorization>
-            <Field
-              model={`${this.props.storeKey}.search.published`}
-              className="nested-selector multiselectItem admin-filter"
-              onClick={() => this.props.togglePublished(this.props.storeKey, 'published')}
-            >
-              <input type="checkbox" className="multiselectItem-input" id="published" />
-              <label className="multiselectItem-label">
-                <span className="multiselectItem-icon">
-                  <Icon icon={['far', 'square']} className="checkbox-empty" />
-                  <Icon icon="check" className="checkbox-checked" />
-                </span>
-                <span className="multiselectItem-name">
-                  <Icon icon="globe-africa" />
-                  <Translate>Published</Translate>
-                </span>
-              </label>
-            </Field>
-            <Field
-              model={`${this.props.storeKey}.search.restricted`}
-              className="nested-selector multiselectItem admin-filter"
-              onClick={() => this.props.togglePublished(this.props.storeKey, 'restricted')}
-            >
-              <input type="checkbox" className="multiselectItem-input" id="restricted" />
-              <label className="multiselectItem-label">
-                <span className="multiselectItem-icon">
-                  <Icon icon={['far', 'square']} className="checkbox-empty" />
-                  <Icon icon="check" className="checkbox-checked" />
-                </span>
-                <span className="multiselectItem-name">
-                  <Icon icon="lock" />
-                  <Translate>Restricted</Translate>
-                </span>
-              </label>
-            </Field>
+          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+            <div className="nested-selector admin-filter">
+              {[
+                { type: 'published', label: 'Published' },
+                { type: 'restricted', label: 'Restricted' },
+              ].map(field => (
+                <Field
+                  model={`${this.props.storeKey}.search.${field.type}`}
+                  className="multiselectItem"
+                  onClick={() => this.props.togglePublished(this.props.storeKey, field.type)}
+                >
+                  <input type="checkbox" className="multiselectItem-input" />
+                  <label className="multiselectItem-label">
+                    <span className="multiselectItem-icon">
+                      <Icon icon={['far', 'square']} className="checkbox-empty" />
+                      <Icon icon="check" className="checkbox-checked" />
+                    </span>
+                    <span className="multiselectItem-name">
+                      <Icon icon="globe-africa" />
+                      {field.label}
+                    </span>
+                  </label>
+                </Field>
+              ))}
+            </div>
           </NeedAuthorization>
 
           <FiltersForm storeKey={this.props.storeKey} />
@@ -116,8 +106,6 @@ LibraryFilters.defaultProps = {
   storeKey: 'library',
   sidePanelMode: '',
   hideFilters: () => {},
-  unpublished: false,
-  includeUnpublished: false,
 };
 
 LibraryFilters.propTypes = {
@@ -127,8 +115,6 @@ LibraryFilters.propTypes = {
   storeKey: PropTypes.string,
   sidePanelMode: PropTypes.string,
   hideFilters: PropTypes.func,
-  unpublished: PropTypes.bool,
-  includeUnpublished: PropTypes.bool,
 };
 
 export function mapStateToProps(state, props) {
@@ -136,8 +122,6 @@ export function mapStateToProps(state, props) {
   const isFilterShown = state[props.storeKey].ui.get('filtersPanel') !== false;
   return {
     open: noDocumentSelected && isFilterShown,
-    unpublished: (state[props.storeKey].search || {}).unpublished,
-    includeUnpublished: (state[props.storeKey].search || {}).includeUnpublished,
   };
 }
 

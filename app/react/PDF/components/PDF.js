@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SelectionHandler, SelectionRegion } from 'react-pdf-handler';
+import { SelectionRegion, HandleTextSelection } from 'react-text-selection-handler';
 import { advancedSort } from 'app/utils/advancedSort';
 
 import { isClient } from '../../utils';
@@ -159,10 +159,9 @@ class PDF extends Component {
         }}
         style={this.props.style}
       >
-        <SelectionHandler
-          onTextSelection={this.props.onTextSelection}
-          onTextDeselection={this.props.onTextDeselection}
-          elementTagsToAvoid={['DIV']}
+        <HandleTextSelection
+          onSelect={this.props.onTextSelection}
+          onDeselect={this.props.onTextDeselection}
         >
           {(() => {
             const pages = [];
@@ -185,7 +184,7 @@ class PDF extends Component {
             }
             return pages;
           })()}
-        </SelectionHandler>
+        </HandleTextSelection>
       </div>
     );
   }
