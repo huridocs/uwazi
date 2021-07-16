@@ -67,7 +67,7 @@ export class LibraryFilters extends Component {
               </button>
             </div>
           </div>
-          <NeedAuthorization>
+          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <div className="nested-selector admin-filter">
               {[
                 { type: 'published', label: 'Published' },
