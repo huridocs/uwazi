@@ -15,6 +15,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
+import { filterToQuery } from '../helpers/publishedStatusFilter';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -160,16 +161,14 @@ export function filterIsEmpty(value) {
 }
 
 export function processFilters(readOnlySearch, filters, limit, from) {
-  const search = {
+  let search = {
     filters: {},
     ...readOnlySearch,
   };
 
-  search.includeUnpublished = search.published && search.restricted;
-  search.unpublished = !search.published && search.restricted;
-
-  delete search.published;
-  delete search.restricted;
+  if (search.publishedStatus) {
+    search = filterToQuery(search);
+  }
 
   search.filters = {};
 

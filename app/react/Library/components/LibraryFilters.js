@@ -1,26 +1,15 @@
-import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
 import { resetFilters } from 'app/Library/actions/filterActions';
-import { searchDocuments } from 'app/Library/actions/libraryActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import { wrapDispatch } from 'app/Multireducer';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { actions as formActions, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 import { hideFilters } from 'app/Entities/actions/uiActions';
 import { LibrarySidePanelButtons } from 'app/Library/components/LibrarySidePanelButtons';
-
-function togglePublished(storeKey, key) {
-  return (dispatch, getState) => {
-    const { search } = getState()[storeKey];
-    dispatch(formActions.change(`${storeKey}.search.${key}`, !search[key]));
-    dispatch(searchDocuments({}, storeKey));
-  };
-}
 
 export class LibraryFilters extends Component {
   reset() {
@@ -75,7 +64,6 @@ LibraryFilters.defaultProps = {
 
 LibraryFilters.propTypes = {
   resetFilters: PropTypes.func.isRequired,
-  togglePublished: PropTypes.func.isRequired,
   open: PropTypes.bool,
   storeKey: PropTypes.string,
   sidePanelMode: PropTypes.string,
@@ -91,10 +79,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators(
-    { resetFilters, togglePublished, hideFilters },
-    wrapDispatch(dispatch, props.storeKey)
-  );
+  return bindActionCreators({ resetFilters, hideFilters }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);
