@@ -17,15 +17,6 @@ import { LibrarySidePanelButtons } from 'app/Library/components/LibrarySidePanel
 function togglePublished(storeKey, key) {
   return (dispatch, getState) => {
     const { search } = getState()[storeKey];
-
-    // OPTION 1
-    // if (key === 'published' && search.published && !search.restricted) return;
-
-    // OPTION 2
-    // if (key === 'published' && search.published && !search.restricted) {
-    //   dispatch(formActions.change(`${storeKey}.search.restricted`, true));
-    // }
-
     dispatch(formActions.change(`${storeKey}.search.${key}`, !search[key]));
     dispatch(searchDocuments({}, storeKey));
   };
@@ -67,32 +58,6 @@ export class LibraryFilters extends Component {
               </button>
             </div>
           </div>
-          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-            <div className="nested-selector admin-filter">
-              {[
-                { type: 'published', label: 'Published' },
-                { type: 'restricted', label: 'Restricted' },
-              ].map(field => (
-                <Field
-                  model={`${this.props.storeKey}.search.${field.type}`}
-                  className="multiselectItem"
-                  onClick={() => this.props.togglePublished(this.props.storeKey, field.type)}
-                >
-                  <input type="checkbox" className="multiselectItem-input" />
-                  <label className="multiselectItem-label">
-                    <span className="multiselectItem-icon">
-                      <Icon icon={['far', 'square']} className="checkbox-empty" />
-                      <Icon icon="check" className="checkbox-checked" />
-                    </span>
-                    <span className="multiselectItem-name">
-                      <Icon icon="globe-africa" />
-                      {field.label}
-                    </span>
-                  </label>
-                </Field>
-              ))}
-            </div>
-          </NeedAuthorization>
 
           <FiltersForm storeKey={this.props.storeKey} />
         </div>
