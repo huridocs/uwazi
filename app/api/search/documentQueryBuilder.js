@@ -219,6 +219,30 @@ export default function() {
       return this;
     },
 
+    publishingStatusAggregations() {
+      const user = permissionsContext.getUserInContext();
+      if (user && ['admin', 'editor', 'collaborator'].includes(user.role)) {
+        baseQuery.aggregations.all.aggregations.published = {
+          terms: {
+            field: 'published',
+            missing: 'false',
+            size: preloadOptionsSearch,
+          },
+          aggregations: {
+            filtered: {
+              filter: {
+                bool: {
+                  must: [{ bool: { should: [] } }],
+                  filter: defaultFilter,
+                },
+              },
+            },
+          },
+        };
+      }
+      return this;
+    },
+
     owner(user) {
       const match = { match: { user: user._id } };
       baseQuery.query.bool.must.push(match);
