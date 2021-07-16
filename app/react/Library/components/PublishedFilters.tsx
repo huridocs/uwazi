@@ -11,11 +11,19 @@ export interface PublishedFiltersProps {
   aggregations: Aggregations;
 }
 
-const filteredAggregation = (aggregations: Aggregations, key: string) => {
-  const bucket = (aggregations?.all?.permissions?.buckets || []).find(a => a.key === key) || {
+const filteredAggregation = (aggregations: Aggregations) => {
+  const published = (aggregations?.all?.published?.buckets || []).find(a => a.key === 'true') || {
     filtered: { doc_count: 0 },
   };
-  return bucket.filtered.doc_count;
+
+  const restricted = (aggregations?.all?.published?.buckets || []).find(a => a.key === 'false') || {
+    filtered: { doc_count: 0 },
+  };
+
+  return {
+    published: published.filtered.doc_count || 9999,
+    restricted: restricted.filtered.doc_count || 9999,
+  };
 };
 
 const generateOptions = (aggregations: Aggregations) => [
@@ -29,7 +37,7 @@ const generateOptions = (aggregations: Aggregations) => [
     ),
     title: 'Published',
     value: 'published',
-    // results: filteredAggregation(aggregations, 'write'),
+    results: filteredAggregation(aggregations).published,
   },
   {
     label: (
@@ -41,7 +49,7 @@ const generateOptions = (aggregations: Aggregations) => [
     ),
     title: 'Restricted',
     value: 'restricted',
-    // results: filteredAggregation(aggregations, 'read'),
+    results: filteredAggregation(aggregations).restricted,
   },
 ];
 

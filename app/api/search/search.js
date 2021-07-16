@@ -247,7 +247,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     if (
       !aggregations[key].buckets ||
       aggregations[key].type === 'nested' ||
-      ['_types', 'generatedToc', 'permissions'].includes(key)
+      ['_types', 'generatedToc', 'permissions', 'published'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
@@ -665,6 +665,10 @@ const search = {
 
     if (query.aggregateGeneratedToc) {
       queryBuilder.generatedTocAggregations();
+    }
+
+    if (query.aggregatePublishingStatus) {
+      queryBuilder.publishingStatusAggregations();
     }
 
     return elastic
