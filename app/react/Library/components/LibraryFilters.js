@@ -17,15 +17,6 @@ import { LibrarySidePanelButtons } from 'app/Library/components/LibrarySidePanel
 function togglePublished(storeKey, key) {
   return (dispatch, getState) => {
     const { search } = getState()[storeKey];
-
-    // OPTION 1
-    // if (key === 'published' && search.published && !search.restricted) return;
-
-    // OPTION 2
-    // if (key === 'published' && search.published && !search.restricted) {
-    //   dispatch(formActions.change(`${storeKey}.search.restricted`, true));
-    // }
-
     dispatch(formActions.change(`${storeKey}.search.${key}`, !search[key]));
     dispatch(searchDocuments({}, storeKey));
   };
@@ -67,7 +58,7 @@ export class LibraryFilters extends Component {
               </button>
             </div>
           </div>
-          
+
           <FiltersForm storeKey={this.props.storeKey} />
         </div>
       </SidePanel>
