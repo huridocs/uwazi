@@ -21,8 +21,8 @@ class Footer extends Component {
                 <a href="https://huridocs.org/" target="_blank">
                   <img
                     src="/public/huridocs-logo.svg"
-                    title="Huridocs"
-                    alt="Human Rights Documentation Systems"
+                    title="HURIDOCS"
+                    alt="Human Rights Information and Documentation Systems"
                   />
                 </a>
               </p>
