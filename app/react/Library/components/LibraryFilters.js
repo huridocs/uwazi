@@ -126,11 +126,8 @@ export function mapStateToProps(state, props) {
   const isFilterShown = state[props.storeKey].ui.get('filtersPanel') !== false;
   return {
     open: noDocumentSelected && isFilterShown,
-<<<<<<< HEAD
     unpublished: (state[props.storeKey].search || {}).unpublished,
     includeUnpublished: (state[props.storeKey].search || {}).includeUnpublished,
-=======
->>>>>>> 3cb6b1710236eb7fa1871a06738e01741ca21c32
   };
 }
 
