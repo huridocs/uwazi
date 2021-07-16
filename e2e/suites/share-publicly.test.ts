@@ -135,7 +135,7 @@ describe('Share entities', () => {
   it('should show mixed access', async () => {
     await reLogin('admin', 'admin');
     await expect(page).toClick('.multiselectItem-name', {
-      text: 'Include unpublished documents',
+      text: 'Include unpublished entities',
     });
     await expect(page).toFill('input[name="library.search.searchTerm"]', 'test 2016');
     await expect(page).toClick('[aria-label="Search button"]');

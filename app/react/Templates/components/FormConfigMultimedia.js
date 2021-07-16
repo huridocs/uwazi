@@ -81,7 +81,7 @@ class FormConfigMultimedia extends Component {
             label="Required property"
             model={`template.data.properties[${index}].required`}
           >
-            <Tip>You won&#39;t be able to save a document if this property is empty.</Tip>
+            <Tip>You won&#39;t be able to save an entity if this property is empty.</Tip>
           </PropertyConfigOption>
         )}
         {canShowInCard && (

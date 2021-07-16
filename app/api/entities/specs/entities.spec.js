@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
@@ -23,6 +24,7 @@ import fixtures, {
   uploadId1,
   uploadId2,
   unpublishedDocId,
+  entityGetTestTemplateId,
 } from './fixtures.js';
 
 describe('entities', () => {
@@ -668,6 +670,24 @@ describe('entities', () => {
   });
 
   describe('get', () => {
+    const checkFilenames = (expectedFilenames, entity, property) => {
+      if (expectedFilenames !== null) {
+        expect(entity[property].length).toBe(expectedFilenames.length);
+        entity[property].forEach((element, index) => {
+          expect(element.filename).toBe(expectedFilenames[index]);
+        });
+      } else {
+        expect(entity).not.toHaveProperty(property);
+      }
+    };
+
+    const checkEntityGetResult = (entity, title, documentFilenames, attachmentFilenames) => {
+      expect(entity.title).toBe(title);
+
+      checkFilenames(documentFilenames, entity, 'documents');
+      checkFilenames(attachmentFilenames, entity, 'attachments');
+    };
+
     it('should return matching entities for the conditions', done => {
       const sharedId = 'shared1';
 
@@ -682,6 +702,48 @@ describe('entities', () => {
         })
         .catch(catchErrors(done));
     });
+
+    it('should return documents and attachments properly, when requested.', async () => {
+      const result = await entities.get({ template: entityGetTestTemplateId });
+      checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
+      checkEntityGetResult(result[1], 'TitleB', [], []);
+      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name']);
+    });
+
+    it('should return documents and attachments properly while using a select clause in the query.', async () => {
+      const result = await entities.get({ template: entityGetTestTemplateId }, { title: true });
+      checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
+      checkEntityGetResult(result[1], 'TitleB', [], []);
+      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name']);
+    });
+
+    it('should not return documents and attachments, when not requested.', async () => {
+      const result = await entities.get(
+        { template: entityGetTestTemplateId },
+        {},
+        { withoutDocuments: true }
+      );
+      checkEntityGetResult(result[0], 'TitleA', null, null);
+      checkEntityGetResult(result[1], 'TitleB', null, null);
+      checkEntityGetResult(result[2], 'TitleC', null, null);
+    });
+
+    it.each([
+      [undefined, undefined],
+      ['title', 'title sharedId'],
+      ['+title', '+title +sharedId'],
+      [['title'], ['title', 'sharedId']],
+      [{}, {}],
+      [{ title: 1 }, { title: 1, sharedId: 1 }],
+    ])(
+      'should call model.get with a properly extended select: %s -> %s',
+      async (select, extended) => {
+        const entitesModelGet = jest.spyOn(entitiesModel, 'get');
+        await entities.get({ template: entityGetTestTemplateId }, select);
+        expect(entitesModelGet).toBeCalledWith({ template: entityGetTestTemplateId }, extended, {});
+        entitesModelGet.mockRestore();
+      }
+    );
   });
 
   describe('denormalize', () => {
@@ -705,6 +767,20 @@ describe('entities', () => {
         { value: 'something to be inherited' },
       ]);
       expect(denormalized.metadata.enemies[0].inheritedType).toBe('text');
+    });
+
+    it('should denormalize thesauri categories as parents', async () => {
+      const entity = {
+        template: templateId,
+        title: 'Thesauri categories test',
+        language: 'en',
+        metadata: {
+          select: [{ value: 'town1' }],
+          multiselect: [{ value: 'country_one' }, { value: 'town2' }],
+        },
+      };
+      const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
+      expect(denormalized.metadata.select[0].parent).toEqual({ value: 'towns', label: 'Towns' });
     });
   });
 

@@ -71,7 +71,7 @@ describe('Custom home page and styles', () => {
   it('should check the newly created entity', async () => {
     await refreshIndex();
     await expect(page).toClick('a', {
-      text: 'Private documents',
+      text: 'Private entities',
     });
     await expect(page).toClick('.item-name span', {
       text: 'Test public submit entity',

@@ -8,14 +8,17 @@ import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 import { generateNamesAndIds } from './utils';
+import { checkIfReindex } from './reindex';
 
 export default app => {
+  // eslint-disable-next-line max-statements
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
-      const { reindex } = req.body;
+      const { reindex: fullReindex } = req.body;
       delete req.body.reindex;
 
-      const response = await templates.save(req.body, req.language, !reindex);
+      const reindex = fullReindex ? false : await checkIfReindex(req.body);
+      const response = await templates.save(req.body, req.language, reindex);
       req.sockets.emitToCurrentTenant('templateChange', response);
       const updatedSettings = await settings.updateFilterName(
         response._id.toString(),
@@ -25,7 +28,7 @@ export default app => {
         req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
       }
 
-      if (reindex) {
+      if (fullReindex) {
         const allTemplates = await templates.get();
         reindexAll(allTemplates, search);
       }

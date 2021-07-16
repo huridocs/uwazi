@@ -194,7 +194,7 @@ class DocumentsList extends Component {
                 <Icon icon="lightbulb" /> <b>ProTip!</b>
                 <span>
                   Use <span className="protip-key">cmd</span> or{' '}
-                  <span className="protip-key">shift</span>&nbsp; + click to select multiple files.
+                  <span className="protip-key">shift</span>&nbsp; + click to select multiple cards.
                 </span>
               </div>
             </NeedAuthorization>

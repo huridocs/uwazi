@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -236,6 +237,35 @@ describe('Metadata', () => {
     it('should pass it to ValueList', () => {
       props.metadata = prepareMultivalueMetadata();
       props.compact = true;
+      testSnapshot();
+    });
+  });
+
+  describe('when passing a prop with parent', () => {
+    it('should render the parent too', () => {
+      props.metadata = [
+        {
+          name: 'name',
+          label: 'label',
+          value: 'Child Value',
+          parent: 'Parent',
+          type: 'select',
+        },
+      ];
+      testSnapshot();
+    });
+  });
+
+  describe('when passing a prop with multivalue and parents', () => {
+    it('should render the list with the parents too', () => {
+      props.metadata = [
+        {
+          name: 'name',
+          label: 'label',
+          value: [{ parent: 'Parent', value: ['one', 'two'] }, { value: 'three' }],
+          parent: 'Parent',
+        },
+      ];
       testSnapshot();
     });
   });

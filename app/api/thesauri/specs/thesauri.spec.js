@@ -1,5 +1,4 @@
-/** @format */
-
+/* eslint-disable max-lines */
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
@@ -28,19 +27,25 @@ describe('thesauri', () => {
 
   describe('get()', () => {
     it('should return all thesauri including entity templates as options', async () => {
-      const dictionaries = await thesauri.get(null, 'es');
-      expect(dictionaries.length).toBe(6);
-      expect(dictionaries[0].name).toBe('dictionary');
-      expect(dictionaries[1].name).toBe('dictionary 2');
-      expect(dictionaries[4].name).toBe('entityTemplate');
-      expect(dictionaries[4].values).toEqual([
-        {
-          id: 'sharedId',
-          label: 'spanish entity',
-          icon: { type: 'Icon' },
-        },
-      ]);
-      expect(dictionaries[4].type).toBe('template');
+      search.indexEntities.and.callThrough();
+      const elasticIndex = 'thesauri.spec.elastic.index';
+      await db.clearAllAndLoad(fixtures, elasticIndex);
+      const thesaurus = await thesauri.get(null, 'es');
+
+      expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
+      expect(thesaurus[1]).toMatchObject({ name: 'dictionary 2' });
+
+      expect(thesaurus[4]).toMatchObject({
+        name: 'entityTemplate',
+        values: [{ label: 'spanish entity' }],
+        optionsCount: 3,
+      });
+
+      expect(thesaurus[5]).toMatchObject({
+        name: 'documentTemplate',
+        values: [{ label: 'document' }, { label: 'document 2' }],
+        optionsCount: 2,
+      });
     });
 
     it('should return all thesauri including unpublished documents if user', async () => {
@@ -58,7 +63,8 @@ describe('thesauri', () => {
         const response = await thesauri.get(dictionaryId);
         expect(response[0].name).toBe('dictionary 2');
         expect(response[0].values[0].label).toBe('value 1');
-        expect(response[0].values[1].label).toBe('value 2');
+        expect(response[0].values[1].label).toBe('Parent');
+        expect(response[0].values[1].values[0].label).toBe('value 2');
       });
     });
   });
@@ -79,7 +85,8 @@ describe('thesauri', () => {
         expect(response.length).toBe(1);
         expect(response[0].name).toBe('dictionary 2');
         expect(response[0].values[0].label).toBe('value 1');
-        expect(response[0].values[1].label).toBe('value 2');
+        expect(response[0].values[1].label).toBe('Parent');
+        expect(response[0].values[1].values[0].label).toBe('value 2');
       });
     });
   });
@@ -255,7 +262,7 @@ describe('thesauri', () => {
           _id: dictionaryId,
           values: [
             { id: '1', label: 'value 1 changed' },
-            { id: '2', label: 'value 2' },
+            { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
           ],
         };
 
@@ -272,7 +279,37 @@ describe('thesauri', () => {
           expect.objectContaining({
             multiselect: [
               { value: '1', label: 'value 1 changed' },
-              { value: '2', label: 'value 2' },
+              { value: '2', label: 'value 2', parent: { value: '3', label: 'Parent' } },
+            ],
+          })
+        );
+      });
+
+      it('should update parent label on entities with child values', async () => {
+        const thesaurus = {
+          name: 'dictionary 2',
+          _id: dictionaryId,
+          values: [
+            { id: '1', label: 'value 1' },
+            { id: '3', label: 'Parent changed', values: [{ id: '2', label: 'value 2' }] },
+          ],
+        };
+
+        await thesauri.save(thesaurus);
+
+        const changedEntities = await entities.get({ language: 'es' });
+
+        expect(changedEntities[0].metadata).toEqual(
+          expect.objectContaining({
+            multiselect: [{ value: '1', label: 'value 1' }],
+          })
+        );
+
+        expect(changedEntities[1].metadata).toEqual(
+          expect.objectContaining({
+            multiselect: [
+              { value: '1', label: 'value 1' },
+              { value: '2', label: 'value 2', parent: { value: '3', label: 'Parent changed' } },
             ],
           })
         );
@@ -346,17 +383,15 @@ describe('thesauri', () => {
 
   describe('update', () => {
     describe('when the name of thesaurus is updated', () => {
-      it('should update the translations', async () => {
+      it('should update the translations key', async () => {
         const data = { ...fixtures.dictionaries[1], name: 'new name' };
         const response = await thesauri.save(data);
         data.values.push({ id: '3', label: 'value 3' });
         await thesauri.save(data);
         const allTranslations = await translations.get();
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
-        const labels = Object.keys(context.values);
-        expect(labels.length).toBe(4);
-        expect(labels[0]).toBe('new name');
-        expect(labels[3]).toBe('value 3');
+
+        expect(context.values['new name']).toBe('dictionary 2');
       });
     });
   });

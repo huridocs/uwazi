@@ -67,18 +67,18 @@ describe('templates utils', () => {
       const e = await entities.getById(e1);
       expect(await syncEntity(e!, { mode: 'onlynew', overwrite: false })).toBe(true);
       expect(e!.suggestedMetadata!.movies).toEqual([
-        {
+        expect.objectContaining({
           label: 'spiderman',
           suggestion_confidence: 0.7,
           suggestion_model: '123',
           value: '2.2',
-        },
-        {
+        }),
+        expect.objectContaining({
           label: 'groundhog day',
           suggestion_confidence: 0.4,
           suggestion_model: '123',
           value: '1.1',
-        },
+        }),
       ]);
       // Reject one, test that override keeps it.
       e!.suggestedMetadata!.movies = [e!.suggestedMetadata!.movies![0]];
@@ -88,12 +88,12 @@ describe('templates utils', () => {
         })
       ).toBe(false);
       expect(e!.suggestedMetadata!.movies).toEqual([
-        {
+        expect.objectContaining({
           label: 'spiderman',
           suggestion_confidence: 0.7,
           suggestion_model: '123',
           value: '2.2',
-        },
+        }),
       ]);
     });
   });
@@ -110,18 +110,18 @@ describe('templates utils', () => {
       );
       const e = await entities.getById(e1);
       expect(e!.suggestedMetadata!.movies).toEqual([
-        {
+        expect.objectContaining({
           label: 'spiderman',
           suggestion_confidence: 0.7,
           suggestion_model: '123',
           value: '2.2',
-        },
-        {
+        }),
+        expect.objectContaining({
           label: 'groundhog day',
           suggestion_confidence: 0.4,
           suggestion_model: '123',
           value: '1.1',
-        },
+        }),
       ]);
     });
   });
@@ -130,20 +130,20 @@ describe('templates utils', () => {
       const e = await entities.getById(e1);
       expect(await syncEntity(e!, { mode: 'autoaccept', overwrite: false })).toBe(true);
       expect(e!.metadata!.movies).toEqual([
-        {
+        expect.objectContaining({
           label: 'spiderman',
           suggestion_confidence: 0.7,
           suggestion_model: '123',
           value: '2.2',
           provenance: provenanceTypes.bulk,
-        },
-        {
+        }),
+        expect.objectContaining({
           label: 'groundhog day',
           suggestion_confidence: 0.4,
           suggestion_model: '123',
           value: '1.1',
           provenance: provenanceTypes.bulk,
-        },
+        }),
       ]);
       // Remove one, test that override keeps it.
       e!.metadata!.movies = [e!.metadata!.movies![0]];
@@ -195,13 +195,13 @@ describe('templates utils', () => {
       );
       const e = await entities.getById(e1);
       expect(e!.metadata!.movies).toEqual([
-        {
+        expect.objectContaining({
           label: 'spiderman',
           suggestion_confidence: 0.7,
           suggestion_model: '123',
           value: '2.2',
           provenance: provenanceTypes.bulk,
-        },
+        }),
       ]);
     });
   });
