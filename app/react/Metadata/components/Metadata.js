@@ -147,7 +147,6 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, group
   const groupedMetadata = groupGeolocations
     ? groupAdjacentGeolocations(filteredMetadata)
     : filteredMetadata;
-
   return (
     <>
       {groupedMetadata.map((prop, index) => {
@@ -155,6 +154,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, group
         type = type === 'image' || type === 'media' ? 'multimedia' : type;
         const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
         const fullWidthClass = prop.fullWidth ? 'full-width' : '';
+
         return (
           <dl
             className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}

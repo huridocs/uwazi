@@ -1,7 +1,8 @@
-/**
- * @jest-environment jsdom
- */
+/* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
+/* eslint-disable max-lines */
+/* @jest-environment jsdom */
+
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';
@@ -245,29 +246,6 @@ describe('MetadataProperty', () => {
       });
 
       describe('errors', () => {
-        it('should render duplicated relation error', () => {
-          props.formState.$form.errors['properties.1.relationType.duplicated'] = true;
-          const store = mockStoreCreator({
-            template: {
-              uiState: Immutable.fromJS({}),
-              formState: {
-                fields: [],
-                $form: {
-                  errors: {
-                    'properties.1.relationType.duplicated': true,
-                  },
-                },
-              },
-              data: {
-                commonProperties: [],
-              },
-            },
-          });
-
-          const connectedComponent = render(store, props);
-          expect(connectedComponent.find('.validation-error')).toMatchSnapshot();
-        });
-
         it('should render duplicated label error', () => {
           const store = mockStoreCreator({
             template: {
