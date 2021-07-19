@@ -30,7 +30,7 @@ const LibrarySidePanelButtonsComponent = ({
   showImportPanel,
 }: LibrarySidePanelButtonsProps) => (
   <div className="sidepanel-footer">
-    <NeedAuthorization>
+    <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
       <button className="btn btn-success" type="button" onClick={() => newEntity(storeKey)}>
         <Icon icon="plus" />
         <span className="btn-label">

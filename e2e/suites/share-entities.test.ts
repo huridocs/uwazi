@@ -4,6 +4,7 @@ import { adminLogin, logout, login } from '../helpers/login';
 import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
 import { expectDocumentCountAfterSearch } from '../helpers/elastichelpers';
+import { goToRestrictedEntities, goToPublishedEntities } from '../helpers/publishedFilter';
 
 describe('Share entities', () => {
   beforeAll(async () => {
@@ -47,8 +48,9 @@ describe('Share entities', () => {
     await expect(page).toClick('button', { text: 'Create User' });
   });
 
+  // eslint-disable-next-line max-statements
   it('Should list available collaborators of an entity', async () => {
-    await expect(page).toClick('a.private-documents');
+    await goToRestrictedEntities();
     await expect(page).toClick('.item-document', {
       text: titleEntity1,
     });
@@ -188,7 +190,7 @@ describe('Share entities', () => {
     await logout();
     await login('colla', 'borator');
     await disableTransitions();
-    await expect(page).toClick('a.private-documents');
+    await goToRestrictedEntities();
     await page.waitFor('.item-document');
     const entities = await page.$$('.item-document');
     expect(entities.length).toBe(3);
@@ -202,7 +204,7 @@ describe('Share entities', () => {
       text: titleEntity4,
     });
     await expect(page).toClick('button', { text: 'Edit' });
-    await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Edited title');
+    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Edited title');
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert', { text: 'Entity updated' });
     await page.waitFor('.item-document');
@@ -212,7 +214,7 @@ describe('Share entities', () => {
   });
 
   it('should be able to see only published entities', async () => {
-    await expect(page).toClick('a.public-documents');
+    await goToPublishedEntities();
     await page.waitFor('.item-document');
     await expect(page).toFill(
       'input[name="library.search.searchTerm"]',
@@ -220,7 +222,7 @@ describe('Share entities', () => {
     );
     await expect(page).toClick('[aria-label="Search button"]');
     await expectDocumentCountAfterSearch(page, 1);
-    await expect(page).toMatchElement('.item-document .item-info > div > span', {
+    await expect(page).toMatchElement('.item-document .item-info > .item-name > span', {
       text: titlePublic1,
     });
   });
