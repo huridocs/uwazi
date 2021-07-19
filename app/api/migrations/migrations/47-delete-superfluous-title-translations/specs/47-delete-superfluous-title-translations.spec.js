@@ -27,12 +27,16 @@ const unrelatedResult = {
   'some-menu-item': 'some-menu-item',
   'other-menu-item': 'other-menu-item',
 };
+const nonexistingResult = {
+  NonExistingTemplateName: 'NonExistingTemplateName',
+};
 const results = [
   expectedDefaultResult,
   expectedChangedOnceResult,
   expectedChangedMultipleResult,
   expectedComplexResult,
   unrelatedResult,
+  nonexistingResult,
 ];
 
 describe('migration delete-superfluous-title-translations', () => {

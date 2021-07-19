@@ -23,13 +23,15 @@ export default {
               .collection('templates')
               .findOne({ _id: ObjectId(context.id) });
 
-            const templateLabelSet = new Set([
-              template.name,
-              'Title',
-              template.commonProperties.find(p => p.name === 'title').label,
-              ...template.properties.map(p => p.label),
-            ]);
-            context.values = context.values.filter(element => templateLabelSet.has(element.key));
+            if (template) {
+              const templateLabelSet = new Set([
+                template.name,
+                'Title',
+                template.commonProperties.find(p => p.name === 'title').label,
+                ...template.properties.map(p => p.label),
+              ]);
+              context.values = context.values.filter(element => templateLabelSet.has(element.key));
+            }
           }
           return Promise.resolve();
         })

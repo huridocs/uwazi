@@ -1,5 +1,7 @@
 import db from 'api/utils/testing_db';
 
+export const nonExistingTemplateId = db.id();
+
 export const defaultTemplateName = 'default template';
 export const defaultTemplateId = db.id();
 export const templateChangedOnceName = 'changed once';
@@ -137,6 +139,18 @@ const commonContexts = [
       {
         key: 'other-menu-item',
         value: 'other-menu-item',
+      },
+    ],
+  },
+  //nonexisting template
+  {
+    id: nonExistingTemplateId,
+    label: 'NonExistingTemplateName',
+    type: 'Entity',
+    values: [
+      {
+        key: 'NonExistingTemplateName',
+        value: 'NonExistingTemplateName',
       },
     ],
   },
