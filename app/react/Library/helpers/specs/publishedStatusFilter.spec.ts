@@ -45,15 +45,17 @@ describe('publishedStatus filter helpers', () => {
     });
   });
 
-  it.each`
-    unpublished | includeUnpublished | result
-    ${false}    | ${false}           | ${{ values: ['published'] }}
-    ${true}     | ${false}           | ${{ values: ['restricted'] }}
-    ${false}    | ${true}            | ${{ values: ['published', 'restricted'] }}
-  `(
-    'should set publishedStatus parameters based on query parameters',
-    ({ unpublished, includeUnpublished, result }) => {
-      expect(queryToFilter(unpublished, includeUnpublished)).toEqual(result);
-    }
-  );
+  describe('queryToFilter', () => {
+    it.each`
+      unpublished | includeUnpublished | result
+      ${false}    | ${false}           | ${{ values: ['published'] }}
+      ${true}     | ${false}           | ${{ values: ['restricted'] }}
+      ${false}    | ${true}            | ${{ values: ['published', 'restricted'] }}
+    `(
+      'should set publishedStatus parameters based on query parameters',
+      ({ unpublished, includeUnpublished, result }) => {
+        expect(queryToFilter(unpublished, includeUnpublished)).toEqual(result);
+      }
+    );
+  });
 });
