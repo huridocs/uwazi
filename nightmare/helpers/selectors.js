@@ -12,7 +12,7 @@ export default {
     collectionNameForm:
       '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(1) > input',
     settingsHeader:
-      '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
+      '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(2) > a',
     logoutButton:
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     accountButton:
@@ -170,6 +170,12 @@ export default {
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
     sidePanelDocumentType:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > div > span',
+    newEntityButtom:
+      '#app > div.content > div > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-footer > div > button:nth-child(1)',
+    publishedEntitiesFilterSelector:
+      '#filtersForm > div.admin-filter.form-group > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name > span',
+    restrictedEntitiesFilterSelector:
+      '#filtersForm > div.admin-filter.form-group > ul > li.wide > ul > li:nth-child(3) > label > span.multiselectItem-name > span',
   },
   documentView: {
     searchTextTab:
@@ -268,10 +274,6 @@ export default {
     uploadBox: '#app > div.content > div > div > div > main > div.upload-box',
     firstDocument:
       '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1)',
-    newEntityButtom:
-      '#app > div.content > div > div > div.content-header > div > button:nth-child(1)',
-    saveButton:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     shareButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success.share-btn',
     multiShareButton:
@@ -282,8 +284,6 @@ export default {
   },
   navigation: {
     loginNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
-    uploadsNavButton:
-      '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
     libraryNavButton:
       '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(1) > a',
     settingsNavButton:
