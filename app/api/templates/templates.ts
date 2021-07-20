@@ -13,7 +13,7 @@ import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyA
 import model from './templatesModel';
 import {
   generateNamesAndIds,
-  getDeletedCommonProperties,
+  getRenamedTitle,
   getDeletedProperties,
   getUpdatedNames,
   denormalizeInheritedProperties,
@@ -63,7 +63,7 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
   }
   const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
   deletedPropertiesByLabel.push(
-    ...getDeletedCommonProperties(
+    ...getRenamedTitle(
       ensure<PropertySchema[]>(currentTemplate.commonProperties),
       ensure<PropertySchema[]>(template.commonProperties)
     )

@@ -137,7 +137,7 @@ export function getDeletedProperties(
     .map(property => property[prop]);
 }
 
-export function getDeletedCommonProperties(
+export function getRenamedTitle(
   oldCommonProperties: PropertySchema[],
   newCommonProperties: PropertySchema[]
 ) {
