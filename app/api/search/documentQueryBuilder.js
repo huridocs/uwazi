@@ -7,6 +7,7 @@ import {
   propertyToAggregation,
   generatedTocAggregations,
   permissionsLevelAgreggations,
+  publishingStatusAgreggations,
 } from './metadataAggregations';
 
 const nested = (filters, path) => ({
@@ -220,26 +221,7 @@ export default function() {
     },
 
     publishingStatusAggregations() {
-      const user = permissionsContext.getUserInContext();
-      if (user && ['admin', 'editor', 'collaborator'].includes(user.role)) {
-        baseQuery.aggregations.all.aggregations.published = {
-          terms: {
-            field: 'published',
-            missing: 'false',
-            size: preloadOptionsSearch,
-          },
-          aggregations: {
-            filtered: {
-              filter: {
-                bool: {
-                  must: [{ bool: { should: [] } }],
-                  filter: defaultFilter,
-                },
-              },
-            },
-          },
-        };
-      }
+      baseQuery.aggregations.all.aggregations._published = publishingStatusAgreggations(baseQuery);
       return this;
     },
 
@@ -431,6 +413,7 @@ export default function() {
       if (onlyPublished) {
         return this;
       }
+
       const user = permissionsContext.getUserInContext();
       if (user && !['admin', 'editor'].includes(user.role)) {
         const permissionsFilter = nested(

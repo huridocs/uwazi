@@ -33,7 +33,7 @@ describe('publishedStatus filter helpers', () => {
             values: [],
           },
         })
-      ).toEqual({ includeUnpublished: false, unpublished: false });
+      ).toEqual({ includeUnpublished: true, unpublished: false });
 
       expect(
         filterToQuery({
