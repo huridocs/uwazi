@@ -3,6 +3,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
+import { loginAsAdminAndViewRestrictedEntities } from '../helpers/commonTests';
 
 const nightmare = createNightmare();
 
@@ -12,14 +13,8 @@ describe('Uploads', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  it('should log in as admin', done => {
-    nightmare
-      .login('admin', 'admin')
-      .goToUploads()
-      .then(() => {
-        done();
-      })
-      .catch(catchErrors(done));
+  it('should log in as admin and go restricted entities', done => {
+    loginAsAdminAndViewRestrictedEntities(nightmare, catchErrors, done);
   });
 
   describe('when filtering by type', () => {
@@ -47,7 +42,7 @@ describe('Uploads', () => {
       nightmare
         .upload('.upload-box input', `${__dirname}/test_files/valid.pdf`)
         .waitForCardToBeCreated(expectedTitle)
-        .waitForCardTemplate(selectors.uploadsView.firstDocument, 'Test entity')
+        .waitForCardTemplate(selectors.libraryView.firstDocument, 'Test entity')
         .getResultsAsJson()
         .then(results => {
           expect(results[0].title).toBe(expectedTitle);
@@ -63,7 +58,7 @@ describe('Uploads', () => {
         nightmare
           .upload('.upload-box input', `${__dirname}/test_files/invalid.pdf`)
           .waitForCardToBeCreated(expectedTitle)
-          .waitForCardStatus(selectors.uploadsView.firstDocument, 'Conversion failed')
+          .waitForCardStatus(selectors.libraryView.firstDocument, 'Conversion failed')
           .getResultsAsJson()
           .then(results => {
             expect(results[0].title).toBe(expectedTitle);
