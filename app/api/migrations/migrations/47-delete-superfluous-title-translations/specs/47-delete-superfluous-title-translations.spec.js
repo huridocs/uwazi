@@ -6,17 +6,14 @@ import fixtures from './fixtures.js';
 const expectedDefaultResult = { 'default template': 'default template', Title: 'Title' };
 const expectedChangedOnceResult = {
   'changed once': 'changed once',
-  Title: 'Title',
   'First New Title': 'First New Title',
 };
 const expectedChangedMultipleResult = {
   'changed multiple correct': 'changed multiple correct',
-  Title: 'Title',
   'Fourth New Title': 'Fourth New Title',
 };
 const expectedComplexResult = {
   'with properties': 'with properties',
-  Title: 'Title',
   'Fourth New Title': 'Fourth New Title',
   date_title: 'date_title',
   rich_text_title: 'rich_text_title',

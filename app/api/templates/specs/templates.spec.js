@@ -212,7 +212,7 @@ describe('templates', () => {
         templateToBeEditedId,
         'template to be edited',
         {},
-        [],
+        ['Title'],
         expectedContext,
         'Entity'
       );
@@ -353,7 +353,7 @@ describe('templates', () => {
                 'label 1': 'new label 1',
                 'created template': 'new title',
               },
-              ['label 2'],
+              ['label 2', 'Title'],
               {
                 'new label 1': 'new label 1',
                 'label 3': 'label 3',

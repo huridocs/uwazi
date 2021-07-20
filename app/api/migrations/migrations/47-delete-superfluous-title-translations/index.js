@@ -26,7 +26,6 @@ export default {
             if (template) {
               const templateLabelSet = new Set([
                 template.name,
-                'Title',
                 template.commonProperties.find(p => p.name === 'title').label,
                 ...template.properties.map(p => p.label),
               ]);

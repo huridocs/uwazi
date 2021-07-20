@@ -143,5 +143,5 @@ export function getRenamedTitle(
 ) {
   const oldTitle = ensure<PropertySchema>(oldCommonProperties.find(p => p.name === 'title'));
   const newTitle = ensure<PropertySchema>(newCommonProperties.find(p => p.name === 'title'));
-  return oldTitle.label !== newTitle.label && oldTitle.label !== 'Title' ? [oldTitle.label] : [];
+  return oldTitle.label !== newTitle.label ? [oldTitle.label] : [];
 }
