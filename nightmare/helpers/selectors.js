@@ -287,7 +287,7 @@ export default {
     libraryNavButton:
       '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(1) > a',
     settingsNavButton:
-      '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
+      '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(2) > a',
     spanish:
       '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a',
     english:
