@@ -3,7 +3,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
-import { loginAsAdminAndGoToUploads } from '../helpers/commonTests.js';
+import { loginAsAdminAndViewRestrictedEntities } from '../helpers/commonTests.js';
 
 const nightmare = createNightmare();
 
@@ -43,8 +43,9 @@ describe('PublishDocument', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  it('should log in as admin then click the uploads nav button', done => {
-    loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
+  it('should log in as admin then select restricted entities', done => {
+    loginAsAdminAndViewRestrictedEntities(nightmare, catchErrors, done);
+    nightmare.then(done);
   });
 
   it('should fill a document metadata and publish it', done => {
