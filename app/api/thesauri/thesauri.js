@@ -5,6 +5,7 @@ import templates from 'api/templates/templates';
 import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
 import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
+import { search } from 'api/search';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
 
@@ -77,10 +78,33 @@ async function updateOptionsInEntities(current, thesauri) {
   );
 
   const updatedIds = getUpdatedNames(currentProperties, newProperties, 'label', 'id');
+  const toUpdate = [];
+
+  Object.keys(updatedIds).forEach(id => {
+    const option = newProperties
+      .reduce((flattendedOptions, o) => flattendedOptions.concat([o, ...(o.values || [])]), [])
+      .find(o => o.id === id);
+
+    if (option.values?.length) {
+      option.values.forEach(o => {
+        toUpdate.push({ id: o.id, label: o.label, parent: { id, label: updatedIds[id] } });
+      });
+      return;
+    }
+
+    toUpdate.push({ id, label: updatedIds[id] });
+  });
+
   const defaultLanguage = (await settings.get()).languages.find(lang => lang.default).key;
   await Promise.all(
-    Object.entries(updatedIds).map(([updatedId, newLabel]) =>
-      denormalizeThesauriLabelInMetadata(updatedId, newLabel, thesauri._id, defaultLanguage)
+    toUpdate.map(option =>
+      denormalizeThesauriLabelInMetadata(
+        option.id,
+        option.label,
+        thesauri._id,
+        defaultLanguage,
+        option.parent
+      )
     )
   );
 }
@@ -120,7 +144,7 @@ const thesauri = {
     return { values };
   },
 
-  async templateToThesauri(template, language, user) {
+  async templateToThesauri(template, language, user, countPerTemplate) {
     const onlyPublished = !user;
     const _entities = await entities.getByTemplate(
       template._id,
@@ -128,9 +152,11 @@ const thesauri = {
       onlyPublished,
       preloadOptionsLimit
     );
-    const optionsCount = await entities.countByTemplate(template._id, language);
     const values = this.entitiesToThesauri(_entities);
-    return Object.assign(template, values, { type: 'template', optionsCount });
+    return Object.assign(template, values, {
+      type: 'template',
+      optionsCount: countPerTemplate[template._id.toString()],
+    });
   },
 
   getById(id) {
@@ -146,15 +172,20 @@ const thesauri = {
     const dictionaries = await model.get(query);
     const allTemplates = await templates.get(query);
 
-    const processedTemplates = await Promise.all(
-      allTemplates.map(result =>
-        this.templateToThesauri(result, language, user).then(
-          templateTransformedInThesauri => templateTransformedInThesauri
-        )
-      )
-    );
+    if (allTemplates.length && language) {
+      const templateCount = await search.countPerTemplate(language);
 
-    return dictionaries.concat(processedTemplates);
+      const processedTemplates = await Promise.all(
+        allTemplates.map(result =>
+          this.templateToThesauri(result, language, user, templateCount).then(
+            templateTransformedInThesauri => templateTransformedInThesauri
+          )
+        )
+      );
+      return dictionaries.concat(processedTemplates);
+    }
+
+    return dictionaries;
   },
 
   dictionaries(query) {

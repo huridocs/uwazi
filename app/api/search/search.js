@@ -810,39 +810,31 @@ const search = {
     };
   },
 
-  async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
-    const publishedFilter = includeUnpublished ? undefined : { term: { published: true } };
-
-    const body = {
-      _source: {
-        include: ['title', 'template', 'sharedId', 'icon'],
-      },
-      from: 0,
-      size: preloadOptionsSearch,
-      query: {
-        bool: {
-          must: [
-            {
-              multi_match: {
-                query: searchTerm,
-                type: 'bool_prefix',
-                fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram'],
-              },
-            },
-          ],
-          filter: [publishedFilter, { term: { language } }],
-        },
-      },
-      sort: [],
-    };
+  async autocomplete(searchTerm, language, templates = []) {
+    const queryBuilder = documentQueryBuilder()
+      .include(['title', 'template', 'sharedId', 'icon'])
+      .language(language)
+      .limit(preloadOptionsSearch)
+      .filterByPermissions()
+      .includeUnpublished();
 
     if (templates.length) {
-      body.query.bool.must.push({
-        terms: {
-          template: templates,
-        },
-      });
+      queryBuilder.filterByTemplate(templates);
     }
+
+    const body = queryBuilder.query();
+
+    body.query.bool.must = [
+      {
+        multi_match: {
+          query: searchTerm,
+          type: 'bool_prefix',
+          fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram', 'title.sayt_ngram'],
+        },
+      },
+    ];
+
+    delete body.aggregations;
 
     const response = await elastic.search({ body });
 
@@ -859,6 +851,21 @@ const search = {
   async updateTemplatesMapping() {
     const templates = await templatesModel.get();
     return updateMapping(templates);
+  },
+
+  async countPerTemplate(language) {
+    const queryBuilder = documentQueryBuilder()
+      .language(language)
+      .includeUnpublished()
+      .limit(0);
+
+    return (
+      await elastic.search({ body: queryBuilder.query() })
+    ).body.aggregations.all._types.buckets.reduce((map, bucket) => {
+      // eslint-disable-next-line no-param-reassign
+      map[bucket.key] = bucket.filtered.doc_count;
+      return map;
+    }, {});
   },
 };
 

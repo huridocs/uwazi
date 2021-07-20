@@ -7,6 +7,8 @@ const {
   CUSTOM_UPLOADS_FOLDER,
   TEMPORAL_FILES_FOLDER,
   USER_SESSION_SECRET,
+  MONGO_URI,
+  DBHOST,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -15,10 +17,12 @@ const rootPath = ROOT_PATH || `${__dirname}/../../`;
 // when using multiple node processes
 const CLUSTER_MODE = process.env.CLUSTER_MODE || false;
 
+const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://localhost/');
+
 export const config = {
   PORT: process.env.PORT || 3000,
 
-  DBHOST: process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/',
+  DBHOST: MONGO_URI || onlyDBHOST(),
 
   rootPath,
 

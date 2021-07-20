@@ -1,6 +1,7 @@
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 
 const entityTemplateId = '589af97080fc0b23471d67f3';
+const documentTemplate = testingDB.id();
 const dictionaryId = '589af97080fc0b23471d67f4';
 const dictionaryIdToTranslate = '589af97080fc0b23471d67f5';
 const dictionaryWithValueGroups = testingDB.id();
@@ -14,7 +15,7 @@ const fixtures: DBFixture = {
       name: 'dictionary 2',
       values: [
         { id: '1', label: 'value 1' },
-        { id: '2', label: 'value 2' },
+        { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
       ],
     },
     {
@@ -61,7 +62,7 @@ const fixtures: DBFixture = {
         },
       ],
     },
-    { _id: testingDB.id(), name: 'documentTemplate', properties: [{}] },
+    { _id: documentTemplate, name: 'documentTemplate', properties: [{}] },
   ],
   entities: [
     {
@@ -70,7 +71,7 @@ const fixtures: DBFixture = {
       language: 'es',
       template: testingDB.id(entityTemplateId),
       metadata: {
-        multiselect: [{ value: '1', label: '1' }],
+        multiselect: [{ value: '1', label: 'value 1' }],
       },
     },
     {
@@ -81,7 +82,7 @@ const fixtures: DBFixture = {
       template: testingDB.id(entityTemplateId),
       icon: { type: 'Icon' },
       metadata: {
-        multiselect: [{ value: '1', label: '1' }],
+        multiselect: [{ value: '1', label: 'value 1' }],
       },
     },
     {
@@ -94,8 +95,8 @@ const fixtures: DBFixture = {
       published: true,
       metadata: {
         multiselect: [
-          { value: '1', label: '1' },
-          { value: '2', label: 'value 2' },
+          { value: '1', label: 'value 1' },
+          { value: '2', label: 'value 2', parent: { label: 'Parent', value: '3' } },
         ],
       },
     },
@@ -107,6 +108,22 @@ const fixtures: DBFixture = {
       language: 'es',
       template: testingDB.id(entityTemplateId),
       published: false,
+    },
+    {
+      _id: testingDB.id(),
+      title: 'document',
+      sharedId: 'documentSharedId',
+      language: 'es',
+      template: documentTemplate,
+      published: true,
+    },
+    {
+      _id: testingDB.id(),
+      title: 'document 2',
+      sharedId: 'documentSharedId 2',
+      language: 'es',
+      template: documentTemplate,
+      published: true,
     },
   ],
   settings: [{ _id: testingDB.id(), languages: [{ key: 'es', default: true }] }],
@@ -122,6 +139,7 @@ const fixtures: DBFixture = {
             { key: 'dictionary 2', value: 'dictionary 2' },
             { key: 'value 1', value: 'value 1' },
             { key: 'value 2', value: 'value 2' },
+            { key: 'Parent', value: 'Parent' },
           ],
         },
       ],

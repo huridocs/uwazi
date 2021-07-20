@@ -6,6 +6,8 @@ import * as entitiesIndex from 'api/search/entitiesIndex';
 import templates from '../templates';
 import templateRoutes from '../routes.js';
 
+import * as reindex from '../reindex';
+
 const mocketSocketIo = () => ({
   emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
 });
@@ -22,6 +24,7 @@ describe('templates routes', () => {
     spyOn(entitiesIndex, 'checkMapping').and.returnValue(
       Promise.resolve({ errors: [], valid: true })
     );
+    spyOn(reindex, 'checkIfReindex').and.returnValue(true);
   });
 
   afterAll(async () => {

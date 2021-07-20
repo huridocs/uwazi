@@ -18,9 +18,14 @@ class Footer extends Component {
             <div className="footer-tooltip">
               <p>
                 Uwazi is developed by{' '}
-                <img src="/public/huridocs-logo.svg" title="uwazi" alt="uwazi" />
+                <a href="https://huridocs.org/" target="_blank">
+                  <img
+                    src="/public/huridocs-logo.svg"
+                    title="HURIDOCS"
+                    alt="Human Rights Information and Documentation Systems"
+                  />
+                </a>
               </p>
-              <p>in Kenya, Ecuador, Spain, Germany and USA.</p>
             </div>
             <a href="https://www.uwazi.io/" target="_blank" className="footer-logo">
               <img src="/public/logo.svg" title="uwazi" alt="uwazi" />

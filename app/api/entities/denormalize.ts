@@ -218,7 +218,8 @@ const denormalizeThesauriLabelInMetadata = async (
   valueId: string,
   newLabel: string,
   thesaurusId: string,
-  language: string
+  language: string,
+  parent: { id: string; label: string }
 ) => {
   const updates = await denormalizationUpdates(thesaurusId.toString(), ['label']);
   await Promise.all(
@@ -232,12 +233,18 @@ const denormalizeThesauriLabelInMetadata = async (
         {
           $set: {
             [`${entry.valuePath}.$[valueIndex].label`]: newLabel,
+            ...(parent
+              ? {
+                  [`${entry.valuePath}.$[valueIndex].parent.label`]: parent.label,
+                }
+              : {}),
           },
         },
         { arrayFilters: [{ 'valueIndex.value': valueId }] }
       )
     )
   );
+
   await reindexUpdates(valueId, language, updates);
 };
 

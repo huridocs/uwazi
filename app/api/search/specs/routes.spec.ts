@@ -4,9 +4,11 @@ import { Application } from 'express';
 import db from 'api/utils/testing_db';
 
 import { setUpApp } from 'api/utils/testingRoutes';
-import searchRoutes from 'api/search/routes.ts';
+import searchRoutes from 'api/search/routes';
 
+import { UserRole } from 'shared/types/userSchema';
 import { fixtures, ids, fixturesTimeOut } from './fixtures_elastic';
+import { UserInContextMockFactory } from '../../utils/testingUserInContext';
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -42,30 +44,75 @@ describe('Search routes', () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: '[]' });
-
-      expect(res.body.options.length).toBe(4);
+      expect(res.body.options.length).toBe(5);
 
       res = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: JSON.stringify([ids.template1]) });
-
       expect(res.body.options.length).toBe(3);
       expect(res.body.count).toBe(3);
     });
 
-    it('should filter by unpublished', async () => {
-      let res: SuperTestResponse = await request(app)
+    it('should include unpublished entities', async () => {
+      const res = await request(app)
         .get('/api/search/lookup')
         .set('content-language', 'es')
         .query({ searchTerm: 'unpublished' });
-      expect(res.body.options.length).toBe(0);
+      expect(res.body.options.length).toBe(1);
+    });
 
+    it('should search by the parts of a word', async () => {
+      let res = await request(app)
+        .get('/api/search/lookup')
+        .set('content-language', 'es')
+        .query({ searchTerm: 'she' });
+      expect(res.body.options.length).toBe(3);
       res = await request(app)
         .get('/api/search/lookup')
         .set('content-language', 'es')
-        .query({ searchTerm: 'unpublished', unpublished: true });
+        .query({ searchTerm: 'shed' });
+      expect(res.body.options.length).toBe(2);
+    });
 
-      expect(res.body.options.length).toBe(1);
+    describe('permissions', () => {
+      const userContextMocker = new UserInContextMockFactory();
+
+      afterAll(() => {
+        userContextMocker.mockEditorUser();
+      });
+
+      it("should not return unpublished if there's no logged-in user", async () => {
+        userContextMocker.mock(undefined);
+        const res: SuperTestResponse = await request(app)
+          .get('/api/search/lookup')
+          .set('content-language', 'es')
+          .query({ searchTerm: 'unpublished' });
+
+        expect(res.body.options.length).toBe(0);
+      });
+
+      it('should only return unpublished if the logged user has permissions on the entity', async () => {
+        const collabUser = {
+          _id: 'collabId',
+          role: UserRole.COLLABORATOR,
+          username: 'collabUser',
+          email: 'collab@test.com',
+        };
+        new UserInContextMockFactory().mock(collabUser);
+        let res: SuperTestResponse = await request(app)
+          .get('/api/search/lookup')
+          .set('content-language', 'es')
+          .query({ searchTerm: 'unpublished' });
+
+        expect(res.body.options.length).toBe(0);
+
+        res = await request(app)
+          .get('/api/search/lookup')
+          .set('content-language', 'es')
+          .query({ searchTerm: 'with permissions but not published', unpublished: true });
+
+        expect(res.body.options.length).toBe(1);
+      });
     });
   });
 
