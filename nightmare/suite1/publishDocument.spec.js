@@ -45,7 +45,6 @@ describe('PublishDocument', () => {
 
   it('should log in as admin then select restricted entities', done => {
     loginAsAdminAndViewRestrictedEntities(nightmare, catchErrors, done);
-    nightmare.then(done);
   });
 
   it('should fill a document metadata and publish it', done => {

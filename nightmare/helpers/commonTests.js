@@ -20,5 +20,8 @@ export function loginAsAdminAndViewRestrictedEntities(nightmare, catchErrors, do
     .waitToClick(selectors.libraryView.restrictedEntitiesFilterSelector)
     .waitToClick(selectors.libraryView.publishedEntitiesFilterSelector)
     .wait(selectors.libraryView.newEntityButtom)
+    .then(() => {
+      done();
+    })
     .catch(catchErrors(done));
 }
