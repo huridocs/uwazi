@@ -33,7 +33,6 @@ export default {
               context.values = context.values.filter(element => templateLabelSet.has(element.key));
             }
           }
-          return Promise.resolve();
         })
       );
       await db.collection('translations').save(translation);
