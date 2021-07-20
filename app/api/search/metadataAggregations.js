@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 
@@ -221,6 +222,40 @@ export const permissionsLevelAgreggations = baseQuery => {
               },
             },
           },
+        },
+      },
+    },
+  };
+};
+
+export const publishingStatusAgreggations = baseQuery => {
+  const path = 'published';
+  const filters = extractFilters(baseQuery, path);
+  const { should } = baseQuery.query.bool;
+
+  const baseFilters = filters.filter(
+    f =>
+      !(
+        (f?.bool?.must || f?.bool?.should)?.length === 1 &&
+        (f?.bool?.must || f?.bool?.should)[0].term?.published !== undefined
+      )
+  );
+
+  console.log(JSON.stringify(baseFilters, null, 2));
+
+  return {
+    filter: {
+      bool: {
+        should,
+        filter: baseFilters,
+      },
+    },
+    aggregations: {
+      filtered: {
+        terms: {
+          field: path,
+          missing: 'false',
+          size: preloadOptionsSearch,
         },
       },
     },

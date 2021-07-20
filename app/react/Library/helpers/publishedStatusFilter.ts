@@ -9,7 +9,7 @@ export const filterToQuery = (search: FilterToQueryParams) => {
   const published = filteredQuery.publishedStatus!.values.includes('published');
   const restricted = filteredQuery.publishedStatus!.values.includes('restricted');
 
-  filteredQuery.includeUnpublished = published && restricted;
+  filteredQuery.includeUnpublished = published === restricted;
   filteredQuery.unpublished = !published && restricted;
 
   delete filteredQuery.publishedStatus;

@@ -11,20 +11,12 @@ export interface PublishedFiltersProps {
   aggregations: Aggregations;
 }
 
-const filteredAggregation = (aggregations: Aggregations) => {
-  const published = (aggregations?.all?.published?.buckets || []).find(a => a.key === 'true') || {
-    filtered: { doc_count: 0 },
-  };
-
-  const restricted = (aggregations?.all?.published?.buckets || []).find(a => a.key === 'false') || {
-    filtered: { doc_count: 0 },
-  };
-
-  return {
-    published: published.filtered.doc_count || 9999,
-    restricted: restricted.filtered.doc_count || 9999,
-  };
-};
+const filteredAggregation = (aggregations: Aggregations, key: string) =>
+  (
+    (aggregations?.all?._published?.buckets || []).find(a => a.key === key) || {
+      filtered: { doc_count: 0 },
+    }
+  ).filtered.doc_count || 0;
 
 const generateOptions = (aggregations: Aggregations) => [
   {
@@ -37,7 +29,7 @@ const generateOptions = (aggregations: Aggregations) => [
     ),
     title: 'Published',
     value: 'published',
-    results: filteredAggregation(aggregations).published,
+    results: filteredAggregation(aggregations, 'true'),
   },
   {
     label: (
@@ -49,16 +41,16 @@ const generateOptions = (aggregations: Aggregations) => [
     ),
     title: 'Restricted',
     value: 'restricted',
-    results: filteredAggregation(aggregations).restricted,
+    results: filteredAggregation(aggregations, 'false'),
   },
 ];
 
 export const PublishedFilters = ({ onChange, aggregations }: PublishedFiltersProps) => {
   const options = generateOptions(aggregations);
-  // const totalAggs = options.reduce((total, o) => total + o.results, 0);
-  // if (totalAggs === 0) {
-  //   return null;
-  // }
+  const totalAggs = options.reduce((total, o) => total + o.results, 0);
+  if (totalAggs === 0) {
+    return null;
+  }
   return (
     <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
       <FormGroup key="publishedStatus" className="admin-filter">
