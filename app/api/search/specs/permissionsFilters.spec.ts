@@ -19,6 +19,7 @@ function getAggregationCountByType(typesBuckets: AggregationBucket[], templateId
   return typesBuckets.find(a => a.key === templateId.toString())?.filtered.doc_count;
 }
 
+// eslint-disable-next-line max-statements
 describe('Permissions filters', () => {
   let buckets: AggregationBucket[];
   const user3WithGroups = { ...users.user3, groups: [{ _id: group1.toString() }] };
@@ -165,6 +166,42 @@ describe('Permissions filters', () => {
         buckets = await performSearch(user);
         expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(expect1);
         expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(expect2);
+      }
+    );
+  });
+
+  describe('published aggregations based on access level ', () => {
+    const performSearch = async (
+      user: UserSchema,
+      filters: { unpublished: boolean; includeUnpublished: boolean }
+    ): Promise<AggregationBucket[]> => {
+      const response = await search.search(
+        { aggregatePublishingStatus: true, ...filters },
+        'es',
+        user
+      );
+      const aggs = response.aggregations as Aggregations;
+      return aggs.all._published.buckets;
+    };
+
+    it.each`
+      user                | unpublished | includeUnpublished | published | restricted
+      ${users.adminUser}  | ${false}    | ${false}           | ${2}      | ${4}
+      ${users.adminUser}  | ${true}     | ${false}           | ${2}      | ${4}
+      ${users.editorUser} | ${true}     | ${false}           | ${2}      | ${4}
+      ${users.user1}      | ${false}    | ${false}           | ${2}      | ${3}
+      ${users.user1}      | ${true}     | ${false}           | ${2}      | ${3}
+      ${users.user1}      | ${false}    | ${true}            | ${2}      | ${3}
+      ${user3WithGroups}  | ${false}    | ${false}           | ${2}      | ${4}
+      ${user3WithGroups}  | ${true}     | ${false}           | ${2}      | ${4}
+      ${user3WithGroups}  | ${false}    | ${true}            | ${2}      | ${4}
+    `(
+      'should return aggregations of publishing status filtered per current user',
+      async ({ user, unpublished, includeUnpublished, published, restricted }) => {
+        userFactory.mock(user);
+        buckets = await performSearch(user, { unpublished, includeUnpublished });
+        expect(buckets.find(a => a.key === 'true')?.filtered.doc_count).toBe(published);
+        expect(buckets.find(a => a.key === 'false')?.filtered.doc_count).toBe(restricted);
       }
     );
   });

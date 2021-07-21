@@ -232,17 +232,14 @@ export const publishingStatusAgreggations = baseQuery => {
   const path = 'published';
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
+  const user = permissionsContext.getUserInContext();
+  const isCollab = user && !['admin', 'editor'].includes(user.role);
 
   const baseFilters = filters.filter(
-    f =>
-      !(
-        (f?.bool?.must || f?.bool?.should)?.length === 1 &&
-        (f?.bool?.must || f?.bool?.should)[0].term?.published !== undefined
-      )
+    f => !((f?.bool?.must || f?.bool?.should)?.[0]?.term?.published !== undefined)
   );
 
-  const user = permissionsContext.getUserInContext();
-  if (user && !['admin', 'editor'].includes(user.role)) {
+  if (isCollab) {
     baseFilters.push({
       bool: {
         should: [
