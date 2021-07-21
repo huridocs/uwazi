@@ -198,6 +198,41 @@ describe('templates', () => {
       );
     });
 
+    it('should update translations with the name of the title property, and remove old custom value', async () => {
+      spyOn(translations, 'updateContext');
+      const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];
+
+      testTemplate.commonProperties[0].label = 'First New Title';
+      await templates.save(testTemplate);
+      let expectedContext = {
+        'template to be edited': 'template to be edited',
+        'First New Title': 'First New Title',
+      };
+      expect(translations.updateContext).toHaveBeenLastCalledWith(
+        templateToBeEditedId,
+        'template to be edited',
+        {},
+        ['Title'],
+        expectedContext,
+        'Entity'
+      );
+
+      testTemplate.commonProperties[0].label = 'Second New Title';
+      await templates.save(testTemplate);
+      expectedContext = {
+        'template to be edited': 'template to be edited',
+        'Second New Title': 'Second New Title',
+      };
+      expect(translations.updateContext).toHaveBeenLastCalledWith(
+        templateToBeEditedId,
+        'template to be edited',
+        {},
+        ['First New Title'],
+        expectedContext,
+        'Entity'
+      );
+    });
+
     it('should assign a safe property name based on the label ', done => {
       const newTemplate = {
         name: 'created_template',
@@ -318,7 +353,7 @@ describe('templates', () => {
                 'label 1': 'new label 1',
                 'created template': 'new title',
               },
-              ['label 2'],
+              ['label 2', 'Title'],
               {
                 'new label 1': 'new label 1',
                 'label 3': 'label 3',
