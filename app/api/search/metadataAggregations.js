@@ -241,7 +241,47 @@ export const publishingStatusAgreggations = baseQuery => {
       )
   );
 
-  console.log(JSON.stringify(baseFilters, null, 2));
+  const user = permissionsContext.getUserInContext();
+  if (user && !['admin', 'editor'].includes(user.role)) {
+    baseFilters.push({
+      bool: {
+        should: [
+          {
+            term: {
+              published: true,
+            },
+          },
+          {
+            bool: {
+              must: [
+                {
+                  term: {
+                    published: false,
+                  },
+                },
+                {
+                  nested: {
+                    path: 'permissions',
+                    query: {
+                      bool: {
+                        must: [
+                          {
+                            terms: {
+                              'permissions.refId': permissionsContext.permissionsRefIds(),
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  }
 
   return {
     filter: {

@@ -128,6 +128,7 @@ describe('static requestState()', () => {
         sort: 'creationDate',
         view: undefined,
         aggregatePermissionsByLevel: true,
+        aggregatePublishingStatus: true,
       });
 
       query = processQuery(params, globalResources, 'uploads');

@@ -422,6 +422,7 @@ export default function() {
         );
         baseQuery.query.bool.filter[0].bool.should.push(permissionsFilter);
       }
+
       return this;
     },
   };
