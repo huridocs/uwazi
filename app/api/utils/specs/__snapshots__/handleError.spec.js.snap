@@ -6,13 +6,14 @@ Object {
   "message": "test error",
   "prettyMessage": "
 test error",
+  "requestId": "1234",
 }
 `;
 
 exports[`handleError when the body contains the user and password should not show them in the log 1`] = `
 Array [
   Array [
-    "
+    "requestId: 1234 
 body: {
  \\"username\\": \\"########\\",
  \\"password\\": \\"########\\"

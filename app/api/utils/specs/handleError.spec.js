@@ -3,22 +3,29 @@ import { createError } from 'api/utils';
 import debugLog from 'api/log/debugLog';
 
 import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
+import { appContext } from 'api/utils/AppContext';
 import handleError from '../handleError';
 
+jest.mock('api/utils/AppContext');
+
 describe('handleError', () => {
+  const contextRequestId = '1234';
   beforeEach(() => {
     spyOn(errorLog, 'error');
     spyOn(debugLog, 'debug');
+    spyOn(appContext, 'get').and.returnValue(contextRequestId);
   });
 
   describe('when error is instance of Error', () => {
-    it('should return the error with 500 code and not include the original error', () => {
+    it('should return the error with 500 code without the original error and error stack', () => {
       const errorInstance = new Error('error');
       const error = handleError(errorInstance);
 
       expect(error.code).toBe(500);
-      expect(error.message).toEqual(errorInstance.stack);
-      expect(error.original).not.toBeDefined();
+      expect(error.requestId).toBe(contextRequestId);
+      expect(error.prettyMessage).toEqual('error');
+      expect(error.message).toBeUndefined();
+      expect(error.original).toBeUndefined();
     });
 
     it('should correctly log the original error for ElasticSearch exceptions', () => {
@@ -26,7 +33,7 @@ describe('handleError', () => {
       handleError(error);
 
       expect(errorLog.error).toHaveBeenCalledWith(
-        `\n${error.stack}
+        `requestId: ${contextRequestId} \n${error.stack}
 original error: {
  "name": "ConnectionError",
  "meta": {
@@ -37,11 +44,14 @@ original error: {
       );
     });
 
-    it('should log the error', () => {
+    it('should log the error with the requestId', () => {
       const error = new Error('error');
       handleError(error);
 
-      expect(errorLog.error).toHaveBeenCalledWith(`\n${error.stack}\noriginal error: {}`, {});
+      expect(errorLog.error).toHaveBeenCalledWith(
+        `requestId: ${contextRequestId} \n${error.stack}\noriginal error: {}`,
+        {}
+      );
     });
   });
 
@@ -56,7 +66,10 @@ original error: {
       expect(errorLog.error).not.toHaveBeenCalled();
 
       handleError(createError('test error'));
-      expect(errorLog.error).toHaveBeenCalledWith('\ntest error', {});
+      expect(errorLog.error).toHaveBeenCalledWith(
+        `requestId: ${contextRequestId} \ntest error`,
+        {}
+      );
     });
   });
 
@@ -80,7 +93,8 @@ original error: {
     it('should return generate a new error with code 500', () => {
       const error = handleError();
       expect(error.code).toBe(500);
-      expect(error.message).toMatch(/undefined error/i);
+      expect(error.prettyMessage).toMatch(/Unexpected error has occurred/i);
+      expect(error.requestId).toBe(contextRequestId);
     });
   });
 

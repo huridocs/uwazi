@@ -3,6 +3,8 @@ import { Request, NextFunction, Response } from 'express';
 import middleware from '../languageMiddleware';
 import fixtures from './languageFixtures.js';
 
+jest.mock('api/utils/AppContext');
+
 describe('languageMiddleware', () => {
   let req: Request;
   const res: Response = <Response>{};

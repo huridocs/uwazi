@@ -1,6 +1,8 @@
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import Ajv from 'ajv';
+import { createError } from 'api/utils/index';
+import { appContext } from 'api/utils/AppContext';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -97,33 +99,43 @@ const getOriginalError = (data, error) => {
 
 const sendLog = (data, error, errorOptions) => {
   const originalError = getOriginalError(data, error);
+  const prettyMessage = `requestId: ${data.requestId} ${data.prettyMessage}`;
   if (data.code === 500) {
     errorLog.error(
-      originalError ? appendOriginalError(data.prettyMessage, originalError) : data.prettyMessage,
+      originalError ? appendOriginalError(prettyMessage, originalError) : prettyMessage,
       errorOptions
     );
   } else if (data.code === 400) {
     debugLog.debug(
-      originalError ? appendOriginalError(data.prettyMessage, originalError) : data.prettyMessage,
+      originalError ? appendOriginalError(prettyMessage, originalError) : prettyMessage,
       errorOptions
     );
   }
 };
 
 export default (_error, { req = undefined, uncaught = false } = {}) => {
-  const error = _error || new Error('undefined error occurred');
-  const responseToClientError = error.json;
+  const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
 
+  const error = errorData || new Error('Unexpected error has occurred');
+  const responseToClientError = error.json;
   if (responseToClientError) {
     return false;
   }
 
   const result = prettifyError(error, { req, uncaught });
+  result.requestId = appContext.get('requestId');
 
   const errorOptions = req ? { shouldBeMultiTenantContext: true } : {};
   sendLog(result, error, errorOptions);
 
   delete result.original;
+
+  if (error instanceof Error) {
+    result.prettyMessage = error.message;
+    delete result.message;
+  } else {
+    result.prettyMessage = result.prettyMessage || error.message;
+  }
 
   return result;
 };
