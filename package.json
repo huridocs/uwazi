@@ -130,7 +130,7 @@
     "otplib": "^11.0.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "2.1.266",
+    "pdfjs-dist": "2.3.200",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.0",
     "qs": "^6.10.1",
