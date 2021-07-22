@@ -221,7 +221,9 @@ export default function() {
     },
 
     publishingStatusAggregations() {
-      baseQuery.aggregations.all.aggregations._published = publishingStatusAgreggations(baseQuery);
+      if (permissionsContext.getUserInContext()) {
+        baseQuery.aggregations.all.aggregations._published = publishingStatusAgreggations(baseQuery);
+      }
       return this;
     },
 

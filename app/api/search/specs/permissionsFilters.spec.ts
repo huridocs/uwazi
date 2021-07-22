@@ -181,27 +181,28 @@ describe('Permissions filters', () => {
         user
       );
       const aggs = response.aggregations as Aggregations;
-      return aggs.all._published.buckets;
+      return aggs.all._published?.buckets;
     };
 
     it.each`
-      user                | unpublished | includeUnpublished | published | restricted
-      ${users.adminUser}  | ${false}    | ${false}           | ${2}      | ${4}
-      ${users.adminUser}  | ${true}     | ${false}           | ${2}      | ${4}
-      ${users.editorUser} | ${true}     | ${false}           | ${2}      | ${4}
-      ${users.user1}      | ${false}    | ${false}           | ${2}      | ${3}
-      ${users.user1}      | ${true}     | ${false}           | ${2}      | ${3}
-      ${users.user1}      | ${false}    | ${true}            | ${2}      | ${3}
-      ${user3WithGroups}  | ${false}    | ${false}           | ${2}      | ${4}
-      ${user3WithGroups}  | ${true}     | ${false}           | ${2}      | ${4}
-      ${user3WithGroups}  | ${false}    | ${true}            | ${2}      | ${4}
+      user                | unpublished | includeUnpublished | published    | restricted
+      ${users.adminUser}  | ${false}    | ${false}           | ${2}         | ${4}
+      ${users.adminUser}  | ${true}     | ${false}           | ${2}         | ${4}
+      ${users.editorUser} | ${true}     | ${false}           | ${2}         | ${4}
+      ${users.user1}      | ${false}    | ${false}           | ${2}         | ${3}
+      ${users.user1}      | ${true}     | ${false}           | ${2}         | ${3}
+      ${users.user1}      | ${false}    | ${true}            | ${2}         | ${3}
+      ${user3WithGroups}  | ${false}    | ${false}           | ${2}         | ${4}
+      ${user3WithGroups}  | ${true}     | ${false}           | ${2}         | ${4}
+      ${user3WithGroups}  | ${false}    | ${true}            | ${2}         | ${4}
+      ${undefined}        | ${false}    | ${false}           | ${undefined} | ${undefined}
     `(
       'should return aggregations of publishing status filtered per current user',
       async ({ user, unpublished, includeUnpublished, published, restricted }) => {
         userFactory.mock(user);
         buckets = await performSearch(user, { unpublished, includeUnpublished });
-        expect(buckets.find(a => a.key === 'true')?.filtered.doc_count).toBe(published);
-        expect(buckets.find(a => a.key === 'false')?.filtered.doc_count).toBe(restricted);
+        expect(buckets?.find(a => a.key === 'true')?.filtered.doc_count).toBe(published);
+        expect(buckets?.find(a => a.key === 'false')?.filtered.doc_count).toBe(restricted);
       }
     );
   });
