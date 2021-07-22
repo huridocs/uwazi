@@ -128,15 +128,19 @@ describe('Share entities', () => {
       '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select'
     );
     await expect(page).toClick('button', { text: 'Close' });
+    await expect(page).toClick(
+      'aside.metadata-sidepanel.is-active > div.sidepanel-header > button.close-modal'
+    );
   });
 
   it('should not be able to share entity as a collaborator', async () => {
-    await goToRestrictedEntities();
     await expect(page).toClick('button', { text: 'Create entity' });
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('div.alert', { text: 'Entity created' });
     await refreshIndex();
+    await goToRestrictedEntities();
     await expect(page).toClick('.item-document', {
       text: 'Test title',
     });
