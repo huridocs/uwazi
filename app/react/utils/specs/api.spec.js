@@ -46,7 +46,7 @@ describe('api', () => {
       .get(`${APIURL}unauthorised`, { status: 401, body: {} })
       .get(`${APIURL}notfound`, { status: 404, body: {} })
       .get(`${APIURL}conflict`, { status: 409, body: { error: 'conflict error' } })
-      .get(`${APIURL}error_url`, { status: 500, body: {} })
+      .get(`${APIURL}error_url`, { status: 500, body: { requestId: '1234' } })
       .get(`${APIURL}network_error`, {
         throws: new TypeError('Failed to fetch'),
       })
@@ -219,7 +219,9 @@ describe('api', () => {
 
     it('should notify the user', async () => {
       await testErrorHandling('error_url', () => {
-        testNotificationDisplayed('An error has occurred');
+        testNotificationDisplayed(
+          'An error has occurred, it has been logged with request id #1234.'
+        );
       });
     });
 
