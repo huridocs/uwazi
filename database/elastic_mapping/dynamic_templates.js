@@ -70,6 +70,15 @@ const dynamicTemplates = [
     },
   },
   {
+    unmapped_objects: {
+      match: '*',
+      match_mapping_type: 'object',
+      mapping: {
+        enabled: false,
+      },
+    },
+  },
+  {
     unmapped_fields: {
       match: '*',
       mapping: {

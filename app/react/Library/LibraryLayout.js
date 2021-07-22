@@ -16,9 +16,6 @@ import { QuickLabelHeader } from './components/QuickLabelHeader';
 
 export class LibraryLayoutBase extends Component {
   render() {
-    if (blankState()) {
-      return <Welcome />;
-    }
     const { className, children, quickLabelThesaurus, sidePanelMode, noScrollable } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
@@ -31,6 +28,7 @@ export class LibraryLayoutBase extends Component {
         <Helmet title={t('System', 'Library', null, false)} />
         {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass}>
+          {blankState() && <Welcome />}
           <main className={`${className}`}>{children}</main>
           <LibraryFilters storeKey="library" sidePanelMode={sidePanelMode} />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
