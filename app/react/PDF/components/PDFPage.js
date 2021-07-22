@@ -114,6 +114,7 @@ class PDFPage extends Component {
           scale,
           defaultViewport: page.getViewport({ scale }),
           enhanceTextSelection: true,
+          textLayerMode:2,
           textLayerFactory,
         });
 
