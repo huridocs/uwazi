@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
 import * as types from 'app/Library/actions/actionTypes';
 import qs from 'qs';
 import { notificationActions } from 'app/Notifications';

@@ -38,7 +38,7 @@ const LibrarySidePanelButtonsComponent = ({
         </span>
       </button>
     </NeedAuthorization>
-    <NeedAuthorization>
+    <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
       <PDFUploadButton storeKey={storeKey} />
     </NeedAuthorization>
     <Export storeKey={storeKey} />

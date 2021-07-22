@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 
