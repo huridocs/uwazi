@@ -26,7 +26,8 @@ const joiPrettifier = (error, req) => {
 
   let errorMessage = `${url}${body}${query}${errorString}`;
 
-  if (errorMessage.match(/^[{}\n]+$/g)) {
+  //if the resulting message is empty, or meaningless combination of characters ('{}')
+  if (errorMessage.match(/^[{}\s]*$/g)) {
     errorMessage = JSON.stringify(error, null, 2);
   }
 
