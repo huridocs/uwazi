@@ -40,9 +40,10 @@ import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
+import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import React from 'react';
-import { IndexRoute, Route } from 'react-router';
 
+import { IndexRoute, Route } from 'react-router';
 import { UserManagement } from 'app/Users/UserManagement';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
@@ -178,7 +179,8 @@ const routes = (
       component={SemanticSearchResultsView}
       onEnter={onEnter}
     />
-    <Route path="404" component={NoMatch} />
+    <Route path="error/:errorCode" component={GeneralError} />
+    <Route path="404" component={GeneralError} />
   </Route>
 );
 

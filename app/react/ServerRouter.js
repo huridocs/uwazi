@@ -88,7 +88,8 @@ function respondError(res, error, req) {
   handleError(error, { req });
   res.status(error.status || 500);
   if (error.json) {
-    res.send(`<pre>${error.json.prettyMessage}</pre>`);
+    const requestId = error.json.requestId || '';
+    res.redirect(`/error/${error.status}?requestId=${requestId}`);
   } else {
     res.send(error.message);
   }
