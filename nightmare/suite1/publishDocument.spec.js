@@ -4,6 +4,7 @@ import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
 import { loginAsAdminAndViewRestrictedEntities } from '../helpers/commonTests.js';
+import config from '../helpers/config';
 
 const nightmare = createNightmare();
 
@@ -68,6 +69,7 @@ describe('PublishDocument', () => {
       const title = 'Wolverine';
 
       nightmare
+        .goto(config.url)
         .waitForTheEntityToBeIndexed()
         .click(selectors.navigation.libraryNavButton)
         .waitForTheEntityToBeIndexed()
