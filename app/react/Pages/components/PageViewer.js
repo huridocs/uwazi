@@ -8,6 +8,8 @@ import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
 import MDComponents from 'app/Markdown/components';
 import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
+import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { getRenderError } from 'app/App/ErrorHandling/ErrorUtils';
 import Script from './Script';
@@ -15,6 +17,16 @@ import Script from './Script';
 const { Context } = MDComponents;
 
 class PageViewer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { customPageError: null };
+    this.warningPageError = this.warningPageError.bind(this);
+  }
+
+  warningPageError(error) {
+    this.setState({ customPageError: error });
+  }
+
   render() {
     const { page, itemLists, datasets } = this.props;
     const lists = itemLists.toJS();
@@ -30,6 +42,15 @@ class PageViewer extends Component {
           <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
           <main className="page-viewer document-viewer">
             <div className="main-wrapper">
+              {this.state.customPageError && (
+                <div className="alert alert-danger">
+                  <Icon icon="exclamation-triangle" />
+                  <Translate>
+                    Unexpected error on this custom page, it might not work properly
+                  </Translate>
+                  <Icon icon="times" onClick={() => this.setState({ customPageError: null })} />
+                </div>
+              )}
               <Context.Provider value={datasets}>
                 <ErrorBoundary>
                   <MarkdownViewer html markdown={originalText} lists={lists} />
@@ -38,7 +59,9 @@ class PageViewer extends Component {
               <Footer />
             </div>
           </main>
-          <Script scriptRendered={scriptRendered}>{scriptCode}</Script>
+          <Script scriptRendered={scriptRendered} onError={this.warningPageError}>
+            {scriptCode}
+          </Script>
         </div>
       );
     }

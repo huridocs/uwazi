@@ -13,6 +13,7 @@ class Script extends Component {
 
   componentDidMount() {
     this.appendScript();
+    window.onerror = this.props.onError;
   }
 
   componentDidUpdate(prevProps) {
@@ -61,6 +62,7 @@ Script.propTypes = {
   children: PropTypes.string,
   scriptRendered: PropTypes.bool,
   dispatch: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired,
 };
 
 const container = connect()(Script);
