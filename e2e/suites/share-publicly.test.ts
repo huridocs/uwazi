@@ -110,38 +110,45 @@ describe('Share entities', () => {
     });
   });
 
-  it('should not be able to unshare entities publicly as a collaborator', async () => {
-    await logout();
-    await login('colla', 'borator');
-    await disableTransitions();
-    await page.waitFor('.item-document');
-    await expect(page).toClick('.item-document', {
-      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+  describe('as a collaborator', () => {
+    it('should not be able to unshare entities publicly', async () => {
+      await logout();
+      await login('colla', 'borator');
+      await disableTransitions();
+      await page.waitFor('.item-document');
+      await expect(page).toClick('.item-document', {
+        text:
+          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+      });
+      await page.waitForSelector('.share-btn');
+      await expect(page).toClick('button', { text: 'Share' });
+      await expect(page).not.toMatchElement(
+        '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select'
+      );
+      await expect(page).toClick('button', { text: 'Close' });
+      await expect(page).toClick(
+        'aside.metadata-sidepanel.is-active > div.sidepanel-header > button.close-modal'
+      );
     });
-    await page.waitForSelector('.share-btn');
-    await expect(page).toClick('button', { text: 'Share' });
-    await expect(page).not.toMatchElement(
-      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select'
-    );
-    await expect(page).toClick('button', { text: 'Close' });
-    await expect(page).toClick(
-      'aside.metadata-sidepanel.is-active > div.sidepanel-header > button.close-modal'
-    );
-  });
 
-  it('should not be able to share entity as a collaborator', async () => {
-    await expect(page).toClick('button', { text: 'Create entity' });
-    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
-    await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert', { text: 'Entity created' });
-    await refreshIndex();
-    await goToRestrictedEntities();
-    await expect(page).toClick('.item-document', {
-      text: 'Test title',
+    it('should create an entity', async () => {
+      await expect(page).toClick('button', { text: 'Create entity' });
+      await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
+      await expect(page).toMatchElement('button', { text: 'Save' });
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('div.alert', { text: 'Entity created' });
     });
-    await page.waitForSelector('.share-btn');
-    await expect(page).toClick('button', { text: 'Share' });
-    await selectLookupOption('', 'Public', false);
+
+    it('should not be able to share the entity', async () => {
+      await refreshIndex();
+      await goToRestrictedEntities();
+      await expect(page).toClick('.item-document', {
+        text: 'Test title',
+      });
+      await page.waitForSelector('.share-btn');
+      await expect(page).toClick('button', { text: 'Share' });
+      await selectLookupOption('', 'Public', false);
+    });
   });
 
   it('should show mixed access', async () => {
