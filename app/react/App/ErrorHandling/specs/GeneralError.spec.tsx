@@ -30,7 +30,7 @@ describe('General Error', () => {
           .props()
       ).toEqual({
         error: {
-          message: 'Something went wrong',
+          message: '',
           name: 'Error 500. Unexpected error',
           title: 'Unexpected error',
         },

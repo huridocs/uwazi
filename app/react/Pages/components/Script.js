@@ -62,7 +62,7 @@ Script.propTypes = {
   children: PropTypes.string,
   scriptRendered: PropTypes.bool,
   dispatch: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
+  onError: PropTypes.func,
 };
 
 const container = connect()(Script);
