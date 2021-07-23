@@ -124,8 +124,6 @@ Menu.propTypes = {
   location: PropTypes.object,
   librarySearch: PropTypes.object,
   libraryFilters: PropTypes.object,
-  uploadsSearch: PropTypes.object,
-  uploadsFilters: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,
