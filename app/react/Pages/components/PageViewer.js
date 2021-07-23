@@ -27,6 +27,16 @@ class PageViewer extends Component {
     this.setState({ customPageError: error });
   }
 
+  renderErrorWarning() {
+    return (
+      <div className="alert alert-danger">
+        <Icon icon="exclamation-triangle" />
+        <Translate>Unexpected error on this custom page, it might not work properly</Translate>
+        <Icon icon="times" onClick={() => this.setState({ customPageError: null })} />
+      </div>
+    );
+  }
+
   render() {
     const { page, itemLists, datasets } = this.props;
     const lists = itemLists.toJS();
@@ -36,36 +46,31 @@ class PageViewer extends Component {
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
     const renderError = getRenderError(this.props.error?.toJS());
-    if (!renderError.name) {
-      return (
-        <div className="row">
-          <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
-          <main className="page-viewer document-viewer">
-            <div className="main-wrapper">
-              {this.state.customPageError && (
-                <div className="alert alert-danger">
-                  <Icon icon="exclamation-triangle" />
-                  <Translate>
-                    Unexpected error on this custom page, it might not work properly
-                  </Translate>
-                  <Icon icon="times" onClick={() => this.setState({ customPageError: null })} />
-                </div>
-              )}
-              <Context.Provider value={datasets}>
-                <ErrorBoundary>
-                  <MarkdownViewer html markdown={originalText} lists={lists} />
-                </ErrorBoundary>
-              </Context.Provider>
-              <Footer />
-            </div>
-          </main>
-          <Script scriptRendered={scriptRendered} onError={this.warningPageError}>
-            {scriptCode}
-          </Script>
-        </div>
-      );
-    }
-    return <ErrorFallback error={renderError} />;
+
+    return (
+      <div className="row">
+        {!renderError.name && (
+          <>
+            <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
+            <main className="page-viewer document-viewer">
+              <div className="main-wrapper">
+                {this.state.customPageError && this.renderErrorWarning()}
+                <Context.Provider value={datasets}>
+                  <ErrorBoundary>
+                    <MarkdownViewer html markdown={originalText} lists={lists} />
+                  </ErrorBoundary>
+                </Context.Provider>
+                <Footer />
+              </div>
+            </main>
+            <Script scriptRendered={scriptRendered} onError={this.warningPageError}>
+              {scriptCode}
+            </Script>
+          </>
+        )}
+        {renderError.name && <ErrorFallback error={renderError} />}
+      </div>
+    );
   }
 }
 

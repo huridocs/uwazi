@@ -56,6 +56,7 @@ class Script extends Component {
 Script.defaultProps = {
   children: '',
   scriptRendered: null,
+  onError: () => {},
 };
 
 Script.propTypes = {

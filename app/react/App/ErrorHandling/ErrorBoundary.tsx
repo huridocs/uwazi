@@ -7,7 +7,6 @@ interface ErrorBoundaryProps {
 }
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryProps> {
-  
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { error: props.error, errorInfo: props.errorInfo };
@@ -22,7 +21,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryPro
 
   render() {
     if (this.state.error?.message) {
-      return (<ErrorFallback error = {this.state.error} errorInfo={this.state.errorInfo }/>)
+      return <ErrorFallback error={this.state.error} errorInfo={this.state.errorInfo} />;
     }
     return this.props.children;
   }

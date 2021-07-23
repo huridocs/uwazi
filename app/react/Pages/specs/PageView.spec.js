@@ -95,7 +95,7 @@ describe('PageView', () => {
       it('should render a fallback UI as error boundary', () => {
         const consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
         spyOn(console, 'error').and.callFake(consoleErrorSpy);
-        assetsUtilsSpy.and.returnValue(Promise.reject('error at rendering'));
+        assetsUtilsSpy.and.returnValue(Promise.reject(new Error('error at rendering')));
         component = mount(<PageView />, { context });
         const errorMessage = component
           .find(ErrorFallback)

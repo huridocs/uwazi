@@ -113,12 +113,26 @@ const sendLog = (data, error, errorOptions) => {
   }
 };
 
+function simplifyError(result, error) {
+  const simplifiedError = { ...result };
+  delete simplifiedError.original;
+
+  if (error instanceof Error) {
+    simplifiedError.prettyMessage = error.message;
+    simplifiedError.error = error.message;
+    delete simplifiedError.message;
+  } else {
+    simplifiedError.prettyMessage = simplifiedError.prettyMessage || error.message;
+  }
+
+  return simplifiedError;
+}
+
 export default (_error, { req = undefined, uncaught = false } = {}) => {
   const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
 
   const error = errorData || new Error('Unexpected error has occurred');
-  const responseToClientError = error.json;
-  if (responseToClientError) {
+  if (error.json) {
     return false;
   }
 
@@ -128,17 +142,7 @@ export default (_error, { req = undefined, uncaught = false } = {}) => {
   const errorOptions = req ? { shouldBeMultiTenantContext: true } : {};
   sendLog(result, error, errorOptions);
 
-  delete result.original;
-
-  if (error instanceof Error) {
-    result.prettyMessage = error.message;
-    result.error = error.message;
-    delete result.message;
-  } else {
-    result.prettyMessage = result.prettyMessage || error.message;
-  }
-
-  return result;
+  return simplifyError(result, error);
 };
 
 export { prettifyError };
