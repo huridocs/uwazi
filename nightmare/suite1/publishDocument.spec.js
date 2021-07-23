@@ -64,13 +64,12 @@ describe('PublishDocument', () => {
   });
 
   describe('metadata editing', () => {
-    it('should select the correct entity', done => {
+    it('should select the correct entity', async done => {
       const title = 'Wolverine';
-
       nightmare
+        .click(selectors.libraryView.sidePanelCloseButton)
         .waitForTheEntityToBeIndexed()
-        .click(selectors.navigation.libraryNavButton)
-        .waitForTheEntityToBeIndexed()
+        .waitToClick(selectors.libraryView.restrictedEntitiesFilterSelector)
         .openDocumentFromLibrary(title)
         .waitForText(selectors.documentView.sidePanelTitle)
         .getInnerText(selectors.documentView.sidePanelTitle)
