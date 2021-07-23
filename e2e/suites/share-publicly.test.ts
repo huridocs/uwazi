@@ -1,9 +1,9 @@
 import insertFixtures from '../helpers/insertFixtures';
 import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
-import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
 import { expectDocumentCountAfterSearch, refreshIndex } from '../helpers/elastichelpers';
+import { createUser } from '../helpers/createUser';
 import {
   goToPublishedEntities,
   goToRestrictedEntities,
@@ -43,23 +43,19 @@ describe('Share entities', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
-    await page.goto(`${host}/settings/users`);
-    await disableTransitions();
   });
 
   afterAll(async () => {
     await logout();
   });
 
-  it('should create a colaborator in the shared User Group and share an entity', async () => {
-    await expect(page).toClick('button', { text: 'Add user' });
-    await expect(page).toFill('input[name=email]', 'rock@stone.com');
-    await expect(page).toFill('input[name=username]', 'colla');
-    await expect(page).toFill('input[name=password]', 'borator');
-    await expect(page).toClick('.multiselectItem-name', {
-      text: 'Asesores legales',
+  it('should create a colaborator in the shared User Group', async () => {
+    await createUser({
+      username: 'colla',
+      password: 'borator',
+      email: 'rock@stone.com',
+      group: 'Asesores legales',
     });
-    await expect(page).toClick('button', { text: 'Create User' });
   });
 
   it('should share an entity with the collaborator', async () => {
@@ -136,7 +132,6 @@ describe('Share entities', () => {
   it('should not be able to share entity as a collaborator', async () => {
     await expect(page).toClick('button', { text: 'Create entity' });
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
-    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert', { text: 'Entity created' });
     await refreshIndex();

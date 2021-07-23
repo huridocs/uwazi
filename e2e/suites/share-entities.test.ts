@@ -1,17 +1,16 @@
 import insertFixtures from '../helpers/insertFixtures';
 import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
-import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
 import { expectDocumentCountAfterSearch, refreshIndex } from '../helpers/elastichelpers';
 import { goToRestrictedEntities, goToPublishedEntities } from '../helpers/publishedFilter';
+import { createUser } from '../helpers/createUser';
 
 describe('Share entities', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
-    await page.goto(`${host}/settings/users`);
     await disableTransitions();
   });
 
@@ -38,12 +37,11 @@ describe('Share entities', () => {
   };
 
   it('should create a collaborator in the shared User Group', async () => {
-    await expect(page).toClick('button', { text: 'Add user' });
-    await expect(page).toFill('input[name=email]', 'rock@stone.com');
-    await expect(page).toFill('input[name=username]', 'colla');
-    await expect(page).toFill('input[name=password]', 'borator');
-    await expect(page).toClick('.multiselectItem-name', {
-      text: 'Asesores legales',
+    await createUser({
+      username: 'colla',
+      password: 'borator',
+      email: 'rock@stone.com',
+      group: 'Asesores legales',
     });
     await expect(page).toClick('button', { text: 'Create User' });
   });
