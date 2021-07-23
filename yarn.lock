@@ -10934,9 +10934,10 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-pdfjs-dist@2.1.266:
-  version "2.1.266"
-  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-2.1.266.tgz#cded02268b389559e807f410d2a729db62160026"
+pdfjs-dist@2.3.200:
+  version "2.3.200"
+  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-2.3.200.tgz#2920dc28ae7f2b8313cd6d6223c97ae85ac07eac"
+  integrity sha512-+8wBjU5h8LPZOIvR9X2uCrp/8xWQG1DRDKMLg5lzGN1qyIAZlYUxA0KQyy12Nw5jN7ozulC6v97PMaDcLgAcFg==
   dependencies:
     node-ensure "^0.0.0"
     worker-loader "^2.0.0"
@@ -11973,10 +11974,6 @@ react-onclickoutside@^6.9.0:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.9.0.tgz#a54bc317ae8cf6131a5d78acea55a11067f37a1f"
   integrity sha512-8ltIY3bC7oGhj2nPAvWOGi+xGFybPNhJM0V1H8hY/whNcXgmDeaeoCMPPd8VatrpTsUWjb/vGzrmu6SrXVty3A==
 
-react-pdf-handler@huridocs/react-pdf-renderer:
-  version "1.0.0"
-  resolved "https://codeload.github.com/huridocs/react-pdf-renderer/tar.gz/e563b6ae82f8ac148059083b12a0c065fb5a532b"
-
 react-player@^1.11.1:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/react-player/-/react-player-1.11.1.tgz#81d89151889b70b2d9cc2ed526fdb47fe636563c"
@@ -12090,6 +12087,11 @@ react-test-renderer@^16.0.0-0:
     prop-types "^15.6.2"
     react-is "^16.8.6"
     scheduler "^0.19.1"
+
+react-text-selection-handler@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-text-selection-handler/-/react-text-selection-handler-0.0.3.tgz#e55e079763b95612af8dd50ca7bba6fc59bf9f6a"
+  integrity sha512-K70sBt2t/1VR267QCgawwCqlnXvok5p79XSo5uKmobZBLSCZSE98yPVkdVSTKltRpoX3G1OvZn2jd5ozoYosYA==
 
 react-transition-group@^2.4.0:
   version "2.9.0"
