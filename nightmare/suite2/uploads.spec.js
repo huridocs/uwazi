@@ -9,7 +9,7 @@ const nightmare = createNightmare();
 
 const comicCharacter = '58ad7d240d44252fee4e61fd';
 
-describe('Uploads', () => {
+describe('Uploads (now restricted entities)', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
@@ -40,7 +40,7 @@ describe('Uploads', () => {
       const expectedTitle = 'Valid';
 
       nightmare
-        .upload('.upload-box input', `${__dirname}/test_files/valid.pdf`)
+        .upload('#pdf-upload-button', `${__dirname}/test_files/valid.pdf`)
         .waitForCardToBeCreated(expectedTitle)
         .waitForCardTemplate(selectors.libraryView.firstDocument, 'Test entity')
         .getResultsAsJson()
@@ -56,7 +56,7 @@ describe('Uploads', () => {
         const expectedTitle = 'Invalid';
 
         nightmare
-          .upload('.upload-box input', `${__dirname}/test_files/invalid.pdf`)
+          .upload('#pdf-upload-button', `${__dirname}/test_files/invalid.pdf`)
           .waitForCardToBeCreated(expectedTitle)
           .waitForCardStatus(selectors.libraryView.firstDocument, 'Conversion failed')
           .getResultsAsJson()
