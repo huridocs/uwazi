@@ -9,9 +9,11 @@ import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 import { t } from 'app/I18N';
-import { Icon } from 'UI';
 import { DocumentCounter } from 'app/Layout/DocumentCounter';
+import { Icon } from 'UI';
+import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
+import blankState from '../Library/helpers/blankState';
 
 class DocumentsList extends Component {
   constructor(props, context) {
@@ -146,6 +148,7 @@ class DocumentsList extends Component {
               </div>
             </NeedAuthorization>
           </div>
+          {blankState() && <Welcome />}
           {(() => {
             if (view !== 'graph') {
               return (
