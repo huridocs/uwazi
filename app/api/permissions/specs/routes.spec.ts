@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
+import testingDB from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
-import testingDB from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
@@ -122,7 +122,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on save');
+        expect(response.body.error).toContain('error on save');
       });
       it('should handle errors on PUT', async () => {
         spyOn(entitiesPermissions, 'get').and.throwError('error on get');
@@ -132,7 +132,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send({ sharedIds: ['sharedId1', 'sharedId2'] });
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on get');
+        expect(response.body.error).toContain('error on get');
       });
       it('should handle errors on collaborators search', async () => {
         spyOn(collaborators, 'search').and.throwError('error on get');
@@ -142,7 +142,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .query({ filterTerm: 'username' });
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on get');
+        expect(response.body.error).toContain('error on get');
       });
     });
 

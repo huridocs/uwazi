@@ -132,6 +132,7 @@ export default (_error, { req = undefined, uncaught = false } = {}) => {
 
   if (error instanceof Error) {
     result.prettyMessage = error.message;
+    result.error = error.message;
     delete result.message;
   } else {
     result.prettyMessage = result.prettyMessage || error.message;

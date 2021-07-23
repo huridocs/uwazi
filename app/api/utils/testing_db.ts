@@ -10,12 +10,14 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { appContext } from 'api/utils/AppContext';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 
-mongoose.Promise = Promise;
-mongoose.set('useFindAndModify', false);
+jest.mock('api/utils/AppContext');
 
+mongoose.set('useFindAndModify', false);
+mongoose.Promise = Promise;
 let connected = false;
 let mongod: MongoMemoryServer;
 let mongodb: Db;
@@ -59,6 +61,9 @@ const initMongoServer = async () => {
   mongooseConnection = await DB.connect(uri);
   connected = true;
 };
+const appContextTestValues: { [k: string]: any } = {
+  requestId: '1234',
+};
 
 const testingDB: {
   mongodb: Db | null;
@@ -68,10 +73,12 @@ const testingDB: {
   clear: (collections?: string[] | undefined) => Promise<void>;
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
   dbName: string;
+  appContextSpy: jest.SpyInstance | null;
   setupFixturesAndContext: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
 } = {
   mongodb: null,
   dbName: '',
+  appContextSpy: null,
 
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
@@ -102,6 +109,7 @@ const testingDB: {
       await mongod.stop();
     }
     testingTenants.restoreCurrentFn();
+    this.appContextSpy?.mockRestore();
   },
 
   id(id = undefined) {
@@ -116,6 +124,10 @@ const testingDB: {
     await this.connect();
     await fixturer.clearAllAndLoad(mongodb, fixtures);
     new UserInContextMockFactory().mockEditorUser();
+
+    this.appContextSpy = jest
+      .spyOn(appContext, 'get')
+      .mockImplementation((key: string) => appContextTestValues[key]);
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
       await elasticTesting.reindex();

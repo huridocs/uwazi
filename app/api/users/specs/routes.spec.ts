@@ -15,6 +15,7 @@ jest.mock(
     next();
   }
 );
+jest.mock('api/utils/AppContext');
 
 const invalidUserProperties = [
   { field: 'username', value: undefined, dataPath: '.body', keyword: 'required' },
@@ -173,7 +174,7 @@ describe('users routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send({ email: 'recover@me.com' });
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on recoverPassword');
+        expect(response.body.prettyMessage).toContain('error on recoverPassword');
       });
     });
 

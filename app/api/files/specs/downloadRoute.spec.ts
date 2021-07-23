@@ -15,6 +15,7 @@ jest.mock(
     next();
   }
 );
+jest.mock('api/utils/AppContext');
 
 describe('files routes download', () => {
   const app: Application = setUpApp(uploadRoutes);

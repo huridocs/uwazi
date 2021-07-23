@@ -21,7 +21,7 @@ describe('usergroups routes', () => {
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
 
   beforeAll(async () => {
-    await testingDB.connect();
+    await testingDB.setupFixturesAndContext([]);
   });
 
   afterAll(async () => {
@@ -196,7 +196,7 @@ describe('usergroups routes', () => {
         spyOn(userGroups, 'save').and.throwError('unhandled error');
         const response: request.Response = await endpointCall();
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: unhandled error');
+        expect(response.body.prettyMessage).toContain('unhandled error');
       }
     );
   });

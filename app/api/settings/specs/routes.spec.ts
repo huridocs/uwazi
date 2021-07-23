@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { NextFunction, Application } from 'express';
+import { testingDB } from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
-import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import settings from 'api/settings';
 import templates from 'api/templates';
@@ -25,10 +25,10 @@ describe('Settings routes', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     const elasticIndex = 'settings_index';
-    await db.clearAllAndLoad(fixtures, elasticIndex);
+    await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingDB.disconnect());
 
   describe('GET', () => {
     it('should respond with settings', async () => {

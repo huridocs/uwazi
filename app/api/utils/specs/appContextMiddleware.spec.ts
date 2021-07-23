@@ -38,6 +38,6 @@ describe('appcontext middleware', () => {
 
   it('should set a requestId number as part of the context', async () => {
     const response = await request(app).get('/api/requestId');
-    expect(response.text).toEqual(expect.stringMatching(/^[0-9-]{4}$/));
+    expect(response.text).toEqual(expect.stringMatching(/^[0-9]{1,4}$/));
   });
 });

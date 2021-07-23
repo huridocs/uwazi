@@ -1,9 +1,8 @@
-import { Application } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
-
-import errorLog from 'api/log/errorLog';
+import { Application } from 'express';
 import { testingDB } from 'api/utils/testing_db';
+import { setUpApp } from 'api/utils/testingRoutes';
+import errorLog from 'api/log/errorLog';
 import { elastic } from 'api/search';
 
 import { searchRoutes } from '../routes';

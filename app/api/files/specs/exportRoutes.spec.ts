@@ -8,11 +8,10 @@ import * as filesystem from 'api/files/filesystem';
 import { NextFunction, Request, Response } from 'express';
 import authMiddleware from 'api/auth/authMiddleware';
 
+import { User } from 'api/users/usersModel';
 import routes from '../exportRoutes';
-import { User } from '../../users/usersModel';
 
 jest.mock('api/csv/csvExporter');
-
 jest.mock('../../auth/authMiddleware.ts');
 
 const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;

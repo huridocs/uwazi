@@ -19,7 +19,7 @@ describe('relationships routes', () => {
 
   beforeEach(async () => {
     spyOn(errorLog, 'error');
-    await testingDB.clearAllAndLoad({
+    await testingDB.setupFixturesAndContext({
       settings: [{ languages: [{ key: 'en', default: true }] }],
     });
   });
@@ -32,7 +32,7 @@ describe('relationships routes', () => {
         .post('/api/relationships/bulk')
         .send({ save: [{ notAllowedProperty: 'test' }], delete: [] });
 
-      expect(body.error).toBe('validation failed');
+      expect(body.prettyMessage).toBe('validation failed');
     });
 
     it('should throw an especial 500 error when selectionRectangles is sent empty', async () => {

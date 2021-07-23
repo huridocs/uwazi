@@ -1,10 +1,10 @@
-import { TenantsModel } from '../tenantsModel';
 import { config } from 'api/config';
 import { DB } from 'api/odm/DB';
 import { Db, ObjectID } from 'mongodb';
 import testingDB from 'api/utils/testing_db';
 import { Model } from 'mongoose';
 import waitForExpect from 'wait-for-expect';
+import { TenantsModel } from '../tenantsModel';
 
 describe('tenantsModel', () => {
   let db: Db;

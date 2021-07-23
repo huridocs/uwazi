@@ -16,6 +16,8 @@ import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
+jest.mock('api/utils/AppContext');
+
 describe('files routes', () => {
   const app: Application = setUpApp(
     uploadRoutes,
@@ -30,7 +32,7 @@ describe('files routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => db.disconnect());
