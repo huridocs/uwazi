@@ -43,7 +43,6 @@ describe('Share entities', () => {
       email: 'rock@stone.com',
       group: 'Asesores legales',
     });
-    await expect(page).toClick('button', { text: 'Create User' });
   });
 
   // eslint-disable-next-line max-statements
