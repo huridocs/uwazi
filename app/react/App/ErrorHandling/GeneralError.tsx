@@ -3,17 +3,20 @@ import RouteHandler from 'app/App/RouteHandler';
 import Helmet from 'react-helmet';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 
-const handledErrors: { [k: string]: Error } = {
+const handledErrors: { [k: string]: Error & { title: string } } = {
   400: {
+    title: 'Bad Request',
     name: 'Bad Request',
     message: 'Error 400. The request could not be processed.',
   },
   404: {
+    title: 'Not Found',
     name: 'Not Found',
     message: '404',
   },
   500: {
-    name: 'Unexpected error',
+    title: 'Unexpected error',
+    name: 'Error 500. Unexpected error',
     message: 'Something went wrong',
   },
 };
@@ -26,7 +29,7 @@ class GeneralError extends RouteHandler {
     const error = handledErrors[code] || handledErrors['404'];
     return (
       <div>
-        <Helmet title={error.name} />
+        <Helmet title={error.title} />
         <ErrorFallback error={error} />
         {safeRequestId && <span>Request id #{safeRequestId}</span>}
       </div>

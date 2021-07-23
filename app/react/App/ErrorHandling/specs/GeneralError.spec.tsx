@@ -28,7 +28,13 @@ describe('General Error', () => {
           .find(ErrorFallback)
           .at(0)
           .props()
-      ).toEqual({ error: { message: 'Something went wrong', name: 'Unexpected error' } });
+      ).toEqual({
+        error: {
+          message: 'Something went wrong',
+          name: 'Error 500. Unexpected error',
+          title: 'Unexpected error',
+        },
+      });
     });
 
     it('should show the request Id if it is defined', () => {

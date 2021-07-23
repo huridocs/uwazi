@@ -24,7 +24,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryPro
     if (this.state.error?.message) {
       return (<ErrorFallback error = {this.state.error} errorInfo={this.state.errorInfo }/>)
     }
-    return this.props.children || <span>nada</span>;
+    return this.props.children;
   }
 }
 

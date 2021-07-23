@@ -86,13 +86,10 @@ function handle404(res) {
 
 function respondError(res, error, req) {
   handleError(error, { req });
-  res.status(error.status || 500);
-  if (error.json) {
-    const requestId = error.json.requestId || '';
-    res.redirect(`/error/${error.status}?requestId=${requestId}`);
-  } else {
-    res.send(error.message);
-  }
+  const code = error.status || 500;
+  res.status(code);
+  const requestId = error.json?.requestId || '';
+  res.redirect(`/error/${code}?requestId=${requestId}`);
 }
 
 function handleRedirect(res, redirectLocation) {
