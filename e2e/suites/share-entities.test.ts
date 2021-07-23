@@ -3,7 +3,7 @@ import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
 import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
-import { expectDocumentCountAfterSearch } from '../helpers/elastichelpers';
+import { expectDocumentCountAfterSearch, refreshIndex } from '../helpers/elastichelpers';
 import { goToRestrictedEntities, goToPublishedEntities } from '../helpers/publishedFilter';
 
 describe('Share entities', () => {
@@ -168,6 +168,7 @@ describe('Share entities', () => {
     );
     await expect(page).toClick('button', { text: 'Save changes' });
     await page.waitForSelector('.share-modal', { hidden: true });
+    await refreshIndex();
   });
 
   const checkCanEdit = async (docSelector: string, can = true) => {
@@ -189,9 +190,8 @@ describe('Share entities', () => {
   it('should be able to see and edit entities as a collaborator', async () => {
     await logout();
     await login('colla', 'borator');
-    await disableTransitions();
     await goToRestrictedEntities();
-    await page.waitFor('.item-document');
+    await expectDocumentCountAfterSearch(page, 3);
     const entities = await page.$$('.item-document');
     expect(entities.length).toBe(3);
     await checkCanEdit(titleEntity1, false);
@@ -221,7 +221,6 @@ describe('Share entities', () => {
       '"Resolución de la Corte IDH."'
     );
     await expect(page).toClick('[aria-label="Search button"]');
-    await expectDocumentCountAfterSearch(page, 1);
     await expect(page).toMatchElement('.item-document .item-info > .item-name > span', {
       text: titlePublic1,
     });
