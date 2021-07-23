@@ -17,7 +17,7 @@ const handledErrors: { [k: string]: Error & { title: string } } = {
   500: {
     title: 'Unexpected error',
     name: 'Error 500. Unexpected error',
-    message: 'Something went wrong',
+    message: '',
   },
 };
 
