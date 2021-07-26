@@ -4,7 +4,7 @@ import debugLog from 'api/log/debugLog';
 
 import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
 import { appContext } from 'api/utils/AppContext';
-import handleError from '../handleError';
+import handleError, { prettifyError } from '../handleError';
 
 jest.mock('api/utils/AppContext');
 
@@ -174,6 +174,22 @@ original error: {
       expect(error.code).toBe(400);
       const expectedPrettymessage = 'hello\na property: an error';
       expect(error.prettyMessage).toEqual(expectedPrettymessage);
+    });
+  });
+});
+
+describe('prettifyError', () => {
+  describe('when the error does not fall into any other category, and the resulting message would be empty', () => {
+    it('should return JSON representation of the original error object as a message.', () => {
+      const prettied = prettifyError({
+        json: {},
+        status: '404',
+        headers: 'some_headers',
+      });
+
+      expect(prettied.prettyMessage).toBe(
+        '{\n  "json": {},\n  "status": "404",\n  "headers": "some_headers"\n}'
+      );
     });
   });
 });
