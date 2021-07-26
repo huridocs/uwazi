@@ -6,29 +6,27 @@ interface ErrorFallbackProps {
   error: RequestError;
   errorInfo?: ErrorInfo;
 }
-export const ErrorFallback = (props: ErrorFallbackProps) => (
-  <>
-    <div className="error-fallback-ui">
-      <div className="message">
-        <p className="error-message-xxl">
-          {props.error.summary || <Translate>Well, this is awkward...</Translate>}
-        </p>
-        <p className="error-message-lg">
-          {props.error.name || <Translate>Something went wrong</Translate>}
-        </p>
-        <p className="error-message-lg">
-          <Translate>Please contact an admin for details.</Translate>
-        </p>
-        {props.error.code === '500' && props.error.requestId && (
-          <p className="error-message-sm">Request id #{props.error.requestId}</p>
-        )}
-        {(props.error.stack || props.error.message) && (
-          <details className="error-details">
-            {props.errorInfo?.componentStack || props.error.message}
-          </details>
-        )}
+export const ErrorFallback = (props: ErrorFallbackProps) => {
+  const showRequestId = props.error.code === '500' && props.error.requestId;
+  const errorDetails = props.errorInfo?.componentStack || props.error.message;
+  return (
+    <>
+      <div className="error-fallback-ui">
+        <div className="message">
+          <p className="error-message-xxl">
+            {props.error.summary || <Translate>Well, this is awkward...</Translate>}
+          </p>
+          <p className="error-message-lg">
+            {props.error.name || <Translate>Something went wrong</Translate>}
+          </p>
+          <p>
+            <Translate>Please contact an admin for details.</Translate>
+          </p>
+          {showRequestId && <p className="error-message-sm">Request id #{props.error.requestId}</p>}
+          {errorDetails && <details className="error-details">{errorDetails}</details>}
+        </div>
+        {props.error.code && <span className="error-code">{props.error.code}</span>}
       </div>
-      {props.error.code && <span className="error-code">{props.error.code}</span>}
-    </div>
-  </>
-);
+    </>
+  );
+};
