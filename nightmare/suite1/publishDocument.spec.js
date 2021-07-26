@@ -49,7 +49,7 @@ describe('PublishDocument', () => {
 
   it('should fill a document metadata and publish it', done => {
     nightmare
-      .click(selectors.libraryView.librarySecondDocument)
+      .waitToClick(selectors.libraryView.librarySecondDocument)
       .waitToClick(selectors.libraryView.editEntityButton)
       .clearInput(selectors.doc.form.title)
       .write(selectors.doc.form.title, 'Wolverine')
