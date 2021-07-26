@@ -70,10 +70,10 @@ export class Menu extends Component {
               <I18NLink
                 to={this.libraryUrl()}
                 className="menuNav-btn btn btn-default public-documents"
-                aria-label={t('System', 'Public entities', null, false)}
+                aria-label={t('System', 'Library', null, false)}
               >
                 <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
-                <span className="tab-link-tooltip">{t('System', 'Public entities')}</span>
+                <span className="tab-link-tooltip">{t('System', 'Library')}</span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
