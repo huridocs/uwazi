@@ -3,7 +3,7 @@
 .error-fallback-ui {
   height: calc(100% - 200px);
   .message {
-    position: fixed;
+    position: relative;
     left: 15em;
     top: 200px;
     max-width: 80%;

@@ -11,7 +11,7 @@ export const ErrorFallback = (props: ErrorFallbackProps) => (
     <div className="error-fallback-ui">
       <div className="message">
         <p className="error-message-xxl">
-          {props.error.title || <Translate>Well, this is awkward...</Translate>}
+          {props.error.summary || <Translate>Well, this is awkward...</Translate>}
         </p>
         <p className="error-message-lg">
           {props.error.name || <Translate>Something went wrong</Translate>}

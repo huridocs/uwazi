@@ -1,5 +1,6 @@
 export interface RequestError extends Error {
   title?: string;
+  summary?: string;
   requestId?: string;
   code?: string;
 }

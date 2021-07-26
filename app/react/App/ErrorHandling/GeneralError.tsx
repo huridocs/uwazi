@@ -8,18 +8,21 @@ import Footer from 'app/App/Footer';
 const handledErrors: { [k: string]: RequestError } = {
   400: {
     title: 'Bad Request',
+    summary: 'Bad Request',
     name: 'The request could not be processed.',
     message: '',
     code: '400',
   },
   404: {
     title: 'Not Found',
+    summary: '',
     name: 'We can’t find the page you’re looking for. ',
     message: '',
     code: '404',
   },
   500: {
     title: 'Unexpected error',
+    summary: 'Unexpected error',
     name: '',
     message: '',
     code: '500',
@@ -28,7 +31,7 @@ const handledErrors: { [k: string]: RequestError } = {
 
 class GeneralError extends RouteHandler {
   render() {
-    const code: string = this.props.params.errorCode || '404';
+    const code: string = handledErrors[this.props.params.errorCode]?.code || '404';
     const { requestId } = this.props.location.query;
     const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
     const error = handledErrors[code];
@@ -37,7 +40,7 @@ class GeneralError extends RouteHandler {
       <div>
         <Helmet title={error.title} />
         <ErrorFallback error={error} />
-        <Footer className="footer" />
+        <Footer />
       </div>
     );
   }

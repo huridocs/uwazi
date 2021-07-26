@@ -68,10 +68,10 @@ class PageViewer extends Component {
           </>
         )}
         {renderError.name && (
-          <>
+          <div className="main-wrapper">
             <ErrorFallback error={renderError} />
             <Footer />
-          </>
+          </div>
         )}
       </div>
     );
