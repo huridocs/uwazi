@@ -2,36 +2,42 @@ import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
 import Helmet from 'react-helmet';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { RequestError } from 'app/App/ErrorHandling/ErrorUtils';
+import Footer from 'app/App/Footer';
 
-const handledErrors: { [k: string]: Error & { title: string } } = {
+const handledErrors: { [k: string]: RequestError } = {
   400: {
     title: 'Bad Request',
-    name: 'Bad Request',
-    message: 'Error 400. The request could not be processed.',
+    name: 'The request could not be processed.',
+    message: '',
+    code: '400',
   },
   404: {
     title: 'Not Found',
-    name: 'Not Found',
-    message: '404',
+    name: 'We can’t find the page you’re looking for. ',
+    message: '',
+    code: '404',
   },
   500: {
     title: 'Unexpected error',
-    name: 'Error 500. Unexpected error',
+    name: '',
     message: '',
+    code: '500',
   },
 };
 
 class GeneralError extends RouteHandler {
   render() {
-    const code: string = this.props.params.errorCode;
+    const code: string = this.props.params.errorCode || '404';
     const { requestId } = this.props.location.query;
     const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
-    const error = handledErrors[code] || handledErrors['404'];
+    const error = handledErrors[code];
+    error.requestId = safeRequestId ? safeRequestId[0] : undefined;
     return (
       <div>
         <Helmet title={error.title} />
         <ErrorFallback error={error} />
-        {safeRequestId && <span>Request id #{safeRequestId}</span>}
+        <Footer className="footer" />
       </div>
     );
   }

@@ -2,7 +2,6 @@
 import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
 import { trackPage } from 'app/App/GoogleAnalytics';
-import NoMatch from 'app/App/NoMatch';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
@@ -189,8 +188,8 @@ export default (
     {routes}
     <Route path=":lang">
       {routes}
-      <Route path="*" component={NoMatch} />
+      <Route path="*" component={GeneralError} />
     </Route>
-    <Route path="*" component={NoMatch} />
+    <Route path="*" component={GeneralError} />
   </Route>
 );

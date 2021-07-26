@@ -46,7 +46,6 @@ class PageViewer extends Component {
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
     const renderError = getRenderError(this.props.error?.toJS());
-
     return (
       <div className="row">
         {!renderError.name && (
@@ -68,7 +67,12 @@ class PageViewer extends Component {
             </Script>
           </>
         )}
-        {renderError.name && <ErrorFallback error={renderError} />}
+        {renderError.name && (
+          <>
+            <ErrorFallback error={renderError} />
+            <Footer />
+          </>
+        )}
       </div>
     );
   }

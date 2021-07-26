@@ -1,6 +1,7 @@
 export interface RequestError extends Error {
-  requestId?: number;
-  code?: number;
+  title?: string;
+  requestId?: string;
+  code?: string;
 }
 
 export interface APIError {
