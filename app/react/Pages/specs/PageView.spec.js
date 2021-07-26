@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
-import { mount, shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 import { actions } from 'app/BasicReducer';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
@@ -11,6 +11,7 @@ import { PageViewer } from 'app/Pages/components/PageViewer';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import PageView from '../PageView';
 import * as assetsUtils from '../utils/getPageAssets';
 
@@ -96,10 +97,10 @@ describe('PageView', () => {
         const consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
         spyOn(console, 'error').and.callFake(consoleErrorSpy);
         assetsUtilsSpy.and.returnValue(Promise.reject(new Error('error at rendering')));
-        component = mount(<PageView />, { context });
+        component = renderConnectedMount(PageView, { context }, {}, true);
         const errorMessage = component
           .find(ErrorFallback)
-          .find('h2')
+          .find('.error-message-lg')
           .at(0)
           .text();
 

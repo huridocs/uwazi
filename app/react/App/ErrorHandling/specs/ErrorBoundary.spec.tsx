@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 import React, { Component } from 'react';
-import { mount } from 'enzyme';
 import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 
 describe('ErrorBoundary', () => {
   class ComponentWithError extends Component {
@@ -16,11 +16,13 @@ describe('ErrorBoundary', () => {
       );
     }
   }
-  const component = mount(
+
+  const controlledComponent = (
     <ErrorBoundary>
       <ComponentWithError />
     </ErrorBoundary>
   );
+  const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
 
   it('should show the nested children if no errors', () => {
     expect(component.text()).toContain('content');
