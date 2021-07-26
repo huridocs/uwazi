@@ -16,6 +16,7 @@ import defaultTemplate from '../helpers/defaultTemplate';
 import validator from '../helpers/validator';
 import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
+import { groupSameRelationshipFields } from '../helpers/groupRelationshipFields';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -35,7 +36,19 @@ export class MetadataForm extends Component {
     this.props.componentWillUnmount();
   }
 
-  onSubmit(entity) {
+  onSubmit(readOnlyentity) {
+    const { properties } = this.props.template.toJS();
+    const entity = { ...readOnlyentity, metadata: { ...readOnlyentity.metadata } };
+
+    groupSameRelationshipFields(properties).forEach(prop => {
+      if (prop.type === 'relationship' && prop.multiEditingRelationshipFields) {
+        const editedValues = entity.metadata[prop.name];
+        prop.multiEditingRelationshipFields.forEach(relationshipField => {
+          entity.metadata[relationshipField.name] = editedValues;
+        });
+      }
+    });
+
     this.props.onSubmit(
       wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
       this.props.model

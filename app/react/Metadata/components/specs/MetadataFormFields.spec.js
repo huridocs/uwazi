@@ -17,6 +17,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
       { name: 'field2', label: 'label2', type: 'relationship', content: '2' },
       { name: 'field3', label: 'label3', type: 'date' },
       { name: 'field4', label: 'label4', type: 'generatedid' },
+      { name: 'field5', label: 'label5', type: 'relationship', content: '2' },
     ];
 
     props = {
@@ -103,5 +104,11 @@ describe('MetadataFormFields with one entity to edit ', () => {
     expect(generatedIdField.props().className).toBe(' hidden ');
     const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
     expect(generatedIdInput.props().defaultValue.length).toBe(12);
+  });
+
+  it('should not render two relationships fields with the same configuration', () => {
+    render({ model: 'publicform' });
+    const secondRelationshipField = component.find('[model=".metadata.field5"]').at(0);
+    expect(secondRelationshipField.length).toBe(0);
   });
 });

@@ -241,7 +241,7 @@ export default {
       propType = type;
       value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris);
     }
-
+    value = value.filter(v => v);
     return {
       translateContext: template.get('_id'),
       ...inheritedProperty.toJS(),

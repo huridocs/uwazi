@@ -147,6 +147,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, group
   const groupedMetadata = groupGeolocations
     ? groupAdjacentGeolocations(filteredMetadata)
     : filteredMetadata;
+
   return (
     <>
       {groupedMetadata.map((prop, index) => {

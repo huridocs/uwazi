@@ -179,6 +179,63 @@ describe('MetadataForm', () => {
       component.find(Form).simulate('submit', UnwrapedEntity);
       expect(props.onSubmit).toHaveBeenCalledWith(WrapedEntity, 'metadata');
     });
+
+    it('should assign same values to same relationship properties', () => {
+      props.template = Immutable.fromJS({
+        name: 'template1',
+        _id: 'templateId',
+        properties: [
+          {
+            type: 'relationship',
+            name: 'relation1',
+            label: 'rel one',
+            content: '123',
+            relationType: 'abc',
+          },
+          {
+            type: 'relationship',
+            name: 'relation2',
+            label: 'rel two',
+            content: '123',
+            relationType: 'abc',
+          },
+          {
+            type: 'relationship',
+            name: 'relation3',
+            label: 'rel three',
+            content: '123',
+            relationType: 'def',
+          },
+          { type: 'text', name: 'text', label: 'a text' },
+        ],
+        commonProperties: [{ name: 'title', label: 'Title' }],
+      });
+
+      const UnwrapedEntity = {
+        _id: '123',
+        template: '456',
+        language: 'en',
+        metadata: {
+          relation1: ['one', 'two', 'three'],
+          relation2: ['one', 'two'],
+          relation3: ['six', 'seven'],
+          text: 'Hellow',
+        },
+        file: {},
+        fullText: [],
+      };
+      const expectedValue = expect.objectContaining({
+        metadata: {
+          relation1: [{ value: 'one' }, { value: 'two' }, { value: 'three' }],
+          relation2: [{ value: 'one' }, { value: 'two' }, { value: 'three' }],
+          relation3: [{ value: 'six' }, { value: 'seven' }],
+          text: [{ value: 'Hellow' }],
+        },
+      });
+      render();
+      component.find(Form).simulate('submit', UnwrapedEntity);
+      expect(props.onSubmit).toHaveBeenCalledWith(expectedValue, 'metadata');
+    });
   });
 
   describe('mapStateToProps', () => {

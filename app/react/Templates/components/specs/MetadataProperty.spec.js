@@ -1,7 +1,9 @@
+/**
+ * @jest-environment jsdom
+ */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
-/* @jest-environment jsdom */
 
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';

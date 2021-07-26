@@ -10,6 +10,9 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
 import { generateID } from 'shared/IDGenerator';
+import { Icon } from 'UI';
+import { groupSameRelationshipFields } from '../helpers/groupRelationshipFields';
+
 import {
   DatePicker,
   DateRange,
@@ -177,15 +180,57 @@ export class MetadataFormFields extends Component {
     }
   }
 
+  renderLabel(property) {
+    const { template, multipleEdition, model } = this.props;
+    const templateID = template.get('_id');
+    let label = templateID ? (
+      <Translate context={templateID}>{property.label}</Translate>
+    ) : (
+      property.label
+    );
+    if (property.multiEditingRelationshipFields) {
+      label = (
+        <p>
+          <Icon icon="info-circle" />
+          &nbsp;
+          <Translate>This field updates all relationships with the same configuration:</Translate>
+          <ul>
+            {property.multiEditingRelationshipFields.map(f =>
+              templateID ? (
+                <li key={f._id}>
+                  <Translate context={templateID}>{f.label}</Translate>
+                </li>
+              ) : (
+                <li key={f._id}>{f.labell}</li>
+              )
+            )}
+          </ul>
+        </p>
+      );
+    }
+    return (
+      <li className="title">
+        <label>
+          <MultipleEditionFieldWarning
+            multipleEdition={multipleEdition}
+            model={model}
+            field={`metadata.${property.name}`}
+          />
+          {label}
+          {property.required ? <span className="required">*</span> : ''}
+        </label>
+      </li>
+    );
+  }
+
   render() {
-    const { thesauris, template, multipleEdition, model, showSubset } = this.props;
+    const { thesauris, template, model, showSubset } = this.props;
 
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
       .map(thes => thes.get('_id'))
       .toJS();
-    const fields = template.get('properties').toJS();
-    const templateID = template.get('_id');
+    const fields = groupSameRelationshipFields(template.get('properties').toJS());
 
     return (
       <div>
@@ -206,21 +251,7 @@ export class MetadataFormFields extends Component {
                   this.props.highlightedProps.includes(property.name) ? 'highlight' : ''
                 }`}
               >
-                <li className="title">
-                  <label>
-                    <MultipleEditionFieldWarning
-                      multipleEdition={multipleEdition}
-                      model={model}
-                      field={`metadata.${property.name}`}
-                    />
-                    {templateID ? (
-                      <Translate context={templateID}>{property.label}</Translate>
-                    ) : (
-                      property.label
-                    )}
-                    {property.required ? <span className="required">*</span> : ''}
-                  </label>
-                </li>
+                {this.renderLabel(property)}
                 {mlThesauri.includes(property.content) &&
                 [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
                   <li className="wide">
