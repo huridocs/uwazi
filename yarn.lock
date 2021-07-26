@@ -12088,10 +12088,10 @@ react-test-renderer@^16.0.0-0:
     react-is "^16.8.6"
     scheduler "^0.19.1"
 
-react-text-selection-handler@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/react-text-selection-handler/-/react-text-selection-handler-0.0.3.tgz#e55e079763b95612af8dd50ca7bba6fc59bf9f6a"
-  integrity sha512-K70sBt2t/1VR267QCgawwCqlnXvok5p79XSo5uKmobZBLSCZSE98yPVkdVSTKltRpoX3G1OvZn2jd5ozoYosYA==
+react-text-selection-handler@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/react-text-selection-handler/-/react-text-selection-handler-0.1.0.tgz#823defde4abb3307c422d9031ce909bf71b1bf88"
+  integrity sha512-FRBo3rZPZfu2aMKSvB1TGtcFS9pb+C1z+FRLb55PdAYnSgMDUvLqjym2KZmVpb/oQpa5ceMt625qMBqzZSO/0A==
 
 react-transition-group@^2.4.0:
   version "2.9.0"
