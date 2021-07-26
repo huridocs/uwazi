@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
@@ -79,9 +80,10 @@ class DocumentsList extends Component {
     const {
       documents,
       connections,
+      GraphView,
+      view,
       searchCentered,
       hideFooter,
-      view,
       connectionsGroups,
       LoadMoreButton,
       rowListZoomLevel,
@@ -147,7 +149,6 @@ class DocumentsList extends Component {
               </div>
             </NeedAuthorization>
           </div>
-
           {blankState() && <Welcome />}
 
           {(() => {
@@ -164,6 +165,9 @@ class DocumentsList extends Component {
                   }}
                 />
               );
+            }
+            if (view === 'graph') {
+              return <GraphView clickOnDocument={this.clickOnDocument} />;
             }
             return null;
           })()}
@@ -223,6 +227,7 @@ DocumentsList.propTypes = {
   selectedDocuments: PropTypes.instanceOf(Object),
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
+  GraphView: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func,

@@ -44,6 +44,38 @@ describe('DocumentsList', () => {
     instance = component.instance();
   };
 
+  describe('Graph view', () => {
+    beforeEach(() => {
+      props.view = 'graph';
+      props.connections = { totalRows: 2 };
+      props.connectionsGroups = Immutable.fromJS([
+        {
+          templates: [
+            {
+              count: 2,
+            },
+          ],
+        },
+      ]);
+      props.GraphView = () => <div>GraphView</div>;
+      render();
+    });
+
+    it('should not render Doc elements', () => {
+      expect(component.find(Doc).length).toBe(0);
+    });
+
+    it('should render GraphView prop', () => {
+      expect(component.find(props.GraphView).length).toBe(1);
+      expect(
+        component
+          .find(props.GraphView)
+          .getElements()[0]
+          .type().props.children
+      ).toBe('GraphView');
+    });
+  });
+
   it('should render action buttons if passed as props', () => {
     render();
     expect(component.find('.search-list-actions').length).toBe(0);
