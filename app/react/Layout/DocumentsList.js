@@ -81,6 +81,7 @@ class DocumentsList extends Component {
       connections,
       searchCentered,
       hideFooter,
+      view,
       connectionsGroups,
       LoadMoreButton,
       rowListZoomLevel,
@@ -149,19 +150,31 @@ class DocumentsList extends Component {
 
           {blankState() && <Welcome />}
 
-          <CollectionViewer
-            {...{
-              rowListZoomLevel,
-              storeKey: this.props.storeKey,
-              clickOnDocument: this.clickOnDocument,
-              onSnippetClick: this.props.onSnippetClick,
-              deleteConnection: this.props.deleteConnection,
-              loadNextGroupOfEntities: this.loadNextGroupOfEntities,
-            }}
-          />
+          {(() => {
+            if (view !== 'graph') {
+              return (
+                <CollectionViewer
+                  {...{
+                    rowListZoomLevel,
+                    storeKey: this.props.storeKey,
+                    clickOnDocument: this.clickOnDocument,
+                    onSnippetClick: this.props.onSnippetClick,
+                    deleteConnection: this.props.deleteConnection,
+                    loadNextGroupOfEntities: this.loadNextGroupOfEntities,
+                  }}
+                />
+              );
+            }
+            return null;
+          })()}
 
           <div className="row">
-            <p className="col-sm-12 text-center documents-counter">{counter}</p>
+            {(() => {
+              if (view !== 'graph') {
+                return <p className="col-sm-12 text-center documents-counter">{counter}</p>;
+              }
+              return null;
+            })()}
             {(() => {
               if (LoadMoreButton) {
                 return <LoadMoreButton />;
@@ -224,6 +237,7 @@ DocumentsList.propTypes = {
   connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
+  view: PropTypes.string,
   location: PropTypes.shape({
     pathname: PropTypes.string,
     query: PropTypes.object,
