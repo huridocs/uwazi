@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 
 import { editLink } from 'app/Settings/actions/uiActions';
 import { removeLink } from 'app/Settings/actions/navlinksActions';
-import ShowIf from 'app/App/ShowIf';
+// import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 
 export const LinkSource = {
@@ -70,14 +70,14 @@ export const LinkTarget = {
 export class NavlinkForm extends Component {
   render() {
     const {
-      link,
+      // link,
       index,
       isDragging,
       connectDragPreview,
       connectDragSource,
       connectDropTarget,
       formState,
-      uiState,
+      // uiState,
     } = this.props;
     let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
@@ -90,18 +90,50 @@ export class NavlinkForm extends Component {
     return connectDragPreview(
       connectDropTarget(
         <li className={className}>
-          <div>
-            {connectDragSource(
-              <span className="property-name">
-                <Icon icon="bars" className="reorder" />
-                &nbsp;
-                <Icon icon="link" />
-                &nbsp;&nbsp;
-                {link.title && link.title.trim().length ? link.title : <em>no title</em>}
-              </span>
-            )}
+          <div className="propery-form expand">
+            <div>
+              <div className="row">
+                <div className="col-sm-1">
+                  {connectDragSource(
+                    <span className="property-name">
+                      <Icon icon="bars" className="reorder" />
+                      &nbsp;
+                      <Icon icon="link" />
+                      {/* <Icon icon="link" />
+                        &nbsp;&nbsp;
+                        {link.title && link.title.trim().length ? link.title : <em>no title</em>} */}
+                    </span>
+                  )}
+                </div>
+                <div className="col-sm-3">
+                  <div className={titleClass}>
+                    <span className="input-group-addon">Title</span>
+                    <Field model={`settings.navlinksData.links[${index}].title`}>
+                      <input className="form-control" />
+                    </Field>
+                  </div>
+                </div>
+                <div className="col-sm-6">
+                  <div className="input-group">
+                    <span className="input-group-addon">URL</span>
+                    <Field model={`settings.navlinksData.links[${index}].url`}>
+                      <input className="form-control" />
+                    </Field>
+                  </div>
+                </div>
+                <div className="col-sm-2">
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-xs property-remove"
+                    onClick={() => this.props.removeLink(index)}
+                  >
+                    <Icon icon="trash-alt" /> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
+          {/* <div>
             <button
               type="button"
               className="btn btn-default btn-xs property-edit"
@@ -116,32 +148,7 @@ export class NavlinkForm extends Component {
             >
               <Icon icon="trash-alt" /> Delete
             </button>
-          </div>
-
-          <ShowIf if={uiState.get('editingLink') === link.localID}>
-            <div className="propery-form expand">
-              <div>
-                <div className="row">
-                  <div className="col-sm-4">
-                    <div className={titleClass}>
-                      <span className="input-group-addon">Title</span>
-                      <Field model={`settings.navlinksData.links[${index}].title`}>
-                        <input className="form-control" />
-                      </Field>
-                    </div>
-                  </div>
-                  <div className="col-sm-8">
-                    <div className="input-group">
-                      <span className="input-group-addon">URL</span>
-                      <Field model={`settings.navlinksData.links[${index}].url`}>
-                        <input className="form-control" />
-                      </Field>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ShowIf>
+          </div> */}
         </li>
       )
     );
