@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+
 export default {
   delta: 48,
 
@@ -24,6 +25,11 @@ export default {
                 property: prop.inherit.property.toString(),
               },
             };
+          }
+
+          if (prop.inherit === false) {
+            const { inheritProperty, inherit, ...newProp } = prop;
+            return newProp;
           }
           return prop;
         })

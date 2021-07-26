@@ -44,4 +44,22 @@ describe('migration fix_migration_45_inherit_property', () => {
       type: 'numeric',
     });
   });
+
+  it('should transform properties that have inherit: false and inheritProperty to the intended migration 45 structure', async () => {
+    await migration.up(testingDB.mongodb);
+
+    const [templateFive] = await testingDB.mongodb
+      .collection('templates')
+      .find({ name: 'template_five' })
+      .toArray();
+
+    const [templateSix] = await testingDB.mongodb
+      .collection('templates')
+      .find({ name: 'template_six' })
+      .toArray();
+
+    expect(templateFive.properties[0].inherit).not.toBeDefined();
+    expect(templateFive.properties[1].inherit).not.toBeDefined();
+    expect(templateSix.properties[1].inherit).not.toBeDefined();
+  });
 });
