@@ -79,8 +79,6 @@ class DocumentsList extends Component {
     const {
       documents,
       connections,
-      GraphView,
-      view,
       searchCentered,
       hideFooter,
       connectionsGroups,
@@ -148,34 +146,22 @@ class DocumentsList extends Component {
               </div>
             </NeedAuthorization>
           </div>
+
           {blankState() && <Welcome />}
-          {(() => {
-            if (view !== 'graph') {
-              return (
-                <CollectionViewer
-                  {...{
-                    rowListZoomLevel,
-                    storeKey: this.props.storeKey,
-                    clickOnDocument: this.clickOnDocument,
-                    onSnippetClick: this.props.onSnippetClick,
-                    deleteConnection: this.props.deleteConnection,
-                    loadNextGroupOfEntities: this.loadNextGroupOfEntities,
-                  }}
-                />
-              );
-            }
-            if (view === 'graph') {
-              return <GraphView clickOnDocument={this.clickOnDocument} />;
-            }
-            return null;
-          })()}
+
+          <CollectionViewer
+            {...{
+              rowListZoomLevel,
+              storeKey: this.props.storeKey,
+              clickOnDocument: this.clickOnDocument,
+              onSnippetClick: this.props.onSnippetClick,
+              deleteConnection: this.props.deleteConnection,
+              loadNextGroupOfEntities: this.loadNextGroupOfEntities,
+            }}
+          />
+
           <div className="row">
-            {(() => {
-              if (view !== 'graph') {
-                return <p className="col-sm-12 text-center documents-counter">{counter}</p>;
-              }
-              return null;
-            })()}
+            <p className="col-sm-12 text-center documents-counter">{counter}</p>
             {(() => {
               if (LoadMoreButton) {
                 return <LoadMoreButton />;
@@ -224,7 +210,6 @@ DocumentsList.propTypes = {
   selectedDocuments: PropTypes.instanceOf(Object),
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
-  GraphView: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func,
@@ -239,7 +224,6 @@ DocumentsList.propTypes = {
   connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
-  view: PropTypes.string,
   location: PropTypes.shape({
     pathname: PropTypes.string,
     query: PropTypes.object,
