@@ -8,84 +8,87 @@ import handleError, { prettifyError } from '../handleError';
 
 jest.mock('api/utils/AppContext');
 
+const contextRequestId = '1234';
+
 describe('handleError', () => {
-  const contextRequestId = '1234';
   beforeEach(() => {
     spyOn(errorLog, 'error');
     spyOn(debugLog, 'debug');
     spyOn(appContext, 'get').and.returnValue(contextRequestId);
   });
 
-  describe('when error is instance of Error', () => {
-    it('should return the error with 500 code without the original error and error stack', () => {
-      const errorInstance = new Error('error');
-      const error = handleError(errorInstance);
+  describe('errors by type', () => {
+    describe('when error is instance of Error', () => {
+      it('should return the error with 500 code without the original error and error stack', () => {
+        const errorInstance = new Error('error');
+        const error = handleError(errorInstance);
 
-      expect(error.code).toBe(500);
-      expect(error.requestId).toBe(contextRequestId);
-      expect(error.prettyMessage).toEqual('error');
-      expect(error.message).toBeUndefined();
-      expect(error.original).toBeUndefined();
-    });
+        expect(error.code).toBe(500);
+        expect(error.requestId).toBe(contextRequestId);
+        expect(error.prettyMessage).toEqual('error');
+        expect(error.message).toBeUndefined();
+        expect(error.original).toBeUndefined();
+      });
 
-    it('should correctly log the original error for ElasticSearch exceptions', () => {
-      const error = new ConnectionError('test error', { meta: 'some meta' });
-      handleError(error);
+      it('should correctly log the original error for ElasticSearch exceptions', () => {
+        const error = new ConnectionError('test error', { meta: 'some meta' });
+        handleError(error);
 
-      expect(errorLog.error).toHaveBeenCalledWith(
-        `requestId: ${contextRequestId} \n${error.stack}
+        expect(errorLog.error).toHaveBeenCalledWith(
+          `requestId: ${contextRequestId} \n${error.stack}
 original error: {
  "name": "ConnectionError",
  "meta": {
   "meta": "some meta"
  }
 }`,
-        {}
-      );
+          {}
+        );
+      });
+
+      it('should log the error with the requestId', () => {
+        const error = new Error('error');
+        handleError(error);
+
+        expect(errorLog.error).toHaveBeenCalledWith(
+          `requestId: ${contextRequestId} \n${error.stack}\noriginal error: {}`,
+          {}
+        );
+      });
     });
 
-    it('should log the error with the requestId', () => {
-      const error = new Error('error');
-      handleError(error);
+    describe('when error is created with createError', () => {
+      it('should return the error', () => {
+        const error = handleError(createError('test error', 400));
+        expect(error).toMatchSnapshot();
+      });
 
-      expect(errorLog.error).toHaveBeenCalledWith(
-        `requestId: ${contextRequestId} \n${error.stack}\noriginal error: {}`,
-        {}
-      );
+      it('should not log the error when code is not 500', () => {
+        handleError(createError('test error', 400));
+        expect(errorLog.error).not.toHaveBeenCalled();
+
+        handleError(createError('test error'));
+        expect(errorLog.error).toHaveBeenCalledWith(
+          `requestId: ${contextRequestId} \ntest error`,
+          {}
+        );
+      });
     });
-  });
 
-  describe('when error is created with createError', () => {
-    it('should return the error', () => {
-      const error = handleError(createError('test error', 400));
-      expect(error).toMatchSnapshot();
+    describe('when error is a MongoError', () => {
+      it('should return the error with a 500 code', () => {
+        const error = handleError({ name: 'MongoError', message: 'error', code: '345' });
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('error');
+      });
     });
 
-    it('should not log the error when code is not 500', () => {
-      handleError(createError('test error', 400));
-      expect(errorLog.error).not.toHaveBeenCalled();
-
-      handleError(createError('test error'));
-      expect(errorLog.error).toHaveBeenCalledWith(
-        `requestId: ${contextRequestId} \ntest error`,
-        {}
-      );
-    });
-  });
-
-  describe('when error is a MongoError', () => {
-    it('should return the error with a 500 code', () => {
-      const error = handleError({ name: 'MongoError', message: 'error', code: '345' });
-      expect(error.code).toBe(500);
-      expect(error.message).toBe('error');
-    });
-  });
-
-  describe('when error is a mongoose ValidationError', () => {
-    it('should return the error with a 422 error', () => {
-      const error = handleError({ name: 'ValidationError', message: 'error', code: '1000' });
-      expect(error.code).toBe(422);
-      expect(error.message).toBe('error');
+    describe('when error is a mongoose ValidationError', () => {
+      it('should return the error with a 422 error', () => {
+        const error = handleError({ name: 'ValidationError', message: 'error', code: '1000' });
+        expect(error.code).toBe(422);
+        expect(error.message).toBe('error');
+      });
     });
   });
 
