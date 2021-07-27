@@ -31,7 +31,10 @@ class PageViewer extends Component {
     return (
       <div className="alert alert-danger">
         <Icon icon="exclamation-triangle" />
-        <Translate>Unexpected error on this custom page, it might not work properly</Translate>
+        <Translate>
+          There is an unexpected error on this custom page, it might not work properly. Please
+          contact an admin for details.
+        </Translate>
         <Icon icon="times" onClick={() => this.setState({ customPageError: null })} />
       </div>
     );
