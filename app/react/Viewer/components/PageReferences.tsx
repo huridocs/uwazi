@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { IStore } from 'app/istore';
 import { ConnectionSchema } from 'shared/types/connectionType';
 import { createSelector } from 'reselect';
-import { Highlight } from 'react-pdf-handler';
+import { Highlight } from 'react-text-selection-handler';
 import { unique } from 'shared/filterUnique';
 
 export interface PageReferencesProps {
@@ -35,7 +35,7 @@ export const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
           className="reference"
           onClick={props.onClick.bind(null, r)}
         >
-          <Highlight regionId={props.page.toString()} highlight={highlight} color={color} />
+          <Highlight textSelection={highlight} color={color} />
         </div>
       );
     })}
