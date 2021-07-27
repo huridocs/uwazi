@@ -89,7 +89,11 @@ function respondError(res, error, req) {
   const code = error.status || 500;
   res.status(code);
   const requestId = error.json?.requestId || '';
-  res.redirect(`/error/${code}?requestId=${requestId}`);
+  if (!req.url.startsWith('/error/500')) {
+    res.redirect(`/error/${code}?requestId=${requestId}`);
+  } else {
+    res.send(`<pre>An unexpected error has occurred. Request id: ${requestId}</pre>`);
+  }
 }
 
 function handleRedirect(res, redirectLocation) {

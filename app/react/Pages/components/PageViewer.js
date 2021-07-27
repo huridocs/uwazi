@@ -38,14 +38,14 @@ class PageViewer extends Component {
   }
 
   render() {
-    const { page, itemLists, datasets } = this.props;
+    const { page, itemLists, datasets, error } = this.props;
     const lists = itemLists.toJS();
     const originalText = page.getIn(['metadata', 'content']) || '';
     const scriptRendered = page.getIn(['scriptRendered']);
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
-    const renderError = getRenderError(this.props.error?.toJS());
+    const renderError = getRenderError(error instanceof Immutable.Map ? error.toJS() : error);
     return (
       <div className="row">
         {!renderError.name && (

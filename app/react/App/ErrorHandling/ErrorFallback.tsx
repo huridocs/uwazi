@@ -7,7 +7,7 @@ interface ErrorFallbackProps {
   errorInfo?: ErrorInfo;
 }
 export const ErrorFallback = (props: ErrorFallbackProps) => {
-  const showRequestId = props.error.code === '500' && props.error.requestId;
+  const showRequestId = props.error.code?.toString() === '500' && props.error.requestId;
   const errorDetails = props.errorInfo?.componentStack || props.error.message;
   return (
     <>
