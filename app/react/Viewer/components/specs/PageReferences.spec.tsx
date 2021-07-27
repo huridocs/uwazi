@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { Highlight } from 'react-pdf-handler';
+import { Highlight } from 'react-text-selection-handler';
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 
@@ -55,8 +55,7 @@ describe('FormConfigInput', () => {
     expect(hihglights.length).toBe(2);
 
     const firstHighlightProps: any = hihglights.at(0).props();
-    expect(firstHighlightProps.regionId).toBe('3');
-    expect(firstHighlightProps.highlight).toEqual({ selectionRectangles: [{ regionId: '3' }] });
+    expect(firstHighlightProps.textSelection).toEqual({ selectionRectangles: [{ regionId: '3' }] });
     expect(firstHighlightProps.color).toBe('#ffd84b');
 
     const secondHighlightProps: any = hihglights.at(1).props();
