@@ -6,6 +6,18 @@ import rison from 'rison-node';
 
 let cookie;
 
+class FetchResponseError extends Error {
+  // eslint-disable-next-line no-shadow
+  constructor(message, { json, status, cookie, headers } = {}) {
+    super(message);
+    this.name = 'FetchResponseError';
+    this.json = json;
+    this.status = status;
+    this.cookie = cookie;
+    this.headers = headers;
+  }
+}
+
 const attemptRisonDecode = string => {
   const errcb = e => {
     throw Error(`rison decoder error: ${e}`);
@@ -106,7 +118,10 @@ const _fetch = (url, data, method, _headers) => {
       };
 
       if (response.status > 399) {
-        throw processedResponse;
+        throw new FetchResponseError(
+          `Fetch returned a response with status ${response.status}.`,
+          processedResponse
+        );
       }
 
       return processedResponse;
@@ -145,3 +160,5 @@ export default {
     cookie = c;
   },
 };
+
+export { FetchResponseError };
