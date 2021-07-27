@@ -10,9 +10,11 @@ const selectText = async (selector: string) => {
   await expect(page).toClick(selector);
   await page.evaluate(_selector => {
     const range = document.createRange();
-    const element = document.querySelector(_selector);
+    const element = document.querySelector<HTMLElement>(_selector);
     if (element) {
-      range.selectNodeContents(element);
+      Array.from(element.childNodes).forEach(node => {
+        range.selectNodeContents(node);
+      });
       const sel = window.getSelection();
       sel!.removeAllRanges();
       sel!.addRange(range);
