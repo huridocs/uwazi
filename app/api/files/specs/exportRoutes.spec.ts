@@ -9,6 +9,7 @@ import { NextFunction, Request, Response } from 'express';
 import authMiddleware from 'api/auth/authMiddleware';
 
 import { User } from 'api/users/usersModel';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import routes from '../exportRoutes';
 
 jest.mock('api/csv/csvExporter');
@@ -42,7 +43,7 @@ describe('export routes', () => {
           },
         ],
       };
-      await db.clearAllAndLoad(fixtures);
+      await testingEnvironment.setUp(fixtures);
 
       exportMock = jest.fn().mockImplementation(async () => Promise.resolve());
       (csvExporter as any).mockImplementation(() => ({

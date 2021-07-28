@@ -16,8 +16,6 @@ import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
-jest.mock('api/utils/AppContext');
-
 describe('files routes', () => {
   const app: Application = setUpApp(
     uploadRoutes,

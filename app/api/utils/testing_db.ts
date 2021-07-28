@@ -14,8 +14,6 @@ import { appContext } from 'api/utils/AppContext';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 
-jest.mock('api/utils/AppContext');
-
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
 let connected = false;

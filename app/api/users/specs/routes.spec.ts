@@ -4,8 +4,8 @@ import request from 'supertest';
 import { NextFunction, Request, Response } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
-import testingDB from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 
@@ -15,7 +15,6 @@ jest.mock(
     next();
   }
 );
-jest.mock('api/utils/AppContext');
 
 const invalidUserProperties = [
   { field: 'username', value: undefined, dataPath: '.body', keyword: 'required' },
@@ -44,11 +43,14 @@ describe('users routes', () => {
   });
 
   beforeAll(async () => {
-    await testingDB.connect();
+    await testingEnvironment
+      .connect()
+      .withContext()
+      .run();
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.disconnect();
   });
 
   beforeEach(() => {

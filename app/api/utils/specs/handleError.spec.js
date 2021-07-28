@@ -6,8 +6,6 @@ import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
 import { appContext } from 'api/utils/AppContext';
 import handleError, { prettifyError } from '../handleError';
 
-jest.mock('api/utils/AppContext');
-
 const contextRequestId = '1234';
 
 describe('handleError', () => {

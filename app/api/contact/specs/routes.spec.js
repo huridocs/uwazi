@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { testingDB } from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import contactRoutes from '../routes.js';
 import contact from '../contact';
 
@@ -12,11 +12,14 @@ describe('contact', () => {
   const app = setUpApp(contactRoutes);
 
   beforeAll(async () => {
-    await testingDB.connect();
+    await testingEnvironment
+      .connect()
+      .withContext()
+      .run();
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.disconnect();
   });
 
   describe('POST', () => {

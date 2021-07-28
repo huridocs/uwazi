@@ -27,8 +27,6 @@ jest.mock(
   }
 );
 
-jest.mock('api/utils/AppContext');
-
 describe('upload routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 

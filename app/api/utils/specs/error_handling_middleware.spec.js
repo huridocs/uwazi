@@ -2,8 +2,6 @@ import { appContext } from 'api/utils/AppContext';
 import middleware from '../error_handling_middleware.js';
 import errorLog from '../../log/errorLog';
 
-jest.mock('api/utils/AppContext');
-
 describe('Error handling middleware', () => {
   let next;
   let res;
