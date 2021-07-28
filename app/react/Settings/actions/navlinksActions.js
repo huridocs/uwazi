@@ -13,10 +13,18 @@ export function loadLinks(links) {
   return formActions.load('settings.navlinksData', { links });
 }
 
-export function addLink(links) {
-  const link = { title: `Item ${links.length + 1}`, localID: ID() };
+export function addLink(links, type = 'link') {
+  const link = { title: `Item ${links.length + 1}`, localID: ID(), type, children: [] };
   return dispatch => {
     dispatch(formActions.push('settings.navlinksData.links', link));
+    dispatch(editLink(link.localID));
+  };
+}
+
+export function addGroupLink(links, index) {
+  const link = { title: `Item ${index} - ${links.length + 1}`, localID: ID() };
+  return dispatch => {
+    dispatch(formActions.push(`settings.navlinksData.links[${index}].children`, link));
     dispatch(editLink(link.localID));
   };
 }

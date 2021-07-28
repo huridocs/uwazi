@@ -62,10 +62,12 @@ export class NavlinksSettings extends Component {
               ))}
             </ul>
             <div className="settings-footer">
-              <a className="btn btn-primary" onClick={this.props.addLink.bind(this, links)}>
-                <Icon icon="plus" />
-                <span className="btn-label">{t('System', 'Add link')}</span>
-              </a>
+              <button onClick={this.props.addLink.bind(this, links, 'link')}>
+                {t('System', 'Add link')}
+              </button>
+              <button onClick={this.props.addLink.bind(this, links, 'group')}>
+                {t('System', 'Add group')}
+              </button>
               <button
                 type="submit"
                 className="btn btn-success"
