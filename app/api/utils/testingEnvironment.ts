@@ -14,7 +14,7 @@ interface TestingEnvironment {
   appContextSpy: jest.SpyInstance | null;
   setUp: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
 
-  connect(): TestingEnvironment;
+  connect(options?: { defaultTenant: boolean }): TestingEnvironment;
   disconnect(): void;
 
   withFixtures(fixtures: DBFixture): void;
@@ -47,8 +47,8 @@ const testingEnvironment: TestingEnvironment = {
   async run() {
     await Promise.all(this.promises);
   },
-  connect() {
-    this.promises.push(testingDB.connect());
+  connect(options?: { defaultTenant: boolean }) {
+    this.promises.push(testingDB.connect(options));
     return this;
   },
   async disconnect() {

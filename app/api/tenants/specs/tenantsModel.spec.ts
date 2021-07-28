@@ -1,9 +1,9 @@
 import { config } from 'api/config';
 import { DB } from 'api/odm/DB';
 import { Db, ObjectID } from 'mongodb';
-import testingDB from 'api/utils/testing_db';
 import { Model } from 'mongoose';
 import waitForExpect from 'wait-for-expect';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TenantsModel } from '../tenantsModel';
 
 describe('tenantsModel', () => {
@@ -14,7 +14,10 @@ describe('tenantsModel', () => {
   let mockChangeStream: { on: Function; close: Function };
 
   beforeAll(async () => {
-    await testingDB.connect({ defaultTenant: false });
+    await testingEnvironment
+      .connect({ defaultTenant: false })
+      .withContext()
+      .run();
     db = DB.connectionForDB(config.SHARED_DB).db;
   });
 
@@ -49,7 +52,7 @@ describe('tenantsModel', () => {
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.disconnect();
   });
 
   describe('get()', () => {

@@ -1,11 +1,11 @@
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
-import testingDB from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import errorLog from 'api/log/errorLog';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 jest.mock(
@@ -31,11 +31,14 @@ describe('permissions routes', () => {
   );
 
   beforeAll(async () => {
-    await testingDB.connect();
+    await testingEnvironment
+      .connect()
+      .withContext()
+      .run();
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.disconnect();
   });
 
   describe('entities', () => {
