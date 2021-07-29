@@ -14,10 +14,7 @@ describe('tenantsModel', () => {
   let mockChangeStream: { on: Function; close: Function };
 
   beforeAll(async () => {
-    await testingEnvironment
-      .connect({ defaultTenant: false })
-      .withContext()
-      .run();
+    await testingEnvironment.connect({ defaultTenant: false }).withContext();
     db = DB.connectionForDB(config.SHARED_DB).db;
   });
 

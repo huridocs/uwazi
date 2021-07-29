@@ -43,10 +43,7 @@ describe('users routes', () => {
   });
 
   beforeAll(async () => {
-    await testingEnvironment
-      .connect()
-      .withContext()
-      .run();
+    await testingEnvironment.connect().withContext();
   });
 
   afterAll(async () => {
