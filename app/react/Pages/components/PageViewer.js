@@ -64,8 +64,7 @@ class PageViewer extends Component {
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
-    const SSRError = error instanceof Immutable.Map ? error.toJS() : error;
-    const parsedPageError = SSRError?.json ? parseRenderingError(SSRError) : null;
+    const parsedPageError = this.parseSSRError(error);
     return (
       <div className="row">
         {!parsedPageError && (
@@ -95,6 +94,12 @@ class PageViewer extends Component {
         )}
       </div>
     );
+  }
+
+  parseSSRError(error) {
+    const SSRError = error instanceof Immutable.Map ? error.toJS() : error;
+    const parsedPageError = SSRError?.json ? parseRenderingError(SSRError) : null;
+    return parsedPageError;
   }
 }
 
