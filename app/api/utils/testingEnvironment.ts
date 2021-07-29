@@ -4,6 +4,7 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserSchema } from 'shared/types/userType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { setupTestUploadedPaths } from 'api/files';
 
 class TestingEnvironment {
   private queue: Promise<void>;
@@ -20,6 +21,7 @@ class TestingEnvironment {
       .withElastic(elasticIndex)
       .withPermissions()
       .withRequestId();
+    return this;
   }
 
   async then(callback: (queue: Promise<any>) => {}) {
@@ -37,6 +39,7 @@ class TestingEnvironment {
         dbName: testingDB.dbName || 'defaultDB',
         indexName: 'index',
       });
+      await setupTestUploadedPaths();
     });
 
     return this;
