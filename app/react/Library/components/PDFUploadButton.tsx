@@ -1,7 +1,7 @@
 import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'app/UI';
-import React, { ChangeEvent, Dispatch } from 'react';
+import React, { ChangeEvent, Dispatch, useMemo } from 'react';
 import { bindActionCreators } from 'redux';
 import { EntitySchema } from 'shared/types/entityType';
 
@@ -61,26 +61,34 @@ const PDFUploadButtonComponent = ({
   createDocument,
   uploadDocument,
   unselectAllDocuments,
-}: PDFUploadButtonProps) => (
-  <label htmlFor="pdf-upload-button" className="btn btn-success">
-    <Icon icon="cloud-upload-alt" />
-    <span className="btn-label">
-      <Translate>Upload PDF(s) to create</Translate>
-    </span>
-    <input
-      type="file"
-      id="pdf-upload-button"
-      style={{ display: 'none' }}
-      accept="application/pdf"
-      multiple
-      onChange={onChangePDFs({
+}: PDFUploadButtonProps) => {
+  const onChangeHandler = useMemo(
+    () =>
+      onChangePDFs({
         createDocument,
         uploadDocument,
         unselectAllDocuments,
-      })}
-    />
-  </label>
-);
+      }),
+    [createDocument, uploadDocument, unselectAllDocuments]
+  );
+
+  return (
+    <label htmlFor="pdf-upload-button" className="btn btn-success">
+      <Icon icon="cloud-upload-alt" />
+      <span className="btn-label">
+        <Translate>Upload PDF(s) to create</Translate>
+      </span>
+      <input
+        type="file"
+        id="pdf-upload-button"
+        style={{ display: 'none' }}
+        accept="application/pdf"
+        multiple
+        onChange={onChangeHandler}
+      />
+    </label>
+  );
+};
 
 function mapDispatchToProps(dispatch: Dispatch<any>, props: PDFUploadButtonOwnProps) {
   return bindActionCreators(
