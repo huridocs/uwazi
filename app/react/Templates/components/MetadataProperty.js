@@ -122,7 +122,12 @@ export class MetadataProperty extends Component {
               <Icon icon="exclamation-triangle" /> Duplicated label
             </span>
           )}
-
+          {this.props.isRelationDuplicated && (
+            <span className="validation-error">
+              <Icon icon="exclamation-triangle" /> Relationship fields must have diferent
+              relationship or diferent type of entity.
+            </span>
+          )}
           <button
             type="button"
             className="btn btn-default btn-xs property-edit"
@@ -174,6 +179,7 @@ MetadataProperty.defaultProps = {
   submitFailed: false,
   hasErrors: false,
   isLabelDuplicated: false,
+  isRelationDuplicated: false,
 };
 
 MetadataProperty.propTypes = {
@@ -182,6 +188,7 @@ MetadataProperty.propTypes = {
   submitFailed: PropTypes.bool,
   hasErrors: PropTypes.bool,
   isLabelDuplicated: PropTypes.bool,
+  isRelationDuplicated: PropTypes.bool,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
   localID: PropTypes.any.isRequired,
@@ -265,6 +272,9 @@ const mapStateToProps = ({ template }, ownProps) => ({
     false
   ),
   isLabelDuplicated: isLabelDuplicated(ownProps.index, template.data, template.formState),
+  isRelationDuplicated: Boolean(
+    template.formState.$form.errors[`properties.${ownProps.index}.relationType.duplicated`]
+  ),
   submitFailed: template.formState.$form.submitFailed,
 });
 

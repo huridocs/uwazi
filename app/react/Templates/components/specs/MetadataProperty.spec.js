@@ -248,6 +248,31 @@ describe('MetadataProperty', () => {
       });
 
       describe('errors', () => {
+        describe('errors', () => {
+        
+          it('should render duplicated relation error', () => {
+          props.formState.$form.errors['properties.1.relationType.duplicated'] = true;
+          const store = mockStoreCreator({
+            template: {
+              uiState: Immutable.fromJS({}),
+              formState: {
+                fields: [],
+                $form: {
+                  errors: {
+                    'properties.1.relationType.duplicated': true,
+                  },
+                },
+              },
+              data: {
+                commonProperties: [],
+              },
+            },
+          });
+
+          const connectedComponent = render(store, props);
+          expect(connectedComponent.find('.validation-error')).toMatchSnapshot();
+        });
+
         it('should render duplicated label error', () => {
           const store = mockStoreCreator({
             template: {
