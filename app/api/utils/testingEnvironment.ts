@@ -1,70 +1,65 @@
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { appContext } from 'api/utils/AppContext';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
+import { testingTenants } from 'api/utils/testingTenants';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserSchema } from 'shared/types/userType';
-import { elasticTesting } from './elastic_testing';
-import { testingTenants } from './testingTenants';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
 const appContextTestValues: { [k: string]: any } = {
   requestId: '1234',
 };
 
-interface TestingEnvironment {
-  promises: Promise<any>[];
-  appContextSpy: jest.SpyInstance | null;
-  setUp: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
+class TestingEnvironment {
+  private queue: Promise<void>;
 
-  connect(options?: { defaultTenant: boolean }): TestingEnvironment;
-  disconnect(): void;
+  private appContextSpy: jest.SpyInstance | null = null;
 
-  withFixtures(fixtures: DBFixture): void;
+  constructor() {
+    this.queue = Promise.resolve();
+  }
 
-  withElastic(elasticIndex: string): void;
-
-  withContext(): any;
-
-  withPermissions(): void;
-
-  run(): void;
-}
-
-const testingEnvironment: TestingEnvironment = {
-  promises: [],
-  appContextSpy: null,
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
-    if (fixtures) {
-      this.connect();
-      this.withFixtures(fixtures);
-    }
-    if (elasticIndex) {
-      this.withElastic(elasticIndex);
-    }
-    this.withPermissions();
-    this.withContext();
-    await this.run();
-  },
+    await this.connect()
+      .withFixtures(fixtures)
+      .withElastic(elasticIndex)
+      .withPermissions()
+      .withContext();
+  }
 
-  async run() {
-    await Promise.all(this.promises);
-  },
-  connect(options?: { defaultTenant: boolean }) {
-    this.promises.push(testingDB.connect(options));
+  async then(callback: (queue: Promise<any>) => {}) {
+    callback(this.queue);
+  }
+
+  chain(callback: () => Promise<void>): void {
+    this.queue = this.queue.then(callback);
+  }
+
+  connect = (options?: { defaultTenant: boolean }) => {
+    this.chain(async () => {
+      await testingDB.connect(options);
+    });
     return this;
-  },
-  async disconnect() {
-    await testingDB.disconnect();
-  },
+  };
+
   withFixtures(fixtures?: DBFixture) {
     if (fixtures) {
-      this.promises.push(testingDB.clearAllAndLoad(fixtures));
+      this.chain(async () => {
+        await testingDB.clearAllAndLoadFixtures(fixtures);
+      });
     }
     return this;
-  },
-  withElastic(elasticIndex: string) {
-    testingTenants.changeCurrentTenant({ indexName: elasticIndex });
-    this.promises.push(elasticTesting.reindex());
+  }
+
+  withElastic(elasticIndex?: string) {
+    if (elasticIndex) {
+      testingTenants.changeCurrentTenant({ indexName: elasticIndex });
+      this.chain(async () => {
+        await elasticTesting.reindex();
+      });
+    }
     return this;
-  },
+  }
+
   withPermissions(user?: UserSchema) {
     const userInContextMockFactory = new UserInContextMockFactory();
     if (!user) {
@@ -73,13 +68,21 @@ const testingEnvironment: TestingEnvironment = {
       userInContextMockFactory.mock(user);
     }
     return this;
-  },
+  }
+
   withContext(contextValues: { [k: string]: any } = appContextTestValues) {
     this.appContextSpy = jest
       .spyOn(appContext, 'get')
       .mockImplementation((key: string) => contextValues[key]);
     return this;
-  },
-};
+  }
 
-export { testingEnvironment };
+  async disconnect() {
+    this.chain(async () => {
+      await testingDB.disconnect();
+    });
+    return this;
+  }
+}
+
+export const testingEnvironment = new TestingEnvironment();

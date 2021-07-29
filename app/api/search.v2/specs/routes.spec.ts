@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Application } from 'express';
-import { testingDB } from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 import errorLog from 'api/log/errorLog';
 import { elastic } from 'api/search';
 
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { searchRoutes } from '../routes';
 import {
   fixturesTitleSearch,
@@ -20,10 +20,10 @@ describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
-    await testingDB.setupFixturesAndContext(fixturesTitleSearch, 'entities.v2.index');
+    await testingEnvironment.setUp(fixturesTitleSearch, 'entities.v2.index');
   });
 
-  afterAll(async () => testingDB.disconnect());
+  afterAll(async () => testingEnvironment.disconnect());
 
   describe('GET', () => {
     it('should have a validation', async () => {

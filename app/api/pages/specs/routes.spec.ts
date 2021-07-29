@@ -1,9 +1,9 @@
 import { Application } from 'express';
 import request from 'supertest';
 
-import testingDB from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import pagesRoutes from '../routes';
 import { fixtures } from './fixtures';
 
@@ -16,11 +16,11 @@ const app: Application = setUpApp(pagesRoutes, (req, _res, next) => {
 
 describe('Pages Routes', () => {
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.disconnect();
   });
 
   describe('/api/pages', () => {

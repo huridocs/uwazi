@@ -3,9 +3,10 @@ import { Application, Request, Response, NextFunction } from 'express';
 
 import db from 'api/utils/testing_db';
 
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, document1 } from './fixtures';
 
-import { setUpApp } from 'api/utils/testingRoutes';
 import { documentRoutes } from '../routes';
 
 jest.mock(
@@ -19,10 +20,10 @@ describe('document routes', () => {
   const app: Application = setUpApp(documentRoutes);
 
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.disconnect());
 
   describe('GET/page', () => {
     it('should return raw page', async () => {
