@@ -5,12 +5,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
 import errorLog from 'api/log/errorLog';
-import {
-  uploadsPath,
-  customUploadsPath,
-  setupTestUploadedPaths,
-  fileExists,
-} from 'api/files/filesystem';
+import { uploadsPath, customUploadsPath, fileExists } from 'api/files/filesystem';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
