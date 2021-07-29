@@ -4,7 +4,6 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
-import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
 import {
   uploadsPath,
@@ -35,14 +34,11 @@ describe('upload routes', () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error'); //just to avoid annoying console output
-    await testingEnvironment
-      .connect()
-      .withFixtures(fixtures)
-      .withContext();
+    await testingEnvironment.setUp(fixtures);
     await setupTestUploadedPaths();
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.disconnect());
 
   const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
     socketEmit('documentProcessed', async () =>

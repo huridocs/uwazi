@@ -2,7 +2,6 @@ import { Writable } from 'stream';
 import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { search } from 'api/search';
-import db from 'api/utils/testing_db';
 import csvExporter from 'api/csv/csvExporter';
 import * as filesystem from 'api/files/filesystem';
 import { NextFunction, Request, Response } from 'express';
@@ -51,7 +50,7 @@ describe('export routes', () => {
       }));
     });
 
-    afterAll(async () => db.disconnect());
+    afterAll(async () => testingEnvironment.disconnect());
 
     const fakeRequestAugmenterMiddleware = (user: User, language: string) => (
       req: Request,
