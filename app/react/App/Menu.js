@@ -30,29 +30,64 @@ export class Menu extends Component {
     const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
 
-    const navLinks = links.map(link => {
-      const url = link.get('url') || '/';
+    const navLinks = links
+      .filter(link => link.get('type') !== 'group')
+      .map(link => {
+        const url = link.get('url') || '/';
 
-      if (url.startsWith('http')) {
+        if (url.startsWith('http')) {
+          return (
+            <li key={link.get('_id')} className="menuNav-item">
+              <a href={url} className="btn menuNav-btn" target="_blank">
+                {t('Menu', link.get('title'))}
+              </a>
+            </li>
+          );
+        }
         return (
           <li key={link.get('_id')} className="menuNav-item">
-            <a href={url} className="btn menuNav-btn" target="_blank">
+            <I18NLink to={url} className="btn menuNav-btn">
               {t('Menu', link.get('title'))}
-            </a>
+            </I18NLink>
           </li>
         );
-      }
-      return (
-        <li key={link.get('_id')} className="menuNav-item">
-          <I18NLink to={url} className="btn menuNav-btn">
-            {t('Menu', link.get('title'))}
-          </I18NLink>
-        </li>
-      );
-    });
+      });
+
+    const subMenuLinks = links
+      .filter(link => link.get('type') === 'group')
+      .map(link => {
+        const url = link.get('url') || '/';
+        if (url.startsWith('http')) {
+          return (
+            <ul key={link.get('_id')} className="Dropdown">
+              <a className="btn menuNav-btn">{t('Menu', link.get('title'))}</a>
+              {link.get('sublinks').map(sublink => (
+                <li className="Dropdown-option">
+                  <a href={sublink.url} className="btn menuNav-btn" target="_blank">
+                    {t('Menu', sublink.get('title'))}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          );
+        }
+        return (
+          <ul key={link.get('_id')} className="Dropdown">
+            <a className="btn menuNav-btn">{t('Menu', link.get('title'))}</a>
+            {link.get('sublinks').map(sublink => (
+              <li className="Dropdown-option">
+                <I18NLink to={sublink.url} className="btn menuNav-btn">
+                  {t('Menu', sublink.get('title'))}
+                </I18NLink>
+              </li>
+            ))}
+          </ul>
+        );
+      });
 
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
+        {subMenuLinks}
         <li className="menuItems">
           <ul className="menuNav-list">{navLinks}</ul>
         </li>
