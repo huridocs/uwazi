@@ -13,13 +13,14 @@ class Script extends Component {
 
   componentDidMount() {
     this.appendScript();
-    window.onerror = this.props.onError;
+    window.addEventListener('error', this.props.onError);
   }
 
   componentDidUpdate(prevProps) {
     const { children } = this.props;
     if (children !== prevProps.children) {
       this.removeScript();
+      window.removeEventListener('error', this.props.onError);
       this.appendScript();
     } else if (this.scriptElement === null) {
       this.appendScript();
@@ -28,6 +29,7 @@ class Script extends Component {
 
   componentWillUnmount() {
     this.removeScript();
+    window.removeEventListener('error', this.props.onError);
   }
 
   appendScript() {

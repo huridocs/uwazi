@@ -19,12 +19,28 @@ const { Context } = MDComponents;
 class PageViewer extends Component {
   constructor(props) {
     super(props);
-    this.state = { customPageError: null };
+    this.state = {};
     this.warningPageError = this.warningPageError.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.page.get('title') !== this.props.page.get('title')) {
+      this.removeCustomPageError();
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.state.customPageError) {
+      this.removeCustomPageError();
+    }
   }
 
   warningPageError(error) {
     this.setState({ customPageError: error });
+  }
+
+  removeCustomPageError() {
+    this.setState({ customPageError: null });
   }
 
   renderErrorWarning() {
@@ -35,7 +51,7 @@ class PageViewer extends Component {
           There is an unexpected error on this custom page, it may not work properly. Please contact
           an admin for details.
         </Translate>
-        <Icon icon="times" onClick={() => this.setState({ customPageError: null })} />
+        <Icon icon="times" onClick={() => this.removeCustomPageError()} />
       </div>
     );
   }
@@ -65,7 +81,7 @@ class PageViewer extends Component {
                 <Footer />
               </div>
             </main>
-            <Script scriptRendered={scriptRendered} onError={this.warningPageError}>
+            <Script scriptRendered={scriptRendered} onError={e => this.warningPageError(e)}>
               {scriptCode}
             </Script>
           </>
