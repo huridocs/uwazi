@@ -35,7 +35,6 @@ describe('upload routes', () => {
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error'); //just to avoid annoying console output
     await testingEnvironment.setUp(fixtures);
-    await setupTestUploadedPaths();
   });
 
   afterAll(async () => testingEnvironment.tearDown());
