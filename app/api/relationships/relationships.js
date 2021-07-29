@@ -12,7 +12,7 @@ import { generateNamesAndIds } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
 import {
-  RelationshipCollection,
+  processRelationshipCollection,
   getEntityReferencesByRelationshipTypes,
   guessRelationshipPropertyHub,
 } from './relationshipsHelpers';
@@ -182,15 +182,12 @@ export default {
             return res;
           }, {});
 
-          let relationshipsCollection = new RelationshipCollection(..._relationships)
-            .removeOtherLanguageTextReferences(connectedDocuments)
-            .withConnectedData(connectedDocuments)
-            .removeSingleHubs()
-            .removeOrphanHubsOf(sharedId);
-
-          if (!unpublished) {
-            relationshipsCollection = relationshipsCollection.removeUnpublished();
-          }
+          const relationshipsCollection = processRelationshipCollection(
+            _relationships,
+            connectedDocuments,
+            sharedId,
+            unpublished
+          );
 
           return relationshipsCollection;
         });
