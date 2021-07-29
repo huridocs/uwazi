@@ -14,7 +14,7 @@ export function loadLinks(links) {
 }
 
 export function addLink(links, type = 'link') {
-  const link = { title: `Item ${links.length + 1}`, localID: ID(), type, children: [] };
+  const link = { title: `Item ${links.length + 1}`, localID: ID(), type, sublinks: [] };
   return dispatch => {
     dispatch(formActions.push('settings.navlinksData.links', link));
     dispatch(editLink(link.localID));
@@ -22,9 +22,9 @@ export function addLink(links, type = 'link') {
 }
 
 export function addGroupLink(links, index) {
-  const link = { title: `Item ${index} - ${links.length + 1}`, localID: ID() };
+  const link = { title: `Item ${index + 1} - ${links[index].sublinks.length + 1}`, localID: ID() };
   return dispatch => {
-    dispatch(formActions.push(`settings.navlinksData.links[${index}].children`, link));
+    dispatch(formActions.push(`settings.navlinksData.links[${index}].sublinks`, link));
     dispatch(editLink(link.localID));
   };
 }
@@ -39,7 +39,7 @@ export function removeLink(index) {
 
 export function removeGroupLink(groupLinkIndex, sublinkIndex) {
   return formActions.remove(
-    `settings.navlinksData.links[${groupLinkIndex}].children`,
+    `settings.navlinksData.links[${groupLinkIndex}].sublinks`,
     sublinkIndex
   );
 }

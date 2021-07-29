@@ -137,7 +137,7 @@ export class NavlinkForm extends Component {
                     <ShowIf if={link.type === 'group'}>
                       <div className="row">
                         <div className="col-sm-12 offset-lg-3 offset-md-3 offset-sm-1">
-                          {links[index].children?.map((_, i) => (
+                          {links[index].sublinks?.map((_, i) => (
                             <div
                               className="row"
                               style={{ paddingBottom: '15px', paddingTop: '5px' }}
@@ -151,7 +151,7 @@ export class NavlinkForm extends Component {
                                 <div className={titleClass}>
                                   <span className="input-group-addon">Title</span>
                                   <Field
-                                    model={`settings.navlinksData.links[${index}].children[${i}].title`}
+                                    model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
                                   >
                                     <input className="form-control" />
                                   </Field>
@@ -161,7 +161,7 @@ export class NavlinkForm extends Component {
                                 <div className="input-group">
                                   <span className="input-group-addon">URL</span>
                                   <Field
-                                    model={`settings.navlinksData.links[${index}].children[${i}].url`}
+                                    model={`settings.navlinksData.links[${index}].sublinks[${i}].url`}
                                   >
                                     <input className="form-control" />
                                   </Field>
