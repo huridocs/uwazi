@@ -16,6 +16,11 @@ import Script from './Script';
 
 const { Context } = MDComponents;
 
+const parseSSRError = error => {
+  const SSRError = error instanceof Immutable.Map ? error.toJS() : error;
+  return SSRError?.json ? parseRenderingError(SSRError) : null;
+};
+
 class PageViewer extends Component {
   constructor(props) {
     super(props);
@@ -64,7 +69,7 @@ class PageViewer extends Component {
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
-    const parsedPageError = this.parseSSRError(error);
+    const parsedPageError = parseSSRError(error);
     return (
       <div className="row">
         {!parsedPageError && (
@@ -94,12 +99,6 @@ class PageViewer extends Component {
         )}
       </div>
     );
-  }
-
-  parseSSRError(error) {
-    const SSRError = error instanceof Immutable.Map ? error.toJS() : error;
-    const parsedPageError = SSRError?.json ? parseRenderingError(SSRError) : null;
-    return parsedPageError;
   }
 }
 
