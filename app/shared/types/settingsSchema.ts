@@ -73,6 +73,8 @@ export const settingsLinkSchema = {
     _id: objectIdSchema,
     title: { type: 'string' },
     url: { type: 'string' },
+    sublinks: { type: 'array' },
+    type: { type: 'string' },
   },
 };
 
