@@ -11,7 +11,7 @@ import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
-import { getRenderError } from 'app/App/ErrorHandling/ErrorUtils';
+import { parseRenderingError } from 'app/App/ErrorHandling/ErrorUtils';
 import Script from './Script';
 
 const { Context } = MDComponents;
@@ -64,10 +64,11 @@ class PageViewer extends Component {
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
-    const renderError = getRenderError(error instanceof Immutable.Map ? error.toJS() : error);
+    const SSRError = error instanceof Immutable.Map ? error.toJS() : error;
+    const parsedPageError = SSRError?.json ? parseRenderingError(SSRError) : null;
     return (
       <div className="row">
-        {!renderError.name && (
+        {!parsedPageError && (
           <>
             <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
             <main className="page-viewer document-viewer">
@@ -86,9 +87,9 @@ class PageViewer extends Component {
             </Script>
           </>
         )}
-        {renderError.name && (
+        {parsedPageError && (
           <div className="main-wrapper">
-            <ErrorFallback error={renderError} />
+            <ErrorFallback error={parsedPageError} />
             <Footer />
           </div>
         )}

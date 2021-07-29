@@ -14,11 +14,8 @@ export interface APIError {
   status?: number;
 }
 
-export const getRenderError = (apiResponse: APIError) => {
-  if (!apiResponse || !apiResponse.json) {
-    return {};
-  }
-  return apiResponse
+export const parseRenderingError = (apiResponse: APIError) =>
+  apiResponse
     ? {
         name: apiResponse.json.error || 'Unexpected error',
         message: apiResponse.json.prettyMessage,
@@ -26,4 +23,3 @@ export const getRenderError = (apiResponse: APIError) => {
         code: apiResponse.status,
       }
     : null;
-};
