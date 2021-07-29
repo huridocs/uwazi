@@ -37,6 +37,13 @@ export function removeLink(index) {
   return formActions.remove('settings.navlinksData.links', index);
 }
 
+export function removeGroupLink(groupLinkIndex, sublinkIndex) {
+  return formActions.remove(
+    `settings.navlinksData.links[${groupLinkIndex}].children`,
+    sublinkIndex
+  );
+}
+
 export function saveLinks(data) {
   return dispatch => {
     dispatch({ type: types.SAVING_NAVLINKS });

@@ -11,6 +11,7 @@ import { faBullhorn } from '@fortawesome/free-solid-svg-icons/faBullhorn';
 import { faCalculator } from '@fortawesome/free-solid-svg-icons/faCalculator';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons/faCalendar';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons/faCaretDown';
+import { faCaretSquareDown } from '@fortawesome/free-solid-svg-icons/faCaretSquareDown';
 import { faCaretUp } from '@fortawesome/free-solid-svg-icons/faCaretUp';
 import { faChartBar } from '@fortawesome/free-solid-svg-icons/faChartBar';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
@@ -119,6 +120,7 @@ const icons = {
   faCalculator,
   faCalendar,
   faCaretDown,
+  faCaretSquareDown,
   faCaretUp,
   faChartBar,
   faCheck,
