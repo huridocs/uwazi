@@ -78,7 +78,7 @@ class TestingEnvironment {
   withRequestId(requestId: string = '1234') {
     this.appContextSpy = jest
       .spyOn(appContext, 'get')
-      .mockImplementation(key => (key === 'requestId' ? requestId : null));
+      .mockImplementationOnce(key => (key === 'requestId' ? requestId : null));
     return this;
   }
 
