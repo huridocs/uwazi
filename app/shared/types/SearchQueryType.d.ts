@@ -9,6 +9,7 @@ export interface SearchQuery {
     searchString?: string | number;
     sharedId?: string;
     published?: boolean;
+    title?: string;
   };
   fields?: string[];
 }

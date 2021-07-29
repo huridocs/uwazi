@@ -13,6 +13,14 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
     query: {
       bool: {
         filter: [
+          // query.filter?.title && {
+          //   terms: {
+          //     'title.raw': [query.filter.title],
+          //   },
+          // },
+          {
+            term: { title: query.filter!.title }
+          },
           query.filter?.sharedId && {
             terms: {
               'sharedId.raw': [query.filter.sharedId],
