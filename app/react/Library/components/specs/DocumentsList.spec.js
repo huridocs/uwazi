@@ -30,7 +30,6 @@ describe('Library DocumentsList container', () => {
       selectDocument: jasmine.createSpy('selectDocument'),
       selectDocuments: jasmine.createSpy('selectDocuments'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
-      authorized: true,
       storeKey: 'library',
     };
   });
@@ -99,7 +98,6 @@ describe('Library DocumentsList container', () => {
         search: { sort: 'sortProperty' },
         selectedDocuments: store.library.ui.get('selectedDocuments'),
         multipleSelected: false,
-        authorized: true,
         rowListZoomLevel: 2,
         clickOnDocument,
         selectAllDocuments,
