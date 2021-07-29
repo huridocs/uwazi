@@ -23,7 +23,7 @@ describe('entities get searchString', () => {
     await testingEnvironment.setUp(fixturesTitleSearch, 'entities.v2.index');
   });
 
-  afterAll(async () => testingEnvironment.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET', () => {
     it('should have a validation', async () => {

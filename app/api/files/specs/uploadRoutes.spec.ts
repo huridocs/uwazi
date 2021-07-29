@@ -38,7 +38,7 @@ describe('upload routes', () => {
     await setupTestUploadedPaths();
   });
 
-  afterAll(async () => testingEnvironment.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
     socketEmit('documentProcessed', async () =>

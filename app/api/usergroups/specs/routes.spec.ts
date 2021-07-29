@@ -21,11 +21,11 @@ describe('usergroups routes', () => {
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
 
   beforeAll(async () => {
-    await testingEnvironment.connect().withContext();
+    await testingEnvironment.withTenant().withRequestId();
   });
 
   afterAll(async () => {
-    await testingEnvironment.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   const getUser = () => user;

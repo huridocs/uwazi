@@ -34,7 +34,7 @@ describe('files routes', () => {
     await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => testingEnvironment.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/files', () => {
     beforeEach(async () => {

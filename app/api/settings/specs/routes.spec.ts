@@ -28,7 +28,7 @@ describe('Settings routes', () => {
     await testingEnvironment.setUp(fixtures, elasticIndex);
   });
 
-  afterAll(async () => testingEnvironment.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET', () => {
     it('should respond with settings', async () => {

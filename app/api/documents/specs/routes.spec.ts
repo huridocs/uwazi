@@ -23,7 +23,7 @@ describe('document routes', () => {
     await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => testingEnvironment.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET/page', () => {
     it('should return raw page', async () => {

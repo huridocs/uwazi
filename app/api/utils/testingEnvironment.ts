@@ -5,10 +5,6 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserSchema } from 'shared/types/userType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
-const appContextTestValues: { [k: string]: any } = {
-  requestId: '1234',
-};
-
 class TestingEnvironment {
   private queue: Promise<void>;
 
@@ -19,11 +15,11 @@ class TestingEnvironment {
   }
 
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
-    await this.connect()
+    await this.withTenant()
       .withFixtures(fixtures)
       .withElastic(elasticIndex)
       .withPermissions()
-      .withContext();
+      .withRequestId();
   }
 
   async then(callback: (queue: Promise<any>) => {}) {
@@ -34,16 +30,22 @@ class TestingEnvironment {
     this.queue = this.queue.then(callback);
   }
 
-  connect = (options?: { defaultTenant: boolean }) => {
+  withTenant() {
     this.chain(async () => {
-      await testingDB.connect(options);
+      await testingTenants.mockCurrentTenant({
+        name: testingDB.dbName || 'defaultDB',
+        dbName: testingDB.dbName || 'defaultDB',
+        indexName: 'index',
+      });
     });
+
     return this;
-  };
+  }
 
   withFixtures(fixtures?: DBFixture) {
     if (fixtures) {
       this.chain(async () => {
+        await testingDB.connect();
         await testingDB.clearAllAndLoadFixtures(fixtures);
       });
     }
@@ -70,14 +72,14 @@ class TestingEnvironment {
     return this;
   }
 
-  withContext(contextValues: { [k: string]: any } = appContextTestValues) {
+  withRequestId(requestId: string = '1234') {
     this.appContextSpy = jest
       .spyOn(appContext, 'get')
-      .mockImplementation((key: string) => contextValues[key]);
+      .mockImplementation(key => (key === 'requestId' ? requestId : null));
     return this;
   }
 
-  async disconnect() {
+  async tearDown() {
     this.chain(async () => {
       await testingDB.disconnect();
     });

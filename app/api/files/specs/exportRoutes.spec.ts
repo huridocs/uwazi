@@ -50,7 +50,7 @@ describe('export routes', () => {
       }));
     });
 
-    afterAll(async () => testingEnvironment.disconnect());
+    afterAll(async () => testingEnvironment.tearDown());
 
     const fakeRequestAugmenterMiddleware = (user: User, language: string) => (
       req: Request,

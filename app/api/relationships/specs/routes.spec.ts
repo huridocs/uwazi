@@ -24,7 +24,7 @@ describe('relationships routes', () => {
     });
   });
 
-  afterAll(async () => testingEnvironment.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/bulk', () => {
     it('should validate connections', async () => {

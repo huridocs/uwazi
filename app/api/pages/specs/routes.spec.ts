@@ -20,7 +20,7 @@ describe('Pages Routes', () => {
   });
 
   afterAll(async () => {
-    await testingEnvironment.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('/api/pages', () => {

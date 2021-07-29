@@ -43,11 +43,11 @@ describe('users routes', () => {
   });
 
   beforeAll(async () => {
-    await testingEnvironment.connect().withContext();
+    await testingEnvironment.withTenant().withRequestId();
   });
 
   afterAll(async () => {
-    await testingEnvironment.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   beforeEach(() => {
