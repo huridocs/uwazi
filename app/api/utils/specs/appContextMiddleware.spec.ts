@@ -8,10 +8,6 @@ const testingRoutes = (app: Application) => {
     res.json(appContext.get('someKey'));
     next();
   });
-  app.get('/api/requestId', (_req, res, next) => {
-    res.json(appContext.get('requestId'));
-    next();
-  });
 };
 
 const helperMiddleware = (req: Request, _res: Response, next: NextFunction) => {
@@ -34,10 +30,5 @@ describe('appcontext middleware', () => {
       .set('someHeader', 'test');
 
     expect(response.text).toBe(JSON.stringify('test'));
-  });
-
-  it('should set a requestId number as part of the context', async () => {
-    const response = await request(app).get('/api/requestId');
-    expect(response.text).toEqual(expect.stringMatching(/^[0-9]{1,4}$/));
   });
 });
