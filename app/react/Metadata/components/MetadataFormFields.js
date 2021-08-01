@@ -31,6 +31,7 @@ import {
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
+import { MetadataExtractor } from './MetadataExtractor';
 
 export const translateOptions = thesauri =>
   thesauri
@@ -258,7 +259,7 @@ export class MetadataFormFields extends Component {
   }
 
   render() {
-    const { thesauris, template, model, showSubset } = this.props;
+    const { thesauris, template, model, showSubset, storeKey } = this.props;
 
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
@@ -296,6 +297,10 @@ export class MetadataFormFields extends Component {
                   </li>
                 ) : null}
                 <li className="wide">
+                  {isDocumentView &&
+                    ['text', 'date', 'numeric', 'markdown'].includes(property.type) && (
+                      <MetadataExtractor fieldName={property.name} />
+                    )}
                   {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
                 </li>
               </ul>
@@ -320,6 +325,7 @@ MetadataFormFields.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
+  storeKey: PropTypes.string.isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
