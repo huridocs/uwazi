@@ -38,7 +38,7 @@ export class Menu extends Component {
         if (url.startsWith('http')) {
           return (
             <li key={link.get('_id')} className="menuNav-item">
-              <a href={url} className="btn menuNav-btn" target="_blank">
+              <a href={url} className="btn menuNav-btn" target="_blank" rel="noreferrer">
                 {t('Menu', link.get('title'))}
               </a>
             </li>
@@ -59,8 +59,10 @@ export class Menu extends Component {
         const url = link.get('url') || '/';
         if (url.startsWith('http')) {
           return (
-            <ul key={link.get('_id')} className="Dropdown">
-              <a className="btn menuNav-btn">{t('Menu', link.get('title'))}</a>
+            <li key={link.get('_id')} className="menuNav-item Dropdown">
+              <a href="" className="btn menuNav-btn">
+                {t('Menu', link.get('title'))}
+              </a>
               {link.get('sublinks').map(sublink => (
                 <li className="Dropdown-option">
                   <a href={sublink.url} className="btn menuNav-btn" target="_blank">
@@ -68,28 +70,30 @@ export class Menu extends Component {
                   </a>
                 </li>
               ))}
-            </ul>
+            </li>
           );
         }
         return (
-          <ul key={link.get('_id')} className="Dropdown">
+          <li key={link.get('_id')} className="menuNav-item Dropdown">
             <a className="btn menuNav-btn">{t('Menu', link.get('title'))}</a>
             {link.get('sublinks').map(sublink => (
-              <li className="Dropdown-option">
+              <div className="Dropdown-option">
                 <I18NLink to={sublink.url} className="btn menuNav-btn">
                   {t('Menu', sublink.get('title'))}
                 </I18NLink>
-              </li>
+              </div>
             ))}
-          </ul>
+          </li>
         );
       });
 
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
-        {subMenuLinks}
         <li className="menuItems">
-          <ul className="menuNav-list">{navLinks}</ul>
+          <ul className="menuNav-list">
+            {navLinks}
+            {subMenuLinks}
+          </ul>
         </li>
         <li className="menuActions">
           <ul className="menuNav-list">

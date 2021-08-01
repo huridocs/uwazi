@@ -12,6 +12,7 @@ import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/
 // import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
+import './styles/menu.scss';
 
 export const LinkSource = {
   beginDrag(props) {
@@ -68,7 +69,6 @@ export const LinkTarget = {
     monitor.getItem().index = hoverIndex;
   },
 };
-
 export class NavlinkForm extends Component {
   render() {
     const {
@@ -96,37 +96,40 @@ export class NavlinkForm extends Component {
           <div className="propery-form expand">
             <div>
               <div className="row">
-                <div className="col-sm-1">
-                  {connectDragSource(
-                    <span className="property-name">
-                      <Icon icon="bars" className="reorder" />
-                      &nbsp;
-                      <Icon icon={link.type === 'group' ? 'caret-square-down' : 'link'} />
-                    </span>
-                  )}
-                </div>
                 <div className="col-sm-11">
                   <div className="row">
-                    <div className="col-sm-3">
+                    <div
+                      className={link.type === 'group' ? 'col-sm-11' : 'col-sm-3'}
+                      style={{ display: 'flex' }}
+                    >
+                      {connectDragSource(
+                        <span className="property-name" style={{ paddingRight: '10px' }}>
+                          <Icon icon="bars" className="reorder" />
+                          &nbsp;
+                          <Icon icon={link.type === 'group' ? 'caret-square-down' : 'link'} />
+                        </span>
+                      )}
                       <div className={titleClass}>
                         <span className="input-group-addon">Title</span>
                         <Field model={`settings.navlinksData.links[${index}].title`}>
-                          <input className="form-control" />
+                          <input className="form-control" style={{ width: '100%' }} />
                         </Field>
                       </div>
                     </div>
-                    <div className="col-sm-8">
-                      <div className="input-group">
-                        <span className="input-group-addon">URL</span>
-                        <Field model={`settings.navlinksData.links[${index}].url`}>
-                          <input className="form-control" />
-                        </Field>
+                    <ShowIf if={link.type !== 'group'}>
+                      <div className="col-sm-8">
+                        <div className="input-group">
+                          <span className="input-group-addon">URL</span>
+                          <Field model={`settings.navlinksData.links[${index}].url`}>
+                            <input className="form-control" />
+                          </Field>
+                        </div>
                       </div>
-                    </div>
+                    </ShowIf>
                     <div className="col-sm-1">
                       <button
                         type="button"
-                        className="btn btn-danger btn-xs property-remove"
+                        className="btn btn-danger btn-xs property-remove, menu-delete-button"
                         onClick={() => this.props.removeLink(index)}
                       >
                         <Icon icon="trash-alt" /> Delete
@@ -136,24 +139,23 @@ export class NavlinkForm extends Component {
                   <div className="row">
                     <ShowIf if={link.type === 'group'}>
                       <div className="row">
-                        <div className="col-sm-12 offset-lg-3 offset-md-3 offset-sm-1">
+                        <div className="col-sm-1"></div>
+                        <div className="col-sm-11">
                           {links[index].sublinks?.map((_, i) => (
                             <div
                               className="row"
-                              style={{ paddingBottom: '15px', paddingTop: '5px' }}
+                              style={{ paddingBottom: '5px', paddingTop: '5px' }}
                             >
-                              <div className="col-sm-1">
-                                <span>
+                              <div className="col-sm-3" style={{ display: 'flex' }}>
+                                <span style={{ padding: '5px 10px 0px 0px' }}>
                                   <Icon icon="link" />
                                 </span>
-                              </div>
-                              <div className="col-sm-2">
                                 <div className={titleClass}>
                                   <span className="input-group-addon">Title</span>
                                   <Field
                                     model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
                                   >
-                                    <input className="form-control" />
+                                    <input className="form-control" style={{ width: '100%' }} />
                                   </Field>
                                 </div>
                               </div>
@@ -170,7 +172,7 @@ export class NavlinkForm extends Component {
                               <div className="col-sm-1">
                                 <button
                                   type="button"
-                                  className="btn btn-danger btn-xs property-remove"
+                                  className="btn btn-danger btn-xs property-remove, menu-delete-button"
                                   onClick={() => this.props.removeGroupLink(index, i)}
                                 >
                                   <Icon icon="trash-alt" /> Delete
@@ -183,6 +185,7 @@ export class NavlinkForm extends Component {
                       <div className="row">
                         <div className="col-sm-12">
                           <button
+                            className="menu-link-group-button"
                             type="submit"
                             onClick={this.props.addGroupLink.bind(this, links, index)}
                           >

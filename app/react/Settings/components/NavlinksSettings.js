@@ -13,6 +13,7 @@ import { t } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
 
 import NavlinkForm from './NavlinkForm';
+import './styles/menu.scss';
 
 export class NavlinksSettings extends Component {
   componentDidMount() {
@@ -62,10 +63,16 @@ export class NavlinksSettings extends Component {
               ))}
             </ul>
             <div className="settings-footer">
-              <button onClick={this.props.addLink.bind(this, links, 'link')}>
+              <button
+                className="menu-link-group-button"
+                onClick={this.props.addLink.bind(this, links, 'link')}
+              >
                 {t('System', 'Add link')}
               </button>
-              <button onClick={this.props.addLink.bind(this, links, 'group')}>
+              <button
+                className="menu-link-group-button"
+                onClick={this.props.addLink.bind(this, links, 'group')}
+              >
                 {t('System', 'Add group')}
               </button>
               <button
