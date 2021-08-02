@@ -16,9 +16,9 @@ class TestingEnvironment {
   }
 
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
-    await this.withTenant()
-      .withFixtures(fixtures)
-      .withElastic(elasticIndex)
+    this.queue = Promise.resolve();
+    await this.withTenant().withFixtures(fixtures);
+    await this.withElastic(elasticIndex)
       .withPermissions()
       .withRequestId();
     return this;
