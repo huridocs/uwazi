@@ -24,7 +24,7 @@ export const fileSchema = {
     creationDate: { type: 'number' },
     language: { type: 'string', minLength: 1 },
     type: { type: 'string', enum: ['custom', 'document', 'thumbnail', 'attachment'] },
-    url: { type: 'string' },
+    url: { type: 'string', pattern: '^https://' },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     totalPages: { type: 'number' },
     generatedToc: { type: 'boolean' },

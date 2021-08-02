@@ -8,6 +8,7 @@ import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
+import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 
@@ -66,6 +67,12 @@ export default (app: Application) => {
   app.post(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: fileSchema,
+      },
+    }),
     (req, res, next) => {
       files
         .save(req.body)
