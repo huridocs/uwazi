@@ -28,6 +28,7 @@ export const fileSchema = {
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     totalPages: { type: 'number' },
     generatedToc: { type: 'boolean' },
+    uploaded: { type: 'boolean' },
     fullText: {
       type: 'object',
       additionalProperties: false,
