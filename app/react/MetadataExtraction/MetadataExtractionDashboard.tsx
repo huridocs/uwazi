@@ -13,6 +13,17 @@ export interface MetadataExtractionDashboardPropTypes {
   extractionSettings: Map<string, string | Array<string>>[];
 }
 
+export interface FormattedSettingsData {
+  [key: string]: {
+    firstProperty: PropertySchema;
+    templates: TemplateSchema[];
+  };
+}
+
+export interface MetadataExtractionDashboardStateTypes {
+  formattedData: FormattedSettingsData;
+}
+
 function mapStateToProps({ settings, templates }: any) {
   return {
     extractionSettings: settings.collection.get('features')?.get('metadata-extraction'),
@@ -20,14 +31,23 @@ function mapStateToProps({ settings, templates }: any) {
   };
 }
 
-class MetadataExtractionDashboard extends React.Component<MetadataExtractionDashboardPropTypes> {
+class MetadataExtractionDashboard extends React.Component<
+  MetadataExtractionDashboardPropTypes,
+  MetadataExtractionDashboardStateTypes
+> {
+  constructor(props: MetadataExtractionDashboardPropTypes) {
+    super(props);
+    this.state = {
+      formattedData: {},
+    };
+  }
+
+  componentDidMount() {
+    this.arrangeTemplatesAndProperties();
+  }
+
   arrangeTemplatesAndProperties() {
-    const formatted: {
-      [key: string]: {
-        firstProperty: PropertySchema;
-        templates: TemplateSchema[];
-      };
-    } = {};
+    const formatted: FormattedSettingsData = {};
 
     this.props.extractionSettings.forEach(setting => {
       const template = setting.has('id')
@@ -57,8 +77,7 @@ class MetadataExtractionDashboard extends React.Component<MetadataExtractionDash
         }
       });
     });
-
-    return formatted;
+    this.setState({ formattedData: formatted });
   }
 
   render() {
@@ -77,7 +96,7 @@ class MetadataExtractionDashboard extends React.Component<MetadataExtractionDash
               </tr>
             </thead>
             <tbody>
-              {Object.entries(this.arrangeTemplatesAndProperties()).map(([propName, data]) => (
+              {Object.entries(this.state.formattedData).map(([propName, data]) => (
                 <tr key={propName}>
                   <td>
                     <Icon icon={Icons[data.firstProperty.type]} fixedWidth />
