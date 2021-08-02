@@ -24,7 +24,12 @@ const joiPrettifier = (error, req) => {
       : '';
   const errorString = `\n${error.message || JSON.stringify(error.json)}`;
 
-  const errorMessage = `${url}${body}${query}${errorString}`;
+  let errorMessage = `${url}${body}${query}${errorString}`;
+
+  //if the resulting message is empty, or meaningless combination of characters ('{}')
+  if (errorMessage.match(/^[{}\s]*$/g)) {
+    errorMessage = JSON.stringify(error, null, 2);
+  }
 
   return errorMessage;
 };
