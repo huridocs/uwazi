@@ -9,10 +9,10 @@ import { setupTestUploadedPaths } from 'api/files';
 const testingEnvironment = {
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
     await this.setTenant();
-    await this.setFixtures(fixtures);
-    await this.setElastic(elasticIndex);
     this.setPermissions();
     this.setRequestId();
+    await this.setFixtures(fixtures);
+    await this.setElastic(elasticIndex);
   },
 
   async setTenant() {
