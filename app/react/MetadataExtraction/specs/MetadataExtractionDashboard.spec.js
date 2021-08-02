@@ -108,20 +108,18 @@ const expectedFormattedData = {
 
 describe('MetadataExtractionDashboard', () => {
   let component;
-  let props;
+  let store;
 
   beforeEach(() => {
-    props = {
-      store: {
-        dispatch: jasmine.createSpy('dispatch'),
-        subscribe: jasmine.createSpy('subscribe'),
-        getState: () => ({ templates, settings }),
-      },
+    store = {
+      dispatch: jasmine.createSpy('dispatch'),
+      subscribe: jasmine.createSpy('subscribe'),
+      getState: () => ({ templates, settings }),
     };
   });
 
   const render = () => {
-    component = shallow(<MetadataExtractionDashboard {...props} />).dive();
+    component = shallow(<MetadataExtractionDashboard store={store} />).dive();
   };
 
   describe('componentDidMount', () => {
