@@ -1,8 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Icon } from 'UI';
 
+import { t } from 'app/I18N';
+import Icons from 'app/Templates/components/Icons';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
+import { PropertySchema } from 'shared/types/commonTypes';
 
 export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
@@ -18,12 +22,17 @@ function mapStateToProps({ settings, templates }: any) {
 
 class MetadataExtractionDashboard extends React.Component<MetadataExtractionDashboardPropTypes> {
   arrangeTemplatesAndProperties() {
-    const result: { [key: string]: Array<string> } = {};
+    const formatted: {
+      [key: string]: {
+        firstProperty: PropertySchema;
+        templates: TemplateSchema[];
+      };
+    } = {};
 
     this.props.extractionSettings.forEach(setting => {
       const template = setting.has('id')
-        ? this.props.templates.find(t => t?.get('_id') === setting.get('id'))
-        : this.props.templates.find(t => t?.get('name') === setting.get('name'));
+        ? this.props.templates.find(temp => temp?.get('_id') === setting.get('id'))
+        : this.props.templates.find(temp => temp?.get('name') === setting.get('name'));
       if (!template) {
         throw new Error(`Template "${setting.get('_id') || setting.get('name')}" not found.`);
       }
@@ -38,22 +47,56 @@ class MetadataExtractionDashboard extends React.Component<MetadataExtractionDash
             `Property "${propLabel}" not found on template "${template.get('name')}".`
           );
         }
-        if (!result.hasOwnProperty(propLabel)) {
-          result[propLabel] = [template.get('name')];
+        if (!formatted.hasOwnProperty(propLabel)) {
+          formatted[propLabel] = {
+            firstProperty: prop.toJS(),
+            templates: [template.toJS()],
+          };
         } else {
-          result[propLabel].push(template.get('name'));
+          formatted[propLabel].templates.push(template.toJS());
         }
       });
     });
 
-    return result;
+    return formatted;
   }
 
   render() {
     return (
-      <>
-        <div>Arranged: {JSON.stringify(this.arrangeTemplatesAndProperties())}</div>
-      </>
+      <div className="panel panel-default">
+        <div className="panel-heading">{t('System', 'Metadata extraction dashboard')}</div>
+        <div className="panel-subheading">
+          {t('System', 'Extract information from your documents')}
+        </div>
+        <div className="metadata-extraction-table">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Metadata to extract</th>
+                <th>Template</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(this.arrangeTemplatesAndProperties()).map(([propName, data]) => (
+                <tr key={propName}>
+                  <td>
+                    <Icon icon={Icons[data.firstProperty.type]} fixedWidth />
+                    {propName}
+                  </td>
+                  <td className="templateNameViewer">
+                    {data.templates.map((template, index) => (
+                      <div key={template.name}>
+                        {template.name}
+                        {index !== data.templates.length - 1 ? ',' : ''}
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   }
 }
