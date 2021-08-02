@@ -21,7 +21,8 @@ describe('usergroups routes', () => {
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
 
   beforeAll(async () => {
-    await testingEnvironment.withTenant().withRequestId();
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {

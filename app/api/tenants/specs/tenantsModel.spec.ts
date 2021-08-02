@@ -16,7 +16,7 @@ describe('tenantsModel', () => {
 
   beforeAll(async () => {
     await testingDB.connect();
-    await testingEnvironment.withRequestId();
+    await testingEnvironment.setRequestId();
     db = DB.connectionForDB(config.SHARED_DB).db;
   });
 

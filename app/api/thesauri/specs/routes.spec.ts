@@ -24,7 +24,8 @@ describe('Thesauri routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await testingEnvironment.withTenant().withFixtures(fixtures);
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setFixtures(fixtures);
   });
 
   afterAll(async () => testingEnvironment.tearDown());

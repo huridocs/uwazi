@@ -7,12 +7,13 @@ import contact from '../contact';
 jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();
 });
-
+await testingEnvironment.set
 describe('contact', () => {
   const app = setUpApp(contactRoutes);
 
   beforeAll(async () => {
-    await testingEnvironment.withTenant().withRequestId();
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {

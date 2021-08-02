@@ -43,7 +43,8 @@ describe('users routes', () => {
   });
 
   beforeAll(async () => {
-    await testingEnvironment.withTenant().withRequestId();
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {
