@@ -57,8 +57,10 @@ class MetadataExtractionDashboard extends React.Component<
         throw new Error(`Template "${setting.get('_id') || setting.get('name')}" not found.`);
       }
 
-      const properties: Array<string> = setting.get('properties');
-      properties.forEach(propLabel => {
+      const rawProperties = setting.get('properties');
+      const properties: Array<string> | undefined =
+        typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
+      properties?.forEach(propLabel => {
         const prop =
           template.get('properties')?.find(p => p?.get('label') === propLabel) ||
           template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
