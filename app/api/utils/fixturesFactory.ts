@@ -21,6 +21,7 @@ export function getFixturesFactory() {
 
     template: (name: string, properties: PropertySchema[] = []) => ({
       _id: idMapper(name),
+      name,
       properties,
     }),
 
