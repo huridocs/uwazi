@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
+import { actions as formActions, formReducer } from 'react-redux-form';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
 import { actions } from 'app/BasicReducer';
 
 export type OwnPropTypes = {
   fieldName: string;
+  model: string;
 };
 
 const selectionHandler = (selection: {}, fieldName: string) =>
@@ -22,6 +24,7 @@ const selectionHandler = (selection: {}, fieldName: string) =>
       },
     ]
   );
+const formFieldUpdater = (value: string, model: string) => formActions.change(model, value);
 
 const mapStateToProps = (state: IStore, ownProps: OwnPropTypes) => {
   const { fieldName } = ownProps;
@@ -32,12 +35,13 @@ const mapStateToProps = (state: IStore, ownProps: OwnPropTypes) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
-  const { fieldName } = ownProps;
+  const { fieldName, model } = ownProps;
   return bindActionCreators(
     {
       setActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', fieldName),
       unsetActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', 'none'),
       setSelection: selection => selectionHandler(selection, fieldName),
+      updateFormField: value => formFieldUpdater(value, model),
     },
     dispatch
   );
@@ -53,10 +57,12 @@ const MetadataExtractorComponent = ({
   setActive,
   unsetActive,
   setSelection,
+  updateFormField,
 }: mappedProps) => {
   useEffect(() => {
     if (isActive && selection !== null) {
       setSelection(selection);
+      updateFormField(selection.text);
       unsetActive();
     }
   }, [isActive, selection]);

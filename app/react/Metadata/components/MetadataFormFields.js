@@ -299,7 +299,10 @@ export class MetadataFormFields extends Component {
                 <li className="wide">
                   {isDocumentView &&
                     ['text', 'date', 'numeric', 'markdown'].includes(property.type) && (
-                      <MetadataExtractor fieldName={property.name} />
+                      <MetadataExtractor
+                        fieldName={property.name}
+                        model={`${model}.metadata.${property.name}`}
+                      />
                     )}
                   {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
                 </li>
