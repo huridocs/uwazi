@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { actions as formActions, formReducer } from 'react-redux-form';
+import { actions as formActions } from 'react-redux-form';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
 import { actions } from 'app/BasicReducer';
