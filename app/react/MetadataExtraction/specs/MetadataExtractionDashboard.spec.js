@@ -14,21 +14,21 @@ const templates = Immutable.fromJS([
     factory.property('AonlyText', 'text'),
     factory.property('ABsharedDate', 'date'),
     factory.property('ACsharedMarkdown', 'markdown'),
-    factory.property('ABCsharedNumber', 'numeric'),
+    factory.property('ABC shared Number', 'numeric'),
     factory.property('sharedIgnoredLink', 'link'),
   ]),
   factory.template('templateB', [
     factory.property('BonlyText', 'text'),
     factory.property('ABsharedDate', 'date'),
     factory.property('BCsharedMarkdown', 'markdown'),
-    factory.property('ABCsharedNumber', 'numeric'),
+    factory.property('ABC shared number', 'numeric'),
     factory.property('sharedIgnoredLink', 'link'),
   ]),
   factory.template('templateC', [
     factory.property('ConlyText', 'text'),
     factory.property('ACsharedMarkdown', 'markdown'),
     factory.property('BCsharedMarkdown', 'markdown'),
-    factory.property('ABCsharedNumber', 'numeric'),
+    factory.property('abc shared number', 'numeric'),
     factory.property('sharedIgnoredLink', 'link'),
   ]),
 ]);
@@ -38,15 +38,15 @@ const settings = {
       'metadata-extraction': [
         {
           id: factory.id('templateA'),
-          properties: ['AonlyText', 'ABsharedDate', 'ACsharedMarkdown', 'ABCsharedNumber'],
+          properties: ['AonlyText', 'ABsharedDate', 'ACsharedMarkdown', 'ABC shared Number'],
         },
         {
           id: factory.id('templateB'),
-          properties: ['BonlyText', 'ABsharedDate', 'BCsharedMarkdown', 'ABCsharedNumber'],
+          properties: ['BonlyText', 'ABsharedDate', 'BCsharedMarkdown', 'ABC shared number'],
         },
         {
           id: factory.id('templateC'),
-          properties: ['ConlyText', 'ACsharedMarkdown', 'BCsharedMarkdown', 'ABCsharedNumber'],
+          properties: ['ConlyText', 'ACsharedMarkdown', 'BCsharedMarkdown', 'abc shared number'],
         },
       ],
     },
@@ -54,51 +54,51 @@ const settings = {
 };
 const expectedFormattedData = {
   formattedData: {
-    AonlyText: {
+    aonlytext: {
       firstProperty: {
-        name: 'AonlyText',
+        name: 'aonlytext',
         type: 'text',
       },
       templates: [{ name: 'templateA' }],
     },
-    ABsharedDate: {
+    abshareddate: {
       firstProperty: {
-        name: 'ABsharedDate',
+        name: 'abshareddate',
         type: 'date',
       },
       templates: [{ name: 'templateA' }, { name: 'templateB' }],
     },
-    ACsharedMarkdown: {
+    acsharedmarkdown: {
       firstProperty: {
-        name: 'ACsharedMarkdown',
+        name: 'acsharedmarkdown',
         type: 'markdown',
       },
       templates: [{ name: 'templateA' }, { name: 'templateC' }],
     },
-    ABCsharedNumber: {
+    abc_shared_number: {
       firstProperty: {
-        name: 'ABCsharedNumber',
+        name: 'abc_shared_number',
         type: 'numeric',
       },
       templates: [{ name: 'templateA' }, { name: 'templateB' }, { name: 'templateC' }],
     },
-    BonlyText: {
+    bonlytext: {
       firstProperty: {
-        name: 'BonlyText',
+        name: 'bonlytext',
         type: 'text',
       },
       templates: [{ name: 'templateB' }],
     },
-    BCsharedMarkdown: {
+    bcsharedmarkdown: {
       firstProperty: {
-        name: 'BCsharedMarkdown',
+        name: 'bcsharedmarkdown',
         type: 'markdown',
       },
       templates: [{ name: 'templateB' }, { name: 'templateC' }],
     },
-    ConlyText: {
+    conlytext: {
       firstProperty: {
-        name: 'ConlyText',
+        name: 'conlytext',
         type: 'text',
       },
       templates: [{ name: 'templateC' }],

@@ -61,21 +61,28 @@ class MetadataExtractionDashboard extends React.Component<
       const properties: Array<string> | undefined =
         typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
       properties?.forEach(propLabel => {
-        const prop =
-          template.get('properties')?.find(p => p?.get('label') === propLabel) ||
-          template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
+        const propName = propLabel
+          .trim()
+          .toLowerCase()
+          .replace(/ /g, '_');
+        let propIndex = propName;
+        let prop = template.get('properties')?.find(p => p?.get('name') === propName);
+        if (!prop) {
+          prop = template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
+          propIndex = propLabel;
+        }
         if (!prop) {
           throw new Error(
             `Property "${propLabel}" not found on template "${template.get('name')}".`
           );
         }
-        if (!formatted.hasOwnProperty(propLabel)) {
-          formatted[propLabel] = {
+        if (!formatted.hasOwnProperty(propIndex)) {
+          formatted[propIndex] = {
             firstProperty: prop.toJS(),
             templates: [template.toJS()],
           };
         } else {
-          formatted[propLabel].templates.push(template.toJS());
+          formatted[propIndex].templates.push(template.toJS());
         }
       });
     });
@@ -98,11 +105,11 @@ class MetadataExtractionDashboard extends React.Component<
               </tr>
             </thead>
             <tbody>
-              {Object.entries(this.state.formattedData).map(([propName, data]) => (
-                <tr key={propName}>
+              {Object.entries(this.state.formattedData).map(([propIndex, data]) => (
+                <tr key={propIndex}>
                   <td>
                     <Icon icon={Icons[data.firstProperty.type]} fixedWidth />
-                    {propName}
+                    {data.firstProperty.label}
                   </td>
                   <td className="templateNameViewer">
                     {data.templates.map((template, index) => (

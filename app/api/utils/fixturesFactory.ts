@@ -66,7 +66,10 @@ export function getFixturesFactory() {
       _id: idMapper(name),
       id: name,
       label: name,
-      name,
+      name: name
+        .trim()
+        .toLowerCase()
+        .replace(/ /g, '_'),
       type,
       ...props,
     }),
