@@ -14,6 +14,7 @@ class Script extends Component {
   componentDidMount() {
     this.appendScript();
     window.addEventListener('error', this.props.onError);
+    window.addEventListener('unhandledrejection', this.props.onError);
   }
 
   componentDidUpdate(prevProps) {
@@ -21,6 +22,7 @@ class Script extends Component {
     if (children !== prevProps.children) {
       this.removeScript();
       window.removeEventListener('error', this.props.onError);
+      window.removeEventListener('unhandledrejection', this.props.onError);
       this.appendScript();
     } else if (this.scriptElement === null) {
       this.appendScript();
@@ -30,6 +32,7 @@ class Script extends Component {
   componentWillUnmount() {
     this.removeScript();
     window.removeEventListener('error', this.props.onError);
+    window.removeEventListener('unhandledrejection', this.props.onError);
   }
 
   appendScript() {

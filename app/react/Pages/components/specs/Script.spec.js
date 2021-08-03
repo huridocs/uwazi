@@ -65,10 +65,11 @@ describe('PageCreator', () => {
       testScriptTag(1, workingScript.value);
     });
 
-    it('should add error event listener.', () => {
+    it('should add listeners for error and unhandledrejection events.', () => {
       jest.spyOn(window, 'addEventListener').mockImplementationOnce(() => {});
       render();
       expect(window.addEventListener).toHaveBeenCalledWith('error', props.onError);
+      expect(window.addEventListener).toHaveBeenCalledWith('unhandledrejection', props.onError);
     });
   });
 
@@ -93,11 +94,12 @@ describe('PageCreator', () => {
       testScriptTag(0);
     });
 
-    it('should remove the error listener if children has changed', () => {
+    it('should remove the listeners for error and unhandledrejection events if children has changed', () => {
       jest.spyOn(window, 'removeEventListener').mockImplementationOnce(() => {});
       component.setProps({ children: null });
 
       expect(window.removeEventListener).toHaveBeenCalledWith('error', props.onError);
+      expect(window.removeEventListener).toHaveBeenCalledWith('unhandledrejection', props.onError);
     });
   });
 
@@ -112,10 +114,11 @@ describe('PageCreator', () => {
       testScriptTag(0);
     });
 
-    it('should remove error event listener.', () => {
+    it('should remove the listeners for error and unhandledrejection events.', () => {
       jest.spyOn(window, 'removeEventListener').mockImplementationOnce(() => {});
       component.unmount();
       expect(window.removeEventListener).toHaveBeenCalledWith('error', props.onError);
+      expect(window.removeEventListener).toHaveBeenCalledWith('unhandledrejection', props.onError);
     });
   });
 
