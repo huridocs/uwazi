@@ -8,17 +8,19 @@ import { actions } from 'app/BasicReducer';
 
 export type OwnPropTypes = {
   fieldName: string;
-  fieldId: string;
   model: string;
+  fieldId?: string;
 };
 
-const selectionHandler = (selection: {}, fieldName: string, fieldId: string) =>
-  actions.updateIn('documentViewer.metadataExtraction', ['selections'], {
-    _id: fieldId,
+const selectionHandler = (selection: {}, fieldName: string, fieldId?: string) => {
+  const data = {
+    ...(fieldId && { _id: fieldId }),
     label: fieldName,
     timestamp: Date(),
     selection,
-  });
+  };
+  return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data);
+};
 
 const formFieldUpdater = (value: string, model: string) => formActions.change(model, value);
 

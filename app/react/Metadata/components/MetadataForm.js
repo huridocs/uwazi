@@ -16,6 +16,7 @@ import defaultTemplate from '../helpers/defaultTemplate';
 import validator from '../helpers/validator';
 import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
+import { MetadataExtractor } from './MetadataExtractor';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -125,22 +126,25 @@ export class MetadataForm extends Component {
         onSubmitFailed={this.onSubmitFailed}
       >
         {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
-          <FormGroup model=".title">
-            <ul className="search__filter">
-              <li>
-                <label>
-                  <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
-                  <span className="required">*</span>
-                </label>
-              </li>
-              <li className="wide">
-                <Field model=".title">
-                  <textarea className="form-control" />
-                </Field>
-              </li>
-              <IconField model={model} />
-            </ul>
-          </FormGroup>
+          <>
+            <MetadataExtractor fieldName="title" model={`${model}.title`} />
+            <FormGroup model=".title">
+              <ul className="search__filter">
+                <li>
+                  <label>
+                    <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
+                    <span className="required">*</span>
+                  </label>
+                </li>
+                <li className="wide">
+                  <Field model=".title">
+                    <textarea className="form-control" />
+                  </Field>
+                </li>
+                <IconField model={model} />
+              </ul>
+            </FormGroup>
+          </>
         )}
 
         {(!showSubset || showSubset.includes('template')) &&
