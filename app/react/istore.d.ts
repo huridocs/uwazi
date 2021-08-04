@@ -127,7 +127,7 @@ export interface IStore {
     }>;
     metadataExtraction: IImmutable<{
       active: string;
-      selection: [];
+      selections: [];
     }>;
   };
   oneUpReview: {

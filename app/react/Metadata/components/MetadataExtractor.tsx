@@ -12,18 +12,12 @@ export type OwnPropTypes = {
 };
 
 const selectionHandler = (selection: {}, fieldName: string) =>
-  actions.concatIn(
-    'documentViewer.metadataExtraction',
-    ['selections'],
-    [
-      {
-        [fieldName]: {
-          selection,
-          timestamp: Date(),
-        },
-      },
-    ]
-  );
+  actions.updateIn('documentViewer.metadataExtraction', ['selections'], {
+    _id: fieldName,
+    timestamp: Date(),
+    selection,
+  });
+
 const formFieldUpdater = (value: string, model: string) => formActions.change(model, value);
 
 const mapStateToProps = (state: IStore, ownProps: OwnPropTypes) => {
