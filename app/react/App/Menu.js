@@ -30,11 +30,11 @@ export class Menu extends Component {
     const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
 
-    const navLinks = links
-      .filter(link => link.get('type') !== 'group')
-      .map(link => {
-        const url = link.get('url') || '/';
+    const navLinks = links.map(link => {
+      const type = link.get('type') || 'link';
+      const url = link.get('url') || '/';
 
+      if (type === 'link') {
         if (url.startsWith('http')) {
           return (
             <li key={link.get('_id')} className="menuNav-item">
@@ -51,49 +51,46 @@ export class Menu extends Component {
             </I18NLink>
           </li>
         );
-      });
+      }
 
-    const subMenuLinks = links
-      .filter(link => link.get('type') === 'group')
-      .map(link => {
-        const url = link.get('url') || '/';
-        if (url.startsWith('http')) {
-          return (
-            <li key={link.get('_id')} className="menuNav-item Dropdown">
-              <a href="" className="btn menuNav-btn">
-                {t('Menu', link.get('title'))}
-              </a>
-              {link.get('sublinks').map(sublink => (
-                <li className="Dropdown-option">
-                  <a href={sublink.url} className="btn menuNav-btn" target="_blank">
-                    {t('Menu', sublink.get('title'))}
+      // It is a group
+
+      if (url.startsWith('http')) {
+        return (
+          <li className="menuNav-item">
+            <a className="btn menuNav-btn">{link.get('title')}</a>
+            <ul key={link.get('_id')} className="Dropdown">
+              {link.get('sublinks').map((sublink, index) => (
+                <li key={index} className="Dropdown-option">
+                  <a href={url} className="btn" target="_blank" rel="noreferrer">
+                    <span>{t('Menu', sublink.get('title'))}</span>
                   </a>
                 </li>
               ))}
-            </li>
-          );
-        }
-        return (
-          <li key={link.get('_id')} className="menuNav-item Dropdown">
-            <a className="btn menuNav-btn">{t('Menu', link.get('title'))}</a>
-            {link.get('sublinks').map(sublink => (
-              <div className="Dropdown-option">
-                <I18NLink to={sublink.url} className="btn menuNav-btn">
-                  {t('Menu', sublink.get('title'))}
-                </I18NLink>
-              </div>
-            ))}
+            </ul>
           </li>
         );
-      });
+      }
+      return (
+        <li className="menuNav-item">
+          <a className="btn menuNav-btn">{link.get('title')}</a>
+          <ul key={link.get('_id')} className="Dropdown">
+            {link.get('sublinks').map((sublink, index) => (
+              <li key={index} className="Dropdown-option">
+                <I18NLink to={url} className="btn">
+                  <span>{t('Menu', sublink.get('title'))}</span>
+                </I18NLink>
+              </li>
+            ))}
+          </ul>
+        </li>
+      );
+    });
 
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
         <li className="menuItems">
-          <ul className="menuNav-list">
-            {navLinks}
-            {subMenuLinks}
-          </ul>
+          <ul className="menuNav-list">{navLinks}</ul>
         </li>
         <li className="menuActions">
           <ul className="menuNav-list">

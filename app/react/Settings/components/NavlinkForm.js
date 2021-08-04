@@ -99,7 +99,7 @@ export class NavlinkForm extends Component {
                 <div className="col-sm-11">
                   <div className="row">
                     <div
-                      className={link.type === 'group' ? 'col-sm-11' : 'col-sm-3'}
+                      className={link.type === 'group' ? 'col-sm-10' : 'col-sm-3'}
                       style={{ display: 'flex' }}
                     >
                       {connectDragSource(
@@ -109,10 +109,10 @@ export class NavlinkForm extends Component {
                           <Icon icon={link.type === 'group' ? 'caret-square-down' : 'link'} />
                         </span>
                       )}
-                      <div className={titleClass}>
+                      <div className={`${titleClass} input-group-width`}>
                         <span className="input-group-addon">Title</span>
                         <Field model={`settings.navlinksData.links[${index}].title`}>
-                          <input className="form-control" style={{ width: '100%' }} />
+                          <input className="form-control" width="100%" />
                         </Field>
                       </div>
                     </div>
@@ -139,8 +139,7 @@ export class NavlinkForm extends Component {
                   <div className="row">
                     <ShowIf if={link.type === 'group'}>
                       <div className="row">
-                        <div className="col-sm-1"></div>
-                        <div className="col-sm-11">
+                        <div className="col-sm-11 sublink-indent">
                           {links[index].sublinks?.map((_, i) => (
                             <div
                               className="row"
@@ -150,7 +149,7 @@ export class NavlinkForm extends Component {
                                 <span style={{ padding: '5px 10px 0px 0px' }}>
                                   <Icon icon="link" />
                                 </span>
-                                <div className={titleClass}>
+                                <div className={`${titleClass} input-group-width`}>
                                   <span className="input-group-addon">Title</span>
                                   <Field
                                     model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
@@ -180,17 +179,17 @@ export class NavlinkForm extends Component {
                               </div>
                             </div>
                           ))}
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-sm-12">
-                          <button
-                            className="menu-link-group-button"
-                            type="submit"
-                            onClick={this.props.addGroupLink.bind(this, links, index)}
-                          >
-                            Add link
-                          </button>
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <button
+                                className="menu-link-group-button"
+                                type="submit"
+                                onClick={this.props.addGroupLink.bind(this, links, index)}
+                              >
+                                Add link
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </ShowIf>
