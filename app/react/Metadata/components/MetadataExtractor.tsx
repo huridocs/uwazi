@@ -8,12 +8,14 @@ import { actions } from 'app/BasicReducer';
 
 export type OwnPropTypes = {
   fieldName: string;
+  fieldId: string;
   model: string;
 };
 
-const selectionHandler = (selection: {}, fieldName: string) =>
+const selectionHandler = (selection: {}, fieldName: string, fieldId: string) =>
   actions.updateIn('documentViewer.metadataExtraction', ['selections'], {
-    _id: fieldName,
+    _id: fieldId,
+    label: fieldName,
     timestamp: Date(),
     selection,
   });
@@ -29,12 +31,12 @@ const mapStateToProps = (state: IStore, ownProps: OwnPropTypes) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
-  const { fieldName, model } = ownProps;
+  const { fieldName, fieldId, model } = ownProps;
   return bindActionCreators(
     {
       setActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', fieldName),
       unsetActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', 'none'),
-      setSelection: selection => selectionHandler(selection, fieldName),
+      setSelection: selection => selectionHandler(selection, fieldName, fieldId),
       updateFormField: value => formFieldUpdater(value, model),
     },
     dispatch

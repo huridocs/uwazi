@@ -301,6 +301,7 @@ export class MetadataFormFields extends Component {
                     ['text', 'date', 'numeric', 'markdown'].includes(property.type) && (
                       <MetadataExtractor
                         fieldName={property.name}
+                        fieldId={property._id}
                         model={`${model}.metadata.${property.name}`}
                       />
                     )}
