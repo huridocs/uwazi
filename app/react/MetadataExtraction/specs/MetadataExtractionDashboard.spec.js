@@ -11,25 +11,25 @@ import MetadataExtractionDashboard from '../MetadataExtractionDashboard';
 const factory = getFixturesFactory();
 const templates = Immutable.fromJS([
   factory.template('templateA', [
-    factory.property('AonlyText', 'text'),
-    factory.property('ABsharedDate', 'date'),
-    factory.property('ACsharedMarkdown', 'markdown'),
-    factory.property('ABC shared Number', 'numeric'),
-    factory.property('sharedIgnoredLink', 'link'),
+    factory.property('AonlyText', 'text', { name: 'aonlytext' }),
+    factory.property('ABsharedDate', 'date', { name: 'abshareddate' }),
+    factory.property('ACsharedMarkdown', 'markdown', { name: 'acsharedmarkdown' }),
+    factory.property('ABC shared Number', 'numeric', { name: 'abc_shared_number' }),
+    factory.property('sharedIgnoredLink', 'link', { name: 'sharedignoredlink' }),
   ]),
   factory.template('templateB', [
-    factory.property('BonlyText', 'text'),
-    factory.property('ABsharedDate', 'date'),
-    factory.property('BCsharedMarkdown', 'markdown'),
-    factory.property('ABC shared number', 'numeric'),
-    factory.property('sharedIgnoredLink', 'link'),
+    factory.property('BonlyText', 'text', { name: 'bonlytext' }),
+    factory.property('ABsharedDate', 'date', { name: 'abshareddate' }),
+    factory.property('BCsharedMarkdown', 'markdown', { name: 'bcsharedmarkdown' }),
+    factory.property('ABC shared number', 'numeric', { name: 'abc_shared_number' }),
+    factory.property('sharedIgnoredLink', 'link', { name: 'sharedignoredlink' }),
   ]),
   factory.template('templateC', [
-    factory.property('ConlyText', 'text'),
-    factory.property('ACsharedMarkdown', 'markdown'),
-    factory.property('BCsharedMarkdown', 'markdown'),
-    factory.property('abc shared number', 'numeric'),
-    factory.property('sharedIgnoredLink', 'link'),
+    factory.property('ConlyText', 'text', { name: 'conlytext' }),
+    factory.property('ACsharedMarkdown', 'markdown', { name: 'acsharedmarkdown' }),
+    factory.property('BCsharedMarkdown', 'markdown', { name: 'bcsharedmarkdown' }),
+    factory.property('abc shared number', 'numeric', { name: 'abc_shared_number' }),
+    factory.property('sharedIgnoredLink', 'link', { name: 'sharedignoredlink' }),
   ]),
 ]);
 const settings = {
@@ -55,52 +55,44 @@ const settings = {
 const expectedFormattedData = {
   formattedData: {
     aonlytext: {
-      firstProperty: {
-        name: 'aonlytext',
-        type: 'text',
-      },
+      properties: [{ label: 'AonlyText', name: 'aonlytext', type: 'text' }],
       templates: [{ name: 'templateA' }],
     },
     abshareddate: {
-      firstProperty: {
-        name: 'abshareddate',
-        type: 'date',
-      },
+      properties: [
+        { label: 'ABsharedDate', name: 'abshareddate', type: 'date' },
+        { label: 'ABsharedDate', name: 'abshareddate', type: 'date' },
+      ],
       templates: [{ name: 'templateA' }, { name: 'templateB' }],
     },
     acsharedmarkdown: {
-      firstProperty: {
-        name: 'acsharedmarkdown',
-        type: 'markdown',
-      },
+      properties: [
+        { label: 'ACsharedMarkdown', name: 'acsharedmarkdown', type: 'markdown' },
+        { label: 'ACsharedMarkdown', name: 'acsharedmarkdown', type: 'markdown' },
+      ],
       templates: [{ name: 'templateA' }, { name: 'templateC' }],
     },
     abc_shared_number: {
-      firstProperty: {
-        name: 'abc_shared_number',
-        type: 'numeric',
-      },
+      properties: [
+        { label: 'ABC shared Number', name: 'abc_shared_number', type: 'numeric' },
+        { label: 'ABC shared number', name: 'abc_shared_number', type: 'numeric' },
+        { label: 'abc shared number', name: 'abc_shared_number', type: 'numeric' },
+      ],
       templates: [{ name: 'templateA' }, { name: 'templateB' }, { name: 'templateC' }],
     },
     bonlytext: {
-      firstProperty: {
-        name: 'bonlytext',
-        type: 'text',
-      },
+      properties: [{ label: 'BonlyText', name: 'bonlytext', type: 'text' }],
       templates: [{ name: 'templateB' }],
     },
     bcsharedmarkdown: {
-      firstProperty: {
-        name: 'bcsharedmarkdown',
-        type: 'markdown',
-      },
+      properties: [
+        { label: 'BCsharedMarkdown', name: 'bcsharedmarkdown', type: 'markdown' },
+        { label: 'BCsharedMarkdown', name: 'bcsharedmarkdown', type: 'markdown' },
+      ],
       templates: [{ name: 'templateB' }, { name: 'templateC' }],
     },
     conlytext: {
-      firstProperty: {
-        name: 'conlytext',
-        type: 'text',
-      },
+      properties: [{ label: 'ConlyText', name: 'conlytext', type: 'text' }],
       templates: [{ name: 'templateC' }],
     },
   },
@@ -123,7 +115,7 @@ describe('MetadataExtractionDashboard', () => {
   };
 
   describe('componentDidMount', () => {
-    it('should transform settings into expected format.', () => {
+    it('should fetch template and properties into expected format.', () => {
       render();
       expect(component.state()).toMatchObject(expectedFormattedData);
     });

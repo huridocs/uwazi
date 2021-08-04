@@ -15,7 +15,7 @@ export interface MetadataExtractionDashboardPropTypes {
 
 export interface FormattedSettingsData {
   [key: string]: {
-    firstProperty: PropertySchema;
+    properties: PropertySchema[];
     templates: TemplateSchema[];
   };
 }
@@ -61,27 +61,26 @@ class MetadataExtractionDashboard extends React.Component<
       const properties: Array<string> | undefined =
         typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
       properties?.forEach(propLabel => {
-        const propName = propLabel
-          .trim()
-          .toLowerCase()
-          .replace(/ /g, '_');
-        let propIndex = propName;
-        let prop = template.get('properties')?.find(p => p?.get('name') === propName);
-        if (!prop) {
-          prop = template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
+        let property = template.get('properties')?.find(p => p?.get('label') === propLabel);
+        let propIndex;
+        if (!property) {
+          property = template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
           propIndex = propLabel;
+        } else {
+          propIndex = property.get('name');
         }
-        if (!prop) {
+        if (!property) {
           throw new Error(
             `Property "${propLabel}" not found on template "${template.get('name')}".`
           );
         }
         if (!formatted.hasOwnProperty(propIndex)) {
           formatted[propIndex] = {
-            firstProperty: prop.toJS(),
+            properties: [property.toJS()],
             templates: [template.toJS()],
           };
         } else {
+          formatted[propIndex].properties.push(property.toJS());
           formatted[propIndex].templates.push(template.toJS());
         }
       });
@@ -108,8 +107,8 @@ class MetadataExtractionDashboard extends React.Component<
               {Object.entries(this.state.formattedData).map(([propIndex, data]) => (
                 <tr key={propIndex}>
                   <td>
-                    <Icon icon={Icons[data.firstProperty.type]} fixedWidth />
-                    {data.firstProperty.label}
+                    <Icon icon={Icons[data.properties[0].type]} fixedWidth />
+                    {data.properties[0].label}
                   </td>
                   <td className="templateNameViewer">
                     {data.templates.map((template, index) => (
