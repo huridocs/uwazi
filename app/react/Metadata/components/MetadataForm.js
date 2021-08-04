@@ -127,7 +127,6 @@ export class MetadataForm extends Component {
       >
         {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
           <>
-            <MetadataExtractor fieldName="title" model={`${model}.title`} />
             <FormGroup model=".title">
               <ul className="search__filter">
                 <li>
@@ -137,6 +136,9 @@ export class MetadataForm extends Component {
                   </label>
                 </li>
                 <li className="wide">
+                  {storeKey === 'documentViewer' && (
+                    <MetadataExtractor fieldName="title" model={`${model}.title`} />
+                  )}
                   <Field model=".title">
                     <textarea className="form-control" />
                   </Field>
