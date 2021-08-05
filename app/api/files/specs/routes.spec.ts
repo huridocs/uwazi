@@ -12,6 +12,7 @@ import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import JSONRequest from 'shared/JSONRequest';
 import { UserRole } from 'shared/types/userSchema';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -30,10 +31,10 @@ describe('files routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/files', () => {
     beforeEach(async () => {

@@ -11,6 +11,7 @@ import path from 'path';
 import { TaskProvider } from 'shared/tasks/tasks';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
+import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -66,7 +67,7 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 //////
-
+app.use(requestIdMiddleware);
 let dbAuth = {};
 
 if (process.env.DBUSER) {

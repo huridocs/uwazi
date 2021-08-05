@@ -1,11 +1,13 @@
 import request from 'supertest';
 import entities from 'api/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import { setUpApp } from 'api/utils/testingRoutes';
 import { testingDB } from 'api/utils/testing_db';
+import { setUpApp } from 'api/utils/testingRoutes';
 import searchRoutes from '../deprecatedRoutes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import { search } from '../search';
+
+jest.mock('api/utils/AppContext');
 
 describe('search routes', () => {
   let routes;

@@ -1,39 +1,107 @@
 import 'api/utils/jasmineHelpers';
-import instrumentRoutes from 'api/utils/instrumentRoutes';
+import { setUpApp } from 'api/utils/testingRoutes';
+import request from 'supertest';
+import qs from 'qs';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { UserRole } from 'shared/types/userSchema';
 import activitylogRoutes from '../routes.js';
 import activitylog from '../activitylog';
 
-describe('Activitylog routes', () => {
-  let routes;
+jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
+  next();
+});
 
-  beforeEach(() => {
-    routes = instrumentRoutes(activitylogRoutes);
+describe('Activitylog routes', () => {
+  let currentUser;
+
+  const adminUser = {
+    username: 'User 1',
+    role: UserRole.ADMIN,
+    email: 'user@test.com',
+  };
+
+  function getUser() {
+    return currentUser;
+  }
+
+  const app = setUpApp(activitylogRoutes, (req, _res, next) => {
+    req.user = getUser();
+    next();
+  });
+
+  beforeAll(async () => {
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setRequestId();
+    await testingEnvironment.setPermissions({
+      _id: 'userId',
+      role: 'admin',
+      username: 'adminUser',
+      email: 'admin@test.com',
+    });
+  });
+
+  beforeEach(async () => {
     spyOn(activitylog, 'get').and.returnValue(Promise.resolve('activitylogs'));
   });
 
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
   describe('GET', () => {
-    it('should have a validation schema and require authorization', () => {
-      expect(routes.get.validation('/api/activitylog')).toMatchSnapshot();
-      expect(routes._get('/api/activitylog', {})).toNeedAuthorization();
-    });
-
     it('should return the log with passed query', async () => {
-      const req = { query: { method: '{"action":"POST"}', time: '{"from":1234}' } };
-
-      const response = await routes.get('/api/activitylog', req);
+      currentUser = adminUser;
+      const response = await request(app)
+        .get('/api/activitylog')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .query(qs.stringify({ method: ['POST'], before: 1628256165 }));
 
       expect(activitylog.get).toHaveBeenCalledWith({
-        method: JSON.stringify({ action: 'POST' }),
-        time: JSON.stringify({ from: 1234 }),
+        before: 1628256165,
+        method: ['POST'],
       });
 
-      expect(response).toBe('activitylogs');
+      expect(response.body).toBe('activitylogs');
     });
 
     it('should not attempt to parse undefined method and time', async () => {
-      const req = { query: {} };
-      await routes.get('/api/activitylog', req);
+      currentUser = adminUser;
+      await request(app)
+        .get('/api/activitylog')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .query({});
       expect(activitylog.get).toHaveBeenCalledWith({ method: undefined, time: undefined });
+    });
+
+    describe('validation', () => {
+      const validQuery = {
+        username: 'collaborator',
+        find: 'textToFind',
+        before: 1627924445000,
+        limit: 3,
+        method: ['POST'],
+        search: 'no value',
+      };
+      it.each`
+        changedProperty          | expectedError             | expectedPath
+        ${{ additional: 'abc' }} | ${'additionalProperties'} | ${'.query'}
+        ${{ limit: 'abc' }}      | ${'type'}                 | ${'.query.limit'}
+        ${{ before: 'abc' }}     | ${'type'}                 | ${'.query.before'}
+      `(
+        'should return a validation error',
+        async ({ changedProperty, expectedError, expectedPath }) => {
+          currentUser = adminUser;
+          const response = await request(app)
+            .get('/api/activitylog')
+            .set('X-Requested-With', 'XMLHttpRequest')
+            .query(qs.stringify({ ...validQuery, ...changedProperty }));
+          expect(response.status).toBe(400);
+          expect(activitylog.get).not.toHaveBeenCalled();
+          expect(response.body.errors[0].keyword).toBe(expectedError);
+          expect(response.body.errors[0].dataPath).toBe(expectedPath);
+          expect(response.body.error).toBe('validation failed');
+        }
+      );
     });
   });
 });
