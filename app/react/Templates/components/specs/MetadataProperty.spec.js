@@ -248,9 +248,7 @@ describe('MetadataProperty', () => {
       });
 
       describe('errors', () => {
-        describe('errors', () => {
-        
-          it('should render duplicated relation error', () => {
+        it('should render duplicated relation error', () => {
           props.formState.$form.errors['properties.1.relationType.duplicated'] = true;
           const store = mockStoreCreator({
             template: {
