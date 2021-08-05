@@ -86,11 +86,13 @@ function handle404(res) {
 
 function respondError(res, error, req) {
   handleError(error, { req });
-  res.status(error.status || 500);
-  if (error.json) {
-    res.send(`<pre>${error.json.prettyMessage}</pre>`);
+  const code = error.status || 500;
+  res.status(code);
+  const requestId = error.json?.requestId || '';
+  if (!req.url.startsWith('/error/500')) {
+    res.redirect(`/error/${code}?requestId=${requestId}`);
   } else {
-    res.send(error.message);
+    res.send(`<pre>An unexpected error has occurred. Request id: ${requestId}</pre>`);
   }
 }
 

@@ -4,8 +4,8 @@ import request from 'supertest';
 import { NextFunction, Request, Response } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
-import testingDB from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 
@@ -43,11 +43,12 @@ describe('users routes', () => {
   });
 
   beforeAll(async () => {
-    await testingDB.connect();
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   beforeEach(() => {
@@ -173,7 +174,7 @@ describe('users routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send({ email: 'recover@me.com' });
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on recoverPassword');
+        expect(response.body.prettyMessage).toContain('error on recoverPassword');
       });
     });
 
