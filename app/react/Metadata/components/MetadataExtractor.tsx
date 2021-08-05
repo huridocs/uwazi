@@ -1,28 +1,16 @@
 import React, { useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { actions as formActions } from 'react-redux-form';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
 import { actions } from 'app/BasicReducer';
+import { selectionHandler, formFieldUpdater } from '../actions/MetadataExtractionActions';
 
 export type OwnPropTypes = {
   fieldName: string;
   model: string;
   fieldId?: string;
 };
-
-const selectionHandler = (selection: {}, fieldName: string, fieldId?: string) => {
-  const data = {
-    ...(fieldId && { _id: fieldId }),
-    label: fieldName,
-    timestamp: Date(),
-    selection,
-  };
-  return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data);
-};
-
-const formFieldUpdater = (value: string, model: string) => formActions.change(model, value);
 
 const mapStateToProps = (state: IStore, ownProps: OwnPropTypes) => {
   const { fieldName } = ownProps;
