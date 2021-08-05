@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
 import { t } from 'app/I18N';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { store } from 'app/store';
 import Icons from 'app/Templates/components/Icons';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -54,36 +56,40 @@ class MetadataExtractionDashboard extends React.Component<
         ? this.props.templates.find(temp => temp?.get('_id') === setting.get('id'))
         : this.props.templates.find(temp => temp?.get('name') === setting.get('name'));
       if (!template) {
-        throw new Error(`Template "${setting.get('_id') || setting.get('name')}" not found.`);
+        store?.dispatch(
+          notify(`Template "${setting.get('_id') || setting.get('name')}" not found.`, 'warning')
+        );
+      } else {
+        const rawProperties = setting.get('properties');
+        const properties: Array<string> | undefined =
+          typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
+        properties?.forEach(propLabel => {
+          let property = template.get('properties')?.find(p => p?.get('label') === propLabel);
+          let propIndex;
+          if (!property) {
+            property = template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
+            propIndex = propLabel;
+          } else {
+            propIndex = property.get('name');
+          }
+          if (!property) {
+            store?.dispatch(
+              notify(
+                `Property "${propLabel}" not found on template "${template.get('name')}".`,
+                'warning'
+              )
+            );
+          } else if (!formatted.hasOwnProperty(propIndex)) {
+            formatted[propIndex] = {
+              properties: [property.toJS()],
+              templates: [template.toJS()],
+            };
+          } else {
+            formatted[propIndex].properties.push(property.toJS());
+            formatted[propIndex].templates.push(template.toJS());
+          }
+        });
       }
-
-      const rawProperties = setting.get('properties');
-      const properties: Array<string> | undefined =
-        typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
-      properties?.forEach(propLabel => {
-        let property = template.get('properties')?.find(p => p?.get('label') === propLabel);
-        let propIndex;
-        if (!property) {
-          property = template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
-          propIndex = propLabel;
-        } else {
-          propIndex = property.get('name');
-        }
-        if (!property) {
-          throw new Error(
-            `Property "${propLabel}" not found on template "${template.get('name')}".`
-          );
-        }
-        if (!formatted.hasOwnProperty(propIndex)) {
-          formatted[propIndex] = {
-            properties: [property.toJS()],
-            templates: [template.toJS()],
-          };
-        } else {
-          formatted[propIndex].properties.push(property.toJS());
-          formatted[propIndex].templates.push(template.toJS());
-        }
-      });
     });
     this.setState({ formattedData: formatted });
   }
