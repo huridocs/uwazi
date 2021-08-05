@@ -5,13 +5,13 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field } from 'react-redux-form';
+import { Field, actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
 import { generateID } from 'shared/IDGenerator';
-import { Icon } from 'UI';
-import { groupSameRelationshipFields } from '../helpers/groupRelationshipFields';
+import { bindActionCreators } from 'redux';
+import Tip from 'app/Layout/Tip';
 
 import {
   DatePicker,
@@ -47,6 +47,31 @@ export const translateOptions = thesauri =>
       return option;
     })
     .toJS();
+
+const groupSameRelationshipFields = fields =>
+  fields
+    .map(field => {
+      if (field.type !== 'relationship') {
+        return field;
+      }
+
+      const multiEditingRelationshipFields = fields.filter(
+        f =>
+          f.content === field.content &&
+          f.relationType === field.relationType &&
+          f._id !== field._id
+      );
+
+      if (multiEditingRelationshipFields.length) {
+        return {
+          ...field,
+          multiEditingRelationshipFields,
+        };
+      }
+
+      return field;
+    })
+    .filter(f => f);
 
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
@@ -124,6 +149,7 @@ export class MetadataFormFields extends Component {
             options={thesauri}
             totalPossibleOptions={totalPossibleOptions}
             prefix={_model}
+            onChange={this.relationshipChange.bind(this, property)}
             sort
           />
         );
@@ -180,6 +206,13 @@ export class MetadataFormFields extends Component {
     }
   }
 
+  relationshipChange(prop, value) {
+    const { change, model } = this.props;
+    prop.multiEditingRelationshipFields?.forEach(p => {
+      change(`${model}.metadata.${p.name}`, value);
+    });
+  }
+
   renderLabel(property) {
     const { template, multipleEdition, model } = this.props;
     const templateID = template.get('_id');
@@ -188,26 +221,28 @@ export class MetadataFormFields extends Component {
     ) : (
       property.label
     );
+
     if (property.multiEditingRelationshipFields) {
       label = (
-        <p>
-          <Icon icon="info-circle" />
-          &nbsp;
-          <Translate>This field updates all relationships with the same configuration:</Translate>
-          <ul>
-            {property.multiEditingRelationshipFields.map(f =>
-              templateID ? (
-                <li key={f._id}>
-                  <Translate context={templateID}>{f.label}</Translate>
-                </li>
-              ) : (
-                <li key={f._id}>{f.labell}</li>
-              )
-            )}
-          </ul>
-        </p>
+        <>
+          <Translate context={templateID}>{property.label}</Translate>
+          &nbsp;(<Translate>affects</Translate>&nbsp;
+          {property.multiEditingRelationshipFields.map(p => (
+            <span key={p._id}>
+              &quot;<Translate context={templateID}>{p.label}</Translate>&quot;
+            </span>
+          ))}
+          )
+          <Tip icon="info-circle" position="right">
+            <p>
+              Making changes to this property will affect other properties on this template because
+              they all share relationships with the same configuration.
+            </p>
+          </Tip>
+        </>
       );
     }
+
     return (
       <li className="title">
         <label>
@@ -231,7 +266,6 @@ export class MetadataFormFields extends Component {
       .map(thes => thes.get('_id'))
       .toJS();
     const fields = groupSameRelationshipFields(template.get('properties').toJS());
-
     return (
       <div>
         {fields
@@ -294,6 +328,7 @@ MetadataFormFields.propTypes = {
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   attachments: PropTypes.instanceOf(Immutable.List),
+  change: PropTypes.func,
 };
 
 export const mapStateToProps = (state, ownProps) => {
@@ -323,4 +358,8 @@ export const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(MetadataFormFields);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ change: formActions.change }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);

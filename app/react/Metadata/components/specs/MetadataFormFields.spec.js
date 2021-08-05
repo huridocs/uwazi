@@ -13,11 +13,11 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
   beforeEach(() => {
     fieldsTemplate = [
-      { name: 'field1', label: 'label1', type: 'text' },
-      { name: 'field2', label: 'label2', type: 'relationship', content: '2' },
-      { name: 'field3', label: 'label3', type: 'date' },
-      { name: 'field4', label: 'label4', type: 'generatedid' },
-      { name: 'field5', label: 'label5', type: 'relationship', content: '2' },
+      { _id: 1, name: 'field1', label: 'label1', type: 'text' },
+      { _id: 2, name: 'field2', label: 'label2', type: 'relationship', content: '2' },
+      { _id: 3, name: 'field3', label: 'label3', type: 'date' },
+      { _id: 4, name: 'field4', label: 'label4', type: 'generatedid' },
+      { _id: 5, name: 'field5', label: 'label5', type: 'relationship', content: '2' },
     ];
 
     props = {
@@ -54,6 +54,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
       ]),
       dateFormat: '',
       model: 'metadata',
+      change: jest.fn(),
     };
   });
 
@@ -83,7 +84,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
       const inputField = component.find('[model=".metadata.field1"]').find('input');
       expect(inputField.length).toBe(1);
 
-      const multiselect = component.find(LookupMultiSelect);
+      const multiselect = component.find(LookupMultiSelect).at(0);
       expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
       expect(multiselect.props().optionsValue).toEqual('id');
 
@@ -106,9 +107,11 @@ describe('MetadataFormFields with one entity to edit ', () => {
     expect(generatedIdInput.props().defaultValue.length).toBe(12);
   });
 
-  it('should not render two relationships fields with the same configuration', () => {
+  it('updating one field should update the others with the same configuration', () => {
     render({ model: 'publicform' });
-    const secondRelationshipField = component.find('[model=".metadata.field5"]').at(0);
-    expect(secondRelationshipField.length).toBe(0);
+    const secondRelationshipField = component.find(LookupMultiSelect).at(1);
+
+    secondRelationshipField.simulate('change', ['123', '456']);
+    expect(props.change).toHaveBeenCalledWith('publicform.metadata.field2', ['123', '456']);
   });
 });
