@@ -68,10 +68,22 @@ describe('files routes', () => {
         await request(app)
           .post('/api/files')
           .set('X-Requested-With', 'XMLHttpRequest')
-          .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+          .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
 
         const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
         expect(file.mimetype).toBe('image/png');
+      });
+
+      it('should return a validation error for a no secured url', async () => {
+        const headers = new Headers();
+        headers.set('content-type', 'image/png');
+
+        const rest = await request(app)
+          .post('/api/files')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+
+        expect(rest.status).toBe(400);
       });
     });
   });
