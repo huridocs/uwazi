@@ -23,9 +23,10 @@ describe('Activitylog routes', () => {
       const response = await routes.get('/api/activitylog', req);
 
       expect(activitylog.get).toHaveBeenCalledWith({
-        method: { action: 'POST' },
-        time: { from: 1234 },
+        method: JSON.stringify({ action: 'POST' }),
+        time: JSON.stringify({ from: 1234 }),
       });
+
       expect(response).toBe('activitylogs');
     });
 
