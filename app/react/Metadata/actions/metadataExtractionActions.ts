@@ -1,9 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
 
-//should only occur when form is loaded
-const getExtractedProperties = async () => {};
-
 const selectionHandler = (selection: {}, fieldName: string, fieldId?: string) => {
   const data = {
     ...(fieldId && { _id: fieldId }),
