@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
 import { actions } from 'app/BasicReducer';
-import { selectionHandler, formFieldUpdater } from '../actions/MetadataExtractionActions';
+import { selectionHandler, formFieldUpdater } from '../actions/metadataExtractionActions';
 
 export type OwnPropTypes = {
   fieldName: string;
@@ -26,8 +26,8 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
     {
       setActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', fieldName),
       unsetActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', 'none'),
-      setSelection: selection => selectionHandler(selection, fieldName, fieldId),
       updateFormField: value => formFieldUpdater(value, model),
+      setSelection: selection => selectionHandler(selection, fieldName, fieldId),
     },
     dispatch
   );
