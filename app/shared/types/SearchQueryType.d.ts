@@ -9,7 +9,7 @@ export interface SearchQuery {
     searchString?: string | number;
     sharedId?: string;
     published?: boolean;
-    title?: string;
+    [k: string]: unknown | undefined;
   };
   fields?: string[];
 }

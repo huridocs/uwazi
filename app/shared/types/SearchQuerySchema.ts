@@ -10,12 +10,10 @@ export const SearchQuerySchema = {
     },
     filter: {
       type: 'object',
-      additionalProperties: false,
       properties: {
         searchString: { anyOf: [{ type: 'string' }, { type: 'number' }] },
         sharedId: { type: 'string' },
         published: { type: 'boolean' },
-        title: { type: 'string' },
       },
     },
     fields: { type: 'array', items: { type: 'string', minlength: 1 } },
