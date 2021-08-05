@@ -6,6 +6,7 @@ import entities from 'api/entities';
 import thesauris from 'api/thesauri';
 import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
+import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 import { validators, customErrorMessages } from './metadataValidators';
@@ -122,6 +123,40 @@ const validateRelationshipForeignIds = async (
   return [];
 };
 
+const validateSameRelationshipsMatch = (
+  property: PropertySchema,
+  entity: EntitySchema,
+  template: TemplateSchema,
+  value: MetadataObjectSchema[]
+) => {
+  let valid = true;
+  if (value && property.type === propertyTypes.relationship) {
+    const sameProps =
+      template.properties?.filter(
+        p =>
+          p.type === propertyTypes.relationship &&
+          p.content?.toString() === property.content?.toString() &&
+          p.relationType?.toString() === property.relationType?.toString()
+      ) || [];
+
+    valid = Boolean(
+      sameProps.every(
+        p => !entity.metadata || JSON.stringify(entity.metadata[p.name]) === JSON.stringify(value)
+      )
+    );
+  }
+
+  return valid
+    ? []
+    : [
+        validationError(
+          { message: customErrorMessages.relationship_values_should_match },
+          property,
+          entity
+        ),
+      ];
+};
+
 const validateFieldSize = (
   property: PropertySchema,
   entity: EntitySchema,
@@ -133,13 +168,18 @@ const validateFieldSize = (
   return [];
 };
 
-export const validateMetadataField = async (property: PropertySchema, entity: EntitySchema) => {
+export const validateMetadataField = async (
+  property: PropertySchema,
+  entity: EntitySchema,
+  template: TemplateSchema
+) => {
   const value = entity.metadata?.[ensure<string>(property.name)];
 
   const errors: Ajv.ErrorObject[] = [
     ...validateRequired(property, entity, value),
     ...validateType(property, entity, value),
     ...validateFieldSize(property, entity, value),
+    ...validateSameRelationshipsMatch(property, entity, template, value),
     ...(await validateRelationshipForeignIds(property, entity, value)),
     ...(await validateDictionariesForeignIds(property, entity, value)),
   ];

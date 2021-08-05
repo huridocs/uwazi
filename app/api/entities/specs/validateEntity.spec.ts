@@ -499,6 +499,22 @@ describe('validateEntity', () => {
             }
           );
         });
+
+        it('should fail if relationship fields with the same configuration have different values', async () => {
+          const entity = createEntity({
+            language: 'es',
+            metadata: {
+              relationship: [{ value: 'entity1' }, { value: 'entity3' }],
+              relationship2: [{ value: 'entity1' }],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.relationship_values_should_match,
+            ".metadata['relationship2']"
+          );
+        });
       });
 
       describe('link property', () => {
