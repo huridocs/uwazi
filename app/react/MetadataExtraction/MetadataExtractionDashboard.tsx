@@ -55,41 +55,45 @@ class MetadataExtractionDashboard extends React.Component<
       const template = setting.has('id')
         ? this.props.templates.find(temp => temp?.get('_id') === setting.get('id'))
         : this.props.templates.find(temp => temp?.get('name') === setting.get('name'));
+
       if (!template) {
         store?.dispatch(
           notify(`Template "${setting.get('_id') || setting.get('name')}" not found.`, 'warning')
         );
-      } else {
-        const rawProperties = setting.get('properties');
-        const properties: Array<string> | undefined =
-          typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
-        properties?.forEach(propLabel => {
-          let property = template.get('properties')?.find(p => p?.get('label') === propLabel);
-          let propIndex;
-          if (!property) {
-            property = template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
-            propIndex = propLabel;
-          } else {
-            propIndex = property.get('name');
-          }
-          if (!property) {
-            store?.dispatch(
-              notify(
-                `Property "${propLabel}" not found on template "${template.get('name')}".`,
-                'warning'
-              )
-            );
-          } else if (!formatted.hasOwnProperty(propIndex)) {
-            formatted[propIndex] = {
-              properties: [property.toJS()],
-              templates: [template.toJS()],
-            };
-          } else {
-            formatted[propIndex].properties.push(property.toJS());
-            formatted[propIndex].templates.push(template.toJS());
-          }
-        });
+        return;
       }
+
+      const rawProperties = setting.get('properties');
+      const properties: Array<string> | undefined =
+        typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
+      properties?.forEach(propLabel => {
+        let property = template.get('properties')?.find(p => p?.get('label') === propLabel);
+        let propIndex;
+        if (!property) {
+          property = template.get('commonProperties')?.find(p => p?.get('label') === propLabel);
+          propIndex = propLabel;
+        } else {
+          propIndex = property.get('name');
+        }
+        if (!property) {
+          store?.dispatch(
+            notify(
+              `Property "${propLabel}" not found on template "${template.get('name')}".`,
+              'warning'
+            )
+          );
+          return;
+        }
+        if (!formatted.hasOwnProperty(propIndex)) {
+          formatted[propIndex] = {
+            properties: [property.toJS()],
+            templates: [template.toJS()],
+          };
+        } else {
+          formatted[propIndex].properties.push(property.toJS());
+          formatted[propIndex].templates.push(template.toJS());
+        }
+      });
     });
     this.setState({ formattedData: formatted });
   }
