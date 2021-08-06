@@ -4,8 +4,8 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
-import testingDB from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 jest.mock(
@@ -31,11 +31,12 @@ describe('permissions routes', () => {
   );
 
   beforeAll(async () => {
-    await testingDB.connect();
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('entities', () => {
@@ -122,7 +123,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on save');
+        expect(response.body.error).toContain('error on save');
       });
       it('should handle errors on PUT', async () => {
         spyOn(entitiesPermissions, 'get').and.throwError('error on get');
@@ -132,7 +133,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send({ sharedIds: ['sharedId1', 'sharedId2'] });
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on get');
+        expect(response.body.error).toContain('error on get');
       });
       it('should handle errors on collaborators search', async () => {
         spyOn(collaborators, 'search').and.throwError('error on get');
@@ -142,7 +143,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .query({ filterTerm: 'username' });
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: error on get');
+        expect(response.body.error).toContain('error on get');
       });
     });
 

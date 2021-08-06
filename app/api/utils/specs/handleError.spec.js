@@ -3,76 +3,90 @@ import { createError } from 'api/utils';
 import debugLog from 'api/log/debugLog';
 
 import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
-import handleError from '../handleError';
+import { appContext } from 'api/utils/AppContext';
+import handleError, { prettifyError } from '../handleError';
+
+const contextRequestId = '1234';
 
 describe('handleError', () => {
   beforeEach(() => {
     spyOn(errorLog, 'error');
     spyOn(debugLog, 'debug');
+    spyOn(appContext, 'get').and.returnValue(contextRequestId);
   });
 
-  describe('when error is instance of Error', () => {
-    it('should return the error with 500 code and not include the original error', () => {
-      const errorInstance = new Error('error');
-      const error = handleError(errorInstance);
+  describe('errors by type', () => {
+    describe('when error is instance of Error', () => {
+      it('should return the error with 500 code without the original error and error stack', () => {
+        const errorInstance = new Error('error');
+        const error = handleError(errorInstance);
 
-      expect(error.code).toBe(500);
-      expect(error.message).toEqual(errorInstance.stack);
-      expect(error.original).not.toBeDefined();
-    });
+        expect(error.code).toBe(500);
+        expect(error.requestId).toBe(contextRequestId);
+        expect(error.prettyMessage).toEqual('error');
+        expect(error.message).toBeUndefined();
+        expect(error.original).toBeUndefined();
+      });
 
-    it('should correctly log the original error for ElasticSearch exceptions', () => {
-      const error = new ConnectionError('test error', { meta: 'some meta' });
-      handleError(error);
+      it('should correctly log the original error for ElasticSearch exceptions', () => {
+        const error = new ConnectionError('test error', { meta: 'some meta' });
+        handleError(error);
 
-      expect(errorLog.error).toHaveBeenCalledWith(
-        `\n${error.stack}
+        expect(errorLog.error).toHaveBeenCalledWith(
+          `requestId: ${contextRequestId} \n${error.stack}
 original error: {
  "name": "ConnectionError",
  "meta": {
   "meta": "some meta"
  }
 }`,
-        {}
-      );
+          {}
+        );
+      });
+
+      it('should log the error with the requestId', () => {
+        const error = new Error('error');
+        handleError(error);
+
+        expect(errorLog.error).toHaveBeenCalledWith(
+          `requestId: ${contextRequestId} \n${error.stack}\noriginal error: {}`,
+          {}
+        );
+      });
     });
 
-    it('should log the error', () => {
-      const error = new Error('error');
-      handleError(error);
+    describe('when error is created with createError', () => {
+      it('should return the error', () => {
+        const error = handleError(createError('test error', 400));
+        expect(error).toMatchSnapshot();
+      });
 
-      expect(errorLog.error).toHaveBeenCalledWith(`\n${error.stack}\noriginal error: {}`, {});
+      it('should not log the error when code is not 500', () => {
+        handleError(createError('test error', 400));
+        expect(errorLog.error).not.toHaveBeenCalled();
+
+        handleError(createError('test error'));
+        expect(errorLog.error).toHaveBeenCalledWith(
+          `requestId: ${contextRequestId} \ntest error`,
+          {}
+        );
+      });
     });
-  });
 
-  describe('when error is created with createError', () => {
-    it('should return the error', () => {
-      const error = handleError(createError('test error', 400));
-      expect(error).toMatchSnapshot();
+    describe('when error is a MongoError', () => {
+      it('should return the error with a 500 code', () => {
+        const error = handleError({ name: 'MongoError', message: 'error', code: '345' });
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('error');
+      });
     });
 
-    it('should not log the error when code is not 500', () => {
-      handleError(createError('test error', 400));
-      expect(errorLog.error).not.toHaveBeenCalled();
-
-      handleError(createError('test error'));
-      expect(errorLog.error).toHaveBeenCalledWith('\ntest error', {});
-    });
-  });
-
-  describe('when error is a MongoError', () => {
-    it('should return the error with a 500 code', () => {
-      const error = handleError({ name: 'MongoError', message: 'error', code: '345' });
-      expect(error.code).toBe(500);
-      expect(error.message).toBe('error');
-    });
-  });
-
-  describe('when error is a mongoose ValidationError', () => {
-    it('should return the error with a 422 error', () => {
-      const error = handleError({ name: 'ValidationError', message: 'error', code: '1000' });
-      expect(error.code).toBe(422);
-      expect(error.message).toBe('error');
+    describe('when error is a mongoose ValidationError', () => {
+      it('should return the error with a 422 error', () => {
+        const error = handleError({ name: 'ValidationError', message: 'error', code: '1000' });
+        expect(error.code).toBe(422);
+        expect(error.message).toBe('error');
+      });
     });
   });
 
@@ -80,7 +94,8 @@ original error: {
     it('should return generate a new error with code 500', () => {
       const error = handleError();
       expect(error.code).toBe(500);
-      expect(error.message).toMatch(/undefined error/i);
+      expect(error.prettyMessage).toMatch(/Unexpected error has occurred/i);
+      expect(error.requestId).toBe(contextRequestId);
     });
   });
 
@@ -160,6 +175,22 @@ original error: {
       expect(error.code).toBe(400);
       const expectedPrettymessage = 'hello\na property: an error';
       expect(error.prettyMessage).toEqual(expectedPrettymessage);
+    });
+  });
+});
+
+describe('prettifyError', () => {
+  describe('when the error does not fall into any other category, and the resulting message would be empty', () => {
+    it('should return JSON representation of the original error object as a message.', () => {
+      const prettied = prettifyError({
+        json: {},
+        status: '404',
+        headers: 'some_headers',
+      });
+
+      expect(prettied.prettyMessage).toBe(
+        '{\n  "json": {},\n  "status": "404",\n  "headers": "some_headers"\n}'
+      );
     });
   });
 });

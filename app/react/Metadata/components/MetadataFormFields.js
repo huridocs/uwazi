@@ -79,7 +79,6 @@ export class MetadataFormFields extends Component {
     let totalPossibleOptions = 0;
     const { dateFormat, version, entityThesauris, attachments } = this.props;
     const propertyType = property.type;
-
     const plainAttachments = attachments.toJS();
 
     switch (propertyType) {

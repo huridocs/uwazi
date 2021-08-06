@@ -14,14 +14,13 @@ import {
 import DocumentsList from '../../Layout/DocumentsList';
 
 export function clickOnDocument(e, doc, active) {
-  const canSelectMultiple = this.props.authorized;
   const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
 
-  if (!specialkeyPressed || !canSelectMultiple) {
+  if (!specialkeyPressed) {
     this.props.unselectAllDocuments();
   }
 
-  if ((active && !specialkeyPressed) || !canSelectMultiple) {
+  if (active && !specialkeyPressed) {
     return this.props.selectDocument(doc);
   }
 
@@ -29,7 +28,7 @@ export function clickOnDocument(e, doc, active) {
     return this.props.unselectDocument(doc.get('_id'));
   }
 
-  if (!active && e.shiftKey && canSelectMultiple) {
+  if (!active && e.shiftKey) {
     const lastSelectedDocument = this.props.selectedDocuments.last();
     const docs = this.props.documents.get('rows');
     const startIndex = docs.reduce((result, _doc, index) => {
@@ -67,7 +66,6 @@ export function mapStateToProps(state, props) {
     filters: state[props.storeKey].filters,
     filtersPanel: state[props.storeKey].ui.get('filtersPanel'),
     search: state[props.storeKey].search,
-    authorized: !!state.user.get('_id'),
     selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
     multipleSelected: state[props.storeKey].ui.get('selectedDocuments').size > 1,
     rowListZoomLevel: state[props.storeKey].ui.get('zoomLevel'),

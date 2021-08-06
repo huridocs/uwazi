@@ -1,18 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`handleError when error is created with createError should return the error 1`] = `
+exports[`handleError errors by type when error is created with createError should return the error 1`] = `
 Object {
   "code": 400,
   "message": "test error",
   "prettyMessage": "
 test error",
+  "requestId": "1234",
 }
 `;
 
 exports[`handleError when the body contains the user and password should not show them in the log 1`] = `
 Array [
   Array [
-    "
+    "requestId: 1234 
 body: {
  \\"username\\": \\"########\\",
  \\"password\\": \\"########\\"

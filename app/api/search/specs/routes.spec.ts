@@ -44,30 +44,34 @@ describe('Search routes', () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: '[]' });
-
-      expect(res.body.options.length).toBe(4);
+      expect(res.body.options.length).toBe(5);
 
       res = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: JSON.stringify([ids.template1]) });
-
       expect(res.body.options.length).toBe(3);
       expect(res.body.count).toBe(3);
     });
 
-    it('should filter by unpublished', async () => {
-      let res: SuperTestResponse = await request(app)
+    it('should include unpublished entities', async () => {
+      const res = await request(app)
         .get('/api/search/lookup')
         .set('content-language', 'es')
         .query({ searchTerm: 'unpublished' });
-      expect(res.body.options.length).toBe(0);
+      expect(res.body.options.length).toBe(1);
+    });
 
+    it('should search by the parts of a word', async () => {
+      let res = await request(app)
+        .get('/api/search/lookup')
+        .set('content-language', 'es')
+        .query({ searchTerm: 'she' });
+      expect(res.body.options.length).toBe(3);
       res = await request(app)
         .get('/api/search/lookup')
         .set('content-language', 'es')
-        .query({ searchTerm: 'unpublished', unpublished: true });
-
-      expect(res.body.options.length).toBe(1);
+        .query({ searchTerm: 'shed' });
+      expect(res.body.options.length).toBe(2);
     });
 
     describe('permissions', () => {
@@ -82,7 +86,7 @@ describe('Search routes', () => {
         const res: SuperTestResponse = await request(app)
           .get('/api/search/lookup')
           .set('content-language', 'es')
-          .query({ searchTerm: 'unpublished', unpublished: true });
+          .query({ searchTerm: 'unpublished' });
 
         expect(res.body.options.length).toBe(0);
       });
@@ -98,7 +102,7 @@ describe('Search routes', () => {
         let res: SuperTestResponse = await request(app)
           .get('/api/search/lookup')
           .set('content-language', 'es')
-          .query({ searchTerm: 'unpublished', unpublished: true });
+          .query({ searchTerm: 'unpublished' });
 
         expect(res.body.options.length).toBe(0);
 

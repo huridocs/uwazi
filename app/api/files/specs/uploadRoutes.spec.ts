@@ -4,18 +4,13 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
-import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
-import {
-  uploadsPath,
-  customUploadsPath,
-  setupTestUploadedPaths,
-  fileExists,
-} from 'api/files/filesystem';
+import { uploadsPath, customUploadsPath, fileExists } from 'api/files/filesystem';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, templateId, importTemplate } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -34,11 +29,10 @@ describe('upload routes', () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error'); //just to avoid annoying console output
-    await db.clearAllAndLoad(fixtures);
-    await setupTestUploadedPaths();
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
     socketEmit('documentProcessed', async () =>
