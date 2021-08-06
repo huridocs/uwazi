@@ -328,7 +328,7 @@ MetadataFormFields.propTypes = {
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   attachments: PropTypes.instanceOf(Immutable.List),
-  change: PropTypes.func,
+  change: PropTypes.func.isRequired,
 };
 
 export const mapStateToProps = (state, ownProps) => {
