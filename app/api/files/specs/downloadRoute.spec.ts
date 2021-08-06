@@ -2,8 +2,9 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { setUpApp } from 'api/utils/testingRoutes';
-import db from 'api/utils/testing_db';
 
+import testingDB from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, fileName1, uploadId } from './fixtures';
 
 import uploadRoutes from '../routes';
@@ -20,10 +21,10 @@ describe('files routes download', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET/', () => {
     it('should send the file', async () => {
@@ -66,7 +67,7 @@ describe('files routes download', () => {
       it('should respond with 404', async () => {
         const response = await request(app)
           .get('/api/files/unexistent.pdf')
-          .query({ _id: db.id().toString() });
+          .query({ _id: testingDB.id().toString() });
 
         expect(response.status).toBe(404);
       });
@@ -76,7 +77,7 @@ describe('files routes download', () => {
       it('should respond with 404', async () => {
         const response = await request(app)
           .get('/api/files/fileNotOnDisk')
-          .query({ _id: db.id().toString() });
+          .query({ _id: testingDB.id().toString() });
 
         expect(response.status).toBe(404);
       });

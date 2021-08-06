@@ -13,9 +13,8 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 
-mongoose.Promise = Promise;
 mongoose.set('useFindAndModify', false);
-
+mongoose.Promise = Promise;
 let connected = false;
 let mongod: MongoMemoryServer;
 let mongodb: Db;
@@ -69,6 +68,7 @@ const testingDB: {
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
   dbName: string;
   setupFixturesAndContext: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
+  clearAllAndLoadFixtures: (fixtures: DBFixture) => Promise<void>;
 } = {
   mongodb: null,
   dbName: '',
@@ -116,6 +116,7 @@ const testingDB: {
     await this.connect();
     await fixturer.clearAllAndLoad(mongodb, fixtures);
     new UserInContextMockFactory().mockEditorUser();
+
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
       await elasticTesting.reindex();
@@ -127,6 +128,10 @@ const testingDB: {
    */
   async clearAllAndLoad(fixtures: DBFixture, elasticIndex?: string) {
     await this.setupFixturesAndContext(fixtures, elasticIndex);
+  },
+
+  async clearAllAndLoadFixtures(fixtures: DBFixture) {
+    await fixturer.clearAllAndLoad(mongodb, fixtures);
   },
 };
 

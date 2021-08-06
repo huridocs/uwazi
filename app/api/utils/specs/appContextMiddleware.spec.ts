@@ -16,12 +16,15 @@ const helperMiddleware = (req: Request, _res: Response, next: NextFunction) => {
 };
 
 describe('appcontext middleware', () => {
-  it('should execute next middlewares inside an async context', async () => {
-    const app: Application = express();
+  const app: Application = express();
+
+  beforeAll(() => {
     app.use(appContextMiddleware);
     app.use(helperMiddleware);
     testingRoutes(app);
+  });
 
+  it('should execute next middlewares inside an async context', async () => {
     const response = await request(app)
       .get('/api/testGET')
       .set('someHeader', 'test');

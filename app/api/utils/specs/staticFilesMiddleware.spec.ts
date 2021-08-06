@@ -5,6 +5,8 @@ import { staticFilesMiddleware } from '../staticFilesMiddleware';
 import { testingTenants } from '../testingTenants';
 import errorHandlingMiddleware from '../error_handling_middleware';
 
+jest.mock('api/utils/AppContext');
+
 describe('static file middleware', () => {
   const app: Application = express();
   app.get('/static-files/:fileName', staticFilesMiddleware([uploadsPath, attachmentsPath]));

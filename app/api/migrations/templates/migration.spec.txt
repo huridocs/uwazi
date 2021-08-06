@@ -9,7 +9,7 @@ describe('migration {{ name }}', () => {
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingDB.tearDown();
   });
 
   it('should have a delta number', () => {
