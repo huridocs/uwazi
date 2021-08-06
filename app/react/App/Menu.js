@@ -58,11 +58,23 @@ export class Menu extends Component {
       if (url.startsWith('http')) {
         return (
           <li className="menuNav-item">
-            <a className="btn menuNav-btn">{link.get('title')}</a>
-            <ul key={link.get('_id')} className="Dropdown">
+            <a
+              className="btn menuNav-btn menuNav-link dropdown-toggle"
+              id="navbarDropdownMenuLink"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              {link.get('title')}
+            </a>
+            <ul
+              key={link.get('_id')}
+              className="dropdown-menu"
+              aria-labelledby="navbarDropdownMenuLink"
+            >
               {link.get('sublinks').map((sublink, index) => (
-                <li key={index} className="Dropdown-option">
-                  <a href={url} className="btn" target="_blank" rel="noreferrer">
+                <li key={index}>
+                  <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
                     <span>{t('Menu', sublink.get('title'))}</span>
                   </a>
                 </li>
@@ -72,12 +84,24 @@ export class Menu extends Component {
         );
       }
       return (
-        <li className="menuNav-item">
-          <a className="btn menuNav-btn">{link.get('title')}</a>
-          <ul key={link.get('_id')} className="Dropdown">
+        <li className="menuNav-item dropdown">
+          <a
+            className="btn menuNav-btn menuNav-link dropdown-toggle"
+            id="navbarDropdownMenuLink"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            {link.get('title')}
+          </a>
+          <ul
+            key={link.get('_id')}
+            className="dropdown-menu"
+            aria-labelledby="navbarDropdownMenuLink"
+          >
             {link.get('sublinks').map((sublink, index) => (
-              <li key={index} className="Dropdown-option">
-                <I18NLink to={url} className="btn">
+              <li key={index}>
+                <I18NLink to={url} className="btn dropdown-item">
                   <span>{t('Menu', sublink.get('title'))}</span>
                 </I18NLink>
               </li>
