@@ -22,7 +22,7 @@ describe('PageCreator', () => {
   let context;
 
   beforeEach(() => {
-    props = { scriptRendered: false };
+    props = { scriptRendered: false, onError: jest.fn() };
     document.body.innerHTML = '';
     context = {
       store: {
@@ -64,6 +64,13 @@ describe('PageCreator', () => {
       render();
       testScriptTag(1, workingScript.value);
     });
+
+    it('should add listeners for error and unhandledrejection events.', () => {
+      jest.spyOn(window, 'addEventListener').mockImplementationOnce(() => {});
+      render();
+      expect(window.addEventListener).toHaveBeenCalledWith('error', props.onError);
+      expect(window.addEventListener).toHaveBeenCalledWith('unhandledrejection', props.onError);
+    });
   });
 
   describe('on componentDidUpdate', () => {
@@ -86,6 +93,14 @@ describe('PageCreator', () => {
       component.setProps({ children: null });
       testScriptTag(0);
     });
+
+    it('should remove the listeners for error and unhandledrejection events if children has changed', () => {
+      jest.spyOn(window, 'removeEventListener').mockImplementationOnce(() => {});
+      component.setProps({ children: null });
+
+      expect(window.removeEventListener).toHaveBeenCalledWith('error', props.onError);
+      expect(window.removeEventListener).toHaveBeenCalledWith('unhandledrejection', props.onError);
+    });
   });
 
   describe('on componentWillUnmount', () => {
@@ -97,6 +112,13 @@ describe('PageCreator', () => {
     it('should remove script.', () => {
       component.unmount();
       testScriptTag(0);
+    });
+
+    it('should remove the listeners for error and unhandledrejection events.', () => {
+      jest.spyOn(window, 'removeEventListener').mockImplementationOnce(() => {});
+      component.unmount();
+      expect(window.removeEventListener).toHaveBeenCalledWith('error', props.onError);
+      expect(window.removeEventListener).toHaveBeenCalledWith('unhandledrejection', props.onError);
     });
   });
 
