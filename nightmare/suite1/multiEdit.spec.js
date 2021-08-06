@@ -16,11 +16,11 @@ describe('multi edit path', () => {
       it('it should create 3 entities', done => {
         nightmare
           .login('admin', 'admin')
-          .waitToClick(selectors.navigation.uploadsNavButton)
-          .wait(selectors.uploadsView.newEntityButtom)
+          .waitToClick(selectors.navigation.libraryNavButton)
+          .wait(selectors.libraryView.newEntityButtom)
           .url()
           .then(url => {
-            expect(url.match(`${config.url}/uploads`)).not.toBe(null);
+            expect(url.match(`${config.url}/library`)).not.toBe(null);
             done();
           })
           .catch(catchErrors(done));
@@ -29,20 +29,20 @@ describe('multi edit path', () => {
 
     it('should create 3 new entities and publish them', done => {
       nightmare
-        .waitToClick(selectors.uploadsView.newEntityButtom)
+        .waitToClick(selectors.libraryView.newEntityButtom)
         .write(selectors.newEntity.form.title, 'King Ping')
         .select(selectors.newEntity.form.type, '58f0aed2e147e720856a0741')
-        .waitToClick(selectors.uploadsView.saveButton)
+        .waitToClick(selectors.libraryView.saveButton)
         .waitToClick('.alert.alert-success')
-        .waitToClick(selectors.uploadsView.newEntityButtom)
+        .waitToClick(selectors.libraryView.newEntityButtom)
         .write(selectors.newEntity.form.title, 'Mysterio')
         .select(selectors.newEntity.form.type, '58f0aed2e147e720856a0741')
-        .waitToClick(selectors.uploadsView.saveButton)
+        .waitToClick(selectors.libraryView.saveButton)
         .waitToClick('.alert.alert-success')
-        .waitToClick(selectors.uploadsView.newEntityButtom)
+        .waitToClick(selectors.libraryView.newEntityButtom)
         .write(selectors.newEntity.form.title, 'Dormmamu')
         .select(selectors.newEntity.form.type, '58ad7d240d44252fee4e61fb')
-        .waitToClick(selectors.uploadsView.saveButton)
+        .waitToClick(selectors.libraryView.saveButton)
         .wait('.alert.alert-success')
         .isVisible('.alert.alert-success')
         .then(result => {

@@ -1,23 +1,19 @@
-import { t } from 'app/I18N';
-import LibraryFilters from 'app/Library/components/LibraryFilters';
-import { QuickLabelPanel } from 'app/Library/components/QuickLabelPanel';
-import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
-import Welcome from 'app/Library/components/Welcome';
-import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
-import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
-import blankState from './helpers/blankState';
+import { t } from 'app/I18N';
+import LibraryFilters from 'app/Library/components/LibraryFilters';
+import { QuickLabelPanel } from 'app/Library/components/QuickLabelPanel';
+import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
+import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
+import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
+import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
+import ImportPanel from 'app/Uploads/components/ImportPanel';
 import { QuickLabelHeader } from './components/QuickLabelHeader';
 
 export class LibraryLayoutBase extends Component {
   render() {
-    if (blankState()) {
-      return <Welcome />;
-    }
     const { className, children, quickLabelThesaurus, sidePanelMode, noScrollable } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
@@ -38,6 +34,7 @@ export class LibraryLayoutBase extends Component {
           <FeatureToggleSemanticSearch>
             <SemanticSearchPanel storeKey="library" />
           </FeatureToggleSemanticSearch>
+          <ImportPanel />
         </div>
       </div>
     );
