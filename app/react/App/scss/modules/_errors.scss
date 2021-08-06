@@ -1,0 +1,63 @@
+@import '../../scss/config/colors';
+@import '../../scss/config/typography';
+.error-fallback-ui {
+  height: calc(100% - 200px);
+  .message {
+    position: relative;
+    left: 15em;
+    top: 200px;
+    max-width: 80%;
+    @media (max-width: 1023px) {
+      top: 100px;
+      left: 50%;
+      width: 380px;
+      transform: translateX(-50%);
+    }
+    @media (max-width: 600px) {
+      top: 80px;
+      width: 280px;
+
+    }
+    .error-message-xxl {
+      font-size: 36px;
+      @media (max-width: 600px) {
+        font-size: 26px;
+      }
+    }
+    .error-message-lg {
+      font-size: $f-size-lg;
+      @media (max-width: 600px) {
+        font-size: 14px;
+      }
+    }
+    .error-message-sm {
+      font-size: $f-size-sm;
+      @media (max-width: 600px) {
+        font-size: $f-size-xs;
+      }
+
+    }
+    .error-details {
+      font-size: $f-size-sm;
+      white-space: pre-wrap;
+      overflow: scroll;
+      max-height: 10em;
+    }
+  }
+  .error-code {
+    font-size: 150px;
+    font-weight: bold;
+    color: $c-grey-dark;
+    position: fixed;
+    top: 50%;
+    left: 70%;
+    @media (max-width: 1023px) {
+      left: 50%;
+      top: 45%;
+      transform: translateX(-50%);
+    }
+    @media (max-width: 600px) {
+      font-size: 100px;
+    }
+  }
+}

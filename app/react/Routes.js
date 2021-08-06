@@ -2,7 +2,6 @@
 import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
 import { trackPage } from 'app/App/GoogleAnalytics';
-import NoMatch from 'app/App/NoMatch';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
@@ -41,9 +40,10 @@ import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
+import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import React from 'react';
-import { IndexRoute, Route } from 'react-router';
 
+import { IndexRoute, Route } from 'react-router';
 import { UserManagement } from 'app/Users/UserManagement';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
@@ -180,7 +180,8 @@ const routes = (
       component={SemanticSearchResultsView}
       onEnter={onEnter}
     />
-    <Route path="404" component={NoMatch} />
+    <Route path="error/:errorCode" component={GeneralError} />
+    <Route path="404" component={GeneralError} />
   </Route>
 );
 
@@ -189,8 +190,8 @@ export default (
     {routes}
     <Route path=":lang">
       {routes}
-      <Route path="*" component={NoMatch} />
+      <Route path="*" component={GeneralError} />
     </Route>
-    <Route path="*" component={NoMatch} />
+    <Route path="*" component={GeneralError} />
   </Route>
 );

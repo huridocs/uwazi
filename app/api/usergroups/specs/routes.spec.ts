@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
-import testingDB from 'api/utils/testing_db';
 
 import { setUpApp } from 'api/utils/testingRoutes';
 import userGroupRoutes from 'api/usergroups/routes';
 import { testingTenants } from 'api/utils/testingTenants';
 import request, { Response as SuperTestResponse } from 'supertest';
 import errorLog from 'api/log/errorLog';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userGroups from '../userGroups';
 
 jest.mock(
@@ -21,11 +21,12 @@ describe('usergroups routes', () => {
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
 
   beforeAll(async () => {
-    await testingDB.connect();
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   const getUser = () => user;
@@ -196,7 +197,7 @@ describe('usergroups routes', () => {
         spyOn(userGroups, 'save').and.throwError('unhandled error');
         const response: request.Response = await endpointCall();
         expect(response.status).toBe(500);
-        expect(response.body.error).toContain('Error: unhandled error');
+        expect(response.body.prettyMessage).toContain('unhandled error');
       }
     );
   });

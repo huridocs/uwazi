@@ -2,17 +2,16 @@ import { Writable } from 'stream';
 import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { search } from 'api/search';
-import db from 'api/utils/testing_db';
 import csvExporter from 'api/csv/csvExporter';
 import * as filesystem from 'api/files/filesystem';
 import { NextFunction, Request, Response } from 'express';
 import authMiddleware from 'api/auth/authMiddleware';
 
+import { User } from 'api/users/usersModel';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import routes from '../exportRoutes';
-import { User } from '../../users/usersModel';
 
 jest.mock('api/csv/csvExporter');
-
 jest.mock('../../auth/authMiddleware.ts');
 
 const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;
@@ -43,7 +42,7 @@ describe('export routes', () => {
           },
         ],
       };
-      await db.clearAllAndLoad(fixtures);
+      await testingEnvironment.setUp(fixtures);
 
       exportMock = jest.fn().mockImplementation(async () => Promise.resolve());
       (csvExporter as any).mockImplementation(() => ({
@@ -51,7 +50,7 @@ describe('export routes', () => {
       }));
     });
 
-    afterAll(async () => db.disconnect());
+    afterAll(async () => testingEnvironment.tearDown());
 
     const fakeRequestAugmenterMiddleware = (user: User, language: string) => (
       req: Request,

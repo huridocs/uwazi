@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PageViewer render should render the script 1`] = `
-<Connect(Script)>
+<Connect(Script)
+  onError={[Function]}
+>
   var datasets = window.store.getState().page.datasets.toJS();
     JSScript
 </Connect(Script)>
