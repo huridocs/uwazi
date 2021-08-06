@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { objectIdSchema, tocSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, tocSchema, extractedMetadataSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { FileType } from './fileType';
 
@@ -40,6 +40,7 @@ export const fileSchema = {
       type: 'array',
       items: tocSchema,
     },
+    extractedMetadata: { type: 'array', items: extractedMetadataSchema },
     pdfInfo: {
       type: 'object',
       additionalProperties: false,

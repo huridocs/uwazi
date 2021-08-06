@@ -141,6 +141,37 @@ export const tocSchema = {
   },
 };
 
+export const extractedMetadataSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    _id: objectIdSchema,
+    label: { type: 'string' },
+    timestamp: { type: 'string' },
+    selection: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        text: { type: 'string' },
+        selectionRectangles: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              top: { type: 'number' },
+              left: { type: 'number' },
+              width: { type: 'number' },
+              height: { type: 'number' },
+              page: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 export const propertySchema = {
   type: 'object',
   required: ['label', 'type', 'name'],

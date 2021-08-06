@@ -3,12 +3,13 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
-import { selectionHandler, formFieldUpdater } from '../actions/metadataExtractionActions';
+import { updateSelection, formFieldUpdater } from '../actions/metadataExtractionActions';
 
 export type OwnPropTypes = {
   fieldName: string;
   model: string;
   fieldId?: string;
+  fieldType?: string;
 };
 
 const mapStateToProps = (state: IStore) => ({
@@ -16,11 +17,11 @@ const mapStateToProps = (state: IStore) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
-  const { fieldName, fieldId, model } = ownProps;
+  const { fieldName, fieldId, model, fieldType = undefined } = ownProps;
   return bindActionCreators(
     {
-      updateFormField: value => formFieldUpdater(value, model),
-      setSelection: selection => selectionHandler(selection, fieldName, fieldId),
+      updateFormField: value => formFieldUpdater(value, model, fieldType),
+      setSelection: selection => updateSelection(selection, fieldName, fieldId),
     },
     dispatch
   );

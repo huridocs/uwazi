@@ -92,6 +92,22 @@ export interface TocSchema {
   indentation?: number;
 }
 
+export interface ExtractedMetadataSchema {
+  _id?: string | ObjectId;
+  label?: string;
+  timestamp?: string;
+  selection?: {
+    text?: string;
+    selectionRectangles?: {
+      top?: number;
+      left?: number;
+      width?: number;
+      height?: number;
+      page?: string;
+    }[];
+  };
+}
+
 export interface PropertySchema {
   _id?: ObjectIdSchema;
   id?: string;
