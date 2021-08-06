@@ -1,5 +1,5 @@
-import { testingDB } from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
+import { testingDB } from 'api/utils/testing_db';
 import { files } from 'api/files';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import errorLog from 'api/log/errorLog';
@@ -29,7 +29,7 @@ describe('tocService', () => {
     });
 
     const elasticIndex = 'toc.service.index';
-    await testingDB.clearAllAndLoad(fixtures, elasticIndex);
+    await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
     await elasticTesting.resetIndex();
     await elasticTesting.refresh();
   });

@@ -1,12 +1,17 @@
+/**
+ * @jest-environment jsdom
+ */
+import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
+import { shallow } from 'enzyme';
 import { actions } from 'app/BasicReducer';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import { PageViewer } from 'app/Pages/components/PageViewer';
 import { RequestParams } from 'app/utils/RequestParams';
-import { shallow } from 'enzyme';
-import React from 'react';
 
+import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import PageView from '../PageView';
 import * as assetsUtils from '../utils/getPageAssets';
 
@@ -14,13 +19,14 @@ describe('PageView', () => {
   let component;
   let instance;
   let context;
+  let assetsUtilsSpy;
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<PageView />, { context });
     instance = component.instance();
-    spyOn(assetsUtils, 'getPageAssets').and.returnValue(
+    assetsUtilsSpy = spyOn(assetsUtils, 'getPageAssets').and.returnValue(
       Promise.resolve({
         pageView: 'pageViewValues',
         itemLists: 'itemListsValues',
@@ -82,6 +88,24 @@ describe('PageView', () => {
         { type: 'page/itemLists/SET', value: 'itemListsValues' },
         { type: 'page/datasets/SET', value: 'datasetsValues' },
       ]);
+    });
+  });
+
+  describe('error handling', () => {
+    describe('when a server side error happens', () => {
+      it('should render a fallback UI as error boundary', () => {
+        const consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
+        spyOn(console, 'error').and.callFake(consoleErrorSpy);
+        assetsUtilsSpy.and.returnValue(Promise.reject(new Error('error at rendering')));
+        component = renderConnectedMount(PageView, { context }, {}, true);
+        const errorMessage = component
+          .find(ErrorFallback)
+          .find('.error-message-lg')
+          .at(0)
+          .text();
+
+        expect(errorMessage).toEqual('TypeError');
+      });
     });
   });
 });
