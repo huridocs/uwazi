@@ -127,7 +127,7 @@ const validateSameRelationshipsMatch = (
   property: PropertySchema,
   entity: EntitySchema,
   template: TemplateSchema,
-  value: MetadataObjectSchema[]
+  value: MetadataObjectSchema[] | undefined
 ) => {
   let valid = true;
   if (value && property.type === propertyTypes.relationship) {
