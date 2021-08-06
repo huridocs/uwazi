@@ -39,11 +39,10 @@ const MetadataExtractorComponent = ({ selection, setSelection, updateFormField }
 
   if (selection !== null) {
     return (
-      <button type="button" onClick={onClick}>
-        <p>
-          Click to fill
-          <Icon icon="link" />
-        </p>
+      <button type="button" onClick={onClick} className="extraction-button">
+        <span>
+          Click to fill <Icon icon="link" />
+        </span>
       </button>
     );
   }

@@ -297,16 +297,18 @@ export class MetadataFormFields extends Component {
                   </li>
                 ) : null}
                 <li className="wide">
-                  {storeKey === 'documentViewer' &&
-                    ['text', 'date', 'numeric', 'markdown'].includes(property.type) && (
-                      <MetadataExtractor
-                        fieldName={property.name}
-                        fieldId={property._id}
-                        fieldType={property.type}
-                        model={`${model}.metadata.${property.name}`}
-                      />
-                    )}
-                  {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
+                  <div className="metadata-extractor-container">
+                    {storeKey === 'documentViewer' &&
+                      ['text', 'date', 'numeric', 'markdown'].includes(property.type) && (
+                        <MetadataExtractor
+                          fieldName={property.name}
+                          fieldId={property._id}
+                          fieldType={property.type}
+                          model={`${model}.metadata.${property.name}`}
+                        />
+                      )}
+                    {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
+                  </div>
                 </li>
               </ul>
             </FormGroup>

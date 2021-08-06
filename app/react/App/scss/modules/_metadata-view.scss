@@ -64,6 +64,25 @@
     font-size: $f-size-sm;
     font-weight: bold;
   }
+  .metadata-extractor-container {
+    position: relative;
+
+    .extraction-button {
+      position: absolute;
+      background: none;
+      border: unset;
+      color: #2b56c1;
+      top: 0;
+      bottom: 0;
+      right: 10px;
+      z-index: 1;
+
+      span {
+        background-color: rgba(255, 255, 255, 1);
+        padding: 2px;
+      }
+    }
+  }
 }
 
 .sidepanel-body .view dl {

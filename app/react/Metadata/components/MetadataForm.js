@@ -136,12 +136,14 @@ export class MetadataForm extends Component {
                   </label>
                 </li>
                 <li className="wide">
-                  {storeKey === 'documentViewer' && (
-                    <MetadataExtractor fieldName="title" model={`${model}.title`} />
-                  )}
-                  <Field model=".title">
-                    <textarea className="form-control" />
-                  </Field>
+                  <div className="metadata-extractor-container">
+                    {storeKey === 'documentViewer' && (
+                      <MetadataExtractor fieldName="title" model={`${model}.title`} />
+                    )}
+                    <Field model=".title">
+                      <textarea className="form-control" />
+                    </Field>
+                  </div>
                 </li>
                 <IconField model={model} />
               </ul>
