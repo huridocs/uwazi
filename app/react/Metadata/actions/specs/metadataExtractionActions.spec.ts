@@ -1,6 +1,11 @@
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
-import { updateSelection, formFieldUpdater } from '../metadataExtractionActions';
+import {
+  updateSelection,
+  formFieldUpdater,
+  getStoredSelections,
+  saveSelections,
+} from '../metadataExtractionActions';
 
 describe('metadataExtractionActions', () => {
   beforeEach(() => {
@@ -17,14 +22,14 @@ describe('metadataExtractionActions', () => {
     it.each(['01/30/1999', '30/01/1999', '01-30-1999', '30-01-1999', '01 30 1999', '30 01 1999'])(
       'should format valid date inputs for Datepicker.js component',
       dateStrings => {
-        const dateForDatepickerInUTC = 917665200;
+        const dateForDatepickerInUTC = 917654400;
         formFieldUpdater(dateStrings, 'fieldModel', 'date');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', dateForDatepickerInUTC);
       }
     );
 
     it('should parse dates that are only years, and set it to 01/01/YEAR', () => {
-      const dateForDatepickerInUTC = 1609470000;
+      const dateForDatepickerInUTC = 1609459200;
       formFieldUpdater('2021', 'fieldModel', 'date');
       expect(formActions.change).toHaveBeenCalledWith('fieldModel', dateForDatepickerInUTC);
     });
@@ -47,6 +52,25 @@ describe('metadataExtractionActions', () => {
           timestamp: Date(),
         }
       );
+    });
+  });
+
+  describe('getStoredSelections', () => {
+    it('should get extracted metadata selections stored in the file', () => {});
+  });
+
+  describe('saveSelections', () => {
+    const data = {
+      _id: 'abc123',
+      label: 'Description of incident',
+      timestamp: Date(),
+      selection: [
+        { text: 'a short description' },
+        { selectionRectangle: [{ top: 10, left: 10, width: 100, height: 2, page: 3 }] },
+      ],
+    };
+    it('should save the extracted selections into the file', async () => {
+      await saveSelections(data, 'fileID');
     });
   });
 });
