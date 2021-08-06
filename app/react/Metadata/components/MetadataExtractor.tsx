@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
-import { actions } from 'app/BasicReducer';
 import { selectionHandler, formFieldUpdater } from '../actions/metadataExtractionActions';
 
 export type OwnPropTypes = {
@@ -12,20 +11,14 @@ export type OwnPropTypes = {
   fieldId?: string;
 };
 
-const mapStateToProps = (state: IStore, ownProps: OwnPropTypes) => {
-  const { fieldName } = ownProps;
-  return {
-    selection: state.documentViewer.uiState.get('reference').get('sourceRange'),
-    isActive: state.documentViewer.metadataExtraction.get('active') === fieldName,
-  };
-};
+const mapStateToProps = (state: IStore) => ({
+  selection: state.documentViewer.uiState.get('reference').get('sourceRange'),
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
   const { fieldName, fieldId, model } = ownProps;
   return bindActionCreators(
     {
-      setActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', fieldName),
-      unsetActive: () => actions.setIn('documentViewer.metadataExtraction', 'active', 'none'),
       updateFormField: value => formFieldUpdater(value, model),
       setSelection: selection => selectionHandler(selection, fieldName, fieldId),
     },
@@ -37,34 +30,23 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const MetadataExtractorComponent = ({
-  selection,
-  isActive,
-  setActive,
-  unsetActive,
-  setSelection,
-  updateFormField,
-}: mappedProps) => {
-  useEffect(() => {
-    if (isActive && selection !== null) {
-      setSelection(selection);
-      updateFormField(selection.text);
-      unsetActive();
-    }
-  }, [isActive, selection]);
-
+const MetadataExtractorComponent = ({ selection, setSelection, updateFormField }: mappedProps) => {
   const onClick = () => {
-    if (!isActive) {
-      return setActive();
-    }
-    return unsetActive();
+    setSelection(selection);
+    updateFormField(selection.text);
   };
 
-  return (
-    <button type="button" onClick={onClick}>
-      {isActive && <p>Select to fill</p>} <Icon icon="link" />
-    </button>
-  );
+  if (selection !== null) {
+    return (
+      <button type="button" onClick={onClick}>
+        <p>
+          Click to fill
+          <Icon icon="link" />
+        </p>
+      </button>
+    );
+  }
+  return null;
 };
 
 const container = connector(MetadataExtractorComponent);
