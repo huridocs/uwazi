@@ -2,7 +2,6 @@
 import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
 import { trackPage } from 'app/App/GoogleAnalytics';
-import NoMatch from 'app/App/NoMatch';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
@@ -30,6 +29,7 @@ import {
   ThesauriList,
   TranslationsList,
 } from 'app/Settings';
+import MetadataExtractionDashboard from 'app/MetadataExtraction/MetadataExtractionDashboard';
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauri/EditThesauri';
@@ -40,9 +40,10 @@ import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
+import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import React from 'react';
-import { IndexRoute, Route } from 'react-router';
 
+import { IndexRoute, Route } from 'react-router';
 import { UserManagement } from 'app/Users/UserManagement';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
@@ -140,6 +141,7 @@ const routes = (
         <Route path="new" component={NewTemplate} />
         <Route path="edit/:templateId" component={EditTemplate} />
       </Route>
+      <Route path="metadata_extraction" component={MetadataExtractionDashboard} />
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />
         <Route path="new" component={NewRelationType} />
@@ -178,7 +180,8 @@ const routes = (
       component={SemanticSearchResultsView}
       onEnter={onEnter}
     />
-    <Route path="404" component={NoMatch} />
+    <Route path="error/:errorCode" component={GeneralError} />
+    <Route path="404" component={GeneralError} />
   </Route>
 );
 
@@ -187,8 +190,8 @@ export default (
     {routes}
     <Route path=":lang">
       {routes}
-      <Route path="*" component={NoMatch} />
+      <Route path="*" component={GeneralError} />
     </Route>
-    <Route path="*" component={NoMatch} />
+    <Route path="*" component={GeneralError} />
   </Route>
 );
