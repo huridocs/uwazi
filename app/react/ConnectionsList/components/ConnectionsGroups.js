@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-
+import { connect } from 'react-redux';
 import { t } from 'app/I18N';
 
 import ConnectionsGroup from './ConnectionsGroup';
 
-export class ConnectionsGroups extends Component {
+export class ConnectionsGroupsComponent extends Component {
   render() {
     const { connectionsGroups } = this.props;
 
@@ -36,6 +36,14 @@ export class ConnectionsGroups extends Component {
   }
 }
 
-ConnectionsGroups.propTypes = {
+ConnectionsGroupsComponent.propTypes = {
   connectionsGroups: PropTypes.object,
 };
+
+function mapStateToProps({ relationships }) {
+  return {
+    connectionsGroups: relationships.list.connectionsGroups,
+  };
+}
+
+export const ConnectionsGroups = connect(mapStateToProps)(ConnectionsGroupsComponent);

@@ -91,13 +91,16 @@ export default app => {
       const unpublished = Boolean(
         req.user && ['admin', 'editor', 'collaborator'].includes(req.user.role)
       );
+      const unrestricted = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
+
       relationships
         .getByDocument(
           req.query.sharedId,
           req.language,
           unpublished,
           req.query.file,
-          req.query.onlyTextReferences
+          req.query.onlyTextReferences,
+          unrestricted
         )
         .then(response => res.json(response))
         .catch(next);
