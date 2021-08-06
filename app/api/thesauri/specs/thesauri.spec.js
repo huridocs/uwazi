@@ -5,7 +5,7 @@ import entities from 'api/entities/entities';
 import { search } from 'api/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
-import db from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import thesauri from '../thesauri.js';
 import {
   fixtures,
@@ -18,18 +18,18 @@ import {
 describe('thesauri', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await db.clearAllAndLoad(fixtures);
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingDB.disconnect();
   });
 
   describe('get()', () => {
     it('should return all thesauri including entity templates as options', async () => {
       search.indexEntities.and.callThrough();
       const elasticIndex = 'thesauri.spec.elastic.index';
-      await db.clearAllAndLoad(fixtures, elasticIndex);
+      await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
       const thesaurus = await thesauri.get(null, 'es');
 
       expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
@@ -137,7 +137,7 @@ describe('thesauri', () => {
     });
 
     it('should create a thesauri', async () => {
-      const _id = db.id();
+      const _id = testingDB.id();
       const data = { name: 'Batman wish list', values: [{ _id, id: '1', label: 'Joker BFF' }] };
 
       const response = await thesauri.save(data);

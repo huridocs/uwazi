@@ -1,10 +1,10 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 
-import { testingDB } from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
 import { setUpApp } from 'api/utils/testingRoutes';
 
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import routes from '../routes';
 
 jest.mock(
@@ -19,12 +19,12 @@ describe('relationships routes', () => {
 
   beforeEach(async () => {
     spyOn(errorLog, 'error');
-    await testingDB.clearAllAndLoad({
+    await testingEnvironment.setUp({
       settings: [{ languages: [{ key: 'en', default: true }] }],
     });
   });
 
-  afterAll(async () => testingDB.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/bulk', () => {
     it('should validate connections', async () => {
@@ -32,7 +32,7 @@ describe('relationships routes', () => {
         .post('/api/relationships/bulk')
         .send({ save: [{ notAllowedProperty: 'test' }], delete: [] });
 
-      expect(body.error).toBe('validation failed');
+      expect(body.prettyMessage).toBe('validation failed');
     });
 
     it('should throw an especial 500 error when selectionRectangles is sent empty', async () => {
