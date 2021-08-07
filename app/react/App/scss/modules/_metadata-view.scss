@@ -64,6 +64,7 @@
     font-size: $f-size-sm;
     font-weight: bold;
   }
+
   .metadata-extractor-container {
     position: relative;
 
@@ -76,6 +77,22 @@
       bottom: 0;
       right: 10px;
       z-index: 1;
+
+      animation-name: extraction-button;
+      animation-duration: 225ms;
+      @keyframes extraction-button {
+        0% {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        25% {
+          transform: scale(1.1);
+          opacity: 0.9;
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
 
       span {
         background-color: rgba(255, 255, 255, 1);
