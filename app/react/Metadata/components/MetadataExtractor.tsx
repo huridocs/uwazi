@@ -12,8 +12,15 @@ export type OwnPropTypes = {
   fieldType?: string;
 };
 
+type selection = {
+  text: string;
+  selectionRectangle: [];
+};
+
 const mapStateToProps = (state: IStore) => ({
-  selection: state.documentViewer.uiState.get('reference').get('sourceRange'),
+  selection: (state.documentViewer.uiState
+    .get('reference')
+    .get('sourceRange') as unknown) as selection,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {

@@ -1,14 +1,9 @@
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
-import {
-  updateSelection,
-  formFieldUpdater,
-  getStoredSelections,
-  saveSelections,
-} from '../metadataExtractionActions';
+import { updateSelection, formFieldUpdater } from '../metadataExtractionActions';
 
 describe('metadataExtractionActions', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     spyOn(formActions, 'change');
     spyOn(actions, 'updateIn');
   });
@@ -52,25 +47,6 @@ describe('metadataExtractionActions', () => {
           timestamp: Date(),
         }
       );
-    });
-  });
-
-  describe('getStoredSelections', () => {
-    it('should get extracted metadata selections stored in the file', () => {});
-  });
-
-  describe('saveSelections', () => {
-    const data = {
-      _id: 'abc123',
-      label: 'Description of incident',
-      timestamp: Date(),
-      selection: [
-        { text: 'a short description' },
-        { selectionRectangle: [{ top: 10, left: 10, width: 100, height: 2, page: 3 }] },
-      ],
-    };
-    it('should save the extracted selections into the file', async () => {
-      await saveSelections(data, 'fileID');
     });
   });
 });

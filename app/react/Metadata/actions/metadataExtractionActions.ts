@@ -15,7 +15,7 @@ const updateSelection = (selection: {}, fieldName: string, fieldId?: string) => 
 const formFieldUpdater = (value: string, model: string, fieldType?: string) => {
   if (fieldType === 'date') {
     const dateFormats = ['DD-MM-YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD', 'YYYY'];
-    const getDate = moment(value, dateFormats).format('x');
+    const getDate = moment.utc(value, dateFormats).format('x');
     const dateForPicker = parseInt(getDate, 10) / 1000;
     return formActions.change(model, dateForPicker);
   }
