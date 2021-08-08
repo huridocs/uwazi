@@ -19,7 +19,6 @@ export default combineReducers({
   tocFormState: formReducer('documentViewer.tocForm'),
   tocBeingEdited: createReducer('documentViewer/tocBeingEdited', false),
   metadataExtraction: createReducer('documentViewer.metadataExtraction', {
-    active: 'none',
     selections: [],
   }),
   sidepanel: combineReducers({

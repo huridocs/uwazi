@@ -15,6 +15,7 @@ import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 import { sortTextSelections } from '../utils/sortTextSelections';
 import EntitiesApi from '../../Entities/EntitiesAPI';
+import { saveSelections } from '../../Metadata/actions/metadataExtractionActions';
 
 export function setDocument(document, html) {
   return {
@@ -44,7 +45,8 @@ export function saveDocument(doc) {
     }
   });
 
-  return dispatch =>
+  return async dispatch => {
+    await saveSelections(updateDoc);
     documentsApi.save(new RequestParams(updateDoc)).then(updatedDoc => {
       dispatch(notificationActions.notify('Document updated', 'success'));
       dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
@@ -52,6 +54,7 @@ export function saveDocument(doc) {
       dispatch(actions.update('viewer/doc', updatedDoc));
       dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
     });
+  };
 }
 
 export function saveToc(toc, fileId) {

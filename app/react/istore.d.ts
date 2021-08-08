@@ -126,7 +126,6 @@ export interface IStore {
       activeReference: string;
     }>;
     metadataExtraction: IImmutable<{
-      active: string;
       selections: [];
     }>;
   };
