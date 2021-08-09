@@ -3,6 +3,7 @@ import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 import { refreshIndex } from '../helpers/elastichelpers';
+import { goToRestrictedEntities } from '../helpers/publishedFilter';
 
 const createMenuLinkToPublicForm = async (linkText: string) => {
   const element = await page.waitForSelector('.alert-info a.pull-right[target="_blank"]');
@@ -70,9 +71,7 @@ describe('Custom home page and styles', () => {
 
   it('should check the newly created entity', async () => {
     await refreshIndex();
-    await expect(page).toClick('a', {
-      text: 'Private entities',
-    });
+    await goToRestrictedEntities();
     await expect(page).toClick('.item-name span', {
       text: 'Test public submit entity',
     });
