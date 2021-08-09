@@ -32,9 +32,15 @@ export default class AttachmentsList extends Component {
     return (
       <div className="attachments-list-parent">
         <div className="attachments-list-header">
-          <h2>
-            <Translate>Supporting files</Translate>
-          </h2>
+          <NeedAuthorization
+            roles={['admin', 'editor']}
+            orWriteAccessTo={[entity]}
+            bypass={attachments.length > 0}
+          >
+            <h2>
+              <Translate>Supporting files</Translate>
+            </h2>
+          </NeedAuthorization>
           {uploadAttachmentButton}
         </div>
         <div className="attachments-list">

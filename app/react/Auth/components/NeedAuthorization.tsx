@@ -10,6 +10,7 @@ type PropTypes = {
   roles?: string[];
   orWriteAccessTo?: EntitySchema[];
   user: UserSchema;
+  bypass?: boolean;
 };
 
 const checkWritePermissions = (entities: EntitySchema[] = [], user?: any) => {
@@ -43,7 +44,12 @@ const NeedAuthorization: React.FC<PropTypes> = ({
   roles,
   orWriteAccessTo,
   user,
+  bypass,
 }: PropTypes) => {
+  if (bypass) {
+    return <>{children}</>;
+  }
+
   const authorized = useMemo(
     () => checkRole(roles, user) || checkWritePermissions(orWriteAccessTo, user),
     [user, roles, orWriteAccessTo]

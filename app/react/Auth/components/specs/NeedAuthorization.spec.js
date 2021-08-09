@@ -257,4 +257,24 @@ describe('NeedAuthorization', () => {
       });
     });
   });
+
+  describe('bypass', () => {
+    beforeEach(() => {
+      store = {
+        user: Immutable.fromJS({ _id: 'userId', role: 'editor' }),
+      };
+    });
+
+    it('should render children even if conditions are otherwise not met', () => {
+      props = {
+        children: 'to render if auth',
+        roles: ['admin'],
+        bypass: true,
+      };
+
+      const component = render();
+
+      expect(component.text()).toBe('to render if auth');
+    });
+  });
 });

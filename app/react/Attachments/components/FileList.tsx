@@ -63,9 +63,15 @@ export class FileList extends Component<FileListProps> {
     return (
       <div className="filelist">
         <div className="filelist-header">
-          <h2>
-            <Translate>Primary Documents</Translate>
-          </h2>
+          <NeedAuthorization
+            roles={['admin', 'editor']}
+            orWriteAccessTo={[entity]}
+            bypass={orderedFiles.length > 0}
+          >
+            <h2>
+              <Translate>Primary Documents</Translate>
+            </h2>
+          </NeedAuthorization>
           <div>
             <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
               <UploadButton
