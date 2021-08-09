@@ -48,7 +48,7 @@ const MetadataExtractorComponent = ({ selection, setSelection, updateFormField }
     return (
       <button type="button" onClick={onClick} className="extraction-button">
         <span>
-          Click to fill <Icon icon="link" />
+          Click to fill <Icon icon="bullseye" />
         </span>
       </button>
     );
