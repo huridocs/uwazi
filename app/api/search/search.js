@@ -247,7 +247,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     if (
       !aggregations[key].buckets ||
       aggregations[key].type === 'nested' ||
-      ['_types', 'generatedToc', 'permissions'].includes(key)
+      ['_types', 'generatedToc', 'permissions', '_published'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
@@ -308,6 +308,14 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
         key: b.key,
         filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
+      }));
+    }
+
+    //published
+    if (aggregationKey === '_published') {
+      aggregation.buckets = aggregation.filtered.buckets.map(b => ({
+        key: b.key,
+        filtered: { doc_count: b.doc_count },
       }));
     }
 
@@ -408,7 +416,6 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result.permissions = permissionsInformation(hit, user);
     return result;
   });
-
   const sanitizedAggregations = await _sanitizeAggregations(
     response.body.aggregations.all,
     templates,
@@ -417,7 +424,6 @@ const processResponse = async (response, templates, dictionaries, language, filt
   );
 
   const aggregationsWithAny = _addAnyAggregation(sanitizedAggregations, filters, response);
-
   return {
     rows,
     totalRows: response.body.hits.total.value,
@@ -665,6 +671,10 @@ const search = {
 
     if (query.aggregateGeneratedToc) {
       queryBuilder.generatedTocAggregations();
+    }
+
+    if (query.aggregatePublishingStatus) {
+      queryBuilder.publishingStatusAggregations();
     }
 
     return elastic
