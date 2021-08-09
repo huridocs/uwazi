@@ -14,6 +14,14 @@ import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 import './styles/menu.scss';
 
+const groupStyles = {
+  paddingRight: '0px',
+  display: 'flex',
+};
+
+const linkStyles = {
+  display: 'flex',
+};
 export const LinkSource = {
   beginDrag(props) {
     return {
@@ -100,10 +108,13 @@ export class NavlinkForm extends Component {
                   <div className="row">
                     <div
                       className={link.type === 'group' ? 'col-sm-11' : 'col-sm-3'}
-                      style={{ display: 'flex' }}
+                      style={link.type === 'group' ? groupStyles : linkStyles}
                     >
                       {connectDragSource(
-                        <span className="property-name" style={{ paddingRight: '10px' }}>
+                        <span
+                          className="property-name"
+                          style={{ paddingRight: '10px', width: '65px' }}
+                        >
                           <Icon icon="bars" className="reorder" />
                           &nbsp;
                           <Icon icon={link.type === 'group' ? 'caret-square-down' : 'link'} />
@@ -112,12 +123,12 @@ export class NavlinkForm extends Component {
                       <div className={`${titleClass} input-group-width`}>
                         <span className="input-group-addon">Title</span>
                         <Field model={`settings.navlinksData.links[${index}].title`}>
-                          <input className="form-control" width="100%" />
+                          <input className="form-control" />
                         </Field>
                       </div>
                     </div>
                     <ShowIf if={link.type !== 'group'}>
-                      <div className="col-sm-8">
+                      <div className="col-sm-8" style={{ paddingRight: '0px' }}>
                         <div className="input-group">
                           <span className="input-group-addon">URL</span>
                           <Field model={`settings.navlinksData.links[${index}].url`}>
@@ -138,57 +149,59 @@ export class NavlinkForm extends Component {
                   </div>
                   <div className="row">
                     <ShowIf if={link.type === 'group'}>
-                      <div className="row">
-                        <div className="col-sm-12 sublink-indent">
-                          {links[index].sublinks?.map((_, i) => (
-                            <div
-                              className="row"
-                              style={{ paddingBottom: '5px', paddingTop: '5px' }}
-                            >
-                              <div className="col-sm-3" style={{ display: 'flex' }}>
-                                <span style={{ padding: '5px 10px 0px 0px' }}>
-                                  <Icon icon="link" />
-                                </span>
-                                <div className={`${titleClass} input-group-width`}>
-                                  <span className="input-group-addon">Title</span>
-                                  <Field
-                                    model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
+                      <div style={{ paddingLeft: '80px' }}>
+                        <div className="row">
+                          <div className="col-sm-12">
+                            {links[index].sublinks?.map((_, i) => (
+                              <div
+                                className="row"
+                                style={{ paddingBottom: '5px', paddingTop: '5px' }}
+                              >
+                                <div className="col-sm-3" style={{ display: 'flex' }}>
+                                  <span style={{ padding: '5px 10px 0px 0px' }}>
+                                    <Icon icon="link" />
+                                  </span>
+                                  <div className={`${titleClass} input-group-width`}>
+                                    <span className="input-group-addon">Title</span>
+                                    <Field
+                                      model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
+                                    >
+                                      <input className="form-control" style={{ width: '100%' }} />
+                                    </Field>
+                                  </div>
+                                </div>
+                                <div className="col-sm-8">
+                                  <div className="input-group">
+                                    <span className="input-group-addon">URL</span>
+                                    <Field
+                                      model={`settings.navlinksData.links[${index}].sublinks[${i}].url`}
+                                    >
+                                      <input className="form-control" />
+                                    </Field>
+                                  </div>
+                                </div>
+                                <div className="col-sm-1" style={{ paddingLeft: '0px' }}>
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger btn-xs property-remove, menu-delete-button"
+                                    onClick={() => this.props.removeGroupLink(index, i)}
                                   >
-                                    <input className="form-control" style={{ width: '100%' }} />
-                                  </Field>
+                                    <Icon icon="trash-alt" /> Delete
+                                  </button>
                                 </div>
                               </div>
-                              <div className="col-sm-8">
-                                <div className="input-group">
-                                  <span className="input-group-addon">URL</span>
-                                  <Field
-                                    model={`settings.navlinksData.links[${index}].sublinks[${i}].url`}
-                                  >
-                                    <input className="form-control" />
-                                  </Field>
-                                </div>
-                              </div>
-                              <div className="col-sm-1">
+                            ))}
+                            <div className="row">
+                              <div className="col-sm-12">
                                 <button
-                                  type="button"
-                                  className="btn btn-danger btn-xs property-remove, menu-delete-button"
-                                  onClick={() => this.props.removeGroupLink(index, i)}
+                                  className="menu-link-group-button"
+                                  type="submit"
+                                  onClick={this.props.addGroupLink.bind(this, links, index)}
                                 >
-                                  <Icon icon="trash-alt" /> Delete
+                                  <Icon icon="link" />
+                                  &nbsp;Add link
                                 </button>
                               </div>
-                            </div>
-                          ))}
-                          <div className="row">
-                            <div className="col-sm-12">
-                              <button
-                                className="menu-link-group-button"
-                                type="submit"
-                                onClick={this.props.addGroupLink.bind(this, links, index)}
-                              >
-                                <Icon icon="link" />
-                                &nbsp;Add link
-                              </button>
                             </div>
                           </div>
                         </div>

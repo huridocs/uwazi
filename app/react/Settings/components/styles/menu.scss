@@ -17,9 +17,20 @@
 }
 
 .input-group-width {
-  width: 95%;
+  width: 100%;
   height: 20px;
 }
 .sublink-indent {
   padding-left: 90px;
+}
+
+.link-group-footer {
+  position: absolute;
+  left: 20px;
+  top: 100%;
+  padding-bottom: 20px;
+}
+
+.footer-buttons {
+  right: calc(100% - 400px);
 }

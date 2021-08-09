@@ -14,7 +14,7 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
   };
 
   return (
-    <li className="menuNav-item" key={link.get('_id')}>
+    <li className="menuNav-item" key={link.get('_id')} onBlur={toggleDropdown}>
       <a
         className="btn menuNav-btn menuNav-link dropdown-toggle"
         id="navbarDropdownMenuLink"
@@ -25,7 +25,11 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
         {link.get('title')}
         &nbsp; <Icon icon="caret-down" />
       </a>
-      <ul key={link.get('_id')} className={`dropdown-menu ${showing ? 'show' : 'hide'}`}>
+      <ul
+        key={link.get('_id')}
+        className={`dropdown-menu ${showing ? 'show' : 'hide'}`}
+        onBlur={toggleDropdown}
+      >
         {link.get('sublinks').map((sublink: any, index: number) => {
           const url = sublink.get('url') || '/';
           if (url.startsWith('http')) {

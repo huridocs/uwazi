@@ -62,7 +62,7 @@ export class NavlinksSettings extends Component {
                 />
               ))}
             </ul>
-            <div className="settings-footer">
+            <div className="settings-footer footer-buttons">
               <button
                 className="menu-link-group-button"
                 onClick={this.props.addLink.bind(this, links, 'link')}
@@ -77,6 +77,8 @@ export class NavlinksSettings extends Component {
                 <Icon icon="caret-square-down" />
                 &nbsp;{t('System', 'Add group')}
               </button>
+            </div>
+            <div className="settings-footer">
               <button
                 type="submit"
                 className="btn btn-success"
