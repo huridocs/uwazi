@@ -103,6 +103,7 @@ import { infoCircleHollow } from 'UI/Icon/info-circle-hollow';
 import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
+import { importCsv } from './import-csv';
 import { copyFrom } from './copy-from';
 import { funnelFilter } from './funnel-filter';
 
@@ -209,6 +210,7 @@ const icons = {
   saveAndNext,
   faTasks,
   exportCsv,
+  importCsv,
   copyFrom,
   funnelFilter,
   twoFactorAuth,

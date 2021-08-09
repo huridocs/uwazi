@@ -8,7 +8,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
-import { loginAsAdminAndGoToUploads } from '../helpers/commonTests.js';
+import { loginAsAdminAndViewRestrictedEntities } from '../helpers/commonTests.js';
 
 const nightmare = createNightmare();
 
@@ -17,14 +17,14 @@ describe('publish entity path', () => {
   afterAll(async () => nightmare.end());
 
   describe('login', () => {
-    it('should log in as admin then click the uploads nav button', done => {
-      loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
+    it('should log in as admin then view restricted entities', done => {
+      loginAsAdminAndViewRestrictedEntities(nightmare, catchErrors, done);
     });
   });
 
   it('should create a new entity and publish it', done => {
     nightmare
-      .click(selectors.uploadsView.newEntityButtom)
+      .click(selectors.libraryView.newEntityButtom)
       .write(selectors.newEntity.form.title, 'scarecrow')
       .select(selectors.newEntity.form.type, '58f0aed2e147e720856a0741')
       .write(selectors.newEntity.form.realName, '?')
@@ -36,15 +36,15 @@ describe('publish entity path', () => {
       .wait(selectors.newEntity.form.suporPowers.laserBeam)
       .waitToClick(selectors.newEntity.form.suporPowers.laserBeam)
       .pickToday(selectors.newEntity.form.firstSighting)
-      .click(selectors.uploadsView.saveButton)
+      .click(selectors.libraryView.saveButton)
       .shareWithPublic('shareButton')
       .then(done);
   });
 
-  it('should go to library and check the values', done => {
+  it('should go to published entities and check the values', done => {
     nightmare
       .waitForTheEntityToBeIndexed()
-      .waitToClick(selectors.navigation.libraryNavButton)
+      .gotoLibrary()
       .waitToClick(selectors.libraryView.libraryFirstDocument)
       .wait(selectors.newEntity.viewer.title)
       .getInnerText(selectors.newEntity.viewer.title)
@@ -140,13 +140,14 @@ describe('publish entity path', () => {
   it('should unpublish the entity', async () => {
     const cards = await nightmare.library
       .openCardSidePanel('scarecrow')
-      .waitToClick(selectors.uploadsView.shareButton)
+      .waitToClick(selectors.libraryView.shareButton)
       .wait(500)
       .select('.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select', 'delete')
       .waitToClick('.share-modal  button.confirm-button')
       .waitForTheEntityToBeIndexed()
-      .waitToClick(selectors.navigation.uploadsNavButton)
-      .wait(selectors.uploadsView.newEntityButtom)
+      .waitToClick(selectors.libraryView.restrictedEntitiesFilterSelector)
+      .waitToClick(selectors.libraryView.publishedEntitiesFilterSelector)
+      .wait(selectors.libraryView.newEntityButtom)
       .waitForCardToBeCreated('scarecrow')
       .getResultsAsJson();
 

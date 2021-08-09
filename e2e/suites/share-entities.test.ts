@@ -1,16 +1,16 @@
 import insertFixtures from '../helpers/insertFixtures';
 import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
-import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
-import { expectDocumentCountAfterSearch } from '../helpers/elastichelpers';
+import { expectDocumentCountAfterSearch, refreshIndex } from '../helpers/elastichelpers';
+import { goToRestrictedEntities, goToPublishedEntities } from '../helpers/publishedFilter';
+import { createUser } from '../helpers/createUser';
 
 describe('Share entities', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
-    await page.goto(`${host}/settings/users`);
     await disableTransitions();
   });
 
@@ -37,18 +37,17 @@ describe('Share entities', () => {
   };
 
   it('should create a collaborator in the shared User Group', async () => {
-    await expect(page).toClick('button', { text: 'Add user' });
-    await expect(page).toFill('input[name=email]', 'rock@stone.com');
-    await expect(page).toFill('input[name=username]', 'colla');
-    await expect(page).toFill('input[name=password]', 'borator');
-    await expect(page).toClick('.multiselectItem-name', {
-      text: 'Asesores legales',
+    await createUser({
+      username: 'colla',
+      password: 'borator',
+      email: 'rock@stone.com',
+      group: 'Asesores legales',
     });
-    await expect(page).toClick('button', { text: 'Create User' });
   });
 
+  // eslint-disable-next-line max-statements
   it('Should list available collaborators of an entity', async () => {
-    await expect(page).toClick('a.private-documents');
+    await goToRestrictedEntities();
     await expect(page).toClick('.item-document', {
       text: titleEntity1,
     });
@@ -166,6 +165,7 @@ describe('Share entities', () => {
     );
     await expect(page).toClick('button', { text: 'Save changes' });
     await page.waitForSelector('.share-modal', { hidden: true });
+    await refreshIndex();
   });
 
   const checkCanEdit = async (docSelector: string, can = true) => {
@@ -187,9 +187,8 @@ describe('Share entities', () => {
   it('should be able to see and edit entities as a collaborator', async () => {
     await logout();
     await login('colla', 'borator');
-    await disableTransitions();
-    await expect(page).toClick('a.private-documents');
-    await page.waitFor('.item-document');
+    await goToRestrictedEntities();
+    await expectDocumentCountAfterSearch(page, 3);
     const entities = await page.$$('.item-document');
     expect(entities.length).toBe(3);
     await checkCanEdit(titleEntity1, false);
@@ -202,7 +201,7 @@ describe('Share entities', () => {
       text: titleEntity4,
     });
     await expect(page).toClick('button', { text: 'Edit' });
-    await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Edited title');
+    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Edited title');
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert', { text: 'Entity updated' });
     await page.waitFor('.item-document');
@@ -212,15 +211,14 @@ describe('Share entities', () => {
   });
 
   it('should be able to see only published entities', async () => {
-    await expect(page).toClick('a.public-documents');
+    await goToPublishedEntities();
     await page.waitFor('.item-document');
     await expect(page).toFill(
       'input[name="library.search.searchTerm"]',
       '"Resolución de la Corte IDH."'
     );
     await expect(page).toClick('[aria-label="Search button"]');
-    await expectDocumentCountAfterSearch(page, 1);
-    await expect(page).toMatchElement('.item-document .item-info > div > span', {
+    await expect(page).toMatchElement('.item-document .item-info > .item-name > span', {
       text: titlePublic1,
     });
   });

@@ -22,11 +22,6 @@ export class Menu extends Component {
     return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(params)}`;
   }
 
-  uploadsUrl() {
-    const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
-    return `/uploads/${encodeSearch(params)}`;
-  }
-
   render() {
     const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
@@ -83,26 +78,12 @@ export class Menu extends Component {
               <I18NLink
                 to={this.libraryUrl()}
                 className="menuNav-btn btn btn-default public-documents"
-                aria-label={t('System', 'Public entities', null, false)}
+                aria-label={t('System', 'Library', null, false)}
               >
                 <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
-                <span className="tab-link-tooltip">{t('System', 'Public entities')}</span>
+                <span className="tab-link-tooltip">{t('System', 'Library')}</span>
               </I18NLink>
             </li>
-            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-              <li className="menuNav-item">
-                <I18NLink
-                  to={this.uploadsUrl()}
-                  className="menuNav-btn btn btn-default private-documents"
-                  aria-label={t('System', 'Private entities', null, false)}
-                >
-                  <span>
-                    <Icon icon="cloud-upload-alt" />
-                  </span>
-                  <span className="tab-link-tooltip">{t('System', 'Private entities')}</span>
-                </I18NLink>
-              </li>
-            </NeedAuthorization>
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
               <li className="menuNav-item">
                 <I18NLink
@@ -151,8 +132,6 @@ Menu.propTypes = {
   location: PropTypes.object,
   librarySearch: PropTypes.object,
   libraryFilters: PropTypes.object,
-  uploadsSearch: PropTypes.object,
-  uploadsFilters: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,

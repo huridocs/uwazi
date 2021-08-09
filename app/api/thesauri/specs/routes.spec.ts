@@ -3,16 +3,14 @@ import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
-import db from 'api/utils/testing_db';
-import errorLog from 'api/log/errorLog';
-import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { setUpApp } from 'api/utils/testingRoutes';
 
+import { ensure } from 'shared/tsUtils';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { routes } from '../routes';
 import { thesauri } from '../thesauri';
 import { fixtures } from './fixtures';
-import { ensure } from 'shared/tsUtils';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -26,13 +24,11 @@ describe('Thesauri routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(Date, 'now').and.returnValue(1000);
-    spyOn(errorLog, 'error'); //just to avoid annoying console output
-    await db.clearAllAndLoad(fixtures);
-    await setupTestUploadedPaths();
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setFixtures(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('when file is uploaded', () => {
     it('should import data into the thesauri', async () => {
