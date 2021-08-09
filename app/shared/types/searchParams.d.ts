@@ -5,6 +5,7 @@ export interface SearchParams {
   query?: {
     aggregateGeneratedToc?: boolean;
     aggregatePermissionsByLevel?: boolean;
+    aggregatePublishingStatus?: boolean;
     filters?: {
       [k: string]: unknown | undefined;
     };

@@ -1,0 +1,13 @@
+.metadata-extraction-table{
+  .table tr th{
+    border-bottom: 0;
+  }
+  .table tr:first-of-type td{
+    border-top: 0;
+  }
+  .table > tbody > tr > td{
+    vertical-align: middle;
+    text-align: left;
+    padding: 10px 0px;
+  }
+}

@@ -42,7 +42,7 @@ export function processQuery(params, globalResources, key) {
 
   return {
     ...tocGenerationUtils.aggregations(sanitizedQuery, globalResources.settings.collection.toJS()),
-    ...(loggedIn ? { aggregatePermissionsByLevel: true } : {}),
+    ...(loggedIn ? { aggregatePermissionsByLevel: true, aggregatePublishingStatus: true } : {}),
   };
 }
 
