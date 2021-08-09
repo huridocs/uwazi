@@ -27,9 +27,8 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
       </a>
       <ul key={link.get('_id')} className={`dropdown-menu ${showing ? 'show' : 'hide'}`}>
         {link.get('sublinks').map((sublink: any, index: number) => {
-          console.log('Sublink: ', sublink.entries);
-          const url = sublink.get('url');
-          if (true) {
+          const url = sublink.get('url') || '/';
+          if (url.startsWith('http')) {
             return (
               <li key={index}>
                 <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
