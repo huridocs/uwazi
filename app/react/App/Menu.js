@@ -10,6 +10,7 @@ import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { Icon } from 'UI';
 import { libraryViewInfo } from 'app/App/libraryViewInfo';
+import { DropdownMenu } from './DropdownMenu';
 
 export class Menu extends Component {
   libraryUrl() {
@@ -32,9 +33,9 @@ export class Menu extends Component {
 
     const navLinks = links.map(link => {
       const type = link.get('type') || 'link';
-      const url = link.get('url') || '/';
 
       if (type === 'link') {
+        const url = link.get('url') || '/';
         if (url.startsWith('http')) {
           return (
             <li key={link.get('_id')} className="menuNav-item">
@@ -55,60 +56,7 @@ export class Menu extends Component {
 
       // It is a group
 
-      if (url.startsWith('http')) {
-        return (
-          <li className="menuNav-item">
-            <a
-              className="btn menuNav-btn menuNav-link dropdown-toggle"
-              id="navbarDropdownMenuLink"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              {link.get('title')}
-            </a>
-            <ul
-              key={link.get('_id')}
-              className="dropdown-menu"
-              aria-labelledby="navbarDropdownMenuLink"
-            >
-              {link.get('sublinks').map((sublink, index) => (
-                <li key={index}>
-                  <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
-                    <span>{t('Menu', sublink.get('title'))}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </li>
-        );
-      }
-      return (
-        <li className="menuNav-item dropdown">
-          <a
-            className="btn menuNav-btn menuNav-link dropdown-toggle"
-            id="navbarDropdownMenuLink"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            {link.get('title')}
-          </a>
-          <ul
-            key={link.get('_id')}
-            className="dropdown-menu"
-            aria-labelledby="navbarDropdownMenuLink"
-          >
-            {link.get('sublinks').map((sublink, index) => (
-              <li key={index}>
-                <I18NLink to={url} className="btn dropdown-item">
-                  <span>{t('Menu', sublink.get('title'))}</span>
-                </I18NLink>
-              </li>
-            ))}
-          </ul>
-        </li>
-      );
+      return <DropdownMenu link={link} />;
     });
 
     return (

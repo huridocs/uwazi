@@ -67,13 +67,15 @@ export class NavlinksSettings extends Component {
                 className="menu-link-group-button"
                 onClick={this.props.addLink.bind(this, links, 'link')}
               >
-                {t('System', 'Add link')}
+                <Icon icon="link" />
+                &nbsp;{t('System', 'Add link')}
               </button>
               <button
                 className="menu-link-group-button"
                 onClick={this.props.addLink.bind(this, links, 'group')}
               >
-                {t('System', 'Add group')}
+                <Icon icon="caret-square-down" />
+                &nbsp;{t('System', 'Add group')}
               </button>
               <button
                 type="submit"

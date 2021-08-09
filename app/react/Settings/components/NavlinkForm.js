@@ -96,10 +96,10 @@ export class NavlinkForm extends Component {
           <div className="propery-form expand">
             <div>
               <div className="row">
-                <div className="col-sm-11">
+                <div className="col-sm-12">
                   <div className="row">
                     <div
-                      className={link.type === 'group' ? 'col-sm-10' : 'col-sm-3'}
+                      className={link.type === 'group' ? 'col-sm-11' : 'col-sm-3'}
                       style={{ display: 'flex' }}
                     >
                       {connectDragSource(
@@ -139,7 +139,7 @@ export class NavlinkForm extends Component {
                   <div className="row">
                     <ShowIf if={link.type === 'group'}>
                       <div className="row">
-                        <div className="col-sm-11 sublink-indent">
+                        <div className="col-sm-12 sublink-indent">
                           {links[index].sublinks?.map((_, i) => (
                             <div
                               className="row"
@@ -186,7 +186,8 @@ export class NavlinkForm extends Component {
                                 type="submit"
                                 onClick={this.props.addGroupLink.bind(this, links, index)}
                               >
-                                Add link
+                                <Icon icon="link" />
+                                &nbsp;Add link
                               </button>
                             </div>
                           </div>
