@@ -1,75 +1,100 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
-import db from 'api/utils/testing_db';
-
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import request from 'supertest';
+import { UserRole } from 'shared/types/userSchema';
 import documentRoutes from '../deprecatedRoutes.js';
 import documents from '../documents';
 import { fixtures } from './fixtures';
-import instrumentRoutes from '../../utils/instrumentRoutes';
 import templates from '../../templates';
 
-describe('documents', () => {
-  let routes;
+jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
+  _req.language = 'es';
+  next();
+});
 
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
-    routes = instrumentRoutes(documentRoutes);
+describe('documents', () => {
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
+  let currentUser;
+
+  const adminUser = {
+    username: 'User 1',
+    role: UserRole.ADMIN,
+    email: 'user@test.com',
+  };
+
+  function getUser() {
+    return currentUser;
+  }
+
+  const app = setUpApp(documentRoutes, (req, _res, next) => {
+    req.user = getUser();
+    next();
   });
 
   describe('POST', () => {
     let req;
 
+    const document = { title: 'Batman begins' };
     beforeEach(() => {
       req = {
-        body: { title: 'Batman begins' },
-        user: { _id: db.id(), username: 'admin' },
+        body: document,
+        user: { _id: 'admin1', username: 'admin' },
         language: 'es',
       };
     });
 
-    it('should need authorization', () => {
+    it('should need authorization', async () => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
-      expect(routes.post('/api/documents', req)).toNeedAuthorization();
+      await request(app)
+        .post('/api/documents')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .send(req)
+        .expect(401);
     });
 
-    it('should create a new document with current user', done => {
+    it('should create a new document with current user', async () => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
-      routes
-        .post('/api/documents', req)
-        .then(document => {
-          expect(document).toBe('document');
-          expect(documents.save).toHaveBeenCalledWith(req.body, {
-            user: req.user,
-            language: req.language,
-          });
-          done();
-        })
-        .catch(catchErrors(done));
+      currentUser = adminUser;
+      const response = await request(app)
+        .post('/api/documents')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .send(document);
+      expect(response.body).toBe('document');
+      expect(documents.save).toHaveBeenCalledWith(document, {
+        user: adminUser,
+        language: req.language,
+      });
     });
   });
 
-  describe('/api/documents', () => {
+  describe('GET /api/documents', () => {
     beforeEach(() => {
       spyOn(documents, 'getById').and.returnValue(new Promise(resolve => resolve('documents')));
     });
-    it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/documents')).toMatchSnapshot();
+    it('should have a validation schema', async () => {
+      const response = await request(app)
+        .get('/api/documents')
+        .query({ _id: '/@novalidID//' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.errors[0].keyword).toBe('pattern');
+      expect(response.body.errors[0].dataPath).toBe('.query._id');
+      expect(response.body.error).toBe('validation failed');
     });
-    it('should return documents.get', done => {
-      const req = { query: { _id: 'id' }, language: 'es' };
-      routes
-        .get('/api/documents', req)
-        .then(response => {
-          expect(documents.getById).toHaveBeenCalledWith(req.query._id, req.language);
-          expect(response).toEqual({ rows: ['documents'] });
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should return documents.get', async () => {
+      const response = await request(app)
+        .get('/api/documents')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .query({ _id: 'id' });
+      expect(documents.getById).toHaveBeenCalledWith('id', 'es');
+      expect(response.body).toEqual({ rows: ['documents'] });
     });
   });
 
@@ -77,20 +102,23 @@ describe('documents', () => {
     beforeEach(() => {
       spyOn(templates, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
     });
-    it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/documents/count_by_template')).toMatchSnapshot();
-    });
-    it('should return count of documents using a specific template', done => {
-      const req = { query: { templateId: 'templateId' } };
+    it('should have a validation schema', async () => {
+      const response = await request(app)
+        .get('/api/documents/count_by_template')
+        .query({});
 
-      routes
-        .get('/api/documents/count_by_template', req)
-        .then(response => {
-          expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
-          expect(response).toEqual(2);
-          done();
-        })
-        .catch(catchErrors(done));
+      expect(response.status).toBe(400);
+      expect(response.body.errors[0].keyword).toBe('required');
+      expect(response.body.errors[0].dataPath).toBe('.query');
+      expect(response.body.error).toBe('validation failed');
+    });
+    it('should return count of documents using a specific template', async () => {
+      const response = await request(app)
+        .get('/api/documents/count_by_template')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .query({ templateId: 'templateId' });
+      expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
+      expect(response.body).toEqual(2);
     });
   });
 
@@ -99,19 +127,26 @@ describe('documents', () => {
       spyOn(documents, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.delete.validation('/api/documents')).toMatchSnapshot();
+    it('should have a validation schema', async () => {
+      currentUser = adminUser;
+      const response = await request(app)
+        .delete('/api/documents')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .send({});
+
+      expect(response.status).toBe(400);
+      expect(response.body.errors[0].keyword).toBe('required');
+      expect(response.body.errors[0].dataPath).toBe('.query');
+      expect(response.body.error).toBe('validation failed');
     });
 
-    it('should use documents to delete it', done => {
-      const req = { query: { sharedId: 123, _rev: 456 } };
-      return routes
-        .delete('/api/documents', req)
-        .then(() => {
-          expect(documents.delete).toHaveBeenCalledWith(req.query.sharedId);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should use documents to delete it', async () => {
+      currentUser = adminUser;
+      await request(app)
+        .delete('/api/documents')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .query({ sharedId: 123 });
+      expect(documents.delete).toHaveBeenCalledWith('123');
     });
   });
 });

@@ -7,7 +7,7 @@ import { UserRole } from 'shared/types/userSchema';
 import activitylogRoutes from '../routes.js';
 import activitylog from '../activitylog';
 
-jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
+jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();
 });
 
