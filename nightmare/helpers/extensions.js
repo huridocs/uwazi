@@ -82,15 +82,6 @@ Nightmare.action('countFiltersResults', function countFiltersResults(done) {
   this.evaluate_now(() => document.querySelectorAll('.item-document').length, done);
 });
 
-Nightmare.action('goToUploads', function goToUploads(done) {
-  this.goto(config.url)
-    .waitToClick(selectors.navigation.uploadsNavButton)
-    .wait(selectors.uploadsView.firstDocument)
-    .then(() => {
-      done();
-    });
-});
-
 Nightmare.action('login', function login(name, password, done) {
   this.goto(config.url)
     .wait(selectors.navigation.loginNavButton)
@@ -637,7 +628,7 @@ Nightmare.action('clickLink', function clickLink(label, done) {
 });
 
 Nightmare.action('shareWithPublic', function shareWithPublic(selectorKey, done) {
-  this.waitToClick(selectors.uploadsView[selectorKey])
+  this.waitToClick(selectors.libraryView[selectorKey])
     .wait(500)
     .evaluate(
       selector => document.querySelector(selector).focus(),

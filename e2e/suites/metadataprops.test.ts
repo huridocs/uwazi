@@ -6,6 +6,7 @@ import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 import { clearInput, selectDate, scrollTo, waitForNavigation } from '../helpers/formActions';
+import { goToRestrictedEntities } from '../helpers/publishedFilter';
 
 describe('Metadata Properties', () => {
   beforeAll(async () => {
@@ -47,10 +48,10 @@ describe('Metadata Properties', () => {
   });
 
   it('should create an entity filling all the props.', async () => {
-    await expect(page).toClick('a', { text: 'Private entities' });
-    await expect(page).toClick('span', { text: 'New entity' });
+    await goToRestrictedEntities();
+    await expect(page).toClick('button', { text: 'Create entity' });
     await expect(page).toFill(
-      'textarea[name="uploads.sidepanel.metadata.title"]',
+      'textarea[name="library.sidepanel.metadata.title"]',
       'Entity with all props'
     );
     await expect(page).toSelect('select:first-of-type', 'All props');

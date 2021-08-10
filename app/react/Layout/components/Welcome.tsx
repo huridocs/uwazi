@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 
 export default class Welcome extends Component {
@@ -8,10 +7,7 @@ export default class Welcome extends Component {
       <div className="blank-state">
         <Icon icon="cog" />
         <h4>Welcome to Uwazi</h4>
-        <p>
-          To start you can upload documents in <I18NLink to="/uploads">uploads</I18NLink>
-        </p>
-        <a href="https://github.com/huridocs/uwazi/wiki" target="_blank">
+        <a href="https://uwazi.readthedocs.io/en/latest/" target="_blank" rel="noreferrer">
           Learn more
         </a>
       </div>

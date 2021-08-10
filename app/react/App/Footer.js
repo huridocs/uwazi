@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { I18NLink, t } from 'app/I18N';
 import { createSelector } from 'reselect';
-import { NeedAuthorization } from 'app/Auth';
 import { libraryViewInfo } from 'app/App/libraryViewInfo';
 
 const getLibraryURL = libraryView =>
@@ -45,11 +44,6 @@ class Footer extends Component {
               {t('System', 'Library')}
             </I18NLink>
           </li>
-          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-            <li className="footer-nav_item">
-              <I18NLink to="/uploads">{t('System', 'Uploads')}</I18NLink>
-            </li>
-          </NeedAuthorization>
           {(() => {
             if (!this.props.user._id) {
               return (

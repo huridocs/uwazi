@@ -1,5 +1,6 @@
 import comonProperties from 'shared/comonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { queryToFilter } from './publishedStatusFilter';
 
 function getOptions(property, thesauris) {
   const matchingTHesauri = thesauris.find(thesauri => thesauri._id === property.content);
@@ -50,8 +51,7 @@ function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedPro
       sort,
       order,
       userSelectedSorting,
-      includeUnpublished,
-      unpublished,
+      publishedStatus: queryToFilter(unpublished, includeUnpublished),
       allAggregations,
     },
   };
