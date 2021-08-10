@@ -218,6 +218,39 @@ describe('metadata formater', () => {
         ).not.toThrow();
       });
 
+      it('should not format as undefined value when there is no inherited value', () => {
+        const docWithEmptyInherited = {
+          _id: 'languageSpecificId',
+          template: 'templateID',
+          title: 'Rude awakening',
+          metadata: {
+            relationship3: [
+              {
+                value: 'value1',
+                label: 'Value 1',
+                inheritedValue: [],
+              },
+              {
+                value: 'value2',
+                label: 'Value 2',
+                inheritedValue: [{ value: 'this one has a value' }],
+              },
+            ],
+          },
+        };
+
+        const formatted = formater.prepareMetadata(
+          docWithEmptyInherited,
+          templates,
+          thesauris,
+          relationships
+        );
+
+        expect(
+          formatted.metadata.find(m => m.name === 'relationship3').value.includes(undefined)
+        ).toBe(false);
+      });
+
       it('should append the translated entity title to certain values', () => {
         assessBasicProperties(relationship4, ['Relationship 4', 'relationship4', 'template2']);
         expect(relationship4.inheritedName).toBe('home_geolocation');
