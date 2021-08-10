@@ -141,6 +141,7 @@ export class NavlinkForm extends Component {
                       <button
                         type="button"
                         className="btn btn-danger btn-xs property-remove, menu-delete-button"
+                        style={{ marginLeft: '4px' }}
                         onClick={() => this.props.removeLink(index)}
                       >
                         <Icon icon="trash-alt" /> Delete
