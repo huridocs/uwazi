@@ -1,6 +1,7 @@
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
-import React, { MutableRefObject, useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
 export type DropdownMenuProps = {
   link: any;
@@ -8,52 +9,31 @@ export type DropdownMenuProps = {
 
 export function DropdownMenu({ link }: DropdownMenuProps) {
   const [showing, setShowing] = useState(false);
-  const dropdownRef: MutableRefObject<HTMLInputElement | undefined> = useRef();
-  const toggleDropdown = () => {
-    setShowing(true);
-  };
+  const dropdownRef = useRef(null);
+  const onClickOutside = useCallback(() => {
+    setShowing(false);
+  }, []);
+
+  useOnClickOutsideElement<HTMLLIElement>(dropdownRef, onClickOutside);
 
   return (
-    <li
-      className="menuNav-item"
-      key={link.get('_id')}
-      onBlur={e => {
-        console.log(e.relatedTarget);
-        if (e.relatedTarget === null) {
-          setShowing(false);
-        }
-      }}
-      tabIndex={-1}
-      data-toggle="dropdown"
-      onClick={toggleDropdown}
-    >
-      <a className="btn menuNav-btn menuNav-link dropdown-toggle" id="navbarDropdownMenuLink">
+    <li className="menuNav-item" key={link.get('_id')} ref={dropdownRef}>
+      <button
+        type="button"
+        className="btn menuNav-btn menuNav-link dropdown-toggle"
+        id="navbarDropdownMenuLink"
+        onClick={() => setShowing(!showing)}
+      >
         {link.get('title')}
         &nbsp; <Icon icon="caret-down" />
-      </a>
-      <ul
-        key={link.get('_id')}
-        className={`dropdown-menu ${showing ? 'show' : 'hide'}`}
-        // @ts-ignore
-        ref={dropdownRef}
-        onBlur={() => {
-          console.log('second blur');
-          // setShowing(false);
-        }}
-        tabIndex={-1}
-      >
+      </button>
+      <ul key={link.get('_id')} className={`dropdown-menu ${showing ? 'show' : 'hide'}`}>
         {link.get('sublinks').map((sublink: any, index: number) => {
           const url = sublink.get('url') || '/';
           if (url.startsWith('http')) {
             return (
               <li key={index}>
-                <a
-                  href={url}
-                  className="btn dropdown-item"
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={toggleDropdown}
-                >
+                <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
                   <span>{t('Menu', sublink.get('title'))}</span>
                 </a>
               </li>
@@ -61,7 +41,7 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
           }
           return (
             <li key={index}>
-              <I18NLink to={url} className="btn dropdown-item" onClick={toggleDropdown}>
+              <I18NLink to={url} className="btn dropdown-item">
                 <span>{t('Menu', sublink.get('title'))}</span>
               </I18NLink>
             </li>
