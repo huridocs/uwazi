@@ -14,9 +14,8 @@ describe('Entities', () => {
   });
 
   it('Should create new entity', async () => {
-    await expect(page).toClick('a', { text: 'Private entities' });
-    await expect(page).toClick('button', { text: 'New entity' });
-    await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Test title');
+    await expect(page).toClick('button', { text: 'Create entity' });
+    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
   });

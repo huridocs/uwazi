@@ -2,6 +2,7 @@ import React from 'react';
 import { I18NLink, Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 
 const SettingsNavigation = () => (
   <div>
@@ -62,6 +63,17 @@ const SettingsNavigation = () => (
             <Translate>Templates</Translate>
           </I18NLink>
         </NeedAuthorization>
+        <FeatureToggle feature="metadata-extraction">
+          <NeedAuthorization roles={['admin']}>
+            <I18NLink
+              to="settings/metadata_extraction"
+              activeClassName="active"
+              className="list-group-item"
+            >
+              <Translate>Metadata Extraction</Translate>
+            </I18NLink>
+          </NeedAuthorization>
+        </FeatureToggle>
         <NeedAuthorization roles={['admin']}>
           <I18NLink to="settings/dictionaries" activeClassName="active" className="list-group-item">
             <Translate>Thesauri</Translate>

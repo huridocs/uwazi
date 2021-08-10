@@ -7,6 +7,7 @@ export const searchParamsSchema = {
       properties: {
         aggregateGeneratedToc: { type: 'boolean' },
         aggregatePermissionsByLevel: { type: 'boolean' },
+        aggregatePublishingStatus: { type: 'boolean' },
         filters: { type: 'object' },
         customFilters: {
           additionalProperties: false,

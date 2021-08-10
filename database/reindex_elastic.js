@@ -4,11 +4,11 @@ import { DB } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { IndexError } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
 import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import templatesModel from '../app/api/templates';
-import settingsModel from '../app/api/settings';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
 import errorLog from '../app/api/log/errorLog';
 
@@ -84,12 +84,9 @@ const prepareIndex = async () => {
   process.stdout.write(' - Base properties mapping\r\n');
   await request.put(getIndexUrl(), elasticMapping);
   process.stdout.write(' - Custom templates mapping\r\n');
-  const { features } = await settingsModel.get();
   const templates = await templatesModel.get();
-  const templatesMapping = elasticMapFactory.mapping(
-    templates,
-    features?.topicClassification || false
-  );
+  const dictionaries = await dictionariesModel.get({ enable_classification: true });
+  const templatesMapping = elasticMapFactory.mapping(templates, !!dictionaries.length);
   await request.put(`${getIndexUrl()}/_mapping`, templatesMapping);
   process.stdout.write(' [done]\n');
 };

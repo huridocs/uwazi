@@ -29,6 +29,7 @@ import {
   ThesauriList,
   TranslationsList,
 } from 'app/Settings';
+import MetadataExtractionDashboard from 'app/MetadataExtraction/MetadataExtractionDashboard';
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauri/EditThesauri';
@@ -140,6 +141,7 @@ const routes = (
         <Route path="new" component={NewTemplate} />
         <Route path="edit/:templateId" component={EditTemplate} />
       </Route>
+      <Route path="metadata_extraction" component={MetadataExtractionDashboard} />
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />
         <Route path="new" component={NewRelationType} />
