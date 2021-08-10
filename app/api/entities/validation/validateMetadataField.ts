@@ -127,7 +127,7 @@ const validateSameRelationshipsMatch = (
   property: PropertySchema,
   entity: EntitySchema,
   template: TemplateSchema,
-  value: MetadataObjectSchema[] | undefined
+  value: MetadataObjectSchema[] = []
 ) => {
   if (property.type !== propertyTypes.relationship) {
     return [];
@@ -141,11 +141,13 @@ const validateSameRelationshipsMatch = (
         p.relationType?.toString() === property.relationType?.toString()
     ) || [];
 
-  const valid = Boolean(
-    sameProps.every(
-      p => !entity.metadata || JSON.stringify(entity.metadata[p.name]) === JSON.stringify(value)
-    )
-  );
+  const valid = sameProps.every(p => {
+    const otherProp = entity.metadata?.[p.name] || [];
+    return (
+      otherProp?.length === value?.length &&
+      value.every(mo => otherProp?.find(_mo => _mo.value === mo.value))
+    );
+  });
 
   return valid
     ? []
