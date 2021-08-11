@@ -229,7 +229,7 @@ NavlinkForm.propTypes = {
   sortLink: PropTypes.func.isRequired,
   removeLink: PropTypes.func,
   formState: PropTypes.object.isRequired,
-  addGroupLink: PropTypes.func,
+  addGroupLink: PropTypes.func.isRequired,
   removeGroupLink: PropTypes.func,
 };
 
