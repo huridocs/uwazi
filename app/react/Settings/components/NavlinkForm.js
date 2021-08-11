@@ -87,7 +87,6 @@ export class NavlinkForm extends Component {
       connectDragSource,
       connectDropTarget,
       formState,
-      // uiState,
     } = this.props;
     let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
@@ -230,7 +229,6 @@ NavlinkForm.propTypes = {
   sortLink: PropTypes.func.isRequired,
   removeLink: PropTypes.func,
   formState: PropTypes.object.isRequired,
-  uiState: PropTypes.object.isRequired,
   addGroupLink: PropTypes.func,
   removeGroupLink: PropTypes.func,
 };
@@ -249,7 +247,6 @@ export function mapStateToProps({ settings }) {
   const { links } = settings.navlinksData;
   return {
     formState: settings.navlinksFormState,
-    uiState: settings.uiState,
     links,
   };
 }
