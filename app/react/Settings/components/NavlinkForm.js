@@ -6,7 +6,6 @@ import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { editLink } from 'app/Settings/actions/uiActions';
 import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
 
 // import ShowIf from 'app/App/ShowIf';
@@ -229,7 +228,6 @@ NavlinkForm.propTypes = {
   link: PropTypes.object.isRequired,
   links: PropTypes.array.isRequired,
   sortLink: PropTypes.func.isRequired,
-  editLink: PropTypes.func,
   removeLink: PropTypes.func,
   formState: PropTypes.object.isRequired,
   uiState: PropTypes.object.isRequired,
@@ -257,7 +255,7 @@ export function mapStateToProps({ settings }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ editLink, removeLink, addGroupLink, removeGroupLink }, dispatch);
+  return bindActionCreators({ removeLink, addGroupLink, removeGroupLink }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(dragSource);
