@@ -7,8 +7,8 @@ import documents from '../documents';
 import { fixtures } from './fixtures';
 import templates from '../../templates';
 
-jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
-  _req.language = 'es';
+jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
+  req.language = 'es';
   next();
 });
 
@@ -78,7 +78,7 @@ describe('documents', () => {
     beforeEach(() => {
       spyOn(documents, 'getById').and.returnValue(new Promise(resolve => resolve('documents')));
     });
-    it('should have a validation schema', async () => {
+    it('should return a validation error for no valid id', async () => {
       const response = await request(app)
         .get('/api/documents')
         .query({ _id: '/@novalidID//' });
@@ -102,7 +102,7 @@ describe('documents', () => {
     beforeEach(() => {
       spyOn(templates, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
     });
-    it('should have a validation schema', async () => {
+    it('should return a validation error if templateId is not passed', async () => {
       const response = await request(app)
         .get('/api/documents/count_by_template')
         .query({});
@@ -127,7 +127,7 @@ describe('documents', () => {
       spyOn(documents, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
     });
 
-    it('should have a validation schema', async () => {
+    it('should return a validation error if sharedId is not passed', async () => {
       currentUser = adminUser;
       const response = await request(app)
         .delete('/api/documents')
