@@ -1,5 +1,4 @@
 import { Field } from 'react-redux-form';
-import { fromJS } from 'immutable';
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -61,7 +60,6 @@ describe('NavlinkForm', () => {
       links: [{ sublinks: [] }, { sublinks: [] }],
       id: 'newLink1',
       index: 1,
-      uiState: fromJS({ editingLink: 0 }),
       formState: { $form: { errors: {} } },
       editLink: jasmine.createSpy('editLink'),
       removeLink: jasmine.createSpy('removeLink'),
@@ -145,7 +143,6 @@ describe('NavlinkForm', () => {
     it('should return the right props', () => {
       expect(mapStateToProps({ settings })).toEqual({
         formState: 'formState',
-        uiState: 'uiState',
         links: [],
       });
     });
