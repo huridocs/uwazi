@@ -39,7 +39,7 @@ export default app => {
         query: {
           additionalProperties: false,
           properties: {
-            _id: { ...objectIdSchema },
+            _id: { ...objectIdSchema, pattern: '^[0-9a-zA-Z]+$' },
           },
           required: ['_id'],
         },
