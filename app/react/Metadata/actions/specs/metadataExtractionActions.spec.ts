@@ -54,13 +54,13 @@ describe('metadataExtractionActions', () => {
     });
   });
 
-  describe('saveSelections', () => {
-    //WIP
-    const entity: EntityWithFilesSchema = { sharedId: 'myEntity' };
-    const file: FileType = { _id: 'fileID', entity: 'myEntity', extractedMetadata: [] };
+  // WIP
+  // describe('saveSelections', () => {
+  //   const entity: EntityWithFilesSchema = { sharedId: 'myEntity' };
+  //   const file: FileType = { _id: 'fileID', entity: 'myEntity', extractedMetadata: [] };
 
-    it('should save selected data to the main file on document save', async () => {
-      await saveSelections(entity);
-    });
-  });
+  //   it('should save selected data to the main file on document save', async () => {
+  //     await saveSelections(entity);
+  //   });
+  // });
 });
