@@ -64,6 +64,7 @@ export class NavlinksSettings extends Component {
             </ul>
             <div className="settings-footer footer-buttons">
               <button
+                type="button"
                 className="menu-link-group-button"
                 id="main-add-link-button"
                 onClick={this.props.addLink.bind(this, links, 'link')}
@@ -72,6 +73,7 @@ export class NavlinksSettings extends Component {
                 &nbsp;{t('System', 'Add link')}
               </button>
               <button
+                type="button"
                 className="menu-link-group-button"
                 onClick={this.props.addLink.bind(this, links, 'group')}
               >
