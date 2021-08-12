@@ -41,13 +41,14 @@ export class MetadataFormButtons extends Component {
           <ShowIf if={!entityBeingEdited}>
             <button
               type="button"
-              onClick={() =>
+              onClick={() => {
                 this.props.loadInReduxForm(
                   this.props.formStatePath,
                   data,
                   this.props.templates.toJS()
-                )
-              }
+                );
+                this.props.clearMetadataSelections();
+              }}
               className="edit-metadata btn btn-primary"
             >
               <Icon icon="pencil-alt" />
@@ -130,6 +131,7 @@ MetadataFormButtons.defaultProps = {
 MetadataFormButtons.propTypes = {
   loadInReduxForm: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
+  clearMetadataSelections: PropTypes.func.isRequired,
   delete: PropTypes.func,
   templates: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
@@ -150,6 +152,7 @@ function mapDispatchToProps(dispatch, props) {
     {
       loadInReduxForm: actions.loadInReduxForm,
       resetForm: actions.resetReduxForm,
+      clearMetadataSelections: actions.clearMetadataSelections,
     },
     wrapDispatch(dispatch, props.storeKey)
   );
