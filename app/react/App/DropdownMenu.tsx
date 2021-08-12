@@ -34,7 +34,7 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
             return (
               <li key={index}>
                 <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
-                  <span>{t('Menu', sublink.get('title'))}</span>
+                  {t('Menu', sublink.get('title'))}
                 </a>
               </li>
             );
@@ -42,7 +42,7 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
           return (
             <li key={index}>
               <I18NLink to={url} className="btn dropdown-item">
-                <span>{t('Menu', sublink.get('title'))}</span>
+                {t('Menu', sublink.get('title'))}
               </I18NLink>
             </li>
           );
