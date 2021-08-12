@@ -10,7 +10,6 @@ if (isClient) {
   PDFJS = require('../../../node_modules/pdfjs-dist/web/pdf_viewer.js');
   if (process.env.HOT || process.env.NODE_ENV === 'test') {
     pdfjsLib = require('pdfjs-dist');
-    // pdfjsLib.workerSrc = 'http://localhost:8080/pdf.worker.js';
   } else {
     pdfjsLib = require('pdfjs-dist/webpack');
   }

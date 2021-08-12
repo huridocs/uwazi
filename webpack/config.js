@@ -53,11 +53,11 @@ module.exports = production => {
             name(module) {
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
 
-              if (packageName.match(/pdfjs-dist/)) {
-                return packageName;
-              }
-
-              if (packageName.match(/qrcode.react/)) {
+              if (
+                packageName.match(/qrcode.react/) ||
+                packageName.match(/pdfjs-dist/) ||
+                packageName.match(/LazyLoad*/)
+              ) {
                 return packageName;
               }
 

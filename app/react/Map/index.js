@@ -1,5 +1,7 @@
+import loadable from '@loadable/component';
 import * as helper from './helper';
 
-export { default as Map } from './Map.js';
+const Map = loadable(async () => import(/* webpackChunkName: "LazyLoadMap" */ './Map.js'));
+
 export { default as Markers } from './Markers.js';
-export { helper };
+export { helper, Map };
