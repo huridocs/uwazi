@@ -1,0 +1,79 @@
+import testingDB from 'api/utils/testing_db';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
+
+const locales = ['en', 'es', 'hu'];
+const newKeyValues = [
+  { key: 'Custom page', value: 'Custom page' },
+  { key: 'HELP', value: 'HELP' },
+  {
+    key: 'landing page description',
+    value: `The landing page is the first thing users will see when visiting your Uwazi instance.
+You can use any URL from your Uwazi instance as a landing page, examples:
+A page: /page/dicxg0oagy3xgr7ixef80k9
+Library results: /library/?searchTerm=test
+An entity: /entity/9htbkgpkyy7j5rk9
+A document: /document/4y9i99fadjp833di
+Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.`,
+  },
+];
+const alreadyInAllContexts = {
+  key: 'Upload PDF',
+  en: 'Upload PDF',
+  es: 'Subir PDF',
+  hu: 'PDF Feltöltése',
+};
+const alreadyInOneContext = [
+  { locale: 'hu', key: 'Unpublish', value: 'Unpublish', existingValue: 'Visszavonás' },
+  {
+    locale: 'es',
+    key: 'Two-step verification',
+    value: 'Two-step verification',
+    existingValue: 'Verificación en dos pasos',
+  },
+];
+
+describe('migration add_system_key_translations', () => {
+  beforeEach(async () => {
+    spyOn(process.stdout, 'write');
+    await testingDB.clearAllAndLoad(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
+  it('should have a delta number', () => {
+    expect(migration.delta).toBe(49);
+  });
+
+  it('should append new keys, leave existing keys intact.', async () => {
+    function testKeyValue(translations, key, value, locale) {
+      expect(
+        translations.find(tr => tr.locale === locale).contexts[0].values.find(v => v.key === key)
+          .value
+      ).toBe(value);
+    }
+
+    await migration.up(testingDB.mongodb);
+
+    const allTranslations = await testingDB.mongodb
+      .collection('translations')
+      .find()
+      .toArray();
+
+    newKeyValues.forEach(({ key, value }) => {
+      locales.forEach(loc => {
+        testKeyValue(allTranslations, key, value, loc);
+      });
+    });
+    locales.forEach(loc =>
+      testKeyValue(allTranslations, alreadyInAllContexts.key, alreadyInAllContexts[loc], loc)
+    );
+    alreadyInOneContext.forEach(({ locale, key, value, existingValue }) => {
+      locales.forEach(loc =>
+        testKeyValue(allTranslations, key, locale === loc ? existingValue : value, loc)
+      );
+    });
+  });
+});
