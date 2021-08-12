@@ -1,9 +1,7 @@
 import { actions } from 'app/BasicReducer';
 import api from 'app/utils/api';
 import { actions as formActions } from 'react-redux-form';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { updateSelection, formFieldUpdater, saveSelections } from '../metadataExtractionActions';
+import { updateSelection, formFieldUpdater } from '../metadataExtractionActions';
 
 describe('metadataExtractionActions', () => {
   beforeAll(() => {
@@ -53,14 +51,4 @@ describe('metadataExtractionActions', () => {
       );
     });
   });
-
-  // WIP
-  // describe('saveSelections', () => {
-  //   const entity: EntityWithFilesSchema = { sharedId: 'myEntity' };
-  //   const file: FileType = { _id: 'fileID', entity: 'myEntity', extractedMetadata: [] };
-
-  //   it('should save selected data to the main file on document save', async () => {
-  //     await saveSelections(entity);
-  //   });
-  // });
 });

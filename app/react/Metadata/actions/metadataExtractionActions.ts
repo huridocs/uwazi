@@ -1,26 +1,6 @@
 import moment from 'moment';
 import { actions as formActions } from 'react-redux-form';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { store } from 'app/store';
 import { actions } from 'app/BasicReducer';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-
-const mergeByProperty = (a: any[], b: any[], p: string) =>
-  a.filter(aa => !b.find(bb => aa[p] === bb[p])).concat(b);
-
-const checkSelections = (storeSelections = [], file: FileType, entity: EntitySchema) => {
-  let selections;
-
-  if (file.extractedMetadata) {
-    selections = mergeByProperty(file.extractedMetadata, storeSelections, 'label');
-    return selections;
-  }
-
-  selections = storeSelections;
-  return selections;
-};
 
 const updateSelection = (selection: {}, fieldName: string, fieldId?: string) => {
   const data = {
@@ -47,25 +27,4 @@ const formFieldUpdater = (value: string, model: string, fieldType?: string) => {
   return formActions.change(model, value);
 };
 
-const saveSelections = async (entity: EntitySchema) => {
-  const { selections: storeSelections } = store
-    ? store.getState().documentViewer.metadataExtraction.toJS()
-    : { selections: [] };
-
-  const mainDocument = await api.get(
-    'files',
-    new RequestParams({ entity: entity.sharedId, type: 'document' })
-  );
-
-  if (storeSelections.length > 0) {
-    const selections = checkSelections(storeSelections, mainDocument.json[0], entity);
-    return api.post(
-      'files',
-      new RequestParams({ extractedMetadata: selections, _id: mainDocument.json[0]._id })
-    );
-  }
-
-  return null;
-};
-
-export { updateSelection, formFieldUpdater, saveSelections };
+export { updateSelection, formFieldUpdater };

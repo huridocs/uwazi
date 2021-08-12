@@ -22,6 +22,7 @@ import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
 import { denormalizeRelated } from './denormalize';
+import { saveSelections } from './metadataExtraction/saveSelections';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -401,6 +402,7 @@ export default {
   getEntityTemplate,
   async save(_doc, { user, language }, updateRelationships = true, index = true) {
     await validateEntity(_doc);
+    await saveSelections(_doc);
     const doc = _doc;
     if (!doc.sharedId) {
       doc.user = user._id;
