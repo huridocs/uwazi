@@ -29,6 +29,7 @@ describe('Metadata Actions', () => {
       const templates = [
         {
           _id: 'templateId',
+          commonProperties: [{ name: 'title', generatedId: false }],
           properties: [
             { name: 'test' },
             { name: 'newProp' },
@@ -71,6 +72,7 @@ describe('Metadata Actions', () => {
             _id: 'templateId1',
             name: 'first',
             default: true,
+            commonProperties: [{ name: 'title', generatedId: false }],
             properties: [
               { name: 'test' },
               { name: 'newProp' },
@@ -82,6 +84,7 @@ describe('Metadata Actions', () => {
           {
             _id: 'templateId2',
             name: 'last',
+            commonProperties: [],
             properties: [
               { name: 'test' },
               { name: 'newProp' },
@@ -102,6 +105,45 @@ describe('Metadata Actions', () => {
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
     });
+
+    describe('generatedId as title', () => {
+      const templates = [
+        {
+          _id: 'templateId',
+          commonProperties: [{ name: 'title', generatedId: true }],
+          properties: [],
+        },
+      ];
+      const dispatch = jasmine.createSpy('dispatch');
+      beforeEach(() => {
+        spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
+      });
+      it('should set a generatedId value as title if it is configured with this option', async () => {
+        const expectedDoc = {
+          sharedId: '1',
+          template: 'templateId',
+          title: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/),
+          metadata: {},
+        };
+        const doc = { sharedId: '1', template: 'templateId' };
+        api.get.and.returnValue(Promise.resolve([doc]));
+        await actions.loadInReduxForm('formNamespace', { sharedId: '1' }, templates)(dispatch);
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      });
+
+      it('should keep the title if it is already set', async () => {
+        const expectedDoc = {
+          sharedId: '1',
+          title: 'previousTitle',
+          template: 'templateId',
+          metadata: {},
+        };
+        const doc = { sharedId: '1', title: 'previousTitle', template: 'templateId' };
+        api.get.and.returnValue(Promise.resolve([doc]));
+        await actions.loadInReduxForm('formNamespace', { sharedId: '1' }, templates)(dispatch);
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      });
+    });
   });
 
   describe('changeTemplate', () => {
@@ -119,6 +161,7 @@ describe('Metadata Actions', () => {
 
       const template = {
         _id: 'newTemplate',
+        commonProperties: [{ name: 'title', generatedId: false }],
         properties: [
           { name: 'test' },
           { name: 'newProp', type: 'nested' },
@@ -169,6 +212,60 @@ describe('Metadata Actions', () => {
         jasmine.clock().tick(0);
         expect(dispatch).toHaveBeenCalledWith('formLoad');
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      });
+    });
+    describe('generatedId as entity title', () => {
+      const template = {
+        _id: 'newTemplate',
+        properties: [],
+        commonProperties: [{ name: 'title', generatedId: true }],
+      };
+      const stateGeneratedIdTest = {
+        templates: Immutable.fromJS([template, { _id: 'templateId', properties: [] }]),
+      };
+      const getState1 = () => stateGeneratedIdTest;
+
+      it('should set a generatedId as title if the new template has that option', () => {
+        const doc = {
+          _id: 'entityId',
+          template: 'templateId',
+          metadata: {},
+        };
+        spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
+
+        actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState1);
+        expect(reactReduxForm.getModel).toHaveBeenCalledWith(stateGeneratedIdTest, 'formNamespace');
+
+        const expectedDoc1 = {
+          _id: 'entityId',
+          title: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/),
+          template: 'newTemplate',
+          metadata: {},
+        };
+        jasmine.clock().tick(0);
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc1);
+      });
+
+      it('should keep the title if it is already set', () => {
+        const doc = {
+          _id: 'entityId',
+          title: 'test',
+          template: 'templateId',
+          metadata: {},
+        };
+        spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
+
+        actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState1);
+        expect(reactReduxForm.getModel).toHaveBeenCalledWith(stateGeneratedIdTest, 'formNamespace');
+
+        const expectedDoc1 = {
+          _id: 'entityId',
+          title: 'test',
+          template: 'newTemplate',
+          metadata: {},
+        };
+        jasmine.clock().tick(0);
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc1);
       });
     });
   });

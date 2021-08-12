@@ -93,6 +93,12 @@ export function loadFetchedInReduxForm(form, entity, templates) {
   const defaultTemplate = sortedTemplates.find(t => t.default);
   const templateId = entity.template || defaultTemplate._id;
   const template = sortedTemplates.find(t => t._id === templateId) || emptyTemplate;
+  const generatedTitle =
+    !entity.title &&
+    template.commonProperties.find(property => property.name === 'title' && property.generatedId);
+  if (generatedTitle) {
+    entity.title = generateID(3, 4, 4);
+  }
 
   const entitySelectedOptions = {};
   template.properties.forEach(property => {
@@ -133,9 +139,19 @@ export function changeTemplate(form, templateId) {
     const template = templates.find(t => t.get('_id') === templateId);
     const previousTemplate = templates.find(t => t.get('_id') === entity.template);
 
+    const templateJS = template.toJS();
+    const generatedTitle =
+      !entity.title &&
+      templateJS.commonProperties.find(
+        property => property.name === 'title' && property.generatedId
+      );
+    if (generatedTitle) {
+      entity.title = generateID(3, 4, 4);
+    }
+
     entity.metadata = resetMetadata(
       entity.metadata,
-      template.toJS(),
+      templateJS,
       { resetExisting: false },
       previousTemplate.toJS()
     );
