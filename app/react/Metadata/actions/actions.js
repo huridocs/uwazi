@@ -193,7 +193,5 @@ export async function getSuggestions(templates, searchTerm = '') {
   return searchAPI.getSuggestions(request);
 }
 
-export const clearMetadataSelections = () => {
-  console.log('clearing selections');
-  return actions.unset('documentViewer.metadataExtraction', ['selections']);
-};
+export const clearMetadataSelections = () =>
+  actions.unset('documentViewer.metadataExtraction', ['selections']);
