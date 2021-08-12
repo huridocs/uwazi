@@ -118,6 +118,7 @@ export interface PropertySchema {
     | 'text'
     | 'generatedid';
   prioritySorting?: boolean;
+  generatedId?: boolean;
   content?: string;
   relationType?: string;
   inherit?: {

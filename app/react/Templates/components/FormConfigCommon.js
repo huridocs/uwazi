@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 
 import Tip from 'app/Layout/Tip';
 import PropertyConfigOption from 'app/Templates/components/PropertyConfigOption';
-import { Translate } from 'app/I18N/components/Translate';
 import PrioritySortingLabel from './PrioritySortingLabel';
 
 export class FormConfigCommon extends Component {
