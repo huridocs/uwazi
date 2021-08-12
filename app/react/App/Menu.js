@@ -59,7 +59,7 @@ export class Menu extends Component {
         <li className="menuItems">
           <ul className="menuNav-list">{navLinks}</ul>
         </li>
-        <li className="menuActions">
+        <li className="menuActions mobile-menuActions">
           <ul className="menuNav-list">
             <FeatureToggleSemanticSearch>
               <li className="menuNav-item semantic-search">

@@ -24,10 +24,10 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
         id="navbarDropdownMenuLink"
         onClick={() => setShowing(!showing)}
       >
-        {link.get('title')}
+        {t('Menu', link.get('title'))}
         &nbsp; <Icon icon="caret-down" />
       </a>
-      <ul key={link.get('_id')} className={`dropdown-menu ${showing ? 'show' : 'hide'}`}>
+      <ul key={link.get('_id')} className={`dropdown-menu ${showing ? 'show' : ''} mobile`}>
         {link.get('sublinks').map((sublink: any, index: number) => {
           const url = sublink.get('url') || '/';
           if (url.startsWith('http')) {
