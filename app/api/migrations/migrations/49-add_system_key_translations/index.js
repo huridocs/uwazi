@@ -37,6 +37,7 @@ async function readCsvToSystemKeys(db, filename) {
       if (!locToKeys[loc].has(key)) {
         const newValue = optionalValue || key;
         locToSystemContext[loc].values.push({ key, value: newValue });
+        locToKeys[loc].add(key);
       }
     });
   });
