@@ -11,11 +11,21 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
       includes: query.fields || defaultFields,
     },
     query: {
+      // Move inside the rest of the query and implement ranges
+      // constant_score: {
+      //   filter: {
+      //     term: {
+      //       'metadata.numericPropertyName.value': 42,
+      //     },
+      //   },
+      // },
       bool: {
         filter: [
-          ...Object.keys(query.filter || {}).map(key => ({
-            term: { [`${key}.value`]: query.filter?.[key] },
-          })),
+          ...Object.keys(query.filter || {})
+            .filter(filter => filter.startsWith('metadata.'))
+            .map(key => ({
+              term: { [`${key}.value`]: query.filter?.[key] },
+            })),
           query.filter?.sharedId && {
             terms: {
               'sharedId.raw': [query.filter.sharedId],
