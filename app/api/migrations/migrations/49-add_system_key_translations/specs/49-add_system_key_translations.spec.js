@@ -4,8 +4,8 @@ import fixtures from './fixtures.js';
 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
-  { key: 'Custom page', value: 'Custom page' },
-  { key: 'HELP', value: 'HELP' },
+  { key: 'Default template', value: 'Default template' },
+  { key: 'Zoom in', value: 'Zoom in' },
   {
     key: 'landing page description',
     value: `The landing page is the first thing users will see when visiting your Uwazi instance.
