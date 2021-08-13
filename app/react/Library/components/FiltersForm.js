@@ -14,6 +14,7 @@ import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { PermissionsFilter } from './PermissionsFilter';
+import { PublishedFilters } from './PublishedFilters';
 
 import Filters from './FiltersFromProperties';
 
@@ -67,6 +68,7 @@ export class FiltersForm extends Component {
     return (
       <div className="filters-box">
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
+          <PublishedFilters onChange={this.activateAutoSearch} aggregations={aggregations} />
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
 
           <div className="documentTypes-selector nested-selector">

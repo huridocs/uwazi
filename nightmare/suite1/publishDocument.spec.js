@@ -3,7 +3,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
-import { loginAsAdminAndGoToUploads } from '../helpers/commonTests.js';
+import { loginAsAdminAndViewRestrictedEntities } from '../helpers/commonTests.js';
 
 const nightmare = createNightmare();
 
@@ -43,13 +43,13 @@ describe('PublishDocument', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  it('should log in as admin then click the uploads nav button', done => {
-    loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
+  it('should log in as admin then select restricted entities', done => {
+    loginAsAdminAndViewRestrictedEntities(nightmare, catchErrors, done);
   });
 
   it('should fill a document metadata and publish it', done => {
     nightmare
-      .click(selectors.libraryView.librarySecondDocument)
+      .waitToClick(selectors.libraryView.librarySecondDocument)
       .waitToClick(selectors.libraryView.editEntityButton)
       .clearInput(selectors.doc.form.title)
       .write(selectors.doc.form.title, 'Wolverine')
@@ -64,13 +64,12 @@ describe('PublishDocument', () => {
   });
 
   describe('metadata editing', () => {
-    it('should select the correct entity', done => {
+    it('should select the correct entity', async done => {
       const title = 'Wolverine';
-
       nightmare
+        .click(selectors.libraryView.sidePanelCloseButton)
         .waitForTheEntityToBeIndexed()
-        .click(selectors.navigation.libraryNavButton)
-        .waitForTheEntityToBeIndexed()
+        .waitToClick(selectors.libraryView.restrictedEntitiesFilterSelector)
         .openDocumentFromLibrary(title)
         .waitForText(selectors.documentView.sidePanelTitle)
         .getInnerText(selectors.documentView.sidePanelTitle)

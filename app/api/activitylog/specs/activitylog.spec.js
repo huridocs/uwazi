@@ -1,11 +1,12 @@
 import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import activitylog from '../activitylog';
 import * as activityLogParser from '../activitylogParser';
 import fixtures from './fixtures';
 
 describe('activitylog', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
     spyOn(activityLogParser, 'getSemanticData').and.returnValue(
       Promise.resolve({ beautified: true })
     );

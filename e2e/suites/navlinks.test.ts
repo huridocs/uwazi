@@ -25,7 +25,7 @@ describe('navlinks', () => {
   });
 
   it('should render the menus on the header', async () => {
-    await expect(page).toClick('a', { text: 'Public entities' });
+    await expect(page).toClick('a', { text: 'Library' });
     await expect(page).toMatchElement(navLink1, { text: 'NavLink1' });
     await expect(page).toMatchElement(navLink2, { text: 'NavLink2' });
 

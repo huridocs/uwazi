@@ -12,6 +12,7 @@ import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import JSONRequest from 'shared/JSONRequest';
 import { UserRole } from 'shared/types/userSchema';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -30,10 +31,10 @@ describe('files routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/files', () => {
     beforeEach(async () => {
@@ -68,10 +69,22 @@ describe('files routes', () => {
         await request(app)
           .post('/api/files')
           .set('X-Requested-With', 'XMLHttpRequest')
-          .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+          .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
 
         const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
         expect(file.mimetype).toBe('image/png');
+      });
+
+      it('should return a validation error for a no secured url', async () => {
+        const headers = new Headers();
+        headers.set('content-type', 'image/png');
+
+        const rest = await request(app)
+          .post('/api/files')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+
+        expect(rest.status).toBe(400);
       });
     });
   });
