@@ -88,17 +88,22 @@ export const UnwrapMetadataObject = (MetadataObject, Template) =>
     return { ...UnwrapedMO, [key]: propertyValue };
   }, {});
 
+function checkGeneratedTitle(entity, template) {
+  const generatedTitle =
+    !entity.title &&
+    template.commonProperties.find(property => property.name === 'title' && property.generatedId);
+  if (generatedTitle) {
+    return generateID(3, 4, 4);
+  }
+  return entity.title;
+}
+
 export function loadFetchedInReduxForm(form, entity, templates) {
   const sortedTemplates = advancedSort(templates, { property: 'name' });
   const defaultTemplate = sortedTemplates.find(t => t.default);
   const templateId = entity.template || defaultTemplate._id;
   const template = sortedTemplates.find(t => t._id === templateId) || emptyTemplate;
-  const generatedTitle =
-    !entity.title &&
-    template.commonProperties.find(property => property.name === 'title' && property.generatedId);
-  if (generatedTitle) {
-    entity.title = generateID(3, 4, 4);
-  }
+  const title = checkGeneratedTitle(entity, template);
 
   const entitySelectedOptions = {};
   template.properties.forEach(property => {
@@ -115,7 +120,7 @@ export function loadFetchedInReduxForm(form, entity, templates) {
   // suggestedMetadata remains in metadata-object form (all components consuming it are new).
   return [
     formActions.reset(form),
-    formActions.load(form, { ...entity, metadata, template: templateId }),
+    formActions.load(form, { ...entity, metadata, template: templateId, title }),
     formActions.setPristine(form),
     actions.set('entityThesauris', entitySelectedOptions),
   ];
@@ -140,14 +145,7 @@ export function changeTemplate(form, templateId) {
     const previousTemplate = templates.find(t => t.get('_id') === entity.template);
 
     const templateJS = template.toJS();
-    const generatedTitle =
-      !entity.title &&
-      templateJS.commonProperties.find(
-        property => property.name === 'title' && property.generatedId
-      );
-    if (generatedTitle) {
-      entity.title = generateID(3, 4, 4);
-    }
+    const title = checkGeneratedTitle(entity, templateJS);
 
     entity.metadata = resetMetadata(
       entity.metadata,
@@ -159,7 +157,7 @@ export function changeTemplate(form, templateId) {
 
     dispatch(formActions.reset(form));
     setTimeout(() => {
-      dispatch(formActions.load(form, entity));
+      dispatch(formActions.load(form, { ...entity, title }));
     });
   };
 }
