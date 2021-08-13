@@ -26,7 +26,7 @@ export class Menu extends Component {
     const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
 
-    const navLinks = links.map(link => {
+    const navLinks = links.map((link, index) => {
       const type = link.get('type') || 'link';
 
       if (type === 'link') {
@@ -49,9 +49,7 @@ export class Menu extends Component {
         );
       }
 
-      // It is a group
-
-      return <DropdownMenu link={link} />;
+      return <DropdownMenu link={link} position={index} key={index} />;
     });
 
     return (

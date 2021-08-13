@@ -5,9 +5,10 @@ import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook
 
 export type DropdownMenuProps = {
   link: any;
+  position: number;
 };
 
-export function DropdownMenu({ link }: DropdownMenuProps) {
+export function DropdownMenu({ link, position }: DropdownMenuProps) {
   const [showing, setShowing] = useState(false);
   const dropdownRef = useRef(null);
   const onClickOutside = useCallback(() => {
@@ -17,7 +18,7 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
   useOnClickOutsideElement<HTMLLIElement>(dropdownRef, onClickOutside);
 
   return (
-    <li className="menuNav-item" key={link.get('_id')} ref={dropdownRef}>
+    <li className="menuNav-item" key={position} ref={dropdownRef}>
       <a
         type="button"
         className="btn menuNav-btn menuNav-link dropdown-toggle"
@@ -27,7 +28,7 @@ export function DropdownMenu({ link }: DropdownMenuProps) {
         {t('Menu', link.get('title'))}
         &nbsp; <Icon icon="caret-down" />
       </a>
-      <ul key={link.get('_id')} className={`dropdown-menu ${showing ? 'show' : ''} mobile`}>
+      <ul className={`dropdown-menu ${showing ? 'show' : ''} mobile`}>
         {link.get('sublinks').map((sublink: any, index: number) => {
           const url = sublink.get('url') || '/';
           if (url.startsWith('http')) {

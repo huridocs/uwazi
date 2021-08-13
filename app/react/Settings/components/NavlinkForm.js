@@ -5,10 +5,7 @@ import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
 import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
-
-// import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 import './styles/menu.scss';
@@ -194,7 +191,7 @@ export class NavlinkForm extends Component {
                               <div className="col-sm-12">
                                 <button
                                   className="menu-link-group-button"
-                                  type="submit"
+                                  type="button"
                                   onClick={this.props.addGroupLink.bind(this, links, index)}
                                 >
                                   <Icon icon="link" />
