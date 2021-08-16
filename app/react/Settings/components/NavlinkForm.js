@@ -8,7 +8,6 @@ import React, { Component } from 'react';
 import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
-import './styles/menu.scss';
 
 const groupStyles = {
   paddingRight: '0px',
