@@ -124,8 +124,8 @@ export class MetadataProperty extends Component {
           )}
           {this.props.isRelationDuplicated && (
             <span className="validation-error">
-              <Icon icon="exclamation-triangle" /> Relationship fields must have diferent
-              relationship or diferent type of entity.
+              <Icon icon="exclamation-triangle" /> Cannot use 'any entity or document' if another
+              relationship of the same type is already with a specific entity.
             </span>
           )}
           <button

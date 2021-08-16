@@ -228,7 +228,7 @@ export class MetadataFormFields extends Component {
           &nbsp;(<Translate>affects</Translate>&nbsp;
           {property.multiEditingRelationshipFields.map(p => (
             <span key={p._id}>
-              &quot;<Translate context={templateID}>{p.label}</Translate>&quot;
+              &quot;<Translate context={templateID}>{p.label}</Translate>&quot;&nbsp;
             </span>
           ))}
           )
