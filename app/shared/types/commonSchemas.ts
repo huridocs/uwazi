@@ -146,7 +146,7 @@ export const extractedMetadataSchema = {
   additionalProperties: false,
   properties: {
     _id: objectIdSchema,
-    label: { type: 'string' },
+    name: { type: 'string' },
     timestamp: { type: 'string' },
     selection: {
       type: 'object',

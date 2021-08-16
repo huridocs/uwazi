@@ -48,7 +48,7 @@ describe('metadataExtractionActions', () => {
     it('should call updateIn with the selection parameters and the correct storeKey', () => {
       updateSelection(
         { selectedText: 'text selected by the user on the file' },
-        'aFieldLabel',
+        'fieldName',
         'someFieldId'
       );
       expect(actions.updateIn).toHaveBeenLastCalledWith(
@@ -56,7 +56,7 @@ describe('metadataExtractionActions', () => {
         ['selections'],
         {
           _id: 'someFieldId',
-          label: 'aFieldLabel',
+          name: 'fieldName',
           selection: { selectedText: 'text selected by the user on the file' },
           timestamp: Date(),
         }

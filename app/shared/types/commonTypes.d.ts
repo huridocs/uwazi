@@ -94,7 +94,7 @@ export interface TocSchema {
 
 export interface ExtractedMetadataSchema {
   _id?: string | ObjectId;
-  label?: string;
+  name?: string;
   timestamp?: string;
   selection?: {
     text?: string;

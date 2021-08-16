@@ -5,7 +5,7 @@ import { actions } from 'app/BasicReducer';
 const updateSelection = (selection: {}, fieldName: string, fieldId?: string) => {
   const data = {
     ...(fieldId && { _id: fieldId }),
-    label: fieldName,
+    name: fieldName,
     timestamp: Date(),
     selection,
   };
