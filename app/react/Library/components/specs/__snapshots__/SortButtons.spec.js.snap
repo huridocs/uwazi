@@ -77,7 +77,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date added
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -102,7 +102,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date added
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -132,7 +132,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date modified
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -157,7 +157,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date modified
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -187,7 +187,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             date
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -212,7 +212,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             date
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -471,7 +471,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date added
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -496,7 +496,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date added
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -526,7 +526,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date modified
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -551,7 +551,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             Date modified
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -581,7 +581,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             date
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -606,7 +606,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <span>
             date
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -872,7 +872,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date added
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -897,7 +897,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date added
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -927,7 +927,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date modified
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -952,7 +952,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date modified
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -982,7 +982,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             date
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -1007,7 +1007,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             date
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -1266,7 +1266,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date added
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -1291,7 +1291,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date added
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -1321,7 +1321,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date modified
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -1346,7 +1346,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             Date modified
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
@@ -1376,7 +1376,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             date
              (
-            Recently
+            Newest
             )
           </span>
           <ShowIf
@@ -1401,7 +1401,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           <span>
             date
              (
-            Least recently
+            Oldest
             )
           </span>
           <ShowIf
