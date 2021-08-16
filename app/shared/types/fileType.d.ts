@@ -26,21 +26,7 @@ export interface FileType {
     [k: string]: string;
   };
   toc?: TocSchema[];
-  extractedMetadata?: {
-    _id?: ObjectIdSchema;
-    label?: string;
-    timestamp?: string;
-    selection?: {
-      text?: string;
-      selectionRectangles?: {
-        top?: number;
-        left?: number;
-        width?: number;
-        height?: number;
-        page?: string;
-      }[];
-    };
-  }[];
+  extractedMetadata?: ExtractedMetadataSchema[];
   pdfInfo?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition

@@ -13,7 +13,7 @@ export const fileSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'FileType',
-  definitions: { objectIdSchema, tocSchema },
+  definitions: { objectIdSchema, tocSchema, extractedMetadataSchema },
   properties: {
     _id: objectIdSchema,
     entity: { type: 'string', minLength: 1 },
