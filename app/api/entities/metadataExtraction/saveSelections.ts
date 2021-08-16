@@ -1,42 +1,48 @@
+import { files } from 'api/files';
+import { uniqBy } from 'lodash';
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 
-const mergeByProperty = (a, b, p) => a.filter(aa => !b.find(bb => aa[p] === bb[p])).concat(b);
+interface EntityWithExtractedMetadata extends EntitySchema {
+  __extractedMetadata: { selections: ExtractedMetadataSchema[] };
+}
 
-const checkSelections = (storeSelections: any = [], file: FileType, entity: EntitySchema) => {
-  let selections = storeSelections;
+const checkSelections = (entity: EntityWithExtractedMetadata, file: FileType) => {
+  let selections: any;
 
   const entityData = {
     title: entity.title,
     ...entity.metadata,
   };
 
-  if (file.extractedMetadata) {
-    selections = mergeByProperty(file.extractedMetadata, storeSelections, 'label');
+  if (file.extractedMetadata && entity.__extractedMetadata) {
+    const merged = entity.__extractedMetadata.selections.concat(file.extractedMetadata);
+    selections = uniqBy(merged, 'label');
+    return selections;
   }
 
-  selections = storeSelections;
-  return selections;
+  if (entity.__extractedMetadata) {
+    selections = entity.__extractedMetadata.selections;
+    return selections;
+  }
+
+  return [];
 };
 
-const saveSelections = async (entity: EntitySchema) => {
-  console.log('here goes the extracted metadata validation!');
-  console.log(entity);
+const saveSelections = async (entity: EntityWithExtractedMetadata) => {
+  const mainDocument = await files.get({ entity: entity.sharedId, type: 'document' });
+  let selections = [];
 
-  // const mainDocument = await api.get(
-  //   'files',
-  //   new RequestParams({ entity: entity.sharedId, type: 'document' })
-  // );
+  if (mainDocument.length > 0) {
+    selections = checkSelections(entity, mainDocument[0]);
+  }
 
-  // const selections = checkSelections(storeSelections, mainDocument.json[0], entity);
-  // if (storeSelections.length > 0) {
-  //   return api.post(
-  //     'files',
-  //     new RequestParams({ extractedMetadata: selections, _id: mainDocument.json[0]._id })
-  //   );
-  // }
+  if (selections.length > 0) {
+    return files.save({ _id: mainDocument[0]._id, extractedMetadata: selections });
+  }
 
   return null;
 };
 
-export { saveSelections, checkSelections };
+export { saveSelections };
