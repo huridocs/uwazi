@@ -107,7 +107,7 @@ export class NavlinkForm extends Component {
                       {connectDragSource(
                         <span
                           className="property-name"
-                          style={{ paddingRight: '10px', width: '65px' }}
+                          style={{ paddingRight: '10px', width: '70px' }}
                         >
                           <Icon icon="bars" className="reorder" />
                           &nbsp;
@@ -117,7 +117,7 @@ export class NavlinkForm extends Component {
                       <div className={`${titleClass} input-group-width`}>
                         <span className="input-group-addon">Title</span>
                         <Field model={`settings.navlinksData.links[${index}].title`}>
-                          <input className="form-control" />
+                          <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
                         </Field>
                       </div>
                     </div>
@@ -126,7 +126,7 @@ export class NavlinkForm extends Component {
                         <div className="input-group">
                           <span className="input-group-addon">URL</span>
                           <Field model={`settings.navlinksData.links[${index}].url`}>
-                            <input className="form-control" />
+                            <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
                           </Field>
                         </div>
                       </div>
