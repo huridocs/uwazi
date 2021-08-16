@@ -226,3 +226,74 @@ export const permissionsLevelAgreggations = baseQuery => {
     },
   };
 };
+
+export const publishingStatusAgreggations = baseQuery => {
+  const path = 'published';
+  const filters = extractFilters(baseQuery, path);
+  const { should } = baseQuery.query.bool;
+  const user = permissionsContext.getUserInContext();
+  const needsPermissions = user && !['admin', 'editor'].includes(user.role);
+
+  const baseFilters = filters.filter(
+    f => !((f?.bool?.must || f?.bool?.should)?.[0]?.term?.published !== undefined)
+  );
+
+  if (needsPermissions) {
+    baseFilters.push({
+      bool: {
+        should: [
+          {
+            term: {
+              published: true,
+            },
+          },
+          {
+            bool: {
+              must: [
+                {
+                  term: {
+                    published: false,
+                  },
+                },
+                {
+                  nested: {
+                    path: 'permissions',
+                    query: {
+                      bool: {
+                        must: [
+                          {
+                            terms: {
+                              'permissions.refId': permissionsContext.permissionsRefIds(),
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  return {
+    filter: {
+      bool: {
+        should,
+        filter: baseFilters,
+      },
+    },
+    aggregations: {
+      filtered: {
+        terms: {
+          field: path,
+          missing: 'false',
+          size: preloadOptionsSearch,
+        },
+      },
+    },
+  };
+};

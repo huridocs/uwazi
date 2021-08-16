@@ -128,14 +128,16 @@ describe('static requestState()', () => {
         sort: 'creationDate',
         view: undefined,
         aggregatePermissionsByLevel: true,
+        aggregatePublishingStatus: true,
       });
 
-      query = processQuery(params, globalResources, 'uploads');
+      query = processQuery(params, globalResources, 'library');
       expect(query).toEqual({
         order: 'desc',
         sort: 'creationDate',
         view: undefined,
         aggregatePermissionsByLevel: true,
+        aggregatePublishingStatus: true,
       });
     });
 

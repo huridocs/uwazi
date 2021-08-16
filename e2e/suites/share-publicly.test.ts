@@ -1,9 +1,14 @@
 import insertFixtures from '../helpers/insertFixtures';
 import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
-import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
 import { expectDocumentCountAfterSearch, refreshIndex } from '../helpers/elastichelpers';
+import { createUser } from '../helpers/createUser';
+import {
+  goToPublishedEntities,
+  goToRestrictedEntities,
+  goToAllEntities,
+} from '../helpers/publishedFilter';
 
 const selectLookupOption = async (
   searchTerm: string,
@@ -38,27 +43,23 @@ describe('Share entities', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
-    await page.goto(`${host}/settings/users`);
-    await disableTransitions();
   });
 
   afterAll(async () => {
     await logout();
   });
 
-  it('should create a colaborator in the shared User Group and share an entity', async () => {
-    await expect(page).toClick('button', { text: 'Add user' });
-    await expect(page).toFill('input[name=email]', 'rock@stone.com');
-    await expect(page).toFill('input[name=username]', 'colla');
-    await expect(page).toFill('input[name=password]', 'borator');
-    await expect(page).toClick('.multiselectItem-name', {
-      text: 'Asesores legales',
+  it('should create a colaborator in the shared User Group', async () => {
+    await createUser({
+      username: 'colla',
+      password: 'borator',
+      email: 'rock@stone.com',
+      group: 'Asesores legales',
     });
-    await expect(page).toClick('button', { text: 'Create User' });
   });
 
   it('should share an entity with the collaborator', async () => {
-    await expect(page).toClick('a.public-documents');
+    await goToPublishedEntities();
     await expect(page).toClick('.item-document', {
       text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
     });
@@ -79,64 +80,80 @@ describe('Share entities', () => {
     await expect(page).toClick('button', { text: 'Save changes' });
     await page.waitForSelector('.share-modal', { hidden: true });
     await refreshIndex();
+    await goToPublishedEntities();
     await expect(page).not.toMatchElement('.item-document', {
       text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
     });
   });
 
-  it('should share entities publicly', async () => {
-    await expect(page).toClick('a.private-documents');
-    await expect(page).toClick('.item-document', {
-      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+  describe('share entities publicly', () => {
+    it('should share the entity', async () => {
+      await goToRestrictedEntities();
+      await expect(page).toClick('.item-document', {
+        text:
+          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+      });
+      await page.waitForSelector('.share-btn');
+      await expect(page).toClick('button', { text: 'Share' });
+      await selectLookupOption('', 'Public');
+      await expect(page).toClick('button', { text: 'Save changes' });
+      await page.waitForSelector('.share-modal', { hidden: true });
     });
-    await page.waitForSelector('.share-btn');
-    await expect(page).toClick('button', { text: 'Share' });
-    await selectLookupOption('', 'Public');
-    await expect(page).toClick('button', { text: 'Save changes' });
-    await page.waitForSelector('.share-modal', { hidden: true });
-    await refreshIndex();
-    await page.waitFor('.item-document');
-    await expect(page).not.toMatchElement('.item-document', {
-      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+    it('should not display the entity among the restricted ones', async () => {
+      await refreshIndex();
+      await page.reload();
+      await page.waitFor('.item-document');
+      await expect(page).not.toMatchElement('.item-document', {
+        text:
+          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+      });
     });
   });
 
-  it('should not be able to unshare entities publicly as a collaborator', async () => {
-    await logout();
-    await login('colla', 'borator');
-    await disableTransitions();
-    await page.waitFor('.item-document');
-    await expect(page).toClick('.item-document', {
-      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+  describe('as a collaborator', () => {
+    it('should not be able to unshare entities publicly', async () => {
+      await logout();
+      await login('colla', 'borator');
+      await disableTransitions();
+      await page.waitFor('.item-document');
+      await expect(page).toClick('.item-document', {
+        text:
+          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+      });
+      await page.waitForSelector('.share-btn');
+      await expect(page).toClick('button', { text: 'Share' });
+      await expect(page).not.toMatchElement(
+        '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select'
+      );
+      await expect(page).toClick('button', { text: 'Close' });
+      await expect(page).toClick(
+        'aside.metadata-sidepanel.is-active > div.sidepanel-header > button.close-modal'
+      );
     });
-    await page.waitForSelector('.share-btn');
-    await expect(page).toClick('button', { text: 'Share' });
-    await expect(page).not.toMatchElement(
-      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select'
-    );
-    await expect(page).toClick('button', { text: 'Close' });
-  });
 
-  it('should not be able to share entity as a collaborator', async () => {
-    await expect(page).toClick('a.private-documents');
-    await expect(page).toClick('button', { text: 'New entity' });
-    await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Test title');
-    await expect(page).toMatchElement('button', { text: 'Save' });
-    await expect(page).toClick('button', { text: 'Save' });
-    await refreshIndex();
-    await expect(page).toClick('.item-document', {
-      text: 'Test title',
+    it('should create an entity', async () => {
+      await expect(page).toClick('button', { text: 'Create entity' });
+      await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
+      await expect(page).toMatchElement('button', { text: 'Save' });
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('div.alert', { text: 'Entity created' });
     });
-    await page.waitForSelector('.share-btn');
-    await expect(page).toClick('button', { text: 'Share' });
-    await selectLookupOption('', 'Public', false);
+
+    it('should not be able to share the entity', async () => {
+      await refreshIndex();
+      await goToRestrictedEntities();
+      await expect(page).toClick('.item-document', {
+        text: 'Test title',
+      });
+      await page.waitForSelector('.share-btn');
+      await expect(page).toClick('button', { text: 'Share' });
+      await selectLookupOption('', 'Public', false);
+    });
   });
 
   it('should show mixed access', async () => {
     await reLogin('admin', 'admin');
-    await expect(page).toClick('.multiselectItem-name', {
-      text: 'Include unpublished entities',
-    });
+    await goToAllEntities();
     await expect(page).toFill('input[name="library.search.searchTerm"]', 'test 2016');
     await expect(page).toClick('[aria-label="Search button"]');
     await expectDocumentCountAfterSearch(page, 3);

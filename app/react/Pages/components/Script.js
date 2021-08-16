@@ -13,12 +13,16 @@ class Script extends Component {
 
   componentDidMount() {
     this.appendScript();
+    window.addEventListener('error', this.props.onError);
+    window.addEventListener('unhandledrejection', this.props.onError);
   }
 
   componentDidUpdate(prevProps) {
     const { children } = this.props;
     if (children !== prevProps.children) {
       this.removeScript();
+      window.removeEventListener('error', this.props.onError);
+      window.removeEventListener('unhandledrejection', this.props.onError);
       this.appendScript();
     } else if (this.scriptElement === null) {
       this.appendScript();
@@ -27,6 +31,8 @@ class Script extends Component {
 
   componentWillUnmount() {
     this.removeScript();
+    window.removeEventListener('error', this.props.onError);
+    window.removeEventListener('unhandledrejection', this.props.onError);
   }
 
   appendScript() {
@@ -55,12 +61,14 @@ class Script extends Component {
 Script.defaultProps = {
   children: '',
   scriptRendered: null,
+  onError: () => {},
 };
 
 Script.propTypes = {
   children: PropTypes.string,
   scriptRendered: PropTypes.bool,
   dispatch: PropTypes.func.isRequired,
+  onError: PropTypes.func,
 };
 
 const container = connect()(Script);

@@ -13,6 +13,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
+import { filterToQuery } from '../helpers/publishedStatusFilter';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -158,10 +159,15 @@ export function filterIsEmpty(value) {
 }
 
 export function processFilters(readOnlySearch, filters, limit, from) {
-  const search = {
+  let search = {
     filters: {},
     ...readOnlySearch,
   };
+
+  if (search.publishedStatus) {
+    search = filterToQuery(search);
+  }
+
   search.filters = {};
 
   filters.properties.forEach(property => {
