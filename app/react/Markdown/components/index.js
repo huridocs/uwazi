@@ -42,7 +42,7 @@ const GaugeChart = loadable(async () =>
   import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js')
 );
 
-export default {
+export {
   MarkdownMedia,
   ContactForm,
   Context,

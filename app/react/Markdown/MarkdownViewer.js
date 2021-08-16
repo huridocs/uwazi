@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import rison from 'rison-node';
 
-import CustomComponents from './components';
+import * as CustomComponents from './components';
 import CustomHookComponents from './CustomHooks';
 
 import markdownToReact from './markdownToReact';

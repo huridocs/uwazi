@@ -1,6 +1,7 @@
 import React from 'react';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { MarkdownMedia } from 'app/Markdown/components';
+console.log(MarkdownMedia);
 import ReactPlayer from 'react-player';
 
 export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema }) => {

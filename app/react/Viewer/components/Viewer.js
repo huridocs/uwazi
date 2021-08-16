@@ -14,6 +14,7 @@ import { actions } from 'app/BasicReducer';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import ContextMenu from 'app/ContextMenu';
 import Footer from 'app/App/Footer';
+import loadable from '@loadable/component';
 import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
@@ -28,11 +29,17 @@ import {
 import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
-import SourceDocument from './SourceDocument';
-import TargetDocument from './TargetDocument';
+
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
+
+const SourceDocument = loadable(async () =>
+  import(/* webpackChunkName: "LazyLoadSourceDocument" */ './SourceDocument.js')
+);
+const TargetDocument = loadable(async () =>
+  import(/* webpackChunkName: "LazyLoadTargetDocument" */ './TargetDocument.js')
+);
 
 import determineDirection from '../utils/determineDirection';
 import { requestViewerState } from '../actions/routeActions';
