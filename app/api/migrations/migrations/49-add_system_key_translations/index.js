@@ -42,9 +42,7 @@ async function readCsvToSystemKeys(db, filename) {
     });
   });
 
-  await translations.forEach(async tr =>
-    db.collection('translations').replaceOne({ _id: tr._id }, tr)
-  );
+  await translations.forEach(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr));
 }
 
 export default {

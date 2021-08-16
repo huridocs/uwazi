@@ -1,8 +1,10 @@
 import db from 'api/utils/testing_db';
 
 export const templateId = db.id();
+export const defaultTemplateName = 'default template';
+export const defaultTemplateTitle = 'Title';
 
-//system context
+//contexts
 const commonContext = {
   id: 'System',
   label: 'User Interface',
@@ -14,9 +16,32 @@ const commonContext = {
     },
   ],
 };
+const templateContext = {
+  id: templateId.toString(),
+  label: defaultTemplateName,
+  type: 'Entity',
+  values: [
+    {
+      key: defaultTemplateName,
+      value: defaultTemplateName,
+    },
+    {
+      key: defaultTemplateTitle,
+      value: defaultTemplateTitle,
+    },
+  ],
+};
 
 export default {
-  entities: [{ title: 'test_doc' }],
+  templates: [
+    //default template name - correct
+    {
+      _id: templateId,
+      name: defaultTemplateName,
+      commonProperties: [{ name: 'title', label: defaultTemplateTitle, type: 'text' }],
+      properties: [],
+    },
+  ],
   translations: [
     {
       _id: db.id(),
@@ -29,6 +54,7 @@ export default {
             { key: 'Two-step verification', value: 'Verificación en dos pasos' },
           ]),
         },
+        templateContext,
       ],
     },
     {
@@ -39,6 +65,7 @@ export default {
           ...commonContext,
           values: commonContext.values.concat([{ key: 'Upload PDF', value: 'Upload PDF' }]),
         },
+        templateContext,
       ],
     },
     {
@@ -52,6 +79,7 @@ export default {
             { key: 'Upload PDF', value: 'PDF Feltöltése' },
           ]),
         },
+        templateContext,
       ],
     },
   ],
