@@ -2,9 +2,22 @@ import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import React, { useRef, useState, useCallback } from 'react';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
+import { IImmutable } from 'shared/types/Immutable';
+
+type ISublink = {
+  title: string;
+  url: string;
+};
+
+type ILink = {
+  title: string;
+  url: string;
+  sublinks: [ISublink];
+  type: string;
+};
 
 export type DropdownMenuProps = {
-  link: any;
+  link: IImmutable<ILink>;
   position: number;
 };
 
@@ -29,13 +42,13 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
         &nbsp; <Icon icon="caret-down" />
       </a>
       <ul className={`dropdown-menu ${showing ? 'show' : ''} mobile`}>
-        {link.get('sublinks').map((sublink: any, index: number) => {
-          const url = sublink.get('url') || '/';
+        {link.get('sublinks').map((sublink?: IImmutable<ISublink>, index?: number) => {
+          const url = sublink?.get('url') || '/';
           if (url.startsWith('http')) {
             return (
               <li key={index}>
                 <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
-                  {t('Menu', sublink.get('title'))}
+                  {t('Menu', sublink?.get('title'))}
                 </a>
               </li>
             );
@@ -43,7 +56,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
           return (
             <li key={index}>
               <I18NLink to={url} className="btn dropdown-item">
-                {t('Menu', sublink.get('title'))}
+                {t('Menu', sublink?.get('title'))}
               </I18NLink>
             </li>
           );
