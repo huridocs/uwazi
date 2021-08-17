@@ -13,10 +13,10 @@ Can see
 Cards View
 Clear Filters
 Collaborator
-Connection
 connections
 Copy From
 Copy Highlighted
+Copy properties to this entity from
 Custom styles
 Date modified
 Day
@@ -24,7 +24,6 @@ Default language
 Default template
 Delete User
 Description
-Dictionary
 Discard Changes
 Documentation
 editor
@@ -36,7 +35,6 @@ Find
 Global CSS
 Groups
 Import
-Include unpublished documents
 Languages
 Legend
 Maptiler Key
@@ -75,7 +73,6 @@ There are no pages enabled for entity view
 This option will show a notification about the use of cookies in your instance.
 Time
 Two-step verification
-Unpublish
 Upload PDF
 Upload a ZIP or CSV file.
 Import instructions
@@ -85,3 +82,5 @@ Year
 You should activate this feature for enhanced account security
 Zoom in
 Zoom out
+Oldest
+Newest
