@@ -1,5 +1,4 @@
-import Joi from 'joi';
-
+import { objectIdSchema } from 'shared/types/commonSchemas';
 import { validation } from '../utils';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
@@ -15,14 +14,17 @@ export default app => {
 
   app.get(
     '/api/documents/count_by_template',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          templateId: Joi.objectId().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      properties: {
+        query: {
+          additionalProperties: false,
+          properties: {
+            templateId: objectIdSchema,
+          },
+          required: ['templateId'],
+        },
+      },
+    }),
     (req, res, next) =>
       templates
         .countByTemplate(req.query.templateId)
@@ -32,12 +34,17 @@ export default app => {
 
   app.get(
     '/api/documents',
-    validation.validateRequest(
-      Joi.object().keys({
-        _id: Joi.string().required(),
-      }),
-      'query'
-    ),
+    validation.validateRequest({
+      properties: {
+        query: {
+          additionalProperties: false,
+          properties: {
+            _id: { ...objectIdSchema, pattern: '^[0-9a-zA-Z]+$' },
+          },
+          required: ['_id'],
+        },
+      },
+    }),
     (req, res, next) => {
       let id;
 
@@ -61,13 +68,17 @@ export default app => {
   app.delete(
     '/api/documents',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest(
-      Joi.object({
-        sharedId: Joi.string().required(),
-      }).required(),
-      'query'
-    ),
-
+    validation.validateRequest({
+      properties: {
+        query: {
+          additionalProperties: false,
+          properties: {
+            sharedId: objectIdSchema,
+          },
+          required: ['sharedId'],
+        },
+      },
+    }),
     (req, res, next) => {
       documents
         .delete(req.query.sharedId)
