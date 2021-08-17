@@ -15,10 +15,10 @@ describe('saveSelections', () => {
           type: 'document',
           extractedMetadata: [
             {
-              label: 'Property A',
+              name: 'property_a',
               selection: { text: 'old text of Property A' },
             },
-            { label: 'Property B', selection: { text: 'unchanged text of prop B' } },
+            { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
           ],
         },
         {
@@ -39,7 +39,7 @@ describe('saveSelections', () => {
     await saveSelections({
       sharedId: 'entityWithNoFile',
       __extractedMetadata: {
-        selections: [{ label: 'Title', selection: { text: 'a selection for testing porpouses' } }],
+        selections: [{ name: 'Title', selection: { text: 'a selection for testing porpouses' } }],
       },
     });
     expect(files.save).not.toHaveBeenCalled();
@@ -59,17 +59,34 @@ describe('saveSelections', () => {
       sharedId: 'entitySharedId',
       __extractedMetadata: {
         selections: [
-          { label: 'Property A', selection: { text: 'newer selected text of prop A' } },
-          { label: 'Property C', selection: { text: 'new selected text of prop C' } },
+          { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
+          { name: 'property_c', selection: { text: 'new selected text of prop C' } },
+        ],
+      },
+      metadata: {
+        property_a: [
+          {
+            value: 'newer selected text of prop A',
+          },
+        ],
+        property_b: [
+          {
+            value: 'unchanged text of prop B',
+          },
+        ],
+        property_c: [
+          {
+            value: 'new selected text of prop C',
+          },
         ],
       },
     });
     expect(files.save).toHaveBeenCalledWith({
       _id: '61182037e1a99857d7382d47',
       extractedMetadata: [
-        { label: 'Property A', selection: { text: 'newer selected text of prop A' } },
-        { label: 'Property C', selection: { text: 'new selected text of prop C' } },
-        { label: 'Property B', selection: { text: 'unchanged text of prop B' } },
+        { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
+        { name: 'property_c', selection: { text: 'new selected text of prop C' } },
+        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
       ],
     });
   });
@@ -80,14 +97,24 @@ describe('saveSelections', () => {
       sharedId: 'entitySharedId',
       __extractedMetadata: {
         selections: [
-          { label: 'Property A', selection: { text: 'newer selected text of prop A' } },
-          { label: 'Property C', selection: { text: 'new text of prop C' } },
+          { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
+          { name: 'property_c', selection: { text: 'new text of prop C' } },
         ],
       },
       metadata: {
         property_a: [
           {
-            value: 'diferent metadata entered manually by user',
+            value: 'diferent text entered manually by user',
+          },
+        ],
+        property_b: [
+          {
+            value: 'unchanged text of prop B',
+          },
+        ],
+        property_c: [
+          {
+            value: 'new text of prop C',
           },
         ],
       },
@@ -95,8 +122,50 @@ describe('saveSelections', () => {
     expect(files.save).toHaveBeenCalledWith({
       _id: '61182037e1a99857d7382d47',
       extractedMetadata: [
-        { label: 'Property C', selection: { text: 'new text of prop C' } },
-        { label: 'Property B', selection: { text: 'unchanged text of prop B' } },
+        { name: 'property_c', selection: { text: 'new text of prop C' } },
+        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
+      ],
+    });
+  });
+
+  it('should work with numeric and date values, removing them from extracted metadata if they are diferent in the entity', async () => {
+    await saveSelections({
+      _id: 'entityID',
+      sharedId: 'entitySharedId',
+      __extractedMetadata: {
+        selections: [
+          { name: 'numeric_property_a', selection: { text: '122547899' } },
+          { name: 'date_property_b', selection: { text: '-4733596800' } },
+        ],
+      },
+      metadata: {
+        numeric_property_a: [
+          {
+            value: '45',
+          },
+        ],
+        date_property_b: [
+          {
+            value: '1820',
+          },
+        ],
+        property_a: [
+          {
+            value: 'old text of Property A',
+          },
+        ],
+        property_b: [
+          {
+            value: 'unchanged text of prop B',
+          },
+        ],
+      },
+    });
+    expect(files.save).toHaveBeenCalledWith({
+      _id: '61182037e1a99857d7382d47',
+      extractedMetadata: [
+        { name: 'property_a', selection: { text: 'old text of Property A' } },
+        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
       ],
     });
   });
