@@ -55,16 +55,12 @@ describe('migration add_system_key_translations', () => {
       .find()
       .toArray();
     function testKeyValue(key, value, locale, contextId) {
-      try {
-        expect(
-          allTranslations
-            .find(tr => tr.locale === locale)
-            .contexts.find(c => c.id === contextId)
-            .values.find(v => v.key === key).value
-        ).toBe(value);
-      } catch (e) {
-        console.log(key);
-      }
+      expect(
+        allTranslations
+          .find(tr => tr.locale === locale)
+          .contexts.find(c => c.id === contextId)
+          .values.find(v => v.key === key).value
+      ).toBe(value);
     }
 
     newKeyValues.forEach(({ key, value }) => {
