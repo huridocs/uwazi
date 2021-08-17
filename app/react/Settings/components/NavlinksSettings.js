@@ -61,26 +61,28 @@ export class NavlinksSettings extends Component {
                   sortLink={this.props.sortLink}
                 />
               ))}
+              <li className="list-group-item">
+                <div className="footer-buttons">
+                  <button
+                    type="button"
+                    className="menu-link-group-button"
+                    id="main-add-link-button"
+                    onClick={this.props.addLink.bind(this, links, 'link')}
+                  >
+                    <Icon icon="link" />
+                    &nbsp;{t('System', 'Add link')}
+                  </button>
+                  <button
+                    type="button"
+                    className="menu-link-group-button"
+                    onClick={this.props.addLink.bind(this, links, 'group')}
+                  >
+                    <Icon icon="caret-square-down" />
+                    &nbsp;{t('System', 'Add group')}
+                  </button>
+                </div>
+              </li>
             </ul>
-            <div className="settings-footer footer-buttons">
-              <button
-                type="button"
-                className="menu-link-group-button"
-                id="main-add-link-button"
-                onClick={this.props.addLink.bind(this, links, 'link')}
-              >
-                <Icon icon="link" />
-                &nbsp;{t('System', 'Add link')}
-              </button>
-              <button
-                type="button"
-                className="menu-link-group-button"
-                onClick={this.props.addLink.bind(this, links, 'group')}
-              >
-                <Icon icon="caret-square-down" />
-                &nbsp;{t('System', 'Add group')}
-              </button>
-            </div>
             <div className="settings-footer">
               <button
                 type="submit"
