@@ -50,8 +50,6 @@ const checkSelections = (entity: EntityWithExtractedMetadata, file: FileType) =>
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
   const mainDocument = await files.get({ entity: entity.sharedId, type: 'document' });
 
-  console.log(JSON.stringify(entity, null, 2));
-
   if (mainDocument.length > 0) {
     const selections = checkSelections(entity, mainDocument[0]);
     if (selections.length > 0) {

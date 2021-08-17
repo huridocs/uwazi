@@ -146,7 +146,7 @@ describe('saveSelections', () => {
         ],
         date_property_b: [
           {
-            value: '1820',
+            value: '-4733596800',
           },
         ],
         property_a: [
@@ -164,6 +164,7 @@ describe('saveSelections', () => {
     expect(files.save).toHaveBeenCalledWith({
       _id: '61182037e1a99857d7382d47',
       extractedMetadata: [
+        { name: 'date_property_b', selection: { text: '-4733596800' } },
         { name: 'property_a', selection: { text: 'old text of Property A' } },
         { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
       ],
