@@ -139,6 +139,7 @@
 
 .property-description-right {
   @include tooltip('right');
+  z-index: 9999;
 }
 .property-description-left {
   @include tooltip('left');
