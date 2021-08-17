@@ -6,7 +6,7 @@ import { t } from 'app/I18N';
 
 import ConnectionsGroup from './ConnectionsGroup';
 
-export class ConnectionsGroupsComponent extends Component {
+class ConnectionsGroupsComponent extends Component {
   render() {
     const { connectionsGroups } = this.props;
 

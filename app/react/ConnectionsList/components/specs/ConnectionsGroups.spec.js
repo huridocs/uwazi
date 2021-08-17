@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import { ConnectionsGroupsComponent } from '../ConnectionsGroups';
+import { ConnectionsGroups } from '../ConnectionsGroups';
 import ConnectionsGroup from '../ConnectionsGroup';
 
 describe('ConnectionsGroups', () => {
@@ -25,7 +25,7 @@ describe('ConnectionsGroups', () => {
   });
 
   const render = () => {
-    component = shallow(<ConnectionsGroupsComponent {...props} />);
+    component = shallow(<ConnectionsGroups.WrappedComponent {...props} />);
   };
 
   describe('when there are connectionsGroups', () => {
