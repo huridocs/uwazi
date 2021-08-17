@@ -1,4 +1,4 @@
-import languagesUtil from 'shared/languages';
+import languagesUtil from 'shared/detectLanguage';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';

@@ -1,5 +1,10 @@
-import PDF from './components/PDF.js';
-import PDFUtils from './utils.js';
+import loadable from '@loadable/component';
 
-export default PDF;
-export { PDFUtils };
+const PDF = loadable(async () =>
+  import(/* webpackChunkName: "LazyLoadPDF" */ './components/PDF.js')
+);
+const PDFPage = loadable(async () =>
+  import(/* webpackChunkName: "LazyLoadPDFPage" */ './components/PDFPage.js')
+);
+
+export { PDF, PDFPage };

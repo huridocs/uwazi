@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
-import languages from 'shared/languages';
+import languages from 'shared/detectLanguage';
 import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';

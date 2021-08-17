@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const RtlCssPlugin = require('rtlcss-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const rootPath = path.join(__dirname, '/../');
 
@@ -56,6 +57,9 @@ module.exports = production => {
               if (
                 packageName.match(/qrcode.react/) ||
                 packageName.match(/pdfjs-dist/) ||
+                packageName.match(/recharts/) ||
+                packageName.match(/react-map-gl/) ||
+                packageName.match(/mapbox-gl/) ||
                 packageName.match(/LazyLoad*/)
               ) {
                 return packageName;
@@ -110,6 +114,7 @@ module.exports = production => {
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
         ],
       }),
+      new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
     ],
   };
 };
