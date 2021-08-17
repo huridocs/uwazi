@@ -13,7 +13,6 @@ describe('DocumentCounter', () => {
       entityTotal: 100,
       totalConnectionsCount: 3,
       hitsTotalRelation: 'eq',
-      hiddenConnectionsCount: 2,
     };
   });
 
@@ -25,12 +24,10 @@ describe('DocumentCounter', () => {
   describe('connections content', () => {
     it('should show the connections count', () => {
       render();
-      expect(component.children().get(0).props.children[0]).toBe(1);
+      expect(component.children().get(0).props.children[0]).toBe(3);
       expect(component.children().get(1).props.children).toBe('connections');
-      expect(component.children().get(3).props.children[0]).toBe('2 ');
-      expect(component.children().get(3).props.children[1].props.children).toBe('hidden');
-      expect(component.children().get(6).props.children[0].props.children[1]).toBe('100');
-      expect(component.children().get(7).props.children).toBe('entities');
+      expect(component.children().get(3).props.children[0].props.children[1]).toBe('100');
+      expect(component.children().get(4).props.children).toBe('entities');
     });
   });
 
