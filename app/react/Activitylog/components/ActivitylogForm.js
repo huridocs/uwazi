@@ -40,7 +40,7 @@ class ActivitylogForm extends Component {
 
     if (searchResults.get('remainingRows')) {
       const { query } = this.state;
-      const lastResultTime = searchResults.getIn(['rows', -1, 'time']);
+      const lastResultTime = parseInt(searchResults.getIn(['rows', -1, 'time']), 10);
       searchMore({ ...query, before: lastResultTime });
     }
   }
