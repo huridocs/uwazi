@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import Immutable from 'immutable';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { connect } from 'react-redux';
@@ -37,7 +38,7 @@ class ConnectionsGroupsComponent extends Component {
 }
 
 ConnectionsGroupsComponent.propTypes = {
-  connectionsGroups: PropTypes.object,
+  connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
 };
 
 function mapStateToProps({ relationships }) {
