@@ -75,7 +75,7 @@ export default {
         {
           ...commonContext,
           values: commonContext.values.concat([
-            { key: 'Zoom in', value: 'Nagyítás' },
+            { key: 'Year', value: 'Év' },
             { key: 'Upload PDF', value: 'PDF Feltöltése' },
           ]),
         },

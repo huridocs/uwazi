@@ -24,7 +24,7 @@ const alreadyInAllContexts = {
   hu: 'PDF Feltöltése',
 };
 const alreadyInOneContext = [
-  { locale: 'hu', key: 'Zoom in', value: 'Zoom in', existingValue: 'Nagyítás' },
+  { locale: 'hu', key: 'Year', value: 'Year', existingValue: 'Év' },
   {
     locale: 'es',
     key: 'Two-step verification',
