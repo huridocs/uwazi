@@ -278,6 +278,7 @@ export default function() {
     customFilters(filters = {}) {
       Object.keys(filters)
         .filter(key => filters[key].values.length)
+        // eslint-disable-next-line max-statements
         .forEach(key => {
           if (key === 'permissions.level') {
             addFilter(
@@ -285,6 +286,36 @@ export default function() {
                 [
                   { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
                   { terms: { 'permissions.level': filters[key].values } },
+                ],
+                'permissions'
+              )
+            );
+            return;
+          }
+
+          if (key === 'permissions.read') {
+            if (permissionsContext.getUserInContext()?.role !== 'admin') return;
+
+            addFilter(
+              nested(
+                [
+                  { terms: { 'permissions.refId': filters[key].values } },
+                  { terms: { 'permissions.level': ['read'] } },
+                ],
+                'permissions'
+              )
+            );
+            return;
+          }
+
+          if (key === 'permissions.write') {
+            if (permissionsContext.getUserInContext()?.role !== 'admin') return;
+
+            addFilter(
+              nested(
+                [
+                  { terms: { 'permissions.refId': filters[key].values } },
+                  { terms: { 'permissions.level': ['write'] } },
                 ],
                 'permissions'
               )
