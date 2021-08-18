@@ -151,6 +151,7 @@ export class NavlinkForm extends Component {
                               <div
                                 className="row"
                                 style={{ paddingBottom: '5px', paddingTop: '5px' }}
+                                key={i}
                               >
                                 <div className="col-sm-3" style={{ display: 'flex' }}>
                                   <span style={{ padding: '5px 10px 0px 0px' }}>
