@@ -16,7 +16,7 @@ describe('PublicForm', () => {
     submit = jasmine.createSpy('submit').and.returnValue(request);
   });
 
-  const render = customProps => {
+  const render = (customProps, generatedId = false) => {
     props = {
       template: Immutable.fromJS({
         _id: '123',
@@ -24,6 +24,7 @@ describe('PublicForm', () => {
           {
             label: 'Title changed',
             name: 'title',
+            generatedId,
           },
         ],
         properties: [{ type: 'text', name: 'text' }],
@@ -44,6 +45,12 @@ describe('PublicForm', () => {
   it('should render a form', () => {
     render();
     expect(component).toMatchSnapshot();
+  });
+
+  it('should render a generated ID as title if the option is marked', () => {
+    render({}, true);
+    const title = component.find('#title').at(0);
+    expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
   });
 
   it('should enable remote captcha', () => {

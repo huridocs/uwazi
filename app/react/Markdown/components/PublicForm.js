@@ -14,13 +14,13 @@ import Loader from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
 import Dropzone from 'react-dropzone';
 import { BrowserView, MobileView } from 'react-device-detect';
+import { generateID } from 'shared/IDGenerator';
 
 class PublicForm extends Component {
   static renderTitle(template) {
-    const titleLabel = template
-      .get('commonProperties')
-      .find(p => p.get('name') === 'title')
-      .get('label');
+    const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
+    const defaultTitle = titleProperty.get('generatedId') ? generateID(3, 4, 4) : '';
+    const titleLabel = titleProperty.get('label');
 
     return (
       <FormGroup key="title" model=".title">
@@ -32,7 +32,12 @@ class PublicForm extends Component {
             </label>
           </li>
           <li className="wide">
-            <Control.text id="title" className="form-control" model=".title" />
+            <Control.text
+              id="title"
+              className="form-control"
+              defaultValue={defaultTitle}
+              model=".title"
+            />
           </li>
         </ul>
       </FormGroup>
