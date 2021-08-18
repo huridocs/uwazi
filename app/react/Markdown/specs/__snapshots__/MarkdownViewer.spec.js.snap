@@ -4,14 +4,14 @@ exports[`MarkdownViewer render should be able to render properly custom componen
 <div
   className="markdown-viewer"
 >
-  <MarkdownMedia
+  <ForwardRef
     compact={false}
     config="(youtubeUrl)"
     key="0"
   />
   
 
-  <MarkdownMedia
+  <ForwardRef
     compact={false}
     config="(mediaUrl)"
     key="2"
@@ -347,21 +347,21 @@ exports[`MarkdownViewer render should render media components 1`] = `
 <div
   className="markdown-viewer"
 >
-  <MarkdownMedia
+  <ForwardRef
     compact={false}
     config="(1234, options)"
     key="0"
   />
   
 
-  <MarkdownMedia
+  <ForwardRef
     compact={false}
     config="(1234)"
     key="2"
   />
   
 
-  <MarkdownMedia
+  <ForwardRef
     compact={false}
     config="(config options)"
     key="4"
@@ -478,7 +478,7 @@ exports[`MarkdownViewer render when passing html true prop should render customC
     <div
       key="1"
     >
-      <MarkdownMedia
+      <ForwardRef
         compact={false}
         config="(url)"
         key="0"

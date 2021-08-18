@@ -1,4 +1,5 @@
 import languages from '../languages';
+import detectLanguage from '../detectLanguage';
 
 describe('languages', () => {
   describe('getAll', () => {
@@ -37,30 +38,34 @@ describe('languages', () => {
 
   describe('detect', () => {
     it('should return the text language (for elasticsearch by default)', () => {
-      expect(languages.detect('de que color es el caballo blanco de santiago')).toBe('spanish');
-      expect(languages.detect('what is the colour of the white horse of santiago')).toBe('english');
+      expect(detectLanguage.detect('de que color es el caballo blanco de santiago')).toBe(
+        'spanish'
+      );
+      expect(detectLanguage.detect('what is the colour of the white horse of santiago')).toBe(
+        'english'
+      );
     });
 
     it('should return the text language for a specific purpose if selected', () => {
-      expect(languages.detect('de que color es el caballo blanco de santiago', 'ISO639_1')).toBe(
-        'es'
-      );
       expect(
-        languages.detect('what is the colour of the white horse of santiago', 'ISO639_1')
+        detectLanguage.detect('de que color es el caballo blanco de santiago', 'ISO639_1')
+      ).toBe('es');
+      expect(
+        detectLanguage.detect('what is the colour of the white horse of santiago', 'ISO639_1')
       ).toBe('en');
-      expect(languages.detect('de que color es el caballo blanco de santiago', 'franc')).toBe(
+      expect(detectLanguage.detect('de que color es el caballo blanco de santiago', 'franc')).toBe(
         'spa'
       );
-      expect(languages.detect('what is the colour of the white horse of santiago', 'franc')).toBe(
-        'eng'
-      );
+      expect(
+        detectLanguage.detect('what is the colour of the white horse of santiago', 'franc')
+      ).toBe('eng');
     });
 
     it('should return other when the language is not supported', () => {
-      expect(languages.detect('color chIS Sargh santiago')).toBe('other');
-      expect(languages.detect('sdgfghhg hgjk ljhgfhgjk ghgjh ghfdfgfartytuasd fjh fghjgjasd')).toBe(
-        'other'
-      );
+      expect(detectLanguage.detect('color chIS Sargh santiago')).toBe('other');
+      expect(
+        detectLanguage.detect('sdgfghhg hgjk ljhgfhgjk ghgjh ghfdfgfartytuasd fjh fghjgjasd')
+      ).toBe('other');
     });
   });
 });

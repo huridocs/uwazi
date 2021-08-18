@@ -33,13 +33,8 @@ import ConfirmCloseForm from './ConfirmCloseForm';
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
-
-const SourceDocument = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadSourceDocument" */ './SourceDocument.js')
-);
-const TargetDocument = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadTargetDocument" */ './TargetDocument.js')
-);
+import SourceDocument from './SourceDocument';
+import TargetDocument from './TargetDocument.js';
 
 import determineDirection from '../utils/determineDirection';
 import { requestViewerState } from '../actions/routeActions';

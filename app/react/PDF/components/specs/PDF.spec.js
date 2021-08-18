@@ -4,9 +4,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import PDFJS from '../../PDFJS';
-
 import PDF from '../PDF';
-import PDFPage from '../PDFPage.js';
+import { PDFPage } from 'app/PDF';
 
 const legacyCharacterMapUrl = '/legacy_character_maps/';
 
@@ -17,7 +16,7 @@ describe('PDF', () => {
 
   let props;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdfObject) });
     props = {
       file: 'file_url',
@@ -33,24 +32,21 @@ describe('PDF', () => {
     };
   });
 
-  const render = () => {
+  const render = async () => {
     component = shallow(<PDF {...props} />);
     instance = component.instance();
     spyOn(instance, 'setState').and.callThrough();
   };
 
   describe('on instance', () => {
-    it('should get the pdf with pdfjs', done => {
-      render();
+    it('should get the pdf with pdfjs', async () => {
+      await render();
       expect(PDFJS.getDocument).toHaveBeenCalledWith({
         cMapPacked: true,
         cMapUrl: legacyCharacterMapUrl,
         url: props.file,
       });
-      setTimeout(() => {
-        expect(instance.setState).toHaveBeenCalledWith({ pdf: pdfObject });
-        done();
-      });
+      expect(instance.setState).toHaveBeenCalledWith({ pdf: pdfObject });
     });
   });
 
