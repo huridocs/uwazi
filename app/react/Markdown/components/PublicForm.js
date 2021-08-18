@@ -21,7 +21,6 @@ class PublicForm extends Component {
     const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
     const defaultTitle = titleProperty.get('generatedId') ? generateID(3, 4, 4) : '';
     const titleLabel = titleProperty.get('label');
-
     return (
       <FormGroup key="title" model=".title">
         <ul className="search__filter">
@@ -99,7 +98,6 @@ class PublicForm extends Component {
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
     values.attachments = this.state.files.length ? this.state.files : undefined;
-
     submit(values, remote)
       .then(uploadCompletePromise => {
         this.setState({ submiting: true });
@@ -229,7 +227,6 @@ class PublicForm extends Component {
     );
   }
 }
-
 PublicForm.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
@@ -246,9 +243,7 @@ export const mapStateToProps = (state, props) => ({
   remote: props.remote !== undefined,
   attachments: props.attachments !== undefined,
 });
-
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
-
 export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);
