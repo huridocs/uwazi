@@ -55,7 +55,7 @@ class Footer extends Component {
 
             return (
               <li className="footer-nav_item">
-                <I18NLink to="/settings">{t('System', 'Settings')}</I18NLink>
+                <I18NLink to="/settings/account">{t('System', 'Settings')}</I18NLink>
               </li>
             );
           })()}

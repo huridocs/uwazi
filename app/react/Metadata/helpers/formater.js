@@ -226,13 +226,30 @@ export default {
     const type = inheritedProperty.get('type');
     const methodType = this[type] ? type : 'default';
 
-    let value = propValue.map(v => {
-      if (v && v.inheritedValue) {
-        return this[methodType](inheritedProperty, v.inheritedValue, thesauris, options, templates);
-      }
+    let value = propValue
+      .map(v => {
+        if (v && v.inheritedValue) {
+          if (
+            !v.inheritedValue.length ||
+            v.inheritedValue.every(
+              iv => !(iv.value || type === null || (type === 'numeric' && iv.value === 0))
+            )
+          ) {
+            return null;
+          }
 
-      return {};
-    });
+          return this[methodType](
+            inheritedProperty,
+            v.inheritedValue,
+            thesauris,
+            options,
+            templates
+          );
+        }
+
+        return {};
+      })
+      .filter(v => v);
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
       const templateThesauris = thesauris.find(
