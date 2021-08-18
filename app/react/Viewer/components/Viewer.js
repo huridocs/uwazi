@@ -14,7 +14,6 @@ import { actions } from 'app/BasicReducer';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import ContextMenu from 'app/ContextMenu';
 import Footer from 'app/App/Footer';
-import loadable from '@loadable/component';
 import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';

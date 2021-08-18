@@ -1,4 +1,5 @@
 import loadable from '@loadable/component';
+
 import { Link } from 'react-router';
 import { Icon } from 'UI';
 import Counter from './Counter';
@@ -11,6 +12,7 @@ import Context from './Context';
 import Connect from './Connect';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
+import MarkdownMedia from './MarkdownMedia';
 import PayPalDonateLink from './PayPalDonateLink';
 import PublicForm from './PublicForm';
 import Value from './Value';
@@ -28,9 +30,6 @@ const Slideshow = loadable(async () =>
   import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js')
 );
 
-const MarkdownMedia = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadMarkdownMedia" */ './MarkdownMedia.js')
-);
 const PieChart = loadable(async () =>
   import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js')
 );
