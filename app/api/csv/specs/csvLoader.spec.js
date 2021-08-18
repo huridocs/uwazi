@@ -319,7 +319,7 @@ describe('csvLoader', () => {
       });
     });
     describe('title marked with generated Id option', () => {
-      it('should set a generatedId as the title', async () => {
+      it('should set a generatedId as the title if a value is not provided', async () => {
         const csv = `title , numeric label
                        , 10
                  title2, 10`;
@@ -333,7 +333,7 @@ describe('csvLoader', () => {
         expect(result[0].title).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
         expect(result[1].title).toBe('title2');
       });
-      it('should set a generatedId as the title', async () => {
+      it('should set a generatedId as the title if column is not provided', async () => {
         const csv = `numeric label
                      20
                      22`;
