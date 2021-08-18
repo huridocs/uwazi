@@ -23,7 +23,6 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -130,11 +129,9 @@ export class DocumentSidePanel extends Component {
       );
     }
 
-    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references, hubs } = this.props;
+    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
 
-    this.visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
-
-    const summary = this.visibleConnectionGroups.reduce(
+    const summary = connectionsGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -456,7 +453,7 @@ export class DocumentSidePanel extends Component {
                 />
               </TabContent>
               <TabContent for="connections" className="connections">
-                <ConnectionsGroups connectionsGroups={this.visibleConnectionGroups} />
+                <ConnectionsGroups />
               </TabContent>
               <TabContent for="semantic-search-results">
                 <DocumentSemanticSearchResults doc={jsDoc} />
@@ -486,7 +483,6 @@ DocumentSidePanel.defaultProps = {
   EntityForm: () => false,
   raw: false,
   file: {},
-  hubs: Immutable.fromJS([]),
   leaveEditMode: () => {},
 };
 
@@ -526,7 +522,6 @@ DocumentSidePanel.propTypes = {
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
-  hubs: PropTypes.instanceOf(Immutable.List),
 };
 
 DocumentSidePanel.contextTypes = {
@@ -554,7 +549,6 @@ export const mapStateToProps = (state, ownProps) => {
     defaultLanguage,
     templates: state.templates,
     formData: state[ownProps.storeKey].sidepanel.metadata,
-    hubs: state.relationships.hubs,
   };
 };
 
