@@ -53,6 +53,21 @@ describe('PublicForm', () => {
     expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
   });
 
+  it('should load a generated Id as title if the option is marked after submit', done => {
+    render({}, true);
+    const title = component.find('#title').at(0);
+    expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
+    component.find(LocalForm).simulate('submit', { title: 'test' });
+    request.then(uploadCompletePromise => {
+      uploadCompletePromise.promise.then(() => {
+        const title1 = component.find('#title').at(0);
+        expect(title1.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
+        expect(title1).not.toEqual(title);
+        done();
+      });
+    });
+  });
+
   it('should enable remote captcha', () => {
     render({ remote: true });
     expect(component).toMatchSnapshot();
