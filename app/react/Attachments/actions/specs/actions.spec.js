@@ -7,6 +7,7 @@ import { mockID } from 'shared/uniqueID.js';
 import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import { NOTIFY } from 'app/Notifications/actions/actionTypes';
 import * as actions from '../actions';
 import * as types from '../actionTypes';
 
@@ -52,6 +53,13 @@ describe('Attachments actions', () => {
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 55 },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 65 },
         {
+          type: NOTIFY,
+          notification: {
+            message: 'Attachment uploaded',
+            type: 'success',
+          },
+        },
+        {
           type: types.ATTACHMENT_COMPLETE,
           entity: 'sharedId',
           file: { text: 'file' },
@@ -66,7 +74,7 @@ describe('Attachments actions', () => {
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });
       mockUpload.emit('response', { text: '{"text": "file"}' });
-      expect(store.getActions()).toEqual(expectedActions);
+      expect(store.getActions()).toMatchObject(expectedActions);
     });
   });
 
