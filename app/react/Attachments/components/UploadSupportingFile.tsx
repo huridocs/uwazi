@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Translate } from 'app/I18N';
@@ -21,6 +21,12 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
   const closeModal = () => setModalOpen(false);
 
   const getPercentage = progress.get(entitySharedId);
+
+  useEffect(() => {
+    if (getPercentage) {
+      closeModal();
+    }
+  }, [progress]);
 
   return (
     <>
