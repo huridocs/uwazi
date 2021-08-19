@@ -114,7 +114,7 @@ module.exports = production => {
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
         ],
       }),
-      new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
+      new BundleAnalyzerPlugin({ analyzerMode: 'disabled' }), // set to static to see the analyzer
     ],
   };
 };
