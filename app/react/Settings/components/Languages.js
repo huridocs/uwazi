@@ -14,7 +14,7 @@ export class Languages extends Component {
     return (
       <span>
         {t('System', 'Default language')}
-        <Tip>
+        <Tip position="right">
           This language will be used as default translation when adding new languages, and the
           default language for the site when no other language has been selected.
         </Tip>
