@@ -77,6 +77,13 @@ header {
   }
 }
 
+@media(max-width: 1023px) {
+  .mobile-menuActions {
+    position: absolute;
+    bottom: 0px;
+  }
+}
+
 .menuNav {
   padding: 0;
   margin: 0;
@@ -112,13 +119,24 @@ header {
     padding: 0;
     margin: 0;
     @media(min-width: 1024px) {
-      overflow: hidden;
+      // overflow: hidden;
       white-space: nowrap;
     }
   }
 }
 
+.menuItems {
+  @media(max-width: 1023px) {
+    max-height: 80%;
+    overflow: scroll;
+  }
+}
+
 .menuNav-list {
+  @media(max-width: 1023px) {
+    display: flex;
+    flex-direction: column;
+  }
   list-style: none;
   padding: 0;
   margin: 0;
@@ -132,6 +150,31 @@ header {
     display: inline-block;
     width: auto;
     min-width: $header-height;
+
+    .mobile {
+      display: none;
+    }
+  }
+  @media(max-width: 1023px) {
+    .mobile {
+      width: 100%;
+      padding-left: 70px;
+      display: flex;
+      flex-direction: column;
+      background-color: inherit;
+      box-shadow: none;
+      border: 0;
+      position: relative;
+      li {
+        a {
+          color: white;
+          &:hover {
+            background: inherit;
+            border-bottom: $c-white solid 1px;
+          }
+        }
+      }
+    }
   }
 
   &:hover .tab-link-tooltip{
@@ -229,5 +272,25 @@ header {
 
   .menuNav-btn {
     font-size: $f-size-sm;
+  }
+}
+.hide {
+  display: none;
+}
+
+.dropdown-menu {
+  li {
+    a {
+      display: flex;
+      justify-content: flex-start;
+      width: auto;
+      min-width: 100px;
+      padding: 12px;
+      height: 40px;
+
+      &:hover {
+        background: #F8F8F8;
+      }
+    }
   }
 }

@@ -5,12 +5,18 @@ import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { editLink } from 'app/Settings/actions/uiActions';
-import { removeLink } from 'app/Settings/actions/navlinksActions';
-import ShowIf from 'app/App/ShowIf';
+import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
 import { Icon } from 'UI';
+import ShowIf from 'app/App/ShowIf';
 
+const groupStyles = {
+  paddingRight: '0px',
+  display: 'flex',
+};
+
+const linkStyles = {
+  display: 'flex',
+};
 export const LinkSource = {
   beginDrag(props) {
     return {
@@ -66,18 +72,17 @@ export const LinkTarget = {
     monitor.getItem().index = hoverIndex;
   },
 };
-
 export class NavlinkForm extends Component {
   render() {
     const {
       link,
+      links,
       index,
       isDragging,
       connectDragPreview,
       connectDragSource,
       connectDropTarget,
       formState,
-      uiState,
     } = this.props;
     let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
@@ -90,58 +95,119 @@ export class NavlinkForm extends Component {
     return connectDragPreview(
       connectDropTarget(
         <li className={className}>
-          <div>
-            {connectDragSource(
-              <span className="property-name">
-                <Icon icon="bars" className="reorder" />
-                &nbsp;
-                <Icon icon="link" />
-                &nbsp;&nbsp;
-                {link.title && link.title.trim().length ? link.title : <em>no title</em>}
-              </span>
-            )}
-          </div>
-          <div>
-            <button
-              type="button"
-              className="btn btn-default btn-xs property-edit"
-              onClick={() => this.props.editLink(link.localID)}
-            >
-              <Icon icon="pencil-alt" /> Edit
-            </button>
-            <button
-              type="button"
-              className="btn btn-danger btn-xs property-remove"
-              onClick={() => this.props.removeLink(index)}
-            >
-              <Icon icon="trash-alt" /> Delete
-            </button>
-          </div>
-
-          <ShowIf if={uiState.get('editingLink') === link.localID}>
-            <div className="propery-form expand">
-              <div>
-                <div className="row">
-                  <div className="col-sm-4">
-                    <div className={titleClass}>
-                      <span className="input-group-addon">Title</span>
-                      <Field model={`settings.navlinksData.links[${index}].title`}>
-                        <input className="form-control" />
-                      </Field>
+          <div className="propery-form expand">
+            <div>
+              <div className="row">
+                <div className="col-sm-12">
+                  <div className="row">
+                    <div
+                      className={link.type === 'group' ? 'col-sm-11' : 'col-sm-3'}
+                      style={link.type === 'group' ? groupStyles : linkStyles}
+                    >
+                      {connectDragSource(
+                        <span
+                          className="property-name"
+                          style={{ paddingRight: '10px', width: '70px' }}
+                        >
+                          <Icon icon="bars" className="reorder" />
+                          &nbsp;
+                          <Icon icon={link.type === 'group' ? 'caret-square-down' : 'link'} />
+                        </span>
+                      )}
+                      <div className={`${titleClass} input-group-width`}>
+                        <span className="input-group-addon">Title</span>
+                        <Field model={`settings.navlinksData.links[${index}].title`}>
+                          <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
+                        </Field>
+                      </div>
+                    </div>
+                    <ShowIf if={link.type !== 'group'}>
+                      <div className="col-sm-8" style={{ paddingRight: '0px' }}>
+                        <div className="input-group">
+                          <span className="input-group-addon">URL</span>
+                          <Field model={`settings.navlinksData.links[${index}].url`}>
+                            <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
+                          </Field>
+                        </div>
+                      </div>
+                    </ShowIf>
+                    <div className="col-sm-1">
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-xs property-remove, menu-delete-button"
+                        style={{ marginLeft: '4px' }}
+                        onClick={() => this.props.removeLink(index)}
+                      >
+                        <Icon icon="trash-alt" /> Delete
+                      </button>
                     </div>
                   </div>
-                  <div className="col-sm-8">
-                    <div className="input-group">
-                      <span className="input-group-addon">URL</span>
-                      <Field model={`settings.navlinksData.links[${index}].url`}>
-                        <input className="form-control" />
-                      </Field>
-                    </div>
+                  <div className="row">
+                    <ShowIf if={link.type === 'group'}>
+                      <div style={{ paddingLeft: '80px' }}>
+                        <div className="row">
+                          <div className="col-sm-12">
+                            {links[index].sublinks?.map((_, i) => (
+                              <div
+                                className="row"
+                                style={{ paddingBottom: '5px', paddingTop: '5px' }}
+                                key={i}
+                              >
+                                <div className="col-sm-3" style={{ display: 'flex' }}>
+                                  <span style={{ padding: '5px 10px 0px 0px' }}>
+                                    <Icon icon="link" />
+                                  </span>
+                                  <div className={`${titleClass} input-group-width`}>
+                                    <span className="input-group-addon">Title</span>
+                                    <Field
+                                      model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
+                                    >
+                                      <input className="form-control" style={{ width: '100%' }} />
+                                    </Field>
+                                  </div>
+                                </div>
+                                <div className="col-sm-8">
+                                  <div className="input-group">
+                                    <span className="input-group-addon">URL</span>
+                                    <Field
+                                      model={`settings.navlinksData.links[${index}].sublinks[${i}].url`}
+                                    >
+                                      <input className="form-control" />
+                                    </Field>
+                                  </div>
+                                </div>
+                                <div className="col-sm-1" style={{ paddingLeft: '0px' }}>
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger btn-xs property-remove, menu-delete-button"
+                                    onClick={() => this.props.removeGroupLink(index, i)}
+                                  >
+                                    <Icon icon="trash-alt" /> Delete
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                            <div className="row">
+                              <div className="col-sm-12">
+                                <button
+                                  className="menu-link-group-button"
+                                  type="button"
+                                  onClick={this.props.addGroupLink.bind(this, links, index)}
+                                >
+                                  <Icon icon="link" />
+                                  &nbsp;Add link
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ShowIf>
                   </div>
                 </div>
               </div>
             </div>
-          </ShowIf>
+          </div>
         </li>
       )
     );
@@ -156,11 +222,12 @@ NavlinkForm.propTypes = {
   isDragging: PropTypes.bool.isRequired,
   id: PropTypes.any.isRequired,
   link: PropTypes.object.isRequired,
+  links: PropTypes.array.isRequired,
   sortLink: PropTypes.func.isRequired,
-  editLink: PropTypes.func,
   removeLink: PropTypes.func,
   formState: PropTypes.object.isRequired,
-  uiState: PropTypes.object.isRequired,
+  addGroupLink: PropTypes.func.isRequired,
+  removeGroupLink: PropTypes.func,
 };
 
 const dropTarget = DropTarget('LINK', LinkTarget, connectDND => ({
@@ -174,11 +241,15 @@ const dragSource = DragSource('LINK', LinkSource, (connectDND, monitor) => ({
 }))(dropTarget);
 
 export function mapStateToProps({ settings }) {
-  return { formState: settings.navlinksFormState, uiState: settings.uiState };
+  const { links } = settings.navlinksData;
+  return {
+    formState: settings.navlinksFormState,
+    links,
+  };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ editLink, removeLink }, dispatch);
+  return bindActionCreators({ removeLink, addGroupLink, removeGroupLink }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(dragSource);
