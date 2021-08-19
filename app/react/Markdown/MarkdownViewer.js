@@ -58,7 +58,7 @@ class MarkdownViewer extends Component {
 
   customComponent(type, config, index, children) {
     try {
-      if (typeof type === 'function') {
+      if (typeof type === 'function' || typeof type === 'object') {
         const Element = type;
         return (
           <Element {...config} key={index}>
