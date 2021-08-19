@@ -25,7 +25,7 @@ exports[`Languages should render Languages component 1`] = `
         Default language
         <Tip
           icon="question-circle"
-          position=""
+          position="right"
         >
           This language will be used as default translation when adding new languages, and the default language for the site when no other language has been selected.
         </Tip>
