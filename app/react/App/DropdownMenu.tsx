@@ -4,12 +4,12 @@ import React, { useRef, useState, useCallback } from 'react';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { IImmutable } from 'shared/types/Immutable';
 
-type ISublink = {
+export type ISublink = {
   title: string;
   url: string;
 };
 
-type ILink = {
+export type ILink = {
   title: string;
   url: string;
   sublinks: [ISublink];
