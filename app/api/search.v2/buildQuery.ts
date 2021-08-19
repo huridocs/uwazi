@@ -10,22 +10,28 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
     _source: {
       includes: query.fields || defaultFields,
     },
+    // const match = { range: {} };
+    // match.range[`${path}.${filter.name}`] = { gte: filter.value.from, lte: filter.value.to };
+    // return match;
     query: {
-      // Move inside the rest of the query and implement ranges
-      // constant_score: {
-      //   filter: {
-      //     term: {
-      //       'metadata.numericPropertyName.value': 42,
-      //     },
-      //   },
-      // },
       bool: {
         filter: [
           ...Object.keys(query.filter || {})
             .filter(filter => filter.startsWith('metadata.'))
-            .map(key => ({
-              term: { [`${key}.value`]: query.filter?.[key] },
-            })),
+            .map(key => {
+              if (Object.keys(query.filter?.[key]).includes('from')) {
+                return {
+                  range: {
+                    [`${key}.value`]: { lte: query.filter?.[key].to },
+                  },
+                };
+              }
+              return {
+                term: {
+                  [`${key}.value`]: query.filter[key],
+                },
+              };
+            }),
           query.filter?.sharedId && {
             terms: {
               'sharedId.raw': [query.filter.sharedId],

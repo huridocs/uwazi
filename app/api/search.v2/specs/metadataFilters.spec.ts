@@ -118,6 +118,9 @@ describe('Metadata filters', () => {
             multiselect: [factory.metadataValue('thesaurusId2')],
             numericPropertyName: [factory.metadataValue(13)],
           }),
+          factory.entity('Entity 3', 'templateA', {
+            numericPropertyName: [factory.metadataValue(5)],
+          }),
         ],
       },
       'search.v2.metadata_filters'
@@ -125,13 +128,13 @@ describe('Metadata filters', () => {
 
     const query = {
       filter: {
-        'metadata.numeric': 42,
+        'metadata.numericPropertyName': 42,
       },
     };
 
     const query2 = {
       filter: {
-        'metadata.numeric': { from: 15, to: 25 },
+        'metadata.numericPropertyName': { from: 10, to: 25 },
       },
     };
 
@@ -139,6 +142,14 @@ describe('Metadata filters', () => {
       .get('/api/v2/entities')
       .query(query)
       .expect(200);
+
     expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
+
+    const { body: newBody } = await request(app)
+      .get('/api/v2/entities')
+      .query(query2)
+      .expect(200);
+
+    expect(newBody.data).toMatchObject([{ title: 'Entity 2' }]);
   });
 });
