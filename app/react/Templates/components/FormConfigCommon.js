@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 
 import Tip from 'app/Layout/Tip';
 import PropertyConfigOption from 'app/Templates/components/PropertyConfigOption';
+import { Translate } from 'app/I18N/components/Translate';
+import { t } from 'app/I18N';
 import PrioritySortingLabel from './PrioritySortingLabel';
 
 export class FormConfigCommon extends Component {
@@ -51,7 +53,7 @@ export class FormConfigCommon extends Component {
             label="Generated ID"
             model={`template.data.commonProperties[${this.getZeroIndex()}].generatedId`}
           >
-            <Tip>The title will be an auto-generated identification by default.</Tip>
+            <Tip>{t('System', 'A generated ID will be the default title.')}</Tip>
           </PropertyConfigOption>
         )}
       </div>
