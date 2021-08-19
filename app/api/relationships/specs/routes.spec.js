@@ -68,25 +68,35 @@ describe('relationships routes', () => {
   });
 
   describe('GET by_document', () => {
-    it('should return relationships.getByDocument', async () => {
-      const req = {
-        query: { sharedId: 'documentId', file: 'fileid' },
-        language: 'es',
-        user: { role: 'admin' },
-      };
+    it.each`
+      user                        | unpublished | unrestricted
+      ${{ role: 'admin' }}        | ${true}     | ${true}
+      ${{ role: 'editor' }}       | ${true}     | ${true}
+      ${{ role: 'collaborator' }} | ${true}     | ${false}
+      ${undefined}                | ${false}    | ${false}
+    `(
+      'should return relationships.getByDocument given $user',
+      async ({ user, unpublished, unrestricted }) => {
+        const req = {
+          query: { sharedId: 'documentId', file: 'fileid' },
+          language: 'es',
+          user,
+        };
 
-      spyOn(relationships, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
+        spyOn(relationships, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
 
-      const response = await routes.get('/api/references/by_document/', req);
-      expect(relationships.getByDocument).toHaveBeenCalledWith(
-        'documentId',
-        'es',
-        true,
-        'fileid',
-        undefined
-      );
-      expect(response).toBe('byDocument');
-    });
+        const response = await routes.get('/api/references/by_document/', req);
+        expect(relationships.getByDocument).toHaveBeenCalledWith(
+          'documentId',
+          'es',
+          unpublished,
+          'fileid',
+          undefined,
+          unrestricted
+        );
+        expect(response).toBe('byDocument');
+      }
+    );
   });
 
   describe('GET group_by_connection', () => {
