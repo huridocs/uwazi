@@ -10,6 +10,7 @@ import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 import { StateSelector } from 'app/Review/components/StateSelector';
 import { createSelector } from 'reselect';
+import { Translate } from 'app/I18N';
 
 import FormConfigInput from './FormConfigInput';
 import FormConfigSelect from './FormConfigSelect';
@@ -119,13 +120,16 @@ export class MetadataProperty extends Component {
         <div className="list-group-item-actions">
           {this.props.isLabelDuplicated && (
             <span className="validation-error">
-              <Icon icon="exclamation-triangle" /> Duplicated label
+              <Icon icon="exclamation-triangle" /> <Translate>Duplicated label</Translate>
             </span>
           )}
           {this.props.isRelationDuplicated && (
             <span className="validation-error">
-              <Icon icon="exclamation-triangle" /> Cannot use 'any entity or document' if another
-              relationship of the same type is already with a specific entity.
+              <Icon icon="exclamation-triangle" />
+              <Translate>
+                Cannot use &apos;any entity or document&apos; if another relationship of the same
+                type is already with a specific entity.
+              </Translate>
             </span>
           )}
           <button
@@ -133,7 +137,7 @@ export class MetadataProperty extends Component {
             className="btn btn-default btn-xs property-edit"
             onClick={() => this.props.editProperty(beingEdited ? null : localID)}
           >
-            <Icon icon="pencil-alt" /> Edit
+            <Icon icon="pencil-alt" /> <Translate>Edit</Translate>
           </button>
           {!this.props.isCommonProperty && (
             <button
@@ -141,7 +145,7 @@ export class MetadataProperty extends Component {
               className="btn btn-danger btn-xs property-remove"
               onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
             >
-              <Icon icon="trash-alt" /> Delete
+              <Icon icon="trash-alt" /> <Translate>Delete</Translate>
             </button>
           )}
         </div>
