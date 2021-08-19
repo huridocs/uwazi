@@ -247,7 +247,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     if (
       !aggregations[key].buckets ||
       aggregations[key].type === 'nested' ||
-      ['_types', 'generatedToc', 'permissions', '_published'].includes(key)
+      ['_types', 'generatedToc', 'permissions', '_published', 'canread', 'canwrite'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
@@ -305,6 +305,21 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     //permissions
     if (aggregationKey === 'permissions') {
+      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
+        key: b.key,
+        filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
+      }));
+    }
+
+    //individual permissions
+    if (aggregationKey === 'canread') {
+      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
+        key: b.key,
+        filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
+      }));
+    }
+
+    if (aggregationKey === 'canwrite') {
       aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
         key: b.key,
         filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
@@ -667,6 +682,10 @@ const search = {
 
     if (query.aggregatePermissionsByLevel) {
       queryBuilder.permissionsLevelAgreggations();
+    }
+
+    if (query.aggregatePermissionsByUsers) {
+      queryBuilder.permissionsUsersAgreggations();
     }
 
     if (query.aggregateGeneratedToc) {

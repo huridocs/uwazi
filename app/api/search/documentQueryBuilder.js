@@ -8,6 +8,7 @@ import {
   generatedTocAggregations,
   permissionsLevelAgreggations,
   publishingStatusAgreggations,
+  permissionsUsersAgreggations,
 } from './metadataAggregations';
 
 const nested = (filters, path) => ({
@@ -344,6 +345,19 @@ export default function() {
 
     permissionsLevelAgreggations() {
       baseQuery.aggregations.all.aggregations.permissions = permissionsLevelAgreggations(baseQuery);
+    },
+
+    permissionsUsersAgreggations() {
+      if (permissionsContext.getUserInContext()?.role !== 'admin') return;
+
+      baseQuery.aggregations.all.aggregations.canread = permissionsUsersAgreggations(
+        baseQuery,
+        'read'
+      );
+      baseQuery.aggregations.all.aggregations.canwrite = permissionsUsersAgreggations(
+        baseQuery,
+        'write'
+      );
     },
 
     aggregations(properties, dictionaries) {
