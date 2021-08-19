@@ -36,7 +36,7 @@ describe('Settings/Navlinks actions', () => {
 
   describe('addLink', () => {
     it('should push a new item with default naming', () => {
-      const expected = { title: 'Item 2', localID: 'unique_id' };
+      const expected = { title: 'Item 2', localID: 'unique_id', type: 'link', sublinks: [] };
       actions.addLink([{ _id: 'existing link' }])(dispatch);
       expect(formActions.push).toHaveBeenCalledWith('settings.navlinksData.links', expected);
       expect(uiActions.editLink).toHaveBeenCalledWith('unique_id');
