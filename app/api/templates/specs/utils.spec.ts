@@ -1,17 +1,55 @@
 import db from 'api/utils/testing_db';
 import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
+import { files } from 'api/files';
 import {
   generateIds,
   getUpdatedNames,
   getDeletedProperties,
   generateNamesAndIds,
   PropertyOrThesaurusSchema,
+  removeExtractedMetadata,
 } from '../utils';
 
 describe('templates utils', () => {
+  jest.spyOn(files, 'get');
+  jest.spyOn(files, 'save');
+
   beforeEach(async () => {
-    await db.clearAllAndLoad({});
+    await db.clearAllAndLoad({
+      files: [
+        {
+          filename: 'file1.pdf',
+          extractedMetadata: [
+            {
+              _id: '1234',
+              name: 'property_a',
+              selection: { text: 'sample text of file 1 for propA' },
+            },
+            {
+              _id: '4567',
+              name: 'property_b',
+              selection: { text: 'sample text of file 1 for propB' },
+            },
+          ],
+        },
+        {
+          filename: 'file2.pdf',
+          extractedMetadata: [
+            {
+              _id: '1234',
+              name: 'property_a',
+              selection: { text: 'sample text of file 2 for propA' },
+            },
+            {
+              _id: '4567',
+              name: 'property_b',
+              selection: { text: 'sample text of file 2 for propA' },
+            },
+          ],
+        },
+      ],
+    });
   });
 
   afterAll(async () => db.disconnect());
@@ -184,6 +222,20 @@ describe('templates utils', () => {
 
       const result = getDeletedProperties(oldProperties, newProperties);
       expect(result).toEqual(['boromir']);
+    });
+  });
+
+  describe('removeExtractedMetadata()', () => {
+    it('should work', async () => {
+      const oldProps: PropertySchema[] = [
+        { _id: '1234', localID: '1', label: 'label', name: 'property_a', type: 'text' },
+        { _id: '4567', localID: '2', label: 'label', name: 'property_b', type: 'markdown' },
+      ];
+      const newProps: PropertySchema[] = [
+        { _id: '1234', localID: '1', label: 'label', name: 'property_a', type: 'text' },
+      ];
+      await removeExtractedMetadata(oldProps, newProps);
+      expect(files.get).toHaveBeenLastCalledWith({ 'extractedMetadata._id': '4567' }, '+fullText');
     });
   });
 });

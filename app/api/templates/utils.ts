@@ -1,7 +1,9 @@
 import uuid from 'node-uuid';
 import { ObjectID } from 'mongodb';
+import { differenceBy, remove } from 'lodash';
 
 import settings from 'api/settings/settings';
+import { files } from 'api/files';
 import propertiesHelper from 'shared/comonProperties';
 import { safeName as sharedSafeName } from 'shared/propertyNames';
 import { ensure } from 'shared/tsUtils';
@@ -144,3 +146,31 @@ export function getRenamedTitle(
   const newTitle = ensure<PropertySchema>(newCommonProperties.find(p => p.name === 'title'));
   return oldTitle.label !== newTitle.label ? [oldTitle.label] : [];
 }
+
+export const removeExtractedMetadata = async (
+  oldProperties: PropertySchema[] = [],
+  newProperties: PropertySchema[] = []
+) => {
+  const hasRemovedProperties = oldProperties.length > newProperties.length;
+  let removedProperties: PropertySchema[] = [];
+
+  if (hasRemovedProperties) {
+    const difference = differenceBy(oldProperties, newProperties, 'localID');
+    removedProperties = difference.filter(property =>
+      ['text', 'markdown', 'numeric', 'date'].includes(property.type)
+    );
+  }
+
+  if (removedProperties.length > 0) {
+    await Promise.all(
+      removedProperties.map(async property => {
+        const affectedFiles = await files.get(
+          { 'extractedMetadata._id': property._id?.toString() },
+          '+fullText'
+        );
+      })
+    );
+  }
+
+  return null;
+};
