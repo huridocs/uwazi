@@ -10,46 +10,14 @@ import {
   PropertyOrThesaurusSchema,
   removeExtractedMetadata,
 } from '../utils';
+import fixtures from './fixtures';
 
 describe('templates utils', () => {
   jest.spyOn(files, 'get');
   jest.spyOn(files, 'save');
 
   beforeEach(async () => {
-    await db.clearAllAndLoad({
-      files: [
-        {
-          filename: 'file1.pdf',
-          extractedMetadata: [
-            {
-              _id: '1234',
-              name: 'property_a',
-              selection: { text: 'sample text of file 1 for propA' },
-            },
-            {
-              _id: '4567',
-              name: 'property_b',
-              selection: { text: 'sample text of file 1 for propB' },
-            },
-          ],
-        },
-        {
-          filename: 'file2.pdf',
-          extractedMetadata: [
-            {
-              _id: '1234',
-              name: 'property_a',
-              selection: { text: 'sample text of file 2 for propA' },
-            },
-            {
-              _id: '4567',
-              name: 'property_b',
-              selection: { text: 'sample text of file 2 for propA' },
-            },
-          ],
-        },
-      ],
-    });
+    await db.clearAllAndLoad({ files: fixtures.files });
   });
 
   afterAll(async () => db.disconnect());
@@ -226,7 +194,7 @@ describe('templates utils', () => {
   });
 
   describe('removeExtractedMetadata()', () => {
-    it('should work', async () => {
+    it('should remove deleted properties from extracted metadata on files', async () => {
       const oldProps: PropertySchema[] = [
         { _id: '1234', localID: '1', label: 'label', name: 'property_a', type: 'text' },
         { _id: '4567', localID: '2', label: 'label', name: 'property_b', type: 'markdown' },
@@ -234,8 +202,31 @@ describe('templates utils', () => {
       const newProps: PropertySchema[] = [
         { _id: '1234', localID: '1', label: 'label', name: 'property_a', type: 'text' },
       ];
+
       await removeExtractedMetadata(oldProps, newProps);
       expect(files.get).toHaveBeenLastCalledWith({ 'extractedMetadata._id': '4567' }, '+fullText');
+      expect(files.save).toHaveBeenCalledWith([
+        {
+          filename: 'file1.pdf',
+          extractedMetadata: [
+            {
+              _id: '1234',
+              name: 'property_a',
+              selection: { text: 'sample text of file 1 for propA' },
+            },
+          ],
+        },
+        {
+          filename: 'file2.pdf',
+          extractedMetadata: [
+            {
+              _id: '1234',
+              name: 'property_a',
+              selection: { text: 'sample text of file 2 for propA' },
+            },
+          ],
+        },
+      ]);
     });
   });
 });

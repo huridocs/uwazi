@@ -168,6 +168,7 @@ export const removeExtractedMetadata = async (
           { 'extractedMetadata._id': property._id?.toString() },
           '+fullText'
         );
+        console.log(affectedFiles);
       })
     );
   }

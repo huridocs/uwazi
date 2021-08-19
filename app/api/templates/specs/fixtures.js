@@ -151,6 +151,38 @@ export default {
     { _id: thesauriId1, name: 'options' },
     { _id: thesauriId2, name: 'options' },
   ],
+  files: [
+    {
+      filename: 'file1.pdf',
+      extractedMetadata: [
+        {
+          _id: '1234',
+          name: 'property_a',
+          selection: { text: 'sample text of file 1 for propA' },
+        },
+        {
+          _id: '4567',
+          name: 'property_b',
+          selection: { text: 'sample text of file 1 for propB' },
+        },
+      ],
+    },
+    {
+      filename: 'file2.pdf',
+      extractedMetadata: [
+        {
+          _id: '1234',
+          name: 'property_a',
+          selection: { text: 'sample text of file 2 for propA' },
+        },
+        {
+          _id: '4567',
+          name: 'property_b',
+          selection: { text: 'sample text of file 2 for propA' },
+        },
+      ],
+    },
+  ],
 };
 
 export {
