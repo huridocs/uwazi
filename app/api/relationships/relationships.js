@@ -170,43 +170,49 @@ export default {
     return model.get({ hub: { $in: hubsIds } });
   },
 
-  getByDocument(sharedId, language, unpublished = true, file, onlyTextReferences = false) {
+  getByDocument(
+    sharedId,
+    language,
+    unpublished = true,
+    file,
+    onlyTextReferences = false,
+    unrestricted = true
+  ) {
     return this.getDocumentHubs(sharedId, file, onlyTextReferences).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
-      return entities
-        .getUnrestrictedWithDocuments({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
-          'template',
-          'creationDate',
-          'title',
-          'file',
-          'sharedId',
-          'uploaded',
-          'processed',
-          'type',
-          'published',
-          'metadata',
-        ])
-        .then(_connectedDocuments => {
-          const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
-            res[doc.sharedId] = doc;
-            return res;
-          }, {});
+      const method = unrestricted ? 'getUnrestrictedWithDocuments' : 'get';
+      return entities[method]({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
+        'template',
+        'creationDate',
+        'title',
+        'file',
+        'sharedId',
+        'uploaded',
+        'processed',
+        'type',
+        'published',
+        'metadata',
+      ]).then(_connectedDocuments => {
+        const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
+          res[doc.sharedId] = doc;
+          return res;
+        }, {});
 
-          const relationshipsCollection = processRelationshipCollection(
-            _relationships,
-            connectedDocuments,
-            sharedId,
-            unpublished
-          );
+        const relationshipsCollection = processRelationshipCollection(
+          _relationships,
+          connectedDocuments,
+          sharedId,
+          unpublished
+        );
 
-          return relationshipsCollection;
-        });
+        return relationshipsCollection;
+      });
     });
   },
 
   getGroupsByConnection(id, language, options = {}) {
     return Promise.all([
-      this.getByDocument(id, language),
+      this.getByDocument(id, language, undefined, undefined, undefined, false),
       templatesAPI.get(),
       relationtypes.get(),
     ]).then(([references, templates, relationTypes]) => {
