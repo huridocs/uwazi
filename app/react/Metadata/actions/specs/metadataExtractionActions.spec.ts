@@ -59,7 +59,8 @@ describe('metadataExtractionActions', () => {
           name: 'fieldName',
           selection: { selectedText: 'text selected by the user on the file' },
           timestamp: Date(),
-        }
+        },
+        'propertyID'
       );
     });
   });

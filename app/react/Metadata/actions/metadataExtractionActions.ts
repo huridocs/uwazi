@@ -30,7 +30,7 @@ const updateSelection = (
     timestamp: Date(),
     selection: selected,
   };
-  return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data);
+  return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data, 'propertyID');
 };
 
 const formFieldUpdater = (value: string, model: string, fieldType?: string) => {

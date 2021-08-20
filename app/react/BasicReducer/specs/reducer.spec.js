@@ -106,6 +106,28 @@ describe('BasicReducer', () => {
         },
       });
     });
+    it('should update passed value in a list in a nested key at the namespace, by a custom index', () => {
+      state = Immutable({
+        nested: {
+          key: [
+            { _id: 1, title: 'test' },
+            { customID: 1, title: 'test2' },
+          ],
+        },
+      });
+      const newState = reducer(
+        state,
+        actions.updateIn('1', ['nested', 'key'], { customID: 1, title: 'changed test' }, 'customID')
+      );
+      expect(newState.toJS()).toEqual({
+        nested: {
+          key: [
+            { _id: 1, title: 'test' },
+            { customID: 1, title: 'changed test' },
+          ],
+        },
+      });
+    });
     describe('when value does not exist', () => {
       it('should push it to the collection at the specified key path', () => {
         const newState = reducer(

@@ -15,6 +15,7 @@ const CONCAT_IN = 'CONCAT_IN';
 export default function createReducer(namespace, defaultValue) {
   return (currentState = defaultValue, action = {}) => {
     let index;
+    let customIndex;
 
     switch (action.type) {
       case `${namespace}/${SET}`:
@@ -54,7 +55,13 @@ export default function createReducer(namespace, defaultValue) {
         return currentState.set(index, Immutable.fromJS(action.value));
 
       case `${namespace}/${UPDATE_IN}`:
-        index = currentState.getIn(action.key).findIndex(o => o.get('_id') === action.value._id);
+        index = currentState
+          .getIn(action.key)
+          .findIndex(
+            o =>
+              o.get(action.customIndex || '_id') ===
+              (action.customIndex ? action.value[action.customIndex] : action.value._id)
+          );
         if (index === -1) {
           return currentState.updateIn(action.key, collection =>
             collection.push(Immutable.fromJS(action.value))
@@ -75,11 +82,12 @@ export function update(namespace, value) {
   };
 }
 
-export function updateIn(namespace, key, value) {
+export function updateIn(namespace, key, value, customIndex = undefined) {
   return {
     type: `${namespace}/${UPDATE_IN}`,
     key,
     value,
+    customIndex,
   };
 }
 
