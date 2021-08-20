@@ -25,7 +25,7 @@ const updateSelection = (
     selected.text = dateToMilliseconds(selection.text).toString();
   }
   const data = {
-    ...(fieldId && { _id: fieldId }),
+    ...(fieldId && { propertyID: fieldId }),
     name: fieldName,
     timestamp: Date(),
     selection: selected,

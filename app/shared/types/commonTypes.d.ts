@@ -93,7 +93,7 @@ export interface TocSchema {
 }
 
 export interface ExtractedMetadataSchema {
-  _id?: string | ObjectId;
+  propertyID?: string;
   name?: string;
   timestamp?: string;
   selection?: {

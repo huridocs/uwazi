@@ -55,7 +55,7 @@ describe('metadataExtractionActions', () => {
         'documentViewer.metadataExtraction',
         ['selections'],
         {
-          _id: 'someFieldId',
+          propertyID: 'someFieldId',
           name: 'fieldName',
           selection: { selectedText: 'text selected by the user on the file' },
           timestamp: Date(),
