@@ -50,6 +50,11 @@ export interface SettingsLinkSchema {
   _id?: ObjectIdSchema;
   title?: string;
   url?: string;
+  sublinks?: {
+    title?: string;
+    [k: string]: unknown | undefined;
+  }[];
+  type?: string;
 }
 
 export interface Settings {
