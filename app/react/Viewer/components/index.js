@@ -1,3 +1,1 @@
-import Document from './Document.js';
-
-export { Document };
+export { default as Document } from './Document.js';
