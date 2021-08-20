@@ -13,6 +13,7 @@ import { t } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
 
 import NavlinkForm from './NavlinkForm';
+import './styles/menu.scss';
 
 export class NavlinksSettings extends Component {
   componentDidMount() {
@@ -60,12 +61,29 @@ export class NavlinksSettings extends Component {
                   sortLink={this.props.sortLink}
                 />
               ))}
+              <li className="list-group-item">
+                <div className="footer-buttons">
+                  <button
+                    type="button"
+                    className="menu-link-group-button"
+                    id="main-add-link-button"
+                    onClick={this.props.addLink.bind(this, links, 'link')}
+                  >
+                    <Icon icon="link" />
+                    &nbsp;{t('System', 'Add link')}
+                  </button>
+                  <button
+                    type="button"
+                    className="menu-link-group-button"
+                    onClick={this.props.addLink.bind(this, links, 'group')}
+                  >
+                    <Icon icon="caret-square-down" />
+                    &nbsp;{t('System', 'Add group')}
+                  </button>
+                </div>
+              </li>
             </ul>
             <div className="settings-footer">
-              <a className="btn btn-primary" onClick={this.props.addLink.bind(this, links)}>
-                <Icon icon="plus" />
-                <span className="btn-label">{t('System', 'Add link')}</span>
-              </a>
               <button
                 type="submit"
                 className="btn btn-success"

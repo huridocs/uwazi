@@ -1,5 +1,4 @@
 import { Field } from 'react-redux-form';
-import { fromJS } from 'immutable';
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -58,13 +57,14 @@ describe('NavlinkForm', () => {
 
     props = {
       link: { localID: 'newLink1' },
+      links: [{ sublinks: [] }, { sublinks: [] }],
       id: 'newLink1',
       index: 1,
-      uiState: fromJS({ editingLink: 0 }),
       formState: { $form: { errors: {} } },
       editLink: jasmine.createSpy('editLink'),
       removeLink: jasmine.createSpy('removeLink'),
       sortLink: jasmine.createSpy('sortLink'),
+      addGroupLink: jasmine.createSpy('addGroupLink'),
       isDragging: false,
       connectDragSource: dragAndDropConnects.connectDragSource,
       connectDropTarget: dragAndDropConnects.connectDropTarget,
@@ -86,18 +86,9 @@ describe('NavlinkForm', () => {
     expect(component.find('li').props().className).toBe('list-group-item dragging');
   });
 
-  it('should have an edit button to activate editing link mode', () => {
-    component
-      .find('button')
-      .first()
-      .props()
-      .onClick();
-    expect(props.editLink).toHaveBeenCalledWith('newLink1');
-  });
-
   it('should have a remove button to remove a link', () => {
     component
-      .find('button')
+      .find('.menu-delete-button')
       .last()
       .props()
       .onClick();
@@ -117,7 +108,7 @@ describe('NavlinkForm', () => {
         .first()
         .parent()
         .props().className
-    ).toBe('input-group');
+    ).toBe('input-group input-group-width');
     expect(
       component
         .find(Field)
@@ -138,7 +129,7 @@ describe('NavlinkForm', () => {
           .first()
           .parent()
           .props().className
-      ).toBe('input-group has-error');
+      ).toBe('input-group has-error input-group-width');
     });
   });
 
@@ -146,10 +137,14 @@ describe('NavlinkForm', () => {
     const settings = {
       navlinksFormState: 'formState',
       uiState: 'uiState',
+      navlinksData: { links: [] },
     };
 
     it('should return the right props', () => {
-      expect(mapStateToProps({ settings })).toEqual({ formState: 'formState', uiState: 'uiState' });
+      expect(mapStateToProps({ settings })).toEqual({
+        formState: 'formState',
+        links: [],
+      });
     });
   });
 });
