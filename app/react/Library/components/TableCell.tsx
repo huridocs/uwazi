@@ -27,9 +27,13 @@ const formatProperty = (prop: FormattedMetadataValue, dateFormat: string | undef
 
   switch (prop.type) {
     case 'date':
-      result = moment(prop.value as string)
-        .utc()
-        .format((dateFormat as string).replace('dd', 'DD').replace('yyyy', 'YYYY'));
+      if (dateFormat) {
+        result = moment(prop.value as string)
+          .utc()
+          .format((dateFormat as string).replace('dd', 'DD').replace('yyyy', 'YYYY'));
+      } else {
+        result = prop.value;
+      }
       break;
     case 'multiselect':
     case 'multidaterange':
