@@ -7,6 +7,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const rootPath = path.join(__dirname, '/../');
+const myArgs = process.argv.slice(2);
+const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -114,7 +116,7 @@ module.exports = production => {
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
         ],
       }),
-      new BundleAnalyzerPlugin({ analyzerMode: 'disabled' }), // set to static to see the analyzer
+      new BundleAnalyzerPlugin({ analyzerMode }),
     ],
   };
 };
