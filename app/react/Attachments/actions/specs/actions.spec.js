@@ -78,6 +78,31 @@ describe('Attachments actions', () => {
     });
   });
 
+  describe('uploadAttachmentFromUrl', () => {
+    it('should post the url and dispatch the upload progress and notification at the finish', () => {
+      spyOn(api, 'post').and.returnValue({ then: cb => cb({ json: { text: 'file' } }) });
+      const expectedActions = [
+        { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
+        { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 100 },
+        {
+          type: types.ATTACHMENT_COMPLETE,
+          entity: 'sharedId',
+          file: { text: 'file' },
+          __reducerKey: 'storeKey',
+        },
+        {
+          type: NOTIFY,
+          notification: {
+            message: 'Attachment uploaded',
+            type: 'success',
+          },
+        },
+      ];
+      store.dispatch(actions.uploadAttachmentFromUrl('sharedId', 'fileName', 'URL', 'storeKey'));
+      expect(store.getActions()).toMatchObject(expectedActions);
+    });
+  });
+
   describe('renameAttachment', () => {
     beforeEach(() => {
       spyOn(api, 'post').and.returnValue({ then: cb => cb({ json: 'file' }) });
