@@ -17,6 +17,7 @@ import {
   getDeletedProperties,
   getUpdatedNames,
   denormalizeInheritedProperties,
+  removeExtractedMetadata,
 } from './utils';
 
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
@@ -170,6 +171,7 @@ export default {
     const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
     await updateTranslation(currentTemplate, template);
     await removeExcludedPropertiesValues(currentTemplate, template);
+    await removeExtractedMetadata(currentTemplate.properties, template.properties);
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
     await entities.updateMetadataProperties(template, currentTemplate, language, {

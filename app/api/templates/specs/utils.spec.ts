@@ -1,5 +1,6 @@
 import db from 'api/utils/testing_db';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 import settings from 'api/settings/settings';
 import { files } from 'api/files';
 import {
@@ -8,19 +9,14 @@ import {
   getDeletedProperties,
   generateNamesAndIds,
   PropertyOrThesaurusSchema,
-  removeExtractedMetadata,
 } from '../utils';
+import templates from '../templates';
 import fixtures from './fixtures';
 
 describe('templates utils', () => {
-  jest.spyOn(files, 'get');
-  jest.spyOn(files, 'save');
-
   beforeEach(async () => {
-    await db.clearAllAndLoad({ files: fixtures.files });
+    await db.clearAllAndLoad({});
   });
-
-  afterAll(async () => db.disconnect());
 
   describe('name generation', () => {
     describe('default name generation', () => {
@@ -192,41 +188,52 @@ describe('templates utils', () => {
       expect(result).toEqual(['boromir']);
     });
   });
+});
 
-  describe('removeExtractedMetadata()', () => {
-    it('should remove deleted properties from extracted metadata on files', async () => {
-      const oldProps: PropertySchema[] = [
-        { _id: '1234', localID: '1', label: 'label', name: 'property_a', type: 'text' },
-        { _id: '4567', localID: '2', label: 'label', name: 'property_b', type: 'markdown' },
-      ];
-      const newProps: PropertySchema[] = [
-        { _id: '1234', localID: '1', label: 'label', name: 'property_a', type: 'text' },
-      ];
+describe('removeExtractedMetadata()', () => {
+  beforeEach(async () => {
+    await db.clearAllAndLoad({ files: fixtures.files, templates: fixtures.templates });
+  });
 
-      await removeExtractedMetadata(oldProps, newProps);
-      expect(files.get).toHaveBeenLastCalledWith({ 'extractedMetadata._id': '4567' }, '+fullText');
-      expect(files.save).toHaveBeenCalledWith([
-        {
-          filename: 'file1.pdf',
-          extractedMetadata: [
-            {
-              _id: '1234',
-              name: 'property_a',
-              selection: { text: 'sample text of file 1 for propA' },
-            },
-          ],
-        },
-        {
-          filename: 'file2.pdf',
-          extractedMetadata: [
-            {
-              _id: '1234',
-              name: 'property_a',
-              selection: { text: 'sample text of file 2 for propA' },
-            },
-          ],
-        },
-      ]);
-    });
+  it('should remove deleted properties from extracted metadata on files', async () => {
+    const templateToUpdate: TemplateSchema = {
+      _id: db.id(),
+      name: 'template_with_extracted_metadata',
+      properties: [
+        { label: 'text', name: 'property_a', type: 'text' },
+        { label: 'link', name: 'property_d', type: 'text' },
+      ],
+    };
+    await templates.save(templateToUpdate, 'en');
+    const response = await files.get();
+
+    console.log(response);
+
+    //   expect((await files.get())[0]).toMatchObject({
+    //     filename: 'file1.pdf',
+    //     extractedMetadata: [
+    //       {
+    //         name: 'property_a',
+    //       },
+    //     ],
+    //   });
+    //   expect((await files.get())[1]).toMatchObject({
+    //     filename: 'file2.pdf',
+    //     extractedMetadata: [
+    //       {
+    //         name: 'property_a',
+    //       },
+    //     ],
+    //   });
+    //   expect((await files.get())[2]).toMatchObject({
+    //     filename: 'file3.pdf',
+    //     extractedMetadata: [
+    //       {
+    //         name: 'property_a',
+    //       },
+    //     ],
+    //   });
   });
 });
+
+afterAll(async () => db.disconnect());

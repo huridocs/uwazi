@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
 import { ObjectID } from 'mongodb';
-import { differenceBy, remove } from 'lodash';
+import { differenceBy } from 'lodash';
 
 import settings from 'api/settings/settings';
 import { files } from 'api/files';
@@ -155,22 +155,28 @@ export const removeExtractedMetadata = async (
   let removedProperties: PropertySchema[] = [];
 
   if (hasRemovedProperties) {
-    const difference = differenceBy(oldProperties, newProperties, 'localID');
+    const difference = differenceBy(oldProperties, newProperties, 'name');
     removedProperties = difference.filter(property =>
       ['text', 'markdown', 'numeric', 'date'].includes(property.type)
     );
   }
-
   if (removedProperties.length > 0) {
-    await Promise.all(
-      removedProperties.map(async property => {
-        const affectedFiles = await files.get(
-          { 'extractedMetadata._id': property._id?.toString() },
-          '+fullText'
-        );
-        console.log(affectedFiles);
-      })
-    );
+    return removedProperties.reduce(async (previousPromise: Promise<void>, property) => {
+      await previousPromise;
+      const affectedFiles = await files.get({
+        'extractedMetadata.propertyID': property._id?.toString(),
+      });
+
+      await affectedFiles.reduce(async (prevPromise: Promise<void>, file) => {
+        await prevPromise;
+        await files.save({
+          ...file,
+          extractedMetadata: file.extractedMetadata?.filter(
+            data => data.propertyID !== property._id?.toString()
+          ),
+        });
+      }, Promise.resolve());
+    }, Promise.resolve());
   }
 
   return null;

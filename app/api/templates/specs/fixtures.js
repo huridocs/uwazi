@@ -138,6 +138,17 @@ export default {
         },
       ],
     },
+    {
+      _id: '5bfbb1a0471dd0fc16ada146',
+      name: 'template_with_extracted_metadata',
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      properties: [
+        { _id: '1234', label: 'text', name: 'property_a', type: 'text' },
+        { _id: '4567', label: 'markdown', name: 'property_b', type: 'markdown' },
+        { _id: '7890', label: 'numeric', name: 'property_c', type: 'numeric' },
+        { _id: '1011', label: 'link', name: 'property_d', type: 'link' },
+      ],
+    },
   ],
   relationtypes: [{ _id: relatedTo, name: 'related to' }],
   settings: [
@@ -154,33 +165,70 @@ export default {
   files: [
     {
       filename: 'file1.pdf',
+      _id: db.id(),
       extractedMetadata: [
         {
-          _id: '1234',
+          propertyID: '1234',
           name: 'property_a',
           selection: { text: 'sample text of file 1 for propA' },
         },
         {
-          _id: '4567',
+          propertyID: '4567',
           name: 'property_b',
           selection: { text: 'sample text of file 1 for propB' },
+        },
+        {
+          propertyID: '7890',
+          name: 'property_c',
+          selection: { text: 'a number in file 1' },
         },
       ],
     },
     {
       filename: 'file2.pdf',
+      _id: db.id(),
       extractedMetadata: [
         {
-          _id: '1234',
+          propertyID: '1234',
           name: 'property_a',
           selection: { text: 'sample text of file 2 for propA' },
         },
         {
-          _id: '4567',
+          propertyID: '4567',
           name: 'property_b',
-          selection: { text: 'sample text of file 2 for propA' },
+          selection: { text: 'sample text of file 2 for propB' },
+        },
+        {
+          propertyID: '7890',
+          name: 'property_c',
+          selection: { text: 'a number in file 2' },
         },
       ],
+    },
+    {
+      filename: 'file3.pdf',
+      _id: db.id(),
+      extractedMetadata: [
+        {
+          propertyID: '1234',
+          name: 'property_a',
+          selection: { text: 'sample text of file 3 for propA' },
+        },
+        {
+          propertyID: '4567',
+          name: 'property_b',
+          selection: { text: 'sample text of file 3 for propB' },
+        },
+        {
+          propertyID: '7890',
+          name: 'property_c',
+          selection: { text: 'a number in file 3' },
+        },
+      ],
+    },
+    {
+      filename: 'file4.pdf',
+      _id: db.id(),
     },
   ],
 };
