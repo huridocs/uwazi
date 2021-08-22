@@ -20,12 +20,14 @@ describe('saveSelections', () => {
             },
             { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
           ],
+          language: 'eng',
         },
         {
           _id: '23467234678sdf236784234678',
           filename: 'aFile.pdf',
           entity: 'anotherEntity',
           type: 'document',
+          language: 'eng',
         },
       ],
     });
@@ -38,6 +40,7 @@ describe('saveSelections', () => {
   it('should not call save if entity has no main file', async () => {
     await saveSelections({
       sharedId: 'entityWithNoFile',
+      language: 'en',
       __extractedMetadata: {
         selections: [{ name: 'Title', selection: { text: 'a selection for testing porpouses' } }],
       },
@@ -48,6 +51,7 @@ describe('saveSelections', () => {
   it('should not call save if entity has file, but there is not extracted metadata', async () => {
     await saveSelections({
       sharedId: 'anotherEntity',
+      language: 'en',
       __extractedMetadata: { selections: [] },
     });
     expect(files.save).not.toHaveBeenCalled();
@@ -56,6 +60,7 @@ describe('saveSelections', () => {
   it('should not call save if theres no change to files extracted metadata', async () => {
     await saveSelections({
       sharedId: 'entitySharedId',
+      language: 'en',
       __extractedMetadata: {
         selections: [],
       },
@@ -79,6 +84,7 @@ describe('saveSelections', () => {
     await saveSelections({
       _id: 'entityID',
       sharedId: 'entitySharedId',
+      language: 'en',
       __extractedMetadata: {
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
@@ -117,6 +123,7 @@ describe('saveSelections', () => {
     await saveSelections({
       _id: 'entityID',
       sharedId: 'entitySharedId',
+      language: 'en',
       __extractedMetadata: {
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
@@ -154,6 +161,7 @@ describe('saveSelections', () => {
     await saveSelections({
       _id: 'entityID',
       sharedId: 'entitySharedId',
+      language: 'en',
       __extractedMetadata: {
         selections: [
           { name: 'numeric_property_a', selection: { text: '122547899' } },
