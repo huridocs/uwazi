@@ -40,6 +40,7 @@ describe('Are text similar', () => {
       textSimilarityCheck('very long sentence with a lot of words', 'very long of words')
     ).toEqual(false);
   });
+
   it('should account for numbers and only return true if they are the same', () => {
     expect(textSimilarityCheck(1, 1)).toBe(true);
     expect(textSimilarityCheck(1, 2)).toBe(false);

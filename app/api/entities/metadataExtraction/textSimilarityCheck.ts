@@ -30,14 +30,17 @@ const textSimilarityCheck = (value1: string | number, value2: string | number) =
   ) {
     return value1.toString() === value2.toString();
   }
+
   const text1 = value1.toString();
   const text2 = value2.toString();
   const longer = text1.length < text2.length ? text2 : text1;
   const shorter = text1.length < text2.length ? text1 : text2;
   const longerLength = longer.length;
+
   if (longerLength === 0) {
     return true;
   }
+
   return (longerLength - editDistance(longer, shorter)) / longerLength > 0.75;
 };
 

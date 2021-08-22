@@ -15,19 +15,21 @@ const updateSelections = (newSelections: any[], storedSelections: any[]) => {
   return selections;
 };
 
-const removeUserChangedSelections = (
-  entityData: { [key: string]: any },
-  userSelections?: any[]
-) => {
+const removeUserChangedSelections = (entityData: { [key: string]: any }, userSelections: any[]) => {
   let updatedSelections = [];
-  if (userSelections) {
+
+  if (userSelections.length > 0) {
     updatedSelections = userSelections.filter(selection => {
       if (selection.name === 'title') {
         return textSimilarityCheck(selection.selection.text, entityData.title);
       }
-      return textSimilarityCheck(selection.selection.text, entityData[selection.name][0].value);
+      return textSimilarityCheck(
+        selection.selection.text,
+        entityData[selection.name][0].value || ''
+      );
     });
   }
+
   return updatedSelections;
 };
 
@@ -47,12 +49,26 @@ const checkSelections = (entity: EntityWithExtractedMetadata, file: FileType) =>
   return selections;
 };
 
+const selectionsHaveChanged = (
+  fileExtractedMetadata: ExtractedMetadataSchema[],
+  selections: ExtractedMetadataSchema[]
+) => {
+  if (fileExtractedMetadata.length === selections.length) {
+    const hasChanges = fileExtractedMetadata.filter(
+      (extractedData, index) => extractedData.selection?.text !== selections[index].selection?.text
+    );
+    return hasChanges.length > 0;
+  }
+  return true;
+};
+
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
   const mainDocument = await files.get({ entity: entity.sharedId, type: 'document' });
 
   if (mainDocument.length > 0) {
     const selections = checkSelections(entity, mainDocument[0]);
-    if (selections.length > 0) {
+
+    if (selectionsHaveChanged(mainDocument[0].extractedMetadata || [], selections)) {
       return files.save({ _id: mainDocument[0]._id, extractedMetadata: selections });
     }
   }

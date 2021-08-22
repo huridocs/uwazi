@@ -53,6 +53,28 @@ describe('saveSelections', () => {
     expect(files.save).not.toHaveBeenCalled();
   });
 
+  it('should not call save if theres no change to files extracted metadata', async () => {
+    await saveSelections({
+      sharedId: 'entitySharedId',
+      __extractedMetadata: {
+        selections: [],
+      },
+      metadata: {
+        property_b: [
+          {
+            value: 'unchanged text of prop B',
+          },
+        ],
+        property_a: [
+          {
+            value: 'old text of Property A',
+          },
+        ],
+      },
+    });
+    expect(files.save).not.toHaveBeenCalled();
+  });
+
   it('should update selections stored in the file with the newer ones', async () => {
     await saveSelections({
       _id: 'entityID',
