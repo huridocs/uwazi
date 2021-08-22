@@ -15,7 +15,6 @@ const CONCAT_IN = 'CONCAT_IN';
 export default function createReducer(namespace, defaultValue) {
   return (currentState = defaultValue, action = {}) => {
     let index;
-    let customIndex;
 
     switch (action.type) {
       case `${namespace}/${SET}`:
