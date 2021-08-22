@@ -1,5 +1,6 @@
 import languages from '../languages';
 import { detectLanguage } from '../detectLanguage';
+import { ISO6391toISO6392 } from '../languagesList';
 
 describe('languages', () => {
   describe('getAll', () => {
@@ -60,6 +61,15 @@ describe('languages', () => {
       expect(detectLanguage('sdgfghhg hgjk ljhgfhgjk ghgjh ghfdfgfartytuasd fjh fghjgjasd')).toBe(
         'other'
       );
+    });
+  });
+
+  describe('ISO6391toISO6392', () => {
+    it('should return the matching ISO639_2 available when passed a ISO639_1 language', () => {
+      expect(ISO6391toISO6392('es')).toBe('spa');
+      expect(ISO6391toISO6392('en')).toBe('eng');
+      expect(ISO6391toISO6392('ab')).toBe('other');
+      expect(ISO6391toISO6392('gl')).toBe('glg');
     });
   });
 });

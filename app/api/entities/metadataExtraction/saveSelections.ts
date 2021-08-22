@@ -4,6 +4,7 @@ import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { textSimilarityCheck } from './textSimilarityCheck';
+import { ISO6391toISO6392 } from '../../../shared/languagesList';
 
 interface EntityWithExtractedMetadata extends EntitySchema {
   __extractedMetadata: { selections: ExtractedMetadataSchema[] };
@@ -63,7 +64,11 @@ const selectionsHaveChanged = (
 };
 
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
-  const mainDocument = await files.get({ entity: entity.sharedId, type: 'document' });
+  const mainDocument = await files.get({
+    entity: entity.sharedId,
+    type: 'document',
+    language: ISO6391toISO6392(entity.language),
+  });
 
   if (mainDocument.length > 0) {
     const selections = checkSelections(entity, mainDocument[0]);
