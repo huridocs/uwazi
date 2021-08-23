@@ -10,6 +10,12 @@ const templateToBeInherited = db.id();
 const propertyToBeInherited = db.id();
 const thesauriId1 = db.id();
 const thesauriId2 = db.id();
+const templateWithExtractedMetadata = db.id();
+const propertyA = db.id();
+const propertyB = db.id();
+const propertyC = db.id();
+const propertyD = db.id();
+
 export default {
   templates: [
     {
@@ -139,14 +145,38 @@ export default {
       ],
     },
     {
-      _id: '5bfbb1a0471dd0fc16ada146',
+      _id: templateWithExtractedMetadata,
       name: 'template_with_extracted_metadata',
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
-        { _id: '1234', label: 'text', name: 'property_a', type: 'text' },
-        { _id: '4567', label: 'markdown', name: 'property_b', type: 'markdown' },
-        { _id: '7890', label: 'numeric', name: 'property_c', type: 'numeric' },
-        { _id: '1011', label: 'link', name: 'property_d', type: 'link' },
+        {
+          _id: propertyA,
+          label: 'Property A',
+          name: 'property_a',
+          type: 'text',
+          id: '1',
+        },
+        {
+          _id: propertyB,
+          label: 'Property B',
+          name: 'property_b',
+          type: 'markdown',
+          id: '2',
+        },
+        {
+          _id: propertyC,
+          label: 'Property C',
+          name: 'property_c',
+          type: 'numeric',
+          id: '3',
+        },
+        {
+          _id: propertyD,
+          label: 'Property D',
+          name: 'property_d',
+          type: 'link',
+          id: '4',
+        },
       ],
     },
   ],
@@ -165,20 +195,19 @@ export default {
   files: [
     {
       filename: 'file1.pdf',
-      _id: db.id(),
       extractedMetadata: [
         {
-          propertyID: '1234',
+          propertyID: propertyA.toString(),
           name: 'property_a',
           selection: { text: 'sample text of file 1 for propA' },
         },
         {
-          propertyID: '4567',
+          propertyID: propertyB.toString(),
           name: 'property_b',
           selection: { text: 'sample text of file 1 for propB' },
         },
         {
-          propertyID: '7890',
+          propertyID: propertyC.toString(),
           name: 'property_c',
           selection: { text: 'a number in file 1' },
         },
@@ -186,49 +215,17 @@ export default {
     },
     {
       filename: 'file2.pdf',
-      _id: db.id(),
       extractedMetadata: [
         {
-          propertyID: '1234',
+          propertyID: propertyA.toString(),
           name: 'property_a',
-          selection: { text: 'sample text of file 2 for propA' },
-        },
-        {
-          propertyID: '4567',
-          name: 'property_b',
-          selection: { text: 'sample text of file 2 for propB' },
-        },
-        {
-          propertyID: '7890',
-          name: 'property_c',
-          selection: { text: 'a number in file 2' },
+          selection: { text: 'sample text of file 1 for propA' },
         },
       ],
     },
     {
       filename: 'file3.pdf',
-      _id: db.id(),
-      extractedMetadata: [
-        {
-          propertyID: '1234',
-          name: 'property_a',
-          selection: { text: 'sample text of file 3 for propA' },
-        },
-        {
-          propertyID: '4567',
-          name: 'property_b',
-          selection: { text: 'sample text of file 3 for propB' },
-        },
-        {
-          propertyID: '7890',
-          name: 'property_c',
-          selection: { text: 'a number in file 3' },
-        },
-      ],
-    },
-    {
-      filename: 'file4.pdf',
-      _id: db.id(),
+      extractedMetadata: [],
     },
   ],
 };
@@ -243,4 +240,7 @@ export {
   relatedTo,
   thesauriId1,
   thesauriId2,
+  templateWithExtractedMetadata,
+  propertyA,
+  propertyD,
 };
