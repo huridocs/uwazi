@@ -57,12 +57,9 @@ module.exports = production => {
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
 
               if (
-                packageName.match(/qrcode.react/) ||
-                packageName.match(/pdfjs-dist/) ||
-                packageName.match(/recharts/) ||
-                packageName.match(/react-map-gl/) ||
-                packageName.match(/mapbox-gl/) ||
-                packageName.match(/LazyLoad*/)
+                packageName.match(
+                  /qrcode.react|pdfjs-dist|recharts|react-map-gl|mapbox-gl|LazyLoad/
+                )
               ) {
                 return packageName;
               }
