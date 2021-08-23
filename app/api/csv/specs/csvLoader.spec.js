@@ -5,7 +5,7 @@ import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
 
-import { CSVLoader } from '../csvLoader';
+import { CSVLoader } from 'api/csv';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
@@ -151,6 +151,7 @@ describe('csvLoader', () => {
         'not_defined_type',
         'geolocation_geolocation',
         'auto_id',
+        'additional_tag(s)',
       ]);
     });
 
@@ -170,6 +171,11 @@ describe('csvLoader', () => {
 
         const thesauriValues = imported.map(i => i.metadata.select_label[0].label);
         expect(thesauriValues).toEqual(['thesauri1', 'thesauri2', 'thesauri2']);
+      });
+
+      it('should import properties that contains parentheses in the name', () => {
+        const additionalTags = imported.map(i => i.metadata['additional_tag(s)'][0].value);
+        expect(additionalTags).toEqual(['tag1', 'tag2', 'tag3']);
       });
 
       describe('when parser not defined', () => {
