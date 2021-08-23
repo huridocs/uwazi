@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
-import { detect } from 'shared/detectLanguage';
+import { detectLanguage } from 'shared/detectLanguage';
 import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
@@ -80,7 +80,7 @@ class PDF extends EventEmitter {
   generateFileInfo(conversion) {
     return {
       ...this.file,
-      language: detect(Object.values(conversion.fullTextWithoutPages).join(''), 'franc'),
+      language: detectLanguage(Object.values(conversion.fullTextWithoutPages).join(''), 'franc'),
     };
   }
 

@@ -1,4 +1,4 @@
-import { detect } from 'shared/detectLanguage';
+import { detectLanguage } from 'shared/detectLanguage';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
@@ -29,7 +29,7 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
 
   let language;
   if (!defaultDocument.language) {
-    language = detect(fullText);
+    language = detectLanguage(fullText);
   }
   if (defaultDocument.language) {
     language = languages(defaultDocument.language);
