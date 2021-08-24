@@ -400,10 +400,8 @@ export default {
       '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-danger',
     saveAndGoToNextEnabled:
       '#app > div.content > div > div > div > main > div.content-footer > button.save-and-next.btn-success',
-    acceptConfirmDialog:
-      'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
-    cancelConfirmDialog:
-      'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button',
+    acceptConfirmDialog: 'div.modal-footer > button.btn.confirm-button.btn-danger',
+    cancelConfirmDialog: 'div.modal-footer > button.btn.btn-default.cancel-button',
   },
   quickLabel: {
     notice:

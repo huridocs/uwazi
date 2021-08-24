@@ -4,8 +4,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const RtlCssPlugin = require('rtlcss-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const rootPath = path.join(__dirname, '/../');
+const myArgs = process.argv.slice(2);
+const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -53,11 +56,11 @@ module.exports = production => {
             name(module) {
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
 
-              if (packageName.match(/pdfjs-dist/)) {
-                return packageName;
-              }
-
-              if (packageName.match(/qrcode.react/)) {
+              if (
+                packageName.match(
+                  /qrcode.react|pdfjs-dist|recharts|react-map-gl|mapbox-gl|LazyLoad/
+                )
+              ) {
                 return packageName;
               }
 
@@ -110,6 +113,7 @@ module.exports = production => {
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
         ],
       }),
+      new BundleAnalyzerPlugin({ analyzerMode }),
     ],
   };
 };
