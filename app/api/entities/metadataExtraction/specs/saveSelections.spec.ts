@@ -26,6 +26,8 @@ const fixture = {
   ],
 };
 
+const entityBasicProperties = { _id: 'entityID', sharedId: 'entitySharedId', language: 'en' };
+
 describe('saveSelections', () => {
   jest.spyOn(files, 'save');
 
@@ -82,9 +84,7 @@ describe('saveSelections', () => {
 
   it('should update selections stored in the file with the newer ones', async () => {
     await saveSelections({
-      _id: 'entityID',
-      sharedId: 'entitySharedId',
-      language: 'en',
+      ...entityBasicProperties,
       __extractedMetadata: {
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
@@ -125,9 +125,7 @@ describe('saveSelections', () => {
 
   it('should remove selections if entity metadata is diferent from selected metadata', async () => {
     await saveSelections({
-      _id: 'entityID',
-      sharedId: 'entitySharedId',
-      language: 'en',
+      ...entityBasicProperties,
       __extractedMetadata: {
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
@@ -163,9 +161,7 @@ describe('saveSelections', () => {
 
   it('should work with numeric and date values, removing them from extracted metadata if they are diferent in the entity', async () => {
     await saveSelections({
-      _id: 'entityID',
-      sharedId: 'entitySharedId',
-      language: 'en',
+      ...entityBasicProperties,
       __extractedMetadata: {
         selections: [
           { name: 'numeric_property_a', selection: { text: '122547899' } },
