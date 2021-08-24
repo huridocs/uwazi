@@ -319,5 +319,21 @@ describe('documentsReducer', () => {
         expect(newState.toJS()).toEqual(expectedState);
       });
     });
+
+    describe('ATTACHMENT_RENAMED', () => {
+      it('should rename the changed file in the entity attachments', () => {
+        const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), {
+          type: attachmentTypes.ATTACHMENT_RENAMED,
+          entity: 'shared1',
+          file: { _id: 'fileId1', originalname: 'fileRenamed' },
+        });
+
+        const expectedState = {
+          ...initialDocumentsState,
+        };
+        expectedState.rows[0].attachments = [{ _id: 'fileId1', originalname: 'fileRenamed' }];
+        expect(newState.toJS()).toEqual(expectedState);
+      });
+    });
   });
 });
