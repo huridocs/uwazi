@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { SelectionRegion, HandleTextSelection } from 'react-text-selection-handler';
 import { advancedSort } from 'app/utils/advancedSort';
-
+import { PDFPage } from 'app/PDF';
 import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
-import PDFPage from './PDFPage.js';
 
 const cMapUrl = '/legacy_character_maps/';
 const cMapPacked = true;
