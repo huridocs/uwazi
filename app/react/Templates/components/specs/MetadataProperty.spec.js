@@ -1,7 +1,10 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
+/* eslint-disable max-lines */
+
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';
@@ -77,8 +80,13 @@ function sourceTargetTestContext(Target, Source, actions) {
 describe('MetadataProperty', () => {
   let component;
 
-  const render = (store, props) => {
+  const render = (_store, props) => {
     const DNDComponent = DragDropContext(TestBackend)(Connected);
+    const store = {
+      ..._store,
+      translations: () => Immutable.fromJS([]),
+      inlineEdit: () => Immutable.fromJS({}),
+    };
     return shallow(
       <Provider store={store}>
         <DNDComponent {...props} />
@@ -110,6 +118,8 @@ describe('MetadataProperty', () => {
         editProperty,
         uiState: Immutable.fromJS({ editingProperty: '' }),
         templates: Immutable.fromJS([]),
+        translations: () => Immutable.fromJS([]),
+        inlineEdit: () => Immutable.fromJS({}),
       };
     });
 
@@ -136,7 +146,7 @@ describe('MetadataProperty', () => {
         });
 
         const connectedComponent = render(store, props);
-        expect(connectedComponent.find('.validation-error').text()).toMatch('Duplicated label');
+        expect(connectedComponent.find('.validation-error').length).toBe(1);
       });
     });
 
@@ -287,7 +297,7 @@ describe('MetadataProperty', () => {
           });
 
           const connectedComponent = render(store, props);
-          expect(connectedComponent.find('.validation-error').text()).toMatch('Duplicated label');
+          expect(connectedComponent.find('.validation-error')).toMatchSnapshot();
         });
       });
     });
@@ -331,6 +341,8 @@ describe('MetadataProperty', () => {
           uiState: Immutable.fromJS({ templates: [] }),
           formState: { fields: [], errors: {} },
         },
+        translations: Immutable.fromJS([]),
+        inlineEdit: Immutable.fromJS({}),
         templates: Immutable.fromJS([]),
         modals: Immutable.fromJS({}),
       }));
