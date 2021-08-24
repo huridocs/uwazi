@@ -53,15 +53,20 @@ export default function documents(state = initialState, action = {}) {
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
-  if (action.type === attachmentTypes.ATTACHMENT_COMPLETE) {
+  if (
+    [attachmentTypes.ATTACHMENT_COMPLETE, attachmentTypes.ATTACHMENT_DELETED].includes(action.type)
+  ) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.entity);
     const doc = state
       .get('rows')
       .get(docIndex)
       .toJS();
 
-    doc.attachments.push(action.file);
-
+    if (action.type === attachmentTypes.ATTACHMENT_COMPLETE) {
+      doc.attachments.push(action.file);
+    } else {
+      doc.attachments = doc.attachments.filter(att => att._id !== action.file._id);
+    }
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
