@@ -3,6 +3,7 @@ import * as types from 'app/Library/actions/actionTypes';
 
 import documentsReducer from 'app/Library/reducers/documentsReducer';
 import * as actions from 'app/Library/actions/libraryActions';
+import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
 
 describe('documentsReducer', () => {
   const initialState = Immutable.fromJS({ rows: [], totalRows: 0 });
@@ -250,6 +251,56 @@ describe('documentsReducer', () => {
           { title: '3', _id: 3, sharedId: 'shared3', published: true },
         ],
         totalRows: 3,
+      });
+    });
+  });
+
+  describe('ATTACHMENTS', () => {
+    const initialDocumentsState = {
+      rows: [
+        {
+          title: '1',
+          _id: 1,
+          sharedId: 'shared1',
+          attachments: [{ _id: 'fileId1', originalname: 'file1' }],
+        },
+        {
+          title: '2',
+          _id: 2,
+          sharedId: 'shared2',
+          published: false,
+          attachments: [{ _id: 'fileId2', originalname: 'file2' }],
+        },
+        {
+          title: '3',
+          _id: 3,
+          sharedId: 'shared3',
+          published: false,
+          attachments: [
+            { _id: 'fileId3', originalname: 'file3' },
+            { _id: 'fileId3a', originalname: 'file3a' },
+          ],
+        },
+      ],
+      totalRows: 3,
+    };
+
+    describe('ATTACHMENT_COMPLETE', () => {
+      it('should push the newly uploaded file to the entity attachments', () => {
+        const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), {
+          type: attachmentTypes.ATTACHMENT_COMPLETE,
+          entity: 'shared2',
+          file: { _id: 'fileId2a', originalname: 'file2a' },
+        });
+
+        const expectedState = {
+          ...initialDocumentsState,
+        };
+        expectedState.rows[1].attachments = [
+          { _id: 'fileId2', originalname: 'file2' },
+          { _id: 'fileId2a', originalname: 'file2a' },
+        ];
+        expect(newState.toJS()).toEqual(expectedState);
       });
     });
   });
