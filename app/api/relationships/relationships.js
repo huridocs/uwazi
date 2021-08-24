@@ -29,7 +29,17 @@ function excludeRefs(template) {
 }
 
 function getPropertiesToBeConnections(template) {
-  return template.properties.filter(prop => prop.type === 'relationship');
+  const props = [];
+  template.properties.forEach(prop => {
+    const repeated = props.find(
+      p => p.content === prop.content && p.relationType === prop.relationType
+    );
+
+    if (prop.type === 'relationship' && !repeated) {
+      props.push(prop);
+    }
+  });
+  return props;
 }
 
 const createRelationship = async relationship => model.save(relationship);
