@@ -96,6 +96,7 @@ export interface ExtractedMetadataSchema {
   propertyID?: string;
   name?: string;
   timestamp?: string;
+  language?: string;
   selection?: {
     text?: string;
     selectionRectangles?: {
