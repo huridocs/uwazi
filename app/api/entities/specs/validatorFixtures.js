@@ -22,6 +22,7 @@ export default {
         { name: 'select', type: 'select', content: dictionary1 },
         { name: 'multiselect', type: 'multiselect', content: dictionary2 },
         { name: 'relationship', type: 'relationship', content: simpleTemplateId },
+        { name: 'relationship2', type: 'relationship', content: simpleTemplateId },
         { name: 'media', type: 'media' },
         { name: 'image', type: 'image' },
         { name: 'link', type: 'link' },

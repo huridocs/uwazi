@@ -90,6 +90,8 @@ describe('MetadataTemplate', () => {
           uiState: () => Immutable.fromJS({ editProperty: '' }),
         }),
         templates: () => Immutable.fromJS([]),
+        translations: () => Immutable.fromJS([]),
+        inlineEdit: () => Immutable.fromJS({}),
         form: () => initialData.form,
         modals: () => initialData.modals,
       }),
