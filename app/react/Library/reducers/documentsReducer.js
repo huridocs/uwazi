@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 import * as uploadTypes from 'app/Uploads/actions/actionTypes';
+import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
 
 const initialState = { rows: [], totalRows: 0 };
 
@@ -49,6 +50,18 @@ export default function documents(state = initialState, action = {}) {
       .get(docIndex)
       .toJS();
     doc.documents.push(action.file);
+    return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
+  }
+
+  if (action.type === attachmentTypes.ATTACHMENT_COMPLETE) {
+    const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.entity);
+    const doc = state
+      .get('rows')
+      .get(docIndex)
+      .toJS();
+
+    doc.attachments.push(action.file);
+
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
