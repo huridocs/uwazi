@@ -7,7 +7,7 @@ import filesize from 'filesize';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
+import { RenderAttachment } from 'app/Attachments';
 import Tip from 'app/Layout/Tip';
 
 const validators = {

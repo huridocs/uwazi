@@ -28,11 +28,12 @@ import {
 import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
-import SourceDocument from './SourceDocument';
-import TargetDocument from './TargetDocument';
+
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
+import SourceDocument from './SourceDocument';
+import TargetDocument from './TargetDocument.js';
 
 import determineDirection from '../utils/determineDirection';
 import { requestViewerState } from '../actions/routeActions';
