@@ -34,8 +34,9 @@ const removeUserChangedSelections = (entityData: { [key: string]: any }, userSel
   return updatedSelections;
 };
 
-const checkSelections = (entity: EntityWithExtractedMetadata, file: FileType) => {
+const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) => {
   let selections = entity.__extractedMetadata?.selections || [];
+
   const entityData = {
     title: entity.title,
     ...entity.metadata,
@@ -66,15 +67,17 @@ const selectionsHaveChanged = (
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
   const mainDocument = await files.get({
     entity: entity.sharedId,
-    type: 'document',
     language: ISO6391toISO6392(entity.language),
   });
 
   if (mainDocument.length > 0) {
-    const selections = checkSelections(entity, mainDocument[0]);
-
+    const selections = prepareSelections(entity, mainDocument[0]);
     if (selectionsHaveChanged(mainDocument[0].extractedMetadata || [], selections)) {
-      return files.save({ _id: mainDocument[0]._id, extractedMetadata: selections });
+      const finalizedSelections = selections.map(selection => ({
+        language: entity.language,
+        ...selection,
+      }));
+      return files.save({ _id: mainDocument[0]._id, extractedMetadata: finalizedSelections });
     }
   }
 

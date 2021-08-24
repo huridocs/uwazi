@@ -2,35 +2,35 @@ import { files } from 'api/files';
 import { testingDB } from 'api/utils/testing_db';
 import { saveSelections } from '../saveSelections';
 
+const fixture = {
+  files: [
+    {
+      _id: '61182037e1a99857d7382d47',
+      filename: '1628971063058z11sx28u0j.pdf',
+      entity: 'entitySharedId',
+      extractedMetadata: [
+        {
+          name: 'property_a',
+          selection: { text: 'old text of Property A' },
+        },
+        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
+      ],
+      language: 'eng',
+    },
+    {
+      _id: '23467234678sdf236784234678',
+      filename: 'aFile.pdf',
+      entity: 'anotherEntity',
+      language: 'eng',
+    },
+  ],
+};
+
 describe('saveSelections', () => {
   jest.spyOn(files, 'save');
 
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad({
-      files: [
-        {
-          _id: '61182037e1a99857d7382d47',
-          filename: '1628971063058z11sx28u0j.pdf',
-          entity: 'entitySharedId',
-          type: 'document',
-          extractedMetadata: [
-            {
-              name: 'property_a',
-              selection: { text: 'old text of Property A' },
-            },
-            { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
-          ],
-          language: 'eng',
-        },
-        {
-          _id: '23467234678sdf236784234678',
-          filename: 'aFile.pdf',
-          entity: 'anotherEntity',
-          type: 'document',
-          language: 'eng',
-        },
-      ],
-    });
+    await testingDB.clearAllAndLoad(fixture);
   });
 
   afterAll(async () => {
@@ -112,9 +112,13 @@ describe('saveSelections', () => {
     expect(files.save).toHaveBeenCalledWith({
       _id: '61182037e1a99857d7382d47',
       extractedMetadata: [
-        { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
-        { name: 'property_c', selection: { text: 'new selected text of prop C' } },
-        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
+        {
+          name: 'property_a',
+          language: 'en',
+          selection: { text: 'newer selected text of prop A' },
+        },
+        { name: 'property_c', language: 'en', selection: { text: 'new selected text of prop C' } },
+        { name: 'property_b', language: 'en', selection: { text: 'unchanged text of prop B' } },
       ],
     });
   });
@@ -151,8 +155,8 @@ describe('saveSelections', () => {
     expect(files.save).toHaveBeenCalledWith({
       _id: '61182037e1a99857d7382d47',
       extractedMetadata: [
-        { name: 'property_c', selection: { text: 'new text of prop C' } },
-        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
+        { name: 'property_c', language: 'en', selection: { text: 'new text of prop C' } },
+        { name: 'property_b', language: 'en', selection: { text: 'unchanged text of prop B' } },
       ],
     });
   });
@@ -194,9 +198,9 @@ describe('saveSelections', () => {
     expect(files.save).toHaveBeenCalledWith({
       _id: '61182037e1a99857d7382d47',
       extractedMetadata: [
-        { name: 'date_property_b', selection: { text: '-4733596800' } },
-        { name: 'property_a', selection: { text: 'old text of Property A' } },
-        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
+        { name: 'date_property_b', language: 'en', selection: { text: '-4733596800' } },
+        { name: 'property_a', language: 'en', selection: { text: 'old text of Property A' } },
+        { name: 'property_b', language: 'en', selection: { text: 'unchanged text of prop B' } },
       ],
     });
   });
