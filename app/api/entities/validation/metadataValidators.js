@@ -84,6 +84,8 @@ export const customErrorMessages = {
   property_not_allowed: 'property is not configured on the template, it is not allowed',
   relationship_wrong_foreign_id: 'related entities do not exist or belong to another template',
   dictionary_wrong_foreing_id: 'related dictionary value/s does not exists',
+  relationship_values_should_match:
+    'relationships with the same configuration should have the same values',
   [propertyTypes.date]: 'should be number',
   [propertyTypes.multidate]: 'should be an array of numbers',
   [propertyTypes.daterange]:
