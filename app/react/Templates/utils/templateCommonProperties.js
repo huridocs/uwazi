@@ -7,6 +7,7 @@ export default {
       isCommonProperty: true,
       type: 'text',
       prioritySorting: false,
+      generatedId: false,
     },
     {
       localID: 'commonCreationDate',
