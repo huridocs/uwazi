@@ -24,7 +24,7 @@
     "run-production": "export NODE_ENV=production; node --max-http-header-size 20000 server.js",
     "dev-server": "./node_modules/.bin/nodemon --max-http-header-size 20000 ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node ./webpack/webpack.server.js",
-    "check-translations": "node ./checkTranslations.js",
+    "check-translations": "node ./checkTranslations.mjs",
     "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn run dev-server & yarn run webpack-server",
     "run-puppeteer": "export DATABASE_NAME=uwazi_e2e; export INDEX_NAME=uwazi_e2e; yarn run-production",
     "hot-inspect": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn dev-server --inspect & yarn run webpack-server",
