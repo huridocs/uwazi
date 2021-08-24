@@ -54,7 +54,11 @@ export default function documents(state = initialState, action = {}) {
   }
 
   if (
-    [attachmentTypes.ATTACHMENT_COMPLETE, attachmentTypes.ATTACHMENT_DELETED].includes(action.type)
+    [
+      attachmentTypes.ATTACHMENT_COMPLETE,
+      attachmentTypes.ATTACHMENT_DELETED,
+      attachmentTypes.ATTACHMENT_RENAMED,
+    ].includes(action.type)
   ) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.entity);
     const doc = state
@@ -64,6 +68,9 @@ export default function documents(state = initialState, action = {}) {
 
     if (action.type === attachmentTypes.ATTACHMENT_COMPLETE) {
       doc.attachments.push(action.file);
+    } else if (action.type === attachmentTypes.ATTACHMENT_RENAMED) {
+      const file = doc.attachments.filter(att => att._id === action.file._id)[0];
+      file.originalname = action.file.originalname;
     } else {
       doc.attachments = doc.attachments.filter(att => att._id !== action.file._id);
     }
