@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 
 import { FormConfigCommon } from 'app/Templates/components/FormConfigCommon';
 import { Field } from 'react-redux-form';
+import PropertyConfigOption from 'app/Templates/components/PropertyConfigOption';
 
 describe('FormConfigCommon', () => {
   let component;
@@ -49,6 +50,14 @@ describe('FormConfigCommon', () => {
     expect(formFields.getElements()[0].props.model).toBe('template.data.commonProperties[0].label');
     expect(formFields.getElements()[1].props.model).toBe(
       'template.data.commonProperties[0].prioritySorting'
+    );
+  });
+  it('should render generatedId option for title property', () => {
+    props.index = -2;
+    component = shallow(<FormConfigCommon {...props} />);
+    const formFields = component.find(PropertyConfigOption);
+    expect(formFields.getElements()[0].props.model).toBe(
+      'template.data.commonProperties[0].generatedId'
     );
   });
 

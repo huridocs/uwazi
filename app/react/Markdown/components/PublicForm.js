@@ -14,25 +14,28 @@ import Loader from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
 import Dropzone from 'react-dropzone';
 import { BrowserView, MobileView } from 'react-device-detect';
+import { generateID } from 'shared/IDGenerator';
 
 class PublicForm extends Component {
   static renderTitle(template) {
-    const titleLabel = template
-      .get('commonProperties')
-      .find(p => p.get('name') === 'title')
-      .get('label');
-
+    const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
+    const defaultTitle = titleProperty.get('generatedId') ? generateID(3, 4, 4) : '';
     return (
       <FormGroup key="title" model=".title">
         <ul className="search__filter">
           <li>
             <label htmlFor="title">
-              <Translate context={template.get('_id')}>{titleLabel}</Translate>
+              <Translate context={template.get('_id')}>{titleProperty.get('label')}</Translate>
               <span className="required">*</span>
             </label>
           </li>
           <li className="wide">
-            <Control.text id="title" className="form-control" model=".title" />
+            <Control.text
+              id="title"
+              className="form-control"
+              defaultValue={defaultTitle}
+              model=".title"
+            />
           </li>
         </ul>
       </FormGroup>
@@ -59,15 +62,16 @@ class PublicForm extends Component {
       captcha: { required: val => val && val.text.length },
       ...validator.generate(props.template.toJS()),
     };
-    this.state = { submiting: false, files: [] };
+    const generatedIdTitle = props.template
+      .get('commonProperties')
+      .find(p => p.get('name') === 'title' && p.get('generatedId') === true);
+    this.state = { submiting: false, files: [], generatedIdTitle };
   }
 
   fileDropped(files) {
     const uploadedFiles = files;
     this.state.files.forEach(file => uploadedFiles.push(file));
-    this.setState({
-      files: uploadedFiles,
-    });
+    this.setState({ files: uploadedFiles });
   }
 
   async removeAttachment(removedFile) {
@@ -86,6 +90,9 @@ class PublicForm extends Component {
 
   resetForm() {
     this.formDispatch(actions.reset('publicform'));
+    if (this.state.generatedIdTitle) {
+      this.formDispatch(actions.load('publicform', { title: generateID(3, 4, 4) }));
+    }
   }
 
   handleSubmit(_values) {
@@ -94,7 +101,6 @@ class PublicForm extends Component {
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
     values.attachments = this.state.files.length ? this.state.files : undefined;
-
     submit(values, remote)
       .then(uploadCompletePromise => {
         this.setState({ submiting: true });
@@ -171,7 +177,6 @@ class PublicForm extends Component {
   }
 
   renderCaptcha() {
-    const { remote } = this.props;
     return (
       <FormGroup key="captcha" model=".captcha">
         <ul className="search__filter">
@@ -183,7 +188,7 @@ class PublicForm extends Component {
           </li>
           <li className="wide">
             <Captcha
-              remote={remote}
+              remote={this.props.remote}
               refresh={refresh => {
                 this.refreshCaptcha = refresh;
               }}
@@ -205,16 +210,14 @@ class PublicForm extends Component {
         getDispatch={dispatch => this.attachDispatch(dispatch)}
         onSubmit={this.handleSubmit}
       >
-        {submiting ? (
-          PublicForm.renderSubmitState()
-        ) : (
+        {submiting && PublicForm.renderSubmitState()}
+        {!submiting && (
           <div className="public-form">
             {PublicForm.renderTitle(template)}
             <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
             {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
             {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
             {this.renderCaptcha()}
-
             <button type="submit" className="btn btn-success">
               <Translate>Submit</Translate>
             </button>
@@ -224,7 +227,6 @@ class PublicForm extends Component {
     );
   }
 }
-
 PublicForm.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
@@ -233,7 +235,6 @@ PublicForm.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
 };
-
 export const mapStateToProps = (state, props) => ({
   template: state.templates.find(template => template.get('_id') === props.template),
   thesauris: state.thesauris,
@@ -241,9 +242,7 @@ export const mapStateToProps = (state, props) => ({
   remote: props.remote !== undefined,
   attachments: props.attachments !== undefined,
 });
-
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
-
 export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);

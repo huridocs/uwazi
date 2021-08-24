@@ -1,36 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`GeolocationViewer should not fail if points is just an empty array 1`] = `
-<Map
-  autoCenter={true}
-  clickOnCluster={[Function]}
-  clickOnMarker={[Function]}
-  cluster={false}
+<ForwardRef
   height={370}
-  hoverOnMarker={[Function]}
-  interactiveLayerIds={Array []}
-  latitude={null}
-  longitude={null}
   markers={Array []}
-  onClick={[Function]}
-  renderMarker={null}
-  renderPopupInfo={null}
-  scrollZoom={true}
-  showControls={false}
-  width={null}
-  zoom={4}
 />
 `;
 
 exports[`GeolocationViewer should render a map with markers when onlyForCards is false, not failing on nulls 1`] = `
-<Map
-  autoCenter={true}
-  clickOnCluster={[Function]}
-  clickOnMarker={[Function]}
-  cluster={false}
+<ForwardRef
   height={370}
-  hoverOnMarker={[Function]}
-  interactiveLayerIds={Array []}
   latitude={13}
   longitude={7}
   markers={
@@ -59,13 +38,6 @@ exports[`GeolocationViewer should render a map with markers when onlyForCards is
       },
     ]
   }
-  onClick={[Function]}
-  renderMarker={null}
-  renderPopupInfo={null}
-  scrollZoom={true}
-  showControls={false}
-  width={null}
-  zoom={4}
 />
 `;
 

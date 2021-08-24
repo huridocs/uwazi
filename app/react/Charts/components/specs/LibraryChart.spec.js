@@ -1,10 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
+import { Pie, Bar } from 'app/Charts';
 import { LibraryChartComponent } from '../LibraryChart';
-
-import Pie from '../Pie';
-import Bar from '../Bar';
 
 describe('LibraryChart', () => {
   let component;
