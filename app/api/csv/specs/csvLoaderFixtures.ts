@@ -5,6 +5,7 @@ import { templateUtils } from 'api/templates';
 const template1Id = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
+const templateWithGeneratedTitle = db.id();
 
 export default {
   templates: [
@@ -58,6 +59,18 @@ export default {
           type: propertyTypes.text,
           label: 'additional tag(s)',
           name: templateUtils.safeName('additional tag(s)', true),
+        },
+      ],
+    },
+    {
+      _id: templateWithGeneratedTitle,
+      name: 'template with generated title',
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text', generatedId: true }],
+      properties: [
+        {
+          type: propertyTypes.numeric,
+          label: 'numeric label',
+          name: templateUtils.safeName('numeric label'),
         },
       ],
     },
@@ -138,4 +151,4 @@ export default {
   ],
 };
 
-export { template1Id };
+export { template1Id, templateWithGeneratedTitle };
