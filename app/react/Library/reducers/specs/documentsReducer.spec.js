@@ -255,7 +255,7 @@ describe('documentsReducer', () => {
     });
   });
 
-  describe('ATTACHMENTS', () => {
+  describe('Attachments', () => {
     const initialDocumentsState = {
       rows: [
         {
@@ -300,6 +300,22 @@ describe('documentsReducer', () => {
           { _id: 'fileId2', originalname: 'file2' },
           { _id: 'fileId2a', originalname: 'file2a' },
         ];
+        expect(newState.toJS()).toEqual(expectedState);
+      });
+    });
+
+    describe('ATTACHMENT_DELETED', () => {
+      it('should remove the deleted file from the entity attachments', () => {
+        const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), {
+          type: attachmentTypes.ATTACHMENT_DELETED,
+          entity: 'shared3',
+          file: { _id: 'fileId3a', originalname: 'file3a' },
+        });
+
+        const expectedState = {
+          ...initialDocumentsState,
+        };
+        expectedState.rows[2].attachments = [{ _id: 'fileId3', originalname: 'file3' }];
         expect(newState.toJS()).toEqual(expectedState);
       });
     });
