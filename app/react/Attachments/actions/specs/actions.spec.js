@@ -79,7 +79,7 @@ describe('Attachments actions', () => {
   });
 
   describe('uploadAttachmentFromUrl', () => {
-    it('should post the url and dispatch the upload progress and notification at the finish', () => {
+    it('should post the url and dispatch the upload progress and notification upon completion', () => {
       spyOn(api, 'post').and.returnValue({ then: cb => cb({ json: { text: 'file' } }) });
       const expectedActions = [
         { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
