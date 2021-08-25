@@ -285,54 +285,58 @@ describe('documentsReducer', () => {
       totalRows: 3,
     };
 
+    const assertAttachmentReducer = (action, expectedIndex, expectedAttachments) => {
+      const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), action);
+
+      const expectedState = {
+        ...initialDocumentsState,
+      };
+      expectedState.rows[expectedIndex].attachments = expectedAttachments;
+      expect(newState.toJS()).toEqual(expectedState);
+    };
+
     describe('ATTACHMENT_COMPLETE', () => {
       it('should push the newly uploaded file to the entity attachments', () => {
-        const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), {
-          type: attachmentTypes.ATTACHMENT_COMPLETE,
-          entity: 'shared2',
-          file: { _id: 'fileId2a', originalname: 'file2a' },
-        });
-
-        const expectedState = {
-          ...initialDocumentsState,
-        };
-        expectedState.rows[1].attachments = [
-          { _id: 'fileId2', originalname: 'file2' },
-          { _id: 'fileId2a', originalname: 'file2a' },
-        ];
-        expect(newState.toJS()).toEqual(expectedState);
+        assertAttachmentReducer(
+          {
+            type: attachmentTypes.ATTACHMENT_COMPLETE,
+            entity: 'shared2',
+            file: { _id: 'fileId2a', originalname: 'file2a' },
+          },
+          1,
+          [
+            { _id: 'fileId2', originalname: 'file2' },
+            { _id: 'fileId2a', originalname: 'file2a' },
+          ]
+        );
       });
     });
 
     describe('ATTACHMENT_DELETED', () => {
       it('should remove the deleted file from the entity attachments', () => {
-        const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), {
-          type: attachmentTypes.ATTACHMENT_DELETED,
-          entity: 'shared3',
-          file: { _id: 'fileId3a', originalname: 'file3a' },
-        });
-
-        const expectedState = {
-          ...initialDocumentsState,
-        };
-        expectedState.rows[2].attachments = [{ _id: 'fileId3', originalname: 'file3' }];
-        expect(newState.toJS()).toEqual(expectedState);
+        assertAttachmentReducer(
+          {
+            type: attachmentTypes.ATTACHMENT_DELETED,
+            entity: 'shared3',
+            file: { _id: 'fileId3a', originalname: 'file3a' },
+          },
+          2,
+          [{ _id: 'fileId3', originalname: 'file3' }]
+        );
       });
     });
 
     describe('ATTACHMENT_RENAMED', () => {
       it('should rename the changed file in the entity attachments', () => {
-        const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), {
-          type: attachmentTypes.ATTACHMENT_RENAMED,
-          entity: 'shared1',
-          file: { _id: 'fileId1', originalname: 'fileRenamed' },
-        });
-
-        const expectedState = {
-          ...initialDocumentsState,
-        };
-        expectedState.rows[0].attachments = [{ _id: 'fileId1', originalname: 'fileRenamed' }];
-        expect(newState.toJS()).toEqual(expectedState);
+        assertAttachmentReducer(
+          {
+            type: attachmentTypes.ATTACHMENT_RENAMED,
+            entity: 'shared1',
+            file: { _id: 'fileId1', originalname: 'fileRenamed' },
+          },
+          0,
+          [{ _id: 'fileId1', originalname: 'fileRenamed' }]
+        );
       });
     });
   });
