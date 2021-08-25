@@ -54,13 +54,15 @@ export class CSVLoader extends EventEmitter {
     const availableLanguages: string[] = ensure<LanguageSchema[]>(
       (await settings.get()).languages
     ).map((l: LanguageSchema) => l.key);
+    const { newNameGeneration = false } = await settings.get();
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
         const { rawEntity, rawTranslations } = extractEntity(
           row,
           availableLanguages,
-          options.language
+          options.language,
+          newNameGeneration
         );
 
         if (rawEntity) {
