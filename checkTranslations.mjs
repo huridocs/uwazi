@@ -35,18 +35,31 @@ const wordRegexp = new RegExp(/\b[\w']+\b/g);
 const processTextNode = (path, file) => {
   const text = path.node.value.trim();
   const parentTag = path.parent.openingElement;
-  const tagName = parentTag?.name.name;
+  const container = parentTag?.name.name;
   if (!wordRegexp.test(text)) {
     return null;
   }
 
   let key;
-  if (tagName === 'Translate' && tagName && parentTag.attributes.length) {
+  if (container === 'Translate' && container && parentTag.attributes.length) {
     key = parentTag.attributes.find(a => a.name.name === 'translationKey')?.value.value;
   }
   const shortName = file.split('app/react/').pop();
-  return { text, tagName, file: shortName, key };
+  return { text, container, file: shortName, key };
 };
+
+const processTFunction = (path, file) => {
+  const shortName = file.split('app/react/').pop();
+  const key = path.node.arguments[1].value;
+  const text = path.node.arguments[2]?.value ? path.node.arguments[2].value : key;
+
+  if (!text) {
+    return null;
+  }
+
+  return { text: text || key, container: 't', file: shortName, key };
+};
+
 async function parseFile(file) {
   const result = [];
   const fileContents = await promises.readFile(file, 'utf8');
@@ -55,6 +68,14 @@ async function parseFile(file) {
 
   traverse.default(ast, {
     enter(path) {
+      if (
+        path.isCallExpression() &&
+        path.node.callee.name === 't' &&
+        path.node.arguments[0].value === 'System'
+      ) {
+        result.push(processTFunction(path, file));
+      }
+
       if (path.isJSXElement()) {
         const noTranslate = path.node.openingElement.attributes.find(
           a => a.name?.name === 'no-translate'
@@ -102,8 +123,8 @@ const reportNoTranslaeElement = textsWithoutTranslateElement => {
     return;
   }
 
-  textsWithoutTranslateElement.forEach(({ text, tagName, file }) => {
-    console.log('\x1b[36m', file, '\x1b[37m', text, '\x1b[31m', tagName, '\x1b[0m');
+  textsWithoutTranslateElement.forEach(({ text, container, file }) => {
+    console.log('\x1b[36m', file, '\x1b[37m', text, '\x1b[31m', container, '\x1b[0m');
   });
 
   console.log(
@@ -142,9 +163,11 @@ async function checkTranslations(dir) {
   const results = await Promise.all(files.map(file => parseFile(file)));
   const allTexts = results.reduce((acc, curr) => acc.concat(curr), []);
   const textsNotInTranslations = await checkSystemKeys(allTexts);
-  const textsWithoutTranslateElement = allTexts.filter(t => t.tagName !== 'Translate');
+  const textsWithoutTranslateElement = allTexts.filter(
+    t => t.container !== 'Translate' && t.container !== 't'
+  );
   reportNoTranslaeElement(textsWithoutTranslateElement);
-  reportnotInTranslations(textsNotInTranslations);
+  // reportnotInTranslations(textsNotInTranslations);
 
   if (textsNotInTranslations.length || textsWithoutTranslateElement.length) {
     process.exit(1);

@@ -13,9 +13,13 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       Are you sure you want to continue?
     </p>
     <p>
-       If you want to continue, please type '
+      <Connect(Translate)>
+        If you want to continue, please type
+      </Connect(Translate)>
+       '
       CONFIRM
-      ' 
+      '
+       
     </p>
     <input
       onChange={[Function]}

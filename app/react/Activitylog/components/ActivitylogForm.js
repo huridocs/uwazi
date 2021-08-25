@@ -53,11 +53,15 @@ class ActivitylogForm extends Component {
         <div className="activity-log-form">
           <LocalForm onSubmit={this.handleSubmit}>
             <div className="form-group col-sm-12 col-md-6 col-lg-2">
-              <label htmlFor="find">User</label>
+              <label htmlFor="find">
+                <Translate>User</Translate>
+              </label>
               <Control.text className="form-control" model=".username" id="username" />
             </div>
             <div className="form-group col-sm-12 col-md-6 col-lg-4">
-              <label htmlFor="find">Find</label>
+              <label htmlFor="find">
+                <Translate>Find</Translate>
+              </label>
               <Control.text
                 className="form-control"
                 model=".find"
@@ -66,7 +70,9 @@ class ActivitylogForm extends Component {
               />
             </div>
             <div className="form-group col-sm-12 col-lg-6">
-              <label htmlFor="time">Time</label>
+              <label htmlFor="time">
+                <Translate>Time</Translate>
+              </label>
               <DateRange
                 className="form-control"
                 model=".time"

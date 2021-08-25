@@ -4,7 +4,7 @@ import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Select } from 'app/ReactReduxForms';
 import Tip from 'app/Layout/Tip';
 
@@ -15,7 +15,9 @@ import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 const style = index => (
   <div>
     <div className="form-group">
-      <label>{t('System', 'Style')}</label>
+      <label>
+        <Translate>Style</Translate>
+      </label>
       <Select
         model={`template.data.properties[${index}].style`}
         options={[
@@ -28,10 +30,22 @@ const style = index => (
     </div>
     <div className="protip">
       <p>
-        <b>Fit</b> will show the entire media inside the container.
+        <b>
+          <Translate>Fit</Translate>
+        </b>
+        &nbsp;
+        <Translate translationKey="Multimedia fit description">
+          will show the entire media inside the container.
+        </Translate>
         <br />
-        <b>Fill</b> will attempt to fill the container, using it&#39;s entire width. In cards,
-        cropping is likely to occur.
+        <b>
+          <Translate>Fill</Translate>
+        </b>
+        &nbsp;
+        <Translate translationKey="Multimedia fill description">
+          will attempt to fill the container, using it&#39;s entire width. In cards, cropping is
+          likely to occur.
+        </Translate>
       </p>
     </div>
   </div>
@@ -68,20 +82,28 @@ class FormConfigMultimedia extends Component {
           label="Hide label"
           model={`template.data.properties[${index}].noLabel`}
         >
-          <Tip>This property will be shown without the label.</Tip>
+          <Tip>
+            <Translate>This property will be shown without the label.</Translate>
+          </Tip>
         </PropertyConfigOption>
         <PropertyConfigOption
           label="Full width"
           model={`template.data.properties[${index}].fullWidth`}
         >
-          <Tip>This property will be shown using all the width available.</Tip>
+          <Tip>
+            <Translate>This property will be shown using all the width available.</Translate>
+          </Tip>
         </PropertyConfigOption>
         {canBeRequired && (
           <PropertyConfigOption
             label="Required property"
             model={`template.data.properties[${index}].required`}
           >
-            <Tip>You won&#39;t be able to save an entity if this property is empty.</Tip>
+            <Tip>
+              <Translate>
+                You won&#39;t be able to save an entity if this property is empty.
+              </Translate>
+            </Tip>
           </PropertyConfigOption>
         )}
         {canShowInCard && (
@@ -89,7 +111,11 @@ class FormConfigMultimedia extends Component {
             label="Show in cards"
             model={`template.data.properties[${index}].showInCard`}
           >
-            <Tip>This property will appear in the library cards as part of the basic info.</Tip>
+            <Tip>
+              <Translate>
+                This property will appear in the library cards as part of the basic info.
+              </Translate>
+            </Tip>
           </PropertyConfigOption>
         )}
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { createSelector } from 'reselect';
 import { libraryViewInfo } from 'app/App/libraryViewInfo';
 
@@ -16,7 +16,7 @@ class Footer extends Component {
           <li className="footer-nav_item">
             <div className="footer-tooltip">
               <p>
-                Uwazi is developed by{' '}
+                <Translate>Uwazi is developed by</Translate>{' '}
                 <a href="https://huridocs.org/" target="_blank">
                   <img
                     src="/public/huridocs-logo.svg"
@@ -41,21 +41,25 @@ class Footer extends Component {
 
           <li className="footer-nav_item">
             <I18NLink to={getLibraryURL(this.props.defaultLibraryView)}>
-              {t('System', 'Library')}
+              <Translate>Library</Translate>
             </I18NLink>
           </li>
           {(() => {
             if (!this.props.user._id) {
               return (
                 <li className="footer-nav_item">
-                  <I18NLink to="/login">{t('System', 'Login')}</I18NLink>
+                  <I18NLink to="/login">
+                    <Translate>Login</Translate>
+                  </I18NLink>
                 </li>
               );
             }
 
             return (
               <li className="footer-nav_item">
-                <I18NLink to="/settings/account">{t('System', 'Settings')}</I18NLink>
+                <I18NLink to="/settings/account">
+                  <Translate>Settings</Translate>
+                </I18NLink>
               </li>
             );
           })()}

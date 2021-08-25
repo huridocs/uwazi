@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Thumbnail, ConfirmButton } from 'app/Layout';
 import { actions } from 'app/BasicReducer';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import { Icon } from 'UI';
@@ -34,19 +34,24 @@ export class CustomUploads extends RouteHandler {
   render() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Custom Uploads')}</div>
+        <div className="panel-heading">
+          <Translate>Custom Uploads</Translate>
+        </div>
         <div className="panel-body custom-uploads">
           <Dropzone className="upload-box" onDrop={this.onDrop}>
             <div className="upload-box_wrapper">
               <Icon icon="upload" />
               <button className="upload-box_link" type="button">
-                Browse files to upload
+                <Translate>Browse files to upload</Translate>
               </button>
-              <span> or drop your files here.</span>
+              <span>
+                &nbsp;<Translate>or drop your files here.</Translate>
+              </span>
             </div>
             {this.props.progress && (
               <div className="uploading">
-                <Icon icon="spinner" spin /> Uploading ...
+                <Icon icon="spinner" spin />
+                <Translate>Uploading ...</Translate>
               </div>
             )}
           </Dropzone>
@@ -55,11 +60,12 @@ export class CustomUploads extends RouteHandler {
               <li key={upload.get('filename')}>
                 <Thumbnail file={`/assets/${upload.get('filename')}`} />
                 <div className="info">
-                  URL:
+                  <span no-translate>URL:</span>
                   <br />
                   <span className="thumbnail-url">{`/assets/${upload.get('filename')}`}</span>
                   <ConfirmButton action={() => this.props.deleteCustomUpload(upload.get('_id'))}>
                     Delete
+                    <Translate>Delete</Translate>
                   </ConfirmButton>
                 </div>
               </li>

@@ -8,7 +8,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { FavoriteBanner } from 'app/Favorites';
 import helpers from 'app/Documents/helpers';
-
+import { Translate } from 'app/I18N';
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';
@@ -81,7 +81,9 @@ export class Item extends Component {
             {doc.published ? (
               ''
             ) : (
-              <Tip icon="lock">This entity is restricted from public view.</Tip>
+              <Tip icon="lock">
+                <Translate>This entity is restricted from public view.</Translate>
+              </Tip>
             )}
           </>
           {this.props.labels}

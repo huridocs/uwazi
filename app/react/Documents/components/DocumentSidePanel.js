@@ -164,7 +164,7 @@ export class DocumentSidePanel extends Component {
                     >
                       <Icon icon="flask" />
                       <span className="tab-link-tooltip">
-                        {t('System', 'Semantic search results')}
+                        <Translate>Semantic search results</Translate>
                       </span>
                     </TabLink>
                   </li>
@@ -347,7 +347,9 @@ export class DocumentSidePanel extends Component {
                   className="edit-toc btn btn-primary"
                 >
                   <Icon icon="pencil-alt" />
-                  <span className="btn-label">Edit</span>
+                  <span className="btn-label">
+                    <Translate>Edit</Translate>
+                  </span>
                 </button>
                 <ReviewTocButton file={this.props.file}>
                   <Translate>Mark as Reviewed</Translate>
@@ -368,11 +370,11 @@ export class DocumentSidePanel extends Component {
               <TabContent for="toc" className="toc">
                 <div className="tocHeader">
                   <h1>
-                    <Translate>Table of contents </Translate>
+                    <Translate>Table of contents</Translate>
                   </h1>
                   &nbsp;
                   <TocGeneratedLabel file={this.props.file}>
-                    <Translate>auto-created ⓘ </Translate>
+                    <Translate>auto-created ⓘ</Translate>
                   </TocGeneratedLabel>
                 </div>
                 <ShowIf if={!this.props.tocBeingEdited}>

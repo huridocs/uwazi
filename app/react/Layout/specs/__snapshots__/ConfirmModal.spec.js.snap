@@ -19,14 +19,18 @@ exports[`ConfirmModal should render a confirm modal 1`] = `
       onClick={[Function]}
       type="button"
     >
-      Cancel
+      <Connect(Translate)>
+        Cancel
+      </Connect(Translate)>
     </button>
     <button
       className="btn confirm-button btn-danger"
       onClick={[Function]}
       type="button"
     >
-      Accept
+      <Connect(Translate)>
+        Accept
+      </Connect(Translate)>
     </button>
   </Footer>
 </Modal>
