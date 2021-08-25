@@ -54,6 +54,12 @@ export default {
           label: 'Auto ID',
           name: templateUtils.safeName('auto id'),
         },
+        {
+          _id: db.id(),
+          type: propertyTypes.text,
+          label: 'additional tag(s)',
+          name: templateUtils.safeName('additional tag(s)', true),
+        },
       ],
     },
     {
@@ -92,6 +98,7 @@ export default {
         { key: 'es', label: 'Spanish' },
         { key: 'fr', label: 'French' },
       ],
+      newNameGeneration: true,
     },
   ],
 
