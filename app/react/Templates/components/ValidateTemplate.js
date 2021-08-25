@@ -24,10 +24,11 @@ export function validateDuplicatedRelationship(property, properties) {
   return (properties || []).reduce((validity, prop) => {
     const sameProperty = (prop._id || prop.localID) === (property._id || property.localID);
     const differentRelationtype = !prop.relationType || prop.relationType !== property.relationType;
-    const differentContent = prop.content !== property.content;
+    const sameContent = prop.content === property.content;
     const isNotAnyTemplate = Boolean(property.content && property.content.trim() !== '');
     return (
-      validity && (sameProperty || differentRelationtype || (differentContent && isNotAnyTemplate))
+      validity &&
+      (sameProperty || differentRelationtype || sameContent || (!sameContent && isNotAnyTemplate))
     );
   }, true);
 }
