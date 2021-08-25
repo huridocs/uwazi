@@ -42,7 +42,10 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
                   icon="exclamation-triangle"
                   size="xs"
                 />
-                 Duplicated name
+                 
+                <Connect(Translate)>
+                  Duplicated name
+                </Connect(Translate)>
               </div>
             </ShowIf>
           </Modeled(Connect(Field))>
@@ -107,7 +110,9 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           <span
             className="btn-label"
           >
-            Add group
+            <Connect(Translate)>
+              Add group
+            </Connect(Translate)>
           </span>
         </button>
         <button
@@ -121,7 +126,9 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           <span
             className="btn-label"
           >
-            Sort
+            <Connect(Translate)>
+              Sort
+            </Connect(Translate)>
           </span>
         </button>
         <SelectFileButton
@@ -153,7 +160,9 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           <span
             className="btn-label"
           >
-            Save
+            <Connect(Translate)>
+              Save
+            </Connect(Translate)>
           </span>
         </button>
       </div>

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Translate } from 'app/I18N';
 import Modal from './Modal';
 
 class ConfirmModal extends Component {
@@ -17,14 +18,14 @@ class ConfirmModal extends Component {
             className="btn btn-default cancel-button"
             onClick={this.props.onCancel}
           >
-            Cancel
+            <Translate>Cancel</Translate>
           </button>
           <button
             type="button"
             className={`btn confirm-button btn-${this.props.type}`}
             onClick={this.props.onAccept}
           >
-            Accept
+            <Translate>Accept</Translate>
           </button>
         </Modal.Footer>
       </Modal>

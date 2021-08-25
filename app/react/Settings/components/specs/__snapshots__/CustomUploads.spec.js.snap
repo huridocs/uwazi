@@ -16,7 +16,9 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
   <div
     className="panel-heading"
   >
-    Custom Uploads
+    <Connect(Translate)>
+      Custom Uploads
+    </Connect(Translate)>
   </div>
   <div
     className="panel-body custom-uploads"
@@ -42,10 +44,15 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           className="upload-box_link"
           type="button"
         >
-          Browse files to upload
+          <Connect(Translate)>
+            Browse files to upload
+          </Connect(Translate)>
         </button>
         <span>
-           or drop your files here.
+           
+          <Connect(Translate)>
+            or drop your files here.
+          </Connect(Translate)>
         </span>
       </div>
     </t>
@@ -60,7 +67,11 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
         <div
           className="info"
         >
-          URL:
+          <span
+            no-translate={true}
+          >
+            URL:
+          </span>
           <br />
           <span
             className="thumbnail-url"
@@ -74,6 +85,9 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
             title="Confirm action"
           >
             Delete
+            <Connect(Translate)>
+              Delete
+            </Connect(Translate)>
           </ConfirmButton>
         </div>
       </li>
@@ -87,7 +101,11 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
         <div
           className="info"
         >
-          URL:
+          <span
+            no-translate={true}
+          >
+            URL:
+          </span>
           <br />
           <span
             className="thumbnail-url"
@@ -101,6 +119,9 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
             title="Confirm action"
           >
             Delete
+            <Connect(Translate)>
+              Delete
+            </Connect(Translate)>
           </ConfirmButton>
         </div>
       </li>
@@ -116,7 +137,9 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
   <div
     className="panel-heading"
   >
-    Custom Uploads
+    <Connect(Translate)>
+      Custom Uploads
+    </Connect(Translate)>
   </div>
   <div
     className="panel-body custom-uploads"
@@ -142,10 +165,15 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
           className="upload-box_link"
           type="button"
         >
-          Browse files to upload
+          <Connect(Translate)>
+            Browse files to upload
+          </Connect(Translate)>
         </button>
         <span>
-           or drop your files here.
+           
+          <Connect(Translate)>
+            or drop your files here.
+          </Connect(Translate)>
         </span>
       </div>
       <div
@@ -155,7 +183,9 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
           icon="spinner"
           spin={true}
         />
-         Uploading ...
+        <Connect(Translate)>
+          Uploading ...
+        </Connect(Translate)>
       </div>
     </t>
     <ul />

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 
 import Modal from 'app/Layout/Modal';
 import Loader from 'app/components/Elements/Loader';
@@ -59,7 +59,10 @@ export class Confirm extends Component {
   renderExtraConfirm() {
     return (
       <>
-        <p> If you want to continue, please type &#39;{this.props.extraConfirmWord}&#39; </p>
+        <p>
+          <Translate>If you want to continue, please type</Translate> &#39;
+          {this.props.extraConfirmWord}&#39;{' '}
+        </p>
         <input type="text" onChange={this.handleInput} value={this.state.confirmInputValue} />
       </>
     );

@@ -10,7 +10,7 @@ import debounce from 'app/utils/debounce';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { PermissionsFilter } from './PermissionsFilter';
@@ -93,14 +93,20 @@ export class FiltersForm extends Component {
             return (
               <div className="blank-state">
                 <Icon icon="times" />
-                <h4>{t('System', 'No common filters')}</h4>
-                <p>The combination of entity types doesn&#39;t have any filters in common.</p>
+                <h4>
+                  <Translate>No common filters</Translate>
+                </h4>
+                <p>
+                  <Translate>
+                    The combination of entity types doesn&#39;t have any filters in common.
+                  </Translate>
+                </p>
                 <a
                   href="https://github.com/huridocs/uwazi/wiki/Filter"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Learn more
+                  <Translate>Learn more</Translate>
                 </a>
               </div>
             );

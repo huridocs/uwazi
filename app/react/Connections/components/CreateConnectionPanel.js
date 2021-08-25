@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 
 import { closePanel } from '../actions/uiActions';
 import { setRelationType, setTargetDocument } from '../actions/actions';
@@ -36,7 +36,9 @@ export class CreateConnectionPanel extends Component {
     return (
       <SidePanel open={open} className={className}>
         <div className="sidepanel-header">
-          <h1>Create {typeLabel}</h1>
+          <h1>
+            <Translate>Create</Translate> {typeLabel}
+          </h1>
           <button
             className="closeSidepanel close-modal"
             onClick={this.props.closePanel}
@@ -44,7 +46,9 @@ export class CreateConnectionPanel extends Component {
           >
             <Icon icon="times" />
           </button>
-          <div className="connections-list-title">{t('System', 'Select relationship type')}</div>
+          <div className="connections-list-title">
+            <Translate>Select relationship type</Translate>
+          </div>
           <ul className="connections-list multiselect">
             {this.props.relationTypes.map(template => (
               <li

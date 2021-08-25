@@ -10,20 +10,28 @@ exports[`ActivitylogList should render a table with the activity log entries and
     <thead>
       <tr>
         <th>
-          Action
+          <Connect(Translate)>
+            Action
+          </Connect(Translate)>
         </th>
         <th>
-          User
+          <Connect(Translate)>
+            User
+          </Connect(Translate)>
         </th>
         <th
           className="activitylog-description"
         >
-          Description
+          <Connect(Translate)>
+            Description
+          </Connect(Translate)>
         </th>
         <th
           className="activitylog-time"
         >
-          Time
+          <Connect(Translate)>
+            Time
+          </Connect(Translate)>
         </th>
       </tr>
     </thead>

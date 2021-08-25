@@ -175,7 +175,9 @@ export class ThesauriForm extends Component {
                     }
                   >
                     <div className="validation-error">
-                      <Icon icon="exclamation-triangle" size="xs" /> Duplicated name
+                      <Icon icon="exclamation-triangle" size="xs" />
+                      &nbsp;
+                      <Translate>Duplicated name</Translate>
                     </div>
                   </ShowIf>
                 </Field>
@@ -196,11 +198,15 @@ export class ThesauriForm extends Component {
               <BackButton to="/settings/dictionaries" />
               <button type="button" className="btn btn-primary" onClick={this.props.addGroup}>
                 <Icon icon="plus" />
-                <span className="btn-label">Add group</span>
+                <span className="btn-label">
+                  <Translate>Add group</Translate>
+                </span>
               </button>
               <button type="button" className="btn btn-primary" onClick={this.props.sortValues}>
                 <Icon icon="sort-alpha-down" />
-                <span className="btn-label">Sort</span>
+                <span className="btn-label">
+                  <Translate>Sort</Translate>
+                </span>
               </button>
               <SelectFileButton onFileImported={this.importThesaurusFile}>
                 <button type="button" className="btn btn-primary import-template">
@@ -212,7 +218,9 @@ export class ThesauriForm extends Component {
               </SelectFileButton>
               <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save" />
-                <span className="btn-label">Save</span>
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
               </button>
             </div>
           </div>

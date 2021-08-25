@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
+import { Translate } from 'app/I18N';
 
 const DescriptionWrapper = props => {
   const { entry, toggleExpand, expanded, children } = props;
@@ -23,23 +24,31 @@ const DescriptionWrapper = props => {
             <tbody>
               {entry.getIn(['semantic', 'beautified']) && (
                 <tr>
-                  <td>Route</td>
+                  <td>
+                    <Translate>Route</Translate>
+                  </td>
                   <td>
                     {entry.get('method')} : {entry.get('url')}
                   </td>
                 </tr>
               )}
               <tr>
-                <td>Query</td>
+                <td>
+                  <Translate>Query</Translate>
+                </td>
                 <td className="tdquery">{entry.get('query')}</td>
               </tr>
               <tr>
-                <td>Body</td>
+                <td>
+                  <Translate>Body</Translate>
+                </td>
                 <td className="tdbody">{entry.get('body')}</td>
               </tr>
               {entry.getIn(['semantic', 'errorStack']) && (
                 <tr>
-                  <td>Error</td>
+                  <td>
+                    <Translate>Error</Translate>
+                  </td>
                   <td className="tdbody">{entry.getIn(['semantic', 'errorStack'])}</td>
                 </tr>
               )}
