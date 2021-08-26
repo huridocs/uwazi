@@ -126,29 +126,27 @@ export class MetadataForm extends Component {
         onSubmitFailed={this.onSubmitFailed}
       >
         {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
-          <>
-            <FormGroup model=".title">
-              <ul className="search__filter">
-                <li>
-                  <label>
-                    <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
-                    <span className="required">*</span>
-                  </label>
-                </li>
-                <li className="wide">
-                  <div className="metadata-extractor-container">
-                    {storeKey === 'documentViewer' && (
-                      <MetadataExtractor fieldName="title" model={`${model}.title`} />
-                    )}
-                    <Field model=".title">
-                      <textarea className="form-control" />
-                    </Field>
-                  </div>
-                </li>
-                <IconField model={model} />
-              </ul>
-            </FormGroup>
-          </>
+          <FormGroup model=".title">
+            <ul className="search__filter">
+              <li>
+                <label>
+                  <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
+                  <span className="required">*</span>
+                </label>
+              </li>
+              <li className="wide">
+                <div className="metadata-extractor-container">
+                  {storeKey === 'documentViewer' && (
+                    <MetadataExtractor fieldName="title" model={`${model}.title`} />
+                  )}
+                  <Field model=".title">
+                    <textarea className="form-control" />
+                  </Field>
+                </div>
+              </li>
+              <IconField model={model} />
+            </ul>
+          </FormGroup>
         )}
 
         {(!showSubset || showSubset.includes('template')) &&

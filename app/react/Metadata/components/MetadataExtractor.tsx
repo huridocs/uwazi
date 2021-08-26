@@ -3,7 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
-import { updateSelection, formFieldUpdater } from '../actions/metadataExtractionActions';
+import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
 
 export type OwnPropTypes = {
   fieldName: string;
@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
   const { fieldName, fieldId, model, fieldType = undefined } = ownProps;
   return bindActionCreators(
     {
-      updateFormField: value => formFieldUpdater(value, model, fieldType),
+      updateField: value => updateFormField(value, model, fieldType),
       setSelection: selection => updateSelection(selection, fieldName, fieldId, fieldType),
     },
     dispatch
@@ -38,10 +38,10 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const MetadataExtractorComponent = ({ selection, setSelection, updateFormField }: mappedProps) => {
+const MetadataExtractorComponent = ({ selection, setSelection, updateField }: mappedProps) => {
   const onClick = () => {
     setSelection(selection);
-    updateFormField(selection.text);
+    updateField(selection.text);
   };
 
   if (selection !== null) {

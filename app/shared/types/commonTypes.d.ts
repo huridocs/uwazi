@@ -80,6 +80,14 @@ export interface MetadataSchema {
   [k: string]: MetadataObjectSchema[] | undefined;
 }
 
+export type SelectionRectanglesSchema = {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  page?: string;
+}[];
+
 export interface TocSchema {
   selectionRectangles?: {
     top?: number;

@@ -1,15 +1,15 @@
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
-import { updateSelection, formFieldUpdater } from '../metadataExtractionActions';
+import { updateSelection, updateFormField } from '../metadataExtractionActions';
 
 describe('metadataExtractionActions', () => {
-  describe('formFieldUpdater', () => {
+  describe('updateFormField', () => {
     beforeEach(() => {
       spyOn(formActions, 'change');
     });
 
     it('should update the form fields with the selected value', () => {
-      formFieldUpdater('value to put in form', 'fieldModel');
+      updateFormField('value to put in form', 'fieldModel');
       expect(formActions.change).toHaveBeenCalledWith('fieldModel', 'value to put in form');
     });
 
@@ -17,24 +17,24 @@ describe('metadataExtractionActions', () => {
       'should format valid date inputs for Datepicker.js component',
       dateStrings => {
         const dateForDatepickerInUTC = 917654400;
-        formFieldUpdater(dateStrings, 'fieldModel', 'date');
+        updateFormField(dateStrings, 'fieldModel', 'date');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', dateForDatepickerInUTC);
       }
     );
 
     it('should parse dates that are only years, and set it to 01/01/YEAR', () => {
       const dateForDatepickerInUTC = 1609459200;
-      formFieldUpdater('2021', 'fieldModel', 'date');
+      updateFormField('2021', 'fieldModel', 'date');
       expect(formActions.change).toHaveBeenCalledWith('fieldModel', dateForDatepickerInUTC);
     });
 
     describe('numeric fields', () => {
       it('should check that selections for numeric fields are actual numbers', () => {
-        formFieldUpdater('12345', 'fieldModel', 'numeric');
+        updateFormField('12345', 'fieldModel', 'numeric');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', '12345');
       });
       it('should set the numeric field to 0 if the value is not a number', () => {
-        formFieldUpdater('une two three', 'fieldModel', 'numeric');
+        updateFormField('une two three', 'fieldModel', 'numeric');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', '0');
       });
     });

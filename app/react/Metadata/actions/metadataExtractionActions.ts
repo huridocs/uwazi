@@ -33,7 +33,7 @@ const updateSelection = (
   return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data, 'propertyID');
 };
 
-const formFieldUpdater = (value: string, model: string, fieldType?: string) => {
+const updateFormField = (value: string, model: string, fieldType?: string) => {
   if (fieldType === 'date') {
     const dateForPicker = dateToMilliseconds(value);
     return formActions.change(model, dateForPicker);
@@ -46,4 +46,4 @@ const formFieldUpdater = (value: string, model: string, fieldType?: string) => {
   return formActions.change(model, value);
 };
 
-export { updateSelection, formFieldUpdater };
+export { updateSelection, updateFormField };

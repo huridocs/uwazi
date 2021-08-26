@@ -10,23 +10,29 @@ interface EntityWithExtractedMetadata extends EntitySchema {
   __extractedMetadata: { selections: ExtractedMetadataSchema[] };
 }
 
-const updateSelections = (newSelections: any[], storedSelections: any[]) => {
+const updateSelections = (
+  newSelections: ExtractedMetadataSchema[],
+  storedSelections: ExtractedMetadataSchema[]
+) => {
   const merged = newSelections.concat(storedSelections);
   const selections = uniqBy(merged, 'name');
   return selections;
 };
 
-const removeUserChangedSelections = (entityData: { [key: string]: any }, userSelections: any[]) => {
-  let updatedSelections = [];
+const removeUserChangedSelections = (
+  entityData: { [key: string]: any },
+  userSelections: ExtractedMetadataSchema[]
+) => {
+  let updatedSelections: ExtractedMetadataSchema[] = [];
 
   if (userSelections.length > 0) {
     updatedSelections = userSelections.filter(selection => {
       if (selection.name === 'title') {
-        return textSimilarityCheck(selection.selection.text, entityData.title);
+        return textSimilarityCheck(selection.selection?.text || '', entityData.title);
       }
       return textSimilarityCheck(
-        selection.selection.text,
-        entityData[selection.name][0].value || ''
+        selection.selection?.text || '',
+        (selection.name && entityData[selection.name][0].value) || ''
       );
     });
   }

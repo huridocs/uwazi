@@ -26,8 +26,6 @@ const fixture = {
   ],
 };
 
-const entityBasicProperties = { _id: 'entityID', sharedId: 'entitySharedId', language: 'en' };
-
 describe('saveSelections', () => {
   jest.spyOn(files, 'save');
 
@@ -84,7 +82,9 @@ describe('saveSelections', () => {
 
   it('should update selections stored in the file with the newer ones', async () => {
     await saveSelections({
-      ...entityBasicProperties,
+      _id: 'entityID',
+      sharedId: 'entitySharedId',
+      language: 'en',
       __extractedMetadata: {
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
@@ -123,9 +123,11 @@ describe('saveSelections', () => {
     });
   });
 
-  it('should remove selections if entity metadata is diferent from selected metadata', async () => {
+  it('should remove selections if entity metadata is different from selected metadata', async () => {
     await saveSelections({
-      ...entityBasicProperties,
+      _id: 'entityID',
+      sharedId: 'entitySharedId',
+      language: 'en',
       __extractedMetadata: {
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
@@ -135,7 +137,7 @@ describe('saveSelections', () => {
       metadata: {
         property_a: [
           {
-            value: 'diferent text entered manually by user',
+            value: 'different text entered manually by user',
           },
         ],
         property_b: [
@@ -159,9 +161,11 @@ describe('saveSelections', () => {
     });
   });
 
-  it('should work with numeric and date values, removing them from extracted metadata if they are diferent in the entity', async () => {
+  it('should work with numeric and date values, removing them from extracted metadata if they are different in the entity', async () => {
     await saveSelections({
-      ...entityBasicProperties,
+      _id: 'entityID',
+      sharedId: 'entitySharedId',
+      language: 'en',
       __extractedMetadata: {
         selections: [
           { name: 'numeric_property_a', selection: { text: '122547899' } },
