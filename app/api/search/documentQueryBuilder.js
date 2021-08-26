@@ -112,6 +112,7 @@ export default function() {
 
   return {
     query() {
+      console.log(JSON.stringify(baseQuery.query, null, 2));
       return baseQuery;
     },
 
@@ -300,8 +301,12 @@ export default function() {
             addFilter(
               nested(
                 [
-                  { terms: { 'permissions.refId': filters[key].values } },
-                  { terms: { 'permissions.level': ['read'] } },
+                  ...(filters[key].and
+                    ? filters[key].values.map(value => ({
+                        terms: { 'permissions.refId': [value] },
+                      }))
+                    : [{ terms: { 'permissions.refId': filters[key].values } }]),
+                  { term: { 'permissions.level': 'read' } },
                 ],
                 'permissions'
               )
@@ -316,7 +321,7 @@ export default function() {
               nested(
                 [
                   { terms: { 'permissions.refId': filters[key].values } },
-                  { terms: { 'permissions.level': ['write'] } },
+                  { term: { 'permissions.level': 'write' } },
                 ],
                 'permissions'
               )

@@ -45,6 +45,27 @@ describe('Permissions filters', () => {
 
         expect(rows.map((r: EntitySchema) => r.title)).toEqual(['ent3']);
       });
+
+      fit.each`
+        operator | expected
+        ${'and'} | ${['ent1', 'ent2']}
+        ${'or'}  | ${['ent1', 'ent2', 'ent3']}
+      `('should accept the "$operator" operator', async ({ operator, expected }) => {
+        userFactory.mock(users.adminUser);
+        const query = {
+          customFilters: {
+            'permissions.read': {
+              and: operator === 'and',
+              values: [users.user1._id.toString(), group1.toString()],
+            },
+          },
+          includeUnpublished: true,
+        };
+
+        const { rows } = await search.search(query, 'es', users.adminUser);
+
+        expect(rows.map((r: EntitySchema) => r.title)).toEqual(expected);
+      });
     });
 
     describe('if not logged as admin', () => {
