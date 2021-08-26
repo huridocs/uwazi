@@ -3,6 +3,7 @@ import * as types from 'app/Library/actions/actionTypes';
 
 import documentsReducer from 'app/Library/reducers/documentsReducer';
 import * as actions from 'app/Library/actions/libraryActions';
+import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
 
 describe('documentsReducer', () => {
   const initialState = Immutable.fromJS({ rows: [], totalRows: 0 });
@@ -250,6 +251,92 @@ describe('documentsReducer', () => {
           { title: '3', _id: 3, sharedId: 'shared3', published: true },
         ],
         totalRows: 3,
+      });
+    });
+  });
+
+  describe('Attachments', () => {
+    const initialDocumentsState = {
+      rows: [
+        {
+          title: '1',
+          _id: 1,
+          sharedId: 'shared1',
+          attachments: [{ _id: 'fileId1', originalname: 'file1' }],
+        },
+        {
+          title: '2',
+          _id: 2,
+          sharedId: 'shared2',
+          published: false,
+          attachments: [{ _id: 'fileId2', originalname: 'file2' }],
+        },
+        {
+          title: '3',
+          _id: 3,
+          sharedId: 'shared3',
+          published: false,
+          attachments: [
+            { _id: 'fileId3', originalname: 'file3' },
+            { _id: 'fileId3a', originalname: 'file3a' },
+          ],
+        },
+      ],
+      totalRows: 3,
+    };
+
+    const assertAttachmentReducer = (action, expectedIndex, expectedAttachments) => {
+      const newState = documentsReducer(Immutable.fromJS(initialDocumentsState), action);
+
+      const expectedState = {
+        ...initialDocumentsState,
+      };
+      expectedState.rows[expectedIndex].attachments = expectedAttachments;
+      expect(newState.toJS()).toEqual(expectedState);
+    };
+
+    describe('ATTACHMENT_COMPLETE', () => {
+      it('should push the newly uploaded file to the entity attachments', () => {
+        assertAttachmentReducer(
+          {
+            type: attachmentTypes.ATTACHMENT_COMPLETE,
+            entity: 'shared2',
+            file: { _id: 'fileId2a', originalname: 'file2a' },
+          },
+          1,
+          [
+            { _id: 'fileId2', originalname: 'file2' },
+            { _id: 'fileId2a', originalname: 'file2a' },
+          ]
+        );
+      });
+    });
+
+    describe('ATTACHMENT_DELETED', () => {
+      it('should remove the deleted file from the entity attachments', () => {
+        assertAttachmentReducer(
+          {
+            type: attachmentTypes.ATTACHMENT_DELETED,
+            entity: 'shared3',
+            file: { _id: 'fileId3a', originalname: 'file3a' },
+          },
+          2,
+          [{ _id: 'fileId3', originalname: 'file3' }]
+        );
+      });
+    });
+
+    describe('ATTACHMENT_RENAMED', () => {
+      it('should rename the changed file in the entity attachments', () => {
+        assertAttachmentReducer(
+          {
+            type: attachmentTypes.ATTACHMENT_RENAMED,
+            entity: 'shared1',
+            file: { _id: 'fileId1', originalname: 'fileRenamed' },
+          },
+          0,
+          [{ _id: 'fileId1', originalname: 'fileRenamed' }]
+        );
       });
     });
   });
