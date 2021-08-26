@@ -20,15 +20,15 @@ const updateSelections = (
 };
 
 const removeUserChangedSelections = (
-  entityData: { [key: string]: any },
+  entityData: { [key: string]: any; __title?: string },
   userSelections: ExtractedMetadataSchema[]
 ) => {
   let updatedSelections: ExtractedMetadataSchema[] = [];
 
   if (userSelections.length > 0) {
     updatedSelections = userSelections.filter(selection => {
-      if (selection.name === 'title') {
-        return textSimilarityCheck(selection.selection?.text || '', entityData.title);
+      if (selection.name === 'title' && entityData.__title) {
+        return textSimilarityCheck(selection.selection?.text || '', entityData.__title);
       }
       return textSimilarityCheck(
         selection.selection?.text || '',
@@ -44,7 +44,7 @@ const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) 
   let selections = entity.__extractedMetadata?.selections || [];
 
   const entityData = {
-    title: entity.title,
+    __title: entity.title,
     ...entity.metadata,
   };
 
