@@ -4,37 +4,28 @@ import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import MarkdownViewer from 'app/Markdown';
-import moment from 'moment-timezone';
 
 export interface TableCellProps {
   content: FormattedMetadataValue;
   zoomLevel: number;
-  dateFormat: string | undefined;
 }
 
 export interface FormattedMetadataValue extends PropertySchema {
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
-const formatProperty = (prop: FormattedMetadataValue, dateFormat: string | undefined) => {
+const formatProperty = (prop: FormattedMetadataValue) => {
   let result;
   if (!prop?.value) {
     return undefined;
   }
-  if (['daterange', 'numeric', 'select', 'text', 'generatedid', undefined].includes(prop.type)) {
+  if (
+    ['date', 'daterange', 'numeric', 'select', 'text', 'generatedid', undefined].includes(prop.type)
+  ) {
     return prop.value;
   }
 
   switch (prop.type) {
-    case 'date':
-      if (dateFormat) {
-        result = moment(prop.value as string)
-          .utc()
-          .format((dateFormat as string).replace('dd', 'DD').replace('yyyy', 'YYYY'));
-      } else {
-        result = prop.value;
-      }
-      break;
     case 'multiselect':
     case 'multidaterange':
     case 'multidate':
@@ -73,7 +64,7 @@ const formatProperty = (prop: FormattedMetadataValue, dateFormat: string | undef
 };
 
 export const TableCellComponent = (props: TableCellProps) => {
-  const cellValue = formatProperty(props.content, props.dateFormat);
+  const cellValue = formatProperty(props.content);
   return (
     <div className={`table-view-cell table-view-row-zoom-${props.zoomLevel}`}>{cellValue}</div>
   );

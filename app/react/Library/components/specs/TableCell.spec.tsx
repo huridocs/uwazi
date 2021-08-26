@@ -12,7 +12,6 @@ describe('TableCell', () => {
   let component: any;
   const props: TableCellProps = {
     content: { label: 'Title', type: 'text', name: 'title', value: 'Entity 1' },
-    dateFormat: '',
     zoomLevel: 1,
   };
 

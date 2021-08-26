@@ -19,14 +19,12 @@ interface TableRowProps {
   templates: IImmutable<TemplateSchema[]>;
   thesauris: IImmutable<ThesaurusSchema[]>;
   zoomLevel: number;
-  dateFormat: string | undefined;
 }
 
 const defaultProps = {
   templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
   thesauris: Immutable.fromJS([]) as IImmutable<ThesaurusSchema[]>,
   zoomLevel: 2,
-  dateFormat: '',
 };
 
 const getColumnValue = (
@@ -59,8 +57,7 @@ class TableRowComponent extends Component<TableRowProps> {
   renderCell = (
     index: number,
     selected: boolean | undefined,
-    columnValue: FormattedMetadataValue,
-    dateFormat: string | undefined
+    columnValue: FormattedMetadataValue
   ) => {
     if (!index) {
       return (
@@ -73,22 +70,16 @@ class TableRowComponent extends Component<TableRowProps> {
               onClick={this.onRowClick}
             />
           )}
-          <TableCell
-            content={columnValue}
-            zoomLevel={this.props.zoomLevel}
-            dateFormat={dateFormat}
-          />
+          <TableCell content={columnValue} zoomLevel={this.props.zoomLevel} />
         </div>
       );
     }
 
-    return (
-      <TableCell content={columnValue} zoomLevel={this.props.zoomLevel} dateFormat={dateFormat} />
-    );
+    return <TableCell content={columnValue} zoomLevel={this.props.zoomLevel} />;
   };
 
   render() {
-    const { entity, templates, thesauris, columns, selected, dateFormat } = this.props;
+    const { entity, templates, thesauris, columns, selected } = this.props;
     const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
       sortedProperty: 'creationDate',
     });
@@ -104,7 +95,7 @@ class TableRowComponent extends Component<TableRowProps> {
           const columnKey = formattedEntity._id + column.name;
           return (
             <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
-              {this.renderCell(index, selected, columnValue, dateFormat)}
+              {this.renderCell(index, selected, columnValue)}
             </td>
           );
         })}
@@ -125,7 +116,6 @@ function mapStateToProps(state: IStore, ownProps: TableRowProps) {
     selected,
     templates: state.templates,
     thesauris: state.thesauris,
-    dateFormat: state.settings.collection.get('dateFormat'),
     zoomLevel: state[ownProps.storeKey].ui.get('zoomLevel'),
   };
 }
