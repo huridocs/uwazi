@@ -8,6 +8,7 @@ const {
   TEMPORAL_FILES_FOLDER,
   USER_SESSION_SECRET,
   MONGO_URI,
+  ELASTICSEARCH_URL,
   DBHOST,
 } = process.env;
 
@@ -29,6 +30,8 @@ export const config = {
   publicAssets: `${rootPath}/public/`,
 
   userSessionSecret: USER_SESSION_SECRET || uniqueID(),
+
+  elasticsearch_nodes: ELASTICSEARCH_URL ? ELASTICSEARCH_URL.split(',') : ['http://localhost:9200'],
 
   // db for tenants list and sessions
   SHARED_DB: 'uwazi_shared_db',
