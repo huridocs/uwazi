@@ -1,5 +1,5 @@
 import { FormGroup } from 'app/Forms';
-import t from 'app/I18N/t';
+import { t, Translate } from 'app/I18N';
 import { preloadOptionsLimit } from 'shared/config';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { Field, actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
-import { Translate } from 'app/I18N';
 import { generateID } from 'shared/IDGenerator';
 import { bindActionCreators } from 'redux';
 import Tip from 'app/Layout/Tip';
@@ -181,7 +180,9 @@ export class MetadataFormFields extends Component {
       case 'preview':
         return (
           <div>
-            <em>This content is automatically generated</em>
+            <em>
+              <Translate>This content is automatically generated</Translate>
+            </em>
           </div>
         );
       case 'generatedid':
@@ -234,8 +235,10 @@ export class MetadataFormFields extends Component {
           )
           <Tip icon="info-circle" position="right">
             <p>
-              Making changes to this property will affect other properties on this template because
-              they all share relationships with the same configuration.
+              <Translate translationKey="Multiple relationships edit description">
+                Making changes to this property will affect other properties on this template
+                because they all share relationships with the same configuration.
+              </Translate>
             </p>
           </Tip>
         </>

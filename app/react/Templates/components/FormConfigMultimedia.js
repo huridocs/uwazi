@@ -4,7 +4,7 @@ import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { Select } from 'app/ReactReduxForms';
 import Tip from 'app/Layout/Tip';
 

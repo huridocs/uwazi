@@ -83,9 +83,16 @@ export class MetadataForm extends Component {
     return (
       <ul className="search__filter">
         <div className="text-center protip">
-          <Icon icon="lightbulb" /> <b>ProTip!</b>
+          <Icon icon="lightbulb" />{' '}
+          <b>
+            <Translate>ProTip!</Translate>
+          </b>
           <span>
-            You can create metadata templates in <I18NLink to="/settings">settings</I18NLink>.
+            <Translate>You can create metadata templates in</Translate>{' '}
+            <I18NLink to="/settings">
+              <Translate>settings</Translate>
+            </I18NLink>
+            .
           </span>
         </div>
       </ul>

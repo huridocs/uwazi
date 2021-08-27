@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { deleteEntities } from 'app/Entities/actions/actions';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import { createSelector } from 'reselect';
@@ -121,8 +121,9 @@ export class SelectMultiplePanel extends Component {
         <div className="alert alert-warning">
           <Icon icon="exclamation-triangle" size="2x" />
           <p>
-            Warning: you are editing multiple entities. Fields marked with a{' '}
-            <Icon icon="exclamation-triangle" /> will be updated with the same value.
+            <Translate>Warning: you are editing multiple entities. Fields marked with a</Translate>{' '}
+            <Icon icon="exclamation-triangle" />{' '}
+            <Translate>will be updated with the same value.</Translate>
           </p>
         </div>
         <MetadataForm

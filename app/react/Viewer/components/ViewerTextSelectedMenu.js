@@ -7,6 +7,8 @@ import { actions as connectionsActions } from 'app/Connections';
 import { openPanel } from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
+
 import { addToToc } from '../actions/documentActions';
 
 export class ViewerTextSelectedMenu extends Component {
@@ -23,7 +25,9 @@ export class ViewerTextSelectedMenu extends Component {
             className="btn btn-primary connect-to-p"
             onClick={this.showPanel.bind(this, 'targetRanged')}
           >
-            <span className="ContextMenu-tooltip">Connect to a paragraph</span>
+            <span className="ContextMenu-tooltip">
+              <Translate>Connect to a paragraph</Translate>
+            </span>
             <Icon icon="paragraph" />
           </div>
         </ShowIf>
@@ -32,7 +36,9 @@ export class ViewerTextSelectedMenu extends Component {
             className="btn btn-primary connect-to-d"
             onClick={this.showPanel.bind(this, 'ranged')}
           >
-            <span className="ContextMenu-tooltip">Connect to a document</span>
+            <span className="ContextMenu-tooltip">
+              <Translate>Connect to a document</Translate>
+            </span>
             <Icon icon="file" />
           </div>
         </ShowIf>
@@ -40,7 +46,9 @@ export class ViewerTextSelectedMenu extends Component {
           className="btn btn-primary add-toc"
           onClick={this.props.addToToc.bind(null, this.props.reference.toJS(), this.props.file.toc)}
         >
-          <span className="ContextMenu-tooltip">Add to table of contents</span>
+          <span className="ContextMenu-tooltip">
+            <Translate>Add to table of contents</Translate>
+          </span>
           <Icon icon="font" />
         </div>
       </div>

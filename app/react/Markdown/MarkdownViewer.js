@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import rison from 'rison-node';
-
+import { Translate } from 'app/I18N';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
 import CustomHookComponents from './CustomHooks';
 
@@ -13,7 +13,11 @@ class MarkdownViewer extends Component {
       <p key={index} className="error">
         <br />
         <strong>
-          <i>Custom component markup error: unsuported values! Please check your configuration</i>
+          <i>
+            <Translate translationKey="Custom component error">
+              Custom component markup error: unsuported values! Please check your configuration
+            </Translate>
+          </i>
         </strong>
         <br />
         {message}

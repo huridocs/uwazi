@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -9,7 +7,7 @@ import { actions } from 'app/BasicReducer';
 import UsersAPI from 'app/Users/UsersAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { RequestParams } from 'app/utils/RequestParams';
-import { t, I18NLink } from 'app/I18N';
+import { t, I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { createSelector } from 'reselect';
 
@@ -79,7 +77,7 @@ export class AccountSettings extends Component {
     return (
       <div className={`form-group${passwordError ? ' has-error' : ''}`}>
         <label className="form-group-label" htmlFor={id}>
-          {t('System', label)}
+          <Translate>{label}</Translate>
         </label>
         <input
           type="password"
@@ -98,13 +96,17 @@ export class AccountSettings extends Component {
     return (
       <div className="account-settings">
         <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Account')}</div>
+          <div className="panel-heading">
+            <Translate>Account</Translate>
+          </div>
           <div className="panel-body">
-            <h5>{t('System', 'Email address')}</h5>
+            <h5>
+              <Translate>Email address</Translate>
+            </h5>
             <form onSubmit={this.updateEmail}>
               <div className="form-group">
                 <label className="form-group-label" htmlFor="collection_name">
-                  {t('System', 'Email')}
+                  <Translate>Email</Translate>
                 </label>
                 <input
                   type="email"
@@ -114,11 +116,13 @@ export class AccountSettings extends Component {
                 />
               </div>
               <button type="submit" className="btn btn-success">
-                {t('System', 'Update')}
+                <Translate>Update</Translate>
               </button>
             </form>
             <hr />
-            <h5>{t('System', 'Change password')}</h5>
+            <h5>
+              <Translate>Change password</Translate>
+            </h5>
             <form onSubmit={this.updatePassword}>
               {this.renderPasswordField('password', password, 'New password', passwordError)}
               {this.renderPasswordField(
@@ -131,19 +135,23 @@ export class AccountSettings extends Component {
                 <div className="validation-error validation-error-centered">
                   <Icon icon="exclamation-triangle" />
                   &nbsp;
-                  {t('System', 'Password Error')}
+                  <Translate>Password Error</Translate>
                 </div>
               )}
               <button type="submit" className="btn btn-success">
-                {t('System', 'Update')}
+                <Translate>Update</Translate>
               </button>
             </form>
             <hr />
-            <h5>{t('System', 'Two-step verification')}</h5>
+            <h5>
+              <Translate>Two-step verification</Translate>
+            </h5>
             {using2fa && (
               <div className="alert alert-info">
                 <Icon icon="check" size="2x" />
-                <div className="force-ltr">Your account is protected by 2fa.</div>
+                <div className="force-ltr">
+                  <Translate>Your account is protected by 2fa.</Translate>
+                </div>
               </div>
             )}
             {!using2fa && (
@@ -151,12 +159,14 @@ export class AccountSettings extends Component {
                 <div className="alert alert-warning">
                   <Icon icon="exclamation-triangle" size="2x" />
                   <div className="force-ltr">
-                    You should activate this feature for enhanced account security
+                    <Translate>
+                      You should activate this feature for enhanced account security
+                    </Translate>
                   </div>
                 </div>
                 <div>
                   <I18NLink to="/settings/2fa" className="btn btn-success">
-                    {t('System', 'Protect your account')}
+                    <Translate>Protect your account</Translate>
                   </I18NLink>
                 </div>
               </div>
@@ -166,7 +176,9 @@ export class AccountSettings extends Component {
         <div className="settings-footer">
           <a href="/logout" className="btn btn-danger">
             <Icon icon="power-off" />
-            <span className="btn-label">{t('System', 'Logout')}</span>
+            <span className="btn-label">
+              <Translate>Logout</Translate>
+            </span>
           </a>
         </div>
       </div>

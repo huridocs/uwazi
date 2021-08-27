@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Translate } from 'app/I18N';
 
 import { Icon } from 'UI';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
@@ -45,13 +46,21 @@ export class UploadBox extends Component {
       >
         <div className="upload-box_wrapper">
           <Icon icon="upload" />
-          <button className="upload-box_link">Browse your PDFs to upload</button>
-          <span> or drop your files here.</span>
+          <button type="button" className="upload-box_link">
+            <Translate>Browse your PDFs to upload</Translate>
+          </button>
+          &nbsp;<Translate>or drop your files here.</Translate>
         </div>
         <div className="protip">
           <Icon icon="lightbulb" />
-          <b>ProTip!</b>
-          <span>For better performance, upload your files in batches of 50 or less.</span>
+          <b>
+            <Translate>ProTip!</Translate>
+          </b>
+          <span>
+            <Translate>
+              For better performance, upload your files in batches of 50 or less.
+            </Translate>
+          </span>
         </div>
       </Dropzone>
     );

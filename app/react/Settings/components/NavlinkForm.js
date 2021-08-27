@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
+import { Translate } from 'app/I18N';
 
 const groupStyles = {
   paddingRight: '0px',
@@ -115,7 +116,9 @@ export class NavlinkForm extends Component {
                         </span>
                       )}
                       <div className={`${titleClass} input-group-width`}>
-                        <span className="input-group-addon">Title</span>
+                        <span className="input-group-addon">
+                          <Translate>Title</Translate>
+                        </span>
                         <Field model={`settings.navlinksData.links[${index}].title`}>
                           <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
                         </Field>
@@ -124,7 +127,9 @@ export class NavlinkForm extends Component {
                     <ShowIf if={link.type !== 'group'}>
                       <div className="col-sm-8" style={{ paddingRight: '0px' }}>
                         <div className="input-group">
-                          <span className="input-group-addon">URL</span>
+                          <span className="input-group-addon">
+                            <Translate>URL</Translate>
+                          </span>
                           <Field model={`settings.navlinksData.links[${index}].url`}>
                             <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
                           </Field>
@@ -138,7 +143,7 @@ export class NavlinkForm extends Component {
                         style={{ marginLeft: '4px' }}
                         onClick={() => this.props.removeLink(index)}
                       >
-                        <Icon icon="trash-alt" /> Delete
+                        <Icon icon="trash-alt" /> <Translate>Delete</Translate>
                       </button>
                     </div>
                   </div>
@@ -168,7 +173,9 @@ export class NavlinkForm extends Component {
                                 </div>
                                 <div className="col-sm-8">
                                   <div className="input-group">
-                                    <span className="input-group-addon">URL</span>
+                                    <span className="input-group-addon">
+                                      <Translate>URL</Translate>
+                                    </span>
                                     <Field
                                       model={`settings.navlinksData.links[${index}].sublinks[${i}].url`}
                                     >
@@ -182,7 +189,7 @@ export class NavlinkForm extends Component {
                                     className="btn btn-danger btn-xs property-remove, menu-delete-button"
                                     onClick={() => this.props.removeGroupLink(index, i)}
                                   >
-                                    <Icon icon="trash-alt" /> Delete
+                                    <Icon icon="trash-alt" /> <Translate>Delete</Translate>
                                   </button>
                                 </div>
                               </div>
@@ -195,7 +202,7 @@ export class NavlinkForm extends Component {
                                   onClick={this.props.addGroupLink.bind(this, links, index)}
                                 >
                                   <Icon icon="link" />
-                                  &nbsp;Add link
+                                  &nbsp;<Translate>Add link</Translate>
                                 </button>
                               </div>
                             </div>

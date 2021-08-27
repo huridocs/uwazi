@@ -157,7 +157,9 @@ export const AttachmentsModalCmp = ({
                       />
                     </Field>
                     <Tip icon="info-circle" position="right">
-                      <p>To get resource from web:</p>
+                      <p>
+                        <Translate>To get resource from web:</Translate>
+                      </p>
                       <p>
                         1. Right-click an image or video on the web and copy the image's URL.
                         Altenatively websites offers share button whereyou can get URL.

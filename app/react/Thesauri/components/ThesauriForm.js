@@ -185,7 +185,9 @@ export class ThesauriForm extends Component {
             </div>
             <div className="thesauri-values">
               <div className="">
-                <b>Items:</b>
+                <b>
+                  <Translate>Items:</Translate>
+                </b>
               </div>
               <DragAndDropContainer
                 onChange={this.onChange}

@@ -26,7 +26,7 @@ function renderAditionalText(doc) {
           <Translate>Sentences above threshold</Translate>
         </div>
         <div>
-          {aboveThreshold} out of {resultsSize} ({percentage.toFixed(2)}%)
+          {aboveThreshold} <Translate>out of</Translate> {resultsSize} ({percentage.toFixed(2)}%)
         </div>
       </div>
     </div>
@@ -88,7 +88,9 @@ export class SemanticSearchResults extends Component {
       <div className="row panels-layout">
         {isEmpty && (
           <>
-            <p>Search not found</p>
+            <p>
+              <Translate>Search not found</Translate>
+            </p>
             <Helmet title="Semantic search not found" />
           </>
         )}
@@ -136,7 +138,7 @@ export class SemanticSearchResults extends Component {
                   type="button"
                   className="btn btn-default btn-load-more"
                 >
-                  30 <Translate>x more</Translate>
+                  <span no-translate>30</span> <Translate>x more</Translate>
                 </button>
               </div>
             </main>

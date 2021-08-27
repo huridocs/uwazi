@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
-
+import { Translate } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { saveRelationType, resetRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 
@@ -57,7 +57,8 @@ export class RelationTypeForm extends Component {
                     ) {
                       return (
                         <div className="validation-error">
-                          <Icon icon="exclamation-triangle" /> Duplicated name
+                          <Icon icon="exclamation-triangle" />{' '}
+                          <Translate>Duplicated name</Translate>
                         </div>
                       );
                     }
@@ -65,12 +66,16 @@ export class RelationTypeForm extends Component {
                 </Field>
               </FormGroup>
             </div>
-            <div className="panel-body">Currently connections only need a title.</div>
+            <div className="panel-body">
+              <Translate>Currently connections only need a title.</Translate>
+            </div>
             <div className="settings-footer">
               <BackButton to="/settings/connections" />
               <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save" />
-                <span className="btn-label">Save</span>
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
               </button>
             </div>
           </div>

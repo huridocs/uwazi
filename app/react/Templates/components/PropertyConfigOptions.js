@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FilterSuggestions } from 'app/Templates/components/FilterSuggestions';
 import { connect } from 'react-redux';
-
+import { Translate } from 'app/I18N';
 import PropertyConfigOption from './PropertyConfigOption';
 import Tip from '../../Layout/Tip';
 
@@ -15,19 +15,29 @@ class PropertyConfigOptions extends Component {
           label="Hide label"
           model={`template.data.properties[${index}].noLabel`}
         >
-          <Tip>This property will be shown without the label.</Tip>
+          <Tip>
+            <Translate>This property will be shown without the label.</Translate>
+          </Tip>
         </PropertyConfigOption>
         <PropertyConfigOption
           label="Required property"
           model={`template.data.properties[${index}].required`}
         >
-          <Tip>You won&#39;t be able to publish an entity if this property is empty.</Tip>
+          <Tip>
+            <Translate>
+              You won&#39;t be able to save an entity if this property is empty.
+            </Translate>
+          </Tip>
         </PropertyConfigOption>
         <PropertyConfigOption
           label="Show in cards"
           model={`template.data.properties[${index}].showInCard`}
         >
-          <Tip>This property will appear in the library cards as part of the basic info.</Tip>
+          <Tip>
+            <Translate>
+              This property will appear in the library cards as part of the basic info.
+            </Translate>
+          </Tip>
         </PropertyConfigOption>
 
         {canBeFilter && (
@@ -37,9 +47,11 @@ class PropertyConfigOptions extends Component {
               model={`template.data.properties[${index}].filter`}
             >
               <Tip>
-                This property will be used for filtering the library results. When properties match
-                in equal name and field type with other entity types, they will be combined for
-                filtering.
+                <Translate translationKey="Property as filter description">
+                  This property will be used for filtering the library results. When properties
+                  match in equal name and field type with other entity types, they will be combined
+                  for filtering.
+                </Translate>
               </Tip>
             </PropertyConfigOption>
             {filter && (
@@ -49,8 +61,11 @@ class PropertyConfigOptions extends Component {
                   model={`template.data.properties[${index}].defaultfilter`}
                 >
                   <Tip>
-                    Use this property as a default filter in the library. When there are no entity
-                    types selected, this property will show as a default filter for your collection.
+                    <Translate translationKey="Property as default filter description">
+                      Use this property as a default filter in the library. When there are no entity
+                      types selected, this property will show as a default filter for your
+                      collection.
+                    </Translate>
                   </Tip>
                 </PropertyConfigOption>
                 {['text', 'date', 'numeric', 'select'].includes(type) && (
@@ -59,10 +74,12 @@ class PropertyConfigOptions extends Component {
                     model={`template.data.properties[${index}].prioritySorting`}
                   >
                     <Tip>
-                      Properties marked as priority sorting will be used as default sorting
-                      criteria. If more than one property is marked as priority sorting the system
-                      will try to pick-up the best fit. When listing mixed template types, the
-                      system will pick-up the best combined priority sorting.
+                      <Translate translationKey="Priority sorting description">
+                        Properties marked as priority sorting will be used as default sorting
+                        criteria. If more than one property is marked as priority sorting the system
+                        will try to pick-up the best fit. When listing mixed template types, the
+                        system will pick-up the best combined priority sorting.
+                      </Translate>
                     </Tip>
                   </PropertyConfigOption>
                 )}

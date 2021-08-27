@@ -8,7 +8,7 @@ import {
   checkTemplateCanBeDeleted,
   setAsDefault,
 } from 'app/Templates/actions/templatesActions';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
 import Tip from '../../Layout/Tip';
@@ -20,7 +20,7 @@ export class EntityTypesList extends Component {
         onClick={this.props.setAsDefault.bind(null, template)}
         className="btn btn-success btn-xs"
       >
-        <span>{t('System', 'Set as default')}</span>
+        <Translate>Set as default</Translate>
       </button>
     );
   }
@@ -51,8 +51,10 @@ export class EntityTypesList extends Component {
   defaultTemplateMessage() {
     return (
       <span>
-        {t('System', 'Default template')}
-        <Tip>This template will be used as default for new entities.</Tip>
+        <Translate>Default template</Translate>
+        <Tip>
+          <Translate>This template will be used as default for new entities.</Translate>
+        </Tip>
       </span>
     );
   }
@@ -65,7 +67,7 @@ export class EntityTypesList extends Component {
       >
         <Icon icon="trash-alt" />
         &nbsp;
-        <span>{t('System', 'Delete')}</span>
+        <Translate>Delete</Translate>
       </button>
     );
   }
@@ -73,7 +75,9 @@ export class EntityTypesList extends Component {
   render() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Templates')}</div>
+        <div className="panel-heading">
+          <Translate>Templates</Translate>
+        </div>
         <ul className="list-group document-types">
           {this.props.templates.toJS().map((template, index) => (
             <li key={index} className="list-group-item">
@@ -87,7 +91,7 @@ export class EntityTypesList extends Component {
                 >
                   <Icon icon="pencil-alt" />
                   &nbsp;
-                  <span>{t('System', 'Edit')}</span>
+                  <Translate>Edit</Translate>
                 </Link>
                 {!template.default ? this.deleteTemplateButton(template) : ''}
               </div>
@@ -97,7 +101,9 @@ export class EntityTypesList extends Component {
         <div className="settings-footer">
           <Link to="/settings/templates/new" className="btn btn-success">
             <Icon icon="plus" />
-            <span className="btn-label">{t('System', 'Add template')}</span>
+            <span className="btn-label">
+              <Translate>Add template</Translate>
+            </span>
           </Link>
         </div>
       </div>

@@ -22,7 +22,12 @@ export const ErrorFallback = (props: ErrorFallbackProps) => {
           <p>
             <Translate>Please contact an admin for details.</Translate>
           </p>
-          {showRequestId && <p className="error-message-sm">Request id #{props.error.requestId}</p>}
+          {showRequestId && (
+            <p className="error-message-sm">
+              <Translate>Request id #</Translate>
+              {props.error.requestId}
+            </p>
+          )}
           {errorDetails && <details className="error-details">{errorDetails}</details>}
         </div>
         {props.error.code && <span className="error-code">{props.error.code}</span>}

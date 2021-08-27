@@ -11,6 +11,7 @@ import { resetTemplate, saveTemplate } from 'app/Templates/actions/templateActio
 import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import PropertyOption from 'app/Templates/components/PropertyOption';
+import { Translate } from 'app/I18N';
 
 export class TemplateCreator extends Component {
   componentWillUnmount() {
@@ -31,7 +32,9 @@ export class TemplateCreator extends Component {
     return (
       <div className="metadata">
         <div className="panel panel-default">
-          <div className="panel-heading">Metadata creator</div>
+          <div className="panel-heading">
+            <Translate>Metadata creator</Translate>
+          </div>
           <div className="panel-body">
             <div className="row">
               <main className="col-xs-12 col-sm-9">
@@ -45,7 +48,9 @@ export class TemplateCreator extends Component {
                 <aside className="col-xs-12 col-sm-3">
                   <div className="metadataTemplate-constructor">
                     <div>
-                      <i>Properties</i>
+                      <i>
+                        <Translate>Properties</Translate>
+                      </i>
                     </div>
                     <ul className="list-group property-options-list">
                       <PropertyOption label="Text" type="text" />
@@ -67,12 +72,6 @@ export class TemplateCreator extends Component {
                           disabled={this.props.noRelationtypes}
                         />
                       )}
-                      {
-                        // Disabled, to be used via API untill we develop all the UI functionality to work with relation metadata
-                        // { environment !== 'relationship' &&
-                        //   <PropertyOption label="Relationship filter" type="relationshipfilter" disabled={this.props.noRelationtypes} />
-                        // }
-                      }
                       <PropertyOption label="Date" type="date" />
                       <PropertyOption label="Date Range" type="daterange" />
                       <PropertyOption label="Multi Date" type="multidate" />
@@ -92,8 +91,10 @@ export class TemplateCreator extends Component {
                     </ul>
                     {this.props.noRelationtypes && (
                       <div className="alert alert-warning">
-                        Relationship fields can not be added untill you have at least one
-                        relationship type to select.
+                        <Translate translationKey="No relationship types warning">
+                          Relationship fields can not be added untill you have at least one
+                          relationship type to select.
+                        </Translate>
                       </div>
                     )}
                   </div>

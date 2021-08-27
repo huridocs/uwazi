@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Modal from 'app/Layout/Modal';
-
+import { Translate } from 'app/I18N';
 import { removeProperty } from 'app/Templates/actions/templateActions';
 import { hideModal } from 'app/Modals/actions/modalActions';
 
@@ -17,12 +17,18 @@ export class RemovePropertyConfirm extends Component {
     return (
       <Modal isOpen={this.props.isOpen || false} type="danger">
         <Modal.Body>
-          <h4>Confirm deletion</h4>
+          <h4>
+            <Translate>Confirm deletion</Translate>
+          </h4>
           <p>
-            Deleting a template property will delete this metadata information on all documents
-            using this template.
+            <Translate translationKey="Property delete warning">
+              Deleting a template property will delete this metadata information on all documents
+              using this template.
+            </Translate>
           </p>
-          <p>Change will take effect after saving the template</p>
+          <p>
+            <Translate>Change will take effect after saving the template</Translate>
+          </p>
         </Modal.Body>
 
         <Modal.Footer>
@@ -31,14 +37,14 @@ export class RemovePropertyConfirm extends Component {
             className="btn btn-default cancel-button"
             onClick={() => this.props.hideModal('RemovePropertyModal')}
           >
-            Cancel
+            <Translate>Cancel</Translate>
           </button>
           <button
             type="button"
             className="btn btn-danger confirm-button"
             onClick={() => this.confirm()}
           >
-            Delete Property
+            <Translate>Delete Property</Translate>
           </button>
         </Modal.Footer>
       </Modal>
