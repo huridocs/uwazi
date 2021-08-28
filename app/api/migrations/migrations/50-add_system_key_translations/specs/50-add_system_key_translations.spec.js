@@ -4,32 +4,26 @@ import fixtures, { templateId, defaultTemplateName, defaultTemplateTitle } from 
 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
-  { key: 'Default template', value: 'Default template' },
-  { key: 'Zoom in', value: 'Zoom in' },
   {
-    key: 'landing page description',
-    value: `The landing page is the first thing users will see when visiting your Uwazi instance.
-You can use any URL from your Uwazi instance as a landing page, examples:
-A page: /page/dicxg0oagy3xgr7ixef80k9
-Library results: /library/?searchTerm=test
-An entity: /entity/9htbkgpkyy7j5rk9
-A document: /document/4y9i99fadjp833di
-Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.`,
+    key: 'Priority sorting description',
+
+    value:
+      // eslint-disable-next-line max-len
+      'Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.',
   },
 ];
 const alreadyInAllContexts = {
-  key: 'Upload PDF',
-  en: 'Upload PDF',
-  es: 'Subir PDF',
-  hu: 'PDF Feltöltése',
+  key: 'Duplicated label',
+  en: 'Duplicated label',
+  es: 'Nombre duplicado',
+  hu: 'Ismétlődő címke',
 };
 const alreadyInOneContext = [
-  { locale: 'hu', key: 'Year', value: 'Year', existingValue: 'Év' },
   {
     locale: 'es',
-    key: 'Two-step verification',
-    value: 'Two-step verification',
-    existingValue: 'Verificación en dos pasos',
+    key: 'Drag properties here',
+    value: 'Drag properties here',
+    existingValue: 'Arrastra propiedades aquí',
   },
 ];
 

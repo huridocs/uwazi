@@ -50,8 +50,8 @@ export default {
         {
           ...commonContext,
           values: commonContext.values.concat([
-            { key: 'Upload PDF', value: 'Subir PDF' },
-            { key: 'Two-step verification', value: 'Verificación en dos pasos' },
+            { key: 'Drag properties here', value: 'Arrastra propiedades aquí' },
+            { key: 'Duplicated label', value: 'Nombre duplicado' },
           ]),
         },
         templateContext,
@@ -63,7 +63,10 @@ export default {
       contexts: [
         {
           ...commonContext,
-          values: commonContext.values.concat([{ key: 'Upload PDF', value: 'Upload PDF' }]),
+          values: commonContext.values.concat([
+            { key: 'Priority sorting', value: 'Priority sorting' },
+            { key: 'Duplicated label', value: 'Duplicated label' },
+          ]),
         },
         templateContext,
       ],
@@ -75,8 +78,7 @@ export default {
         {
           ...commonContext,
           values: commonContext.values.concat([
-            { key: 'Year', value: 'Év' },
-            { key: 'Upload PDF', value: 'PDF Feltöltése' },
+            { key: 'Duplicated label', value: 'Ismétlődő címke' },
           ]),
         },
         templateContext,

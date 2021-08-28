@@ -43,7 +43,9 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
         <div
           className="stretch"
         >
-          <Connect(Translate)>
+          <Connect(Translate)
+            translationKey="Suggested labels description"
+          >
             Uwazi has suggested labels for your collection. Review them using the "View suggestions" button next to each topic. Disable suggestions with the "Show suggestions" toggle.
           </Connect(Translate)>
           <br />
