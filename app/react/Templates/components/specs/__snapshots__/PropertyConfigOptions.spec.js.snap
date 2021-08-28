@@ -10,7 +10,9 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -21,7 +23,9 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -32,7 +36,9 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <Connect(SharedProperties)
@@ -51,7 +57,9 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -62,7 +70,9 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -73,7 +83,9 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -87,7 +99,11 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -98,7 +114,11 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        <Connect(Translate)
+          translationKey="Property as default filter description"
+        >
+          Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -109,7 +129,11 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
         icon="question-circle"
         position=""
       >
-        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        <Connect(Translate)
+          translationKey="Priority sorting description"
+        >
+          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -129,7 +153,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -140,7 +166,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -151,7 +179,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -165,7 +195,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -185,7 +219,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -196,7 +232,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -207,7 +245,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -221,7 +261,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -241,7 +285,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -252,7 +298,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -263,7 +311,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -277,7 +327,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -297,7 +351,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -308,7 +364,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -319,7 +377,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -333,7 +393,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -353,7 +417,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -364,7 +430,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -375,7 +443,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -389,7 +459,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -400,7 +474,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        <Connect(Translate)
+          translationKey="Property as default filter description"
+        >
+          Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -411,7 +489,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        <Connect(Translate)
+          translationKey="Priority sorting description"
+        >
+          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -431,7 +513,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -442,7 +526,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -453,7 +539,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -467,7 +555,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -478,7 +570,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        <Connect(Translate)
+          translationKey="Property as default filter description"
+        >
+          Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -489,7 +585,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        <Connect(Translate)
+          translationKey="Priority sorting description"
+        >
+          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -509,7 +609,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -520,7 +622,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -531,7 +635,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -545,7 +651,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -556,7 +666,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        <Connect(Translate)
+          translationKey="Property as default filter description"
+        >
+          Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -567,7 +681,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        <Connect(Translate)
+          translationKey="Priority sorting description"
+        >
+          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -587,7 +705,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -598,7 +718,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -609,7 +731,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -623,7 +747,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -634,7 +762,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        <Connect(Translate)
+          translationKey="Property as default filter description"
+        >
+          Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -645,7 +777,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         icon="question-circle"
         position=""
       >
-        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        <Connect(Translate)
+          translationKey="Priority sorting description"
+        >
+          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -665,7 +801,9 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       icon="question-circle"
       position=""
     >
-      This property will be shown without the label.
+      <Connect(Translate)>
+        This property will be shown without the label.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -676,7 +814,9 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       icon="question-circle"
       position=""
     >
-      You won't be able to publish an entity if this property is empty.
+      <Connect(Translate)>
+        You won't be able to save an entity if this property is empty.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -687,7 +827,9 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       icon="question-circle"
       position=""
     >
-      This property will appear in the library cards as part of the basic info.
+      <Connect(Translate)>
+        This property will appear in the library cards as part of the basic info.
+      </Connect(Translate)>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -701,7 +843,11 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
         icon="question-circle"
         position=""
       >
-        This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        <Connect(Translate)
+          translationKey="Property as filter description"
+        >
+          This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
+        </Connect(Translate)>
       </Tip>
     </PropertyConfigOption>
   </div>

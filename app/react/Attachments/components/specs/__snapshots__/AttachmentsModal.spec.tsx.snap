@@ -154,13 +154,19 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
                   position="right"
                 >
                   <p>
-                    To get resource from web:
+                    <Connect(Translate)>
+                      To get resource from web:
+                    </Connect(Translate)>
                   </p>
                   <p>
-                    1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
+                    <Connect(Translate)>
+                      1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
+                    </Connect(Translate)>
                   </p>
                   <p>
-                    2. Return here and paste the URL in this field (Ctrl+V or Command+V)
+                    <Connect(Translate)>
+                      2. Return here and paste the URL in this field (Ctrl+V or Command+V)
+                    </Connect(Translate)>
                   </p>
                 </Tip>
               </div>
@@ -348,13 +354,19 @@ exports[`Attachments Modal Should match render of web form 1`] = `
                   position="right"
                 >
                   <p>
-                    To get resource from web:
+                    <Connect(Translate)>
+                      To get resource from web:
+                    </Connect(Translate)>
                   </p>
                   <p>
-                    1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
+                    <Connect(Translate)>
+                      1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
+                    </Connect(Translate)>
                   </p>
                   <p>
-                    2. Return here and paste the URL in this field (Ctrl+V or Command+V)
+                    <Connect(Translate)>
+                      2. Return here and paste the URL in this field (Ctrl+V or Command+V)
+                    </Connect(Translate)>
                   </p>
                 </Tip>
               </div>

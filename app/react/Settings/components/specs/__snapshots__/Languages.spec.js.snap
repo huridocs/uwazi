@@ -7,7 +7,9 @@ exports[`Languages should render Languages component 1`] = `
   <div
     className="panel-heading"
   >
-    Active Languages
+    <Connect(Translate)>
+      Active Languages
+    </Connect(Translate)>
   </div>
   <ul
     className="list-group document-types"
@@ -22,12 +24,18 @@ exports[`Languages should render Languages component 1`] = `
         Español (es)
       </span>
       <span>
-        Default language
+        <Connect(Translate)>
+          Default language
+        </Connect(Translate)>
         <Tip
           icon="question-circle"
           position="right"
         >
-          This language will be used as default translation when adding new languages, and the default language for the site when no other language has been selected.
+          <Connect(Translate)
+            translationKey="Default language description"
+          >
+            This language will be used as default translation when adding new languages, and the default language for the site when no other language has been selected.
+          </Connect(Translate)>
         </Tip>
       </span>
       <div
@@ -57,7 +65,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Set as default
+            <Connect(Translate)>
+              Set as default
+            </Connect(Translate)>
           </span>
         </button>
         <button
@@ -71,7 +81,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Delete language
+            <Connect(Translate)>
+              Delete language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -80,7 +92,9 @@ exports[`Languages should render Languages component 1`] = `
   <div
     className="panel-heading"
   >
-    Available Languages
+    <Connect(Translate)>
+      Available Languages
+    </Connect(Translate)>
   </div>
   <ul
     className="list-group document-types"
@@ -96,7 +110,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -113,7 +129,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -129,7 +147,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -146,7 +166,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -162,7 +184,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -179,7 +203,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -195,7 +221,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -212,7 +240,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -228,7 +258,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -245,7 +277,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -261,7 +295,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -278,7 +314,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -306,7 +344,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -322,7 +362,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -339,7 +381,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -367,7 +411,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -383,7 +429,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -400,7 +448,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -416,7 +466,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -433,7 +485,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -449,7 +503,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -466,7 +522,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -482,7 +540,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -499,7 +559,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -515,7 +577,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -532,7 +596,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -548,7 +614,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -565,7 +633,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -581,7 +651,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -598,7 +670,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -626,7 +700,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -642,7 +718,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -659,7 +737,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -675,7 +755,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -692,7 +774,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -708,7 +792,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -725,7 +811,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -741,7 +829,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -758,7 +848,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -774,7 +866,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -791,7 +885,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -807,7 +903,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -824,7 +922,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -852,7 +952,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -868,7 +970,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -885,7 +989,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -913,7 +1019,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -929,7 +1037,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -946,7 +1056,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -962,7 +1074,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -979,7 +1093,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -995,7 +1111,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1012,7 +1130,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1028,7 +1148,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1045,7 +1167,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1061,7 +1185,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1078,7 +1204,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1094,7 +1222,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1111,7 +1241,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1127,7 +1259,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1144,7 +1278,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1160,7 +1296,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1177,7 +1315,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1193,7 +1333,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1210,7 +1352,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1226,7 +1370,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1243,7 +1389,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1259,7 +1407,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1276,7 +1426,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1304,7 +1456,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1332,7 +1486,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1348,7 +1504,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1365,7 +1523,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1393,7 +1553,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1409,7 +1571,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1426,7 +1590,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1442,7 +1608,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1459,7 +1627,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1475,7 +1645,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1492,7 +1664,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1508,7 +1682,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1525,7 +1701,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1541,7 +1719,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1558,7 +1738,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1574,7 +1756,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1591,7 +1775,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1619,7 +1805,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1647,7 +1835,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1663,7 +1853,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1680,7 +1872,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1708,7 +1902,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1724,7 +1920,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1741,7 +1939,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1757,7 +1957,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1774,7 +1976,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1790,7 +1994,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1807,7 +2013,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1835,7 +2043,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1863,7 +2073,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1879,7 +2091,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1896,7 +2110,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1912,7 +2128,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1929,7 +2147,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1945,7 +2165,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1962,7 +2184,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -1978,7 +2202,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -1995,7 +2221,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2011,7 +2239,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2028,7 +2258,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2044,7 +2276,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2061,7 +2295,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2089,7 +2325,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2105,7 +2343,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2122,7 +2362,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2150,7 +2392,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2166,7 +2410,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2183,7 +2429,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2199,7 +2447,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2216,7 +2466,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2232,7 +2484,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2249,7 +2503,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2265,7 +2521,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2282,7 +2540,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2298,7 +2558,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2315,7 +2577,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2331,7 +2595,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2348,7 +2614,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2364,7 +2632,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2381,7 +2651,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2397,7 +2669,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2414,7 +2688,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2442,7 +2718,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2470,7 +2748,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2486,7 +2766,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2503,7 +2785,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2519,7 +2803,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2536,7 +2822,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2552,7 +2840,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2569,7 +2859,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2585,7 +2877,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2602,7 +2896,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2618,7 +2914,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2635,7 +2933,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2651,7 +2951,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2668,7 +2970,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2684,7 +2988,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2701,7 +3007,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2717,7 +3025,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2734,7 +3044,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2750,7 +3062,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2767,7 +3081,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2783,7 +3099,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2800,7 +3118,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2816,7 +3136,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2833,7 +3155,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2849,7 +3173,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2866,7 +3192,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2882,7 +3210,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2899,7 +3229,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2915,7 +3247,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2932,7 +3266,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2948,7 +3284,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2965,7 +3303,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -2981,7 +3321,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -2998,7 +3340,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3014,7 +3358,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3031,7 +3377,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3047,7 +3395,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3064,7 +3414,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3080,7 +3432,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3097,7 +3451,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3125,7 +3481,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3141,7 +3499,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3158,7 +3518,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3174,7 +3536,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3191,7 +3555,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3219,7 +3585,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3235,7 +3603,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3252,7 +3622,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3268,7 +3640,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3285,7 +3659,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3301,7 +3677,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3318,7 +3696,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3334,7 +3714,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3351,7 +3733,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3367,7 +3751,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3384,7 +3770,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3400,7 +3788,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3417,7 +3807,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3433,7 +3825,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3450,7 +3844,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3466,7 +3862,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3483,7 +3881,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3499,7 +3899,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3516,7 +3918,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3532,7 +3936,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3549,7 +3955,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3565,7 +3973,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3582,7 +3992,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3598,7 +4010,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3615,7 +4029,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3631,7 +4047,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3648,7 +4066,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3664,7 +4084,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3681,7 +4103,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3697,7 +4121,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3714,7 +4140,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3730,7 +4158,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3747,7 +4177,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3763,7 +4195,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3780,7 +4214,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3796,7 +4232,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3813,7 +4251,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3829,7 +4269,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3846,7 +4288,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3874,7 +4318,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3902,7 +4348,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3918,7 +4366,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3935,7 +4385,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3951,7 +4403,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -3968,7 +4422,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -3984,7 +4440,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4001,7 +4459,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4017,7 +4477,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4034,7 +4496,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4050,7 +4514,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4067,7 +4533,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4083,7 +4551,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4100,7 +4570,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4116,7 +4588,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4133,7 +4607,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4149,7 +4625,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4166,7 +4644,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4194,7 +4674,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4210,7 +4692,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4227,7 +4711,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4255,7 +4741,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4271,7 +4759,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4288,7 +4778,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4304,7 +4796,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4321,7 +4815,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4337,7 +4833,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4354,7 +4852,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4382,7 +4882,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4410,7 +4912,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4426,7 +4930,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4443,7 +4949,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4459,7 +4967,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4476,7 +4986,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4492,7 +5004,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4509,7 +5023,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4525,7 +5041,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4542,7 +5060,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4558,7 +5078,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4575,7 +5097,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4591,7 +5115,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4608,7 +5134,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4624,7 +5152,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4641,7 +5171,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4657,7 +5189,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4674,7 +5208,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4690,7 +5226,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4707,7 +5245,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4723,7 +5263,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4740,7 +5282,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4756,7 +5300,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4773,7 +5319,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4789,7 +5337,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4806,7 +5356,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4822,7 +5374,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4839,7 +5393,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4855,7 +5411,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4872,7 +5430,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4888,7 +5448,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4905,7 +5467,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4921,7 +5485,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4938,7 +5504,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4954,7 +5522,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -4971,7 +5541,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -4987,7 +5559,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5004,7 +5578,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5020,7 +5596,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5037,7 +5615,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5065,7 +5645,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5081,7 +5663,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5098,7 +5682,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5114,7 +5700,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5131,7 +5719,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5147,7 +5737,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5164,7 +5756,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5180,7 +5774,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5197,7 +5793,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5213,7 +5811,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5230,7 +5830,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5246,7 +5848,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5263,7 +5867,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5291,7 +5897,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5307,7 +5915,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5324,7 +5934,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5340,7 +5952,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5357,7 +5971,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5373,7 +5989,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5390,7 +6008,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5406,7 +6026,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5423,7 +6045,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5451,7 +6075,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5467,7 +6093,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5484,7 +6112,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5500,7 +6130,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5517,7 +6149,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5533,7 +6167,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5550,7 +6186,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5566,7 +6204,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5583,7 +6223,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5599,7 +6241,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5616,7 +6260,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5632,7 +6278,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5649,7 +6297,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5665,7 +6315,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5682,7 +6334,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5698,7 +6352,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5715,7 +6371,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5731,7 +6389,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5748,7 +6408,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5764,7 +6426,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5781,7 +6445,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5797,7 +6463,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5814,7 +6482,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5830,7 +6500,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5847,7 +6519,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5863,7 +6537,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5880,7 +6556,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5896,7 +6574,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5913,7 +6593,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5929,7 +6611,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5946,7 +6630,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5962,7 +6648,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -5979,7 +6667,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -5995,7 +6685,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -6012,7 +6704,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>
@@ -6028,7 +6722,9 @@ exports[`Languages should render Languages component 1`] = `
         <Warning
           inline={false}
         >
-          Some adavanced search features may not be available for this language.
+          <Connect(Translate)>
+            Some adavanced search features may not be available for this language.
+          </Connect(Translate)>
         </Warning>
       </span>
       <div
@@ -6045,7 +6741,9 @@ exports[`Languages should render Languages component 1`] = `
           />
            
           <span>
-            Add language
+            <Connect(Translate)>
+              Add language
+            </Connect(Translate)>
           </span>
         </button>
       </div>

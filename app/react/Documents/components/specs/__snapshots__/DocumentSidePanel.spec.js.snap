@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DocumentSidePanel Tabs when doc passed has toc toc edition should show Edit button if edition is not active 1`] = `
+<button
+  className="edit-toc btn btn-primary"
+  onClick={[Function]}
+>
+  <Connect(Icon)
+    icon="pencil-alt"
+  />
+  <span
+    className="btn-label"
+  >
+    <Connect(Translate)>
+      Edit
+    </Connect(Translate)>
+  </span>
+</button>
+`;

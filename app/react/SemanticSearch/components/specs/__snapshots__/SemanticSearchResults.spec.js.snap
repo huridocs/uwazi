@@ -71,7 +71,11 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
               </div>
               <div>
                 2
-                 out of 
+                 
+                <Connect(Translate)>
+                  out of
+                </Connect(Translate)>
+                 
                  (
                 50.00
                 %)
@@ -118,7 +122,11 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
               </div>
               <div>
                 1
-                 out of 
+                 
+                <Connect(Translate)>
+                  out of
+                </Connect(Translate)>
+                 
                  (
                 40.00
                 %)
@@ -181,7 +189,12 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
         onClick={[Function]}
         type="button"
       >
-        30 
+        <span
+          no-translate={true}
+        >
+          30
+        </span>
+         
         <Connect(Translate)>
           x more
         </Connect(Translate)>
@@ -201,7 +214,9 @@ exports[`SemanticSearchResults when the search is empty should render not found 
   className="row panels-layout"
 >
   <p>
-    Search not found
+    <Connect(Translate)>
+      Search not found
+    </Connect(Translate)>
   </p>
   <HelmetWrapper
     defer={true}

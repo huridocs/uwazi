@@ -58,7 +58,9 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           className=""
         >
           <b>
-            Items:
+            <Connect(Translate)>
+              Items:
+            </Connect(Translate)>
           </b>
         </div>
         <DragDropContext(DropTarget(DragAndDropContainer))

@@ -354,7 +354,9 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
                   <div
                     id="upload-text"
                   >
-                    Drop your files here to upload or
+                    <Connect(Translate)>
+                      Drop your files here to upload or
+                    </Connect(Translate)>
                   </div>
                   <div
                     id="upload-button"
@@ -362,7 +364,9 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
                     <div
                       id="button"
                     >
-                      Select files on your device
+                      <Connect(Translate)>
+                        Select files on your device
+                      </Connect(Translate)>
                     </div>
                   </div>
                 </div>
@@ -424,7 +428,9 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
                   <div
                     id="upload-text"
                   >
-                    Drop your files here to upload or
+                    <Connect(Translate)>
+                      Drop your files here to upload or
+                    </Connect(Translate)>
                   </div>
                   <div
                     id="upload-button"
@@ -432,7 +438,9 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
                     <div
                       id="button"
                     >
-                      Select files on your device
+                      <Connect(Translate)>
+                        Select files on your device
+                      </Connect(Translate)>
                     </div>
                   </div>
                 </div>

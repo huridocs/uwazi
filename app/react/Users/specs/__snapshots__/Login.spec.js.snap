@@ -36,7 +36,9 @@ exports[`Login on instance should render the component with the login form 1`] =
               className="form-group-label"
               htmlFor="username"
             >
-              User
+              <Connect(Translate)>
+                User
+              </Connect(Translate)>
             </label>
             <input
               className="form-control"
@@ -53,7 +55,9 @@ exports[`Login on instance should render the component with the login form 1`] =
             className="form-group-label"
             htmlFor="password"
           >
-            Password
+            <Connect(Translate)>
+              Password
+            </Connect(Translate)>
           </label>
           <Modeled(Connect(Field))
             model=".password"
@@ -73,7 +77,9 @@ exports[`Login on instance should render the component with the login form 1`] =
               onClick={[Function]}
               title="Forgot Password?"
             >
-              Forgot Password?
+              <Connect(Translate)>
+                Forgot Password?
+              </Connect(Translate)>
             </span>
           </div>
         </div>
@@ -82,7 +88,9 @@ exports[`Login on instance should render the component with the login form 1`] =
             className="btn btn-block btn-lg btn-primary"
             type="submit"
           >
-            Login
+            <Connect(Translate)>
+              Login
+            </Connect(Translate)>
           </button>
         </p>
       </LocalForm>
@@ -143,16 +151,23 @@ exports[`Login submit() on response failure when authorization conflict (2fa req
             >
               <p />
               <p>
-                Open the two-factor Authenticator app on your device 
+                <Connect(Translate)>
+                  Open the two-factor Authenticator app on your device
+                </Connect(Translate)>
+                 
                 <br />
-                to view your authentication code and verify your identity.
+                <Connect(Translate)>
+                  to view your authentication code and verify your identity.
+                </Connect(Translate)>
               </p>
               <p>
                 <span
                   className="button forgot-password "
                   onClick={[Function]}
                 >
-                  Return to login
+                  <Connect(Translate)>
+                    Return to login
+                  </Connect(Translate)>
                 </span>
               </p>
             </div>
@@ -163,7 +178,9 @@ exports[`Login submit() on response failure when authorization conflict (2fa req
             className="btn btn-block btn-lg btn-primary"
             type="submit"
           >
-            Verify
+            <Connect(Translate)>
+              Verify
+            </Connect(Translate)>
           </button>
         </p>
       </LocalForm>
@@ -231,16 +248,23 @@ exports[`Login submit() on response failure when authorization failure should se
                 </span>
               </p>
               <p>
-                Open the two-factor Authenticator app on your device 
+                <Connect(Translate)>
+                  Open the two-factor Authenticator app on your device
+                </Connect(Translate)>
+                 
                 <br />
-                to view your authentication code and verify your identity.
+                <Connect(Translate)>
+                  to view your authentication code and verify your identity.
+                </Connect(Translate)>
               </p>
               <p>
                 <span
                   className="button forgot-password label-danger"
                   onClick={[Function]}
                 >
-                  Return to login
+                  <Connect(Translate)>
+                    Return to login
+                  </Connect(Translate)>
                 </span>
               </p>
             </div>
@@ -251,7 +275,9 @@ exports[`Login submit() on response failure when authorization failure should se
             className="btn btn-block btn-lg btn-primary"
             type="submit"
           >
-            Verify
+            <Connect(Translate)>
+              Verify
+            </Connect(Translate)>
           </button>
         </p>
       </LocalForm>

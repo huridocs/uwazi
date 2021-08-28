@@ -26,9 +26,9 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
       title="publish-button"
       to="/library/?quickLabelThesaurus=thesaurusUnderscoreId1&q=(filters:(__thesaurus_name:(values:!(any)),thesaurus_name:(values:!(any))),limit:100,order:desc,sort:creationDate,unpublished:!t)"
     >
-      <span>
-        Review unpublished documents
-      </span>
+      <Connect(Translate)>
+        Review unpublished document
+      </Connect(Translate)>
     </Connect(I18NLink)>
   </div>
   <div
@@ -43,10 +43,14 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
         <div
           className="stretch"
         >
-          Uwazi has suggested labels for your collection. Review them using the "View suggestions" button next to each topic. Disable suggestions with the "Show suggestions" toggle.
+          <Connect(Translate)>
+            Uwazi has suggested labels for your collection. Review them using the "View suggestions" button next to each topic. Disable suggestions with the "Show suggestions" toggle.
+          </Connect(Translate)>
           <br />
           <br />
-          You can also improve the model by providing more labeled documents.
+          <Connect(Translate)>
+            You can also improve the model by providing more labeled documents.
+          </Connect(Translate)>
         </div>
         <div
           className="footer"
@@ -56,9 +60,9 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
             title="label-docs"
             to="/library/?quickLabelThesaurus=thesaurusUnderscoreId1&q=(allAggregations:!t,includeUnpublished:!t)"
           >
-            <span>
+            <Connect(Translate)>
               Label more documents
-            </span>
+            </Connect(Translate)>
           </Connect(I18NLink)>
         </div>
       </div>
@@ -68,14 +72,26 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
         <div
           className="stretch"
         >
-          We recommend labeling 
+          <Connect(Translate)>
+            We recommend labeling
+          </Connect(Translate)>
+           
           90
-           documents before training (30 per topic).
+           
+          <Connect(Translate)>
+            documents before training (30 per topic).
+          </Connect(Translate)>
           <br />
           <br />
-          You have labeled 
+          <Connect(Translate)>
+            You have labeled
+          </Connect(Translate)>
+           
           2
-           documents so far.
+           
+          <Connect(Translate)>
+            documents so far.
+          </Connect(Translate)>
         </div>
         <div
           className="footer"
@@ -93,12 +109,16 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
           <th
             scope="col"
           >
-            Sample
+            <Connect(Translate)>
+              Sample
+            </Connect(Translate)>
           </th>
           <th
             scope="col"
           >
-            Documents to be reviewed
+            <Connect(Translate)>
+              Documents to be reviewed
+            </Connect(Translate)>
           </th>
           <th
             scope="col"

@@ -8,6 +8,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { Translate } from 'app/I18N';
 
 import ShowToc from '../ShowToc';
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
@@ -176,7 +177,7 @@ describe('DocumentSidePanel', () => {
           render();
           const editTocButtons = component.find('.edit-toc');
           expect(editTocButtons.length).toBe(1);
-          expect(editTocButtons.at(0).text()).toContain('Edit');
+          expect(editTocButtons).toMatchSnapshot();
         });
         it('should show Cancel and Save buttons if edition is active', () => {
           props.tocBeingEdited = true;

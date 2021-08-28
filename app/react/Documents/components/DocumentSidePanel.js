@@ -343,6 +343,7 @@ export class DocumentSidePanel extends Component {
             {this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly && (
               <div className="sidepanel-footer">
                 <button
+                  type="button"
                   onClick={() => this.props.editToc(this.props.file.toc || [])}
                   className="edit-toc btn btn-primary"
                 >

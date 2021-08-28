@@ -6,7 +6,9 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     className="form-group"
   >
     <label>
-      Name
+      <Connect(Translate)>
+        Name
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -124,7 +126,9 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     className="form-group"
   >
     <label>
-      Name
+      <Connect(Translate)>
+        Name
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -242,7 +246,9 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     className="form-group"
   >
     <label>
-      Name
+      <Connect(Translate)>
+        Name
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -316,7 +322,9 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     className="form-group"
   >
     <label>
-      Name
+      <Connect(Translate)>
+        Name
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -457,7 +465,9 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     className="form-group"
   >
     <label>
-      Name
+      <Connect(Translate)>
+        Name
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"

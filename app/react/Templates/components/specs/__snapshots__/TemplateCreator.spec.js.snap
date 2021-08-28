@@ -10,7 +10,9 @@ exports[`TemplateCreator Property Options should include document specific optio
     <div
       className="panel-heading"
     >
-      Metadata creator
+      <Connect(Translate)>
+        Metadata creator
+      </Connect(Translate)>
     </div>
     <div
       className="panel-body"
@@ -35,7 +37,9 @@ exports[`TemplateCreator Property Options should include document specific optio
           >
             <div>
               <i>
-                Properties
+                <Connect(Translate)>
+                  Properties
+                </Connect(Translate)>
               </i>
             </div>
             <ul
@@ -112,7 +116,11 @@ exports[`TemplateCreator Property Options should include document specific optio
             <div
               className="alert alert-warning"
             >
-              Relationship fields can not be added untill you have at least one relationship type to select.
+              <Connect(Translate)
+                translationKey="No relationship types warning"
+              >
+                Relationship fields can not be added untill you have at least one relationship type to select.
+              </Connect(Translate)>
             </div>
           </div>
         </aside>
@@ -132,7 +140,9 @@ exports[`TemplateCreator Property Options should include most common options by 
     <div
       className="panel-heading"
     >
-      Metadata creator
+      <Connect(Translate)>
+        Metadata creator
+      </Connect(Translate)>
     </div>
     <div
       className="panel-body"
@@ -157,7 +167,9 @@ exports[`TemplateCreator Property Options should include most common options by 
           >
             <div>
               <i>
-                Properties
+                <Connect(Translate)>
+                  Properties
+                </Connect(Translate)>
               </i>
             </div>
             <ul
@@ -234,7 +246,11 @@ exports[`TemplateCreator Property Options should include most common options by 
             <div
               className="alert alert-warning"
             >
-              Relationship fields can not be added untill you have at least one relationship type to select.
+              <Connect(Translate)
+                translationKey="No relationship types warning"
+              >
+                Relationship fields can not be added untill you have at least one relationship type to select.
+              </Connect(Translate)>
             </div>
           </div>
         </aside>
@@ -254,7 +270,9 @@ exports[`TemplateCreator Property Options should remove all options for relation
     <div
       className="panel-heading"
     >
-      Metadata creator
+      <Connect(Translate)>
+        Metadata creator
+      </Connect(Translate)>
     </div>
     <div
       className="panel-body"
