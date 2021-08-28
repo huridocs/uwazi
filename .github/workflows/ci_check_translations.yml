@@ -10,12 +10,13 @@ on:
 
 jobs:
   check-translations:
+    runs-on: ubuntu-latest
     services:
       mongodb:
         image: mongo:4.2.6
         ports:
           - 27017/tcp
-    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 14.6.x
