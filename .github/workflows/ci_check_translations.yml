@@ -9,7 +9,12 @@ on:
   pull_request:
 
 jobs:
-  check-emitted-types:
+  check-translations:
+    services:
+    mongodb:
+      image: mongo:4.2.6
+      ports:
+        - 27017/tcp
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,5 +29,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+      - run: yarn blank-state
       - run: yarn migrate
       - run: yarn check-translations
