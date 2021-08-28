@@ -157,7 +157,7 @@ async function checkTranslations(dir) {
     t => t.container !== 'Translate' && t.container !== 't'
   );
   reportNoTranslaeElement(textsWithoutTranslateElement);
-  // reportnotInTranslations(textsNotInTranslations);
+  reportnotInTranslations(textsNotInTranslations);
 
   if (textsNotInTranslations.length || textsWithoutTranslateElement.length) {
     process.exit(1);
