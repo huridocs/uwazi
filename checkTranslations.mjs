@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import parser from '@babel/parser';
 import traverse from '@babel/traverse';
 import mongodb from 'mongodb';
@@ -17,7 +15,11 @@ async function getFiles(dir) {
   );
   return Array.prototype
     .concat(...files)
-    .filter(file => !file.match('.spec') && (file.endsWith('.js') || file.endsWith('.ts')));
+    .filter(
+      file =>
+        !file.match('.spec') &&
+        (file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.tsx'))
+    );
 }
 
 const parserOptions = {
@@ -30,7 +32,7 @@ const parserOptions = {
   ],
 };
 
-const wordRegexp = new RegExp(/\b[\w']+\b/g);
+const wordRegexp = new RegExp(/\b[a-zA-Z]+\b/g);
 
 const processTextNode = (path, file) => {
   const text = path.node.value.trim();
@@ -124,17 +126,11 @@ const reportNoTranslaeElement = textsWithoutTranslateElement => {
   }
 
   textsWithoutTranslateElement.forEach(({ text, container, file }) => {
-    console.log('\x1b[36m', file, '\x1b[37m', text, '\x1b[31m', container, '\x1b[0m');
+    process.stdout.write(`\x1b[36m ${file}\x1b[37m ${text}\x1b[31m ${container}\x1b[0m \n`);
   });
 
-  console.log(
-    '\x1b[33m',
-    ' === Found',
-    '\x1b[31m',
-    `${textsWithoutTranslateElement.length}`,
-    '\x1b[33m',
-    'texts not wrapped in a <Translate> element === ',
-    '\x1b[0m'
+  process.stdout.write(
+    ` === Found \x1b[31m ${textsWithoutTranslateElement.length} \x1b[0m texts not wrapped in a <Translate> element === \n`
   );
 };
 
@@ -143,17 +139,11 @@ const reportnotInTranslations = textsNotInTranslations => {
     return;
   }
   textsNotInTranslations.forEach(({ text, file }) => {
-    console.log('\x1b[36m', file, '\x1b[37m', text);
+    process.stdout.write(` \x1b[36m ${file} \x1b[37m ${text}\x1b[0m \n`);
   });
 
-  console.log(
-    '\x1b[33m',
-    ' === Found',
-    '\x1b[31m',
-    `${textsNotInTranslations.length}`,
-    '\x1b[33m',
-    'texts not in translations collection === ',
-    '\x1b[0m'
+  process.stdout.write(
+    ` === Found \x1b[31m ${textsNotInTranslations.length} \x1b[0m texts not in translations collection ===\n`
   );
 };
 
