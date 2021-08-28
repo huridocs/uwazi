@@ -11,10 +11,10 @@ on:
 jobs:
   check-translations:
     services:
-    mongodb:
-      image: mongo:4.2.6
-      ports:
-        - 27017/tcp
+      mongodb:
+        image: mongo:4.2.6
+        ports:
+          - 27017/tcp
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
