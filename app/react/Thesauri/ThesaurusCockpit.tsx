@@ -3,7 +3,7 @@ import Footer from 'app/App/Footer';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { IStore, ThesaurusSuggestions, TasksState } from 'app/istore';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
@@ -67,10 +67,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
           {label}
           {topicQuality && !!topicQuality.quality && topicQuality.quality < 0.5 && (
             <span className="property-help confidence-bubble low">
-              low
+              <Translate>low</Translate>
               <div className="property-description">
-                Improve the quality of this topic's suggestions by finding more sample documents
-                with this label.
+                <Translate>
+                  Improve the quality of this topic's suggestions by finding more sample documents
+                  with this label.
+                </Translate>
               </div>
             </span>
           )}
@@ -114,12 +116,16 @@ export class ThesaurusCockpitBase extends RouteHandler {
       status = (
         <div className="block">
           <div className="stretch">
-            Uwazi has suggested labels for your collection. Review them using the &#34;View
-            suggestions&#34; button next to each topic. Disable suggestions with the &#34;Show
-            suggestions&#34; toggle.
+            <Translate>
+              Uwazi has suggested labels for your collection. Review them using the &#34;View
+              suggestions&#34; button next to each topic. Disable suggestions with the &#34;Show
+              suggestions&#34; toggle.
+            </Translate>
             <br />
             <br />
-            You can also improve the model by providing more labeled documents.
+            <Translate>
+              You can also improve the model by providing more labeled documents.
+            </Translate>
           </div>
           <div className="footer">
             <I18NLink
@@ -127,7 +133,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
               to={`/library/?quickLabelThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
               className="btn btn-primary get-started"
             >
-              <span>{t('System', 'Label more documents')}</span>
+              <Translate>Label more documents</Translate>
             </I18NLink>
           </div>
         </div>
@@ -136,8 +142,10 @@ export class ThesaurusCockpitBase extends RouteHandler {
       status = (
         <div className="block">
           <div className="stretch">
-            The first step is to label a sample of your documents, so Uwazi can learn which topics
-            to suggest when helping you label your collection.
+            <Translate>
+              The first step is to label a sample of your documents, so Uwazi can learn which topics
+              to suggest when helping you label your collection.
+            </Translate>
           </div>
           <div className="footer">
             <I18NLink
@@ -156,26 +164,31 @@ export class ThesaurusCockpitBase extends RouteHandler {
         <div className="stretch">
           {modelDate && (
             <>
-              The current model was trained at {modelDate.toLocaleString()} with {numTrained}&nbsp;
-              documents.
+              <Translate>The current model was trained at</Translate>&nbsp;
+              {modelDate.toLocaleString()} <Translate>with</Translate> {numTrained}&nbsp;
+              <Translate>documents.</Translate>
               <br />
               <br />
             </>
           )}
           {(numLabeled ?? 0) < numTopics * 30 && (
             <>
-              We recommend labeling {numTopics * 30} documents before training (30 per topic).
+              <Translate>We recommend labeling</Translate> {numTopics * 30}{' '}
+              <Translate>documents before training (30 per topic).</Translate>
               <br />
               <br />
             </>
           )}
-          You have labeled {numLabeled} documents so far.
+          <Translate>You have labeled</Translate> {numLabeled}{' '}
+          <Translate>documents so far.</Translate>
           {isLearning && (
             <>
               <br />
               <br />
-              Uwazi is learning using the labelled documents. This may take up to 2 hours, and once
-              completed you can review suggestions made by Uwazi for your collection.
+              <Translate>
+                Uwazi is learning using the labelled documents. This may take up to 2 hours, and
+                once completed you can review suggestions made by Uwazi for your collection.
+              </Translate>
             </>
           )}
         </div>
@@ -183,7 +196,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           {isLearning && (
             <div className="btn-label property-help">
               <span>
-                Learning... <Icon icon="spinner" spin />
+                <Translate>Learning...</Translate> <Icon icon="spinner" spin />
               </span>
               <div className="property-description">{tasksState.TrainState?.message}</div>
             </div>
@@ -279,7 +292,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         }
         className="btn btn-primary btn-xs"
       >
-        <span>{t('System', 'Review unpublished documents')}</span>
+        <Translate>Review unpublished document</Translate>
       </I18NLink>
     );
   }
@@ -304,8 +317,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
             <thead>
               <tr>
                 <th scope="col">{name}</th>
-                <th scope="col">{t('System', 'Sample')}</th>
-                <th scope="col">{t('System', 'Documents to be reviewed')}</th>
+                <th scope="col">
+                  <Translate>Sample</Translate>
+                </th>
+                <th scope="col">
+                  <Translate>Documents to be reviewed</Translate>
+                </th>
                 <th scope="col" />
               </tr>
             </thead>

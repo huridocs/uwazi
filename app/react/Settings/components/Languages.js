@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { t, actions } from 'app/I18N';
+import { t, actions, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { languages as elasticLanguages, allLanguages as languagesList } from 'shared/languagesList';
 import Warning from '../../Layout/Warning';
@@ -13,10 +13,12 @@ export class Languages extends Component {
   static defaultLanguage() {
     return (
       <span>
-        {t('System', 'Default language')}
+        <Translate>Default language</Translate>
         <Tip position="right">
-          This language will be used as default translation when adding new languages, and the
-          default language for the site when no other language has been selected.
+          <Translate translationKey="Default language description">
+            This language will be used as default translation when adding new languages, and the
+            default language for the site when no other language has been selected.
+          </Translate>
         </Tip>
       </span>
     );
@@ -24,7 +26,11 @@ export class Languages extends Component {
 
   static notSupportedLanguage() {
     return (
-      <Warning>Some adavanced search features may not be available for this language.</Warning>
+      <Warning>
+        <Translate>
+          Some adavanced search features may not be available for this language.
+        </Translate>
+      </Warning>
     );
   }
 
@@ -45,9 +51,15 @@ export class Languages extends Component {
       >
         <Icon prefix="far" icon="star" />
         &nbsp;
-        <span>{t('System', 'Set as default')}</span>
+        <span>
+          <Translate>Set as default</Translate>
+        </span>
       </button>
     );
+  }
+
+  setDefault(language) {
+    this.props.setDefaultLanguage(language.key);
   }
 
   deleteButton(language) {
@@ -60,13 +72,11 @@ export class Languages extends Component {
       >
         <Icon icon="trash-alt" />
         &nbsp;
-        <span>{t('System', 'Delete language')}</span>
+        <span>
+          <Translate>Delete language</Translate>
+        </span>
       </button>
     );
-  }
-
-  setDefault(language) {
-    this.props.setDefaultLanguage(language.key);
   }
 
   deleteLanguage(language) {
@@ -99,7 +109,9 @@ export class Languages extends Component {
     const filteredLanguagesList = languagesList.filter(l => !currentLanguagesIsos.includes(l.key));
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Active Languages')}</div>
+        <div className="panel-heading">
+          <Translate>Active Languages</Translate>
+        </div>
         <ul className="list-group document-types">
           {currentLanguages.map((language, index) => (
             <li key={index} className="list-group-item">
@@ -112,7 +124,9 @@ export class Languages extends Component {
             </li>
           ))}
         </ul>
-        <div className="panel-heading">{t('System', 'Available Languages')}</div>
+        <div className="panel-heading">
+          <Translate>Available Languages</Translate>
+        </div>
         <ul className="list-group document-types">
           {filteredLanguagesList.map((language, index) => {
             const notSupported = !elasticSupportedIsos.includes(language.key);
@@ -131,7 +145,9 @@ export class Languages extends Component {
                   >
                     <Icon icon="plus" />
                     &nbsp;
-                    <span>{t('System', 'Add language')}</span>
+                    <span>
+                      <Translate>Add language</Translate>
+                    </span>
                   </button>
                 </div>
               </li>

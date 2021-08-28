@@ -94,7 +94,9 @@ export class ImportPanel extends Component {
     return (
       <div className="alert alert-info">
         <Icon icon="info-circle" size="2x" />
-        <div className="force-ltr">Uploading file {uploadProgress}%</div>
+        <div className="force-ltr">
+          <Translate>Uploading file</Translate> {uploadProgress}%
+        </div>
       </div>
     );
   }

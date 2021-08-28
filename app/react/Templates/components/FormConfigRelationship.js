@@ -106,8 +106,10 @@ export class FormConfigRelationship extends Component {
               <Translate>Inherit property</Translate>
             </label>
             <Tip>
-              This property will be inherited from the related entities and shown as metadata of
-              this type of entities.
+              <Translate>
+                This property will be inherited from the related entities and shown as metadata of
+                this type of entities.
+              </Translate>
             </Tip>
           </div>
         )}

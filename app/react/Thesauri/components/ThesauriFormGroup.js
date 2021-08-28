@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Field } from 'react-redux-form';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 
@@ -54,7 +55,7 @@ export class ThesauriFormGroup extends Component {
               className="btn btn-xs btn-danger"
               onClick={this.removeGroup}
             >
-              <Icon icon="trash-alt" /> Delete Group
+              <Icon icon="trash-alt" /> <Translate>Delete Group</Translate>
             </button>
           </Field>
         </FormGroup>

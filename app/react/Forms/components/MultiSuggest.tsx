@@ -6,7 +6,7 @@ import { actions as formActions, getModel } from 'react-redux-form';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 
 const defaultProps = {
   // The suggestions value, provided by redux Component.
@@ -103,7 +103,8 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
     return (
       <div className="suggestions multiselect">
         <b className="suggestions-title">
-          {t('System', 'Suggestions')} <span>({filteredValues.length})</span>
+          <Translate>Suggestions</Translate>&nbsp;
+          <span>({filteredValues.length})</span>
         </b>
         {filteredValues.map(value => (
           <div key={value.value!} className="multiselectItem">
@@ -121,10 +122,12 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
                 onClick={this.rejectSuggestion.bind(this, value.value!)}
               >
                 <div className="property-help no-margin">
-                  Reject
+                  <Translate>Reject</Translate>
                   <div className="property-description-top-left">
-                    Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the
-                    suggestions it makes
+                    <Translate>
+                      Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the
+                      suggestions it makes
+                    </Translate>
                   </div>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
 import RouteHandler from 'app/App/RouteHandler';
+import { Translate } from 'app/I18N';
 
 import auth from 'app/Auth';
 
@@ -28,7 +29,9 @@ export class UnlockAccount extends RouteHandler {
     return (
       <div className="content login-content">
         <div className="row">
-          <div className="col-xs-12 col-sm-4 col-sm-offset-4 text-center">Verifying...</div>
+          <div className="col-xs-12 col-sm-4 col-sm-offset-4 text-center">
+            <Translate>Verifying...</Translate>
+          </div>
         </div>
       </div>
     );

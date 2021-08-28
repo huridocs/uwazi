@@ -4,9 +4,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { Select } from 'app/ReactReduxForms';
-import { t } from 'app/I18N';
-import { Warning } from 'app/Layout';
 import { Translate } from 'app/I18N';
+import { Warning } from 'app/Layout';
 import PropertyConfigOptions from './PropertyConfigOptions';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
@@ -35,7 +34,9 @@ export class FormConfigSelect extends Component {
     return (
       <div>
         <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
-          <label>Label</label>
+          <label>
+            <Translate>Label</Translate>
+          </label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
           </Field>
@@ -43,7 +44,7 @@ export class FormConfigSelect extends Component {
 
         <div className={contentRequiredError ? 'form-group has-error' : 'form-group'}>
           <label>
-            {t('System', 'Select list')}
+            <Translate>Select list</Translate>
             <span className="required">*</span>
           </label>
           {this.state.warning && (

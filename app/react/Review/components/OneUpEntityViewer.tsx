@@ -9,7 +9,7 @@ import { ConnectionsList } from 'app/ConnectionsList';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import ContextMenu from 'app/ContextMenu';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { ClientEntitySchema, IStore, OneUpState } from 'app/istore';
 import { Icon as PropertyIcon, TemplateLabel } from 'app/Layout';
 import Tip from 'app/Layout/Tip';
@@ -125,7 +125,9 @@ export class OneUpEntityViewerBase extends Component<
         }
       >
         <Icon icon={oneUpState.fullEdit ? 'toggle-on' : 'toggle-off'} />
-        <span className="btn-label">{t('System', 'Full edit mode')}</span>
+        <span className="btn-label">
+          <Translate>Full edit mode</Translate>
+        </span>
       </button>
     );
   }
@@ -174,7 +176,9 @@ export class OneUpEntityViewerBase extends Component<
                           {entity.published ? (
                             ''
                           ) : (
-                            <Tip icon="eye-slash">This entity is not public.</Tip>
+                            <Tip icon="eye-slash">
+                              <Translate>This entity is not public.</Translate>
+                            </Tip>
                           )}
                         </div>
                         <ShowMetadata

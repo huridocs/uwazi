@@ -1,4 +1,4 @@
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Notice } from 'app/Thesauri/Notice';
 import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/istore';
 import SidePanel from 'app/Layout/SidePanel';
@@ -78,7 +78,9 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
         className={`btn btn-default btn-header btn-toggle-${opts.autoSave ? 'on' : 'off'}`}
       >
         <Icon icon={opts.autoSave ? 'toggle-on' : 'toggle-off'} />
-        <span className="btn-label">{t('System', 'Auto-save')}</span>
+        <span className="btn-label">
+          <Translate>Auto-save</Translate>
+        </span>
       </button>
     );
   }
@@ -92,7 +94,9 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
           className="cancel-edit-metadata btn btn-primary"
         >
           <Icon icon="times" />
-          <span className="btn-label">{t('System', 'Discard')}</span>
+          <span className="btn-label">
+            <Translate>Discard</Translate>
+          </span>
         </button>
       </>
     );
@@ -108,7 +112,9 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
               {canBePublished && isPristine && (
                 <button type="button" className="publish btn btn-success" onClick={this.publish}>
                   <Icon icon="paper-plane" />
-                  <span className="btn-label">{t('System', 'Publish')}</span>
+                  <span className="btn-label">
+                    <Translate>Publish</Translate>
+                  </span>
                 </button>
               )}
               <button
@@ -117,7 +123,9 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
                 className={`cancel-edit-metadata ${!isPristine ? 'btn-danger' : ''} ${btnClass}`}
               >
                 <Icon icon="undo" />
-                <span className="btn-label">{t('System', 'Discard changes')}</span>
+                <span className="btn-label">
+                  <Translate>Discard changes</Translate>
+                </span>
               </button>
               <button
                 type="button"
@@ -125,7 +133,9 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
                 className={`save-metadata ${btnClass}`}
               >
                 <Icon icon="save" />
-                <span className="btn-label">{t('System', 'Save document(s)')}</span>
+                <span className="btn-label">
+                  <Translate>Save document(s)</Translate>
+                </span>
               </button>
             </>
           );
@@ -166,12 +176,16 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
       <Notice title="Label your collection">
         <div>
           <div>
-            Note: Make the sample set of documents for each topic diverse and representative. For
-            example, use various methods to find sample documents and don't just search for the term
-            "education" to find documents for the topic "Education".
+            <Translate translationKey="Label your collection note">
+              Note: Make the sample set of documents for each topic diverse and representative. For
+              example, use various methods to find sample documents and don't just search for the
+              term "education" to find documents for the topic "Education".
+            </Translate>
             <br />
             <br />
-            Return to the thesaurus page when you finished labeling to start learning.
+            <Translate>
+              Return to the thesaurus page when you finished labeling to start learning.
+            </Translate>
           </div>
         </div>
       </Notice>
@@ -186,9 +200,10 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
         <div>
           {QuickLabelPanelBase.renderNotice()}
           <label className="errormsg">
-            {
-              "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
-            }
+            <Translate>
+              Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to
+              this page through Settings.
+            </Translate>
           </label>
         </div>
       );
@@ -197,8 +212,12 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
         <div>
           {QuickLabelPanelBase.renderNotice()}
           <label className="errormsg">
-            Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
-            <b>{quickLabelThesaurus.get('name')}</b>. Try selecting other documents.
+            <Translate>
+              Nothing to see here! The selected documents are not using the selected thesaurus
+            </Translate>
+            &nbsp;
+            <b>{quickLabelThesaurus.get('name')}</b>.{' '}
+            <Translate>Try selecting other documents.</Translate>
           </label>
         </div>
       );
@@ -233,7 +252,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
         <div className="sidepanel-header">
           <Icon icon="check" />{' '}
           <span>
-            {selectedDocuments.size} {t('System', 'selected')}
+            {selectedDocuments.size} <Translate>selected</Translate>
           </span>
           {this.renderAutoSaveToggle()}
           <button

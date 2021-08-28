@@ -86,7 +86,7 @@ class PageCreator extends Component<mappedProps> {
                     href={pageUrl}
                     className="pull-right"
                   >
-                    &nbsp;(view page)
+                    &nbsp;<Translate>(view page)</Translate>
                   </a>
                 </div>
               </ShowIf>
@@ -99,26 +99,29 @@ class PageCreator extends Component<mappedProps> {
               <div className="alert alert-info">
                 <Icon icon="info-circle" size="2x" />
                 <div className="force-ltr">
-                  Use{' '}
+                  <Translate>Use</Translate>{' '}
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
                     href="https://guides.github.com/features/mastering-markdown/"
                   >
-                    Markdown
+                    <Translate>Markdown</Translate>
                   </a>{' '}
-                  syntax to create page content
+                  <Translate>syntax to create page content</Translate>
                   <br />
-                  You can also embed advanced components like maps, charts and entity lists in your
-                  page.&nbsp;
+                  <Translate>
+                    You can also embed advanced components like maps, charts and entity lists in
+                    your page.
+                  </Translate>
+                  &nbsp;
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
                     href="https://github.com/huridocs/uwazi/wiki/Components"
                   >
-                    Click here
+                    <Translate>Click here</Translate>
                   </a>{' '}
-                  to learn more about the components.
+                  <Translate>to learn more about the components.</Translate>
                 </div>
               </div>
               <div>
@@ -130,14 +133,18 @@ class PageCreator extends Component<mappedProps> {
                 <div className="alert alert-warning">
                   <Icon icon="exclamation-triangle" size="2x" />
                   <div className="force-ltr">
-                    With great power comes great responsibility!
+                    <Translate>With great power comes great responsibility!</Translate>
                     <br />
                     <br />
-                    This area allows you to append custom Javascript to the page. This opens up a
-                    new universe of possibilities.
+                    <Translate>
+                      This area allows you to append custom Javascript to the page. This opens up a
+                      new universe of possibilities.
+                    </Translate>
                     <br />
-                    It could also very easily break the app. Only write code here if you know
-                    exactly what you are doing.
+                    <Translate>
+                      It could also very easily break the app. Only write code here if you know
+                      exactly what you are doing.
+                    </Translate>
                   </div>
                 </div>
                 <Field model=".metadata.script">
@@ -154,7 +161,9 @@ class PageCreator extends Component<mappedProps> {
             <BackButton to={backUrl} />
             <button type="submit" className="btn btn-success save-template" disabled={!!savingPage}>
               <Icon icon="save" />
-              <span className="btn-label">Save</span>
+              <span className="btn-label">
+                <Translate>Save</Translate>
+              </span>
             </button>
           </div>
         </Form>

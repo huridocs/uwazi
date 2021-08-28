@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { Translate } from 'app/I18N';
 export type FavoriteBannerProps = {
   sharedId: string;
 };
@@ -51,7 +51,9 @@ class FavoriteBanner extends Component<FavoriteBannerProps, FavoriteBannerState>
         type="button"
         suppressHydrationWarning
       >
-        <span className="tab-link-tooltip">Add / remove favorite</span>
+        <span className="tab-link-tooltip">
+          <Translate>Add / remove favorite</Translate>
+        </span>
       </button>
     );
   }

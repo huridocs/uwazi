@@ -175,9 +175,13 @@ export class Login extends RouteHandler {
                           )}
                         </p>
                         <p>
-                          <Translate></Translate>
-                          Open the two-factor Authenticator app on your device <br />
-                          to view your authentication code and verify your identity.
+                          <Translate>
+                            Open the two-factor Authenticator app on your device
+                          </Translate>{' '}
+                          <br />
+                          <Translate>
+                            to view your authentication code and verify your identity.
+                          </Translate>
                         </p>
                         <p>
                           <span
@@ -186,7 +190,7 @@ export class Login extends RouteHandler {
                               this.state.error2fa ? 'label-danger' : ''
                             }`}
                           >
-                            {t('System', 'Return to login')}
+                            <Translate>Return to login</Translate>
                           </span>
                         </p>
                       </div>
@@ -210,7 +214,7 @@ export class Login extends RouteHandler {
                       onClick={this.setLogin}
                       className="button cancel"
                     >
-                      {t('System', 'Cancel')}
+                      <Translate>Cancel</Translate>
                     </span>
                   </div>
                 )}

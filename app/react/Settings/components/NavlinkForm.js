@@ -163,7 +163,9 @@ export class NavlinkForm extends Component {
                                     <Icon icon="link" />
                                   </span>
                                   <div className={`${titleClass} input-group-width`}>
-                                    <span className="input-group-addon">Title</span>
+                                    <span className="input-group-addon">
+                                      <Translate>Title</Translate>
+                                    </span>
                                     <Field
                                       model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
                                     >

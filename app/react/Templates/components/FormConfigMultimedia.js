@@ -65,7 +65,9 @@ class FormConfigMultimedia extends Component {
     return (
       <div>
         <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
-          <label>Name</label>
+          <label>
+            <Translate>Name</Translate>
+          </label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
           </Field>
