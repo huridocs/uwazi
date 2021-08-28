@@ -116,7 +116,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       status = (
         <div className="block">
           <div className="stretch">
-            <Translate>
+            <Translate translationKey="Suggested labels description">
               Uwazi has suggested labels for your collection. Review them using the &#34;View
               suggestions&#34; button next to each topic. Disable suggestions with the &#34;Show
               suggestions&#34; toggle.
