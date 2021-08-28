@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 
 import { closePanel } from '../actions/uiActions';
 import { setRelationType, setTargetDocument } from '../actions/actions';

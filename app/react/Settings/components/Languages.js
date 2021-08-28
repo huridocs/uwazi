@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { t, actions, Translate } from 'app/I18N';
+import { actions, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { languages as elasticLanguages, allLanguages as languagesList } from 'shared/languagesList';
 import Warning from '../../Layout/Warning';

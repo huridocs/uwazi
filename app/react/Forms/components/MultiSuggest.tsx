@@ -6,7 +6,7 @@ import { actions as formActions, getModel } from 'react-redux-form';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 
 const defaultProps = {
   // The suggestions value, provided by redux Component.
