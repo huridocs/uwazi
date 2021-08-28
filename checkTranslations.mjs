@@ -97,7 +97,7 @@ async function parseFile(file) {
 }
 
 const getClient = async () => {
-  const url = 'mongodb://localhost/';
+  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
   const client = new mongodb.MongoClient(url, { useUnifiedTopology: true });
   await client.connect();
 
