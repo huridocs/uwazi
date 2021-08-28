@@ -110,9 +110,10 @@ const checkSystemKeys = async allTexts => {
   const collection = db.collection('translations');
   const [firstTranslation] = await collection.find().toArray();
   const systemContext = firstTranslation.contexts.find(c => c.id === 'System');
-
+  systemContext.values.forEach(t => {});
   const textsNotInTranslations = allTexts.filter(text => {
-    const key = text.key || text.text;
+    let key = text.key || text.text;
+    key = key.trim().replace(/\n\s*/g, ' ');
     return !systemContext.values.find(t => t.key === key);
   });
 
@@ -161,6 +162,9 @@ async function checkTranslations(dir) {
 
   if (textsNotInTranslations.length || textsWithoutTranslateElement.length) {
     process.exit(1);
+  } else {
+    process.stdout.write('\x1b[32m All good! \x1b[0m\n');
+    process.exit(0);
   }
 }
 
