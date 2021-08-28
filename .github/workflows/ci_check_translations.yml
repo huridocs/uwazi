@@ -1,4 +1,4 @@
-name: check-emitted-types
+name: check-translations
 
 on:
   push:
