@@ -23,7 +23,7 @@ export async function displayGraph() {
   await expect(page).toClick('a', { text: '(view page)' });
 
   //waits until the target is available [see browser.targets] this opens on another pane
-  const graphsPageTarget = await browser.waitForTarget(target => target.url().includes(pageID));
+  const graphsPageTarget = await browser.waitForTarget(target => target.url().includes(pageUrl));
   const graphsPage = await graphsPageTarget.page();
   // wait for the chart visualization animations to end
   await graphsPage.waitFor(4000);
