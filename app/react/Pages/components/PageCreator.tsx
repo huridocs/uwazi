@@ -80,13 +80,14 @@ class PageCreator extends Component<mappedProps> {
               <ShowIf if={Boolean(page.data._id) && !page.data.entityView}>
                 <div className="alert alert-info">
                   <Icon icon="angle-right" /> {pageUrl}
+                  &nbsp;
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
                     href={pageUrl}
                     className="pull-right"
                   >
-                    &nbsp;<Translate>(view page)</Translate>
+                    <Translate>(view page)</Translate>
                   </a>
                 </div>
               </ShowIf>
