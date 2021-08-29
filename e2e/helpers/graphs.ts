@@ -8,10 +8,11 @@ import { host } from '../config';
 expect.extend({ toMatchImageSnapshot });
 
 export async function displayGraph() {
-  const pageID = page
-    .url()
-    .split('/')
-    .pop();
+  const pageID =
+    page
+      .url()
+      .split('/')
+      .pop() || '';
 
   const pageTitle = await page.$eval('.template-name > div > input', input =>
     input.getAttribute('value')
@@ -22,7 +23,7 @@ export async function displayGraph() {
   await expect(page).toClick('a', { text: '(view page)' });
 
   //waits until the target is available [see browser.targets] this opens on another pane
-  const graphsPageTarget = await browser.waitForTarget(target => target.url() === pageUrl);
+  const graphsPageTarget = await browser.waitForTarget(target => target.url().includes(pageID));
   const graphsPage = await graphsPageTarget.page();
   // wait for the chart visualization animations to end
   await graphsPage.waitFor(4000);
