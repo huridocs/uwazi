@@ -5,11 +5,12 @@ import {
   RequestNDBody,
 } from '@elastic/elasticsearch/lib/Transport';
 import { tenants } from 'api/tenants';
+import { config } from 'api/config';
 import { EntitySchema } from 'shared/types/entityType';
 import { SearchResponse, IndicesPutMapping, IndicesDelete, IndicesCreate } from './elasticTypes';
 
 const elasticClient = new elasticSearch.Client({
-  node: process.env.ELASTICSEARCH_URL || 'http://localhost:9200',
+  nodes: config.elasticsearch_nodes,
 });
 
 const elastic = {
