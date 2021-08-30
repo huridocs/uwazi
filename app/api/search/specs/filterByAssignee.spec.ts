@@ -9,6 +9,7 @@ import { EntitySchema } from '../../../shared/types/entityType';
 
 describe('Permissions filters', () => {
   const userFactory = new UserInContextMockFactory();
+  const user3WithGroups = { ...users.user3, groups: [{ _id: group1.toString(), name: 'Group1' }] };
 
   beforeAll(async () => {
     await db.setupFixturesAndContext(permissionsLevelFixtures, 'permissionsadminfilters');
@@ -22,31 +23,26 @@ describe('Permissions filters', () => {
 
   describe('filters', () => {
     describe('if logged as admin', () => {
-      it('should return the entities that the selected user can read', async () => {
-        userFactory.mock(users.adminUser);
-        const query = {
-          customFilters: { 'permissions.read': { values: [users.user1._id.toString()] } },
-          includeUnpublished: true,
-        };
+      it.each`
+        level      | expected
+        ${'read'}  | ${['ent1', 'ent2']}
+        ${'write'} | ${['ent3']}
+      `(
+        'should return the entities that the selected user can $level',
+        async ({ level, expected }) => {
+          userFactory.mock(users.adminUser);
+          const query = {
+            customFilters: { [`permissions.${level}`]: { values: [users.user1._id.toString()] } },
+            includeUnpublished: true,
+          };
 
-        const { rows } = await search.search(query, 'es', users.adminUser);
+          const { rows } = await search.search(query, 'es', users.adminUser);
 
-        expect(rows.map((r: EntitySchema) => r.title)).toEqual(['ent1', 'ent2']);
-      });
+          expect(rows.map((r: EntitySchema) => r.title)).toEqual(expected);
+        }
+      );
 
-      it('should return the entities that the selected user can write', async () => {
-        userFactory.mock(users.adminUser);
-        const query = {
-          customFilters: { 'permissions.write': { values: [users.user1._id.toString()] } },
-          includeUnpublished: true,
-        };
-
-        const { rows } = await search.search(query, 'es', users.adminUser);
-
-        expect(rows.map((r: EntitySchema) => r.title)).toEqual(['ent3']);
-      });
-
-      fit.each`
+      it.each`
         operator | expected
         ${'and'} | ${['ent1', 'ent2']}
         ${'or'}  | ${['ent1', 'ent2', 'ent3']}
@@ -70,81 +66,110 @@ describe('Permissions filters', () => {
 
     describe('if not logged as admin', () => {
       it.each`
-        level      | user
-        ${'read'}  | ${undefined}
-        ${'read'}  | ${users.editorUser}
-        ${'read'}  | ${users.user1}
-        ${'write'} | ${undefined}
-        ${'write'} | ${users.editorUser}
-        ${'write'} | ${users.user1}
-      `('should ignore the filter', async ({ level, user }) => {
-        userFactory.mock(user);
+        user                | refIds                                        | expected
+        ${users.editorUser} | ${[users.editorUser, group1]}                 | ${['ent1']}
+        ${user3WithGroups}  | ${[user3WithGroups, group1, users.adminUser]} | ${['ent1', 'ent2', 'ent3']}
+      `(
+        "should only allow the user's own refIds: $user.username",
+        async ({ user, refIds, expected }) => {
+          userFactory.mock(user);
+          const query = {
+            customFilters: {
+              'permissions.read': { values: refIds.map((r: any) => r._id.toString()) },
+            },
+            includeUnpublished: true,
+          };
+
+          const { rows } = await search.search(query, 'es', user);
+
+          expect(rows.map((r: EntitySchema) => r.title)).toEqual(expected);
+        }
+      );
+    });
+
+    describe('if not logged in', () => {
+      it('should ignore the filter', async () => {
+        userFactory.mock(undefined);
         const query = {
-          customFilters: { [`permissions.${level}`]: { values: [users.user1._id.toString()] } },
+          customFilters: {
+            'permissions.read': { values: [users.editorUser._id.toString()] },
+          },
           includeUnpublished: true,
         };
 
-        const withFilter = await search.search(query, 'es', user);
-        const noFilter = await search.search({ includeUnpublished: true }, 'es', user);
+        const { rows } = await search.search(query, 'es');
 
-        expect(withFilter.rows.map((r: EntitySchema) => r.title)).toEqual(
-          noFilter.rows.map((r: EntitySchema) => r.title)
-        );
+        expect(rows.map((r: EntitySchema) => r.title)).toEqual(['entPublic1', 'entPublic2']);
       });
     });
   });
 
   describe('aggregations', () => {
-    const performSearch = async (user: UserSchema): Promise<AggregationBucket[][]> => {
+    const performSearch = async (user?: UserSchema): Promise<AggregationBucket[][]> => {
       const response = await search.search(
         { aggregatePermissionsByUsers: true, includeUnpublished: true },
         'es',
         user
       );
+
       const aggs = response.aggregations as Aggregations;
-      return [aggs.all.canread?.buckets, aggs.all.canwrite?.buckets];
+      return [aggs.all['_permissions.read']?.buckets, aggs.all['_permissions.write']?.buckets];
     };
 
-    it.each`
-      allowed  | user
-      ${false} | ${undefined}
-      ${false} | ${users.editorUser}
-      ${false} | ${users.user1}
-      ${true}  | ${users.adminUser}
-    `(
-      'should return aggregations of permission level by users and groups',
-      async ({ user, allowed }) => {
-        userFactory.mock(user);
-        const [canRead, canWrite] = await performSearch(user);
+    it('should return aggregations of permission level by users and groups', async () => {
+      userFactory.mock(users.adminUser);
+      const [canRead, canWrite] = await performSearch(users.adminUser);
 
-        if (!allowed) {
-          expect(canRead).toBe(undefined);
-          expect(canWrite).toBe(undefined);
-        } else {
-          expect(canRead.map(a => [a.key, a.filtered.doc_count])).toEqual(
-            expect.arrayContaining([
-              [users.user1._id.toString(), 2],
-              [users.user2._id.toString(), 1],
-              [users.user3._id.toString(), 0],
-              [users.adminUser._id.toString(), 1],
-              [users.editorUser._id.toString(), 1],
-              [group1.toString(), 3],
-              ['any', 6],
-            ])
-          );
-          expect(canWrite.map(a => [a.key, a.filtered.doc_count])).toEqual(
-            expect.arrayContaining([
-              [users.user1._id.toString(), 1],
-              [users.user2._id.toString(), 2],
-              [users.user3._id.toString(), 3],
-              [users.adminUser._id.toString(), 2],
-              [users.editorUser._id.toString(), 1],
-              [group1.toString(), 1],
-              ['any', 6],
-            ])
-          );
-        }
-      }
-    );
+      expect(canRead.map(a => [a.key, a.filtered.doc_count, a.label, a.icon])).toEqual(
+        expect.arrayContaining([
+          [users.user1._id.toString(), 2, 'User 1', undefined],
+          [users.user2._id.toString(), 1, 'User 2', undefined],
+          [users.user3._id.toString(), 0, 'User 3', undefined],
+          [users.adminUser._id.toString(), 1, 'admin', undefined],
+          [users.editorUser._id.toString(), 1, 'editor', undefined],
+          [group1.toString(), 3, 'Group1', 'users'],
+          ['any', 6, 'Any', undefined],
+        ])
+      );
+      expect(canWrite.map(a => [a.key, a.filtered.doc_count, a.label, a.icon])).toEqual(
+        expect.arrayContaining([
+          [users.user1._id.toString(), 1, 'User 1', undefined],
+          [users.user2._id.toString(), 2, 'User 2', undefined],
+          [users.user3._id.toString(), 3, 'User 3', undefined],
+          [users.adminUser._id.toString(), 2, 'admin', undefined],
+          [users.editorUser._id.toString(), 1, 'editor', undefined],
+          [group1.toString(), 1, 'Group1', 'users'],
+          ['any', 6, 'Any', undefined],
+        ])
+      );
+    });
+
+    it('should only return aggregations for self and own groups', async () => {
+      userFactory.mock(user3WithGroups);
+      const [canRead, canWrite] = await performSearch(user3WithGroups);
+
+      expect(canRead.map(a => [a.key, a.filtered.doc_count, a.label, a.icon])).toEqual(
+        expect.arrayContaining([
+          [users.user3._id.toString(), 0, 'User 3', undefined],
+          [group1.toString(), 3, 'Group1', 'users'],
+          ['any', 6, 'Any', undefined],
+        ])
+      );
+      expect(canWrite.map(a => [a.key, a.filtered.doc_count, a.label, a.icon])).toEqual(
+        expect.arrayContaining([
+          [users.user3._id.toString(), 3, 'User 3', undefined],
+          [group1.toString(), 1, 'Group1', 'users'],
+          ['any', 6, 'Any', undefined],
+        ])
+      );
+    });
+
+    it('should not return aggregations to non-logged users', async () => {
+      userFactory.mock(undefined);
+      const [canRead, canWrite] = await performSearch(undefined);
+
+      expect(canRead).toBe(undefined);
+      expect(canWrite).toBe(undefined);
+    });
   });
 });

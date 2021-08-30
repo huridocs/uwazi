@@ -4,6 +4,8 @@ export interface AggregationBucket {
     // eslint-disable-next-line camelcase
     doc_count: number;
   };
+  label?: string;
+  icon?: string;
 }
 
 export interface Aggregations {

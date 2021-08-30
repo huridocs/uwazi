@@ -110,9 +110,27 @@ export default function() {
     );
   }
 
+  function addPermissionsAssigneeFilter(filter, level) {
+    const user = permissionsContext.getUserInContext();
+    if (!user) return;
+    const ownRefIds = permissionsContext.permissionsRefIds();
+    const values =
+      user?.role === 'admin' ? filter.values : filter.values.filter(v => ownRefIds.includes(v));
+
+    addFilter({
+      bool: {
+        [`${filter.and ? 'must' : 'should'}`]: values.map(value =>
+          nested(
+            [{ term: { 'permissions.refId': value } }, { term: { 'permissions.level': level } }],
+            'permissions'
+          )
+        ),
+      },
+    });
+  }
+
   return {
     query() {
-      console.log(JSON.stringify(baseQuery.query, null, 2));
       return baseQuery;
     },
 
@@ -296,36 +314,12 @@ export default function() {
           }
 
           if (key === 'permissions.read') {
-            if (permissionsContext.getUserInContext()?.role !== 'admin') return;
-
-            addFilter(
-              nested(
-                [
-                  ...(filters[key].and
-                    ? filters[key].values.map(value => ({
-                        terms: { 'permissions.refId': [value] },
-                      }))
-                    : [{ terms: { 'permissions.refId': filters[key].values } }]),
-                  { term: { 'permissions.level': 'read' } },
-                ],
-                'permissions'
-              )
-            );
+            addPermissionsAssigneeFilter(filters[key], 'read');
             return;
           }
 
           if (key === 'permissions.write') {
-            if (permissionsContext.getUserInContext()?.role !== 'admin') return;
-
-            addFilter(
-              nested(
-                [
-                  { terms: { 'permissions.refId': filters[key].values } },
-                  { term: { 'permissions.level': 'write' } },
-                ],
-                'permissions'
-              )
-            );
+            addPermissionsAssigneeFilter(filters[key], 'write');
             return;
           }
 
@@ -353,13 +347,13 @@ export default function() {
     },
 
     permissionsUsersAgreggations() {
-      if (permissionsContext.getUserInContext()?.role !== 'admin') return;
+      if (!permissionsContext.getUserInContext()) return;
 
-      baseQuery.aggregations.all.aggregations.canread = permissionsUsersAgreggations(
+      baseQuery.aggregations.all.aggregations['_permissions.read'] = permissionsUsersAgreggations(
         baseQuery,
         'read'
       );
-      baseQuery.aggregations.all.aggregations.canwrite = permissionsUsersAgreggations(
+      baseQuery.aggregations.all.aggregations['_permissions.write'] = permissionsUsersAgreggations(
         baseQuery,
         'write'
       );

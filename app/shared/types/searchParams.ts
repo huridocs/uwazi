@@ -7,6 +7,7 @@ export const searchParamsSchema = {
       properties: {
         aggregateGeneratedToc: { type: 'boolean' },
         aggregatePermissionsByLevel: { type: 'boolean' },
+        aggregatePermissionsByUsers: { type: 'boolean' },
         aggregatePublishingStatus: { type: 'boolean' },
         filters: { type: 'object' },
         customFilters: {
@@ -21,6 +22,21 @@ export const searchParamsSchema = {
               },
             },
             'permissions.level': {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                values: { type: 'array', items: [{ type: 'string' }] },
+              },
+            },
+            'permissions.read': {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                values: { type: 'array', items: [{ type: 'string' }] },
+                and: { type: 'boolean' },
+              },
+            },
+            'permissions.write': {
               type: 'object',
               additionalProperties: false,
               properties: {
