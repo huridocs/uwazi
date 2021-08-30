@@ -3,8 +3,6 @@ import { uniqBy } from 'lodash';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
-import { textSimilarityCheck } from './textSimilarityCheck';
-import { ISO6391toISO6392 } from '../../../shared/languagesList';
 
 interface EntityWithExtractedMetadata extends EntitySchema {
   __extractedMetadata: { selections: ExtractedMetadataSchema[] };
@@ -19,40 +17,12 @@ const updateSelections = (
   return selections;
 };
 
-const removeUserChangedSelections = (
-  entityData: { [key: string]: any; __title?: string },
-  userSelections: ExtractedMetadataSchema[]
-) => {
-  let updatedSelections: ExtractedMetadataSchema[] = [];
-
-  if (userSelections.length > 0) {
-    updatedSelections = userSelections.filter(selection => {
-      if (selection.name === 'title' && entityData.__title) {
-        return textSimilarityCheck(selection.selection?.text || '', entityData.__title);
-      }
-      return textSimilarityCheck(
-        selection.selection?.text || '',
-        (selection.name && entityData[selection.name][0].value) || ''
-      );
-    });
-  }
-
-  return updatedSelections;
-};
-
 const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) => {
   let selections = entity.__extractedMetadata?.selections || [];
-
-  const entityData = {
-    __title: entity.title,
-    ...entity.metadata,
-  };
 
   if (file.extractedMetadata) {
     selections = updateSelections(selections, file.extractedMetadata);
   }
-
-  selections = removeUserChangedSelections(entityData, selections);
 
   return selections;
 };
@@ -73,7 +43,7 @@ const selectionsHaveChanged = (
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
   const mainDocument = await files.get({
     entity: entity.sharedId,
-    language: ISO6391toISO6392(entity.language),
+    type: 'document',
   });
 
   if (mainDocument.length > 0) {

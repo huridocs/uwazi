@@ -226,17 +226,9 @@ const allLanguages: LanguageSchema[] = [
   { label: 'Zulu', key: 'zu' },
 ];
 
-const ISO6391toISO6392 = (language: string = 'other') => {
-  const ISO639_2 = Object.entries(elasticLanguages).find(lang => lang[1].ISO639_1 === language);
-  if (ISO639_2) {
-    return ISO639_2[0];
-  }
-  return 'other';
-};
-
 export default (key: string, purpose = 'elastic') => {
   const defaultValue = purpose !== 'ISO639_1' ? 'other' : null;
   return elasticLanguages[key] ? elasticLanguages[key][purpose] : defaultValue;
 };
 
-export { elasticLanguages as languages, allLanguages, ISO6391toISO6392 };
+export { elasticLanguages as languages, allLanguages };
