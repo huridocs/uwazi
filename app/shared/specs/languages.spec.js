@@ -1,6 +1,5 @@
 import languages from '../languages';
 import { detectLanguage } from '../detectLanguage';
-import { ISO6391toISO6392 } from '../languagesList';
 
 describe('languages', () => {
   describe('getAll', () => {
