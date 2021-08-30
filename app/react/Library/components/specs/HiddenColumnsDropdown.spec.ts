@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 import { ShallowWrapper } from 'enzyme';
 
 import { DropdownList } from 'app/Forms';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import * as actions from 'app/Library/actions/libraryActions';
 import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
 import { SelectableColumn } from '../HiddenColumnsDropdownItem';

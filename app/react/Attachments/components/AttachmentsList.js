@@ -6,6 +6,7 @@ import { Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
 
+import { AttachmentsStateProvider } from 'app/Attachments/actions/attachmentsStore';
 import UploadSupportingFile from './UploadSupportingFile';
 
 export default class AttachmentsList extends Component {

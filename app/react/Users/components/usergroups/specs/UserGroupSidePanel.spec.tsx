@@ -9,7 +9,7 @@ import {
   UserGroupSidePanel,
   UserGroupSidePanelProps,
 } from 'app/Users/components/usergroups/UserGroupSidePanel';
-import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import MultiSelect from 'app/Forms/components/MultiSelect';
 
 describe('UserGroupSidePanel', () => {

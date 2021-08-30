@@ -5,7 +5,7 @@ import 'mutationobserver-shim';
 import React from 'react';
 import { ReactWrapper } from 'enzyme';
 import { SidePanel } from 'app/Layout';
-import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
 import { UserRole } from 'shared/types/userSchema';
 import { PermissionsList } from 'app/Users/components/PermissionsList';

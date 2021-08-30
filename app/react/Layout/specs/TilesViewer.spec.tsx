@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import Doc from 'app/Library/components/Doc';
 import { TilesViewer } from 'app/Layout/TilesViewer';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 
 import { RowList } from '../Lists';
 

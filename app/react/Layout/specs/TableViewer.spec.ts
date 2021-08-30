@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import { TableViewer } from 'app/Layout/TableViewer';
 import { Translate } from 'app/I18N';
 

@@ -11,7 +11,7 @@ import Viewer from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import * as documentActions from 'app/Viewer/actions/documentActions';
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';

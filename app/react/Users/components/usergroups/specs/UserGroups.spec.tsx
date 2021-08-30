@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import { ReactElement } from 'react';
 import { ShallowWrapper } from 'enzyme';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected, renderConnectedMount } from 'app/utils/test/renderConnected';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
 import { UserGroupSidePanel } from 'app/Users/components/usergroups/UserGroupSidePanel';
 import { loadUsers } from 'app/Users/actions/actions';

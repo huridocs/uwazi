@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
+import { store } from 'app/Attachments/actions/attachmentsStore';
 import { uploadAttachment } from '../actions/actions';
 import { AttachmentsModal } from './AttachmentsModal';
 
@@ -23,7 +24,7 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
   const getPercentage = progress.get(entitySharedId);
 
   useEffect(() => {
-    if (getPercentage) {
+    if (getPercentage === 100) {
       closeModal();
     }
   }, [progress]);
@@ -46,7 +47,6 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
           <span>&nbsp;{getPercentage}%</span>
         </div>
       )}
-
       <AttachmentsModal
         isOpen={modalOpen}
         onClose={closeModal}

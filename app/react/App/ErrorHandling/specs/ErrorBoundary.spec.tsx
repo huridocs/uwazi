@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
-import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 
 describe('ErrorBoundary', () => {
   class ComponentWithError extends Component {

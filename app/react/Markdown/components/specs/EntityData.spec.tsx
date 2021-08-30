@@ -4,7 +4,7 @@
 import React from 'react';
 import { ReactWrapper } from 'enzyme';
 import Immutable from 'immutable';
-import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 
 import { EntityData } from '../EntityData';
 

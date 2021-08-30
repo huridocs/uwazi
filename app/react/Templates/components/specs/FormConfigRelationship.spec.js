@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 import { Select } from 'app/ReactReduxForms';
 import { actions as formActions } from 'react-redux-form';
 import FormConfigRelationship from '../FormConfigRelationship';
-import { renderConnected } from '../../specs/utils/renderConnected.tsx';
+import { renderConnected } from '../../../utils/test/renderConnected.tsx';
 
 describe('FormConfigRelationship', () => {
   let templates;

@@ -1,5 +1,5 @@
 import PropertyConfigOptions from '../PropertyConfigOptions';
-import { renderConnected } from '../../specs/utils/renderConnected.tsx';
+import { renderConnected } from '../../../utils/test/renderConnected.tsx';
 
 describe('PropertyConfigOptions', () => {
   let component;

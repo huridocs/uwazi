@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import { TableRows } from 'app/Layout/TableRows';
 import { TableRow } from 'app/Library/components/TableRow';
 
