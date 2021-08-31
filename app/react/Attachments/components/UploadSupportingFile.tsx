@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
-import { store } from 'app/Attachments/actions/attachmentsStore';
 import { uploadAttachment } from '../actions/actions';
 import { AttachmentsModal } from './AttachmentsModal';
 
