@@ -10,12 +10,16 @@ import { Icon } from 'UI';
 import { LocalForm, Control } from 'react-redux-form';
 import { closeImportPanel, importData } from 'app/Uploads/actions/uploadsActions';
 import ImportProgress from './ImportProgress';
+import socket from '../../socket';
 
 export class ImportPanel extends Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.close = this.close.bind(this);
+    this.state = { showError: false };
+    this.showError = this.showError.bind(this);
+    this.importError = '';
   }
 
   close() {
@@ -24,6 +28,15 @@ export class ImportPanel extends Component {
 
   handleSubmit(values) {
     this.props.importData(values.file, values.template);
+  }
+
+  componentDidMount() {
+    socket.on('IMPORT_CSV_ERROR', this.showError);
+  }
+
+  showError(e) {
+    this.importError = e.error;
+    this.setState({ showError: true });
   }
 
   renderForm() {
@@ -103,6 +116,14 @@ export class ImportPanel extends Component {
     const { uploadProgress, importStart, importProgress } = this.props;
     if (uploadProgress) {
       return this.renderUploadProgress();
+    }
+    if (this.state.showError) {
+      return (
+        <div className="alert alert-danger">
+          <Icon icon="exclamation-triangle" />
+          <div className="error">{this.importError}</div>
+        </div>
+      );
     }
 
     if (importStart || importProgress) {
