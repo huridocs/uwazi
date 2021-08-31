@@ -53,13 +53,14 @@ export function uploadAttachment(entity, file, __reducerKey) {
         dispatch({ type: types.ATTACHMENT_PROGRESS, entity, progress: Math.floor(data.percent) });
       })
       .on('response', result => {
-        dispatch(notify('Attachment uploaded', 'success'));
+        dispatch({ type: types.ATTACHMENT_PROGRESS, entity, progress: 100 });
         dispatch({
           type: types.ATTACHMENT_COMPLETE,
           entity,
           file: JSON.parse(result.text),
           __reducerKey,
         });
+        dispatch(notify('Attachment uploaded', 'success'));
       })
       .end();
   };
