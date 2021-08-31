@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
-import configureStore, { MockStore, MockStoreCreator, MockStoreEnhanced } from 'redux-mock-store';
+import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { ConnectedComponent, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
