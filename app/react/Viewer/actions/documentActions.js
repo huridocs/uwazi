@@ -46,7 +46,8 @@ export function saveDocument(doc) {
 
   return (dispatch, getState) => {
     const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
-    updateDoc.__extractedMetadata = extractredMetadata;
+    const fileID = getState().documentViewer.doc.toJS().defaultDoc._id;
+    updateDoc.__extractedMetadata = { fileID, ...extractredMetadata };
     return documentsApi.save(new RequestParams(updateDoc)).then(updatedDoc => {
       dispatch(notificationActions.notify('Document updated', 'success'));
       dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });

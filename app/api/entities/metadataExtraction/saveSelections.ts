@@ -5,7 +5,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 
 interface EntityWithExtractedMetadata extends EntitySchema {
-  __extractedMetadata: { selections: ExtractedMetadataSchema[] };
+  __extractedMetadata?: { fileID: string; selections: ExtractedMetadataSchema[] };
 }
 
 const updateSelections = (
@@ -41,19 +41,19 @@ const selectionsHaveChanged = (
 };
 
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
-  const mainDocument = await files.get({
-    entity: entity.sharedId,
-    type: 'document',
-  });
+  let mainDocument: FileType[] = [];
+
+  if (entity.__extractedMetadata?.fileID) {
+    mainDocument = await files.get({
+      _id: entity.__extractedMetadata.fileID,
+    });
+  }
 
   if (mainDocument.length > 0) {
     const selections = prepareSelections(entity, mainDocument[0]);
+
     if (selectionsHaveChanged(mainDocument[0].extractedMetadata || [], selections)) {
-      const finalizedSelections = selections.map(selection => ({
-        language: entity.language,
-        ...selection,
-      }));
-      return files.save({ _id: mainDocument[0]._id, extractedMetadata: finalizedSelections });
+      return files.save({ _id: mainDocument[0]._id, extractedMetadata: selections });
     }
   }
 

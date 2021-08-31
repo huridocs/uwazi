@@ -2,12 +2,13 @@ import { files } from 'api/files';
 import { testingDB } from 'api/utils/testing_db';
 import { saveSelections } from '../saveSelections';
 
+const file1ID = testingDB.id();
+const file2ID = testingDB.id();
+
 const fixture = {
   files: [
     {
-      _id: '61182037e1a99857d7382d47',
-      filename: '1628971063058z11sx28u0j.pdf',
-      entity: 'entitySharedId',
+      _id: file1ID,
       extractedMetadata: [
         {
           name: 'property_a',
@@ -15,13 +16,10 @@ const fixture = {
         },
         { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
       ],
-      language: 'eng',
     },
     {
-      _id: '23467234678sdf236784234678',
-      filename: 'aFile.pdf',
-      entity: 'anotherEntity',
-      language: 'eng',
+      _id: file2ID,
+      extractedMetadata: [],
     },
   ],
 };
@@ -42,6 +40,7 @@ describe('saveSelections', () => {
       sharedId: 'entityWithNoFile',
       language: 'en',
       __extractedMetadata: {
+        fileID: '',
         selections: [{ name: 'Title', selection: { text: 'a selection for testing porpouses' } }],
       },
     });
@@ -52,7 +51,7 @@ describe('saveSelections', () => {
     await saveSelections({
       sharedId: 'anotherEntity',
       language: 'en',
-      __extractedMetadata: { selections: [] },
+      __extractedMetadata: { fileID: file2ID.toString(), selections: [] },
     });
     expect(files.save).not.toHaveBeenCalled();
   });
@@ -60,8 +59,8 @@ describe('saveSelections', () => {
   it('should not call save if theres no change to files extracted metadata', async () => {
     await saveSelections({
       sharedId: 'entitySharedId',
-      language: 'en',
       __extractedMetadata: {
+        fileID: file1ID.toString(),
         selections: [],
       },
       metadata: {
@@ -84,8 +83,8 @@ describe('saveSelections', () => {
     await saveSelections({
       _id: 'entityID',
       sharedId: 'entitySharedId',
-      language: 'en',
       __extractedMetadata: {
+        fileID: file1ID.toString(),
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
           { name: 'property_c', selection: { text: 'new selected text of prop C' } },
@@ -110,15 +109,14 @@ describe('saveSelections', () => {
       },
     });
     expect(files.save).toHaveBeenCalledWith({
-      _id: '61182037e1a99857d7382d47',
+      _id: file1ID,
       extractedMetadata: [
         {
           name: 'property_a',
-          language: 'en',
           selection: { text: 'newer selected text of prop A' },
         },
-        { name: 'property_c', language: 'en', selection: { text: 'new selected text of prop C' } },
-        { name: 'property_b', language: 'en', selection: { text: 'unchanged text of prop B' } },
+        { name: 'property_c', selection: { text: 'new selected text of prop C' } },
+        { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
       ],
     });
   });

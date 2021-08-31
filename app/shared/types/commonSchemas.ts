@@ -150,7 +150,6 @@ export const extractedMetadataSchema = {
     propertyID: { type: 'string' },
     name: { type: 'string' },
     timestamp: { type: 'string' },
-    language: { type: 'string' },
     selection: {
       type: 'object',
       additionalProperties: false,
