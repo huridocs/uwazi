@@ -52,18 +52,19 @@ describe('Attachments actions', () => {
         { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 55 },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 65 },
+        { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 100 },
+        {
+          type: types.ATTACHMENT_COMPLETE,
+          entity: 'sharedId',
+          file: { text: 'file' },
+          __reducerKey: 'storeKey',
+        },
         {
           type: NOTIFY,
           notification: {
             message: 'Attachment uploaded',
             type: 'success',
           },
-        },
-        {
-          type: types.ATTACHMENT_COMPLETE,
-          entity: 'sharedId',
-          file: { text: 'file' },
-          __reducerKey: 'storeKey',
         },
       ];
 
