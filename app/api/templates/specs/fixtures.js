@@ -242,5 +242,7 @@ export {
   thesauriId2,
   templateWithExtractedMetadata,
   propertyA,
+  propertyB,
+  propertyC,
   propertyD,
 };

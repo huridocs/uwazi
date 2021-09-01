@@ -1,8 +1,6 @@
 import db from 'api/utils/testing_db';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
 import settings from 'api/settings/settings';
-import { files } from 'api/files';
 import {
   generateIds,
   getUpdatedNames,
@@ -10,8 +8,6 @@ import {
   generateNamesAndIds,
   PropertyOrThesaurusSchema,
 } from '../utils';
-import templates from '../templates';
-import fixtures, { propertyA, propertyD, templateWithExtractedMetadata } from './fixtures';
 
 describe('templates utils', () => {
   beforeEach(async () => {
@@ -186,59 +182,6 @@ describe('templates utils', () => {
 
       const result = getDeletedProperties(oldProperties, newProperties);
       expect(result).toEqual(['boromir']);
-    });
-  });
-});
-
-describe('removeExtractedMetadata()', () => {
-  beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures, 'uwazi_test_index');
-  });
-
-  it('should remove deleted properties from extracted metadata on files', async () => {
-    const templateToUpdate: TemplateSchema = {
-      _id: templateWithExtractedMetadata,
-      name: 'template_with_extracted_metadata',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-      properties: [
-        {
-          _id: propertyA,
-          label: 'Property A',
-          name: 'property_a',
-          type: 'text',
-          id: '1',
-        },
-        {
-          _id: propertyD,
-          label: 'Property D',
-          name: 'property_d',
-          type: 'link',
-          id: '4',
-        },
-      ],
-    };
-
-    await templates.save(templateToUpdate, 'en');
-
-    expect((await files.get())[0]).toMatchObject({
-      filename: 'file1.pdf',
-      extractedMetadata: [
-        {
-          name: 'property_a',
-        },
-      ],
-    });
-    expect((await files.get())[1]).toMatchObject({
-      filename: 'file2.pdf',
-      extractedMetadata: [
-        {
-          name: 'property_a',
-        },
-      ],
-    });
-    expect((await files.get())[2]).toMatchObject({
-      filename: 'file3.pdf',
-      extractedMetadata: [],
     });
   });
 });

@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
 import { ObjectID } from 'mongodb';
-import { differenceBy } from 'lodash';
+import { differenceBy, intersectionBy, unionBy, uniqBy } from 'lodash';
 
 import settings from 'api/settings/settings';
 import { files } from 'api/files';
@@ -147,36 +147,74 @@ export function getRenamedTitle(
   return oldTitle.label !== newTitle.label ? [oldTitle.label] : [];
 }
 
-export const removeExtractedMetadata = async (
+const removeDeletedProperties = async (removedProperties: PropertySchema[] = []) =>
+  removedProperties.reduce(async (previousPromise: Promise<void>, property) => {
+    await previousPromise;
+    const affectedFiles = await files.get({
+      'extractedMetadata.propertyID': property._id?.toString(),
+    });
+
+    await affectedFiles.reduce(async (prevPromise: Promise<void>, file) => {
+      await prevPromise;
+      await files.save({
+        ...file,
+        extractedMetadata: file.extractedMetadata?.filter(
+          data => data.propertyID !== property._id?.toString()
+        ),
+      });
+    }, Promise.resolve());
+  }, Promise.resolve());
+
+const updateRenamedProperties = async (renamedProperties: PropertySchema[] = []) =>
+  renamedProperties.reduce(async (previousPromise: Promise<void>, property) => {
+    await previousPromise;
+    const affectedFiles = await files.get({
+      'extractedMetadata.propertyID': property._id?.toString(),
+    });
+
+    await affectedFiles.reduce(async (prevPromise: Promise<void>, file) => {
+      await prevPromise;
+      await files.save({
+        ...file,
+        extractedMetadata: file.extractedMetadata?.map(data => {
+          if (data.propertyID === property._id?.toString()) {
+            return { ...data, name: property.name };
+          }
+          return data;
+        }),
+      });
+    }, Promise.resolve());
+  }, Promise.resolve());
+
+export const updateExtractedMetadataProperties = async (
   oldProperties: PropertySchema[] = [],
   newProperties: PropertySchema[] = []
 ) => {
-  const hasRemovedProperties = oldProperties.length > newProperties.length;
-  let removedProperties: PropertySchema[] = [];
+  const currentProperties = oldProperties.map(property => ({
+    ...property,
+    _id: property._id?.toString(),
+  }));
 
-  if (hasRemovedProperties) {
-    const difference = differenceBy(oldProperties, newProperties, 'name');
-    removedProperties = difference.filter(property =>
-      ['text', 'markdown', 'numeric', 'date'].includes(property.type)
-    );
-  }
+  const differentProperties = differenceBy(
+    newProperties,
+    currentProperties,
+    'name'
+  ).filter(property => ['text', 'markdown', 'numeric', 'date'].includes(property.type));
+
+  const renamedProperties = intersectionBy(differentProperties, currentProperties, '_id');
+
+  const removedProperties = differenceBy(currentProperties, newProperties, '_id').filter(property =>
+    ['text', 'markdown', 'numeric', 'date'].includes(property.type)
+  );
+
   if (removedProperties.length > 0) {
-    return removedProperties.reduce(async (previousPromise: Promise<void>, property) => {
-      await previousPromise;
-      const affectedFiles = await files.get({
-        'extractedMetadata.propertyID': property._id?.toString(),
-      });
+    console.log('REMOVING');
+    await removeDeletedProperties(removedProperties);
+  }
 
-      await affectedFiles.reduce(async (prevPromise: Promise<void>, file) => {
-        await prevPromise;
-        await files.save({
-          ...file,
-          extractedMetadata: file.extractedMetadata?.filter(
-            data => data.propertyID !== property._id?.toString()
-          ),
-        });
-      }, Promise.resolve());
-    }, Promise.resolve());
+  if (renamedProperties.length > 0) {
+    console.log('RENAMING');
+    await updateRenamedProperties(renamedProperties);
   }
 
   return null;
