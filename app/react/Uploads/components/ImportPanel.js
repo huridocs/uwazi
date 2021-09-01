@@ -9,6 +9,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import { Icon } from 'UI';
 import { LocalForm, Control } from 'react-redux-form';
 import { closeImportPanel, importData } from 'app/Uploads/actions/uploadsActions';
+import StackTrace from 'app/components/Elements/StackTrace';
 import ImportProgress from './ImportProgress';
 import socket from '../../socket';
 
@@ -17,25 +18,31 @@ export class ImportPanel extends Component {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.close = this.close.bind(this);
+    this.closeError = this.closeError.bind(this);
     this.state = { showError: false };
     this.showError = this.showError.bind(this);
-    this.importError = '';
-  }
-
-  close() {
-    this.props.closeImportPanel();
-  }
-
-  handleSubmit(values) {
-    this.props.importData(values.file, values.template);
+    this.importError = {};
   }
 
   componentDidMount() {
     socket.on('IMPORT_CSV_ERROR', this.showError);
   }
 
+  handleSubmit(values) {
+    this.props.importData(values.file, values.template);
+  }
+
+  close() {
+    this.setState({ showError: false });
+    this.props.closeImportPanel();
+  }
+
+  closeError() {
+    this.setState({ showError: false });
+  }
+
   showError(e) {
-    this.importError = e.error;
+    this.importError = e;
     this.setState({ showError: true });
   }
 
@@ -114,19 +121,27 @@ export class ImportPanel extends Component {
 
   renderContents() {
     const { uploadProgress, importStart, importProgress } = this.props;
-    if (uploadProgress) {
+    if (uploadProgress && !this.state.showError) {
       return this.renderUploadProgress();
     }
+
     if (this.state.showError) {
+      console.log(this.importError);
       return (
-        <div className="alert alert-danger">
-          <Icon icon="exclamation-triangle" />
-          <div className="error">{this.importError}</div>
-        </div>
+        <>
+          <div className="alert alert-danger">
+            <Icon icon="exclamation-triangle" />
+            <div className="force-ltr">
+              <Translate>The import process threw an error:</Translate>
+            </div>
+            <Icon style={{ cursor: 'pointer' }} icon="times" onClick={this.closeError} />
+          </div>
+          <StackTrace message={this.importError.error} validations={this.importError.validations} />
+        </>
       );
     }
 
-    if (importStart || importProgress) {
+    if ((importStart || importProgress) && !this.state.showError) {
       return <ImportProgress />;
     }
     return this.renderForm();

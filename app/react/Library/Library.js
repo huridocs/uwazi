@@ -6,7 +6,7 @@ import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleBu
 import requestState from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
-import ImportProgress from 'app/Uploads/components/ImportProgress';
+// import ImportProgress from 'app/Uploads/components/ImportProgress';
 import React from 'react';
 import { TableViewer } from 'app/Layout/TableViewer';
 
@@ -22,11 +22,11 @@ export default class Library extends RouteHandler {
   }
 
   static renderTools() {
-    return (
-      <>
-        <ImportProgress />
-      </>
-    );
+    // return (
+    //   <>
+    //     <ImportProgress />
+    //   </>
+    // );
   }
 
   static async requestState(requestParams, globalResources) {
