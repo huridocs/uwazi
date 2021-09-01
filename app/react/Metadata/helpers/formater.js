@@ -92,7 +92,6 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
   }
 
   if (sortedProperties.includes('editDate')) {
-    console.log('Found date edit');
     result = addModificationDate(result, doc);
   }
 
@@ -358,6 +357,10 @@ export default {
 
     if (!doc.metadata) {
       doc.metadata = {};
+    }
+
+    if (!options.sortedProperties) {
+      options.sortedProperties = [];
     }
 
     let metadata = template
