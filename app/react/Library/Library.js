@@ -21,13 +21,7 @@ export default class Library extends RouteHandler {
     this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
   }
 
-  static renderTools() {
-    // return (
-    //   <>
-    //     <ImportProgress />
-    //   </>
-    // );
-  }
+  static renderTools() {}
 
   static async requestState(requestParams, globalResources) {
     return requestState(requestParams, globalResources);
