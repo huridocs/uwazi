@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
 import { ObjectID } from 'mongodb';
-import { differenceBy, intersectionBy, unionBy, uniqBy } from 'lodash';
+import { differenceBy, intersectionBy } from 'lodash';
 
 import settings from 'api/settings/settings';
 import { files } from 'api/files';
@@ -208,12 +208,10 @@ export const updateExtractedMetadataProperties = async (
   );
 
   if (removedProperties.length > 0) {
-    console.log('REMOVING');
     await removeDeletedProperties(removedProperties);
   }
 
   if (renamedProperties.length > 0) {
-    console.log('RENAMING');
     await updateRenamedProperties(renamedProperties);
   }
 
