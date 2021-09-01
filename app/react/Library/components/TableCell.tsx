@@ -4,6 +4,7 @@ import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import MarkdownViewer from 'app/Markdown';
+import moment from 'moment';
 
 export interface TableCellProps {
   content: FormattedMetadataValue;
@@ -19,13 +20,15 @@ const formatProperty = (prop: FormattedMetadataValue) => {
   if (!prop?.value) {
     return undefined;
   }
-  if (
-    ['date', 'daterange', 'numeric', 'select', 'text', 'generatedid', undefined].includes(prop.type)
-  ) {
+  if (['daterange', 'numeric', 'select', 'text', 'generatedid', undefined].includes(prop.type)) {
     return prop.value;
   }
 
   switch (prop.type) {
+    case 'date':
+      result =
+        typeof prop.value === 'number' ? moment.utc(prop.value, 'X').format('ll') : prop.value;
+      break;
     case 'multiselect':
     case 'multidaterange':
     case 'multidate':
