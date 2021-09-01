@@ -26,8 +26,7 @@ const formatProperty = (prop: FormattedMetadataValue) => {
 
   switch (prop.type) {
     case 'date':
-      result =
-        typeof prop.value === 'number' ? moment.utc(prop.value, 'X').format('ll') : prop.value;
+      result = typeof prop.value === 'number' ? moment.utc(prop.value).format('ll') : prop.value;
       break;
     case 'multiselect':
     case 'multidaterange':
