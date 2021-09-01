@@ -10,8 +10,10 @@ import { Icon } from 'UI';
 import { LocalForm, Control } from 'react-redux-form';
 import { closeImportPanel, importData } from 'app/Uploads/actions/uploadsActions';
 import StackTrace from 'app/components/Elements/StackTrace';
+import { actions } from 'app/BasicReducer';
 import ImportProgress from './ImportProgress';
 import socket from '../../socket';
+import { store } from '../../store';
 
 export class ImportPanel extends Component {
   constructor(props) {
@@ -44,6 +46,7 @@ export class ImportPanel extends Component {
   showError(e) {
     this.importError = e;
     this.setState({ showError: true });
+    store.dispatch(actions.set('importStart', false));
   }
 
   renderForm() {
@@ -126,7 +129,6 @@ export class ImportPanel extends Component {
     }
 
     if (this.state.showError) {
-      console.log(this.importError);
       return (
         <>
           <div className="alert alert-danger">
@@ -142,6 +144,7 @@ export class ImportPanel extends Component {
     }
 
     if ((importStart || importProgress) && !this.state.showError) {
+      console.log('Import progress is rendering');
       return <ImportProgress />;
     }
     return this.renderForm();
