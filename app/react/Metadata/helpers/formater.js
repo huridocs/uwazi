@@ -344,7 +344,7 @@ export default {
   prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {
     return this.prepareMetadata(doc, templates, thesauris, null, {
       onlyForCards: true,
-      sortedProperty,
+      sortedProperties: [sortedProperty],
     });
   },
 

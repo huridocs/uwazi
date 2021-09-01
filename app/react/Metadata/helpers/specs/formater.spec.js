@@ -53,7 +53,8 @@ describe('metadata formater', () => {
         doc,
         templates,
         metadataSelectors.indexedThesaurus({ thesauris }),
-        relationships
+        relationships,
+        { sortedProperties: [] }
       );
       [
         text,
@@ -214,7 +215,9 @@ describe('metadata formater', () => {
         };
 
         expect(() =>
-          formater.prepareMetadata(emptyDoc, templates, thesauris, relationships)
+          formater.prepareMetadata(emptyDoc, templates, thesauris, relationships, {
+            sortedProperties: [],
+          })
         ).not.toThrow();
       });
 
@@ -243,7 +246,8 @@ describe('metadata formater', () => {
           docWithEmptyInherited,
           templates,
           thesauris,
-          relationships
+          relationships,
+          { sortedProperties: [] }
         );
 
         expect(
@@ -276,7 +280,8 @@ describe('metadata formater', () => {
           docWithInheritedEmptyValue,
           templates,
           thesauris,
-          relationships
+          relationships,
+          { sortedProperties: [] }
         );
 
         expect(formatted.metadata.find(m => m.name === 'relationship3').value.length).toBe(1);
@@ -343,7 +348,9 @@ describe('metadata formater', () => {
       docCopy.metadata.link = null;
 
       expect(() =>
-        formater.prepareMetadata(docCopy, templates, thesauris, relationships)
+        formater.prepareMetadata(docCopy, templates, thesauris, relationships, {
+          sortedProperties: [],
+        })
       ).not.toThrow();
     });
 
@@ -395,7 +402,8 @@ describe('metadata formater', () => {
         adaptedEntity,
         templates,
         thesauris,
-        relationships
+        relationships,
+        { sortedProperties: [] }
       );
 
       const previewField = formatted.metadata.find(field => field.name === 'preview');
@@ -409,7 +417,7 @@ describe('metadata formater', () => {
         templates,
         metadataSelectors.indexedThesaurus({ thesauris }),
         relationships,
-        { excludePreview: true }
+        { excludePreview: true, sortedProperties: [] }
       );
 
       const previewField = formatted.metadata.find(field => field.name === 'preview');
