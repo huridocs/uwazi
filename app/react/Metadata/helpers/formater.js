@@ -5,7 +5,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 
-const addSortedProperty = (templates, sortedProperty) =>
+const addSortedProperties = (templates, sortedProperties) =>
   templates.reduce((_property, template) => {
     if (!template.get('properties')) {
       return _property;
@@ -13,7 +13,7 @@ const addSortedProperty = (templates, sortedProperty) =>
 
     let matchProp = template
       .get('properties')
-      .find(prop => `metadata.${prop.get('name')}` === sortedProperty);
+      .find(prop => sortedProperties.includes(`metadata.${prop.get('name')}`));
 
     if (matchProp) {
       matchProp = matchProp.set('type', null).set('translateContext', template.get('_id'));
@@ -22,11 +22,11 @@ const addSortedProperty = (templates, sortedProperty) =>
     return _property || matchProp;
   }, false);
 
-const formatMetadataSortedProperty = (metadata, sortedProperty) =>
+const formatMetadataSortedProperties = (metadata, sortedProperties) =>
   metadata.map(prop => {
     const newProp = { ...prop };
     newProp.sortedBy = false;
-    if (sortedProperty === `metadata.${prop.name}`) {
+    if (sortedProperties.includes(`metadata.${prop.name}`)) {
       newProp.sortedBy = true;
       if (!prop.value && prop.value !== 0) {
         newProp.value = 'No value';
@@ -73,23 +73,26 @@ const groupByParent = options =>
     return groupedOptions;
   }, []);
 
-const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
-  const sortPropertyInMetadata = metadata.find(p => sortedProperty === `metadata.${p.name}`);
+const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
+  const sortPropertyInMetadata = metadata.find(p =>
+    sortedProperties.includes(`metadata.${p.name}`)
+  );
   if (
     !sortPropertyInMetadata &&
-    sortedProperty !== 'creationDate' &&
-    sortedProperty !== 'editDate'
+    !sortedProperties.includes('creationDate') &&
+    !sortedProperties.includes('editDate')
   ) {
-    return metadata.push(addSortedProperty(templates, sortedProperty)).filter(p => p);
+    return metadata.push(addSortedProperties(templates, sortedProperties)).filter(p => p);
   }
 
-  let result = formatMetadataSortedProperty(metadata, sortedProperty);
+  let result = formatMetadataSortedProperties(metadata, sortedProperties);
 
-  if (sortedProperty === 'creationDate') {
+  if (sortedProperties.includes('creationDate')) {
     result = addCreationDate(result, doc);
   }
 
-  if (sortedProperty === 'editDate') {
+  if (sortedProperties.includes('editDate')) {
+    console.log('Found date edit');
     result = addModificationDate(result, doc);
   }
 
@@ -361,7 +364,7 @@ export default {
       .get('properties')
       .map((p, index) => p.set('indexInTemplate', index))
       .filter(
-        this.filterProperties(options.onlyForCards, options.sortedProperty, {
+        this.filterProperties(options.onlyForCards, options.sortedProperties, {
           excludePreview: options.excludePreview,
         })
       )
@@ -376,7 +379,7 @@ export default {
         })
       );
 
-    metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
+    metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperties);
 
     return { ...doc, metadata: metadata.toJS(), documentType: template.get('name') };
   },
@@ -408,7 +411,7 @@ export default {
     };
   },
 
-  filterProperties(onlyForCards, sortedProperty, options = {}) {
+  filterProperties(onlyForCards, sortedProperties, options = {}) {
     return p => {
       if (options.excludePreview && p.get('type') === 'preview') {
         return false;
@@ -418,7 +421,7 @@ export default {
         return true;
       }
 
-      if (p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`) {
+      if (p.get('showInCard') || sortedProperties.includes(`metadata.${p.get('name')}`)) {
         return true;
       }
 
