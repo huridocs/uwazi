@@ -375,7 +375,7 @@ export class DocumentSidePanel extends Component {
                   </h1>
                   &nbsp;
                   <TocGeneratedLabel file={this.props.file}>
-                    <Translate>auto-created ⓘ</Translate>
+                    <Translate>auto-created</Translate> ⓘ
                   </TocGeneratedLabel>
                 </div>
                 <ShowIf if={!this.props.tocBeingEdited}>

@@ -49,7 +49,7 @@ key, optionalValue
 "Table of Contents", "Table of Contents"
 "Mark as Reviewed"
 "Table of contents"
-"auto-created ⓘ"
+"auto-created"
 "No Table of Contents", "No Table of Contents"
 "No Table of Contents description", "No Table of Contents description"
 "Document contents", "Document contents"
@@ -62,7 +62,6 @@ key, optionalValue
 "URL"
 "help"
 "Add date"
-Label date "To", To:
 "Add date"
 "more options."
 "Narrow your search"

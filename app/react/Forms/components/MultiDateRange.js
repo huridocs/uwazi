@@ -53,9 +53,7 @@ export default class MultiDateRange extends Component {
             <div key={index} className="multidate-item">
               <div className="multidate-range">
                 <div className="DatePicker__From">
-                  <span>
-                    <Translate translationKey='Label date "From"'>From:</Translate>&nbsp;
-                  </span>
+                  <Translate translationKey='Label date "From"'>From:</Translate>&nbsp;
                   <DatePicker
                     format={this.props.format}
                     value={value.from}
@@ -63,10 +61,7 @@ export default class MultiDateRange extends Component {
                   />
                 </div>
                 <div className="DatePicker__To">
-                  <span>
-                    <Translate translationKey='Label date "To"'>To:</Translate>
-                    &nbsp;
-                  </span>
+                  <Translate translationKey='Label date "to"'>To:</Translate>&nbsp;
                   <DatePicker
                     format={this.props.format}
                     value={value.to}

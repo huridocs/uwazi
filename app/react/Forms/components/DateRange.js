@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import DatePicker from './DatePicker';
 
 class DateRange extends Component {
@@ -19,7 +19,7 @@ class DateRange extends Component {
     return (
       <div>
         <div className="DatePicker__From">
-          <span>{t('System', 'Label date "From"', 'From:')}&nbsp;</span>
+          <Translate translationKey='Label date "From"'>From:</Translate>&nbsp;
           <DatePicker
             locale={locale}
             format={format}
@@ -29,7 +29,7 @@ class DateRange extends Component {
           />
         </div>
         <div className="DatePicker__To">
-          <span>&nbsp;{t('System', 'Label date "to"', 'To:')}&nbsp;</span>
+          <Translate translationKey='Label date "to"'>To:</Translate>&nbsp;
           <DatePicker
             locale={locale}
             format={format}
