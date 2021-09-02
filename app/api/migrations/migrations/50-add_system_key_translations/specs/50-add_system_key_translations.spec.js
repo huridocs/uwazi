@@ -25,6 +25,12 @@ const alreadyInOneContext = [
     value: 'Drag properties here',
     existingValue: 'Arrastra propiedades aquí',
   },
+  {
+    locale: 'en',
+    key: 'Priority sorting',
+    value: 'Priority sorting',
+    existingValue: 'Priority sort',
+  },
 ];
 
 describe('migration add_system_key_translations', () => {

@@ -64,7 +64,7 @@ export default {
         {
           ...commonContext,
           values: commonContext.values.concat([
-            { key: 'Priority sorting', value: 'Priority sorting' },
+            { key: 'Priority sorting', value: 'Priority sort' },
             { key: 'Duplicated label', value: 'Duplicated label' },
           ]),
         },
