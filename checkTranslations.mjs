@@ -18,7 +18,10 @@ async function getFiles(dir) {
     .filter(
       file =>
         !file.match('.spec') &&
-        (file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.tsx'))
+        (file.endsWith('.js') ||
+          file.endsWith('.ts') ||
+          file.endsWith('.tsx') ||
+          file.endsWith('.jsx'))
     );
 }
 
@@ -121,7 +124,7 @@ const checkSystemKeys = async allTexts => {
   return textsNotInTranslations;
 };
 
-const reportNoTranslaeElement = textsWithoutTranslateElement => {
+const reportNoTranslateElement = textsWithoutTranslateElement => {
   if (!textsWithoutTranslateElement.length) {
     return;
   }
@@ -157,7 +160,7 @@ async function checkTranslations(dir) {
   const textsWithoutTranslateElement = allTexts.filter(
     t => t.container !== 'Translate' && t.container !== 't'
   );
-  reportNoTranslaeElement(textsWithoutTranslateElement);
+  reportNoTranslateElement(textsWithoutTranslateElement);
   reportnotInTranslations(textsNotInTranslations);
 
   if (textsNotInTranslations.length || textsWithoutTranslateElement.length) {
