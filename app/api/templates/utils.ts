@@ -7,7 +7,7 @@ import { files } from 'api/files';
 import propertiesHelper from 'shared/comonProperties';
 import { safeName as sharedSafeName } from 'shared/propertyNames';
 import { ensure } from 'shared/tsUtils';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import model from './templatesModel';
@@ -147,8 +147,14 @@ export function getRenamedTitle(
   return oldTitle.label !== newTitle.label ? [oldTitle.label] : [];
 }
 
-const removeDeletedProperties = async (removedProperties: PropertySchema[] = []) =>
-  removedProperties.reduce(async (previousPromise: Promise<void>, property) => {
+const propertyUpdater = async (
+  modifiedProperties: PropertySchema[] = [],
+  updateFunction: (
+    array: ExtractedMetadataSchema[],
+    property: PropertySchema
+  ) => ExtractedMetadataSchema[]
+) =>
+  modifiedProperties.reduce(async (previousPromise: Promise<void>, property) => {
     await previousPromise;
     const affectedFiles = await files.get({
       'extractedMetadata.propertyID': property._id?.toString(),
@@ -158,30 +164,7 @@ const removeDeletedProperties = async (removedProperties: PropertySchema[] = [])
       await prevPromise;
       await files.save({
         ...file,
-        extractedMetadata: file.extractedMetadata?.filter(
-          data => data.propertyID !== property._id?.toString()
-        ),
-      });
-    }, Promise.resolve());
-  }, Promise.resolve());
-
-const updateRenamedProperties = async (renamedProperties: PropertySchema[] = []) =>
-  renamedProperties.reduce(async (previousPromise: Promise<void>, property) => {
-    await previousPromise;
-    const affectedFiles = await files.get({
-      'extractedMetadata.propertyID': property._id?.toString(),
-    });
-
-    await affectedFiles.reduce(async (prevPromise: Promise<void>, file) => {
-      await prevPromise;
-      await files.save({
-        ...file,
-        extractedMetadata: file.extractedMetadata?.map(data => {
-          if (data.propertyID === property._id?.toString()) {
-            return { ...data, name: property.name };
-          }
-          return data;
-        }),
+        extractedMetadata: updateFunction(file.extractedMetadata || [], property),
       });
     }, Promise.resolve());
   }, Promise.resolve());
@@ -208,11 +191,20 @@ export const updateExtractedMetadataProperties = async (
   );
 
   if (removedProperties.length > 0) {
-    await removeDeletedProperties(removedProperties);
+    await propertyUpdater(removedProperties, (metadata, property) =>
+      metadata.filter(data => data.propertyID !== property._id?.toString())
+    );
   }
 
   if (renamedProperties.length > 0) {
-    await updateRenamedProperties(renamedProperties);
+    await propertyUpdater(renamedProperties, (metadata, property) =>
+      metadata.map(data => {
+        if (data.propertyID === property._id?.toString()) {
+          return { ...data, name: property.name };
+        }
+        return data;
+      })
+    );
   }
 
   return null;
