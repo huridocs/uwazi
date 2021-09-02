@@ -1,25 +1,36 @@
 import { TaskManager } from 'api/tasksmanager/taskManager';
 import RedisSMQ from 'rsmq';
+import { RedisServer } from '../RedisServer';
+import Redis from 'ioredis';
 
 describe('taskManager', () => {
   let taskManager: TaskManager;
 
-  let rsmq: Partial<RedisSMQ>;
+  let rsmq: RedisSMQ;
   let queueName: string;
+  let redisServer: RedisServer;
+  let redis: Redis;
 
-  beforeEach(() => {
+  beforeAll(async () => {});
+
+  afterAll(async () => {});
+
+  beforeEach(async () => {
     queueName = 'testQueue';
-    rsmq = {
-      createQueue: jest.fn(),
-      sendMessage: jest.fn(),
-    };
-    taskManager = new TaskManager(rsmq as RedisSMQ, queueName);
   });
 
   describe('addTask', () => {
     it('should add a task', async () => {
-      taskManager.addTask('hello');
-      expect(rsmq.sendMessage).toHaveBeenCalledWith({ qname: queueName, message: 'hello' });
+      redisServer = new RedisServer();
+      await redisServer.start();
+
+      redis = new Redis();
+      rsmq = await new RedisSMQ({ client: redis });
+      // taskManager = new TaskManager(rsmq, queueName);
+      // taskManager.addTask('hello');
+
+      // expect(rsmq.sendMessage).toHaveBeenCalledWith({ qname: queueName, message: 'hello' });
+      await redisServer.stop();
     });
   });
 });
