@@ -155,14 +155,13 @@ async function checkTranslations(dir) {
   const files = await getFiles(dir);
 
   const results = await Promise.all(files.map(file => parseFile(file)));
-  const allTexts = results.reduce((acc, curr) => acc.concat(curr), []);
+  const allTexts = results.flat();
   const textsNotInTranslations = await checkSystemKeys(allTexts);
   const textsWithoutTranslateElement = allTexts.filter(
     t => t.container !== 'Translate' && t.container !== 't'
   );
   reportNoTranslateElement(textsWithoutTranslateElement);
   reportnotInTranslations(textsNotInTranslations);
-
   if (textsNotInTranslations.length || textsWithoutTranslateElement.length) {
     process.exit(1);
   } else {
