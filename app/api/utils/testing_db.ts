@@ -12,6 +12,9 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
+import uniqueID from 'shared/uniqueID';
+import { createMongoInstance } from './createMongoInstance';
+import { ensure } from 'shared/tsUtils';
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
@@ -52,21 +55,24 @@ const fixturer = {
 
 let mongooseConnection: Connection;
 
-const initMongoServer = async () => {
-  mongod = new MongoMemoryServer();
-  const uri = await mongod.getUri();
-  mongooseConnection = await DB.connect(uri);
+export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> =>
+  ensure<MongoMemoryServer>(await createMongoInstance(dbName));
+
+const initMongoServer = async (dbName: string) => {
+  mongod = await createNewMongoDB(dbName);
+  const uri = mongod.getUri();
+  mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };
 
 const testingDB: {
   mongodb: Db | null;
+  dbName: string;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
   id: (id?: string | undefined) => ObjectIdSchema;
   clear: (collections?: string[] | undefined) => Promise<void>;
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
-  dbName: string;
   setupFixturesAndContext: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
   clearAllAndLoadFixtures: (fixtures: DBFixture) => Promise<void>;
 } = {
@@ -75,18 +81,17 @@ const testingDB: {
 
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
-      await initMongoServer();
+      this.dbName = uniqueID();
+      await initMongoServer(this.dbName);
       // mongo/mongoose types collisions
       //@ts-ignore
       mongodb = mongooseConnection.db;
       this.mongodb = mongodb;
 
-      this.dbName = await mongod.getDbName();
-
       if (options.defaultTenant) {
         testingTenants.mockCurrentTenant({
-          name: this.dbName,
           dbName: this.dbName,
+          name: this.dbName,
           indexName: 'index',
         });
         await setupTestUploadedPaths();
