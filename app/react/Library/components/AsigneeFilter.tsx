@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-pascal-case */
 import React, { useCallback, useMemo } from 'react';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { Aggregations } from 'shared/types/aggregations';
@@ -89,6 +88,7 @@ const AssigneeFilterSelect = ({
   onChange,
   aggregations,
 }: Omit<AssigneeFilterProps, 'value'> & { model: string; prefix: string }) => (
+  // eslint-disable-next-line react/jsx-pascal-case
   <Control.select
     component={AssigneeFilterSelectUncontrolled}
     model={model}
