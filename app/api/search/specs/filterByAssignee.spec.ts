@@ -28,11 +28,13 @@ describe('Permissions filters', () => {
         ${'read'}  | ${['ent1', 'ent2']}
         ${'write'} | ${['ent3']}
       `(
-        'should return the entities that the selected user can $level',
+        'should return the entities that the provided user can $level',
         async ({ level, expected }) => {
           userFactory.mock(users.adminUser);
           const query = {
-            customFilters: { [`permissions.${level}`]: { values: [users.user1._id.toString()] } },
+            customFilters: {
+              permissions: { values: [{ refId: users.user1._id.toString(), level }] },
+            },
             includeUnpublished: true,
           };
 
@@ -44,15 +46,18 @@ describe('Permissions filters', () => {
 
       it.each`
         operator | expected
-        ${'and'} | ${['ent1', 'ent2']}
+        ${'and'} | ${['ent3']}
         ${'or'}  | ${['ent1', 'ent2', 'ent3']}
       `('should accept the "$operator" operator', async ({ operator, expected }) => {
         userFactory.mock(users.adminUser);
         const query = {
           customFilters: {
-            'permissions.read': {
+            permissions: {
               and: operator === 'and',
-              values: [users.user1._id.toString(), group1.toString()],
+              values: [
+                { refId: users.user1._id.toString(), level: 'write' },
+                { refId: group1.toString(), level: 'read' },
+              ],
             },
           },
           includeUnpublished: true,
@@ -75,7 +80,9 @@ describe('Permissions filters', () => {
           userFactory.mock(user);
           const query = {
             customFilters: {
-              'permissions.read': { values: refIds.map((r: any) => r._id.toString()) },
+              permissions: {
+                values: refIds.map((r: any) => ({ refId: r._id.toString(), level: 'read' })),
+              },
             },
             includeUnpublished: true,
           };
@@ -92,7 +99,7 @@ describe('Permissions filters', () => {
         userFactory.mock(undefined);
         const query = {
           customFilters: {
-            'permissions.read': { values: [users.editorUser._id.toString()] },
+            permissions: { values: [{ refId: users.editorUser._id.toString(), level: 'read' }] },
           },
           includeUnpublished: true,
         };

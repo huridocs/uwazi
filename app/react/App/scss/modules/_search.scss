@@ -234,6 +234,9 @@
 }
 
 .admin-filter {
+  & > ul > li:first-child {
+    color: #2b56c1;
+  }
   span,
   label {
     color: #2b56c1;

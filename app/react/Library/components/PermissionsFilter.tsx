@@ -52,7 +52,7 @@ export const PermissionsFilter = ({ onChange, aggregations }: PermissionsFilterP
     return null;
   }
   return (
-    <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+    <NeedAuthorization roles={['editor', 'collaborator']}>
       <FormGroup key="permissions.level" className="admin-filter">
         <SelectFilter
           model=".customFilters['permissions.level']"

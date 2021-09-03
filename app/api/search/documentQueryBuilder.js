@@ -110,18 +110,20 @@ export default function() {
     );
   }
 
-  function addPermissionsAssigneeFilter(filter, level) {
+  function addPermissionsAssigneeFilter(filter) {
     const user = permissionsContext.getUserInContext();
     if (!user) return;
     const ownRefIds = permissionsContext.permissionsRefIds();
     const values =
-      user?.role === 'admin' ? filter.values : filter.values.filter(v => ownRefIds.includes(v));
+      user?.role === 'admin'
+        ? filter.values
+        : filter.values.filter(v => ownRefIds.includes(v.refId));
 
     addFilter({
       bool: {
-        [`${filter.and ? 'must' : 'should'}`]: values.map(value =>
+        [`${filter.and ? 'must' : 'should'}`]: values.map(({ refId, level }) =>
           nested(
-            [{ term: { 'permissions.refId': value } }, { term: { 'permissions.level': level } }],
+            [{ term: { 'permissions.refId': refId } }, { term: { 'permissions.level': level } }],
             'permissions'
           )
         ),
@@ -313,13 +315,8 @@ export default function() {
             return;
           }
 
-          if (key === 'permissions.read') {
-            addPermissionsAssigneeFilter(filters[key], 'read');
-            return;
-          }
-
-          if (key === 'permissions.write') {
-            addPermissionsAssigneeFilter(filters[key], 'write');
+          if (key === 'permissions') {
+            addPermissionsAssigneeFilter(filters[key]);
             return;
           }
 

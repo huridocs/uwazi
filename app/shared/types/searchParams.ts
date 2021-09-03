@@ -28,19 +28,24 @@ export const searchParamsSchema = {
                 values: { type: 'array', items: [{ type: 'string' }] },
               },
             },
-            'permissions.read': {
+            permissions: {
               type: 'object',
               additionalProperties: false,
               properties: {
-                values: { type: 'array', items: [{ type: 'string' }] },
+                values: {
+                  type: 'array',
+                  items: [
+                    {
+                      type: 'object',
+                      additionalProperties: false,
+                      properties: {
+                        refId: { type: 'string' },
+                        level: { type: 'string' },
+                      },
+                    },
+                  ],
+                },
                 and: { type: 'boolean' },
-              },
-            },
-            'permissions.write': {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                values: { type: 'array', items: [{ type: 'string' }] },
               },
             },
           },

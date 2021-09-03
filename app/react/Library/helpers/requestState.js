@@ -39,10 +39,12 @@ export function processQuery(params, globalResources, key) {
   const { userSelectedSorting, ...sanitizedQuery } = query;
 
   const loggedIn = globalResources.user && globalResources.user.has('role');
+  const isAdmin = loggedIn && globalResources.user.get('role') === 'admin';
 
   return {
     ...tocGenerationUtils.aggregations(sanitizedQuery, globalResources.settings.collection.toJS()),
     ...(loggedIn ? { aggregatePermissionsByLevel: true, aggregatePublishingStatus: true } : {}),
+    ...(isAdmin ? { aggregatePermissionsByUsers: true } : {}),
   };
 }
 
