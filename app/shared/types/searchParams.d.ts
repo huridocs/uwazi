@@ -17,12 +17,16 @@ export interface SearchParams {
       'permissions.level'?: {
         values?: [] | [string];
       };
-      'permissions.read'?: {
-        values?: [] | [string];
+      permissions?: {
+        values?:
+          | []
+          | [
+              {
+                refId?: string;
+                level?: string;
+              }
+            ];
         and?: boolean;
-      };
-      'permissions.write'?: {
-        values?: [] | [string];
       };
     };
     types?: [] | [string];
