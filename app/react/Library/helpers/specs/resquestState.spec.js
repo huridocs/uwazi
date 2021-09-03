@@ -127,10 +127,11 @@ describe('static requestState()', () => {
         order: 'desc',
         sort: 'creationDate',
         view: undefined,
-        aggregatePermissionsByLevel: true,
+        aggregatePermissionsByUsers: true,
         aggregatePublishingStatus: true,
       });
 
+      globalResources.user = Immutable.fromJS({ role: 'collaborator' });
       query = processQuery(params, globalResources, 'library');
       expect(query).toEqual({
         order: 'desc',
