@@ -1,15 +1,14 @@
-import { TaskManager } from 'api/tasksmanager/taskManager';
-import RedisSMQ from 'rsmq';
+import { TaskManagerFactory, TaskManager } from 'api/tasksmanager/TaskManager';
+import { config } from 'api/config';
 import { RedisServer } from '../RedisServer';
-import Redis from 'ioredis';
+import Redis from 'redis';
 
 describe('taskManager', () => {
   let taskManager: TaskManager;
 
-  let rsmq: RedisSMQ;
   let queueName: string;
   let redisServer: RedisServer;
-  let redis: Redis;
+  let redis: Redis.RedisClient;
 
   beforeAll(async () => {});
 
@@ -19,17 +18,16 @@ describe('taskManager', () => {
     queueName = 'testQueue';
   });
 
-  describe('addTask', () => {
+  describe('startTask', () => {
     it('should add a task', async () => {
       redisServer = new RedisServer();
       await redisServer.start();
 
-      redis = new Redis();
-      rsmq = await new RedisSMQ({ client: redis });
-      // taskManager = new TaskManager(rsmq, queueName);
-      // taskManager.addTask('hello');
+      redis = await Redis.createClient({ port: config.redis.port, host: config.redis.host });
+      taskManager = await TaskManagerFactory.create(redis, queueName);
+      await taskManager.startTask({});
 
-      // expect(rsmq.sendMessage).toHaveBeenCalledWith({ qname: queueName, message: 'hello' });
+      await redis.end(true);
       await redisServer.stop();
     });
   });
