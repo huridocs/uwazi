@@ -91,6 +91,11 @@ export interface ClientEntitySchema extends EntitySchema {
   documents?: ClientFile[];
 }
 
+export interface DocumentViewerUiStateReference {
+  sourceRange: { text: string; selectionRectangles: [] };
+  sourceFile: string;
+}
+
 export interface IStore {
   library: EntityDisplayState;
   uploads: EntityDisplayState;
@@ -117,7 +122,11 @@ export interface IStore {
     doc: IImmutable<ClientEntitySchema>;
     targetDoc: IImmutable<ClientEntitySchema>;
     uiState: IImmutable<{
+      reference: DocumentViewerUiStateReference;
       activeReference: string;
+    }>;
+    metadataExtraction: IImmutable<{
+      selections: [];
     }>;
   };
   oneUpReview: {

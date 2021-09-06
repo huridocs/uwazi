@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, TocSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, TocSchema, ExtractedMetadataSchema } from 'shared/types/commonTypes';
 
 export interface FileType {
   _id?: ObjectIdSchema;
@@ -26,6 +26,7 @@ export interface FileType {
     [k: string]: string;
   };
   toc?: TocSchema[];
+  extractedMetadata?: ExtractedMetadataSchema[];
   pdfInfo?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition

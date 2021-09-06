@@ -129,9 +129,9 @@ export default {
     libraryMultiEditSaveButton:
       '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.btn.btn-success',
     libraryMultiEditFormOption:
-      '#multiEdit > div:nth-child(2) > div > ul > li.wide > ul > li:nth-child(2) > label > span',
+      '#multiEdit > div:nth-child(2) > div > ul > li.wide >  div > ul > li:nth-child(2) > label > span',
     libraryMultiEditFirstInput:
-      '#multiEdit > div:nth-child(2) > div:nth-child(1) > ul > li.wide > div > input',
+      '#multiEdit > div:nth-child(2) > div:nth-child(1) > ul > li.wide > div > div > input',
     libraryMetadataPanel: '.side-panel.metadata-sidepanel',
     searchInUploads: '#app > div.content > header > div > a',
     searchInLibrary:
@@ -266,7 +266,7 @@ export default {
     saveButton:
       '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
     metadataForm: '#metadataForm',
-    metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
+    metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > div > textarea',
     metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
     firstAttachmentTitle:
       '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > a > span > span:nth-child(1)',
@@ -327,27 +327,29 @@ export default {
   },
   newEntity: {
     form: {
-      title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
+      title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > div > textarea',
       type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
-      realName: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
-      age: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > input',
+      realName:
+        '#metadataForm > div:nth-child(3) > div.form-group.text > ul > li.wide > div > div > input',
+      age: '#metadataForm > div:nth-child(3) > div.form-group.numeric > ul > li.wide > div > input',
       knownAccomplices: {
         joker:
-          '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(3) > label',
+          '#metadataForm > div:nth-child(3) > div.form-group.relationship > ul > li.wide > div > ul > li:nth-child(3) > label > span.multiselectItem-name',
       },
-      mainSuperpower: '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > select',
+      mainSuperpower:
+        '#metadataForm > div:nth-child(3) > div.form-group.select > ul > li:nth-child(3) > div > select',
       suporPowers: {
         fly:
-          '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
+          '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(3) > label',
         laserBeam:
-          '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(8) > label',
+          '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(8) > label',
         moreButton:
-          '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(7) > button',
+          '#metadataForm > div:nth-child(3) > div.form-group.multiselect > ul > li:nth-child(3) > div > ul > li > button',
       },
       firstSighting:
-        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > div > input',
       whoIsHe:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div.markdownEditor > div > div.tab-content-visible > textarea',
+        '#metadataForm > div:nth-child(3) > div.form-group.markdown > ul > li.wide > div > div > div > div.tab-content.tab-content-visible > textarea',
     },
     viewer: {
       title:
@@ -386,14 +388,14 @@ export default {
     bottomFirstSuggestReject:
       '#sidePanelMetadataForm > div > div:nth-child(2) > ul > li:nth-child(2) > div > div:nth-child(2) > label > div',
     firstMultiSelectItemSelected:
-      '#sidePanelMetadataForm > div > div:nth-child(2) > ul > li:nth-child(3) > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.checkbox-checked',
+      '#sidePanelMetadataForm > div > div.form-group.multiselect > ul > li:nth-child(3) > div > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-check.fa-w-16.checkbox-checked',
     secondMultiSelectItem:
-      '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label',
+      '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > div > ul > li:nth-child(3) > label',
     secondMultiSelectItemSelected:
-      '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label > span.multiselectItem-icon > svg.checkbox-checked',
+      '#sidePanelMetadataForm > div > div.form-group.multiselect > ul > li:nth-child(3) > div > ul > li:nth-child(3) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-check.fa-w-16.checkbox-checked',
     titleLabel:
       '#app > div.content > div > div > div > main > div.entity-viewer > div > div.tab-content-visible > div > div > div.content-header-title > h1',
-    titleEditBox: '#fullEditMetadataForm > div.form-group > ul > li.wide > div > textarea',
+    titleEditBox: '#fullEditMetadataForm > div.form-group > ul > li.wide > div > div > textarea',
     discardButtonDisabled:
       '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-disabled',
     discardButtonEnabled:
