@@ -6,14 +6,21 @@ export interface Task {
   task: string;
 }
 
+export interface Materials {
+  data: string;
+}
+
 export class TaskManager {
   private rsmq: RedisSMQ;
 
   private queueName: string;
 
-  constructor(rsmq: RedisSMQ, queueName: string) {
+  private serviceUrl: string;
+
+  constructor(rsmq: RedisSMQ, queueName: string, serviceUrl: string) {
     this.rsmq = rsmq;
     this.queueName = queueName;
+    this.serviceUrl = serviceUrl;
   }
 
   async initQueue() {
@@ -26,8 +33,11 @@ export class TaskManager {
     }
   }
 
-  async startTask(message: Task) {
-    await this.rsmq.sendMessageAsync({ qname: this.queueName, message: JSON.stringify(message) });
+  async startTask(message: Task, materials?: Materials) {
+    await this.rsmq.sendMessageAsync({
+      qname: this.queueName,
+      message: JSON.stringify(message),
+    });
   }
 }
 
