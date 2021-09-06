@@ -1,6 +1,7 @@
 import { TaskManagerFactory, TaskManager } from 'api/tasksmanager/TaskManager';
-import { config } from 'api/config';
+
 import { RedisServer } from '../RedisServer';
+import { DummyService } from './DummyService';
 import Redis from 'redis';
 
 describe('taskManager', () => {
@@ -8,27 +9,74 @@ describe('taskManager', () => {
 
   let queueName: string;
   let redisServer: RedisServer;
-  let redis: Redis.RedisClient;
+  let client: Redis.RedisClient;
+  let externalDummyService: DummyService;
 
-  beforeAll(async () => {});
+  beforeAll(async () => {
+    queueName = 'KonzNGaboHellKitchen';
+    redisServer = new RedisServer();
+    await redisServer.start();
+    client = await Redis.createClient('redis://localhost:6379');
+    taskManager = await TaskManagerFactory.create(client, queueName);
 
-  afterAll(async () => {});
+    externalDummyService = new DummyService(1234);
+    await externalDummyService.start(client);
+  });
 
-  beforeEach(async () => {
-    queueName = 'testQueue';
+  afterAll(async () => {
+    await externalDummyService.stop();
+    await client.end(true);
+    await redisServer.stop();
   });
 
   describe('startTask', () => {
     it('should add a task', async () => {
-      redisServer = new RedisServer();
-      await redisServer.start();
+      await taskManager.startTask({
+        task: 'CheeseBurger',
+        tenant: 'Rafa',
+      });
 
-      redis = await Redis.createClient({ port: config.redis.port, host: config.redis.host });
-      taskManager = await TaskManagerFactory.create(redis, queueName);
-      await taskManager.startTask({});
+      await externalDummyService.read();
 
-      await redis.end(true);
-      await redisServer.stop();
+      expect(externalDummyService.currentTask).toBe('{"task":"CheeseBurger","tenant":"Rafa"}');
+    });
+
+    describe('when multiple tasks are added', () => {
+      it('services get them in order', async () => {
+        await taskManager.startTask({
+          task: 'CheeseBurger',
+          tenant: 'Joan',
+        });
+
+        await taskManager.startTask({
+          task: 'Fries',
+          tenant: 'Joan',
+        });
+
+        await taskManager.startTask({
+          task: 'Ribs',
+          tenant: 'Fede',
+        });
+
+        let message = await externalDummyService.read();
+        expect(message).toBe('{"task":"CheeseBurger","tenant":"Joan"}');
+
+        message = await externalDummyService.read();
+        expect(message).toBe('{"task":"Fries","tenant":"Joan"}');
+
+        message = await externalDummyService.read();
+        expect(message).toBe('{"task":"Ribs","tenant":"Fede"}');
+      });
+    });
+
+    describe('sending materials', () => {
+      it('should send materials to the service', async () => {
+        // const task = { task: 'doit', tenant: 'test' };
+        // const materials = { data: '{"someData": "someValue"}' };
+        // await taskManager.startTask(task, materials);
+        // await externalDummyService.read();
+        // expect(externalDummyService.materials[0]).toEqual(materials);
+      });
     });
   });
 });
