@@ -26,6 +26,7 @@ const generateOptions = (aggregations: Aggregations, level: 'read' | 'write') =>
       title: aggregation.label!,
       value: aggregation.key,
       results: aggregation.filtered.doc_count,
+      ...(aggregation.icon ? { icon: { type: 'Icons', _id: aggregation.icon } } : {}),
     })) || [];
 
 export const AssigneeFilterSelectUncontrolled = ({

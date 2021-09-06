@@ -13,7 +13,7 @@ import { searchDocuments } from 'app/Library/actions/libraryActions';
 import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
-import { AssigneeFilter } from 'app/Library/components/AsigneeFilter';
+import { AssigneeFilter } from 'app/Library/components/AssigneeFilter';
 import { PermissionsFilter } from './PermissionsFilter';
 import { PublishedFilters } from './PublishedFilters';
 

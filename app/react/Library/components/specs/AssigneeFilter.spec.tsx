@@ -1,6 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { AssigneeFilterSelectUncontrolled } from '../AsigneeFilter';
+import { AssigneeFilterSelectUncontrolled } from '../AssigneeFilter';
 
 describe('AssigneeFilter uncontrolled', () => {
   const aggregations = {
@@ -9,14 +9,14 @@ describe('AssigneeFilter uncontrolled', () => {
         buckets: [
           { key: 'user1', label: 'User 1', filtered: { doc_count: 1 } },
           { key: 'user2', label: 'User 2', filtered: { doc_count: 2 } },
-          { key: 'group1', label: 'Group 1', filtered: { doc_count: 3 } },
+          { key: 'group1', label: 'Group 1', icon: 'users', filtered: { doc_count: 3 } },
         ],
       },
       '_permissions.write': {
         buckets: [
           { key: 'user1', label: 'User 1', filtered: { doc_count: 4 } },
           { key: 'user2', label: 'User 2', filtered: { doc_count: 5 } },
-          { key: 'group1', label: 'Group 1', filtered: { doc_count: 6 } },
+          { key: 'group1', label: 'Group 1', icon: 'users', filtered: { doc_count: 6 } },
         ],
       },
     },
@@ -72,6 +72,7 @@ describe('AssigneeFilter uncontrolled', () => {
         title: 'Group 1',
         results: 3,
         value: 'group1',
+        icon: { type: 'Icons', _id: 'users' },
       },
     ]);
     expect(write.props.options).toEqual([
@@ -92,6 +93,7 @@ describe('AssigneeFilter uncontrolled', () => {
         title: 'Group 1',
         results: 6,
         value: 'group1',
+        icon: { type: 'Icons', _id: 'users' },
       },
     ]);
   });
