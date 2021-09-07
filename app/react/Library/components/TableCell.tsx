@@ -4,7 +4,6 @@ import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import MarkdownViewer from 'app/Markdown';
-// import moment from 'moment';
 
 export interface TableCellProps {
   content: FormattedMetadataValue;

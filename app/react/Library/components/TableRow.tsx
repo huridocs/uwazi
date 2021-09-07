@@ -87,7 +87,6 @@ class TableRowComponent extends Component<TableRowProps> {
     formattedEntity.metadata.forEach((prop: FormattedMetadataValue) => {
       columnValues.set(prop.name, prop);
     });
-    console.log('columns: ', columns);
 
     return (
       <tr className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}>
