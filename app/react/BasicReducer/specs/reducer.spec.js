@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /** @format */
 
 import { fromJS as Immutable } from 'immutable';
@@ -102,6 +103,28 @@ describe('BasicReducer', () => {
           key: [
             { _id: 1, title: 'changed test' },
             { _id: 2, title: 'test2' },
+          ],
+        },
+      });
+    });
+    it('should update passed value in a list in a nested key at the namespace, by a custom index', () => {
+      state = Immutable({
+        nested: {
+          key: [
+            { _id: 1, title: 'test' },
+            { customID: 1, title: 'test2' },
+          ],
+        },
+      });
+      const newState = reducer(
+        state,
+        actions.updateIn('1', ['nested', 'key'], { customID: 1, title: 'changed test' }, 'customID')
+      );
+      expect(newState.toJS()).toEqual({
+        nested: {
+          key: [
+            { _id: 1, title: 'test' },
+            { customID: 1, title: 'changed test' },
           ],
         },
       });

@@ -80,6 +80,14 @@ export interface MetadataSchema {
   [k: string]: MetadataObjectSchema[] | undefined;
 }
 
+export type SelectionRectanglesSchema = {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  page?: string;
+}[];
+
 export interface TocSchema {
   selectionRectangles?: {
     top?: number;
@@ -90,6 +98,22 @@ export interface TocSchema {
   }[];
   label?: string;
   indentation?: number;
+}
+
+export interface ExtractedMetadataSchema {
+  propertyID?: string;
+  name?: string;
+  timestamp?: string;
+  selection?: {
+    text?: string;
+    selectionRectangles?: {
+      top?: number;
+      left?: number;
+      width?: number;
+      height?: number;
+      page?: string;
+    }[];
+  };
 }
 
 export interface PropertySchema {

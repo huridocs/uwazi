@@ -55,26 +55,26 @@ describe('Entity zone', () => {
       selectors.manBatEntity = {
         form: {
           realName:
-            '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
-          age: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > input',
+            '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > div > input',
+          age: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > div > input',
           knownAccomplices: {
             joker:
-              '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(3) > label',
+              '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > div > ul > li:nth-child(3) > label',
           },
           mainSuperpower:
-            '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > select',
+            '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > div > select',
           suporPowers: {
             fly:
-              '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
+              '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(3) > label',
             laserBeam:
-              '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(8) > label',
+              '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(8) > label',
             moreButton:
-              '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(7) > button',
+              '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(7) > button',
           },
           firstSighting:
-            '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > input',
+            '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > div > input',
           whoIsHe:
-            '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div.markdownEditor > div > div.tab-content-visible > textarea',
+            '#metadataForm > div:nth-child(3) > div.form-group.markdown > ul > li.wide > div > div > div > div.tab-content.tab-content-visible > textarea',
         },
         viewer: {
           realName:

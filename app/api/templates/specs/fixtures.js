@@ -10,6 +10,12 @@ const templateToBeInherited = db.id();
 const propertyToBeInherited = db.id();
 const thesauriId1 = db.id();
 const thesauriId2 = db.id();
+const templateWithExtractedMetadata = db.id();
+const propertyA = db.id();
+const propertyB = db.id();
+const propertyC = db.id();
+const propertyD = db.id();
+
 export default {
   templates: [
     {
@@ -138,6 +144,41 @@ export default {
         },
       ],
     },
+    {
+      _id: templateWithExtractedMetadata,
+      name: 'template_with_extracted_metadata',
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      properties: [
+        {
+          _id: propertyA,
+          label: 'Property A',
+          name: 'property_a',
+          type: 'text',
+          id: '1',
+        },
+        {
+          _id: propertyB,
+          label: 'Property B',
+          name: 'property_b',
+          type: 'markdown',
+          id: '2',
+        },
+        {
+          _id: propertyC,
+          label: 'Property C',
+          name: 'property_c',
+          type: 'numeric',
+          id: '3',
+        },
+        {
+          _id: propertyD,
+          label: 'Property D',
+          name: 'property_d',
+          type: 'link',
+          id: '4',
+        },
+      ],
+    },
   ],
   relationtypes: [{ _id: relatedTo, name: 'related to' }],
   settings: [
@@ -151,6 +192,42 @@ export default {
     { _id: thesauriId1, name: 'options' },
     { _id: thesauriId2, name: 'options' },
   ],
+  files: [
+    {
+      filename: 'file1.pdf',
+      extractedMetadata: [
+        {
+          propertyID: propertyA.toString(),
+          name: 'property_a',
+          selection: { text: 'sample text of file 1 for propA' },
+        },
+        {
+          propertyID: propertyB.toString(),
+          name: 'property_b',
+          selection: { text: 'sample text of file 1 for propB' },
+        },
+        {
+          propertyID: propertyC.toString(),
+          name: 'property_c',
+          selection: { text: 'a number in file 1' },
+        },
+      ],
+    },
+    {
+      filename: 'file2.pdf',
+      extractedMetadata: [
+        {
+          propertyID: propertyA.toString(),
+          name: 'property_a',
+          selection: { text: 'sample text of file 1 for propA' },
+        },
+      ],
+    },
+    {
+      filename: 'file3.pdf',
+      extractedMetadata: [],
+    },
+  ],
 };
 
 export {
@@ -163,4 +240,9 @@ export {
   relatedTo,
   thesauriId1,
   thesauriId2,
+  templateWithExtractedMetadata,
+  propertyA,
+  propertyB,
+  propertyC,
+  propertyD,
 };

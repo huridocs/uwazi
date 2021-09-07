@@ -18,8 +18,8 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       changeTemplate: actions.changeTemplate,
-      onSubmit: doc => disp =>
-        saveDocument(doc)(disp).then(() => {
+      onSubmit: doc => (disp, state) =>
+        saveDocument(doc)(disp, state).then(() => {
           disp(relationshipActions.reloadRelationships(doc.sharedId));
         }),
     },
