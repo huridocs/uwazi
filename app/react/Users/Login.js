@@ -7,7 +7,7 @@ import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 
 import { Icon } from 'UI';
 
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { isClient } from 'app/utils';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
@@ -83,12 +83,14 @@ export class Login extends RouteHandler {
   }
 
   render() {
-    let submitLabel = this.state.recoverPassword
-      ? t('System', 'Send recovery email')
-      : t('System', 'Login button', 'Login');
+    let submitLabel = this.state.recoverPassword ? (
+      <Translate>Send recovery email</Translate>
+    ) : (
+      <Translate>Login</Translate>
+    );
 
     if (this.state.tokenRequired) {
-      submitLabel = t('System', 'Verify');
+      submitLabel = <Translate>Verify</Translate>;
     }
 
     return (
@@ -113,7 +115,11 @@ export class Login extends RouteHandler {
                     >
                       <Field model=".username">
                         <label className="form-group-label" htmlFor="username">
-                          {this.state.recoverPassword ? t('System', 'Email') : t('System', 'User')}
+                          {this.state.recoverPassword ? (
+                            <Translate>Email</Translate>
+                          ) : (
+                            <Translate>User</Translate>
+                          )}
                         </label>
                         <input type="text" name="username" id="username" className="form-control" />
                       </Field>
@@ -124,7 +130,7 @@ export class Login extends RouteHandler {
                       }`}
                     >
                       <label className="form-group-label" htmlFor="password">
-                        {t('System', 'Password')}
+                        <Translate>Password</Translate>
                       </label>
                       <Field model=".password">
                         <input
@@ -143,7 +149,7 @@ export class Login extends RouteHandler {
                             this.state.error ? 'label-danger' : ''
                           }`}
                         >
-                          {t('System', 'Forgot Password?')}
+                          <Translate>Forgot Password?</Translate>
                         </span>
                       </div>
                     </div>
@@ -169,8 +175,13 @@ export class Login extends RouteHandler {
                           )}
                         </p>
                         <p>
-                          Open the two-factor Authenticator app on your device <br />
-                          to view your authentication code and verify your identity.
+                          <Translate>
+                            Open the two-factor Authenticator app on your device
+                          </Translate>{' '}
+                          <br />
+                          <Translate>
+                            to view your authentication code and verify your identity.
+                          </Translate>
                         </p>
                         <p>
                           <span
@@ -179,7 +190,7 @@ export class Login extends RouteHandler {
                               this.state.error2fa ? 'label-danger' : ''
                             }`}
                           >
-                            {t('System', 'Return to login')}
+                            <Translate>Return to login</Translate>
                           </span>
                         </p>
                       </div>
@@ -203,7 +214,7 @@ export class Login extends RouteHandler {
                       onClick={this.setLogin}
                       className="button cancel"
                     >
-                      {t('System', 'Cancel')}
+                      <Translate>Cancel</Translate>
                     </span>
                   </div>
                 )}

@@ -140,9 +140,13 @@ class PublicForm extends Component {
                     <div id="icon">
                       <Icon icon="cloud-upload-alt" />
                     </div>
-                    <div id="upload-text">Drop your files here to upload or</div>
+                    <div id="upload-text">
+                      <Translate>Drop your files here to upload or</Translate>
+                    </div>
                     <div id="upload-button">
-                      <div id="button">Select files on your device</div>
+                      <div id="button">
+                        <Translate>Select files on your device</Translate>
+                      </div>
                     </div>
                   </div>
                 </label>
@@ -163,7 +167,7 @@ class PublicForm extends Component {
                     <div>
                       <span onClick={() => this.removeAttachment(file)}>
                         <Icon icon="times" />
-                        &nbsp;Remove
+                        &nbsp;<Translate>Remove</Translate>
                       </span>
                     </div>
                   </li>
