@@ -347,8 +347,9 @@ export default {
     });
   },
 
-  prepareMetadata(_doc, templates, thesauris, relationships, options = { sortedProperties: [] }) {
+  prepareMetadata(_doc, templates, thesauris, relationships, _options = {}) {
     const doc = _doc;
+    const options = _options;
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
     if (!template || !thesauris.size) {
@@ -357,6 +358,10 @@ export default {
 
     if (!doc.metadata) {
       doc.metadata = {};
+    }
+
+    if (!options.sortedProperties) {
+      options.sortedProperties = [];
     }
 
     let metadata = template
