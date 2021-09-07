@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import Numeric from './Numeric';
 
 export default class NumericRange extends Component {
@@ -30,11 +30,12 @@ export default class NumericRange extends Component {
     return (
       <div>
         <div className="Numeric__From">
-          <span>{t('System', 'Label date "From"')}</span>
+          <Translate translationKey='Label date "From"'>From:</Translate>&nbsp;
           <Numeric value={this.state.from} onChange={val => this.onChange('from', val)} />
         </div>
+        &nbsp;
         <div className="Numeric__To">
-          <span>&nbsp;{t('System', 'Label date "to"')}</span>
+          <Translate translationKey='Label date "to"'>To:</Translate>&nbsp;
           <Numeric value={this.state.to} onChange={val => this.onChange('to', val)} />
         </div>
       </div>

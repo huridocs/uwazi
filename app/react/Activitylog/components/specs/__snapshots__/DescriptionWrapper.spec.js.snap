@@ -19,7 +19,9 @@ exports[`DescriptionWrapper should render expanded data 1`] = `
       <tbody>
         <tr>
           <td>
-            Query
+            <Connect(Translate)>
+              Query
+            </Connect(Translate)>
           </td>
           <td
             className="tdquery"
@@ -29,7 +31,9 @@ exports[`DescriptionWrapper should render expanded data 1`] = `
         </tr>
         <tr>
           <td>
-            Body
+            <Connect(Translate)>
+              Body
+            </Connect(Translate)>
           </td>
           <td
             className="tdbody"
@@ -62,7 +66,9 @@ exports[`DescriptionWrapper should render extra info when expanded and beautifie
       <tbody>
         <tr>
           <td>
-            Route
+            <Connect(Translate)>
+              Route
+            </Connect(Translate)>
           </td>
           <td>
             POST, PUT or DELETE
@@ -72,7 +78,9 @@ exports[`DescriptionWrapper should render extra info when expanded and beautifie
         </tr>
         <tr>
           <td>
-            Query
+            <Connect(Translate)>
+              Query
+            </Connect(Translate)>
           </td>
           <td
             className="tdquery"
@@ -82,7 +90,9 @@ exports[`DescriptionWrapper should render extra info when expanded and beautifie
         </tr>
         <tr>
           <td>
-            Body
+            <Connect(Translate)>
+              Body
+            </Connect(Translate)>
           </td>
           <td
             className="tdbody"

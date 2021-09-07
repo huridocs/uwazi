@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { objectIdSchema, tocSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, tocSchema, extractedMetadataSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { FileType } from './fileType';
 
@@ -13,7 +13,7 @@ export const fileSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'FileType',
-  definitions: { objectIdSchema, tocSchema },
+  definitions: { objectIdSchema, tocSchema, extractedMetadataSchema },
   properties: {
     _id: objectIdSchema,
     entity: { type: 'string', minLength: 1 },
@@ -40,6 +40,7 @@ export const fileSchema = {
       type: 'array',
       items: tocSchema,
     },
+    extractedMetadata: { type: 'array', items: extractedMetadataSchema },
     pdfInfo: {
       type: 'object',
       additionalProperties: false,
