@@ -40,7 +40,10 @@ exports[`ThesauriFormGroup render should render group field and DragAndDropConta
         <Connect(Icon)
           icon="trash-alt"
         />
-         Delete Group
+         
+        <Connect(Translate)>
+          Delete Group
+        </Connect(Translate)>
       </button>
     </Modeled(Connect(Field))>
   </FormGroup>

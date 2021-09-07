@@ -6,6 +6,7 @@ import { browserHistory } from 'react-router';
 import RouteHandler from 'app/App/RouteHandler';
 import qs from 'qs';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 
 import auth from 'app/Auth';
 
@@ -54,15 +55,17 @@ class ResetPassword extends RouteHandler {
               <div className="alert alert-info">
                 <Icon icon="info-circle" />
                 <div>
-                  To complete the account creation process, please create a password for your
-                  account
+                  <Translate>
+                    To complete the account creation process, please create a password for your
+                    account
+                  </Translate>
                 </div>
               </div>
             )}
             <form onSubmit={this.submit}>
               <div className={`form-group login-email ${this.state.error ? 'has-error' : ''}`}>
                 <label className="form-group-label" htmlFor="password">
-                  Password
+                  <Translate>Password</Translate>
                 </label>
                 <input
                   onChange={this.passwordChange}
@@ -75,7 +78,7 @@ class ResetPassword extends RouteHandler {
               </div>
               <div className={`form-group login-password ${this.state.error ? 'has-error' : ''}`}>
                 <label className="form-group-label" htmlFor="repeat-password">
-                  Repeat Password
+                  <Translate>Repeat Password</Translate>
                 </label>
                 <input
                   value={this.state.repeatPassword}
@@ -85,10 +88,14 @@ class ResetPassword extends RouteHandler {
                   id="repeat-password"
                   className="form-control"
                 />
-                {this.state.error && <div className="required">Passwords don&rsquo;t match</div>}
+                {this.state.error && (
+                  <div className="required">
+                    <Translate>Passwords don&rsquo;t match</Translate>
+                  </div>
+                )}
               </div>
               <button type="submit" className="btn btn-block btn-lg btn-primary">
-                Save password
+                <Translate>Save password</Translate>
               </button>
             </form>
           </div>

@@ -24,7 +24,10 @@ exports[`NestedFilter should render a text filter field with a label and passing
         htmlFor="modelstrict"
       >
         <span>
-           Strict mode
+           
+          <Connect(Translate)>
+            Strict mode
+          </Connect(Translate)>
         </span>
       </label>
     </div>

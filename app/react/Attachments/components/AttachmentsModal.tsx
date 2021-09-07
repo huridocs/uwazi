@@ -157,12 +157,20 @@ export const AttachmentsModalCmp = ({
                       />
                     </Field>
                     <Tip icon="info-circle" position="right">
-                      <p>To get resource from web:</p>
                       <p>
-                        1. Right-click an image or video on the web and copy the image's URL.
-                        Altenatively websites offers share button whereyou can get URL.
+                        <Translate>To get resource from web:</Translate>
                       </p>
-                      <p>2. Return here and paste the URL in this field (Ctrl+V or Command+V)</p>
+                      <p>
+                        <Translate>
+                          1. Right-click an image or video on the web and copy the image's URL.
+                          Altenatively websites offers share button whereyou can get URL.
+                        </Translate>
+                      </p>
+                      <p>
+                        <Translate>
+                          2. Return here and paste the URL in this field (Ctrl+V or Command+V)
+                        </Translate>
+                      </p>
                     </Tip>
                   </div>
 

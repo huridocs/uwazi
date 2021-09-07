@@ -1,5 +1,3 @@
-/** @format */
-
 import { Field, Form, actions as formActions } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -8,7 +6,7 @@ import React, { Component } from 'react';
 
 import { Icon } from 'UI';
 import { searchDocuments, processFilters } from 'app/Library/actions/libraryActions';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import SearchTips from 'app/Library/components/SearchTips';
 import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
@@ -69,7 +67,7 @@ export class SearchBar extends Component {
               onClick={this.submitSemanticSearch}
               className="btn btn-success semantic-search-button"
             >
-              <Icon icon="flask" /> Semantic Search
+              <Icon icon="flask" /> <Translate>Semantic Search</Translate>
             </button>
           </FeatureToggleSemanticSearch>
         </Form>
