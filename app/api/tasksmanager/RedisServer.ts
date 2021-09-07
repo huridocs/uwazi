@@ -29,8 +29,7 @@ export class RedisServer {
     execSync(
       `cd redis
        cd redis-stable
-       make
-       make install`
+       make`
     );
   }
 

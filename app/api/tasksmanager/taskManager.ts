@@ -1,50 +1,104 @@
-import RedisSMQ from 'rsmq';
+import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis from 'redis';
+import request from 'shared/JSONRequest';
 
-export interface Task {
+export interface TaskMessage {
   tenant: string;
   task: string;
 }
 
-export interface Materials {
-  data: string;
+export interface Service {
+  serviceName: string;
+  filesUrl: string;
+  dataUrl: string;
+  resultsUrl: string;
 }
 
 export class TaskManager {
-  private rsmq: RedisSMQ;
+  private redisSMQ: RedisSMQ;
 
-  private queueName: string;
+  private readonly service: Service;
 
-  private serviceUrl: string;
+  private readonly taskQueue: string;
 
-  constructor(rsmq: RedisSMQ, queueName: string, serviceUrl: string) {
-    this.rsmq = rsmq;
-    this.queueName = queueName;
-    this.serviceUrl = serviceUrl;
+  private readonly resultsQueue: string;
+
+  private readonly processResults?: (results: object) => void;
+
+  private listeningToQueue: NodeJS.Timeout | undefined;
+
+  constructor(redisSMQ: RedisSMQ, service: Service, processResults?: (results: object) => void) {
+    this.redisSMQ = redisSMQ;
+    this.service = service;
+    this.processResults = processResults;
+    this.taskQueue = `${service.serviceName}_tasks`;
+    this.resultsQueue = `${service.serviceName}_results`;
   }
 
   async initQueue() {
     try {
-      await this.rsmq.createQueueAsync({ qname: this.queueName });
+      await this.redisSMQ.createQueueAsync({ qname: this.taskQueue });
     } catch (err) {
       if (err.name !== 'queueExists') {
         throw err;
       }
     }
+    try {
+      await this.redisSMQ.createQueueAsync({ qname: this.resultsQueue });
+    } catch (err) {
+      if (err.name !== 'queueExists') {
+        throw err;
+      }
+    }
+
+    this.listeningToQueue = setInterval(() => {
+      this.redisSMQ.receiveMessage({ qname: this.resultsQueue }, async (err, resp) => {
+        if (err) {
+          return;
+        }
+
+        const message = resp as QueueMessage;
+
+        if (message.id) {
+          if (this.processResults) {
+            const results = await request.get(this.service.resultsUrl, JSON.parse(message.message));
+            this.processResults(results.json);
+          }
+        }
+      });
+    }, 1000);
   }
 
-  async startTask(message: Task, materials?: Materials) {
-    await this.rsmq.sendMessageAsync({
-      qname: this.queueName,
-      message: JSON.stringify(message),
+  async startTask(taskMessage: TaskMessage) {
+    await this.redisSMQ.sendMessageAsync({
+      qname: this.taskQueue,
+      message: JSON.stringify(taskMessage),
     });
+  }
+
+  async sendJSON(data: object) {
+    await request.post(this.service.dataUrl, data);
+  }
+
+  async sendFile(file: Buffer) {
+    await request.uploadFile(this.service.filesUrl, 'blank.pdf', file);
+  }
+
+  end() {
+    if (this.listeningToQueue) {
+      clearInterval(this.listeningToQueue);
+    }
   }
 }
 
 export const TaskManagerFactory = {
-  create: async (redis: Redis.RedisClient, queueName: string) => {
-    const rsmq = await new RedisSMQ({ client: redis });
-    const manager = await new TaskManager(rsmq, queueName);
+  create: async (
+    redis: Redis.RedisClient,
+    service: Service,
+    processResults?: (results: object) => void
+  ) => {
+    const redisSMQ = await new RedisSMQ({ client: redis });
+    const manager = await new TaskManager(redisSMQ, service, processResults);
     await manager.initQueue();
     return manager;
   },
