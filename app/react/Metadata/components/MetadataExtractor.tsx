@@ -3,6 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
+import { Translate } from 'app/I18N';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
 
 export type OwnPropTypes = {
@@ -48,7 +49,7 @@ const MetadataExtractorComponent = ({ selection, setSelection, updateField }: ma
     return (
       <button type="button" onClick={onClick} className="extraction-button">
         <span>
-          Click to fill <Icon icon="bullseye" />
+          <Translate>Click to fill</Translate> <Icon icon="bullseye" />
         </span>
       </button>
     );
