@@ -91,8 +91,8 @@ describe('Metadata Properties', () => {
       '12/09/1964'
     );
     await expect(page).toFill('.form-group.markdown textarea', '***smile***');
-    await expect(page).toFill('.form-group.link #label', 'Huridocs');
-    await expect(page).toFill('.form-group.link #url', 'https://www.huridocs.org/');
+    await expect(page).toFill('.link .form-group #label', 'Huridocs');
+    await expect(page).toFill('.link .form-group #url', 'https://www.huridocs.org/');
 
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert-success');
