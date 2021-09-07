@@ -118,26 +118,46 @@ export const metadataSchema = {
   },
 };
 
+export const selectionRectanglesSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      top: { type: 'number' },
+      left: { type: 'number' },
+      width: { type: 'number' },
+      height: { type: 'number' },
+      page: { type: 'string' },
+    },
+  },
+};
+
 export const tocSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    selectionRectangles: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          top: { type: 'number' },
-          left: { type: 'number' },
-          width: { type: 'number' },
-          height: { type: 'number' },
-          page: { type: 'string' },
-        },
-      },
-    },
+    selectionRectangles: selectionRectanglesSchema,
     label: { type: 'string' },
     indentation: { type: 'number' },
+  },
+};
+
+export const extractedMetadataSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    propertyID: { type: 'string' },
+    name: { type: 'string' },
+    timestamp: { type: 'string' },
+    selection: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        text: { type: 'string' },
+        selectionRectangles: selectionRectanglesSchema,
+      },
+    },
   },
 };
 

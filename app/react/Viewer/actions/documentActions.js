@@ -44,14 +44,18 @@ export function saveDocument(doc) {
     }
   });
 
-  return dispatch =>
-    documentsApi.save(new RequestParams(updateDoc)).then(updatedDoc => {
+  return (dispatch, getState) => {
+    const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
+    const fileID = getState().documentViewer.doc.toJS().defaultDoc._id;
+    updateDoc.__extractedMetadata = { fileID, ...extractredMetadata };
+    return documentsApi.save(new RequestParams(updateDoc)).then(updatedDoc => {
       dispatch(notificationActions.notify('Document updated', 'success'));
       dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.update('viewer/doc', updatedDoc));
       dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
     });
+  };
 }
 
 export function saveToc(toc, fileId) {

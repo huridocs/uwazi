@@ -16,6 +16,7 @@ import defaultTemplate from '../helpers/defaultTemplate';
 import validator from '../helpers/validator';
 import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
+import { MetadataExtractor } from './MetadataExtractor';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -141,9 +142,14 @@ export class MetadataForm extends Component {
                 </label>
               </li>
               <li className="wide">
-                <Field model=".title">
-                  <textarea className="form-control" />
-                </Field>
+                <div className="metadata-extractor-container">
+                  {storeKey === 'documentViewer' && (
+                    <MetadataExtractor fieldName="title" model={`${model}.title`} />
+                  )}
+                  <Field model=".title">
+                    <textarea className="form-control" />
+                  </Field>
+                </div>
               </li>
               <IconField model={model} />
             </ul>

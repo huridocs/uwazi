@@ -192,3 +192,6 @@ export async function getSuggestions(templates, searchTerm = '') {
   const request = new RequestParams({ searchTerm, templates });
   return searchAPI.getSuggestions(request);
 }
+
+export const clearMetadataSelections = () =>
+  actions.unset('documentViewer.metadataExtraction', ['selections']);
