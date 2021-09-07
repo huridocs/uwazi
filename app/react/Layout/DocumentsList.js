@@ -9,7 +9,7 @@ import SortButtons from 'app/Library/components/SortButtons';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { Icon } from 'UI';
 import Welcome from './components/Welcome';
@@ -126,7 +126,9 @@ class DocumentsList extends Component {
           <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
             <div className="documents-counter">
               <span className="documents-counter-label">{counter}</span>
-              <span className="documents-counter-sort">{t('System', 'sorted by')}:</span>
+              <span className="documents-counter-sort">
+                <Translate>sorted by</Translate>
+              </span>
             </div>
             <SortButtons
               sortCallback={this.props.searchDocuments}
@@ -141,7 +143,7 @@ class DocumentsList extends Component {
                   className="btn btn-default btn-xs"
                   onClick={this.selectAllDocuments}
                 >
-                  {t('System', 'Select all')}
+                  <Translate>Select all</Translate>
                 </button>
               </div>
             </NeedAuthorization>
@@ -194,10 +196,20 @@ class DocumentsList extends Component {
             })()}
             <NeedAuthorization>
               <div className="col-sm-12 force-ltr text-center protip">
-                <Icon icon="lightbulb" /> <b>ProTip!</b>
+                <Icon icon="lightbulb" />{' '}
+                <b>
+                  <Translate>ProTip!</Translate>
+                </b>
                 <span>
-                  Use <span className="protip-key">cmd</span> or{' '}
-                  <span className="protip-key">shift</span>&nbsp; + click to select multiple cards.
+                  <Translate>Use</Translate>&nbsp;
+                  <span className="protip-key" no-translate>
+                    cmd
+                  </span>
+                  &nbsp; <Translate>or</Translate>{' '}
+                  <span className="protip-key" no-translate>
+                    shift
+                  </span>
+                  &nbsp; <Translate>+ click to select multiple cards.</Translate>
                 </span>
               </div>
             </NeedAuthorization>

@@ -2,7 +2,7 @@ import { Field } from 'react-redux-form';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+import { Translate } from 'app/I18N';
 import { NestedMultiselect } from 'app/ReactReduxForms';
 
 class NestedFilter extends Component {
@@ -17,7 +17,9 @@ class NestedFilter extends Component {
               <input id={`${model}strict`} type="checkbox" onChange={onChange} />
             </Field>
             <label htmlFor={`${model}strict`}>
-              <span>&nbsp;Strict mode</span>
+              <span>
+                &nbsp;<Translate>Strict mode</Translate>
+              </span>
             </label>
           </div>
         </li>

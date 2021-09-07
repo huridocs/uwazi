@@ -5,6 +5,7 @@ import { Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties';
 import PropertyConfigOptions from './PropertyConfigOptions';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
@@ -25,7 +26,9 @@ export class FormConfigNested extends Component {
     return (
       <div>
         <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
-          <label>Label</label>
+          <label>
+            <Translate>Label</Translate>
+          </label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
           </Field>
@@ -35,11 +38,13 @@ export class FormConfigNested extends Component {
           <input id={`required${this.props.index}`} type="checkbox" />
           &nbsp;
           <label className="property-label" htmlFor={`required${this.props.index}`}>
-            Required property
+            <Translate>Required property</Translate>
             <span className="property-help">
               <Icon icon="question-circle" />
               <div className="property-description">
-                You won&#39;t be able to publish an entity if this property is empty.
+                <Translate>
+                  You won&#39;t be able to save an entity if this property is empty.
+                </Translate>
               </div>
             </span>
           </label>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { List } from 'immutable';
+import { Translate } from 'app/I18N';
 import ActivitylogRow from './ActivitylogRow';
 
 class ActivityLogList extends Component {
@@ -12,10 +13,18 @@ class ActivityLogList extends Component {
         <table className="table">
           <thead>
             <tr>
-              <th>Action</th>
-              <th>User</th>
-              <th className="activitylog-description">Description</th>
-              <th className="activitylog-time">Time</th>
+              <th>
+                <Translate>Action</Translate>
+              </th>
+              <th>
+                <Translate>User</Translate>
+              </th>
+              <th className="activitylog-description">
+                <Translate>Description</Translate>
+              </th>
+              <th className="activitylog-time">
+                <Translate>Time</Translate>
+              </th>
             </tr>
           </thead>
           <tbody>

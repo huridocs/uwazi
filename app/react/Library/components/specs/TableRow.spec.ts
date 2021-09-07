@@ -58,6 +58,7 @@ describe('TableRow', () => {
     const timestampCreation = Date.UTC(2020, 6, 23).valueOf();
     const timestampProperty = Math.floor(Date.UTC(2019, 4, 20).valueOf() / 1000);
     const storeState = {
+      settings: { collection: Immutable.fromJS({ dateFormat: 'dd-mm-yyyy' }) },
       library: { ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'selectedEntity1' }] }) },
       thesauris: Immutable.fromJS([
         {

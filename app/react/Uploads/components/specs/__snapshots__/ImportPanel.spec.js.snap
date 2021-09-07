@@ -170,7 +170,10 @@ exports[`ImportPanel rendering states when the import starts should render an up
     <div
       className="force-ltr"
     >
-      Uploading file 
+      <Connect(Translate)>
+        Uploading file
+      </Connect(Translate)>
+       
       23
       %
     </div>
@@ -207,7 +210,10 @@ exports[`ImportPanel rendering states when the upload starts should render an up
     <div
       className="force-ltr"
     >
-      Uploading file 
+      <Connect(Translate)>
+        Uploading file
+      </Connect(Translate)>
+       
       23
       %
     </div>

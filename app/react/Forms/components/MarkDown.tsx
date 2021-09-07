@@ -1,6 +1,7 @@
 import MarkdownViewer from 'app/Markdown';
 import React, { Component } from 'react';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
+import { Translate } from 'app/I18N';
 
 export interface MarkDownType {
   onChange: () => {};
@@ -17,16 +18,20 @@ export class MarkDown extends Component<MarkDownType> {
         <Tabs renderActiveTabContentOnly>
           <div className="tab-nav">
             <TabLink to="edit" default>
-              Edit
+              <Translate>Edit</Translate>
             </TabLink>
-            {showPreview && <TabLink to="preview">Preview</TabLink>}
+            {showPreview && (
+              <TabLink to="preview">
+                <Translate>Preview</Translate>
+              </TabLink>
+            )}
             <a
               className="tab-link tab-link--help"
               href="https://guides.github.com/features/mastering-markdown/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              help
+              <Translate>help</Translate>
             </a>
           </div>
           <TabContent for="edit">

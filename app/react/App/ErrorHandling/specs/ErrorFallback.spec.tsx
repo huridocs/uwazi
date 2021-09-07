@@ -16,7 +16,7 @@ describe('ErrorFallback', () => {
     const props = { error: { name: '', message: '', code: '500', requestId: '1234' } };
     const component = shallow(<ErrorFallback {...props} />);
     const requestId = component.find('.error-message-sm').at(0);
-    expect(requestId.text()).toEqual('Request id #1234');
+    expect(requestId.text()).toContain('1234');
     const code = component.find('.error-code').at(0);
     expect(code.text()).toEqual('500');
   });

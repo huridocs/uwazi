@@ -10,7 +10,7 @@ import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 const removeItem = itemId => {
@@ -195,7 +195,9 @@ export class FiltersForm extends Component {
       <div className="FiltersForm">
         <div className="FiltersForm-list">
           <div className="panel panel-default">
-            <div className="panel-heading">{t('System', 'Filters configuration')}</div>
+            <div className="panel-heading">
+              <Translate>Filters configuration</Translate>
+            </div>
             <div className="panel-body">
               <div className="row">
                 <div className="col-sm-9">
@@ -203,18 +205,24 @@ export class FiltersForm extends Component {
                     <Icon icon="info-circle" size="2x" />
                     <div className="force-ltr">
                       <p>
-                        By default, users can filter the entities in the library based on the types
-                        you have defined. However, you can configure how these entity types will be
-                        displayed:
+                        <Translate translationKey="Filters configuration description">
+                          By default, users can filter the entities in the library based on the
+                          types you have defined. However, you can configure how these entity types
+                          will be displayed:
+                        </Translate>
                       </p>
                       <ul>
                         <li>
-                          drag and drop each entity type into the window in order to configure their
-                          order
+                          <Translate translationKey="Filters configuration">
+                            drag and drop each entity type into the window in order to configure
+                            their order
+                          </Translate>
                         </li>
                         <li>
-                          select &quot;Create group&quot; below to group filters under a label e.g
-                          (&quot;Documents &quot;or &quot;People&quot;)
+                          <Translate translationKey="Filters configuration example">
+                            select &quot;Create group&quot; below to group filters under a label e.g
+                            (&quot;Documents &quot;or &quot;People&quot;)
+                          </Translate>
                         </li>
                       </ul>
                     </div>
@@ -229,7 +237,9 @@ export class FiltersForm extends Component {
                 <div className="col-sm-3">
                   <div className="FiltersForm-constructor">
                     <div>
-                      <i>{t('System', 'Entity types')}</i>
+                      <i>
+                        <Translate>Entity types</Translate>
+                      </i>
                     </div>
                     <DragAndDropContainer
                       id="inactive"
@@ -250,11 +260,15 @@ export class FiltersForm extends Component {
             className="btn btn-sm btn-primary"
           >
             <Icon icon="plus" />
-            <span className="btn-label">{t('System', 'Create group')}</span>
+            <span className="btn-label">
+              <Translate>Create group</Translate>
+            </span>
           </button>
           <button type="button" onClick={this.save.bind(this)} className="btn btn-sm btn-success">
             <Icon icon="save" />
-            <span className="btn-label">{t('System', 'Save')}</span>
+            <span className="btn-label">
+              <Translate>Save</Translate>
+            </span>
           </button>
         </div>
       </div>

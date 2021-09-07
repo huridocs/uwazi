@@ -63,6 +63,9 @@ const CollectionSettings = ({
     setSettings(result);
     notify(t('System', 'Settings updated', null, false), 'success');
   };
+  const year = t('System', 'Year', null, false);
+  const month = t('System', 'Month', null, false);
+  const day = t('System', 'Day', null, false);
 
   return (
     <div className="panel panel-default collection-settings">
@@ -98,7 +101,7 @@ const CollectionSettings = ({
           >
             <div className="input-group">
               <span className="input-group-addon" id="basic-addon1">
-                https://yourdomain
+                <Translate>https://yourdomain</Translate>
               </span>
               <input type="text" className="form-control" name="home_page" ref={register} />
             </div>
@@ -108,9 +111,9 @@ const CollectionSettings = ({
         <SettingsFormElement label="Default view">
           <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="defaultLibraryView" className="form-control" ref={register}>
-              <option value="cards">Cards</option>
-              <option value="table">Table</option>
-              <option value="map">Map</option>
+              <option value="cards">{t('System', 'Cards', null, false)}</option>
+              <option value="table">{t('System', 'Table', null, false)}</option>
+              <option value="map">{t('System', 'Map', null, false)}</option>
             </select>
           </div>
         </SettingsFormElement>
@@ -118,12 +121,24 @@ const CollectionSettings = ({
         <SettingsFormElement label="Date format">
           <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="dateFormat" className="form-control" ref={register}>
-              <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
-              <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>
-              <option value="MM/dd/yyyy">02/26/2021 (Month, Day, Year)</option>
-              <option value="yyyy-MM-dd">2021-02-26 (Year, Month, Day)</option>
-              <option value="dd-MM-yyyy">26-02-2021 (Day, Month, Year)</option>
-              <option value="MM-dd-yyyy">02-26-2021 (Month, Day, Year)</option>
+              <option value="yyyy/MM/dd">
+                2021/02/26 ({year}, {month}, {day})
+              </option>
+              <option value="dd/MM/yyyy">
+                26/02/2021 ({day}, {month}, {year})
+              </option>
+              <option value="MM/dd/yyyy">
+                02/26/2021 ({month}, {day}, {year})
+              </option>
+              <option value="yyyy-MM-dd">
+                2021-02-26 ({year}, {month}, {day})
+              </option>
+              <option value="dd-MM-yyyy">
+                26-02-2021 ({day}, {month}, {year})
+              </option>
+              <option value="MM-dd-yyyy">
+                02-26-2021 ({month}, {day}, {year})
+              </option>
             </select>
           </div>
         </SettingsFormElement>
