@@ -146,7 +146,6 @@ export class ImportPanel extends Component {
     }
 
     if ((importStart || importProgress) && !this.state.showError) {
-      console.log('Import progress is rendering');
       return <ImportProgress />;
     }
     return this.renderForm();
