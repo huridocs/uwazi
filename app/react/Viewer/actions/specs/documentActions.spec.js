@@ -292,12 +292,20 @@ describe('documentActions', () => {
           { type: 'viewer/doc/UPDATE', value: { sharedId: 'responseId' } },
           { type: 'reloadRelationships' },
         ];
-        const store = mockStore({});
+        const store = mockStore({
+          documentViewer: {
+            metadataExtraction: Immutable.fromJS([]),
+            doc: Immutable.fromJS({ defaultDoc: { _id: '' } }),
+          },
+        });
 
         store
           .dispatch(actions.saveDocument(doc))
           .then(() => {
-            expect(documentsApi.save).toHaveBeenCalledWith({ data: { name: 'doc' }, headers: {} });
+            expect(documentsApi.save).toHaveBeenCalledWith({
+              data: { __extractedMetadata: { fileID: '' }, name: 'doc' },
+              headers: {},
+            });
             expect(store.getActions()).toEqual(expectedActions);
           })
           .then(done)
