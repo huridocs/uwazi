@@ -18,6 +18,7 @@ describe('MetadataFormButtons', () => {
     props = {
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       resetForm: jasmine.createSpy('resetForm'),
+      clearMetadataSelections: jasmine.createSpy('resetForm'),
       delete: jasmine.createSpy('delete'),
       data: immutable({ test: 'test', sharedId: 'shId', file: {} }),
       templates: immutable([{ test: 'test' }]),
@@ -68,6 +69,14 @@ describe('MetadataFormButtons', () => {
         props.data.toJS(),
         props.templates.toJS()
       );
+    });
+
+    it('should clear metadata extraction selections', () => {
+      component
+        .find('.edit-metadata')
+        .at(1)
+        .simulate('click');
+      expect(props.clearMetadataSelections).toHaveBeenCalled();
     });
   });
 

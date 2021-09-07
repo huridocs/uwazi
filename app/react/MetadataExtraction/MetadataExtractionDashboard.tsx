@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import Icons from 'app/Templates/components/Icons';
@@ -101,16 +101,22 @@ class MetadataExtractionDashboard extends React.Component<
   render() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Metadata extraction dashboard')}</div>
+        <div className="panel-heading">
+          <Translate>Metadata extraction dashboard</Translate>
+        </div>
         <div className="panel-subheading">
-          {t('System', 'Extract information from your documents')}
+          <Translate>Extract information from your documents</Translate>
         </div>
         <div className="metadata-extraction-table">
           <table className="table">
             <thead>
               <tr>
-                <th>Metadata to extract</th>
-                <th>Template</th>
+                <th>
+                  <Translate>Metadata to extract</Translate>
+                </th>
+                <th>
+                  <Translate>Template</Translate>
+                </th>
               </tr>
             </thead>
             <tbody>
