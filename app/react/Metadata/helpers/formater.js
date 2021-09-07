@@ -348,16 +348,12 @@ export default {
   },
 
   prepareMetadata(_doc, templates, thesauris, relationships, _options = {}) {
-    const doc = _doc;
+    const doc = { metadata: {}, ..._doc };
     const options = { sortedProperties: [], ..._options };
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
     if (!template || !thesauris.size) {
       return { ...doc, metadata: [], documentType: '' };
-    }
-
-    if (!doc.metadata) {
-      doc.metadata = {};
     }
 
     let metadata = template
