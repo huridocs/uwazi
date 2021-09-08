@@ -1,6 +1,5 @@
 import React from 'react';
 import Immutable from 'immutable';
-
 import { ImportPanel } from 'app/Uploads/components/ImportPanel';
 import { shallow } from 'enzyme';
 import { LocalForm } from 'react-redux-form';
@@ -54,6 +53,18 @@ describe('ImportPanel', () => {
         props.importProgress = 189;
         render();
         expect(component).toMatchSnapshot();
+      });
+    });
+    describe('error', () => {
+      describe('when there is an error', () => {
+        it('should render an error message', () => {
+          props.importStart = false;
+          props.importProgress = 0;
+          props.uploadProgress = 0;
+          render();
+          component.setState({ showError: true });
+          expect(component).toMatchSnapshot();
+        });
       });
     });
   });
