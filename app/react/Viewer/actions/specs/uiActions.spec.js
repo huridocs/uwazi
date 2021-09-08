@@ -79,13 +79,10 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
-      actions.activateReference(
-        {
-          _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
-        },
-        {}
-      )(dispatch);
+      actions.activateReference({
+        _id: 'id',
+        reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+      })(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE, reference: 'id' });
       expect(dispatch).toHaveBeenCalledWith({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
       expect(dispatch).toHaveBeenCalledWith({
@@ -95,13 +92,10 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SHOW_TAB references by default', () => {
-      actions.activateReference(
-        {
-          _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
-        },
-        {}
-      )(dispatch);
+      actions.activateReference({
+        _id: 'id',
+        reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+      })(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'references',
@@ -114,7 +108,6 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
-        {},
         'another tab'
       )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
@@ -129,7 +122,6 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
-        {},
         []
       )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
@@ -144,7 +136,6 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
-        {},
         [],
         true
       )(dispatch);
@@ -152,13 +143,10 @@ describe('Viewer uiActions', () => {
     });
 
     it('should scroll to the elements', done => {
-      actions.activateReference(
-        {
-          _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
-        },
-        {}
-      )(dispatch);
+      actions.activateReference({
+        _id: 'id',
+        reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+      })(dispatch);
       setTimeout(() => {
         expect(scroller.to).toHaveBeenCalledWith(
           '.document-viewer div#page-1',

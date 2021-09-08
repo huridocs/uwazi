@@ -63,7 +63,6 @@ export class TargetDocumentHeader extends Component {
 
 TargetDocumentHeader.propTypes = {
   connection: PropTypes.object,
-  pdfInfo: PropTypes.object,
   reference: PropTypes.object,
   targetDocument: PropTypes.string,
   saveTargetRangedReference: PropTypes.func,
