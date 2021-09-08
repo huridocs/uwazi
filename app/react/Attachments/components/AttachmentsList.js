@@ -14,6 +14,12 @@ export default class AttachmentsList extends Component {
   }
 
   render() {
+    const label = (
+      <h2>
+        <Translate>Supporting files</Translate>
+      </h2>
+    );
+
     const { parentId, parentSharedId, readOnly, storeKey, entity } = this.props;
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
@@ -32,15 +38,13 @@ export default class AttachmentsList extends Component {
     return (
       <div className="attachments-list-parent">
         <div className="attachments-list-header">
-          <NeedAuthorization
-            roles={['admin', 'editor']}
-            orWriteAccessTo={[entity]}
-            bypass={attachments.length > 0}
-          >
-            <h2>
-              <Translate>Supporting files</Translate>
-            </h2>
-          </NeedAuthorization>
+          {attachments.length === 0 ? (
+            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
+              {label}
+            </NeedAuthorization>
+          ) : (
+            <>{label}</>
+          )}
           {uploadAttachmentButton}
         </div>
         <div className="attachments-list">

@@ -58,20 +58,24 @@ export class FileList extends Component<FileListProps> {
   }
 
   render() {
+    const label = (
+      <h2>
+        <Translate>Primary Documents</Translate>
+      </h2>
+    );
+
     const { files, entity } = this.props;
     const orderedFiles = this.orderFilesByLanguage(files, entity.language as string);
     return (
       <div className="filelist">
         <div className="filelist-header">
-          <NeedAuthorization
-            roles={['admin', 'editor']}
-            orWriteAccessTo={[entity]}
-            bypass={orderedFiles.length > 0}
-          >
-            <h2>
-              <Translate>Primary Documents</Translate>
-            </h2>
-          </NeedAuthorization>
+          {orderedFiles.length === 0 ? (
+            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
+              {label}
+            </NeedAuthorization>
+          ) : (
+            <>{label}</>
+          )}
           <div>
             <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
               <UploadButton
