@@ -1,6 +1,7 @@
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis from 'redis';
 import request from 'shared/JSONRequest';
+import { Repeater } from 'api/utils/Repeater';
 
 export interface TaskMessage {
   tenant: string;
@@ -25,7 +26,7 @@ export class TaskManager {
 
   private readonly processResults?: (results: object) => void;
 
-  private listeningToQueue: NodeJS.Timeout | undefined;
+  private repeater: Repeater;
 
   constructor(redisSMQ: RedisSMQ, service: Service, processResults?: (results: object) => void) {
     this.redisSMQ = redisSMQ;
@@ -33,6 +34,7 @@ export class TaskManager {
     this.processResults = processResults;
     this.taskQueue = `${service.serviceName}_tasks`;
     this.resultsQueue = `${service.serviceName}_results`;
+    this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);
   }
 
   async initQueue() {
@@ -51,22 +53,20 @@ export class TaskManager {
       }
     }
 
-    this.listeningToQueue = setInterval(() => {
-      this.redisSMQ.receiveMessage({ qname: this.resultsQueue }, async (err, resp) => {
-        if (err) {
-          return;
-        }
+    this.repeater.start();
+  }
 
-        const message = resp as QueueMessage;
+  async receiveMessage() {
+    const message = (await this.redisSMQ.receiveMessageAsync({
+      qname: this.resultsQueue,
+    })) as QueueMessage;
 
-        if (message.id) {
-          if (this.processResults) {
-            const results = await request.get(this.service.resultsUrl, JSON.parse(message.message));
-            this.processResults(results.json);
-          }
-        }
-      });
-    }, 1000);
+    if (message.id) {
+      if (this.processResults) {
+        const results = await request.get(this.service.resultsUrl, JSON.parse(message.message));
+        this.processResults(results.json);
+      }
+    }
   }
 
   async startTask(taskMessage: TaskMessage) {
@@ -84,10 +84,8 @@ export class TaskManager {
     await request.uploadFile(this.service.filesUrl, 'blank.pdf', file);
   }
 
-  end() {
-    if (this.listeningToQueue) {
-      clearInterval(this.listeningToQueue);
-    }
+  async stop() {
+    await this.repeater.stop();
   }
 }
 
