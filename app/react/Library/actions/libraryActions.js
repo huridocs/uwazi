@@ -365,10 +365,8 @@ export function getSuggestions() {
 }
 
 export function getDocumentReferences(sharedId, fileId, storeKey) {
-  console.log('---------------libraryActions.getDocumentReferences')
   return dispatch =>
     referencesAPI
-      // .get(new RequestParams({ sharedId }))
       .get(new RequestParams({ sharedId, file: fileId, onlyTextReferences: true }))
       .then(references => {
         dispatch(actions.set(`${storeKey}.sidepanel.references`, references));

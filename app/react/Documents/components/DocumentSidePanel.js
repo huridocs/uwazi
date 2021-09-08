@@ -46,17 +46,6 @@ export class DocumentSidePanel extends Component {
       prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
       this.props.getDocumentReferences
     ) {
-      console.log('---------------DocumentSidePanel.didupdate');
-      console.log(this.props.doc.toJS());
-      // getDocument(
-      //   requestParams.set({ sharedId, withPdfInfo: true }),
-      //   defaultLanguage ? defaultLanguage.get('key') : 'en',
-      //   requestParams.data.file
-      // )
-      //entityDefaultDocument(entity.documents, entity.language, defaultLanguage)
-      const documents = this.props.doc.get('documents');
-      console.log(documents.toJS());
-      console.log(this.props.file);
       this.props.getDocumentReferences(
         this.props.doc.get('sharedId'),
         this.props.file._id,
