@@ -109,6 +109,25 @@ describe('Permissions filters', () => {
         expect(rows.map((r: EntitySchema) => r.title)).toEqual(['entPublic1', 'entPublic2']);
       });
     });
+
+    it('should not fail if no values provided', async () => {
+      userFactory.mock(users.adminUser);
+      let query: any = {
+        customFilters: {
+          permissions: { values: [] },
+        },
+      };
+
+      await search.search(query, 'es', users.adminUser);
+
+      query = {
+        customFilters: {
+          permissions: { and: true },
+        },
+      };
+
+      await search.search(query, 'es', users.adminUser);
+    });
   });
 
   describe('aggregations', () => {

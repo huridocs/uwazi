@@ -300,7 +300,7 @@ export default function() {
 
     customFilters(filters = {}) {
       Object.keys(filters)
-        .filter(key => filters[key].values.length)
+        .filter(key => filters[key].values?.length)
         // eslint-disable-next-line max-statements
         .forEach(key => {
           if (key === 'permissions') {
