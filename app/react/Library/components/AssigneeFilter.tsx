@@ -63,10 +63,7 @@ export const AssigneeFilterSelectUncontrolled = ({
           value={readValues}
         />
       </li>
-      <li className="wide">
-        <hr />
-      </li>
-      <li>
+      <li className="spaced">
         <Translate>Shared as editor</Translate>
       </li>
       <li className="wide">

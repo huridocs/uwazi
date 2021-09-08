@@ -237,6 +237,11 @@
   & > ul > li:first-child {
     color: #2b56c1;
   }
+
+  & > ul > li.spaced {
+    margin-top: 15px;
+  }
+
   span,
   label {
     color: #2b56c1;
