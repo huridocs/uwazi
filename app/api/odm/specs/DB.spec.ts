@@ -4,6 +4,7 @@ import waitForExpect from 'wait-for-expect';
 import { tenants } from 'api/tenants/tenantContext';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { testingTenants } from 'api/utils/testingTenants';
+import { createNewMongoDB } from 'api/utils/testing_db';
 
 import { DB } from '../DB';
 import { instanceModel } from '../model';
@@ -27,8 +28,8 @@ describe('DB', () => {
   let mongoUri: string;
 
   beforeAll(async () => {
-    mongod = new MongoMemoryServer();
-    mongoUri = await mongod.getUri();
+    mongod = await createNewMongoDB();
+    mongoUri = mongod.getUri();
   });
 
   beforeEach(async () => {

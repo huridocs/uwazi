@@ -271,7 +271,7 @@
     "jest-image-snapshot": "^4.1.0",
     "jest-puppeteer": "4.4.0",
     "mini-css-extract-plugin": "^1.6.0",
-    "mongodb-memory-server": "^6.7.5",
+    "mongodb-memory-server": "^7.4.0",
     "mutationobserver-shim": "^0.3.7",
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.0.0",
@@ -297,6 +297,14 @@
     "webpack-hot-middleware": "^2.25.0",
     "winston-transport": "^4.4.0",
     "yargs": "^16.0.3"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "version": "4.4.8",
+      "debug": "yes",
+      "preferGlobalPath": "0",
+      "runtimeDownload": "0"
+    }
   },
   "engines": {
     "node": ">=14.1.0"
