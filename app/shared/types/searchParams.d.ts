@@ -14,9 +14,6 @@ export interface SearchParams {
       generatedToc?: {
         values?: [] | [boolean];
       };
-      'permissions.level'?: {
-        values?: [] | [string];
-      };
       permissions?: {
         values?:
           | []

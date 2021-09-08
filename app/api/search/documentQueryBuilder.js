@@ -133,6 +133,7 @@ export default function() {
 
   return {
     query() {
+      //console.log(JSON.stringify(baseQuery, null, 2));
       return baseQuery;
     },
 
@@ -302,19 +303,6 @@ export default function() {
         .filter(key => filters[key].values.length)
         // eslint-disable-next-line max-statements
         .forEach(key => {
-          if (key === 'permissions.level') {
-            addFilter(
-              nested(
-                [
-                  { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
-                  { terms: { 'permissions.level': filters[key].values } },
-                ],
-                'permissions'
-              )
-            );
-            return;
-          }
-
           if (key === 'permissions') {
             addPermissionsAssigneeFilter(filters[key]);
             return;
@@ -340,7 +328,9 @@ export default function() {
     },
 
     permissionsLevelAgreggations() {
-      baseQuery.aggregations.all.aggregations.permissions = permissionsLevelAgreggations(baseQuery);
+      baseQuery.aggregations.all.aggregations['_permissions.self'] = permissionsLevelAgreggations(
+        baseQuery
+      );
     },
 
     permissionsUsersAgreggations() {

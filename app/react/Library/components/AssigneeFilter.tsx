@@ -15,7 +15,6 @@ interface PermissionsValue {
 interface AssigneeFilterProps {
   onChange: (values: PermissionsValue[]) => void;
   aggregations: Aggregations;
-  value: PermissionsValue[];
 }
 
 const generateOptions = (aggregations: Aggregations, level: 'read' | 'write') =>
@@ -33,7 +32,7 @@ export const AssigneeFilterSelectUncontrolled = ({
   onChange,
   aggregations,
   value = [],
-}: AssigneeFilterProps) => {
+}: AssigneeFilterProps & { value: PermissionsValue[] }) => {
   const readOptions = useMemo(() => generateOptions(aggregations, 'read'), [aggregations]);
   const writeOptions = useMemo(() => generateOptions(aggregations, 'write'), [aggregations]);
 
@@ -88,7 +87,7 @@ const AssigneeFilterSelect = ({
   prefix,
   onChange,
   aggregations,
-}: Omit<AssigneeFilterProps, 'value'> & { model: string; prefix: string }) => (
+}: AssigneeFilterProps & { model: string; prefix: string }) => (
   // eslint-disable-next-line react/jsx-pascal-case
   <Control.select
     component={AssigneeFilterSelectUncontrolled}

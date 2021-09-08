@@ -183,7 +183,13 @@ export const permissionsLevelAgreggations = baseQuery => {
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
 
-  const baseFilters = filters.filter(f => !(f.nested && f.nested.path === 'permissions'));
+  const baseFilters = filters.filter(
+    f =>
+      !(
+        (f.nested && f.nested.path === 'permissions') ||
+        f?.bool?.should?.find(i => i?.nested?.path === 'permissions')
+      )
+  );
 
   return {
     filter: {

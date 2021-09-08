@@ -21,13 +21,6 @@ export const searchParamsSchema = {
                 values: { type: 'array', items: [{ type: 'boolean' }] },
               },
             },
-            'permissions.level': {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                values: { type: 'array', items: [{ type: 'string' }] },
-              },
-            },
             permissions: {
               type: 'object',
               additionalProperties: false,

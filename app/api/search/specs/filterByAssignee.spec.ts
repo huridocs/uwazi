@@ -112,20 +112,28 @@ describe('Permissions filters', () => {
   });
 
   describe('aggregations', () => {
-    const performSearch = async (user?: UserSchema): Promise<AggregationBucket[][]> => {
+    const performSearch = async (
+      user: UserSchema | undefined,
+      flags: string[],
+      aggregationKeys: string[]
+    ): Promise<AggregationBucket[][]> => {
       const response = await search.search(
-        { aggregatePermissionsByUsers: true, includeUnpublished: true },
+        flags.reduce((params, flag) => ({ ...params, [flag]: true }), {}),
         'es',
         user
       );
 
       const aggs = response.aggregations as Aggregations;
-      return [aggs.all['_permissions.read']?.buckets, aggs.all['_permissions.write']?.buckets];
+      return aggregationKeys.map(key => aggs.all[key]?.buckets);
     };
 
     it('should return aggregations of permission level by users and groups', async () => {
       userFactory.mock(users.adminUser);
-      const [canRead, canWrite] = await performSearch(users.adminUser);
+      const [canRead, canWrite] = await performSearch(
+        users.adminUser,
+        ['aggregatePermissionsByUsers', 'includeUnpublished'],
+        ['_permissions.read', '_permissions.write']
+      );
 
       expect(canRead.map(a => [a.key, a.filtered.doc_count, a.label, a.icon])).toEqual(
         expect.arrayContaining([
@@ -153,7 +161,11 @@ describe('Permissions filters', () => {
 
     it('should only return aggregations for self and own groups', async () => {
       userFactory.mock(user3WithGroups);
-      const [canRead, canWrite] = await performSearch(user3WithGroups);
+      const [canRead, canWrite] = await performSearch(
+        users.adminUser,
+        ['aggregatePermissionsByUsers', 'includeUnpublished'],
+        ['_permissions.read', '_permissions.write']
+      );
 
       expect(canRead.map(a => [a.key, a.filtered.doc_count, a.label, a.icon])).toEqual(
         expect.arrayContaining([
@@ -173,10 +185,38 @@ describe('Permissions filters', () => {
 
     it('should not return aggregations to non-logged users', async () => {
       userFactory.mock(undefined);
-      const [canRead, canWrite] = await performSearch(undefined);
+      const [canRead, canWrite] = await performSearch(
+        undefined,
+        ['aggregatePermissionsByUsers', 'includeUnpublished'],
+        ['_permissions.read', '_permissions.write']
+      );
 
       expect(canRead).toBe(undefined);
       expect(canWrite).toBe(undefined);
+    });
+
+    describe('permissions aggregations based on users own access level ', () => {
+      it.each`
+        user                | expect1 | expect2
+        ${users.user1}      | ${2}    | ${1}
+        ${users.user2}      | ${1}    | ${1}
+        ${user3WithGroups}  | ${3}    | ${2}
+        ${users.adminUser}  | ${1}    | ${2}
+        ${users.editorUser} | ${1}    | ${1}
+      `(
+        'should return aggregations of permission level filtered for user $user.username',
+        async ({ user, expect1, expect2 }) => {
+          userFactory.mock(user);
+          const [buckets] = await performSearch(
+            user,
+            ['aggregatePermissionsByLevel', 'unpublished'],
+            ['_permissions.self']
+          );
+
+          expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(expect1);
+          expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(expect2);
+        }
+      );
     });
   });
 });

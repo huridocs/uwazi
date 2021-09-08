@@ -250,7 +250,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     if (
       !aggregations[key].buckets ||
       aggregations[key].type === 'nested' ||
-      ['_types', 'generatedToc', 'permissions', '_published'].includes(key)
+      ['_types', 'generatedToc', '_permissions.self', '_published'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
@@ -336,15 +336,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
     }
 
     //permissions
-    if (aggregationKey === 'permissions') {
-      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
-        key: b.key,
-        filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
-      }));
-    }
-
-    //individual permissions
-    if (['_permissions.read', '_permissions.write'].includes(aggregationKey)) {
+    if (['_permissions.read', '_permissions.write', '_permissions.self'].includes(aggregationKey)) {
       aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
         key: b.key,
         filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
