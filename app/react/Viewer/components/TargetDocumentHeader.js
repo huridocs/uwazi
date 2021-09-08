@@ -18,7 +18,7 @@ export class TargetDocumentHeader extends Component {
     const { reference, connection } = this.props;
     const { targetRange, targetFile } = reference;
     return this.props.saveTargetRangedReference(connection.toJS(), targetRange, targetFile, ref => {
-      this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
+      this.props.addReference(ref, true);
     });
   }
 
@@ -76,7 +76,6 @@ function mapStateToProps({ documentViewer, connections }) {
     connection: connections.connection,
     reference: documentViewer.uiState.toJS().reference,
     targetDocument: documentViewer.targetDoc.get('_id'),
-    pdfInfo: documentViewer.doc.getIn(['defaultDoc', 'pdfInfo']),
   };
 }
 

@@ -22,7 +22,7 @@ export function loadReferences(sharedId) {
     });
 }
 
-export function addReference(references, docInfo, delayActivation) {
+export function addReference(references, delayActivation) {
   return (dispatch, getState) => {
     const tab = 'references';
 
@@ -34,7 +34,7 @@ export function addReference(references, docInfo, delayActivation) {
     dispatch(actions.unset('viewer/targetDocReferences'));
     dispatch(reloadRelationships(getState().relationships.list.sharedId));
 
-    dispatch(uiActions.activateReference(references[0][0], docInfo, tab, delayActivation));
+    dispatch(uiActions.activateReference(references[0][0], tab, delayActivation));
   };
 }
 
