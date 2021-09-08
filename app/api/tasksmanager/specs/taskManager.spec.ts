@@ -32,6 +32,7 @@ describe('taskManager', () => {
   });
 
   afterAll(async () => {
+    await taskManager.stop();
     await externalDummyService.stop();
     await client.end(true);
     await redisServer.stop();
@@ -76,55 +77,47 @@ describe('taskManager', () => {
         expect(message).toBe('{"task":"Ribs","tenant":"Fede"}');
       });
     });
+  });
 
-    describe('sending materials', () => {
-      it('should send materials to the service', async () => {
-        const task = { task: 'Tofu', tenant: 'Me' };
-        const materials1 = { someData: 3 };
-        const materials2 = { someData: 2 };
-        const materials3 = { someData: 3 };
-        await taskManager.sendJSON(materials1);
-        await taskManager.sendJSON(materials2);
-        await taskManager.sendJSON(materials3);
+  describe('sending materials', () => {
+    it('should send materials to the service', async () => {
+      const materials1 = { someData: 3 };
+      const materials2 = { someData: 2 };
+      const materials3 = { someData: 3 };
+      await taskManager.sendJSON(materials1);
+      await taskManager.sendJSON(materials2);
+      await taskManager.sendJSON(materials3);
 
-        await taskManager.startTask(task);
-        await externalDummyService.read();
-
-        expect(externalDummyService.materials.length).toEqual(3);
-        expect(externalDummyService.materials[0]).toEqual(materials1);
-        expect(externalDummyService.materials[1]).toEqual(materials2);
-        expect(externalDummyService.materials[2]).toEqual(materials3);
-      });
-
-      it('should send files to the service', async () => {
-        const task = { task: 'make_food', tenant: 'test' };
-
-        const file = fs.readFileSync('app/api/tasksmanager/specs/blank.pdf');
-
-        await taskManager.sendFile(file);
-        await taskManager.sendFile(file);
-        await taskManager.sendFile(file);
-
-        await taskManager.startTask(task);
-        await externalDummyService.read();
-
-        expect(externalDummyService.files.length).toEqual(3);
-        expect(externalDummyService.files[0]).toEqual(file);
-        expect(externalDummyService.files[1]).toEqual(file);
-        expect(externalDummyService.files[2]).toEqual(file);
-      });
+      expect(externalDummyService.materials.length).toEqual(3);
+      expect(externalDummyService.materials[0]).toEqual(materials1);
+      expect(externalDummyService.materials[1]).toEqual(materials2);
+      expect(externalDummyService.materials[2]).toEqual(materials3);
     });
 
-    it('should get the results when the task has been finished', async done => {
-      taskManager.end();
+    it('should send files to the service', async () => {
+      const file = fs.readFileSync('app/api/tasksmanager/specs/blank.pdf');
 
+      await taskManager.sendFile(file);
+      await taskManager.sendFile(file);
+      await taskManager.sendFile(file);
+
+      expect(externalDummyService.files.length).toEqual(3);
+      expect(externalDummyService.files[0]).toEqual(file);
+      expect(externalDummyService.files[1]).toEqual(file);
+      expect(externalDummyService.files[2]).toEqual(file);
+    });
+  });
+
+  describe('when the task finishes', () => {
+    it('should get the results', async done => {
       const expectedResults = { results: 'Paella' };
       const expectFunction = (results: object) => {
-        console.log('almost there');
         expect(results).toEqual(expectedResults);
         done();
       };
-      await TaskManagerFactory.create(client, service, expectFunction);
+
+      await taskManager.stop();
+      taskManager = await TaskManagerFactory.create(client, service, expectFunction);
 
       const task = { task: 'make_food', tenant: 'test' };
       externalDummyService.setResults(expectedResults);
