@@ -24,8 +24,8 @@ import { migrator } from './api/migrations/migrator';
 import settings from './api/settings';
 import syncWorker from './api/sync/syncWorker';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
-import { handleError } from './api/utils';
-import repeater from './api/utils/Repeater';
+import handleError from './api/utils/handleError.js';
+import { Repeater } from './api/utils/Repeater';
 import serverRenderingRoutes from './react/server.js';
 import { DB } from './api/odm';
 import { tenants } from './api/tenants/tenantContext';
@@ -126,19 +126,21 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         const { evidencesVault, features } = await settings.get();
         if (evidencesVault && evidencesVault.token && evidencesVault.template) {
           console.info('==> 📥  evidences vault config detected, started sync ....');
-          repeater.start(
+          const vaultSyncRepeater = new Repeater(
             () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
             10000
           );
+          vaultSyncRepeater.start();
         }
 
         if (features && features.tocGeneration && features.tocGeneration.url) {
           console.info('==> 🗂️ automatically generating TOCs using external service');
           const service = tocService(features.tocGeneration.url);
-          repeater.start(() => service.processNext(), 10000);
+          const tocServiceRepeater = new Repeater(() => service.processNext(), 10000);
+          tocServiceRepeater.start();
         }
 
-        repeater.start(
+        const topicClassificationRepeater = new Repeater(
           () =>
             TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
               mode: 'onlynew',
@@ -147,6 +149,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
             }),
           10000
         );
+        topicClassificationRepeater.start();
       }
     });
 
