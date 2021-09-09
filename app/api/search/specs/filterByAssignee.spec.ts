@@ -181,7 +181,7 @@ describe('Permissions filters', () => {
     it('should only return aggregations for self and own groups', async () => {
       userFactory.mock(user3WithGroups);
       const [canRead, canWrite] = await performSearch(
-        users.adminUser,
+        user3WithGroups,
         ['aggregatePermissionsByUsers', 'includeUnpublished'],
         ['_permissions.read', '_permissions.write']
       );

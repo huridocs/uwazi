@@ -133,7 +133,6 @@ export default function() {
 
   return {
     query() {
-      //console.log(JSON.stringify(baseQuery, null, 2));
       return baseQuery;
     },
 
@@ -301,7 +300,6 @@ export default function() {
     customFilters(filters = {}) {
       Object.keys(filters)
         .filter(key => filters[key].values?.length)
-        // eslint-disable-next-line max-statements
         .forEach(key => {
           if (key === 'permissions') {
             addPermissionsAssigneeFilter(filters[key]);
