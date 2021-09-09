@@ -9,7 +9,6 @@ export const IGNORED_ENDPOINTS = [
   '/api/unlockaccount',
   '/api/resetpassword',
   '/api/recoverpassword',
-  '/api/documents/pdfInfo',
   '/api/documents/download',
   '/api/attachments/download',
   '/api/semantic-search/notify-updates',
