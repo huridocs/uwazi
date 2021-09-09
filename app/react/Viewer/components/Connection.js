@@ -143,7 +143,6 @@ Connection.propTypes = {
   highlighted: PropTypes.bool.isRequired,
   active: PropTypes.bool.isRequired,
   targetRange: PropTypes.object,
-  doc: PropTypes.object,
   relationTypes: PropTypes.object,
   reference: PropTypes.object.isRequired,
   highlightReference: PropTypes.func.isRequired,
