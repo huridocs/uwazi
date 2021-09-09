@@ -62,7 +62,6 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
-        {},
         '',
         true
       )(dispatch);
@@ -173,7 +172,7 @@ describe('Viewer uiActions', () => {
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
       references = [{ _id: 'id1' }, { _id: 'id2', reference: 'range' }];
-      actions.selectReference(references[1], {})(dispatch);
+      actions.selectReference(references[1])(dispatch);
       dispatch.calls.argsFor(0)[0](dispatch);
     });
 

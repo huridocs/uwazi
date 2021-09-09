@@ -33,15 +33,11 @@ export class Connection extends Component {
       return;
     }
     if (!this.props.targetDoc) {
-      this.props.activateReference(
-        reference,
-        this.props.doc.defaultDoc.pdfInfo,
-        this.props.referencesSection
-      );
+      this.props.activateReference(reference, this.props.referencesSection);
     }
 
     if (this.props.targetDoc && typeof reference.reference !== 'undefined') {
-      this.props.selectReference(reference, this.props.doc.defaultDoc.pdfInfo);
+      this.props.selectReference(reference);
     }
   }
 

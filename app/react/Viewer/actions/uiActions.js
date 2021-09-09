@@ -191,18 +191,18 @@ export function activateReference(connection, tab, delayActivation = false) {
   };
 }
 
-export function scrollToActive(reference, docInfo, tab, doScroll) {
+export function scrollToActive(reference, tab, doScroll) {
   return dispatch => {
     if (doScroll) {
       dispatch(goToActive(false));
-      dispatch(activateReference(reference, docInfo, tab));
+      dispatch(activateReference(reference, tab));
     }
   };
 }
 
-export function selectReference(connection, docInfo) {
+export function selectReference(connection) {
   return dispatch => {
-    dispatch(activateReference(connection, docInfo));
+    dispatch(activateReference(connection));
     dispatch(setTargetSelection(connection.reference));
   };
 }
