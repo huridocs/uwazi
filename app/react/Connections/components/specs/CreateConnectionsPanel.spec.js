@@ -23,7 +23,6 @@ describe('CreateConnectionPanel', () => {
         sourceDocument: 'sourceId',
         targetDocument: 'targetId',
       }),
-      pdfInfo: Immutable([]),
       relationTypes: Immutable([
         { _id: 'rt1', name: 'relationType1' },
         { _id: 'rt2', name: 'relationType2' },
