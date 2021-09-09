@@ -36,7 +36,6 @@ import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument.js';
 
 import determineDirection from '../utils/determineDirection';
-import { requestViewerState } from '../actions/routeActions';
 
 export class Viewer extends Component {
   constructor(props) {
@@ -57,24 +56,6 @@ export class Viewer extends Component {
     store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
-
-    if (file && !file.pdfInfo) {
-      this.getPdfInfo();
-    }
-  }
-
-  getPdfInfo() {
-    const { store } = this.context;
-    const { templates, doc } = this.props;
-    const fileName = doc.get('defaultDoc') ? doc.get('defaultDoc').get('filename') : undefined;
-    requestViewerState(new RequestParams({ sharedId: doc.get('sharedId'), file: fileName }), {
-      ...store.getState(),
-      templates: templates.toJS(),
-    }).then(viewerActions => {
-      viewerActions.forEach(action => {
-        store.dispatch(action);
-      });
-    });
   }
 
   handlePlainTextClick() {
