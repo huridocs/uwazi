@@ -12,6 +12,7 @@ function isRelationshipAReference(doc, reference) {
 
 const parseReferences = (doc, refs) => {
   const textReferences = ImmutableSet(refs.filter(r => isRelationshipAReference(doc, r)));
+  //select basereferences
   const hubIdToBaseReference = new Map();
   textReferences.forEach(tr => {
     const hubId = tr.get('hub');
@@ -32,7 +33,7 @@ const parseReferences = (doc, refs) => {
     }
   });
   // flatten to immutable list
-  const result = ImmutableList(Array.from(hubIdToRelationships.values()).flat());
+  const result = ImmutableList(Array.from(hubIdToRelationships.values())).flatMap(v => v);
   return result;
 };
 
