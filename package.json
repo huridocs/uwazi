@@ -24,6 +24,7 @@
     "run-production": "export NODE_ENV=production; node --max-http-header-size 20000 server.js",
     "dev-server": "./node_modules/.bin/nodemon --max-http-header-size 20000 ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node ./webpack/webpack.server.js",
+    "check-translations": "node ./checkTranslations.mjs",
     "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn run dev-server & yarn run webpack-server",
     "run-puppeteer": "export DATABASE_NAME=uwazi_e2e; export INDEX_NAME=uwazi_e2e; yarn run-production",
     "hot-inspect": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn dev-server --inspect & yarn run webpack-server",
@@ -189,6 +190,7 @@
     "@babel/core": "7.11.6",
     "@babel/eslint-parser": "7.11.5",
     "@babel/helper-call-delegate": "^7.11.4",
+    "@babel/parser": "^7.15.3",
     "@babel/plugin-proposal-class-properties": "7.10.4",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4",
     "@babel/plugin-proposal-object-rest-spread": "7.11.0",
@@ -200,6 +202,7 @@
     "@babel/preset-env": "7.11.5",
     "@babel/preset-react": "7.10.4",
     "@babel/preset-typescript": "7.10.4",
+    "@babel/traverse": "^7.15.0",
     "@types/child-process-promise": "^2.2.1",
     "@types/cookie": "^0.4.0",
     "@types/enzyme": "3.10.0",
@@ -266,7 +269,7 @@
     "jest-image-snapshot": "^4.1.0",
     "jest-puppeteer": "4.4.0",
     "mini-css-extract-plugin": "^1.6.0",
-    "mongodb-memory-server": "^6.7.5",
+    "mongodb-memory-server": "^7.4.0",
     "mutationobserver-shim": "^0.3.7",
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.0.0",
@@ -292,6 +295,14 @@
     "webpack-hot-middleware": "^2.25.0",
     "winston-transport": "^4.4.0",
     "yargs": "^16.0.3"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "version": "4.4.8",
+      "debug": "yes",
+      "preferGlobalPath": "0",
+      "runtimeDownload": "0"
+    }
   },
   "engines": {
     "node": ">=14.1.0"

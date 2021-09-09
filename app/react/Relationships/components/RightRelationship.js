@@ -4,7 +4,7 @@ import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-
+import { Translate } from 'app/I18N';
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
 
@@ -200,7 +200,9 @@ export class RightRelationship extends Component {
                       className={`relationships-new ${isActive ? 'is-active' : ''}`}
                       onClick={this.setAddToData(index, rightRelationshipIndex)}
                     >
-                      <span>Add entities / documents</span>
+                      <span>
+                        <Translate>Add entities / documents</Translate>
+                      </span>
                       <Icon icon="plus" />
                     </button>
                     <div className="insertEntities">

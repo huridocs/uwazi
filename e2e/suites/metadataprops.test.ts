@@ -74,6 +74,8 @@ describe('Metadata Properties', () => {
     await selectDate('.form-group.multidate .multidate-item:first-of-type input', '23/11/1963');
     await selectDate('.form-group.multidate .multidate-item:nth-of-type(2) input', '12/09/1964');
     await expect(page).toClick('.form-group.multidaterange button.btn.add');
+    await expect(page).toFill('.form-group.link #label', 'Huridocs');
+    await expect(page).toFill('.form-group.link #url', 'https://www.huridocs.org/');
     await selectDate(
       '.form-group.multidaterange .multidate-item:first-of-type div.DatePicker__From input',
       '23/11/1963'
@@ -91,8 +93,6 @@ describe('Metadata Properties', () => {
       '12/09/1964'
     );
     await expect(page).toFill('.form-group.markdown textarea', '***smile***');
-    await expect(page).toFill('.form-group.link #label', 'Huridocs');
-    await expect(page).toFill('.form-group.link #url', 'https://www.huridocs.org/');
 
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert-success');

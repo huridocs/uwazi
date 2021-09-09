@@ -13,7 +13,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import {
@@ -203,7 +203,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
                   <div className="no-properties">
                     <span className="no-properties-wrap">
                       <Icon icon="clone" />
-                      Drag properties here
+                      <Translate>Drag properties here</Translate>
                     </span>
                   </div>
                 </ul>
@@ -214,7 +214,9 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
           <div className="settings-footer">
             <I18NLink to={this.props.backUrl} className="btn btn-default">
               <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">Back</span>
+              <span className="btn-label">
+                <Translate>Back</Translate>
+              </span>
             </I18NLink>
             <button
               type="submit"
@@ -222,7 +224,9 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
               disabled={!!this.props.savingTemplate}
             >
               <Icon icon="save" />
-              <span className="btn-label">Save</span>
+              <span className="btn-label">
+                <Translate>Save</Translate>
+              </span>
             </button>
           </div>
         </Form>

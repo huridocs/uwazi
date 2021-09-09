@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { Warning } from 'app/Layout';
 import { closePanel, deactivateReference } from 'app/Viewer/actions/uiActions';
@@ -48,8 +48,10 @@ export class ConnectionsList extends Component {
       <div className="item-group">
         {references.length > 299 && (
           <Warning inline>
-            Text references are temporarily limited to a maximum of 300. We are currently working on
-            a fix for this issue.
+            <Translate translationKey="Text references limit warning">
+              Text references are temporarily limited to a maximum of 300. We are currently working
+              on a fix for this issue.
+            </Translate>
           </Warning>
         )}
         {(() =>

@@ -34,7 +34,7 @@ const getColumnValue = (
 ) => {
   let columnValue: FormattedMetadataValue;
   const columnName = column.name!;
-  if (!column.isCommonProperty || columnName === 'creationDate') {
+  if (!column.isCommonProperty || columnName === 'creationDate' || columnName === 'editDate') {
     columnValue = columnValues.get(columnName) as FormattedMetadataValue;
   } else {
     const commonPropValue =
@@ -81,7 +81,7 @@ class TableRowComponent extends Component<TableRowProps> {
   render() {
     const { entity, templates, thesauris, columns, selected } = this.props;
     const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
-      sortedProperty: 'creationDate',
+      sortedProperties: ['editDate', 'creationDate'],
     });
     const columnValues = new Map();
     formattedEntity.metadata.forEach((prop: FormattedMetadataValue) => {

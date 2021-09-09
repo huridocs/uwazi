@@ -9,7 +9,7 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { isClient } from 'app/utils';
 import { loadLinks, addLink, sortLink, saveLinks } from 'app/Settings/actions/navlinksActions';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
 
 import NavlinkForm from './NavlinkForm';
@@ -37,18 +37,26 @@ export class NavlinksSettings extends Component {
         >
           <div className="panel panel-default">
             <div className="panel-heading">
-              <div className={nameGroupClass}>{t('System', 'Menu')}</div>
+              <div className={nameGroupClass}>
+                <Translate>Menu</Translate>
+              </div>
             </div>
             <ul className="list-group">
               <li className="list-group-item">
                 <div className="alert alert-info">
                   <Icon icon="info-circle" size="2x" />
                   <div className="force-ltr">
-                    If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.
+                    <Translate>
+                      If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.
+                    </Translate>
                     <br />
-                    If it is an internal URL within this website, be sure to delete the first part (
-                    {hostname}), leaving only a relative URL starting with a slash character. Ie.
-                    /some_url.
+                    <Translate>
+                      If it is an internal URL within this website, be sure to delete the first part
+                    </Translate>{' '}
+                    ({hostname}),{' '}
+                    <Translate>
+                      leaving only a relative URL starting with a slash character. Ie. /some_url.
+                    </Translate>
                   </div>
                 </div>
               </li>
@@ -70,7 +78,7 @@ export class NavlinksSettings extends Component {
                     onClick={this.props.addLink.bind(this, links, 'link')}
                   >
                     <Icon icon="link" />
-                    &nbsp;{t('System', 'Add link')}
+                    &nbsp;<Translate>Add link</Translate>
                   </button>
                   <button
                     type="button"
@@ -78,7 +86,7 @@ export class NavlinksSettings extends Component {
                     onClick={this.props.addLink.bind(this, links, 'group')}
                   >
                     <Icon icon="caret-square-down" />
-                    &nbsp;{t('System', 'Add group')}
+                    &nbsp;<Translate>Add group</Translate>
                   </button>
                 </div>
               </li>
@@ -90,7 +98,9 @@ export class NavlinksSettings extends Component {
                 disabled={!!this.props.savingNavlinks}
               >
                 <Icon icon="save" />
-                <span className="btn-label">{t('System', 'Save')}</span>
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
               </button>
             </div>
           </div>

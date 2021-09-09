@@ -51,12 +51,17 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
         size="2x"
       />
       <p>
-        Warning: you are editing multiple entities. Fields marked with a
+        <Connect(Translate)>
+          Warning: you are editing multiple entities. Fields marked with a
+        </Connect(Translate)>
          
         <Connect(Icon)
           icon="exclamation-triangle"
         />
-         will be updated with the same value.
+         
+        <Connect(Translate)>
+          will be updated with the same value.
+        </Connect(Translate)>
       </p>
     </div>
     <Connect(MetadataForm)
@@ -148,12 +153,17 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
         size="2x"
       />
       <p>
-        Warning: you are editing multiple entities. Fields marked with a
+        <Connect(Translate)>
+          Warning: you are editing multiple entities. Fields marked with a
+        </Connect(Translate)>
          
         <Connect(Icon)
           icon="exclamation-triangle"
         />
-         will be updated with the same value.
+         
+        <Connect(Translate)>
+          will be updated with the same value.
+        </Connect(Translate)>
       </p>
     </div>
     <Connect(MetadataForm)

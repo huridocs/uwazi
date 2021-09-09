@@ -43,7 +43,7 @@ export class Attachment extends Component {
 
     if (file.filename && getExtension(file.filename) === 'pdf') {
       thumbnail = (
-        <span>
+        <span no-translate>
           <Icon icon="file-pdf" /> pdf
         </span>
       );

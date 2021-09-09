@@ -1,8 +1,7 @@
-/** @format */
-
 import DatePicker from 'app/Forms/components/DatePicker';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 
 export interface MultiDateProps {
   value?: (number | null)[];
@@ -57,15 +56,16 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
                 value={value}
               />
               <button
+                type="button"
                 className="react-datepicker__delete-icon"
                 onClick={this.remove.bind(this, index)}
               />
             </div>
           )))()}
-        <button className="btn btn-success add" onClick={this.add.bind(this)}>
+        <button type="button" className="btn btn-success add" onClick={this.add.bind(this)}>
           <Icon icon="plus" />
           &nbsp;
-          <span>Add date</span>
+          <Translate>Add date</Translate>
         </button>
       </div>
     );

@@ -67,7 +67,9 @@ exports[`DragAndDropContainer react component should enable iconHandle for child
       <div
         className="no-properties-wrap"
       >
-        Drag items here
+        <Connect(Translate)>
+          Drag items here
+        </Connect(Translate)>
       </div>
     </div>
   </ul>
@@ -127,7 +129,9 @@ exports[`DragAndDropContainer react component should enable iconHandle on childr
       <div
         className="no-properties-wrap"
       >
-        Drag items here
+        <Connect(Translate)>
+          Drag items here
+        </Connect(Translate)>
       </div>
     </div>
   </ul>
