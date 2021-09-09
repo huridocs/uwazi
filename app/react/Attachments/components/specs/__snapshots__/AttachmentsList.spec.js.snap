@@ -8,7 +8,6 @@ exports[`AttachmentsList When parent is Target Document should treat all Attachm
     className="attachments-list-header"
   >
     <Connect(NeedAuthorization)
-      bypass={false}
       orWriteAccessTo={
         Array [
           Object {
@@ -44,7 +43,6 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
     className="attachments-list-header"
   >
     <Connect(NeedAuthorization)
-      bypass={false}
       orWriteAccessTo={
         Array [
           Object {
@@ -104,7 +102,6 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
     className="attachments-list-header"
   >
     <Connect(NeedAuthorization)
-      bypass={false}
       orWriteAccessTo={
         Array [
           Object {
@@ -164,7 +161,6 @@ exports[`AttachmentsList when files is empty should render nothing if user not l
     className="attachments-list-header"
   >
     <Connect(NeedAuthorization)
-      bypass={false}
       orWriteAccessTo={
         Array [
           Object {
