@@ -50,10 +50,6 @@ const fixturesSnippetsSearch: DBFixture = {
         3: 'Other[[3]] phrase[[3]] which[[3]] contains[[3]] different[[3]] data[[3]].'.repeat(5),
         4: 'Phrase[[4]] which[[4]] contains[[4]] searched[[4]] term[[4]]. '.repeat(5),
       },
-      pdfInfo: {
-        1: { chars: 10 },
-        2: { chars: 20 },
-      },
     },
     {
       _id: db.id(),

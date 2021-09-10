@@ -47,7 +47,6 @@ class PDF extends Component {
     return (
       nextProps.file !== this.props.file ||
       nextProps.filename !== this.props.filename ||
-      nextProps.pdfInfo !== this.props.pdfInfo ||
       nextProps.style !== this.props.style ||
       nextState.pdf !== this.state.pdf
     );
@@ -207,7 +206,6 @@ PDF.propTypes = {
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
   onLoad: PropTypes.func.isRequired,
-  pdfInfo: PropTypes.object,
   style: PropTypes.object,
   highlightReference: PropTypes.func,
 };
