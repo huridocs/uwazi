@@ -23,9 +23,9 @@ describe('Viewer', () => {
       doc: fromJS({
         _id: 'id',
         sharedId: 'sharedId',
-        documents: [{ language: 'eng', pdfInfo: 'already parsed' }],
+        documents: [{ language: 'eng' }],
       }),
-      file: { language: 'eng', pdfInfo: 'already parsed' },
+      file: { language: 'eng' },
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {},
