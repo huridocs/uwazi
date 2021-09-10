@@ -123,6 +123,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
       <button
         className="btn btn-primary"
         form="import"
+        id="import-csv"
         type="submit"
       >
         <Connect(Icon)
