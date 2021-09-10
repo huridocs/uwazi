@@ -12,6 +12,10 @@ jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
   next();
 });
 
+jest.mock('../../auth/headersMiddleware.ts', () => (_req, _res, next) => {
+  next();
+});
+
 describe('documents', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
@@ -54,7 +58,6 @@ describe('documents', () => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
       await request(app)
         .post('/api/documents')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send(req)
         .expect(401);
     });
@@ -64,7 +67,6 @@ describe('documents', () => {
       currentUser = adminUser;
       const response = await request(app)
         .post('/api/documents')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send(document);
       expect(response.body).toBe('document');
       expect(documents.save).toHaveBeenCalledWith(document, {
@@ -91,7 +93,6 @@ describe('documents', () => {
     it('should return documents.get', async () => {
       const response = await request(app)
         .get('/api/documents')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: 'id' });
       expect(documents.getById).toHaveBeenCalledWith('id', 'es');
       expect(response.body).toEqual({ rows: ['documents'] });
@@ -115,7 +116,6 @@ describe('documents', () => {
     it('should return count of documents using a specific template', async () => {
       const response = await request(app)
         .get('/api/documents/count_by_template')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ templateId: 'templateId' });
       expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
       expect(response.body).toEqual(2);
@@ -131,7 +131,6 @@ describe('documents', () => {
       currentUser = adminUser;
       const response = await request(app)
         .delete('/api/documents')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send({});
 
       expect(response.status).toBe(400);
@@ -144,7 +143,6 @@ describe('documents', () => {
       currentUser = adminUser;
       await request(app)
         .delete('/api/documents')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ sharedId: 123 });
       expect(documents.delete).toHaveBeenCalledWith('123');
     });

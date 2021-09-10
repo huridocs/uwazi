@@ -5,10 +5,12 @@ import { uploadMiddleware } from 'api/files';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauri from './thesauri';
+import headersMiddleware from '../auth/headersMiddleware';
 
 const routes = app => {
   app.post(
     '/api/thesauris',
+    headersMiddleware,
     needsAuthorization(),
 
     uploadMiddleware(),
@@ -101,6 +103,7 @@ const routes = app => {
 
   app.delete(
     '/api/thesauris',
+    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()

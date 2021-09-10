@@ -15,6 +15,13 @@ jest.mock(
   }
 );
 
+jest.mock(
+  '../../auth/headersMiddleware.ts',
+  () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
+
 describe('permissions routes', () => {
   let user: { username: string; role: string } | undefined;
 
@@ -55,7 +62,6 @@ describe('permissions routes', () => {
         };
         const response = await request(app)
           .post('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
 
         expect(response.status).toBe(200);
@@ -67,7 +73,6 @@ describe('permissions routes', () => {
         const permissionsData = { entities: [], permissions: [{}] };
         const response = await request(app)
           .post('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(400);
       });
@@ -80,7 +85,6 @@ describe('permissions routes', () => {
         };
         const response = await request(app)
           .post('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.unauthorized).toBe(true);
       });
@@ -93,7 +97,6 @@ describe('permissions routes', () => {
         };
         const response = await request(app)
           .post('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(200);
       });
@@ -120,7 +123,6 @@ describe('permissions routes', () => {
         };
         const response = await request(app)
           .post('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('error on save');
@@ -130,7 +132,6 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .put('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ sharedIds: ['sharedId1', 'sharedId2'] });
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('error on get');
@@ -140,7 +141,6 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .get('/api/collaborators')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .query({ filterTerm: 'username' });
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('error on get');
@@ -160,7 +160,6 @@ describe('permissions routes', () => {
         );
         const response = await request(app)
           .put('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ sharedIds: ['sharedId1', 'sharedId2'] });
         expect(response.status).toBe(200);
         expect(response.body).toEqual([{ refId: 'user1', level: 'read' }]);
@@ -178,7 +177,6 @@ describe('permissions routes', () => {
         );
         const response = await request(app)
           .put('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(['sharedId1', 'sharedId2']);
         expect(response.status).toBe(400);
       });
@@ -196,7 +194,6 @@ describe('permissions routes', () => {
       it('should return the matched user and group list', async () => {
         const response = await request(app)
           .get('/api/collaborators')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .query({ filterTerm: 'username' });
         expect(response.status).toBe(200);
         expect(response.body).toEqual([{ refId: 'user1', type: 'user' }]);
@@ -205,7 +202,6 @@ describe('permissions routes', () => {
       it('should not validate if no filterTerm is passed', async () => {
         const response = await request(app)
           .get('/api/collaborators')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .query({});
         expect(response.status).toBe(400);
       });

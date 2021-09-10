@@ -6,7 +6,7 @@ import { search } from 'api/search';
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
 import { uploadsPath, customUploadsPath, uploadMiddleware } from 'api/files';
-
+import headersMiddleware from '../auth/headersMiddleware';
 import { needsAuthorization } from '../auth';
 
 const storage = multer.diskStorage({
@@ -49,27 +49,33 @@ const deleteFromIndex = async (req: Request, file: FileType) => {
 };
 
 export default (app: Application) => {
-  app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
-    try {
-      if (req.body.namespace === 'settings') {
-        const [settings] = await models.settings.get({});
-        req.body.data._id = settings._id;
+  app.post(
+    '/api/sync',
+    headersMiddleware,
+    needsAuthorization(['admin']),
+    async (req, res, next) => {
+      try {
+        if (req.body.namespace === 'settings') {
+          const [settings] = await models.settings.get({});
+          req.body.data._id = settings._id;
+        }
+
+        await (Array.isArray(req.body.data)
+          ? models[req.body.namespace].saveMultiple(req.body.data)
+          : models[req.body.namespace].save(req.body.data));
+
+        await indexEntities(req);
+
+        res.json('ok');
+      } catch (e) {
+        next(e);
       }
-
-      await (Array.isArray(req.body.data)
-        ? models[req.body.namespace].saveMultiple(req.body.data)
-        : models[req.body.namespace].save(req.body.data));
-
-      await indexEntities(req);
-
-      res.json('ok');
-    } catch (e) {
-      next(e);
     }
-  });
+  );
 
   app.post(
     '/api/sync/upload',
+    headersMiddleware,
     needsAuthorization(['admin']),
     uploadMiddleware(uploadsPath, storage),
     (_req, res) => {
@@ -79,6 +85,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/sync/upload/custom',
+    headersMiddleware,
     needsAuthorization(['admin']),
     uploadMiddleware(customUploadsPath, storage),
     (_req, res) => {
@@ -86,22 +93,27 @@ export default (app: Application) => {
     }
   );
 
-  app.delete('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
-    try {
-      let file;
-      if (req.query.namespace === 'files') {
-        file = await models[req.query.namespace].getById(JSON.parse(req.query.data)._id);
+  app.delete(
+    '/api/sync',
+    headersMiddleware,
+    needsAuthorization(['admin']),
+    async (req, res, next) => {
+      try {
+        let file;
+        if (req.query.namespace === 'files') {
+          file = await models[req.query.namespace].getById(JSON.parse(req.query.data)._id);
+        }
+
+        await models[req.query.namespace].delete(JSON.parse(req.query.data));
+
+        if (req.query.namespace === 'entities' || file) {
+          await deleteFromIndex(req, file);
+        }
+
+        res.json('ok');
+      } catch (e) {
+        next(e);
       }
-
-      await models[req.query.namespace].delete(JSON.parse(req.query.data));
-
-      if (req.query.namespace === 'entities' || file) {
-        await deleteFromIndex(req, file);
-      }
-
-      res.json('ok');
-    } catch (e) {
-      next(e);
     }
-  });
+  );
 };

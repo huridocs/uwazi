@@ -9,12 +9,14 @@ import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
 import { fileSchema } from 'shared/types/fileSchema';
+import headersMiddleware from 'api/auth/headersMiddleware';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware(uploadsPath),
     async (req, res) => {
@@ -36,6 +38,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/custom',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware(customUploadsPath),
     activitylogMiddleware,
@@ -51,6 +54,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/attachment',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware(attachmentsPath),
     activitylogMiddleware,
@@ -66,6 +70,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',
@@ -85,6 +90,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/tocReviewed',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       properties: {
@@ -145,6 +151,7 @@ export default (app: Application) => {
 
   app.delete(
     '/api/files',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
 
     validation.validateRequest({
@@ -172,6 +179,7 @@ export default (app: Application) => {
 
   app.get(
     '/api/files',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     (req, res, next) => {
       files
@@ -185,6 +193,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/import',
+    headersMiddleware,
 
     needsAuthorization(['admin']),
 

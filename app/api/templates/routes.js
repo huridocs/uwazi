@@ -3,7 +3,7 @@ import Joi from 'joi';
 import settings from 'api/settings';
 import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
-
+import headersMiddleware from '../auth/headersMiddleware';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
@@ -12,7 +12,7 @@ import { checkIfReindex } from './reindex';
 
 export default app => {
   // eslint-disable-next-line max-statements
-  app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
+  app.post('/api/templates', headersMiddleware, needsAuthorization(), async (req, res, next) => {
     try {
       const { reindex: fullReindex } = req.body;
       delete req.body.reindex;
@@ -40,6 +40,7 @@ export default app => {
 
   app.post(
     '/api/templates/setasdefault',
+    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object().keys({
@@ -69,6 +70,7 @@ export default app => {
 
   app.delete(
     '/api/templates',
+    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object({
@@ -110,11 +112,16 @@ export default app => {
     }
   );
 
-  app.post('/api/templates/check_mapping', needsAuthorization(), async (req, res, next) => {
-    const template = req.body;
-    template.properties = await generateNamesAndIds(template.properties);
-    checkMapping(template)
-      .then(response => res.json(response))
-      .catch(next);
-  });
+  app.post(
+    '/api/templates/check_mapping',
+    headersMiddleware,
+    needsAuthorization(),
+    async (req, res, next) => {
+      const template = req.body;
+      template.properties = await generateNamesAndIds(template.properties);
+      checkMapping(template)
+        .then(response => res.json(response))
+        .catch(next);
+    }
+  );
 };

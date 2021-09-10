@@ -16,6 +16,13 @@ jest.mock(
   }
 );
 
+jest.mock(
+  '../../auth/headersMiddleware.ts',
+  () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
+
 describe('usergroups routes', () => {
   let user: { username: string; role: string } | undefined;
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
@@ -40,22 +47,18 @@ describe('usergroups routes', () => {
   );
 
   async function getUserGroups(): Promise<SuperTestResponse> {
-    return request(app)
-      .get('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest');
+    return request(app).get('/api/usergroups');
   }
 
   async function postUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
     return request(app)
       .post('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest')
       .send(userGroupData);
   }
 
   async function deleteUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
     return request(app)
       .delete('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest')
       .query({ _id: userGroupData._id });
   }
 

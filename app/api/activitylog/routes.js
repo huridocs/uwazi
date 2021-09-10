@@ -1,11 +1,13 @@
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { parseQuery, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import headersMiddleware from '../auth/headersMiddleware';
 import activitylog from './activitylog';
 
 export default app => {
   app.get(
     '/api/activitylog',
+    headersMiddleware,
     needsAuthorization(['admin']),
     parseQuery,
     validation.validateRequest({

@@ -5,6 +5,7 @@ import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
 import needsAuthorization from '../auth/authMiddleware';
+import headersMiddleware from '../auth/headersMiddleware';
 import { parseQuery, validation } from '../utils';
 
 Joi.objectId = objectId(Joi);
@@ -12,6 +13,7 @@ Joi.objectId = objectId(Joi);
 export default app => {
   app.post(
     '/api/entities',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     (req, res, next) =>
       entities
@@ -34,17 +36,22 @@ export default app => {
         .catch(next)
   );
 
-  app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>
-    entities
-      .denormalize(req.body, { user: req.user, language: req.language })
-      .then(response => {
-        res.json(response);
-      })
-      .catch(next)
+  app.post(
+    '/api/entity_denormalize',
+    headersMiddleware,
+    needsAuthorization(['admin', 'editor']),
+    (req, res, next) =>
+      entities
+        .denormalize(req.body, { user: req.user, language: req.language })
+        .then(response => {
+          res.json(response);
+        })
+        .catch(next)
   );
 
   app.post(
     '/api/entities/multipleupdate',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     (req, res, next) =>
       entities
@@ -137,6 +144,7 @@ export default app => {
 
   app.delete(
     '/api/entities',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest(
       Joi.object()
@@ -156,6 +164,7 @@ export default app => {
 
   app.post(
     '/api/entities/bulkdelete',
+    headersMiddleware,
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest(
       Joi.object()

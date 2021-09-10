@@ -16,6 +16,13 @@ jest.mock(
   }
 );
 
+jest.mock(
+  '../../auth/headersMiddleware.ts',
+  () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
+
 const invalidUserProperties = [
   { field: 'username', value: undefined, dataPath: '.body', keyword: 'required' },
   { field: 'email', value: undefined, dataPath: '.body', keyword: 'required' },
@@ -69,7 +76,6 @@ describe('users routes', () => {
       it('should call users save with the body', async () => {
         await request(app)
           .post('/api/users')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(userToUpdate);
 
         expect(users.save).toHaveBeenCalledWith(
@@ -87,7 +93,6 @@ describe('users routes', () => {
             const invalidUser = { ...userToUpdate, [field]: value };
             const response = await request(app)
               .post('/api/users')
-              .set('X-Requested-With', 'XMLHttpRequest')
               .send(invalidUser);
             expect(response.status).toBe(400);
             expect(response.body.errors[0].dataPath).toEqual(dataPath);
@@ -102,7 +107,6 @@ describe('users routes', () => {
         spyOn(users, 'newUser').and.returnValue(Promise.resolve());
         const response = await request(app)
           .post('/api/users/new')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send(userToUpdate);
 
         expect(response.status).toBe(200);
@@ -120,7 +124,6 @@ describe('users routes', () => {
             const invalidUser = { ...userToUpdate, [field]: value };
             const response = await request(app)
               .post('/api/users/new')
-              .set('X-Requested-With', 'XMLHttpRequest')
               .send(invalidUser);
             expect(response.status).toBe(400);
             expect(response.body.errors[0].dataPath).toEqual(dataPath);
@@ -148,7 +151,6 @@ describe('users routes', () => {
       ])('should invalidate if the schema is not matched', async ({ value, keyword }) => {
         const response = await request(app)
           .post('/api/recoverpassword')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ email: value });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toEqual(keyword);
@@ -158,7 +160,6 @@ describe('users routes', () => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
         const response = await request(app)
           .post('/api/recoverpassword')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ email: 'recover@me.com' });
         expect(response.status).toBe(200);
         expect(users.recoverPassword).toHaveBeenCalledWith(
@@ -171,7 +172,6 @@ describe('users routes', () => {
         spyOn(users, 'recoverPassword').and.throwError('error on recoverPassword');
         const response = await request(app)
           .post('/api/recoverpassword')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ email: 'recover@me.com' });
         expect(response.status).toBe(500);
         expect(response.body.prettyMessage).toContain('error on recoverPassword');
@@ -185,7 +185,6 @@ describe('users routes', () => {
       ])('should invalidate if the schema is not matched', async ({ key, password, keyword }) => {
         const response = await request(app)
           .post('/api/resetpassword')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ key, password });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toEqual(keyword);
@@ -195,7 +194,6 @@ describe('users routes', () => {
         spyOn(users, 'resetPassword').and.returnValue(Promise.resolve());
         const response = await request(app)
           .post('/api/resetpassword')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ key: 'key', password: 'pass' });
         expect(response.status).toBe(200);
         expect(users.resetPassword).toHaveBeenCalledWith({ key: 'key', password: 'pass' });
@@ -209,7 +207,6 @@ describe('users routes', () => {
       ])('should invalidate if the schema is not matched', async ({ username, code, keyword }) => {
         const response = await request(app)
           .post('/api/unlockaccount')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ username, code });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toEqual(keyword);
@@ -218,7 +215,6 @@ describe('users routes', () => {
         spyOn(users, 'unlockAccount').and.returnValue(Promise.resolve());
         const response = await request(app)
           .post('/api/unlockAccount')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ username: 'user1', code: 'code' });
         expect(response.status).toBe(200);
         expect(users.unlockAccount).toHaveBeenCalledWith({ username: 'user1', code: 'code' });
@@ -230,17 +226,13 @@ describe('users routes', () => {
     it('should need authorization', async () => {
       spyOn(users, 'get').and.returnValue(Promise.resolve(['users']));
       currentUser!.role = UserRole.EDITOR;
-      const response = await request(app)
-        .get('/api/users')
-        .set('X-Requested-With', 'XMLHttpRequest');
+      const response = await request(app).get('/api/users');
       expect(response.status).toBe(401);
     });
 
     it('should call users get', async () => {
       spyOn(users, 'get').and.returnValue(Promise.resolve(['users']));
-      const response = await request(app)
-        .get('/api/users')
-        .set('X-Requested-With', 'XMLHttpRequest');
+      const response = await request(app).get('/api/users');
       expect(response.status).toBe(200);
       expect(users.get).toHaveBeenCalled();
       expect(response.body).toEqual(['users']);
@@ -255,7 +247,6 @@ describe('users routes', () => {
     it('should invalidate if the schema is not matched', async () => {
       const response = await request(app)
         .delete('/api/users')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: undefined });
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toEqual('required');
@@ -265,7 +256,6 @@ describe('users routes', () => {
       currentUser!.role = UserRole.EDITOR;
       const response = await request(app)
         .delete('/api/users')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: 'user1' });
       expect(response.status).toBe(401);
     });
@@ -273,7 +263,6 @@ describe('users routes', () => {
     it('should use users to delete it', async () => {
       const response = await request(app)
         .delete('/api/users')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: 'userToDeleteId' });
       expect(response.status).toBe(200);
       expect(users.delete).toHaveBeenCalledWith('userToDeleteId', currentUser);

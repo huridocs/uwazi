@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
 import { setUpApp } from 'api/utils/testingRoutes';
@@ -6,6 +6,13 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import pagesRoutes from '../routes';
 import { fixtures } from './fixtures';
+
+jest.mock(
+  '../../auth/headersMiddleware.ts',
+  () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
 
 const getUser = () => ({ _username: 'user 1', role: 'admin' });
 
@@ -29,7 +36,6 @@ describe('Pages Routes', () => {
 
       const response = await request(app)
         .post('/api/pages')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .set('content-language', 'en')
         .send(goodData);
 
@@ -41,7 +47,6 @@ describe('Pages Routes', () => {
 
       const response = await request(app)
         .post('/api/pages')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send(badData);
 
       expect(response.status).toBe(400);

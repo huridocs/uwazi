@@ -17,6 +17,13 @@ import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
+jest.mock(
+  '../../auth/headersMiddleware.ts',
+  () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
+
 describe('files routes', () => {
   const app: Application = setUpApp(
     uploadRoutes,
@@ -40,7 +47,6 @@ describe('files routes', () => {
     beforeEach(async () => {
       await request(app)
         .post('/api/files')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send({ _id: uploadId.toString(), originalname: 'newName' });
     });
 
@@ -68,7 +74,6 @@ describe('files routes', () => {
 
         await request(app)
           .post('/api/files')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
 
         const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
@@ -81,7 +86,6 @@ describe('files routes', () => {
 
         const rest = await request(app)
           .post('/api/files')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
 
         expect(rest.status).toBe(400);
@@ -93,7 +97,6 @@ describe('files routes', () => {
     it('should return all uploads based on the filter', async () => {
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ type: 'custom' });
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
@@ -107,14 +110,12 @@ describe('files routes', () => {
     it('should delete upload and return the response', async () => {
       await request(app)
         .post('/api/files/upload/custom')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .attach('file', path.join(__dirname, 'test.txt'));
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       await request(app)
         .delete('/api/files')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: file._id?.toString() });
 
       expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
@@ -123,7 +124,6 @@ describe('files routes', () => {
     it('should reindex all entities that are related to the files deleted', async () => {
       await request(app)
         .delete('/api/files')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: uploadId2.toString() });
 
       expect(search.indexEntities).toHaveBeenCalledWith(
@@ -135,7 +135,6 @@ describe('files routes', () => {
     it('should delete all connections related to the file', async () => {
       await request(app)
         .delete('/api/files')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: uploadId2.toString() });
 
       const allConnections = await connections.get();
@@ -146,7 +145,6 @@ describe('files routes', () => {
     it('should validate _id as string', async () => {
       const response: SuperTestResponse = await request(app)
         .delete('/api/files')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({ _id: { test: 'test' } });
 
       expect(response.body.errors[0].message).toBe('should be string');
@@ -157,7 +155,6 @@ describe('files routes', () => {
         const response: SuperTestResponse = await request(app)
           .post('/api/files/tocReviewed')
           .set('content-language', 'es')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ fileId: uploadId.toString() });
 
         const [file] = await files.get({ _id: uploadId });
@@ -168,7 +165,6 @@ describe('files routes', () => {
       it('should set tocGenerated to false on the entity when all associated files are false', async () => {
         await request(app)
           .post('/api/files/tocReviewed')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ fileId: uploadId.toString() })
           .expect(200);
 
@@ -177,7 +173,6 @@ describe('files routes', () => {
 
         await request(app)
           .post('/api/files/tocReviewed')
-          .set('X-Requested-With', 'XMLHttpRequest')
           .send({ fileId: uploadId2.toString() })
           .expect(200);
 
@@ -192,7 +187,6 @@ describe('files routes', () => {
       const entityId = db.id();
       await request(app)
         .post('/api/files/upload/attachment')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send({
           originalname: 'Dont bring me down - 1979',
           entity: entityId,
@@ -212,7 +206,6 @@ describe('files routes', () => {
     it('should save the attached file', async () => {
       const response = await request(app)
         .post('/api/files/upload/document')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .attach('file', path.join(__dirname, 'test.txt'));
       expect(response.status).toBe(200);
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });

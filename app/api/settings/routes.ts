@@ -1,10 +1,10 @@
 import settings from 'api/settings/settings';
 import { Application } from 'express';
-
+import headersMiddleware from '../auth/headersMiddleware';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app: Application) => {
-  app.post('/api/settings', needsAuthorization(), (req, res, next) => {
+  app.post('/api/settings', headersMiddleware, needsAuthorization(), (req, res, next) => {
     settings
       .save(req.body)
       .then(response => res.json(response))
