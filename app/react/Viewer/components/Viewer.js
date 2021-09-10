@@ -4,7 +4,6 @@ import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from 'immutable';
-
 import { ConnectionsList } from 'app/ConnectionsList';
 import { CreateConnectionPanel } from 'app/Connections';
 import { CurrentLocationLink, Icon } from 'app/Layout';
@@ -26,7 +25,6 @@ import {
 import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
-
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
@@ -45,12 +43,10 @@ export class Viewer extends Component {
   componentDidMount() {
     const { store } = this.context;
     const { sidepanelTab } = this.props;
-
     store.dispatch(openPanel('viewMetadataPanel'));
     if (sidepanelTab === 'connections') {
       store.dispatch(actions.set('viewer.sidepanel.tab', ''));
     }
-
     store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
@@ -63,19 +59,10 @@ export class Viewer extends Component {
 
   prepareClassName() {
     const { panelIsOpen, targetDoc, showConnections } = this.props;
-
     let className = 'document-viewer with-header';
-
-    if (panelIsOpen) {
-      className += ' with-panel is-active';
-    }
-    if (targetDoc) {
-      className += ' show-target-document';
-    }
-    if (showConnections) {
-      className += ' connections';
-    }
-
+    className += panelIsOpen ? ' with-panel is-active' : '';
+    className += targetDoc ? ' show-target-document' : '';
+    className += showConnections ? ' connections' : '';
     return className;
   }
 
@@ -100,26 +87,13 @@ export class Viewer extends Component {
   }
 
   render() {
-    const {
-      doc,
-      sidepanelTab,
-      targetDoc,
-      changePage,
-      onPageChange,
-      onDocumentReady,
-      addReference,
-      loadTargetDocument,
-      panelIsOpen,
-      showTextSelectMenu,
-      file,
-    } = this.props;
+    const { doc, sidepanelTab, targetDoc, changePage, onPageChange, onDocumentReady } = this.props;
+    const { addReference, loadTargetDocument, panelIsOpen, showTextSelectMenu, file } = this.props;
     const { firstRender } = this.state;
     if (doc.get('_id') && !doc.get('documents').size) {
       return this.renderNoDoc();
     }
-
     const className = this.prepareClassName();
-
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
 
@@ -169,7 +143,6 @@ export class Viewer extends Component {
             <Footer />
           </div>
         </main>
-
         <ConfirmCloseForm />
         <ViewMetadataPanel
           raw={raw || firstRender}
@@ -183,21 +156,15 @@ export class Viewer extends Component {
           onRangedConnect={loadTargetDocument}
           file={file}
         />
-
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <RelationshipMetadata />
-        </ShowIf>
-
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <AddEntitiesPanel />
-        </ShowIf>
-
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <div className="sidepanel-footer">
-            <RelationshipsFormButtons />
-          </div>
-        </ShowIf>
-
+        {sidepanelTab === 'connections' && (
+          <>
+            <RelationshipMetadata />
+            <AddEntitiesPanel />
+            <div className="sidepanel-footer">
+              <RelationshipsFormButtons />
+            </div>
+          </>
+        )}
         <ContextMenu align="bottom" overrideShow show={!panelIsOpen}>
           <ViewerDefaultMenu />
         </ContextMenu>
@@ -251,7 +218,6 @@ Viewer.contextTypes = {
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
-
   return {
     pageText: documentViewer.rawText,
     doc: selectDoc(state),
