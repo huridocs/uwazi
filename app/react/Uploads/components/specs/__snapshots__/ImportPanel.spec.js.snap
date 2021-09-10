@@ -1,54 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ImportPanel rendering states error when there is an error should render an error message 1`] = `
-<SidePanel
-  className="metadata-sidepanel"
-  mode=""
-  open={true}
->
-  <div
-    className="sidepanel-header"
-  >
-    <button
-      className="closeSidepanel close-modal"
-      onClick={[Function]}
-      type="button"
-    >
-      <Connect(Icon)
-        icon="times"
-      />
-    </button>
-  </div>
-  <div
-    className="alert alert-danger"
-  >
-    <Connect(Icon)
-      icon="exclamation-triangle"
-    />
-    <div
-      className="force-ltr"
-    >
-      <Connect(Translate)>
-        The import process threw an error:
-      </Connect(Translate)>
-    </div>
-    <Connect(Icon)
-      icon="times"
-      onClick={[Function]}
-      style={
-        Object {
-          "cursor": "pointer",
-        }
-      }
-    />
-  </div>
-  <StackTrace
-    message=""
-    validations={null}
-  />
-</SidePanel>
-`;
-
 exports[`ImportPanel rendering states should render a form 1`] = `
 <SidePanel
   className="metadata-sidepanel"
@@ -172,6 +123,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
       <button
         className="btn btn-primary"
         form="import"
+        id="import-csv"
         type="submit"
       >
         <Connect(Icon)
