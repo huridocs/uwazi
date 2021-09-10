@@ -17,8 +17,6 @@ import Footer from 'app/App/Footer';
 import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
-import { RequestParams } from 'app/utils/RequestParams';
-
 import { PaginatorWithPage } from './Paginator';
 import { addReference as addReferenceAction } from '../actions/referencesActions';
 import {
@@ -46,7 +44,7 @@ export class Viewer extends Component {
 
   componentDidMount() {
     const { store } = this.context;
-    const { sidepanelTab, file } = this.props;
+    const { sidepanelTab } = this.props;
 
     store.dispatch(openPanel('viewMetadataPanel'));
     if (sidepanelTab === 'connections') {
@@ -218,7 +216,6 @@ Viewer.defaultProps = {
   changePage: () => {},
   onDocumentReady: () => {},
   page: 1,
-  templates: List(),
   doc: Map(),
   file: {},
 };
@@ -243,7 +240,6 @@ Viewer.propTypes = {
   selectedConnectionMetadata: PropTypes.object,
   showTab: PropTypes.func,
   page: PropTypes.number,
-  templates: PropTypes.instanceOf(List),
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
 };
@@ -261,7 +257,6 @@ const mapStateToProps = state => {
     doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
-    templates: state.templates,
     locale: state.locale,
     // TEST!!!!!
     sidepanelTab: documentViewer.sidepanel.tab,
