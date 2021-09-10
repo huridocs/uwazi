@@ -46,7 +46,11 @@ export class DocumentSidePanel extends Component {
       prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
       this.props.getDocumentReferences
     ) {
-      this.props.getDocumentReferences(this.props.doc.get('sharedId'), this.props.storeKey);
+      this.props.getDocumentReferences(
+        this.props.doc.get('sharedId'),
+        this.props.file._id,
+        this.props.storeKey
+      );
     }
   }
 
