@@ -364,11 +364,13 @@ export function getSuggestions() {
   return { type: 'GET_SUGGESTIONS' };
 }
 
-export function getDocumentReferences(sharedId, storeKey) {
+export function getDocumentReferences(sharedId, fileId, storeKey) {
   return dispatch =>
-    referencesAPI.get(new RequestParams({ sharedId })).then(references => {
-      dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
-    });
+    referencesAPI
+      .get(new RequestParams({ sharedId, file: fileId, onlyTextReferences: true }))
+      .then(references => {
+        dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
+      });
 }
 
 export function getAggregationSuggestions(storeKey, property, searchTerm) {

@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { fromJS as Immutable } from 'immutable';
+import { Set as ImmutableSet, List as ImmutableList } from 'immutable';
 
 const documentViewer = s => s.documentViewer;
 
@@ -10,28 +10,32 @@ function isRelationshipAReference(doc, reference) {
   );
 }
 
-const parseReferences = (doc, refs) =>
-  refs
-    .filter(r => isRelationshipAReference(doc, r))
-    .reduce((hubs, r) => {
-      if (hubs.indexOf(r.get('hub')) === -1) {
-        hubs.push(r.get('hub'));
-      }
-      return hubs;
-    }, [])
-    .reduce((memo, hubId) => {
-      let references = memo;
-      const baseReference = refs.find(
-        r => isRelationshipAReference(doc, r) && r.get('hub') === hubId
-      );
-      const otherRelationshipsOfHub = refs.filter(
-        r => r.get('_id') !== baseReference.get('_id') && r.get('hub') === hubId
-      );
-      otherRelationshipsOfHub.forEach(r => {
-        references = references.push(baseReference.set('associatedRelationship', r));
-      });
-      return references;
-    }, Immutable([]));
+const parseReferences = (doc, refs) => {
+  const textReferences = ImmutableSet(refs.filter(r => isRelationshipAReference(doc, r)));
+  //select basereferences
+  const hubIdToBaseReference = new Map();
+  textReferences.forEach(tr => {
+    const hubId = tr.get('hub');
+    if (!hubIdToBaseReference.has(hubId)) {
+      hubIdToBaseReference.set(hubId, tr);
+    }
+  });
+  // collect baseref copies with associatedRelationships
+  const hubIdToRelationships = new Map();
+  Array.from(hubIdToBaseReference.keys()).forEach(hubId => {
+    hubIdToRelationships.set(hubId, []);
+  });
+  refs.forEach(r => {
+    const hubId = r.get('hub');
+    const baseRef = hubIdToBaseReference.get(hubId);
+    if (!textReferences.has(r) && baseRef) {
+      hubIdToRelationships.get(hubId).push(baseRef.set('associatedRelationship', r));
+    }
+  });
+  // flatten to immutable list
+  const result = ImmutableList(Array.from(hubIdToRelationships.values())).flatMap(v => v);
+  return result;
+};
 
 const selectDoc = createSelector(
   s => documentViewer(s).doc,
