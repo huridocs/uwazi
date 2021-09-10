@@ -12,7 +12,7 @@ export class RepeatWithLock {
 
   private redisClient: Redis.RedisClient | undefined;
 
-  constructor(lockName: string, task: () => void) {
+  constructor(lockName: string, task: () => void, ) {
     this.lockName = `locks:${lockName}`;
     this.task = task;
   }
@@ -21,7 +21,14 @@ export class RepeatWithLock {
     this.redisClient = await Redis.createClient('redis://localhost:6379');
     this.redlock = await new Redlock([this.redisClient]);
 
-    this.redlock.on('clientError', function(err) {
+    this.redisClient.on('error', async error => {
+      if (error.code !== 'ECONNREFUSED') {
+        throw error;
+      }
+      console.log(error);
+    });
+
+    this.redlock.on('error', err => {
       console.error('A redis error has occurred:', err);
     });
 
@@ -37,8 +44,10 @@ export class RepeatWithLock {
     await this.redisClient?.end(true);
   }
 
-  lockTask() {
-    this.redlock!.lock(this.lockName, 10000).then(async lock => {
+  async lockTask() {
+    try {
+      const lock = await this.redlock!.lock(this.lockName, 10000);
+
       if (this.stopTask) {
         await lock.unlock();
         this.stopTask(true);
@@ -47,7 +56,13 @@ export class RepeatWithLock {
 
       await this.task();
       await lock.unlock();
-      this.lockTask();
-    });
+    } catch (error) {
+      if (error.name !== 'LockError') {
+        throw error;
+      }
+    }
+
+    this.lockTask();
+
   }
 }

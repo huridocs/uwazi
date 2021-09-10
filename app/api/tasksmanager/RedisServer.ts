@@ -38,7 +38,11 @@ export class RedisServer {
       port: 6379,
       bin: this.pathToBin,
     });
-    await this.server.open();
+    try {
+      await this.server.open();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async stop() {
