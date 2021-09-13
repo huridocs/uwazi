@@ -22,6 +22,13 @@ jest.mock(
   }
 );
 
+jest.mock(
+  '../../auth/headersMiddleware.ts',
+  () => () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
+
 describe('upload routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 
