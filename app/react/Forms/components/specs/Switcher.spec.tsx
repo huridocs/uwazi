@@ -1,11 +1,11 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import { Translate } from 'app/I18N';
-import { Switcher, SwitcherProps } from '../Switcher';
+import { shallow } from 'enzyme';
+
+import Switcher from '../Switcher';
 
 describe('Switcher', () => {
-  let component: ShallowWrapper<typeof Switcher>;
-  let props: SwitcherProps;
+  let component;
+  let props;
 
   beforeEach(() => {
     props = {
@@ -15,9 +15,8 @@ describe('Switcher', () => {
     };
   });
 
-  const render = (customProps: Partial<SwitcherProps> = {}) => {
-    const componentProps = { ...props, ...customProps };
-    component = shallow(<Switcher {...componentProps} />);
+  const render = () => {
+    component = shallow(<Switcher {...props} />);
   };
 
   it('should render an input with the value and prefix passed', () => {
@@ -36,26 +35,5 @@ describe('Switcher', () => {
       input.simulate('change', { target: { checked: false } });
       expect(props.onChange).toHaveBeenCalledWith(false);
     });
-  });
-
-  it('should receive alternative elements for values', () => {
-    render({ leftLabel: <Translate>ALL</Translate>, rightLabel: <Translate>NONE</Translate> });
-    const labels = component.find('Connect(Translate)');
-    expect(labels.at(0).props().children).toEqual('ALL');
-    expect(labels.at(1).props().children).toEqual('NONE');
-  });
-
-  it('should receive alternative labels for values', () => {
-    render({ leftLabel: 'ALL', rightLabel: 'NONE' });
-    const labels = component.find('span');
-    expect(labels.at(0).props().children).toEqual('ALL');
-    expect(labels.at(1).props().children).toEqual('NONE');
-  });
-
-  it('should render default labels AND/OR', () => {
-    render();
-    const labels = component.find('Connect(Translate)');
-    expect(labels.at(0).props().children).toEqual('AND');
-    expect(labels.at(1).props().children).toEqual('OR');
   });
 });

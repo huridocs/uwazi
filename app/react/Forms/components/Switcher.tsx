@@ -1,38 +1,35 @@
-import React from 'react';
-import { Translate } from 'app/I18N';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { t } from 'app/I18N';
 
-export interface SwitcherProps {
-  onChange: (checked: boolean) => {};
-  value: boolean;
-  prefix: string;
-  leftLabel?: JSX.Element | string;
-  rightLabel?: JSX.Element | string;
+export default class Switcher extends Component {
+  onChange(e) {
+    this.props.onChange(e.target.checked);
+  }
+
+  render() {
+    return (
+      <div className="switcher-wrapper">
+        <span className={this.props.value ? 'is-active' : ''}>
+          {t('System', 'Filters AND operator')}
+        </span>
+        <input
+          id={`${this.props.prefix}switcher`}
+          type="checkbox"
+          checked={this.props.value || false}
+          onChange={this.onChange.bind(this)}
+        />
+        <label htmlFor={`${this.props.prefix}switcher`} className="switcher" />
+        <span className={this.props.value ? '' : 'is-active'}>
+          {t('System', 'Filters OR operator')}
+        </span>
+      </div>
+    );
+  }
 }
 
-const Switcher = ({
-  onChange,
-  value,
-  prefix,
-  leftLabel = <Translate translationKey="Filters AND operator">AND</Translate>,
-  rightLabel = <Translate translationKey="Filters OR operator">OR</Translate>,
-}: SwitcherProps) => {
-  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.checked);
-  };
-
-  return (
-    <div className="switcher-wrapper">
-      <span className={value ? 'is-active' : ''}>{leftLabel}</span>
-      <input
-        id={`${prefix}switcher`}
-        type="checkbox"
-        checked={value || false}
-        onChange={onChangeHandler}
-      />
-      <label htmlFor={`${prefix}switcher`} className="switcher" />
-      <span className={value ? '' : 'is-active'}>{rightLabel}</span>
-    </div>
-  );
+Switcher.propTypes = {
+  onChange: PropTypes.func,
+  value: PropTypes.bool,
+  prefix: PropTypes.string,
 };
-
-export { Switcher };
