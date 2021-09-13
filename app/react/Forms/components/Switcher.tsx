@@ -1,35 +1,38 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { t } from 'app/I18N';
 
-export default class Switcher extends Component {
-  onChange(e) {
-    this.props.onChange(e.target.checked);
-  }
-
-  render() {
-    return (
-      <div className="switcher-wrapper">
-        <span className={this.props.value ? 'is-active' : ''}>
-          {t('System', 'Filters AND operator')}
-        </span>
-        <input
-          id={`${this.props.prefix}switcher`}
-          type="checkbox"
-          checked={this.props.value || false}
-          onChange={this.onChange.bind(this)}
-        />
-        <label htmlFor={`${this.props.prefix}switcher`} className="switcher" />
-        <span className={this.props.value ? '' : 'is-active'}>
-          {t('System', 'Filters OR operator')}
-        </span>
-      </div>
-    );
-  }
+export interface SwitcherProps {
+  onChange: (checked: boolean) => {};
+  value: boolean;
+  prefix: string;
+  leftLabel?: string;
+  rightLabel?: string;
 }
 
-Switcher.propTypes = {
-  onChange: PropTypes.func,
-  value: PropTypes.bool,
-  prefix: PropTypes.string,
+const Switcher = ({
+  onChange,
+  value,
+  prefix,
+  leftLabel = 'Filters AND operator',
+  rightLabel = 'Filters OR operator',
+}: SwitcherProps) => {
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.checked);
+  };
+
+  return (
+    <div className="switcher-wrapper">
+      <span className={value ? 'is-active' : ''}>{t('System', leftLabel)}</span>
+      <input
+        id={`${prefix}switcher`}
+        type="checkbox"
+        checked={value || false}
+        onChange={onChangeHandler}
+      />
+      <label htmlFor={`${prefix}switcher`} className="switcher" />
+      <span className={value ? '' : 'is-active'}>{t('System', rightLabel)}</span>
+    </div>
+  );
 };
+
+export default Switcher;
