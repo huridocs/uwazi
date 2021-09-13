@@ -1,7 +1,8 @@
 import Redis from 'redis';
 import Redlock from 'redlock';
+import handleError from 'api/utils/handleError';
 
-export class RepeatWithLock {
+export class RepeatWith {
   private lockName: string;
 
   private task: () => void;
@@ -12,20 +13,30 @@ export class RepeatWithLock {
 
   private redisClient: Redis.RedisClient | undefined;
 
-  constructor(lockName: string, task: () => void, ) {
+  private maxLockTime: number;
+
+  private delayTimeBetweenTasks: number;
+
+  constructor(
+    lockName: string,
+    task: () => void,
+    maxLockTime: number = 10000,
+    delayTimeBetweenTasks = 0
+  ) {
+    this.maxLockTime = maxLockTime;
+    this.delayTimeBetweenTasks = delayTimeBetweenTasks;
     this.lockName = `locks:${lockName}`;
     this.task = task;
   }
 
   async start() {
     this.redisClient = await Redis.createClient('redis://localhost:6379');
-    this.redlock = await new Redlock([this.redisClient]);
+    this.redlock = await new Redlock([this.redisClient], { retryJitter: 0, retryDelay: 20 });
 
     this.redisClient.on('error', async error => {
       if (error.code !== 'ECONNREFUSED') {
         throw error;
       }
-      console.log(error);
     });
 
     this.redlock.on('error', err => {
@@ -46,7 +57,7 @@ export class RepeatWithLock {
 
   async lockTask() {
     try {
-      const lock = await this.redlock!.lock(this.lockName, 10000);
+      const lock = await this.redlock!.lock(this.lockName, this.maxLockTime + this.delayTimeBetweenTasks);
 
       if (this.stopTask) {
         await lock.unlock();
@@ -54,15 +65,21 @@ export class RepeatWithLock {
         return;
       }
 
-      await this.task();
+      try {
+        await this.task();
+      } catch (error) {
+        handleError(error);
+      }
+      await new Promise(resolve => {
+        setTimeout(resolve, this.delayTimeBetweenTasks);
+      });
       await lock.unlock();
     } catch (error) {
-      if (error.name !== 'LockError') {
+      if (error && error.name !== 'LockError') {
         throw error;
       }
     }
 
     this.lockTask();
-
   }
 }
