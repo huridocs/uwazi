@@ -6,9 +6,10 @@ import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
 import { Control } from 'react-redux-form';
 import { Switcher } from 'app/ReactReduxForms';
+import { FiltrableLevel } from './FiltrablePermissionsLevels';
 
 interface PermissionsValue {
-  level: 'read' | 'write';
+  level: FiltrableLevel;
   refId: string;
 }
 
@@ -17,7 +18,7 @@ interface AssigneeFilterProps {
   aggregations: Aggregations;
 }
 
-const generateOptions = (aggregations: Aggregations, level: 'read' | 'write') =>
+const generateOptions = (aggregations: Aggregations, level: FiltrableLevel) =>
   aggregations?.all?.[`_permissions.${level}`]?.buckets
     .filter(aggregation => aggregation.key !== 'any')
     .map(aggregation => ({
@@ -36,7 +37,7 @@ export const AssigneeFilterSelectUncontrolled = ({
   const readOptions = useMemo(() => generateOptions(aggregations, 'read'), [aggregations]);
   const writeOptions = useMemo(() => generateOptions(aggregations, 'write'), [aggregations]);
 
-  const getChangeHandler = (level: 'read' | 'write') => (values: string[]) => {
+  const getChangeHandler = (level: FiltrableLevel) => (values: string[]) => {
     const newSelected = value
       .filter((v: PermissionsValue) => v.level !== level)
       .concat(values.map(v => ({ refId: v, level })));

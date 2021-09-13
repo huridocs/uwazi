@@ -9,11 +9,10 @@ import { connect } from 'react-redux';
 import { UserSchema } from 'shared/types/userType';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';
-
-type PermissionLevel = 'read' | 'write';
+import { FiltrableLevel, filtrableLevels } from './FiltrablePermissionsLevels';
 
 interface PermissionsValue {
-  level: PermissionLevel;
+  level: FiltrableLevel;
   refId: string;
 }
 
@@ -22,7 +21,7 @@ export interface PermissionsFilterProps {
   aggregations: Aggregations;
 }
 
-const filteredAggregation = (aggregations: Aggregations, key: string) => {
+const filteredAggregation = (aggregations: Aggregations, key: FiltrableLevel) => {
   const bucket = (aggregations?.all?.['_permissions.self']?.buckets || []).find(
     a => a.key === key
   ) || {
@@ -64,10 +63,10 @@ export const PermissionsFilterUncontrolled = connect(
       [user]
     );
 
-    const onChangeHandler = (newValues: PermissionLevel[]) => {
+    const onChangeHandler = (newValues: FiltrableLevel[]) => {
       onChange(
         newValues.reduce(
-          (filters: PermissionsValue[], level: PermissionLevel) =>
+          (filters: PermissionsValue[], level: FiltrableLevel) =>
             filters.concat(
               refIds.map(refId => ({
                 refId,
@@ -81,7 +80,7 @@ export const PermissionsFilterUncontrolled = connect(
 
     const mappedValue = useMemo(
       () =>
-        ['read', 'write'].filter(level =>
+        filtrableLevels.filter(level =>
           refIds.every(id => value.find(v => v.refId === id && v.level === level))
         ),
       [refIds, value]
