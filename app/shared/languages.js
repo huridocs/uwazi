@@ -1,4 +1,3 @@
-import franc from 'franc';
 import get, { languages } from 'shared/languagesList';
 
 export default {
@@ -12,6 +11,4 @@ export default {
       .filter(unique)
       .filter(notNull);
   },
-
-  detect: (text, purpose = 'elastic') => get(franc(text), purpose),
 };

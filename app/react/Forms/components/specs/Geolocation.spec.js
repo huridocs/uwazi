@@ -192,17 +192,13 @@ describe('Geolocation', () => {
     it('when longitude empty and latitude not empty', () => {
       expectRenderButton('1', '');
     });
-
-    it('when longitude and latitude not empty', () => {
-      expect(component).toMatchSnapshot();
-    });
   });
 
-  describe('should hide clear fields button ', () => {
-    it('when latitude and longitude are empty', () => {
+  describe('when latitude and longitude are empty', () => {
+    it('should hide clear fields button', () => {
       props.value = [{ lat: '', lon: '' }];
       render();
-      expect(component).toMatchSnapshot();
+      expect(component.find('button').length).toBe(0);
     });
   });
 

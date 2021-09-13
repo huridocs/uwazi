@@ -45,16 +45,10 @@ exports[`Map Markdown component should render the data passed by mapStateToProps
 `;
 
 exports[`Map Markdown component should render the data passed by mapStateToProps 2`] = `
-<Map
-  autoCenter={true}
+<ForwardRef
   clickOnCluster={[Function]}
   clickOnMarker={[Function]}
   cluster={true}
-  height={null}
-  hoverOnMarker={[Function]}
-  interactiveLayerIds={Array []}
-  latitude={null}
-  longitude={null}
   markers={
     Array [
       Object {
@@ -62,12 +56,9 @@ exports[`Map Markdown component should render the data passed by mapStateToProps
       },
     ]
   }
-  onClick={[Function]}
-  renderMarker={null}
   renderPopupInfo={[Function]}
   scrollZoom={false}
   showControls={false}
-  width={null}
   zoom={1}
 />
 `;

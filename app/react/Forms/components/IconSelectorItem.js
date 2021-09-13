@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon, CountryList } from 'UI';
+import { Translate } from 'app/I18N';
 
 const style = { display: 'inline-block', width: '25px' };
 
@@ -12,7 +13,7 @@ export default class IconSelectorItem extends Component {
   render() {
     const { item } = this.props;
 
-    let icon = <span>No icon / flag</span>;
+    let icon = <Translate>No icon / flag</Translate>;
     if (item.type === 'Icons') {
       icon = (
         <span style={style}>

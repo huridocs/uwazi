@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`importFile readStream should return a readable stream for the csv file 1`] = `
-"Title , text label  , numeric label, non configured, select label, not defined type, geolocation_geolocation,auto id
+"Title , text label  , numeric label, non configured, select label, not defined type, geolocation_geolocation,auto id, additional tag(s)
 
-title1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,,
-title2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,,
-title3, text value 3, 2020, ______________, thesauri2   , notType3                 , 0|0,,
+title1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,,tag1
+title2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,,tag2
+title3, text value 3, 2020, ______________, thesauri2   , notType3                 , 0|0,,tag3
 "
 `;
 

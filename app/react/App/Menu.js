@@ -10,6 +10,7 @@ import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { Icon } from 'UI';
 import { libraryViewInfo } from 'app/App/libraryViewInfo';
+import { DropdownMenu } from './DropdownMenu';
 
 export class Menu extends Component {
   libraryUrl() {
@@ -25,25 +26,30 @@ export class Menu extends Component {
     const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
 
-    const navLinks = links.map(link => {
-      const url = link.get('url') || '/';
+    const navLinks = links.map((link, index) => {
+      const type = link.get('type') || 'link';
 
-      if (url.startsWith('http')) {
+      if (type === 'link') {
+        const url = link.get('url') || '/';
+        if (url.startsWith('http')) {
+          return (
+            <li key={link.get('_id')} className="menuNav-item">
+              <a href={url} className="btn menuNav-btn" target="_blank" rel="noreferrer">
+                {t('Menu', link.get('title'))}
+              </a>
+            </li>
+          );
+        }
         return (
           <li key={link.get('_id')} className="menuNav-item">
-            <a href={url} className="btn menuNav-btn" target="_blank">
+            <I18NLink to={url} className="btn menuNav-btn">
               {t('Menu', link.get('title'))}
-            </a>
+            </I18NLink>
           </li>
         );
       }
-      return (
-        <li key={link.get('_id')} className="menuNav-item">
-          <I18NLink to={url} className="btn menuNav-btn">
-            {t('Menu', link.get('title'))}
-          </I18NLink>
-        </li>
-      );
+
+      return <DropdownMenu link={link} position={index} key={index} />;
     });
 
     return (
@@ -51,7 +57,7 @@ export class Menu extends Component {
         <li className="menuItems">
           <ul className="menuNav-list">{navLinks}</ul>
         </li>
-        <li className="menuActions">
+        <li className="menuActions mobile-menuActions">
           <ul className="menuNav-list">
             <FeatureToggleSemanticSearch>
               <li className="menuNav-item semantic-search">

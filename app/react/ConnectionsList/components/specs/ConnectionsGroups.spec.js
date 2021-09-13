@@ -25,7 +25,7 @@ describe('ConnectionsGroups', () => {
   });
 
   const render = () => {
-    component = shallow(<ConnectionsGroups {...props} />);
+    component = shallow(<ConnectionsGroups.WrappedComponent {...props} />);
   };
 
   describe('when there are connectionsGroups', () => {

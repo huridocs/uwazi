@@ -8,11 +8,11 @@ export type RawEntity = {
   [k: string]: string;
 };
 
-const toSafeName = (row: CSVRow): CSVRow =>
+const toSafeName = (row: CSVRow, newNameGeneration: boolean = false): CSVRow =>
   Object.keys(row).reduce(
     (translatedObject, key) => ({
       ...translatedObject,
-      [templateUtils.safeName(key)]: row[key],
+      [templateUtils.safeName(key, newNameGeneration)]: row[key],
     }),
     {}
   );
@@ -31,8 +31,13 @@ const languagesTranslated = (row: CSVRow, availableLanguages: Languages, current
     )
     .concat([currentLanguage]);
 
-const extractEntity = (row: CSVRow, availableLanguages: Languages, currentLanguage: string) => {
-  const safeNamed = toSafeName(row);
+const extractEntity = (
+  row: CSVRow,
+  availableLanguages: Languages,
+  currentLanguage: string,
+  newNameGeneration: boolean = false
+) => {
+  const safeNamed = toSafeName(row, newNameGeneration);
 
   const baseEntity = Object.keys(safeNamed)
     .filter(notTranslated(availableLanguages))

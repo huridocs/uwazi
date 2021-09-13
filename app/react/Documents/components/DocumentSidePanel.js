@@ -23,7 +23,6 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-import { filterVisibleConnections } from 'app/Relationships/utils/relationshipsUtils';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -47,7 +46,11 @@ export class DocumentSidePanel extends Component {
       prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
       this.props.getDocumentReferences
     ) {
-      this.props.getDocumentReferences(this.props.doc.get('sharedId'), this.props.storeKey);
+      this.props.getDocumentReferences(
+        this.props.doc.get('sharedId'),
+        this.props.file._id,
+        this.props.storeKey
+      );
     }
   }
 
@@ -130,11 +133,9 @@ export class DocumentSidePanel extends Component {
       );
     }
 
-    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references, hubs } = this.props;
+    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
 
-    this.visibleConnectionGroups = filterVisibleConnections(connectionsGroups.toJS(), hubs.toJS());
-
-    const summary = this.visibleConnectionGroups.reduce(
+    const summary = connectionsGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -167,7 +168,7 @@ export class DocumentSidePanel extends Component {
                     >
                       <Icon icon="flask" />
                       <span className="tab-link-tooltip">
-                        {t('System', 'Semantic search results')}
+                        <Translate>Semantic search results</Translate>
                       </span>
                     </TabLink>
                   </li>
@@ -346,11 +347,14 @@ export class DocumentSidePanel extends Component {
             {this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly && (
               <div className="sidepanel-footer">
                 <button
+                  type="button"
                   onClick={() => this.props.editToc(this.props.file.toc || [])}
                   className="edit-toc btn btn-primary"
                 >
                   <Icon icon="pencil-alt" />
-                  <span className="btn-label">Edit</span>
+                  <span className="btn-label">
+                    <Translate>Edit</Translate>
+                  </span>
                 </button>
                 <ReviewTocButton file={this.props.file}>
                   <Translate>Mark as Reviewed</Translate>
@@ -371,11 +375,11 @@ export class DocumentSidePanel extends Component {
               <TabContent for="toc" className="toc">
                 <div className="tocHeader">
                   <h1>
-                    <Translate>Table of contents </Translate>
+                    <Translate>Table of contents</Translate>
                   </h1>
                   &nbsp;
                   <TocGeneratedLabel file={this.props.file}>
-                    <Translate>auto-created ⓘ </Translate>
+                    <Translate>auto-created</Translate> ⓘ
                   </TocGeneratedLabel>
                 </div>
                 <ShowIf if={!this.props.tocBeingEdited}>
@@ -456,7 +460,7 @@ export class DocumentSidePanel extends Component {
                 />
               </TabContent>
               <TabContent for="connections" className="connections">
-                <ConnectionsGroups connectionsGroups={this.visibleConnectionGroups} />
+                <ConnectionsGroups />
               </TabContent>
               <TabContent for="semantic-search-results">
                 <DocumentSemanticSearchResults doc={jsDoc} />
@@ -486,7 +490,6 @@ DocumentSidePanel.defaultProps = {
   EntityForm: () => false,
   raw: false,
   file: {},
-  hubs: Immutable.fromJS([]),
   leaveEditMode: () => {},
 };
 
@@ -526,7 +529,6 @@ DocumentSidePanel.propTypes = {
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
-  hubs: PropTypes.instanceOf(Immutable.List),
 };
 
 DocumentSidePanel.contextTypes = {
@@ -554,7 +556,6 @@ export const mapStateToProps = (state, ownProps) => {
     defaultLanguage,
     templates: state.templates,
     formData: state[ownProps.storeKey].sidepanel.metadata,
-    hubs: state.relationships.hubs,
   };
 };
 

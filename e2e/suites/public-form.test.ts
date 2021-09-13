@@ -11,7 +11,7 @@ const createMenuLinkToPublicForm = async (linkText: string) => {
     await element.evaluate(el => (el instanceof HTMLAnchorElement ? el.href : ''))
   ).replace('http://localhost:3000', '');
   await expect(page).toClick('a', { text: 'Menu' });
-  await expect(page).toClick('a', { text: 'Add link' });
+  await expect(page).toClick('button', { text: 'Add link' });
   await expect(page).toFill('input[name="settings.navlinksData.links[0].title"]', linkText);
   await expect(page).toFill('input[name="settings.navlinksData.links[0].url"]', value);
   await expect(page).toClick('button', { text: 'Save' });

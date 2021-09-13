@@ -10,13 +10,17 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
     <div
       className="panel-heading"
     >
-      Account
+      <Connect(Translate)>
+        Account
+      </Connect(Translate)>
     </div>
     <div
       className="panel-body"
     >
       <h5>
-        Email address
+        <Connect(Translate)>
+          Email address
+        </Connect(Translate)>
       </h5>
       <form
         onSubmit={[Function]}
@@ -28,7 +32,9 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
             className="form-group-label"
             htmlFor="collection_name"
           >
-            Email
+            <Connect(Translate)>
+              Email
+            </Connect(Translate)>
           </label>
           <input
             className="form-control"
@@ -41,12 +47,16 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
           className="btn btn-success"
           type="submit"
         >
-          Update
+          <Connect(Translate)>
+            Update
+          </Connect(Translate)>
         </button>
       </form>
       <hr />
       <h5>
-        Change password
+        <Connect(Translate)>
+          Change password
+        </Connect(Translate)>
       </h5>
       <form
         onSubmit={[Function]}
@@ -58,7 +68,9 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
             className="form-group-label"
             htmlFor="password"
           >
-            New password
+            <Connect(Translate)>
+              New password
+            </Connect(Translate)>
           </label>
           <input
             className="form-control"
@@ -75,7 +87,9 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
             className="form-group-label"
             htmlFor="repeatPassword"
           >
-            Confirm new password
+            <Connect(Translate)>
+              Confirm new password
+            </Connect(Translate)>
           </label>
           <input
             className="form-control"
@@ -89,12 +103,16 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
           className="btn btn-success"
           type="submit"
         >
-          Update
+          <Connect(Translate)>
+            Update
+          </Connect(Translate)>
         </button>
       </form>
       <hr />
       <h5>
-        Two-step verification
+        <Connect(Translate)>
+          Two-step verification
+        </Connect(Translate)>
       </h5>
       <div
         className="alert alert-info"
@@ -106,7 +124,9 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
         <div
           className="force-ltr"
         >
-          Your account is protected by 2fa.
+          <Connect(Translate)>
+            Your account is protected by 2fa.
+          </Connect(Translate)>
         </div>
       </div>
     </div>
@@ -124,7 +144,9 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
       <span
         className="btn-label"
       >
-        Logout
+        <Connect(Translate)>
+          Logout
+        </Connect(Translate)>
       </span>
     </a>
   </div>
@@ -141,13 +163,17 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
     <div
       className="panel-heading"
     >
-      Account
+      <Connect(Translate)>
+        Account
+      </Connect(Translate)>
     </div>
     <div
       className="panel-body"
     >
       <h5>
-        Email address
+        <Connect(Translate)>
+          Email address
+        </Connect(Translate)>
       </h5>
       <form
         onSubmit={[Function]}
@@ -159,7 +185,9 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
             className="form-group-label"
             htmlFor="collection_name"
           >
-            Email
+            <Connect(Translate)>
+              Email
+            </Connect(Translate)>
           </label>
           <input
             className="form-control"
@@ -172,12 +200,16 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
           className="btn btn-success"
           type="submit"
         >
-          Update
+          <Connect(Translate)>
+            Update
+          </Connect(Translate)>
         </button>
       </form>
       <hr />
       <h5>
-        Change password
+        <Connect(Translate)>
+          Change password
+        </Connect(Translate)>
       </h5>
       <form
         onSubmit={[Function]}
@@ -189,7 +221,9 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
             className="form-group-label"
             htmlFor="password"
           >
-            New password
+            <Connect(Translate)>
+              New password
+            </Connect(Translate)>
           </label>
           <input
             className="form-control"
@@ -206,7 +240,9 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
             className="form-group-label"
             htmlFor="repeatPassword"
           >
-            Confirm new password
+            <Connect(Translate)>
+              Confirm new password
+            </Connect(Translate)>
           </label>
           <input
             className="form-control"
@@ -220,12 +256,16 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
           className="btn btn-success"
           type="submit"
         >
-          Update
+          <Connect(Translate)>
+            Update
+          </Connect(Translate)>
         </button>
       </form>
       <hr />
       <h5>
-        Two-step verification
+        <Connect(Translate)>
+          Two-step verification
+        </Connect(Translate)>
       </h5>
       <div>
         <div
@@ -238,7 +278,9 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
           <div
             className="force-ltr"
           >
-            You should activate this feature for enhanced account security
+            <Connect(Translate)>
+              You should activate this feature for enhanced account security
+            </Connect(Translate)>
           </div>
         </div>
         <div>
@@ -246,7 +288,9 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
             className="btn btn-success"
             to="/settings/2fa"
           >
-            Protect your account
+            <Connect(Translate)>
+              Protect your account
+            </Connect(Translate)>
           </Connect(I18NLink)>
         </div>
       </div>
@@ -265,7 +309,9 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
       <span
         className="btn-label"
       >
-        Logout
+        <Connect(Translate)>
+          Logout
+        </Connect(Translate)>
       </span>
     </a>
   </div>

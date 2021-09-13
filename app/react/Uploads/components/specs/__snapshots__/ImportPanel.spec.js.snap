@@ -123,6 +123,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
       <button
         className="btn btn-primary"
         form="import"
+        id="import-csv"
         type="submit"
       >
         <Connect(Icon)
@@ -170,7 +171,10 @@ exports[`ImportPanel rendering states when the import starts should render an up
     <div
       className="force-ltr"
     >
-      Uploading file 
+      <Connect(Translate)>
+        Uploading file
+      </Connect(Translate)>
+       
       23
       %
     </div>
@@ -207,7 +211,10 @@ exports[`ImportPanel rendering states when the upload starts should render an up
     <div
       className="force-ltr"
     >
-      Uploading file 
+      <Connect(Translate)>
+        Uploading file
+      </Connect(Translate)>
+       
       23
       %
     </div>

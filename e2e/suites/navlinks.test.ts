@@ -15,10 +15,10 @@ describe('navlinks', () => {
   it('should create an item menu', async () => {
     await expect(page).toClick('a', { text: 'Account settings' });
     await expect(page).toClick('a', { text: 'Menu' });
-    await expect(page).toClick('a', { text: 'Add link' });
+    await expect(page).toClick('button', { text: 'Add link' });
     await expect(page).toFill('input[name="settings.navlinksData.links[0].title"]', 'NavLink1');
     await expect(page).toFill('input[name="settings.navlinksData.links[0].url"]', '/some_url1');
-    await expect(page).toClick('a', { text: 'Add link' });
+    await expect(page).toClick('button', { text: 'Add link' });
     await expect(page).toFill('input[name="settings.navlinksData.links[1].title"]', 'NavLink2');
     await expect(page).toFill('input[name="settings.navlinksData.links[1].url"]', '/some_url2');
     await expect(page).toClick('button', { text: 'Save' });

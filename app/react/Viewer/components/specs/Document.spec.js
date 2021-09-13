@@ -5,7 +5,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import PDF from 'app/PDF';
+import { PDF } from 'app/PDF';
 import { Document } from 'app/Viewer/components/Document.js';
 
 describe('Document', () => {
@@ -14,7 +14,7 @@ describe('Document', () => {
 
   let props;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
       PDFReady: jasmine.createSpy('PDFReady'),

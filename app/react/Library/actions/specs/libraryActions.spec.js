@@ -469,9 +469,11 @@ describe('libraryActions', () => {
         const store = mockStore({ locale: 'es' });
 
         store
-          .dispatch(actions.getDocumentReferences('id', 'library'))
+          .dispatch(actions.getDocumentReferences('id', 'fileId', 'library'))
           .then(() => {
-            expect(referencesAPI.get).toHaveBeenCalledWith(new RequestParams({ sharedId: 'id' }));
+            expect(referencesAPI.get).toHaveBeenCalledWith(
+              new RequestParams({ file: 'fileId', onlyTextReferences: true, sharedId: 'id' })
+            );
             expect(store.getActions()).toEqual(expectedActions);
           })
           .then(done)

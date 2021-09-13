@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import rison from 'rison-node';
-
-import CustomComponents from './components';
+import { Translate } from 'app/I18N';
+import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
 import CustomHookComponents from './CustomHooks';
 
 import markdownToReact from './markdownToReact';
@@ -13,7 +13,11 @@ class MarkdownViewer extends Component {
       <p key={index} className="error">
         <br />
         <strong>
-          <i>Custom component markup error: unsuported values! Please check your configuration</i>
+          <i>
+            <Translate translationKey="Custom component error">
+              Custom component markup error: unsuported values! Please check your configuration
+            </Translate>
+          </i>
         </strong>
         <br />
         {message}
@@ -39,15 +43,15 @@ class MarkdownViewer extends Component {
     }
 
     if (type === 'link') {
-      result = <CustomComponents.MarkdownLink {...rison.decode(config)} key={index} />;
+      result = <MarkdownLink {...rison.decode(config)} key={index} />;
     }
 
     if (type === 'searchbox') {
-      result = <CustomComponents.SearchBox {...rison.decode(config)} key={index} />;
+      result = <SearchBox {...rison.decode(config)} key={index} />;
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {
-      result = <CustomComponents.MarkdownMedia key={index} config={config} compact={compact} />;
+      result = <MarkdownMedia key={index} config={config} compact={compact} />;
     }
 
     if (type === 'customhook') {
@@ -58,7 +62,7 @@ class MarkdownViewer extends Component {
 
   customComponent(type, config, index, children) {
     try {
-      if (typeof type === 'function') {
+      if (typeof type === 'function' || typeof type === 'object') {
         const Element = type;
         return (
           <Element {...config} key={index}>
@@ -80,7 +84,7 @@ class MarkdownViewer extends Component {
   list(_config, index) {
     const listData = this.props.lists[this.renderedLists] || {};
     const output = (
-      <CustomComponents.ItemList
+      <ItemList
         key={index}
         link={`/library/${listData.params}`}
         items={listData.items}

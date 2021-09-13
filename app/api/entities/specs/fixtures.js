@@ -525,7 +525,13 @@ export default {
       _id: templateWithEntityAsThesauri2,
       name: 'template_with_thesauri_as_template',
       properties: [
-        { _id: db.id(), type: 'relationship', name: 'select2', content: templateId.toString() },
+        {
+          _id: db.id(),
+          type: 'relationship',
+          name: 'select2',
+          content: templateId.toString(),
+          relationType: relationType1,
+        },
         {
           _id: db.id(),
           type: 'relationship',

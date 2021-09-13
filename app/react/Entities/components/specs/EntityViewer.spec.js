@@ -45,14 +45,6 @@ describe('EntityViewer', () => {
           ],
         },
       ]),
-      hubs: Immutable.fromJS([
-        {
-          hub: '1',
-          rightRelationships: [
-            { template: 'g1', relationships: [{ entityData: { template: 't1' } }] },
-          ],
-        },
-      ]),
       deleteConnection: jasmine.createSpy('deleteConnection'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
       deleteEntity: jasmine.createSpy('deleteEntity'),
@@ -80,9 +72,6 @@ describe('EntityViewer', () => {
     render();
     const connectionsGroupsComponent = component.find(ConnectionsGroups);
     expect(connectionsGroupsComponent.length).toBe(1);
-    const { connectionsGroups } = connectionsGroupsComponent.props();
-    expect(connectionsGroups.size).toEqual(1);
-    expect(connectionsGroups.get(0).get('key')).toEqual('g1');
   });
 
   it('should render the ConnectionsList passing deleteConnection as prop', () => {

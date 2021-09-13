@@ -3,8 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { t } from 'app/I18N';
 
-import Pie from './Pie';
-import Bar from './Bar';
+import { Pie, Bar } from 'app/Charts';
 
 export class LibraryChartComponent extends Component {
   constructor(props) {

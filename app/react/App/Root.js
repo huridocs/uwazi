@@ -19,7 +19,7 @@ const determineHotAssets = query => ({
 });
 
 const determineAssets = (assets, languageData) => ({
-  JS: [assets['pdfjs-dist'].js, assets.nprogress.js, assets.vendor.js, assets.main.js],
+  JS: [assets.nprogress.js, assets.vendor.js, assets.main.js],
   CSS: [
     assets.vendor.css[languageData.rtl ? 1 : 0],
     assets.main.css[languageData.rtl ? 1 : 0],

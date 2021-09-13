@@ -4,6 +4,7 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DropTarget } from 'react-dnd';
 import ID from 'shared/uniqueID';
+import { Translate } from 'app/I18N';
 import DragAndDropItem from './DragAndDropItem';
 
 export class DragAndDropContainer extends Component {
@@ -64,7 +65,9 @@ export class DragAndDropContainer extends Component {
               </DragAndDropItem>
             ))}
             <div className="no-properties">
-              <div className="no-properties-wrap">Drag items here</div>
+              <div className="no-properties-wrap">
+                <Translate>Drag items here</Translate>
+              </div>
             </div>
           </ul>
         )}

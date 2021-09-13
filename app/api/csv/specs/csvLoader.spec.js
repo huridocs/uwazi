@@ -5,7 +5,8 @@ import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
 
-import { CSVLoader } from '../csvLoader';
+import { CSVLoader } from 'api/csv';
+import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
@@ -151,6 +152,7 @@ describe('csvLoader', () => {
         'not_defined_type',
         'geolocation_geolocation',
         'auto_id',
+        'additional_tag(s)',
       ]);
     });
 
@@ -170,6 +172,11 @@ describe('csvLoader', () => {
 
         const thesauriValues = imported.map(i => i.metadata.select_label[0].label);
         expect(thesauriValues).toEqual(['thesauri1', 'thesauri2', 'thesauri2']);
+      });
+
+      it('should import properties that contains parentheses in the name', () => {
+        const additionalTags = imported.map(i => i.metadata['additional_tag(s)'][0].value);
+        expect(additionalTags).toEqual(['tag1', 'tag2', 'tag3']);
       });
 
       describe('when parser not defined', () => {
@@ -298,6 +305,54 @@ describe('csvLoader', () => {
         language: 'en',
       });
       expect(expected.title).toBe('new title');
+    });
+  });
+
+  describe('when the title is not provided', () => {
+    describe('title not marked with generated Id option', () => {
+      it('should throw a validation error', async () => {
+        const csv = `title , numeric label
+                       , 10
+                 title2, 10`;
+        const testingLoader = new CSVLoader();
+
+        try {
+          await testingLoader.load(stream(csv), template1Id, { language: 'en' });
+        } catch (e) {
+          expect(e.message).toEqual('validation failed');
+          expect(e.errors[0].dataPath).toEqual('.title');
+        }
+      });
+    });
+    describe('title marked with generated Id option', () => {
+      it('should set a generatedId as the title if a value is not provided', async () => {
+        const csv = `title , numeric label
+                       , 10
+                 title2, 10`;
+        const testingLoader = new CSVLoader();
+
+        await testingLoader.load(stream(csv), templateWithGeneratedTitle, { language: 'en' });
+        const result = await entities.get({
+          'metadata.numeric_label.value': 10,
+          language: 'en',
+        });
+        expect(result[0].title).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
+        expect(result[1].title).toBe('title2');
+      });
+      it('should set a generatedId as the title if column is not provided', async () => {
+        const csv = `numeric label
+                     20
+                     22`;
+        const testingLoader = new CSVLoader();
+        await testingLoader.load(stream(csv), templateWithGeneratedTitle, { language: 'en' });
+        const result = await entities.get({
+          'metadata.numeric_label.value': { $in: [20, 22] },
+          language: 'en',
+        });
+        expect(result[0].title).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
+        expect(result[1].title).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
+        expect(result[0].title !== result[1].title);
+      });
     });
   });
 });

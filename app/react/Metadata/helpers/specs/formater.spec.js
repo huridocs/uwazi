@@ -53,7 +53,8 @@ describe('metadata formater', () => {
         doc,
         templates,
         metadataSelectors.indexedThesaurus({ thesauris }),
-        relationships
+        relationships,
+        { sortedProperties: [] }
       );
       [
         text,
@@ -214,8 +215,80 @@ describe('metadata formater', () => {
         };
 
         expect(() =>
-          formater.prepareMetadata(emptyDoc, templates, thesauris, relationships)
+          formater.prepareMetadata(emptyDoc, templates, thesauris, relationships, {
+            sortedProperties: [],
+          })
         ).not.toThrow();
+      });
+
+      it('should not format as undefined value when there is no inherited value', () => {
+        const docWithEmptyInherited = {
+          _id: 'languageSpecificId',
+          template: 'templateID',
+          title: 'Rude awakening',
+          metadata: {
+            relationship3: [
+              {
+                value: 'value1',
+                label: 'Value 1',
+                inheritedValue: [],
+              },
+              {
+                value: 'value2',
+                label: 'Value 2',
+                inheritedValue: [{ value: 'this one has a value' }],
+              },
+            ],
+          },
+        };
+
+        const formatted = formater.prepareMetadata(
+          docWithEmptyInherited,
+          templates,
+          thesauris,
+          relationships,
+          { sortedProperties: [] }
+        );
+
+        expect(
+          formatted.metadata.find(m => m.name === 'relationship3').value.includes(undefined)
+        ).toBe(false);
+      });
+
+      it('should not include empty inherited values', () => {
+        const docWithInheritedEmptyValue = {
+          _id: 'languageSpecificId',
+          template: 'templateID',
+          title: 'Rude awakening',
+          metadata: {
+            relationship3: [
+              {
+                value: 'value1',
+                label: 'Value 1',
+                inheritedValue: [{ value: '' }],
+              },
+              {
+                value: 'value2',
+                label: 'Value 2',
+                inheritedValue: [{ value: 'this one has a value' }],
+              },
+            ],
+          },
+        };
+
+        const formatted = formater.prepareMetadata(
+          docWithInheritedEmptyValue,
+          templates,
+          thesauris,
+          relationships,
+          { sortedProperties: [] }
+        );
+
+        expect(formatted.metadata.find(m => m.name === 'relationship3').value.length).toBe(1);
+
+        expect(formatted.metadata.find(m => m.name === 'relationship3').value[0]).toMatchObject({
+          value: 'this one has a value',
+        });
       });
 
       it('should append the translated entity title to certain values', () => {
@@ -275,7 +348,9 @@ describe('metadata formater', () => {
       docCopy.metadata.link = null;
 
       expect(() =>
-        formater.prepareMetadata(docCopy, templates, thesauris, relationships)
+        formater.prepareMetadata(docCopy, templates, thesauris, relationships, {
+          sortedProperties: [],
+        })
       ).not.toThrow();
     });
 
@@ -327,7 +402,8 @@ describe('metadata formater', () => {
         adaptedEntity,
         templates,
         thesauris,
-        relationships
+        relationships,
+        { sortedProperties: [] }
       );
 
       const previewField = formatted.metadata.find(field => field.name === 'preview');
@@ -341,7 +417,7 @@ describe('metadata formater', () => {
         templates,
         metadataSelectors.indexedThesaurus({ thesauris }),
         relationships,
-        { excludePreview: true }
+        { excludePreview: true, sortedProperties: [] }
       );
 
       const previewField = formatted.metadata.find(field => field.name === 'preview');

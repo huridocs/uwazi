@@ -1271,7 +1271,6 @@ describe('entities', () => {
         }
         return Promise.resolve();
       });
-
       await entities.saveMultiple([{ _id: docId1, file: {} }]);
 
       await entities.addLanguage('ab', 2);

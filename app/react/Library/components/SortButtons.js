@@ -12,7 +12,7 @@ export class SortButtons extends Component {
   static orderDirectionLabel(propertyType, order = 'asc') {
     let label = order === 'asc' ? 'A-Z' : 'Z-A';
     if (propertyType === 'date') {
-      label = order === 'asc' ? t('System', 'Least recently') : t('System', 'Recently');
+      label = order === 'asc' ? t('System', 'Oldest') : t('System', 'Newest');
     }
 
     if (propertyType === 'numeric') {

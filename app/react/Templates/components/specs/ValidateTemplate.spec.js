@@ -64,7 +64,7 @@ describe('ValidateTemplate', () => {
       ];
     });
 
-    it('should not allow 2 relationships that are equaly configured', () => {
+    it('should allow 2 relationships that have same type same content', () => {
       const prop = {
         localID: 'local1',
         label: 'Label1',
@@ -73,7 +73,7 @@ describe('ValidateTemplate', () => {
         content: '1',
       };
       template.push(prop);
-      expect(validateDuplicatedRelationship(prop, template)).toBe(false);
+      expect(validateDuplicatedRelationship(prop, template)).toBe(true);
     });
 
     it('should not allow 2 relationships with same relationType and one with any template configured', () => {

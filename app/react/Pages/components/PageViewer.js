@@ -6,15 +6,13 @@ import React, { Component } from 'react';
 
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
-import MDComponents from 'app/Markdown/components';
+import { Context } from 'app/Markdown/components';
 import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { parseRenderingError } from 'app/App/ErrorHandling/ErrorUtils';
 import Script from './Script';
-
-const { Context } = MDComponents;
 
 const parseSSRError = error => {
   const SSRError = error instanceof Immutable.Map ? error.toJS() : error;

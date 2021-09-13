@@ -11,6 +11,7 @@ import { ensure } from 'shared/tsUtils';
 
 import { attachmentsPath, files } from 'api/files';
 import { propertyTypes } from 'shared/propertyTypes';
+import { generateID } from 'shared/IDGenerator';
 import typeParsers from './typeParsers';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
@@ -39,12 +40,22 @@ const toMetadata = async (
 const currentEntityIdentifiers = async (sharedId: string, language: string) =>
   sharedId ? entities.get({ sharedId, language }, '_id sharedId').then(([e]) => e) : {};
 
+const titleByTemplate = (template: TemplateSchema, entity: RawEntity) => {
+  const generatedTitle =
+    !entity.title &&
+    template.commonProperties?.find(property => property.name === 'title' && property.generatedId);
+  if (generatedTitle) {
+    return generateID(3, 4, 4);
+  }
+  return entity.title;
+};
+
 const entityObject = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
   { language }: Options
 ) => ({
-  title: toImportEntity.title,
+  title: titleByTemplate(template, toImportEntity),
   template: template._id,
   metadata: await toMetadata(template, toImportEntity),
   ...(await currentEntityIdentifiers(toImportEntity.id, language)),

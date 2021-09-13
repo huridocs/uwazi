@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
 
+import Tip from 'app/Layout/Tip';
+import PropertyConfigOption from 'app/Templates/components/PropertyConfigOption';
+import { Translate } from 'app/I18N';
 import PrioritySortingLabel from './PrioritySortingLabel';
 
 export class FormConfigCommon extends Component {
@@ -24,7 +27,9 @@ export class FormConfigCommon extends Component {
 
     return (
       <div className={labelClass}>
-        <label htmlFor={`label${index}`}>Name</label>
+        <label htmlFor={`label${index}`}>
+          <Translate>Name</Translate>
+        </label>
         <Field model={`template.data.commonProperties[${this.getZeroIndex()}].label`}>
           <input id={`label${index}`} className="form-control" />
         </Field>
@@ -44,6 +49,16 @@ export class FormConfigCommon extends Component {
           &nbsp;
           <PrioritySortingLabel htmlFor={`prioritySorting${index}`} />
         </Field>
+        {property.name === 'title' && (
+          <PropertyConfigOption
+            label="Generated ID"
+            model={`template.data.commonProperties[${this.getZeroIndex()}].generatedId`}
+          >
+            <Tip>
+              <Translate>A generated ID will be the default title.</Translate>
+            </Tip>
+          </PropertyConfigOption>
+        )}
       </div>
     );
   }

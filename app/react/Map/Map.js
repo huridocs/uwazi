@@ -7,6 +7,7 @@ import Supercluster from 'supercluster'; //eslint-disable-line
 import settingsAPI from 'app/Settings/SettingsAPI';
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
+import { Translate } from 'app/I18N';
 
 setRTLTextPlugin(
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
@@ -385,7 +386,9 @@ export default class Map extends Component {
             {this.renderControls()}
             <span className="mapbox-help">
               <Icon icon="question-circle" />
-              <span className="mapbox-tooltip">Hold shift to rotate the map</span>
+              <span className="mapbox-tooltip">
+                <Translate>Hold shift to rotate the map</Translate>
+              </span>
             </span>
           </ReactMapGL>
         )}

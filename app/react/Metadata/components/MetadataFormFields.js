@@ -1,15 +1,17 @@
 import { FormGroup } from 'app/Forms';
-import t from 'app/I18N/t';
+import { t, Translate } from 'app/I18N';
 import { preloadOptionsLimit } from 'shared/config';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field } from 'react-redux-form';
+import { Field, actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
-import { Translate } from 'app/I18N';
 import { generateID } from 'shared/IDGenerator';
+import { bindActionCreators } from 'redux';
+import Tip from 'app/Layout/Tip';
+
 import {
   DatePicker,
   DateRange,
@@ -28,6 +30,7 @@ import {
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
+import { MetadataExtractor } from './MetadataExtractor';
 
 export const translateOptions = thesauri =>
   thesauri
@@ -44,6 +47,31 @@ export const translateOptions = thesauri =>
       return option;
     })
     .toJS();
+
+const groupSameRelationshipFields = fields =>
+  fields
+    .map(field => {
+      if (field.type !== 'relationship') {
+        return field;
+      }
+
+      const multiEditingRelationshipFields = fields.filter(
+        f =>
+          f.content === field.content &&
+          f.relationType === field.relationType &&
+          f._id !== field._id
+      );
+
+      if (multiEditingRelationshipFields.length) {
+        return {
+          ...field,
+          multiEditingRelationshipFields,
+        };
+      }
+
+      return field;
+    })
+    .filter(f => f);
 
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
@@ -120,6 +148,7 @@ export class MetadataFormFields extends Component {
             options={thesauri}
             totalPossibleOptions={totalPossibleOptions}
             prefix={_model}
+            onChange={this.relationshipChange.bind(this, property)}
             sort
           />
         );
@@ -152,7 +181,9 @@ export class MetadataFormFields extends Component {
       case 'preview':
         return (
           <div>
-            <em>This content is automatically generated</em>
+            <em>
+              <Translate>This content is automatically generated</Translate>
+            </em>
           </div>
         );
       case 'generatedid':
@@ -176,16 +207,68 @@ export class MetadataFormFields extends Component {
     }
   }
 
+  relationshipChange(prop, value) {
+    const { change, model } = this.props;
+    prop.multiEditingRelationshipFields?.forEach(p => {
+      change(`${model}.metadata.${p.name}`, value);
+    });
+  }
+
+  renderLabel(property) {
+    const { template, multipleEdition, model } = this.props;
+    const templateID = template.get('_id');
+    let label = templateID ? (
+      <Translate context={templateID}>{property.label}</Translate>
+    ) : (
+      property.label
+    );
+
+    if (property.multiEditingRelationshipFields) {
+      label = (
+        <>
+          <Translate context={templateID}>{property.label}</Translate>
+          &nbsp;(<Translate>affects</Translate>&nbsp;
+          {property.multiEditingRelationshipFields.map(p => (
+            <span key={p._id}>
+              &quot;<Translate context={templateID}>{p.label}</Translate>&quot;&nbsp;
+            </span>
+          ))}
+          )
+          <Tip icon="info-circle" position="right">
+            <p>
+              <Translate translationKey="Multiple relationships edit description">
+                Making changes to this property will affect other properties on this template
+                because they all share relationships with the same configuration.
+              </Translate>
+            </p>
+          </Tip>
+        </>
+      );
+    }
+
+    return (
+      <li className="title">
+        <label>
+          <MultipleEditionFieldWarning
+            multipleEdition={multipleEdition}
+            model={model}
+            field={`metadata.${property.name}`}
+          />
+          {label}
+          {property.required ? <span className="required">*</span> : ''}
+        </label>
+      </li>
+    );
+  }
+
   render() {
-    const { thesauris, template, multipleEdition, model, showSubset } = this.props;
+    const { thesauris, template, model, showSubset, storeKey } = this.props;
 
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
       .map(thes => thes.get('_id'))
       .toJS();
-    const fields = template.get('properties').toJS();
-    const templateID = template.get('_id');
-
+    const fields = groupSameRelationshipFields(template.get('properties').toJS());
     return (
       <div>
         {fields
@@ -205,21 +288,7 @@ export class MetadataFormFields extends Component {
                   this.props.highlightedProps.includes(property.name) ? 'highlight' : ''
                 }`}
               >
-                <li className="title">
-                  <label>
-                    <MultipleEditionFieldWarning
-                      multipleEdition={multipleEdition}
-                      model={model}
-                      field={`metadata.${property.name}`}
-                    />
-                    {templateID ? (
-                      <Translate context={templateID}>{property.label}</Translate>
-                    ) : (
-                      property.label
-                    )}
-                    {property.required ? <span className="required">*</span> : ''}
-                  </label>
-                </li>
+                {this.renderLabel(property)}
                 {mlThesauri.includes(property.content) &&
                 [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
                   <li className="wide">
@@ -231,7 +300,18 @@ export class MetadataFormFields extends Component {
                   </li>
                 ) : null}
                 <li className="wide">
-                  {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
+                  <div className="metadata-extractor-container">
+                    {storeKey === 'documentViewer' &&
+                      ['text', 'date', 'numeric', 'markdown'].includes(property.type) && (
+                        <MetadataExtractor
+                          fieldName={property.name}
+                          fieldId={property._id}
+                          fieldType={property.type}
+                          model={`${model}.metadata.${property.name}`}
+                        />
+                      )}
+                    {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
+                  </div>
                 </li>
               </ul>
             </FormGroup>
@@ -255,6 +335,7 @@ MetadataFormFields.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
+  storeKey: PropTypes.string.isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
@@ -262,6 +343,7 @@ MetadataFormFields.propTypes = {
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   attachments: PropTypes.instanceOf(Immutable.List),
+  change: PropTypes.func.isRequired,
 };
 
 export const mapStateToProps = (state, ownProps) => {
@@ -291,4 +373,8 @@ export const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(MetadataFormFields);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ change: formActions.change }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);

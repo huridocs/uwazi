@@ -85,16 +85,10 @@ Immutable.List [
 `;
 
 exports[`MapView render() should render a map 1`] = `
-<Map
-  autoCenter={true}
+<ForwardRef
   clickOnCluster={[Function]}
   clickOnMarker={[Function]}
   cluster={true}
-  height={null}
-  hoverOnMarker={[Function]}
-  interactiveLayerIds={Array []}
-  latitude={null}
-  longitude={null}
   markers={
     Array [
       Object {
@@ -102,12 +96,7 @@ exports[`MapView render() should render a map 1`] = `
       },
     ]
   }
-  onClick={[Function]}
-  renderMarker={null}
   renderPopupInfo={[Function]}
-  scrollZoom={true}
-  showControls={false}
-  width={null}
   zoom={1}
 />
 `;

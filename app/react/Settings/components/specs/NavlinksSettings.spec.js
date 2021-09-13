@@ -52,7 +52,7 @@ describe('NavlinksSettings', () => {
     component = shallow(<NavlinksSettings {...props} />);
     expect(
       component
-        .find('button')
+        .find('button[type="submit"]')
         .first()
         .props().disabled
     ).toBe(true);
@@ -82,10 +82,11 @@ describe('NavlinksSettings', () => {
 
   it('should have an add button that calls on addLink with links', () => {
     component
-      .find('a.btn-primary')
+      .find('.menu-link-group-button')
+      .first()
       .props()
       .onClick();
-    expect(props.addLink).toHaveBeenCalledWith(props.links);
+    expect(props.addLink).toHaveBeenCalledWith(props.links, 'link');
   });
 
   describe('mapStateToProps', () => {

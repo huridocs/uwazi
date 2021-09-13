@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -13,14 +11,15 @@ export default class Numeric extends Component {
   }
 
   render() {
-    const { value } = this.props;
+    const { value = '' } = this.props;
+    const sanitizeValue = value !== null ? value : '';
     return (
       <input
         type="number"
         step="any"
         className="form-control"
         onChange={this.onChange.bind(this)}
-        value={value}
+        value={sanitizeValue}
       />
     );
   }
@@ -32,5 +31,5 @@ Numeric.defaultProps = {
 
 Numeric.propTypes = {
   onChange: PropTypes.func.isRequired,
-  value: PropTypes.any,
+  value: PropTypes.oneOf([PropTypes.number, PropTypes.undefined, PropTypes.string]),
 };

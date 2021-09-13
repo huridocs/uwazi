@@ -13,6 +13,7 @@ Array [
       "_id": "abc2",
       "commonProperties": Array [
         Object {
+          "generatedId": false,
           "isCommonProperty": true,
           "label": "Title",
           "localID": "commonTitle",
