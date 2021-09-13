@@ -1,4 +1,4 @@
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
 import { LibrarySidePanelButtons } from '../LibrarySidePanelButtons';
 
