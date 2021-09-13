@@ -14,8 +14,9 @@ describe('Switcher', () => {
     };
   });
 
-  const render = () => {
-    component = shallow(<Switcher {...props} />);
+  const render = (customProps: Partial<SwitcherProps> = {}) => {
+    const componentProps = {...props, ...customProps}
+    component = shallow(<Switcher {...componentProps} />);
   };
 
   it('should render an input with the value and prefix passed', () => {
@@ -35,4 +36,13 @@ describe('Switcher', () => {
       expect(props.onChange).toHaveBeenCalledWith(false);
     });
   });
+  
+  
+  it('should receive alternative labels for values', ()=>{
+    render({leftLabel:'ALL', rightLabel: 'NONE'});
+    const label = component.find('span');
+    expect(label.at(0).props().children).toEqual('ALL');
+    expect(label.at(1).props().children).toEqual('NONE');
+  })
+  
 });

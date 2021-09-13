@@ -5,24 +5,32 @@ export interface SwitcherProps {
   onChange: (checked: boolean) => {};
   value: boolean;
   prefix: string;
+  leftLabel?: string;
+  rightLabel?: string;
 }
 
-const Switcher = (props: SwitcherProps) => {
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    props.onChange(e.target.checked);
+const Switcher = ({
+  onChange,
+  value,
+  prefix,
+  leftLabel = 'Filters AND operator',
+  rightLabel = 'Filters OR operator',
+}: SwitcherProps) => {
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.checked);
   };
 
   return (
     <div className="switcher-wrapper">
-      <span className={props.value ? 'is-active' : ''}>{t('System', 'Filters AND operator')}</span>
+      <span className={value ? 'is-active' : ''}>{t('System', leftLabel)}</span>
       <input
-        id={`${props.prefix}switcher`}
+        id={`${prefix}switcher`}
         type="checkbox"
-        checked={props.value || false}
-        onChange={onChange}
+        checked={value || false}
+        onChange={onChangeHandler}
       />
-      <label htmlFor={`${props.prefix}switcher`} className="switcher" />
-      <span className={props.value ? '' : 'is-active'}>{t('System', 'Filters OR operator')}</span>
+      <label htmlFor={`${prefix}switcher`} className="switcher" />
+      <span className={value ? '' : 'is-active'}>{t('System', rightLabel)}</span>
     </div>
   );
 };
