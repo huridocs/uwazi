@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import Footer from 'app/App/Footer';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 
 describe('Footer', () => {
   describe('Default library view', () => {
