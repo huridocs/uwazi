@@ -1,11 +1,10 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-
-import Switcher from '../Switcher';
+import { shallow, ShallowWrapper } from 'enzyme';
+import Switcher, { SwitcherProps } from '../Switcher';
 
 describe('Switcher', () => {
-  let component;
-  let props;
+  let component: ShallowWrapper<typeof Switcher>;
+  let props: SwitcherProps;
 
   beforeEach(() => {
     props = {
