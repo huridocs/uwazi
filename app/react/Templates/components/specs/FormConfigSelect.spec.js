@@ -5,7 +5,7 @@ import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 import { Select } from 'app/ReactReduxForms';
 import { Warning } from 'app/Layout';
 
-import { renderConnected } from '../../specs/utils/renderConnected.tsx';
+import { renderConnected } from '../../../utils/test/renderConnected.tsx';
 
 describe('FormConfigSelect', () => {
   let thesauris;
