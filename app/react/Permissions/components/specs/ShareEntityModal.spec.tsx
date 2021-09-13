@@ -4,7 +4,7 @@ import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import * as api from 'app/Permissions/PermissionsAPI';
 import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
