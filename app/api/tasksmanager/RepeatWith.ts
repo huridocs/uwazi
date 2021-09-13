@@ -17,21 +17,32 @@ export class RepeatWith {
 
   private delayTimeBetweenTasks: number;
 
+  private retryDelay: number;
+
+  private id: string;
+
   constructor(
     lockName: string,
     task: () => void,
-    maxLockTime: number = 10000,
-    delayTimeBetweenTasks = 0
+    maxLockTime: number = 2000,
+    delayTimeBetweenTasks: number = 0,
+    retryDelay: number = 200,
+    id: string
   ) {
     this.maxLockTime = maxLockTime;
+    this.retryDelay = retryDelay;
     this.delayTimeBetweenTasks = delayTimeBetweenTasks;
     this.lockName = `locks:${lockName}`;
     this.task = task;
+    this.id = id;
   }
 
   async start() {
     this.redisClient = await Redis.createClient('redis://localhost:6379');
-    this.redlock = await new Redlock([this.redisClient], { retryJitter: 0, retryDelay: 20 });
+    this.redlock = await new Redlock([this.redisClient], {
+      retryJitter: 0,
+      retryDelay: this.retryDelay,
+    });
 
     this.redisClient.on('error', async error => {
       if (error.code !== 'ECONNREFUSED') {
@@ -39,11 +50,18 @@ export class RepeatWith {
       }
     });
 
-    this.redlock.on('error', err => {
-      console.error('A redis error has occurred:', err);
-    });
-
     this.lockTask();
+  }
+
+  async runTask() {
+    try {
+      await this.task();
+    } catch (error) {
+      handleError(error);
+    }
+    await new Promise(resolve => {
+      setTimeout(resolve, this.delayTimeBetweenTasks);
+    });
   }
 
   async stop() {
@@ -51,28 +69,30 @@ export class RepeatWith {
       this.stopTask = resolve;
     });
 
+    console.log('shutting down', this.id);
     await this.redlock?.quit();
     await this.redisClient?.end(true);
+    console.log('==');
   }
 
   async lockTask() {
     try {
-      const lock = await this.redlock!.lock(this.lockName, this.maxLockTime + this.delayTimeBetweenTasks);
+      const lock = await this.redlock!.lock(
+        this.lockName,
+        this.maxLockTime + this.delayTimeBetweenTasks
+      );
+
+      console.log('locked!', this.id);
 
       if (this.stopTask) {
-        await lock.unlock();
         this.stopTask(true);
+        console.log('releasing because of stop', this.id);
+        await lock.unlock();
         return;
       }
 
-      try {
-        await this.task();
-      } catch (error) {
-        handleError(error);
-      }
-      await new Promise(resolve => {
-        setTimeout(resolve, this.delayTimeBetweenTasks);
-      });
+      await this.runTask();
+      console.log('releasing because of finished', this.id);
       await lock.unlock();
     } catch (error) {
       if (error && error.name !== 'LockError') {
