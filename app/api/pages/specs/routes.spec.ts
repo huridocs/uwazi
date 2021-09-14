@@ -7,13 +7,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import pagesRoutes from '../routes';
 import { fixtures } from './fixtures';
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 const getUser = () => ({ _username: 'user 1', role: 'admin' });
 
 const app: Application = setUpApp(pagesRoutes, (req, _res, next) => {

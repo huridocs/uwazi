@@ -1,9 +1,11 @@
 /* eslint-disable global-require */
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
+import headersMiddleware from './auth/headersMiddleware';
 import languageMiddleware from './utils/languageMiddleware';
 
 export default (app, server) => {
   //common middlewares
+  app.use(headersMiddleware);
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 

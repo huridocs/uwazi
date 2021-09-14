@@ -3,7 +3,6 @@ import Ajv from 'ajv';
 import relationships from './relationships.js';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
-import headersMiddleware from '../auth/headersMiddleware';
 
 export default app => {
   app.post(
@@ -30,7 +29,6 @@ export default app => {
 
   app.post(
     '/api/references',
-    headersMiddleware,
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest(
       Joi.object()
@@ -60,7 +58,6 @@ export default app => {
 
   app.delete(
     '/api/references',
-    headersMiddleware,
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest(
       Joi.object()

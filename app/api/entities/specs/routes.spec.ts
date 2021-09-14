@@ -17,13 +17,6 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 describe('entities routes', () => {
   const user = {
     _id: db.id(),

@@ -19,13 +19,6 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 describe('Settings routes', () => {
   const app: Application = setUpApp(settingsRoutes);
 

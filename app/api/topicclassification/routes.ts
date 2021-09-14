@@ -11,7 +11,6 @@ import {
 import { validation } from 'api/utils';
 import { Application, Request, Response } from 'express';
 import { TaskStatus } from '../../shared/tasks/tasks';
-import headersMiddleware from '../auth/headersMiddleware';
 
 // Register tasks.
 require('./sync');
@@ -22,7 +21,6 @@ const tcModelPrefix = `/api/${CLASSIFIER_MODELS_ENDPOINT}`;
 export default (app: Application) => {
   app.get(
     tcModelPrefix,
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest({
       required: ['query'],
@@ -71,7 +69,6 @@ export default (app: Application) => {
 
   app.post(
     `${tcModelPrefix}/train`,
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest({
       required: ['body'],

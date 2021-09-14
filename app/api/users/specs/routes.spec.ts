@@ -16,13 +16,6 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 const invalidUserProperties = [
   { field: 'username', value: undefined, dataPath: '.body', keyword: 'required' },
   { field: 'email', value: undefined, dataPath: '.body', keyword: 'required' },

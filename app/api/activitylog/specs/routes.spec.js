@@ -11,10 +11,6 @@ jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();
 });
 
-jest.mock('../../auth/headersMiddleware.ts', () => (_req, _res, next) => {
-  next();
-});
-
 describe('Activitylog routes', () => {
   let currentUser;
 

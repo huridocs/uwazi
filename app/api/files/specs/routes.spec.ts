@@ -17,13 +17,6 @@ import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 describe('files routes', () => {
   const app: Application = setUpApp(
     uploadRoutes,

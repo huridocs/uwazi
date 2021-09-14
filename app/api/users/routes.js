@@ -2,13 +2,11 @@ import { validation } from 'api/utils';
 import { userSchema } from 'shared/types/userSchema';
 import needsAuthorization from '../auth/authMiddleware';
 import users from './users';
-import headersMiddleware from '../auth/headersMiddleware';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
 export default app => {
   app.post(
     '/api/users',
-    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',
@@ -28,7 +26,6 @@ export default app => {
 
   app.post(
     '/api/users/new',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest({
       type: 'object',
@@ -125,7 +122,6 @@ export default app => {
 
   app.delete(
     '/api/users',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest({
       properties: {

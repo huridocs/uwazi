@@ -2,12 +2,10 @@ import Joi from 'joi';
 import relationtypes from 'api/relationtypes/relationtypes';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
-import headersMiddleware from '../auth/headersMiddleware';
 
 export default app => {
   app.post(
     '/api/relationtypes',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()
@@ -68,7 +66,6 @@ export default app => {
 
   app.delete(
     '/api/relationtypes',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()

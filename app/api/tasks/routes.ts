@@ -5,7 +5,6 @@ import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { Application, Request, Response } from 'express';
 import { TaskProvider } from 'shared/tasks/tasks';
-import headersMiddleware from '../auth/headersMiddleware';
 
 export const TASKS_ENDPOINT = 'tasks';
 const tasksPrefix = `/api/${TASKS_ENDPOINT}`;
@@ -34,7 +33,6 @@ export default (app: Application) => {
 
   app.post(
     tasksPrefix,
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest({
       required: ['query', 'body'],

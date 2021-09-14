@@ -15,13 +15,6 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 describe('permissions routes', () => {
   let user: { username: string; role: string } | undefined;
 

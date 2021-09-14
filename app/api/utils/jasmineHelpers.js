@@ -2,9 +2,7 @@
 
 const assessStatus = routeResult => {
   let status;
-  const req = {
-    get: () => '',
-  };
+  const req = {};
   const next = () => {};
   const res = {
     status: code => {

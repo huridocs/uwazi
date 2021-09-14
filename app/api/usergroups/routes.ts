@@ -3,7 +3,6 @@ import { needsAuthorization } from 'api/auth';
 import { userGroupSchema } from 'shared/types/userGroupSchema';
 import { validation } from 'api/utils';
 import userGroups from './userGroups';
-import headersMiddleware from '../auth/headersMiddleware';
 
 export default (app: Application) => {
   app.get(
@@ -21,7 +20,6 @@ export default (app: Application) => {
 
   app.post(
     '/api/usergroups',
-    headersMiddleware,
     needsAuthorization(['admin']),
     validation.validateRequest({
       type: 'object',
@@ -41,7 +39,6 @@ export default (app: Application) => {
 
   app.delete(
     '/api/usergroups',
-    headersMiddleware,
     needsAuthorization(['admin']),
     validation.validateRequest({
       properties: {

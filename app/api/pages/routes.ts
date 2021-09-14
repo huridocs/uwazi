@@ -3,14 +3,12 @@ import { Application } from 'express';
 
 import { PageSchema } from 'shared/types/pageSchema';
 import { validation } from 'api/utils';
-import headersMiddleware from '../auth/headersMiddleware';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
 
 export default (app: Application) => {
   app.post(
     '/api/pages',
-    headersMiddleware,
     needsAuthorization(['admin']),
 
     validation.validateRequest({
@@ -71,7 +69,6 @@ export default (app: Application) => {
 
   app.delete(
     '/api/pages',
-    headersMiddleware,
     needsAuthorization(),
 
     validation.validateRequest(

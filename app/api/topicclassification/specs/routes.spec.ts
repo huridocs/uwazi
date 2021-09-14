@@ -16,13 +16,6 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 function fakeGet(url: string, _data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/models/list?filter=undefined-topmovies`) {
     return {

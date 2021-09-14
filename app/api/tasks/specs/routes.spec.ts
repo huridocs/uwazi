@@ -18,13 +18,6 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 class TestTask extends Task {
   protected async run(args: any) {
     if (args.a === 0) {

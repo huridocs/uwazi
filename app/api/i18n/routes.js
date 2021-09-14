@@ -7,7 +7,6 @@ import settings from 'api/settings';
 import entities from 'api/entities';
 import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
-import headersMiddleware from '../auth/headersMiddleware';
 
 import { uploadMiddleware } from 'api/files';
 import needsAuthorization from '../auth/authMiddleware';
@@ -23,7 +22,6 @@ export default app => {
 
   app.post(
     '/api/translations/import',
-    headersMiddleware,
     needsAuthorization(),
     uploadMiddleware(),
     validation.validateRequest({
@@ -52,7 +50,6 @@ export default app => {
 
   app.post(
     '/api/translations',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()
@@ -89,7 +86,6 @@ export default app => {
 
   app.post(
     '/api/translations/setasdeafult',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()
@@ -112,7 +108,6 @@ export default app => {
 
   app.post(
     '/api/translations/languages',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()
@@ -142,7 +137,6 @@ export default app => {
 
   app.delete(
     '/api/translations/languages',
-    headersMiddleware,
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()

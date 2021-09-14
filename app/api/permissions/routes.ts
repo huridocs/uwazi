@@ -4,12 +4,10 @@ import { validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import { permissionsDataSchema } from 'shared/types/permissionSchema';
-import headersMiddleware from '../auth/headersMiddleware';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
     '/api/entities/permissions',
-    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       properties: {
@@ -30,7 +28,6 @@ export const permissionRoutes = (app: Application) => {
 
   app.put(
     '/api/entities/permissions/',
-    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       properties: {
@@ -57,7 +54,6 @@ export const permissionRoutes = (app: Application) => {
 
   app.get(
     '/api/collaborators',
-    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       properties: {

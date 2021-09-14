@@ -3,12 +3,10 @@ import { Application } from 'express';
 import needsAuthorization from 'api/auth/authMiddleware';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { validation } from 'api/utils';
-import headersMiddleware from 'api/auth/headersMiddleware';
 
 export default (app: Application) => {
   app.post(
     '/api/auth2fa-secret',
-    headersMiddleware,
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest(Joi.object().keys({})),
     async (req, res, next) => {
