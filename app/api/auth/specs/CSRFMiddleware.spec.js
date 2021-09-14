@@ -19,10 +19,10 @@ describe('CSRFMiddleware', () => {
 
     CSRFMiddleware(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Unauthorized',
-      message: 'X-Requested-With header was not found!',
+      error: 'Forbidden',
+      message: 'X-Requested-With header was not sent!',
     });
     expect(next).not.toHaveBeenCalled();
   });

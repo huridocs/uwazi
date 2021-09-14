@@ -9,7 +9,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
   }
   res.status(403);
   return res.json({
-    error: 'Unauthorized',
-    message: 'Forbidden: X-Requested-With header was not sent!',
+    error: 'Forbidden',
+    message: 'X-Requested-With header was not sent!',
   });
 };
