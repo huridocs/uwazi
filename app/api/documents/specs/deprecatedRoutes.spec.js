@@ -12,10 +12,6 @@ jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
   next();
 });
 
-jest.mock('../../auth/headersMiddleware.ts', () => (_req, _res, next) => {
-  next();
-});
-
 describe('documents', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);

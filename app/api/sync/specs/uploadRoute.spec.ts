@@ -26,13 +26,6 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/headersMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 describe('sync', () => {
   describe('sync/upload', () => {
     beforeAll(async () => {
