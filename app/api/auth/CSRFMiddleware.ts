@@ -7,6 +7,9 @@ export default (req: Request, res: Response, next: NextFunction) => {
   if (req.get('X-Requested-With') === 'XMLHttpRequest') {
     return next();
   }
-  res.status(401);
-  return res.json({ error: 'Unauthorized', message: 'X-Requested-With header was not found!' });
+  res.status(403);
+  return res.json({
+    error: 'Unauthorized',
+    message: 'Forbidden: X-Requested-With header was not sent!',
+  });
 };

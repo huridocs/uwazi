@@ -1,6 +1,6 @@
-import headersMiddleware from '../headersMiddleware';
+import CSRFMiddleware from '../CSRFMiddleware';
 
-describe('headersMiddleware', () => {
+describe('CSRFMiddleware', () => {
   let req;
   let res;
   let next;
@@ -17,7 +17,7 @@ describe('headersMiddleware', () => {
   it('should return an error when no X-Requested-With header in POST', () => {
     req = { get: () => '', method: 'POST' };
 
-    headersMiddleware(req, res, next);
+    CSRFMiddleware(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
@@ -30,7 +30,7 @@ describe('headersMiddleware', () => {
   it('should not return an error when no X-Requested-With header in GET', () => {
     req = { get: () => '', method: 'GET' };
 
-    headersMiddleware(req, res, next);
+    CSRFMiddleware(req, res, next);
 
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
