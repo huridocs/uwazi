@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Aggregations } from 'shared/types/aggregations';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { fromJS } from 'immutable';
 import { MultiSelect } from 'app/Forms';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import { PermissionsFilter, PermissionsFilterUncontrolled } from '../PermissionsFilter';
 
 describe('Permissions Filter', () => {
