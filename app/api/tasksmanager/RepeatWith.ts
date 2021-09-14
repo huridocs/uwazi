@@ -40,11 +40,11 @@ export class RepeatWith {
   async start() {
     this.redisClient = await Redis.createClient('redis://localhost:6379');
     this.redlock = await new Redlock([this.redisClient], {
-      retryJitter: 25,
+      retryJitter: 0,
       retryDelay: this.retryDelay,
     });
 
-    this.redisClient.on('error', async error => {
+    this.redisClient.on('error', error => {
       if (error.code !== 'ECONNREFUSED') {
         throw error;
       }
@@ -53,9 +53,9 @@ export class RepeatWith {
     this.lockTask();
   }
 
-  async sleepTime(time: number) {
+  async waitBetweenTasks() {
     await new Promise(resolve => {
-      setTimeout(resolve, time);
+      setTimeout(resolve, this.delayTimeBetweenTasks);
     });
   }
 
@@ -66,7 +66,7 @@ export class RepeatWith {
       handleError(error);
     }
 
-    await this.sleepTime(this.delayTimeBetweenTasks);
+    await this.waitBetweenTasks();
   }
 
   async stop() {
@@ -74,31 +74,24 @@ export class RepeatWith {
       this.stopTask = resolve;
     });
 
-    console.log('shutting down', this.id);
     await this.redlock?.quit();
     await this.redisClient?.end(true);
-    console.log('==');
   }
 
-  async lockTask() {
+  async lockTask(): Promise<void> {
     try {
       const lock = await this.redlock!.lock(
         this.lockName,
         this.maxLockTime + this.delayTimeBetweenTasks
       );
 
-      console.log('locked!', this.id);
-
       if (this.stopTask) {
         this.stopTask(true);
-        console.log('releasing because of stop', this.id);
         await lock.unlock();
-        return;
+      } else {
+        await this.runTask();
+        await lock.unlock();
       }
-
-      await this.runTask();
-      console.log('releasing because of finished', this.id);
-      await lock.unlock();
     } catch (error) {
       if (error && error.name !== 'LockError') {
         throw error;
