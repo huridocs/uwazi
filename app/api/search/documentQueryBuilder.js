@@ -2,6 +2,7 @@
 
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { UserRole } from 'shared/types/userSchema';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import {
   propertyToAggregation,
@@ -10,7 +11,6 @@ import {
   publishingStatusAgreggations,
   permissionsUsersAgreggations,
 } from './metadataAggregations';
-import { UserRole } from 'shared/types/userSchema';
 
 const nested = (filters, path) => ({
   nested: {

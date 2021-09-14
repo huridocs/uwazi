@@ -9,6 +9,7 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { checkWritePermissions } from 'shared/permissionsUtils';
 import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
+import { UserRole } from 'shared/types/userSchema';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entities from '../entities';
@@ -16,7 +17,6 @@ import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
-import { UserRole } from 'shared/types/userSchema';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
