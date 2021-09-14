@@ -13,7 +13,6 @@ describe('RepeatWithLock', () => {
   let task;
   let rejectTask;
   let redisServer;
-  let pendingTasks;
 
   beforeAll(async () => {
     redisServer = new RedisServer();
@@ -25,22 +24,15 @@ describe('RepeatWithLock', () => {
   });
 
   beforeEach(async () => {
-    pendingTasks = [];
-    task = jasmine.createSpy('callbackone').and.callFake(() => {
-      console.log('start');
-      return new Promise((resolve, reject) => {
-        pendingTasks.push(resolve);
-        rejectTask = reject;
-        console.log('end');
-        finishTask = () => {
-          resolve();
-        };
-      });
-    });
-  });
-
-  afterEach(() => {
-    pendingTasks.forEach(t => t());
+    task = jasmine.createSpy('callbackone').and.callFake(
+      () =>
+        new Promise((resolve, reject) => {
+          rejectTask = reject;
+          finishTask = () => {
+            resolve();
+          };
+        })
+    );
   });
 
   async function sleepTime(time) {
@@ -72,8 +64,9 @@ describe('RepeatWithLock', () => {
     });
 
     finishTask();
-
     await nodeOne.stop();
+
+    finishTask();
     await nodeTwo.stop();
   });
 
@@ -130,8 +123,8 @@ describe('RepeatWithLock', () => {
   });
 
   it('should handle when a lock fails for too many retries', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20, 'one');
-    const nodeTwo = new RepeatWith('my_locked_task', task, 2000, 0, 20, 'two');
+    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20);
+    const nodeTwo = new RepeatWith('my_locked_task', task, 2000, 0, 20);
 
     await nodeOne.start();
     await nodeTwo.start();
