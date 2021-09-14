@@ -49,7 +49,7 @@ describe('RepeatWithLock', () => {
     });
   }
 
-  fit('should run the task one at a time', async () => {
+  it('should run one task at a time', async () => {
     const nodeOne = new RepeatWith('my_locked_task', task);
     const nodeTwo = new RepeatWith('my_locked_task', task);
     await nodeOne.start();
@@ -77,14 +77,14 @@ describe('RepeatWithLock', () => {
     await nodeTwo.stop();
   });
 
-  fit('should execute task when the redis server is available', async () => {
+  it('should wait until the redis server is available to execute the task', async () => {
     await redisServer.stop();
-    const nodeOne = new RepeatWith('my_locked_task', task);
+    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20);
     await nodeOne.start();
 
-    await waitForExpect(async () => {
-      expect(task).toHaveBeenCalledTimes(0);
-    });
+    await sleepTime(50);
+
+    expect(task).toHaveBeenCalledTimes(0);
 
     await redisServer.start();
 
@@ -103,8 +103,8 @@ describe('RepeatWithLock', () => {
     await nodeOne.stop();
   });
 
-  fit('should continue executing tasks after redis was unavailable for a while', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task);
+  it('should continue executing tasks after redis was unavailable for a while', async () => {
+    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20);
     await nodeOne.start();
 
     await waitForExpect(async () => {
@@ -115,9 +115,8 @@ describe('RepeatWithLock', () => {
 
     finishTask();
 
-    await waitForExpect(async () => {
-      expect(task).toHaveBeenCalledTimes(1);
-    });
+    await sleepTime(50);
+    expect(task).toHaveBeenCalledTimes(1);
 
     await redisServer.start();
 
@@ -130,7 +129,7 @@ describe('RepeatWithLock', () => {
     await nodeOne.stop();
   });
 
-  fit('should handle when a lock fails for too many times', async () => {
+  it('should handle when a lock fails for too many retries', async () => {
     const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20, 'one');
     const nodeTwo = new RepeatWith('my_locked_task', task, 2000, 0, 20, 'two');
 
@@ -171,7 +170,9 @@ describe('RepeatWithLock', () => {
 
     await nodeOne.start();
 
-    await sleepTime(25);
+    await waitForExpect(async () => {
+      expect(task).toHaveBeenCalledTimes(1);
+    });
 
     const someError = { error: 'some error' };
     rejectTask(someError);
@@ -180,7 +181,6 @@ describe('RepeatWithLock', () => {
     });
 
     finishTask();
-    await sleepTime(10);
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(2);
     });
@@ -190,18 +190,19 @@ describe('RepeatWithLock', () => {
 
   // eslint-disable-next-line max-statements
   it('should add a delay between task executions', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, 10, 250);
-    const nodeTwo = new RepeatWith('my_locked_task', task, 10, 250);
+    const nodeOne = new RepeatWith('my_locked_task', task, 50, 50, 20);
+    const nodeTwo = new RepeatWith('my_locked_task', task, 50, 50, 20);
 
     await nodeOne.start();
     await nodeTwo.start();
 
-    await sleepTime(50);
-    finishTask();
-    await sleepTime(50);
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(1);
     });
+
+    finishTask();
+    await sleepTime(25);
+    expect(task).toHaveBeenCalledTimes(1);
 
     finishTask();
     await nodeOne.stop();
