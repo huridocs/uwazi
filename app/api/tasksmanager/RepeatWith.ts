@@ -27,7 +27,7 @@ export class RepeatWith {
     maxLockTime: number = 2000,
     delayTimeBetweenTasks: number = 0,
     retryDelay: number = 200,
-    id: string
+    id: string = '1'
   ) {
     this.maxLockTime = maxLockTime;
     this.retryDelay = retryDelay;
@@ -40,7 +40,7 @@ export class RepeatWith {
   async start() {
     this.redisClient = await Redis.createClient('redis://localhost:6379');
     this.redlock = await new Redlock([this.redisClient], {
-      retryJitter: 0,
+      retryJitter: 25,
       retryDelay: this.retryDelay,
     });
 
@@ -53,15 +53,20 @@ export class RepeatWith {
     this.lockTask();
   }
 
+  async sleepTime(time: number) {
+    await new Promise(resolve => {
+      setTimeout(resolve, time);
+    });
+  }
+
   async runTask() {
     try {
       await this.task();
     } catch (error) {
       handleError(error);
     }
-    await new Promise(resolve => {
-      setTimeout(resolve, this.delayTimeBetweenTasks);
-    });
+
+    await this.sleepTime(this.delayTimeBetweenTasks);
   }
 
   async stop() {
