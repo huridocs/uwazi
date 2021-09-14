@@ -10,8 +10,8 @@ import { UserSchema } from 'shared/types/userType';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';
 
-const filtrableLevels = ['read', 'write'] as const;
-type FiltrableLevel = typeof filtrableLevels[number];
+const filtrableLevels = ['read', 'write'];
+type FiltrableLevel = 'read' | 'write';
 
 interface PermissionsValue {
   level: FiltrableLevel;
