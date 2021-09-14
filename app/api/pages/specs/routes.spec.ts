@@ -1,4 +1,4 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import { Application } from 'express';
 import request from 'supertest';
 
 import { setUpApp } from 'api/utils/testingRoutes';
