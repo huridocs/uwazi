@@ -10,6 +10,7 @@ import {
   publishingStatusAgreggations,
   permissionsUsersAgreggations,
 } from './metadataAggregations';
+import { UserRole } from 'shared/types/userSchema';
 
 const nested = (filters, path) => ({
   nested: {
@@ -115,7 +116,7 @@ export default function() {
     if (!user) return;
     const ownRefIds = permissionsContext.permissionsRefIds();
     const values =
-      user?.role === 'admin'
+      user?.role === UserRole.ADMIN
         ? filter.values
         : filter.values.filter(v => ownRefIds.includes(v.refId));
 

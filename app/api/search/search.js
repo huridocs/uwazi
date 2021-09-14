@@ -16,6 +16,7 @@ import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
+import { UserRole } from 'shared/types/userSchema';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -266,7 +267,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       const refIds = permissionsContext.permissionsRefIds();
 
       const buckets = aggregations[key].buckets
-        .filter(bucket => role === 'admin' || refIds.includes(bucket.key))
+        .filter(bucket => role === UserRole.ADMIN || refIds.includes(bucket.key))
         .map(bucket => {
           const itemInfo = info.find(i => i.refId.toString() === bucket.key);
 
