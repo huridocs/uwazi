@@ -10,7 +10,6 @@ exports[`DateRange should allow using the local timezone 1`] = `
     >
       From:
     </Connect(Translate)>
-     
     <Connect(DatePicker)
       onChange={[Function]}
       useTimezone={true}
@@ -25,7 +24,6 @@ exports[`DateRange should allow using the local timezone 1`] = `
     >
       To:
     </Connect(Translate)>
-     
     <Connect(DatePicker)
       endOfDay={true}
       onChange={[Function]}
@@ -46,7 +44,6 @@ exports[`DateRange should render the component 1`] = `
     >
       From:
     </Connect(Translate)>
-     
     <Connect(DatePicker)
       onChange={[Function]}
       useTimezone={false}
@@ -61,7 +58,6 @@ exports[`DateRange should render the component 1`] = `
     >
       To:
     </Connect(Translate)>
-     
     <Connect(DatePicker)
       endOfDay={true}
       onChange={[Function]}
