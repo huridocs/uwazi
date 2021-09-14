@@ -9,9 +9,7 @@ import { connect } from 'react-redux';
 import { UserSchema } from 'shared/types/userType';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';
-
-const filtrableLevels = ['read', 'write'] as const;
-type FiltrableLevel = typeof filtrableLevels[number];
+import { FiltrableLevel, filtrableLevels } from './FiltrablePermissionsLevels';
 
 interface PermissionsValue {
   level: FiltrableLevel;

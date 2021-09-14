@@ -6,9 +6,7 @@ import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
 import { Control } from 'react-redux-form';
 import { Switcher } from 'app/ReactReduxForms';
-
-const filtrableLevels = ['read', 'write'] as const;
-type FiltrableLevel = typeof filtrableLevels[number];
+import { FiltrableLevel } from './FiltrablePermissionsLevels';
 
 interface PermissionsValue {
   level: FiltrableLevel;
