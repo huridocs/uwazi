@@ -1,5 +1,5 @@
 import RedisSMQ, { QueueMessage } from 'rsmq';
-import Redis from 'redis';
+import Redis, { RedisClient } from 'redis';
 import request from 'shared/JSONRequest';
 import { Repeater } from 'api/utils/Repeater';
 
@@ -13,10 +13,12 @@ export interface Service {
   filesUrl: string;
   dataUrl: string;
   resultsUrl: string;
+  redisUrl: string;
+  processResults?: (results: object) => void;
 }
 
 export class TaskManager {
-  private redisSMQ: RedisSMQ;
+  private redisSMQ: RedisSMQ | undefined;
 
   private readonly service: Service;
 
@@ -24,56 +26,68 @@ export class TaskManager {
 
   private readonly resultsQueue: string;
 
-  private readonly processResults?: (results: object) => void;
+  private repeater: Repeater | undefined;
 
-  private repeater: Repeater;
+  private redisClient: RedisClient | undefined;
 
-  constructor(redisSMQ: RedisSMQ, service: Service, processResults?: (results: object) => void) {
-    this.redisSMQ = redisSMQ;
+  constructor(service: Service) {
     this.service = service;
-    this.processResults = processResults;
     this.taskQueue = `${service.serviceName}_tasks`;
     this.resultsQueue = `${service.serviceName}_results`;
-    this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);
   }
 
-  async initQueue() {
+  async createQueue(queueName: string) {
     try {
-      await this.redisSMQ.createQueueAsync({ qname: this.taskQueue });
+      if (this.redisSMQ) {
+        await this.redisSMQ.createQueueAsync({ qname: queueName });
+      }
     } catch (err) {
-      if (err.name !== 'queueExists') {
-        throw err;
+      if (err.name === 'queueExists') {
+        console.log('queueExists');
       }
     }
-    try {
-      await this.redisSMQ.createQueueAsync({ qname: this.resultsQueue });
-    } catch (err) {
-      if (err.name !== 'queueExists') {
-        throw err;
-      }
-    }
+  }
 
+  async start() {
+    this.redisClient = await Redis.createClient(this.service.redisUrl);
+
+    this.redisClient.on('error', e => {
+      throw e;
+    });
+
+    this.redisSMQ = new RedisSMQ({
+      client: this.redisClient,
+    });
+
+    await this.createQueue(this.taskQueue);
+    await this.createQueue(this.resultsQueue);
+
+    this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);
     this.repeater.start();
   }
 
   async receiveMessage() {
-    const message = (await this.redisSMQ.receiveMessageAsync({
-      qname: this.resultsQueue,
-    })) as QueueMessage;
+    if (this.redisSMQ) {
+      const message = (await this.redisSMQ.receiveMessageAsync({
+        qname: this.resultsQueue,
+      })) as QueueMessage;
 
-    if (message.id) {
-      if (this.processResults) {
-        const results = await request.get(this.service.resultsUrl, JSON.parse(message.message));
-        this.processResults(results.json);
+      if (message.id) {
+        if (this.service.processResults) {
+          const results = await request.get(this.service.resultsUrl, JSON.parse(message.message));
+          this.service.processResults(results.json);
+        }
       }
     }
   }
 
   async startTask(taskMessage: TaskMessage) {
-    await this.redisSMQ.sendMessageAsync({
-      qname: this.taskQueue,
-      message: JSON.stringify(taskMessage),
-    });
+    if (this.redisSMQ) {
+      await this.redisSMQ.sendMessageAsync({
+        qname: this.taskQueue,
+        message: JSON.stringify(taskMessage),
+      });
+    }
   }
 
   async sendJSON(data: object) {
@@ -85,19 +99,8 @@ export class TaskManager {
   }
 
   async stop() {
-    await this.repeater.stop();
+    if (this.repeater) {
+      await this.repeater.stop();
+    }
   }
 }
-
-export const TaskManagerFactory = {
-  create: async (
-    redis: Redis.RedisClient,
-    service: Service,
-    processResults?: (results: object) => void
-  ) => {
-    const redisSMQ = await new RedisSMQ({ client: redis });
-    const manager = await new TaskManager(redisSMQ, service, processResults);
-    await manager.initQueue();
-    return manager;
-  },
-};
