@@ -356,8 +356,8 @@ export const mapStateToProps = (state, ownProps) => {
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
   }
 
-  if (storeKey === 'documentView') {
-    const entity = state.documentView.doc;
+  if (storeKey === 'documentView' || storeKey === 'documentViewer') {
+    const entity = state[storeKey].doc;
     attachments = entity.get('attachments');
   }
 
