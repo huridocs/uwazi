@@ -30,12 +30,11 @@ export default class NumericRange extends Component {
     return (
       <div>
         <div className="Numeric__From">
-          <Translate translationKey='Label date "From"'>From:</Translate>&nbsp;
+          <Translate translationKey='Label date "From"'>From:</Translate>
           <Numeric value={this.state.from} onChange={val => this.onChange('from', val)} />
         </div>
-        &nbsp;
         <div className="Numeric__To">
-          <Translate translationKey='Label date "to"'>To:</Translate>&nbsp;
+          <Translate translationKey='Label date "to"'>To:</Translate>
           <Numeric value={this.state.to} onChange={val => this.onChange('to', val)} />
         </div>
       </div>
