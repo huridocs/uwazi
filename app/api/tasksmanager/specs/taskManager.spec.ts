@@ -1,9 +1,6 @@
 import fs from 'fs';
 
 import { TaskManager, Service } from 'api/tasksmanager/taskManager';
-
-import Redis from 'redis';
-import RedisSMQ from 'rsmq';
 import { RedisServer } from '../RedisServer';
 import { ExternalDummyService } from './ExternalDummyService';
 
@@ -12,7 +9,6 @@ describe('taskManager', () => {
 
   let service: Service;
   let redisServer: RedisServer;
-  let client: Redis.RedisClient;
   let externalDummyService: ExternalDummyService;
 
   beforeAll(async () => {
@@ -31,13 +27,12 @@ describe('taskManager', () => {
     await externalDummyService.start(service.redisUrl);
 
     taskManager = new TaskManager(service);
-    await taskManager.start();
+    await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to be ready
   });
 
   afterAll(async () => {
     await taskManager?.stop();
     await externalDummyService.stop();
-    await client.end(true);
     await redisServer.stop();
   });
 
@@ -121,25 +116,33 @@ describe('taskManager', () => {
       service.processResults = expectFunction;
       await taskManager?.stop();
       taskManager = new TaskManager(service);
-      await taskManager.start();
 
-      const task = { task: 'make_food', tenant: 'test' };
       externalDummyService.setResults(expectedResults);
+      const task = { task: 'make_food', tenant: 'test' };
       await externalDummyService.sendFinishedMessage(task);
     });
   });
-});
 
-it('taskManager should fail to start task if redis is unavailable', async () => {
-  const service = {
-    serviceName: 'KonzNGaboHellKitchen',
-    dataUrl: 'http://localhost:1234/data',
-    filesUrl: 'http://localhost:1234/files',
-    resultsUrl: 'http://localhost:1234/results',
-    redisUrl: 'redis://localhost:6379',
-  };
+  describe('when redis server is not available', () => {
+    beforeEach(async () => {
+      await redisServer.stop();
+    });
 
-  const taskManager = new TaskManager(service);
+    afterEach(async () => {
+      await redisServer.stop();
+    });
 
-  await expect(taskManager.start()).rejects.toThrow('I should fail');
+    it('taskManager should fail to start task', async () => {
+      const task = { task: 'make_food', tenant: 'test' };
+
+      try {
+        await taskManager?.startTask(task);
+        fail('It should throw');
+      } catch (e) {
+        expect(e).toEqual(Error('Redis is not connected'));
+      }
+
+      await redisServer.start();
+    });
+  });
 });
