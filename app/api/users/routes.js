@@ -7,7 +7,6 @@ const getDomain = req => `${req.protocol}://${req.get('host')}`;
 export default app => {
   app.post(
     '/api/users',
-
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',

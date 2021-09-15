@@ -67,7 +67,6 @@ describe('entities routes', () => {
       new UserInContextMockFactory().mock(user);
       const response: SuperTestResponse = await request(app)
         .post('/api/entities')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send({ title: 'newEntity' });
       expect(response.body).toEqual(
         expect.objectContaining({
