@@ -3,7 +3,6 @@ import Joi from 'joi';
 import settings from 'api/settings';
 import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
-
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
