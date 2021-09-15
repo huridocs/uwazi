@@ -34,41 +34,42 @@ export class TaskManager {
     this.service = service;
     this.taskQueue = `${service.serviceName}_tasks`;
     this.resultsQueue = `${service.serviceName}_results`;
+    this.start();
   }
 
-  async createQueue(queueName: string) {
-    try {
-      if (this.redisSMQ) {
-        await this.redisSMQ.createQueueAsync({ qname: queueName });
-      }
-    } catch (err) {
-      if (err.name === 'queueExists') {
-        console.log('queueExists');
-      }
-    }
-  }
+  start() {
+    this.redisClient = Redis.createClient(this.service.redisUrl);
 
-  async start() {
-    this.redisClient = await Redis.createClient(this.service.redisUrl);
-
-    this.redisClient.on('error', e => {
-      throw e;
+    this.redisClient.on('error', error => {
+      if (error.code !== 'ECONNREFUSED') {
+        throw error;
+      }
     });
 
-    this.redisSMQ = new RedisSMQ({
-      client: this.redisClient,
-    });
+    this.redisClient.on('connect', () => {
+      this.redisSMQ = new RedisSMQ({
+        client: this.redisClient,
+      });
 
-    await this.createQueue(this.taskQueue);
-    await this.createQueue(this.resultsQueue);
+      this.redisSMQ?.createQueue({ qname: this.taskQueue }, err => {
+        if (err.name !== 'queueExists') {
+          throw err;
+        }
+      });
+      this.redisSMQ?.createQueue({ qname: this.resultsQueue }, err => {
+        if (err.name !== 'queueExists') {
+          throw err;
+        }
+      });
+    });
 
     this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);
     this.repeater.start();
   }
 
   async receiveMessage() {
-    if (this.redisSMQ) {
-      const message = (await this.redisSMQ.receiveMessageAsync({
+    if (this.redisClient?.connected) {
+      const message = (await this.redisSMQ?.receiveMessageAsync({
         qname: this.resultsQueue,
       })) as QueueMessage;
 
@@ -82,12 +83,14 @@ export class TaskManager {
   }
 
   async startTask(taskMessage: TaskMessage) {
-    if (this.redisSMQ) {
-      await this.redisSMQ.sendMessageAsync({
-        qname: this.taskQueue,
-        message: JSON.stringify(taskMessage),
-      });
+    if (!this.redisClient?.connected) {
+      throw new Error('Redis is not connected');
     }
+
+    await this.redisSMQ?.sendMessageAsync({
+      qname: this.taskQueue,
+      message: JSON.stringify(taskMessage),
+    });
   }
 
   async sendJSON(data: object) {
@@ -99,8 +102,7 @@ export class TaskManager {
   }
 
   async stop() {
-    if (this.repeater) {
-      await this.repeater.stop();
-    }
+    await this.repeater?.stop();
+    await this.redisClient?.end(true);
   }
 }
