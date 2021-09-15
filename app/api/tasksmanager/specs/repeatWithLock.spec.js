@@ -1,5 +1,3 @@
-// const handleErrorSpy = jest.mock('api/utils/handleError.js', () => {});
-// import handleError from 'api/utils/handleError';
 import handleError from 'api/utils/handleError';
 import waitForExpect from 'wait-for-expect';
 import { RepeatWith } from '../RepeatWith';
