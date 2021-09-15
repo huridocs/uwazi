@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Translate } from 'app/I18N';
 
 import { Icon } from 'UI';
 import { addReference, saveTargetRangedReference } from '../actions/referencesActions';
@@ -34,18 +35,25 @@ export class TargetDocumentHeader extends Component {
     return (
       <div>
         <div className="relationship-steps is-fixed">
-          <button onClick={this.props.cancelTargetDocument} className="btn btn-default">
+          <button
+            type="button"
+            onClick={this.props.cancelTargetDocument}
+            className="btn btn-default"
+          >
             <Icon icon="arrow-left" />
-            Back
+            <Translate>Back</Translate>
           </button>
           <h2>
-            Select target paragraph<small>3</small>
+            <Translate>Select target paragraph</Translate>
+            <small>3</small>
           </h2>
         </div>
         <div className="ContextMenu ContextMenu-center">
-          <button onClick={this.save} className={className}>
+          <button type="button" onClick={this.save} className={className}>
             <Icon icon="save" />
-            <span className="ContextMenu-tooltip">Save</span>
+            <span className="ContextMenu-tooltip">
+              <Translate>Save</Translate>
+            </span>
           </button>
         </div>
       </div>

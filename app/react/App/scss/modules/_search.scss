@@ -767,14 +767,13 @@
   position: relative;
   float: left;
   width: 100%;
-  margin: 5px 0;
   background: $c-white;
   border-radius: 4px;
 
   > span {
     display: inline-block;
     line-height: 34px;
-    width: 50px;
+    width: 60px;
     position: absolute;
     color: $c-grey-dark;
     padding-left: 10px;
@@ -784,7 +783,7 @@
     z-index: 1;
   }
   input {
-    padding-left: 60px;
+    padding-left: 70px;
     padding-right: 0;
     background: transparent;
   }
@@ -799,7 +798,7 @@
 
 .DatePicker__From,
 .Numeric__From {
-  margin-bottom: 0;
+  margin-bottom: 5px;
 }
 
 .multidate {

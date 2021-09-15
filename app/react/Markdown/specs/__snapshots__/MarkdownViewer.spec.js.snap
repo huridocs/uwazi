@@ -236,7 +236,11 @@ exports[`MarkdownViewer render should render customHook components and show an e
     <br />
     <strong>
       <i>
-        Custom component markup error: unsuported values! Please check your configuration
+        <Connect(Translate)
+          translationKey="Custom component error"
+        >
+          Custom component markup error: unsuported values! Please check your configuration
+        </Connect(Translate)>
       </i>
     </strong>
     <br />

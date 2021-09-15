@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 
 export class ThesauriFormField extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ export class ThesauriFormField extends Component {
             className="btn btn-xs btn-danger"
             onClick={removeValue.bind(null, index, groupIndex)}
           >
-            <Icon icon="trash-alt" /> Delete
+            <Icon icon="trash-alt" /> <Translate>Delete</Translate>
           </button>
         </Field>
       </div>

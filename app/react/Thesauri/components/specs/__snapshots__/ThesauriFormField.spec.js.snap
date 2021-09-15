@@ -21,7 +21,10 @@ exports[`ThesauriFormField should render thesaurus item field 1`] = `
       <Connect(Icon)
         icon="trash-alt"
       />
-       Delete
+       
+      <Connect(Translate)>
+        Delete
+      </Connect(Translate)>
     </button>
   </Modeled(Connect(Field))>
 </div>

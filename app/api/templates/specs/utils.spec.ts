@@ -14,8 +14,6 @@ describe('templates utils', () => {
     await db.clearAllAndLoad({});
   });
 
-  afterAll(async () => db.disconnect());
-
   describe('name generation', () => {
     describe('default name generation', () => {
       it('should sanitize the labels and append the type', async () => {
@@ -187,3 +185,5 @@ describe('templates utils', () => {
     });
   });
 });
+
+afterAll(async () => db.disconnect());

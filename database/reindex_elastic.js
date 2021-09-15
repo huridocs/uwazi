@@ -13,7 +13,7 @@ import elasticMapFactory from './elastic_mapping/elasticMapFactory';
 import errorLog from '../app/api/log/errorLog';
 
 const getIndexUrl = () => {
-  const elasticUrl = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
+  const elasticUrl = config.elasticsearch_nodes[0];
   return `${elasticUrl}/${config.defaultTenant.indexName}`;
 };
 
