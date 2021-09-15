@@ -1,13 +1,14 @@
 import fs from 'fs';
 
-import { TaskManagerFactory, TaskManager, Service } from 'api/tasksmanager/taskManager';
+import { TaskManager, Service } from 'api/tasksmanager/taskManager';
 
 import Redis from 'redis';
+import RedisSMQ from 'rsmq';
 import { RedisServer } from '../RedisServer';
 import { ExternalDummyService } from './ExternalDummyService';
 
 describe('taskManager', () => {
-  let taskManager: TaskManager;
+  let taskManager: TaskManager | undefined;
 
   let service: Service;
   let redisServer: RedisServer;
@@ -20,19 +21,21 @@ describe('taskManager', () => {
       dataUrl: 'http://localhost:1234/data',
       filesUrl: 'http://localhost:1234/files',
       resultsUrl: 'http://localhost:1234/results',
+      redisUrl: 'redis://localhost:6379',
     };
 
     redisServer = new RedisServer();
     await redisServer.start();
-    client = await Redis.createClient('redis://localhost:6379');
-    taskManager = await TaskManagerFactory.create(client, service);
 
     externalDummyService = new ExternalDummyService(1234);
-    await externalDummyService.start(client);
+    await externalDummyService.start(service.redisUrl);
+
+    taskManager = new TaskManager(service);
+    await taskManager.start();
   });
 
   afterAll(async () => {
-    await taskManager.stop();
+    await taskManager?.stop();
     await externalDummyService.stop();
     await client.end(true);
     await redisServer.stop();
@@ -40,7 +43,7 @@ describe('taskManager', () => {
 
   describe('startTask', () => {
     it('should add a task', async () => {
-      await taskManager.startTask({
+      await taskManager?.startTask({
         task: 'CheeseBurger',
         tenant: 'Rafa',
       });
@@ -52,17 +55,17 @@ describe('taskManager', () => {
 
     describe('when multiple tasks are added', () => {
       it('services get them in order', async () => {
-        await taskManager.startTask({
+        await taskManager?.startTask({
           task: 'CheeseBurger',
           tenant: 'Joan',
         });
 
-        await taskManager.startTask({
+        await taskManager?.startTask({
           task: 'Fries',
           tenant: 'Joan',
         });
 
-        await taskManager.startTask({
+        await taskManager?.startTask({
           task: 'Ribs',
           tenant: 'Fede',
         });
@@ -84,9 +87,9 @@ describe('taskManager', () => {
       const materials1 = { someData: 3 };
       const materials2 = { someData: 2 };
       const materials3 = { someData: 3 };
-      await taskManager.sendJSON(materials1);
-      await taskManager.sendJSON(materials2);
-      await taskManager.sendJSON(materials3);
+      await taskManager?.sendJSON(materials1);
+      await taskManager?.sendJSON(materials2);
+      await taskManager?.sendJSON(materials3);
 
       expect(externalDummyService.materials.length).toEqual(3);
       expect(externalDummyService.materials[0]).toEqual(materials1);
@@ -97,9 +100,9 @@ describe('taskManager', () => {
     it('should send files to the service', async () => {
       const file = fs.readFileSync('app/api/tasksmanager/specs/blank.pdf');
 
-      await taskManager.sendFile(file);
-      await taskManager.sendFile(file);
-      await taskManager.sendFile(file);
+      await taskManager?.sendFile(file);
+      await taskManager?.sendFile(file);
+      await taskManager?.sendFile(file);
 
       expect(externalDummyService.files.length).toEqual(3);
       expect(externalDummyService.files[0]).toEqual(file);
@@ -115,13 +118,28 @@ describe('taskManager', () => {
         expect(results).toEqual(expectedResults);
         done();
       };
-
-      await taskManager.stop();
-      taskManager = await TaskManagerFactory.create(client, service, expectFunction);
+      service.processResults = expectFunction;
+      await taskManager?.stop();
+      taskManager = new TaskManager(service);
+      await taskManager.start();
 
       const task = { task: 'make_food', tenant: 'test' };
       externalDummyService.setResults(expectedResults);
       await externalDummyService.sendFinishedMessage(task);
     });
   });
+});
+
+it('taskManager should fail to start task if redis is unavailable', async () => {
+  const service = {
+    serviceName: 'KonzNGaboHellKitchen',
+    dataUrl: 'http://localhost:1234/data',
+    filesUrl: 'http://localhost:1234/files',
+    resultsUrl: 'http://localhost:1234/results',
+    redisUrl: 'redis://localhost:6379',
+  };
+
+  const taskManager = new TaskManager(service);
+
+  await expect(taskManager.start()).rejects.toThrow('I should fail');
 });
