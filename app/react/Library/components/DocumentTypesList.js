@@ -4,38 +4,13 @@ import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { connect } from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
-import { is } from 'immutable';
+import Immutable, { is } from 'immutable';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 
 export class DocumentTypesList extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  setItemsInState(props) {
-    let items = props.fromFilters ? this.props.settings.collection.toJS().filters : [];
-    if (!items?.length || this.props.storeKey === 'uploads') {
-      items = props.templates.toJS().map(tpl => ({
-        id: tpl._id,
-        name: tpl.name,
-      }));
-    }
-
-    if (this.props.storeKey === 'uploads') {
-      items.unshift({
-        id: 'missing',
-        name: 'No type',
-      });
-    }
-    this.state = {
-      items,
-      ui: {},
-    };
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     return (
       !is(this.props.libraryFilters, nextProps.libraryFilters) ||
@@ -43,6 +18,20 @@ export class DocumentTypesList extends Component {
       !is(this.props.aggregations, nextProps.aggregations) ||
       this.stateChanged(nextState)
     );
+  }
+
+  setItemsInState(fromFilters, templates, filters) {
+    let items = fromFilters ? filters : [];
+    if (!items?.length) {
+      items = templates.toJS().map(tpl => ({
+        id: tpl._id,
+        name: tpl.name,
+      }));
+    }
+    this.state = {
+      items,
+      ui: {},
+    };
   }
 
   changeAll(item, e) {
@@ -197,7 +186,8 @@ export class DocumentTypesList extends Component {
   }
 
   render() {
-    this.setItemsInState(this.props);
+    const { fromFilters, templates, settings } = this.props;
+    this.setItemsInState(fromFilters, templates, settings.collection.toJS().filters);
     this.aggs = this.props.aggregations.toJS();
     return (
       <ul className="multiselect is-active">
@@ -214,14 +204,16 @@ export class DocumentTypesList extends Component {
 
 DocumentTypesList.defaultProps = {
   fromFilters: true,
+  templates: Immutable.fromJS([]),
+  storeKey: 'library',
 };
 
 DocumentTypesList.propTypes = {
-  libraryFilters: PropTypes.object,
-  settings: PropTypes.object,
-  templates: PropTypes.object,
-  filterDocumentTypes: PropTypes.func,
-  aggregations: PropTypes.object,
+  libraryFilters: PropTypes.instanceOf(Immutable.Map).isRequired,
+  settings: PropTypes.instanceOf(Immutable.Map).isRequired,
+  templates: PropTypes.instanceOf(Immutable.List),
+  filterDocumentTypes: PropTypes.func.isRequired,
+  aggregations: PropTypes.instanceOf(Immutable.Map).isRequired,
   storeKey: PropTypes.string,
   fromFilters: PropTypes.bool,
 };
