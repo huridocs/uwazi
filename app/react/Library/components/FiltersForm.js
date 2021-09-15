@@ -14,6 +14,7 @@ import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { AssigneeFilter } from 'app/Library/components/AssigneeFilter';
+import { Switcher } from 'app/ReactReduxForms';
 import { PermissionsFilter } from './PermissionsFilter';
 import { PublishedFilters } from './PublishedFilters';
 
@@ -28,17 +29,19 @@ export class FiltersForm extends Component {
 
     this.submit = this.submit.bind(this);
     this.onChange = this.onChange.bind(this);
-
     this.activateAutoSearch = () => {
       this.autoSearch = true;
     };
+
+    this.state = { documentTypeFromFilters: true };
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     return (
       !is(this.props.fields, nextProps.fields) ||
       !is(this.props.aggregations, nextProps.aggregations) ||
-      !is(this.props.documentTypes, nextProps.documentTypes)
+      !is(this.props.documentTypes, nextProps.documentTypes) ||
+      !is(this.state.documentTypeFromFilters, nextState.documentTypeFromFilters)
     );
   }
 
@@ -71,11 +74,28 @@ export class FiltersForm extends Component {
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           <PublishedFilters onChange={this.activateAutoSearch} aggregations={aggregations} />
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
-
-          <div className="documentTypes-selector nested-selector">
-            <DocumentTypesList storeKey={this.props.storeKey} />
+          <div className="form-group">
+            <ul className="search__filter">
+              <li>
+                <Translate>Templates</Translate>
+                <Switcher
+                  className="template-filter-switcher"
+                  model=""
+                  onChange={checked => {
+                    this.setState({ documentTypeFromFilters: checked });
+                  }}
+                  leftLabel="FILTERS"
+                  rightLabel="ALL"
+                />
+              </li>
+              <li className="wide documentTypes-selector">
+                <DocumentTypesList
+                  storeKey={this.props.storeKey}
+                  filters={this.state.documentTypeFromFilters}
+                />
+              </li>
+            </ul>
           </div>
-
           <Filters
             onChange={this.activateAutoSearch}
             properties={fields}
