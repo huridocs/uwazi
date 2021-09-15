@@ -90,7 +90,7 @@ export class FiltersForm extends Component {
               <li className="wide documentTypes-selector">
                 <DocumentTypesList
                   storeKey={this.props.storeKey}
-                  filters={this.state.documentTypeFromFilters}
+                  fromFilters={this.state.documentTypeFromFilters}
                 />
               </li>
             </ul>
