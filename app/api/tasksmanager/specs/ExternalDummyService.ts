@@ -1,6 +1,6 @@
 import express from 'express';
 import RedisSMQ from 'rsmq';
-import Redis from 'redis';
+import Redis, { RedisClient } from 'redis';
 import { Server } from 'http';
 import bodyParser from 'body-parser';
 import { uploadMiddleware } from 'api/files';
@@ -23,6 +23,8 @@ export class ExternalDummyService {
   files: Buffer[] = [];
 
   results: object | undefined;
+
+  redisClient: RedisClient | undefined;
 
   constructor(port: number) {
     this.port = port;
@@ -102,9 +104,9 @@ export class ExternalDummyService {
   }
 
   async start(redisUrl: string) {
-    const redisClient = await Redis.createClient(redisUrl);
+    this.redisClient = await Redis.createClient(redisUrl);
 
-    this.redisSMQ = await new RedisSMQ({ client: redisClient });
+    this.redisSMQ = await new RedisSMQ({ client: this.redisClient });
     await this.resetQueue();
 
     const start = new Promise<void>(resolve => {
@@ -117,6 +119,7 @@ export class ExternalDummyService {
   }
 
   async stop() {
+    await this.redisClient?.end(true);
     await this.server?.close();
   }
 
