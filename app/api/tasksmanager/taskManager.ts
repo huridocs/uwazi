@@ -46,11 +46,11 @@ export class TaskManager {
       }
     });
 
-    this.redisClient.on('connect', () => {
-      this.redisSMQ = new RedisSMQ({
-        client: this.redisClient,
-      });
+    this.redisSMQ = new RedisSMQ({
+      client: this.redisClient,
+    });
 
+    this.redisClient.on('connect', () => {
       this.redisSMQ?.createQueue({ qname: this.taskQueue }, err => {
         if (err.name !== 'queueExists') {
           throw err;

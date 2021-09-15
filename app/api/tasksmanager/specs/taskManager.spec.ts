@@ -1,5 +1,6 @@
+/* eslint-disable max-statements */
 import fs from 'fs';
-
+import waitForExpect from 'wait-for-expect';
 import { TaskManager, Service } from 'api/tasksmanager/taskManager';
 import { RedisServer } from '../RedisServer';
 import { ExternalDummyService } from './ExternalDummyService';
@@ -18,8 +19,8 @@ describe('taskManager', () => {
       filesUrl: 'http://localhost:1234/files',
       resultsUrl: 'http://localhost:1234/results',
       redisUrl: 'redis://localhost:6379',
+      processResults: jest.fn(),
     };
-
     redisServer = new RedisServer();
     await redisServer.start();
 
@@ -34,6 +35,10 @@ describe('taskManager', () => {
     await taskManager?.stop();
     await externalDummyService.stop();
     await redisServer.stop();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('startTask', () => {
@@ -107,33 +112,26 @@ describe('taskManager', () => {
   });
 
   describe('when the task finishes', () => {
-    it('should get the results', async done => {
+    it('should get the results', async () => {
       const expectedResults = { results: 'Paella' };
-      const expectFunction = (results: object) => {
-        expect(results).toEqual(expectedResults);
-        done();
-      };
-      service.processResults = expectFunction;
+
       await taskManager?.stop();
       taskManager = new TaskManager(service);
 
       externalDummyService.setResults(expectedResults);
-      const task = { task: 'make_food', tenant: 'test' };
+      const task = { task: 'Tofu', tenant: 'Gabo' };
       await externalDummyService.sendFinishedMessage(task);
+
+      await waitForExpect(async () => {
+        expect(service.processResults).toHaveBeenCalledWith(expectedResults);
+      });
     });
   });
 
   describe('when redis server is not available', () => {
-    beforeEach(async () => {
-      await redisServer.stop();
-    });
-
-    afterEach(async () => {
-      await redisServer.stop();
-    });
-
     it('taskManager should fail to start task', async () => {
-      const task = { task: 'make_food', tenant: 'test' };
+      await redisServer.stop();
+      const task = { task: 'Spagueti', tenant: 'Kon' };
 
       try {
         await taskManager?.startTask(task);
@@ -141,8 +139,48 @@ describe('taskManager', () => {
       } catch (e) {
         expect(e).toEqual(Error('Redis is not connected'));
       }
-
       await redisServer.start();
+    });
+
+    describe('and redis comes back', () => {
+      it('should send tasks again', async () => {
+        await redisServer.stop();
+        const task = { task: 'Ceviche', tenant: 'Mercy' };
+
+        try {
+          await taskManager?.startTask(task);
+          fail('It should throw');
+        } catch (e) {
+          expect(e).toEqual(Error('Redis is not connected'));
+        }
+
+        await redisServer.start();
+        await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to connect
+        await taskManager?.startTask(task);
+
+        const message = await externalDummyService.read();
+        expect(message).toBe('{"task":"Ceviche","tenant":"Mercy"}');
+      });
+
+      it('should read pending messages', async () => {
+        const task = { task: 'Ceviche', tenant: 'Mercy' };
+
+        await taskManager?.stop();
+        externalDummyService.setResults({ results: 'Paella' });
+        await externalDummyService.sendFinishedMessage(task);
+
+        expect(service.processResults).not.toHaveBeenCalled();
+        await redisServer.stop();
+
+        taskManager?.start();
+        await redisServer.start();
+
+        await waitForExpect(async () => {
+          expect(service.processResults).toHaveBeenCalledWith({
+            results: 'Paella',
+          });
+        });
+      });
     });
   });
 });
