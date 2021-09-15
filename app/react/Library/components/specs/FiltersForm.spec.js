@@ -105,7 +105,21 @@ describe('FiltersForm', () => {
     });
   });
 
-  describe('maped state', () => {
+  describe('documentTypeList mode toggle', () => {
+    it('should mark FILTERS as the default option', () => {
+      const documentTypesList = component.find('Connect(DocumentTypesList)');
+      expect(documentTypesList.props().filters).toBe(true);
+    });
+
+    it('should allows logged users to switch templates filter between ALL/FILTERS', () => {
+      const documentTypesSwitcher = component.find('Switcher');
+      documentTypesSwitcher.props().onChange(false);
+      const documentTypesList = component.find('Connect(DocumentTypesList)');
+      expect(documentTypesList.props().filters).toBe(false);
+    });
+  });
+
+  describe('mapped state', () => {
     it('should contain the fields', () => {
       const store = {
         library: {
