@@ -19,7 +19,7 @@ class DateRange extends Component {
     return (
       <div>
         <div className="DatePicker__From">
-          <Translate translationKey='Label date "From"'>From:</Translate>&nbsp;
+          <Translate translationKey='Label date "From"'>From:</Translate>
           <DatePicker
             locale={locale}
             format={format}
@@ -29,7 +29,7 @@ class DateRange extends Component {
           />
         </div>
         <div className="DatePicker__To">
-          <Translate translationKey='Label date "to"'>To:</Translate>&nbsp;
+          <Translate translationKey='Label date "to"'>To:</Translate>
           <DatePicker
             locale={locale}
             format={format}

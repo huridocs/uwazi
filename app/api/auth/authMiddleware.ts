@@ -10,11 +10,7 @@ declare global {
 }
 
 export default (roles = ['admin']) => (req: Request, res: Response, next: NextFunction) => {
-  if (
-    req.user &&
-    roles.includes(req.user.role || '') &&
-    req.get('X-Requested-With') === 'XMLHttpRequest'
-  ) {
+  if (req.user && roles.includes(req.user.role || '')) {
     return next();
   }
   res.status(401);

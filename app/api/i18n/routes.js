@@ -50,7 +50,6 @@ export default app => {
 
   app.post(
     '/api/translations',
-
     needsAuthorization(),
     validation.validateRequest(
       Joi.object()

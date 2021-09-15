@@ -40,22 +40,18 @@ describe('usergroups routes', () => {
   );
 
   async function getUserGroups(): Promise<SuperTestResponse> {
-    return request(app)
-      .get('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest');
+    return request(app).get('/api/usergroups');
   }
 
   async function postUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
     return request(app)
       .post('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest')
       .send(userGroupData);
   }
 
   async function deleteUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
     return request(app)
       .delete('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest')
       .query({ _id: userGroupData._id });
   }
 
