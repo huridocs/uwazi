@@ -11,6 +11,19 @@ describe('DocumentTypesList', () => {
   let filters;
   let aggregations;
 
+  const allTemplates = [
+    { id: 0, name: 'Case' },
+    { id: 1, name: 'Judge' },
+    { id: 2, name: 'Country' },
+    {
+      id: 3,
+      name: 'Documents',
+      items: [
+        { id: 4, name: 'Decision' },
+        { id: 5, name: 'Cause' },
+      ],
+    },
+  ];
   beforeEach(() => {
     filters = [
       { id: 1, name: 'Judge' },
@@ -44,11 +57,13 @@ describe('DocumentTypesList', () => {
       aggregations: Immutable.fromJS(aggregations),
       libraryFilters: Immutable.fromJS({ documentTypes: [2, 5] }),
       storeKey: 'library',
+      templates: Immutable.fromJS(allTemplates),
     };
   });
 
-  const render = () => {
-    component = shallow(<DocumentTypesList {...props} />);
+  const render = (customProps = {}) => {
+    const componentProps = { ...props, ...customProps };
+    component = shallow(<DocumentTypesList {...componentProps} />);
   };
 
   describe('render', () => {
@@ -78,6 +93,28 @@ describe('DocumentTypesList', () => {
           .props().checked
       ).toBe(true);
     });
+  });
+
+  describe('listed templates', () => {
+    const checkExpectedList = expectedList => {
+      const templatesOptions = component
+        .find('li .multiselectItem-name')
+        .children()
+        .map(name => name.props().children);
+      expect(templatesOptions).toEqual(expectedList);
+    };
+    it('should list all the templates if fromFilters is false', () => {
+      render({ fromFilters: false });
+      checkExpectedList(['Case', 'Judge', 'Country', 'Documents']);
+    });
+
+    it.each([true, undefined])(
+      'should list just the filters when fromFilters is true',
+      fromFilters => {
+        render({ fromFilters });
+        checkExpectedList(['Judge', 'Country', 'Documents', 'Decision', 'Cause']);
+      }
+    );
   });
 
   describe('clicking on a type', () => {

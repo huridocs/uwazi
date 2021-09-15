@@ -13,13 +13,22 @@ import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 export class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
-    let items = this.props.settings.collection.toJS().filters || [];
-    if (!items.length || this.props.storeKey === 'uploads') {
-      items = props.templates.toJS().map(tpl => ({ id: tpl._id, name: tpl.name }));
+  }
+
+  setItemsInState(props) {
+    let items = props.fromFilters ? this.props.settings.collection.toJS().filters : [];
+    if (!items?.length || this.props.storeKey === 'uploads') {
+      items = props.templates.toJS().map(tpl => ({
+        id: tpl._id,
+        name: tpl.name,
+      }));
     }
 
     if (this.props.storeKey === 'uploads') {
-      items.unshift({ id: 'missing', name: 'No type' });
+      items.unshift({
+        id: 'missing',
+        name: 'No type',
+      });
     }
     this.state = {
       items,
@@ -188,6 +197,7 @@ export class DocumentTypesList extends Component {
   }
 
   render() {
+    this.setItemsInState(this.props);
     this.aggs = this.props.aggregations.toJS();
     return (
       <ul className="multiselect is-active">
@@ -202,6 +212,10 @@ export class DocumentTypesList extends Component {
   }
 }
 
+DocumentTypesList.defaultProps = {
+  fromFilters: true,
+};
+
 DocumentTypesList.propTypes = {
   libraryFilters: PropTypes.object,
   settings: PropTypes.object,
@@ -209,6 +223,7 @@ DocumentTypesList.propTypes = {
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.object,
   storeKey: PropTypes.string,
+  fromFilters: PropTypes.bool,
 };
 
 export function mapStateToProps(state, props) {
