@@ -12,8 +12,6 @@ export class ExternalDummyService {
 
   private redisSMQ: RedisSMQ | undefined;
 
-  serviceName = 'KonzNGaboHellKitchen';
-
   private server: Server | undefined;
 
   currentTask: string | undefined;
@@ -22,12 +20,17 @@ export class ExternalDummyService {
 
   files: Buffer[] = [];
 
+  filesNames: String[] = [];
+
   results: object | undefined;
 
   redisClient: RedisClient | undefined;
 
-  constructor(port: number) {
+  private readonly serviceName: string;
+
+  constructor(port: number, serviceName: string) {
     this.port = port;
+    this.serviceName = serviceName;
     this.app = express();
     this.app.use(bodyParser.json());
 
@@ -38,8 +41,9 @@ export class ExternalDummyService {
 
     this.app.post('/files', uploadMiddleware.multiple(), (req, res) => {
       if (req.files.length) {
-        const files = req.files as { buffer: Buffer }[];
+        const files = req.files as { buffer: Buffer; originalname: string }[];
         this.files.push(files[0].buffer);
+        this.filesNames.push(files[0].originalname);
       }
       res.send('received');
     });
@@ -96,11 +100,13 @@ export class ExternalDummyService {
   }
 
   async read() {
-    const { message } = await this.rsmq.receiveMessageAsync({
+    const messageReceived: RedisSMQ.QueueMessage | {} = await this.rsmq.receiveMessageAsync({
       qname: `${this.serviceName}_tasks`,
     });
-    this.currentTask = message;
-    return message;
+
+    const queueMessage = messageReceived as RedisSMQ.QueueMessage;
+    this.currentTask = queueMessage?.message;
+    return this.currentTask;
   }
 
   async start(redisUrl: string) {
