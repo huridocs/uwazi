@@ -2,6 +2,7 @@ import { Service, TaskManager } from 'api/tasksmanager/taskManager';
 import { RepeatWith } from 'api/tasksmanager/RepeatWith';
 import { files, uploadsPath } from 'api/files';
 import fs from 'fs';
+import { FileType } from 'shared/types/fileType';
 
 export interface SegmentationParameters {
   filesUrl: string;
@@ -12,7 +13,7 @@ export interface SegmentationParameters {
 export const SERVICE_NAME = 'pdfSegmentation';
 
 export class PdfSegmentation {
-  private service: Service;
+  private readonly service: Service;
 
   private repeatWith: RepeatWith;
 
@@ -24,6 +25,7 @@ export class PdfSegmentation {
       ...segmentationParameters,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.repeatWith = new RepeatWith(SERVICE_NAME, this.segment.bind(this), 120000, 100);
     this.taskManager = new TaskManager(this.service);
   }
@@ -41,14 +43,20 @@ export class PdfSegmentation {
       type: 'document',
     });
 
-    if (nextFilesToProcess.length === 0 || !nextFilesToProcess[0].filename) {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    await nextFilesToProcess.forEach(async nextFile => {
+      await this.segmentOne(nextFile);
+    });
+  }
+
+  private async segmentOne(nextFile: FileType) {
+    if (!nextFile || !nextFile.filename) {
       return;
     }
-
-    const file = fs.readFileSync(uploadsPath(nextFilesToProcess[0].filename));
-    await this.taskManager.sendFile(file, nextFilesToProcess[0].filename);
+    const file = fs.readFileSync(uploadsPath(nextFile.filename));
+    await this.taskManager.sendFile(file, nextFile.filename);
     const task = {
-      task: nextFilesToProcess[0].filename,
+      task: nextFile.filename,
       tenant: 'tenant1',
     };
     await this.taskManager.startTask(task);

@@ -1,5 +1,5 @@
 import express from 'express';
-import RedisSMQ from 'rsmq';
+import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis, { RedisClient } from 'redis';
 import { Server } from 'http';
 import bodyParser from 'body-parser';
@@ -99,14 +99,36 @@ export class ExternalDummyService {
     }
   }
 
-  async read() {
-    const messageReceived: RedisSMQ.QueueMessage | {} = await this.rsmq.receiveMessageAsync({
+  async readFirstTaskMessage() {
+    const message: RedisSMQ.QueueMessage | {} = await this.rsmq.receiveMessageAsync({
       qname: `${this.serviceName}_tasks`,
     });
+    const queueMessage = message as QueueMessage;
 
-    const queueMessage = messageReceived as RedisSMQ.QueueMessage;
-    this.currentTask = queueMessage?.message;
-    return this.currentTask;
+    if (!queueMessage.id) {
+      return undefined;
+    }
+
+    await this.rsmq.deleteMessageAsync({
+      qname: `${this.serviceName}_tasks`,
+      id: queueMessage.id,
+    });
+
+    return queueMessage?.message;
+  }
+
+  async readAllTaskMessages() {
+    const messages: string[] = [];
+    while (true) {
+      // eslint-disable-next-line no-await-in-loop
+      const message = await this.readFirstTaskMessage();
+      if (!message) {
+        break;
+      }
+      messages.push(message);
+    }
+
+    return messages;
   }
 
   async start(redisUrl: string) {
@@ -134,5 +156,10 @@ export class ExternalDummyService {
       qname: `${this.serviceName}_results`,
       message: JSON.stringify(task),
     });
+  }
+
+  reset() {
+    this.files = [];
+    this.filesNames = [];
   }
 }
