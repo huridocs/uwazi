@@ -139,7 +139,7 @@ export default {
 
   head: (url, data, headers) => _fetch(url, data, 'HEAD', headers),
 
-  // TEST!!!! Fully untested function
+  // TEST!!!!! Fully untested function
   uploadFile: (url, filename, file, _cookie) =>
     new Promise((resolve, reject) => {
       superagent

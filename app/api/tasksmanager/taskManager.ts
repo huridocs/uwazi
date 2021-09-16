@@ -62,7 +62,9 @@ export class TaskManager {
         }
       });
     });
+  }
 
+  subscribeToResults() {
     this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);
     this.repeater.start();
   }
@@ -97,8 +99,8 @@ export class TaskManager {
     await request.post(this.service.dataUrl, data);
   }
 
-  async sendFile(file: Buffer) {
-    await request.uploadFile(this.service.filesUrl, 'blank.pdf', file);
+  async sendFile(file: Buffer, fileName: string) {
+    await request.uploadFile(this.service.filesUrl, fileName, file);
   }
 
   async stop() {
