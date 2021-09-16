@@ -11,6 +11,13 @@ import { Icon } from 'UI';
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 
 export class DocumentTypesList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ui: {},
+    };
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     return (
       !is(this.props.libraryFilters, nextProps.libraryFilters) ||
@@ -20,18 +27,15 @@ export class DocumentTypesList extends Component {
     );
   }
 
-  setItemsInState(fromFilters, templates, filters) {
-    let items = fromFilters ? filters : [];
+  getItemsToShow(fromFilters, templates, settings) {
+    let items = fromFilters ? settings.collection.toJS().filters : [];
     if (!items?.length) {
       items = templates.toJS().map(tpl => ({
         id: tpl._id,
         name: tpl.name,
       }));
     }
-    this.state = {
-      items,
-      ui: {},
-    };
+    return items;
   }
 
   changeAll(item, e) {
@@ -187,11 +191,11 @@ export class DocumentTypesList extends Component {
 
   render() {
     const { fromFilters, templates, settings } = this.props;
-    this.setItemsInState(fromFilters, templates, settings.collection.toJS().filters);
+    const items = this.getItemsToShow(fromFilters, templates, settings);
     this.aggs = this.props.aggregations.toJS();
     return (
       <ul className="multiselect is-active">
-        {this.state.items.map((item, index) => {
+        {items.map((item, index) => {
           if (item.items) {
             return this.renderGroupType(item, index);
           }
@@ -210,7 +214,7 @@ DocumentTypesList.defaultProps = {
 
 DocumentTypesList.propTypes = {
   libraryFilters: PropTypes.instanceOf(Immutable.Map).isRequired,
-  settings: PropTypes.instanceOf(Immutable.Map).isRequired,
+  settings: PropTypes.instanceOf(Object).isRequired,
   templates: PropTypes.instanceOf(Immutable.List),
   filterDocumentTypes: PropTypes.func.isRequired,
   aggregations: PropTypes.instanceOf(Immutable.Map).isRequired,
