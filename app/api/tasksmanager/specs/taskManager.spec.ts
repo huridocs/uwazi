@@ -50,9 +50,9 @@ describe('taskManager', () => {
         tenant: 'Rafa',
       });
 
-      await externalDummyService.read();
+      const message = await externalDummyService.readFirstTaskMessage();
 
-      expect(externalDummyService.currentTask).toBe('{"task":"CheeseBurger","tenant":"Rafa"}');
+      expect(message).toBe('{"task":"CheeseBurger","tenant":"Rafa"}');
     });
 
     describe('when multiple tasks are added', () => {
@@ -72,13 +72,13 @@ describe('taskManager', () => {
           tenant: 'Fede',
         });
 
-        let message = await externalDummyService.read();
+        let message = await externalDummyService.readFirstTaskMessage();
         expect(message).toBe('{"task":"CheeseBurger","tenant":"Joan"}');
 
-        message = await externalDummyService.read();
+        message = await externalDummyService.readFirstTaskMessage();
         expect(message).toBe('{"task":"Fries","tenant":"Joan"}');
 
-        message = await externalDummyService.read();
+        message = await externalDummyService.readFirstTaskMessage();
         expect(message).toBe('{"task":"Ribs","tenant":"Fede"}');
       });
     });
@@ -164,7 +164,7 @@ describe('taskManager', () => {
         await new Promise(resolve => setTimeout(resolve, 200)); // wait for redis to connect
         await taskManager?.startTask(task);
 
-        const message = await externalDummyService.read();
+        const message = await externalDummyService.readFirstTaskMessage();
         expect(message).toBe('{"task":"Ceviche","tenant":"Mercy"}');
       });
 
