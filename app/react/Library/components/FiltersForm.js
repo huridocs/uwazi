@@ -57,8 +57,8 @@ export class FiltersForm extends Component {
   }
 
   render() {
-    const { templates, documentTypes } = this.props;
-
+    const { templates, documentTypes, settings } = this.props;
+    const configuredFilters = settings.collection.toJS().filters?.length > 0;
     const aggregations = this.props.aggregations.toJS();
     const translationContext =
       documentTypes.get(0) || (templates.get(0) || fromJS({})).get('_id') || 'System';
@@ -74,24 +74,27 @@ export class FiltersForm extends Component {
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           <PublishedFilters onChange={this.activateAutoSearch} aggregations={aggregations} />
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
+
           <div className="form-group">
             <ul className="search__filter">
-              <li>
-                <Translate>Templates</Translate>
-                <Switcher
-                  className="template-filter-switcher"
-                  model=""
-                  onChange={checked => {
-                    this.setState({ documentTypeFromFilters: checked });
-                  }}
-                  leftLabel="FILTERS"
-                  rightLabel="ALL"
-                />
-              </li>
+              {configuredFilters && (
+                <li>
+                  <Translate>Templates</Translate>
+                  <Switcher
+                    className="template-filter-switcher"
+                    model=""
+                    onChange={checked => {
+                      this.setState({ documentTypeFromFilters: checked });
+                    }}
+                    leftLabel="FILTERS"
+                    rightLabel="ALL"
+                  />
+                </li>
+              )}
               <li className="wide documentTypes-selector">
                 <DocumentTypesList
                   storeKey={this.props.storeKey}
-                  fromFilters={this.state.documentTypeFromFilters}
+                  fromFilters={this.state.documentTypeFromFilters && configuredFilters}
                 />
               </li>
             </ul>
@@ -149,6 +152,7 @@ FiltersForm.propTypes = {
   search: PropTypes.object,
   documentTypes: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string.isRequired,
+  settings: PropTypes.instanceOf(Object).isRequired,
 };
 
 export function mapStateToProps(state, props) {
@@ -157,6 +161,7 @@ export function mapStateToProps(state, props) {
     aggregations: state[props.storeKey].aggregations,
     templates: state.templates,
     documentTypes: state[props.storeKey].filters.get('documentTypes'),
+    settings: state.settings,
   };
 }
 
