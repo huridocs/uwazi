@@ -8,9 +8,17 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    const { modifiedCount } = await db
+
+    const { modifiedEntitiesCount } = await db
       .collection('entities')
       .updateMany({}, { $unset: { pdfInfo: 1 } });
-    process.stdout.write(`${modifiedCount} entities updated...\r\n`);
+
+    process.stdout.write(`${modifiedEntitiesCount} entities updated...\r\n`);
+
+    const { modifiedFilesCount } = await db
+      .collection('files')
+      .updateMany({}, { $unset: { pdfInfo: 1 } });
+
+    process.stdout.write(`${modifiedFilesCount} files updated...\r\n`);
   },
 };

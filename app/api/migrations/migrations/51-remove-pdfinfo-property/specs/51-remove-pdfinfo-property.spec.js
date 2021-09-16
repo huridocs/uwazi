@@ -18,9 +18,10 @@ describe('migration remove-pdfinfo-property', () => {
   });
 
   describe('unset pdfInfo property', () => {
-    it('should remove pdfInfo property and keep the rest of properties', async () => {
+    beforeEach(async () => {
       await migration.up(testingDB.mongodb);
-
+    });
+    it('should remove pdfInfo property from entities and keep the rest of properties', async () => {
       const entities = await testingDB.mongodb
         .collection('entities')
         .find({})
@@ -34,6 +35,20 @@ describe('migration remove-pdfinfo-property', () => {
           published: true,
         },
       ]);
+    });
+
+    it('should remove pdfInfo property from files and keep the rest of properties', async () => {
+      const filesWithoutPdfInfo = fixtures.files.map(file => {
+        const { pdfInfo, ...fileWithoutPdfInfo } = file;
+        return fileWithoutPdfInfo;
+      });
+
+      const files = await testingDB.mongodb
+        .collection('files')
+        .find({})
+        .toArray();
+
+      expect(files).toEqual(filesWithoutPdfInfo);
     });
   });
 });
