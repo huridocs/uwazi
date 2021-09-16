@@ -1,7 +1,33 @@
-import { SearchQuery } from 'shared/types/SearchQueryType';
+import { RangeQuery, SearchQuery } from 'shared/types/SearchQueryType';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
 import { cleanUp, extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
+
+const languageFilter = (language: string) => [{ term: { language } }];
+
+const sharedIdFilter = (query: SearchQuery) =>
+  query.filter?.sharedId ? [{ terms: { 'sharedId.raw': [query.filter.sharedId] } }] : [];
+
+const isRange = (
+  range: (RangeQuery | string | number | boolean) | undefined
+): range is RangeQuery => typeof range === 'object' && Object.keys(range).includes('from');
+
+const metadataFilters = (query: SearchQuery) =>
+  Object.keys(query.filter || {})
+    .filter(filter => filter.startsWith('metadata.'))
+    .map(key => {
+      const filterValue = query.filter?.[key];
+      if (isRange(filterValue)) {
+        return {
+          range: { [`${key}.value`]: { lte: filterValue.to } },
+        };
+      }
+      return {
+        term: {
+          [`${key}.value`]: query.filter?.[key],
+        },
+      };
+    });
 
 const defaultFields = ['title', 'template', 'sharedId'];
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
@@ -16,32 +42,11 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
     query: {
       bool: {
         filter: [
-          ...Object.keys(query.filter || {})
-            .filter(filter => filter.startsWith('metadata.'))
-            .map(key => {
-              if (Object.keys(query.filter?.[key]).includes('from')) {
-                return {
-                  range: {
-                    [`${key}.value`]: { lte: query.filter?.[key].to },
-                  },
-                };
-              }
-              return {
-                term: {
-                  [`${key}.value`]: query.filter[key],
-                },
-              };
-            }),
-          query.filter?.sharedId && {
-            terms: {
-              'sharedId.raw': [query.filter.sharedId],
-            },
-          },
-          {
-            term: { language },
-          },
+          ...metadataFilters(query),
+          ...sharedIdFilter(query),
+          ...languageFilter(language),
           ...permissionsFilters(query),
-        ].filter(cleanUp),
+        ],
         must: [
           fullTextSearchString && {
             has_child: {

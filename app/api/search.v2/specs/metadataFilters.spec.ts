@@ -101,6 +101,8 @@ describe('Metadata filters', () => {
   });
 
   it('should filter by numeric properties', async () => {
+    throw new Error('should support to and from in numeric filters');
+
     await load(
       {
         templates: [

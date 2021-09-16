@@ -1,6 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
+export interface RangeQuery {
+  from?: number;
+  to?: number;
+}
+
 export interface SearchQuery {
   page?: {
     limit?: number;
@@ -9,17 +14,7 @@ export interface SearchQuery {
     searchString?: string | number;
     sharedId?: string;
     published?: boolean;
-    [k: string]:
-      | (
-          | {
-              from?: number;
-              to?: number;
-            }
-          | string
-          | number
-          | boolean
-        )
-      | undefined;
+    [k: string]: (RangeQuery | string | number | boolean) | undefined;
   };
   fields?: string[];
 }

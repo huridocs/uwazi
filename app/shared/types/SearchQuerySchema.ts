@@ -1,4 +1,11 @@
 export const emitSchemaTypes = true;
+
+export const RangeQuerySchema = {
+  title: 'RangeQuery',
+  additionalProperties: false,
+  properties: { from: { type: 'number' }, to: { type: 'number' } },
+};
+
 export const SearchQuerySchema = {
   title: 'SearchQuery',
   additionalProperties: false,
@@ -11,16 +18,7 @@ export const SearchQuerySchema = {
     filter: {
       type: 'object',
       additionalProperties: {
-        anyOf: [
-          {
-            type: 'object',
-            additionalProperties: false,
-            properties: { from: { type: 'number' }, to: { type: 'number' } },
-          },
-          { type: 'string' },
-          { type: 'number' },
-          { type: 'boolean' },
-        ],
+        anyOf: [RangeQuerySchema, { type: 'string' }, { type: 'number' }, { type: 'boolean' }],
       },
       properties: {
         searchString: { anyOf: [{ type: 'string' }, { type: 'number' }] },
