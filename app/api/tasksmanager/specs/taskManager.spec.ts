@@ -24,10 +24,12 @@ describe('taskManager', () => {
     redisServer = new RedisServer();
     await redisServer.start();
 
-    externalDummyService = new ExternalDummyService(1234);
+    externalDummyService = new ExternalDummyService(1234, service.serviceName);
     await externalDummyService.start(service.redisUrl);
 
     taskManager = new TaskManager(service);
+    taskManager.subscribeToResults();
+
     await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to be ready
   });
 
@@ -100,14 +102,17 @@ describe('taskManager', () => {
     it('should send files to the service', async () => {
       const file = fs.readFileSync('app/api/tasksmanager/specs/blank.pdf');
 
-      await taskManager?.sendFile(file);
-      await taskManager?.sendFile(file);
-      await taskManager?.sendFile(file);
+      await taskManager?.sendFile(file, 'blank1.pdf');
+      await taskManager?.sendFile(file, 'blank2.pdf');
+      await taskManager?.sendFile(file, 'blank3.pdf');
 
       expect(externalDummyService.files.length).toEqual(3);
       expect(externalDummyService.files[0]).toEqual(file);
+      expect(externalDummyService.filesNames[0]).toEqual('blank1.pdf');
       expect(externalDummyService.files[1]).toEqual(file);
+      expect(externalDummyService.filesNames[1]).toEqual('blank2.pdf');
       expect(externalDummyService.files[2]).toEqual(file);
+      expect(externalDummyService.filesNames[2]).toEqual('blank3.pdf');
     });
   });
 
@@ -117,6 +122,7 @@ describe('taskManager', () => {
 
       await taskManager?.stop();
       taskManager = new TaskManager(service);
+      taskManager.subscribeToResults();
 
       externalDummyService.setResults(expectedResults);
       const task = { task: 'Tofu', tenant: 'Gabo' };
@@ -155,7 +161,7 @@ describe('taskManager', () => {
         }
 
         await redisServer.start();
-        await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to connect
+        await new Promise(resolve => setTimeout(resolve, 200)); // wait for redis to connect
         await taskManager?.startTask(task);
 
         const message = await externalDummyService.read();
@@ -173,6 +179,8 @@ describe('taskManager', () => {
         await redisServer.stop();
 
         taskManager?.start();
+        taskManager?.subscribeToResults();
+
         await redisServer.start();
 
         await waitForExpect(async () => {
