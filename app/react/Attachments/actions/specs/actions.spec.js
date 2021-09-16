@@ -7,6 +7,7 @@ import { mockID } from 'shared/uniqueID.js';
 import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import { NOTIFY } from 'app/Notifications/actions/actionTypes';
 import * as actions from '../actions';
 import * as types from '../actionTypes';
 
@@ -51,11 +52,19 @@ describe('Attachments actions', () => {
         { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 55 },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 65 },
+        { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 100 },
         {
           type: types.ATTACHMENT_COMPLETE,
           entity: 'sharedId',
           file: { text: 'file' },
           __reducerKey: 'storeKey',
+        },
+        {
+          type: NOTIFY,
+          notification: {
+            message: 'Attachment uploaded',
+            type: 'success',
+          },
         },
       ];
 
@@ -66,7 +75,32 @@ describe('Attachments actions', () => {
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });
       mockUpload.emit('response', { text: '{"text": "file"}' });
-      expect(store.getActions()).toEqual(expectedActions);
+      expect(store.getActions()).toMatchObject(expectedActions);
+    });
+  });
+
+  describe('uploadAttachmentFromUrl', () => {
+    it('should post the url and dispatch the upload progress and notification upon completion', () => {
+      spyOn(api, 'post').and.returnValue({ then: cb => cb({ json: { text: 'file' } }) });
+      const expectedActions = [
+        { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
+        { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 100 },
+        {
+          type: types.ATTACHMENT_COMPLETE,
+          entity: 'sharedId',
+          file: { text: 'file' },
+          __reducerKey: 'storeKey',
+        },
+        {
+          type: NOTIFY,
+          notification: {
+            message: 'Attachment uploaded',
+            type: 'success',
+          },
+        },
+      ];
+      store.dispatch(actions.uploadAttachmentFromUrl('sharedId', 'fileName', 'URL', 'storeKey'));
+      expect(store.getActions()).toMatchObject(expectedActions);
     });
   });
 

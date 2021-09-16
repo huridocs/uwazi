@@ -34,7 +34,7 @@ export class ImportProgress extends Component {
       );
     }
 
-    if (importError.get('message')) {
+    if (importError.get('prettyMessage')) {
       return (
         <div>
           <div className="alert alert-danger">
@@ -45,7 +45,7 @@ export class ImportProgress extends Component {
             <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close} />
           </div>
           <StackTrace
-            message={importError.get('message')}
+            message={importError.get('prettyMessage')}
             validations={importError.get('validations')}
           />
         </div>

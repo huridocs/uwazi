@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.38.0-rc6",
+  "version": "1.39.0-rc1",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -202,6 +202,7 @@
     "@babel/preset-env": "7.11.5",
     "@babel/preset-react": "7.10.4",
     "@babel/preset-typescript": "7.10.4",
+    "@testing-library/react": "^11.2.7",
     "@babel/traverse": "^7.15.0",
     "@types/child-process-promise": "^2.2.1",
     "@types/cookie": "^0.4.0",
@@ -230,6 +231,7 @@
     "@types/qs": "^6.9.6",
     "@types/react": "^16.8.6",
     "@types/react-dnd": "^3.0.2",
+    "@types/react-dom": "^17.0.9",
     "@types/react-helmet": "^5.0.14",
     "@types/react-redux": "^7.1.5",
     "@types/react-router": "3",
@@ -269,7 +271,7 @@
     "jest-image-snapshot": "^4.1.0",
     "jest-puppeteer": "4.4.0",
     "mini-css-extract-plugin": "^1.6.0",
-    "mongodb-memory-server": "^6.7.5",
+    "mongodb-memory-server": "^7.4.0",
     "mutationobserver-shim": "^0.3.7",
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.0.0",
@@ -295,6 +297,14 @@
     "webpack-hot-middleware": "^2.25.0",
     "winston-transport": "^4.4.0",
     "yargs": "^16.0.3"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "version": "4.4.8",
+      "debug": "yes",
+      "preferGlobalPath": "0",
+      "runtimeDownload": "0"
+    }
   },
   "engines": {
     "node": ">=14.1.0"
