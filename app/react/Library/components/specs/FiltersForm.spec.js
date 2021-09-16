@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
+import { fromJS, fromJS as Immutable } from 'immutable';
 import { Form } from 'react-redux-form';
 
 import { FiltersForm, mapStateToProps } from 'app/Library/components/FiltersForm';
@@ -10,7 +10,7 @@ describe('FiltersForm', () => {
   let component;
   let props;
 
-  beforeEach(() => {
+  const render = templateFilters => {
     props = {
       searchDocuments: jasmine.createSpy('searchDocuments'),
       fields: Immutable([
@@ -87,8 +87,17 @@ describe('FiltersForm', () => {
       }),
       search: { searchTerm: 'Batman' },
       storeKey: 'library',
+      settings: {
+        collection: fromJS({
+          filters: templateFilters,
+        }),
+      },
     };
     component = shallow(<FiltersForm {...props} />);
+  };
+
+  beforeEach(() => {
+    render();
   });
 
   describe('form on submit', () => {
@@ -106,16 +115,31 @@ describe('FiltersForm', () => {
   });
 
   describe('documentTypeList mode toggle', () => {
-    it('should mark FILTERS as the default option', () => {
-      const documentTypesList = component.find('Connect(DocumentTypesList)');
-      expect(documentTypesList.props().fromFilters).toBe(true);
-    });
+    describe('configured filters', () => {
+      beforeEach(() => {
+        render([{ id: 1, name: 'Judge' }]);
+      });
 
-    it('should allows logged users to switch templates filter between ALL/FILTERS', () => {
-      const documentTypesSwitcher = component.find('Switcher');
-      documentTypesSwitcher.props().onChange(false);
-      const documentTypesList = component.find('Connect(DocumentTypesList)');
-      expect(documentTypesList.props().fromFilters).toBe(false);
+      it('should mark FILTERS as the default option', () => {
+        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        expect(documentTypesList.props().fromFilters).toBe(true);
+      });
+
+      it('should allows logged users to switch templates filter between ALL/FILTERS', () => {
+        const documentTypesSwitcher = component.find('Switcher');
+        documentTypesSwitcher.props().onChange(false);
+        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        expect(documentTypesList.props().fromFilters).toBe(false);
+      });
+    });
+    describe('not configured filters', () => {
+      it('should not render template filter toggle', () => {
+        render();
+        const documentTypesSwitcher = component.find('Switcher');
+        expect(documentTypesSwitcher.length).toBe(0);
+        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        expect(documentTypesList.props().fromFilters).toBe(false);
+      });
     });
   });
 

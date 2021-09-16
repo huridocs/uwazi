@@ -10,6 +10,17 @@ import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 
+const getItemsToShow = (fromFilters, templates, settings) => {
+  let items = fromFilters ? settings.collection.toJS().filters : [];
+  if (!items?.length) {
+    items = templates.toJS().map(tpl => ({
+      id: tpl._id,
+      name: tpl.name,
+    }));
+  }
+  return items;
+};
+
 export class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
@@ -25,17 +36,6 @@ export class DocumentTypesList extends Component {
       !is(this.props.aggregations, nextProps.aggregations) ||
       this.stateChanged(nextState)
     );
-  }
-
-  getItemsToShow(fromFilters, templates, settings) {
-    let items = fromFilters ? settings.collection.toJS().filters : [];
-    if (!items?.length) {
-      items = templates.toJS().map(tpl => ({
-        id: tpl._id,
-        name: tpl.name,
-      }));
-    }
-    return items;
   }
 
   changeAll(item, e) {
@@ -191,7 +191,7 @@ export class DocumentTypesList extends Component {
 
   render() {
     const { fromFilters, templates, settings } = this.props;
-    const items = this.getItemsToShow(fromFilters, templates, settings);
+    const items = getItemsToShow(fromFilters, templates, settings);
     this.aggs = this.props.aggregations.toJS();
     return (
       <ul className="multiselect is-active">
