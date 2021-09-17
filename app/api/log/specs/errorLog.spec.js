@@ -20,9 +20,11 @@ describe('errorLog', () => {
 
     const fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
     expect(fileArgs[Symbol.for('message')]).toContain('[localhost] a message');
+    expect(fileArgs[Symbol.for('message')]).toContain('[Tenant error]');
 
     const consoleArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
     expect(consoleArgs[Symbol.for('message')]).toContain('[localhost] a message');
+    expect(consoleArgs[Symbol.for('message')]).toContain('[Tenant error]');
   });
 
   describe('when passing multitenant flag', () => {
@@ -35,7 +37,7 @@ describe('errorLog', () => {
       tenants.add({ name: 'tenant' });
 
       await tenants.run(async () => {
-        anErrorLog.error('a message', { shouldBeMultiTenantContext: true });
+        anErrorLog.error('a message');
       }, 'tenant');
 
       const fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];

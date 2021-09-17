@@ -5,16 +5,23 @@ import { config } from 'api/config';
 
 const addTenant = winston.format((info, { instanceName }: { instanceName: string }) => {
   let tenantName = instanceName;
-  if (info.shouldBeMultiTenantContext) {
+  let tenantError = '';
+
+  try {
     const tenant = tenants.current();
     tenantName = tenant.name === config.defaultTenant.name ? instanceName : tenant.name;
+  } catch (err) {
+    tenantError = err;
   }
-  return { ...info, tenant: tenantName };
+
+  return { ...info, tenant: tenantName, tenantError };
 });
 
 const formatInfo = (info: any) => {
   const message = info.message && info.message.join ? info.message.join('\n') : info.message;
-  return `${info.timestamp} [${info.tenant}] ${message}`;
+  return `${info.timestamp} [${info.tenant}] ${message}${
+    info.tenantError ? `\n[Tenant error] ${info.tenantError}` : ''
+  }`;
 };
 
 const formatter = (DATABASE_NAME: String) =>
