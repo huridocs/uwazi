@@ -480,6 +480,10 @@
   &:not(:last-child) {
     border-bottom: 1px dotted $c-grey;
   }
+
+  & > .no-options-message span {
+    color: $c-grey;
+  }
 }
 
 .multiselectChild {
