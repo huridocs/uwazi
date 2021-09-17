@@ -44,4 +44,22 @@ describe('migration delete-orphaned-connections', () => {
       .toArray();
     expect(connections.length).toBe(2);
   });
+
+  it('should not delete any connection', async () => {
+    const localFixtures = {
+      entities: [...fixtures.entities],
+      connections: [
+        { ...fixtures.connections[0], entity: 'sharedid1' },
+        { ...fixtures.connections[1], entity: 'sharedid2' },
+      ],
+    };
+
+    await testingDB.clearAllAndLoad(localFixtures);
+    await migration.up(testingDB.mongodb);
+    const connections = await testingDB.mongodb
+      .collection('connections')
+      .find()
+      .toArray();
+    expect(connections.length).toBe(2);
+  });
 });
