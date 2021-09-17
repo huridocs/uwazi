@@ -36,9 +36,7 @@ describe('Error handling middleware', () => {
 
     expect(errorLog.error).toHaveBeenCalledWith(
       `requestId: ${contextRequestId} \nurl: url\nerror`,
-      {
-        shouldBeMultiTenantContext: true,
-      }
+      {}
     );
   });
 
@@ -46,18 +44,14 @@ describe('Error handling middleware', () => {
     const error = { message: 'error', code: 500 };
     req.body = { param: 'value', param2: 'value2' };
     middleware(error, req, res, next);
-    expect(
-      errorLog.error
-    ).toHaveBeenCalledWith(
+    expect(errorLog.error).toHaveBeenCalledWith(
       `requestId: ${contextRequestId} \nbody: ${JSON.stringify(req.body, null, ' ')}\nerror`,
-      { shouldBeMultiTenantContext: true }
+      {}
     );
 
     req.body = {};
     middleware(error, req, res, next);
-    expect(errorLog.error).toHaveBeenCalledWith(`requestId: ${contextRequestId} \nerror`, {
-      shouldBeMultiTenantContext: true,
-    });
+    expect(errorLog.error).toHaveBeenCalledWith(`requestId: ${contextRequestId} \nerror`, {});
   });
 
   it('should log the error query', () => {
@@ -65,11 +59,9 @@ describe('Error handling middleware', () => {
     req.query = { param: 'value', param2: 'value2' };
     middleware(error, req, res, next);
 
-    expect(
-      errorLog.error
-    ).toHaveBeenCalledWith(
+    expect(errorLog.error).toHaveBeenCalledWith(
       `requestId: ${contextRequestId} \nquery: ${JSON.stringify(req.query, null, ' ')}\nerror`,
-      { shouldBeMultiTenantContext: true }
+      {}
     );
   });
 });

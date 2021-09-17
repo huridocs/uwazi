@@ -1,5 +1,5 @@
-import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
+import errorLog from 'api/log/errorLog';
 import debugLog from 'api/log/debugLog';
 
 import { ConnectionError } from '@elastic/elasticsearch/lib/errors';

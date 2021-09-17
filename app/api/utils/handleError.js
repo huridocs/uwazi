@@ -144,8 +144,7 @@ export default (_error, { req = undefined, uncaught = false } = {}) => {
   const result = prettifyError(error, { req, uncaught });
   result.requestId = appContext.get('requestId');
 
-  const errorOptions = req ? { shouldBeMultiTenantContext: true } : {};
-  sendLog(result, error, errorOptions);
+  sendLog(result, error, {});
 
   return simplifyError(result, error);
 };
