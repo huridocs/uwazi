@@ -5,7 +5,7 @@ import { config } from 'api/config';
 
 const addTenant = winston.format((info, { instanceName }: { instanceName: string }) => {
   let tenantName = instanceName;
-  let tenantError = '';
+  let tenantError;
 
   try {
     const tenant = tenants.current();
