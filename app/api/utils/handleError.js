@@ -1,5 +1,4 @@
-import debugLog from 'api/log/debugLog';
-import errorLog from 'api/log/errorLog';
+import { errorLog, debugLog } from 'api/log';
 import Ajv from 'ajv';
 import { createError } from 'api/utils/index';
 import { appContext } from 'api/utils/AppContext';
@@ -133,7 +132,7 @@ function simplifyError(result, error) {
   return simplifiedError;
 }
 
-export default (_error, { req = undefined, uncaught = false } = {}) => {
+const handleError = (_error, { req = undefined, uncaught = false } = {}) => {
   const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
 
   const error = errorData || new Error('Unexpected error has occurred');
@@ -149,4 +148,4 @@ export default (_error, { req = undefined, uncaught = false } = {}) => {
   return simplifyError(result, error);
 };
 
-export { prettifyError };
+export { handleError, prettifyError };

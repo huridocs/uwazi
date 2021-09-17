@@ -1,6 +1,6 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import { createWriteStream, unlink } from 'fs';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
 import settings from 'api/settings';

@@ -1,6 +1,6 @@
 import { appContext } from 'api/utils/AppContext';
 import middleware from '../error_handling_middleware.js';
-import errorLog from '../../log/errorLog';
+import { errorLog } from '../../log';
 
 describe('Error handling middleware', () => {
   let next;
