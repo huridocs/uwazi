@@ -16,7 +16,32 @@ describe('migration delete-orphaned-connections', () => {
     expect(migration.delta).toBe(51);
   });
 
-  it('should fail', async () => {
-    await migration.up();
+  it('should delete all connections', async () => {
+    await migration.up(testingDB.mongodb);
+    const connections = await testingDB.mongodb
+      .collection('connections')
+      .find()
+      .toArray();
+    expect(connections.length).toBe(0);
+  });
+
+  it('should delete all orphaned connections except two remaining in hub', async () => {
+    const localFixtures = {
+      entities: [...fixtures.entities],
+      connections: [
+        ...fixtures.connections,
+        {
+          entity: 'sharedid2',
+          hub: 'hub1',
+        },
+      ],
+    };
+    await testingDB.clearAllAndLoad(localFixtures);
+    await migration.up(testingDB.mongodb);
+    const connections = await testingDB.mongodb
+      .collection('connections')
+      .find()
+      .toArray();
+    expect(connections.length).toBe(2);
   });
 });
