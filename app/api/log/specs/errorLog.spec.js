@@ -10,41 +10,41 @@ describe('errorLog', () => {
     expect(anErrorLog.transports.length).toBe(2);
   });
 
-  it('should call 2 transports with instanceName and message', () => {
+  it('should call transports with tenant name and message', async () => {
     const anErrorLog = createErrorLog();
 
     spyOn(anErrorLog.transports[0], 'log');
     spyOn(anErrorLog.transports[1], 'log');
 
-    anErrorLog.error('a message');
+    tenants.add({ name: 'tenant' });
+
+    await tenants.run(async () => {
+      anErrorLog.error('a message');
+    }, 'tenant');
 
     const fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
-    expect(fileArgs[Symbol.for('message')]).toContain('[localhost] a message');
-    expect(fileArgs[Symbol.for('message')]).toContain('[Tenant error]');
+    expect(fileArgs[Symbol.for('message')]).toContain('[tenant] a message');
 
     const consoleArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
-    expect(consoleArgs[Symbol.for('message')]).toContain('[localhost] a message');
-    expect(consoleArgs[Symbol.for('message')]).toContain('[Tenant error]');
+    expect(consoleArgs[Symbol.for('message')]).toContain('[tenant] a message');
   });
 
-  describe('when passing multitenant flag', () => {
-    it('should call 2 transports with tenant name and message', async () => {
+  describe('when current tenant fails', () => {
+    it('should call transports with fallback name, message and tenant error', () => {
       const anErrorLog = createErrorLog();
 
       spyOn(anErrorLog.transports[0], 'log');
       spyOn(anErrorLog.transports[1], 'log');
 
-      tenants.add({ name: 'tenant' });
-
-      await tenants.run(async () => {
-        anErrorLog.error('a message');
-      }, 'tenant');
+      anErrorLog.error('a message');
 
       const fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
-      expect(fileArgs[Symbol.for('message')]).toContain('[tenant] a message');
+      expect(fileArgs[Symbol.for('message')]).toContain('[localhost] a message');
+      expect(fileArgs[Symbol.for('message')]).toContain('[Tenant error]');
 
       const consoleArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
-      expect(consoleArgs[Symbol.for('message')]).toContain('[tenant] a message');
+      expect(consoleArgs[Symbol.for('message')]).toContain('[localhost] a message');
+      expect(consoleArgs[Symbol.for('message')]).toContain('[Tenant error]');
     });
   });
 
