@@ -7,6 +7,7 @@ import db from 'api/utils/testing_db';
 // import fixtures, { template1Id } from './fixtures';
 import { arrangeThesauri } from '../importEntity';
 import importFile from '../importFile';
+import { stream } from './helpers';
 import entities from 'api/entities';
 import thesauri from 'api/thesauri';
 // import typeParsers from '../../typeParsers';
@@ -27,6 +28,9 @@ const fixtures = {
       fixtureFactory.property('multiselect_property', 'multiselect', {
         content: fixtureFactory.id('multiselect_thesaurus'),
       }),
+    ]),
+    fixtureFactory.template('no_selects_template', [
+      fixtureFactory.property('unrelated_property', 'text'),
     ]),
   ],
   entities: [
@@ -75,6 +79,15 @@ describe('arrangeThesauri', () => {
 
   it('dummy_test_delete_when_done', async () => {
     fail('dummy_test_delete_when_done')
+  });
+
+  it('should not fail on templates with no select or multiselect fields', async () => {
+    const noselTemplate = templates.getById(fixtureFactory.id('no_selects_template'));
+    const csv = `title,unrelated_text
+first,first
+second,second`;
+    console.log(csv);
+    await arrangeThesauri(importFile(stream(csv)), noselTemplate);
   });
 
   it('should create values in thesauri', async () => {
