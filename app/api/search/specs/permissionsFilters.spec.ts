@@ -109,65 +109,6 @@ describe('Permissions filters', () => {
       const { rows } = await search.search(query, 'es', users.user2);
       expect(rows).toEqual([]);
     });
-
-    describe('when filtering by permissions level', () => {
-      it('should return only entities that I can see and match the filter', async () => {
-        userFactory.mock(users.user2);
-        const query = {
-          customFilters: { 'permissions.level': { values: ['write'] } },
-          unpublished: true,
-        };
-        const { rows } = await search.search(query, 'es', users.user2);
-        expect(rows).toEqual([expect.objectContaining({ title: 'ent4' })]);
-      });
-
-      it('should return entities that admin/editor have explicit permissions', async () => {
-        userFactory.mock(users.adminUser);
-        const query = {
-          customFilters: { 'permissions.level': { values: ['write'] } },
-          unpublished: true,
-        };
-
-        const { rows: adminRows } = await search.search(query, 'es', users.adminUser);
-        expect(adminRows).toEqual([
-          expect.objectContaining({ title: 'ent2' }),
-          expect.objectContaining({ title: 'ent4' }),
-        ]);
-
-        userFactory.mock(users.editorUser);
-        const { rows: editorRows } = await search.search(query, 'es', users.adminUser);
-        expect(editorRows).toEqual([expect.objectContaining({ title: 'ent4' })]);
-      });
-    });
-  });
-
-  describe('permissions aggregations based on access level ', () => {
-    const performSearch = async (user: UserSchema): Promise<AggregationBucket[]> => {
-      const response = await search.search(
-        { aggregatePermissionsByLevel: true, unpublished: true },
-        'es',
-        user
-      );
-      const aggs = response.aggregations as Aggregations;
-      return aggs.all.permissions.buckets;
-    };
-
-    it.each`
-      user                | expect1 | expect2
-      ${users.user1}      | ${2}    | ${1}
-      ${users.user2}      | ${1}    | ${1}
-      ${user3WithGroups}  | ${3}    | ${2}
-      ${users.adminUser}  | ${1}    | ${2}
-      ${users.editorUser} | ${1}    | ${1}
-    `(
-      'should return aggregations of permission level filtered per current user',
-      async ({ user, expect1, expect2 }) => {
-        userFactory.mock(user);
-        buckets = await performSearch(user);
-        expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(expect1);
-        expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(expect2);
-      }
-    );
   });
 
   describe('published aggregations based on access level ', () => {
