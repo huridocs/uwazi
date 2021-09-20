@@ -108,6 +108,10 @@ const fixturesFilesWithoutInformationExtraction: DBFixture = {
   ],
 };
 
+const fixturesMultiTenant: DBFixture = {
+
+}
+
 export {
   fixturesPdfNameA,
   fixturesOneFile,

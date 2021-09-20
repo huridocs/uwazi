@@ -54,13 +54,11 @@ class SegmentPdfs {
       await this.start();
     }
 
-    console.log(this.templatesWithInformationExtraction);
-
     const nextEntitiesToProcess = await entities.get({
       template: { $in: this.templatesWithInformationExtraction },
     });
 
-    const sharedIds = nextEntitiesToProcess.map(x => x.sharedId);
+    const sharedIds = nextEntitiesToProcess.map((x: { sharedId: string }) => x.sharedId);
     const nextFilesToProcess = await files.get({
       entity: { $in: sharedIds },
     });

@@ -92,4 +92,18 @@ describe('pdfSegmentation', () => {
 
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
   });
+
+  it('should send pdfs from different tenants', async () => {
+    await testingEnvironment.setUp(fixturesMultitenant);
+
+    await segmentPdfs.segmentPdfs();
+
+    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
+      file,
+      fixturesPdfNameA
+    );
+
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
+  });
 });
