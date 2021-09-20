@@ -47,9 +47,9 @@ export function getFixturesFactory() {
     file: (
       id: string,
       entity: string,
-      language: string,
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
-      filename: string
+      filename: string,
+      language: string = 'en'
     ): FileType => ({
       _id: idMapper(`${id}`),
       entity,
