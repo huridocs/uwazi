@@ -459,7 +459,9 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return (
       <ul className="multiselect is-active">
         {this.renderSearch()}
-        {!renderingOptions.length && <span>{t('System', 'No options found')}</span>}
+        {!renderingOptions.length && (
+          <span className="no-options-message">{t('System', 'No options found')}</span>
+        )}
         {renderingOptions.map((option, index) => {
           if (option.options) {
             return this.renderGroup(option, index);

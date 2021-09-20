@@ -13,6 +13,7 @@ import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';
+import { AssigneeFilter } from 'app/Library/components/AssigneeFilter';
 import { PermissionsFilter } from './PermissionsFilter';
 import { PublishedFilters } from './PublishedFilters';
 
@@ -80,6 +81,7 @@ export class FiltersForm extends Component {
           />
 
           <FilterTocGeneration onChange={this.activateAutoSearch} aggregations={aggregations} />
+          <AssigneeFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
         </Form>
 
         {(() => {

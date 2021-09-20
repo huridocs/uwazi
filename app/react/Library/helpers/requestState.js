@@ -7,6 +7,7 @@ import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { setTableViewColumns } from 'app/Library/actions/libraryActions';
 import { tocGenerationUtils } from 'app/ToggledFeatures/tocGeneration';
 import { wrapDispatch } from 'app/Multireducer';
+import { UserRole } from 'shared/types/userSchema';
 import { getTableColumns } from './tableColumns';
 import setReduxState from './setReduxState.js';
 
@@ -39,10 +40,13 @@ export function processQuery(params, globalResources, key) {
   const { userSelectedSorting, ...sanitizedQuery } = query;
 
   const loggedIn = globalResources.user && globalResources.user.has('role');
+  const isAdmin = loggedIn && globalResources.user.get('role') === UserRole.ADMIN;
 
   return {
     ...tocGenerationUtils.aggregations(sanitizedQuery, globalResources.settings.collection.toJS()),
-    ...(loggedIn ? { aggregatePermissionsByLevel: true, aggregatePublishingStatus: true } : {}),
+    ...(loggedIn ? { aggregatePublishingStatus: true } : {}),
+    ...(loggedIn && !isAdmin ? { aggregatePermissionsByLevel: true } : {}),
+    ...(isAdmin ? { aggregatePermissionsByUsers: true } : {}),
   };
 }
 
