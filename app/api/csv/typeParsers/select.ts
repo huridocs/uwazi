@@ -32,17 +32,17 @@ const select = async (
 
   let value = thesauriValues.find(thesauriMatching);
 
-  if (!value) {
-    const updated = await thesauri.save({
-      ...currentThesauri,
-      values: thesauriValues.concat([
-        {
-          label: entityToImport[ensure<string>(property.name)],
-        },
-      ]),
-    });
-    value = (updated.values || []).find(thesauriMatching);
-  }
+  // if (!value) {
+  //   const updated = await thesauri.save({
+  //     ...currentThesauri,
+  //     values: thesauriValues.concat([
+  //       {
+  //         label: entityToImport[ensure<string>(property.name)],
+  //       },
+  //     ]),
+  //   });
+  //   value = (updated.values || []).find(thesauriMatching);
+  // }
   const t2 = performance.now()
   timeSpentInSelect += t2 - t1;
 

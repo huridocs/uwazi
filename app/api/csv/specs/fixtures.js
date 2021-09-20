@@ -71,6 +71,14 @@ export default {
       name: 'thesauri1',
       values: [
         {
+          label: 'value',
+          id: db.id().toString(),
+        },
+        {
+          label: 'value2',
+          id: db.id().toString(),
+        },
+        {
           label: ' value4 ',
           id: db.id().toString(),
         },
