@@ -12,6 +12,8 @@ import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 
+import { timeSpentInSelect } from 'api/csv/typeParsers/select';
+
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
@@ -201,7 +203,9 @@ export default (app: Application) => {
       },
     }),
 
-    (req, res) => {
+    async (req, res) => {
+      console.log('---------------/api/import')
+      console.time('Entire api call time:');
       const loader = new CSVLoader();
       let loaded = 0;
 
@@ -215,7 +219,8 @@ export default (app: Application) => {
       });
 
       req.emitToSessionSocket('IMPORT_CSV_START');
-      loader
+      
+      await loader
         .load(req.file.path, req.body.template, { language: req.language, user: req.user })
         .then(() => {
           req.emitToSessionSocket('IMPORT_CSV_END');
@@ -225,6 +230,8 @@ export default (app: Application) => {
         });
 
       res.json('ok');
+      console.log(`Time spent in select formatter: ${timeSpentInSelect}`)
+      console.timeEnd('Entire api call time:');
     }
   );
 };

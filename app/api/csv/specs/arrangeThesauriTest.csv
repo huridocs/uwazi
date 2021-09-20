@@ -1,0 +1,17 @@
+title,unrelated_property,select_property,multiselect_property
+select_1,unrelated_text,B,A
+select_2,unrelated_text,C,A
+select_3,unrelated_text,b,A
+select_4,unrelated_text,B,A
+select_5,unrelated_text,d,A
+select_6,unrelated_text,D,A
+select_7,unrelated_text,  b,A
+select_8,unrelated_text, ,A
+select_8,unrelated_text,      ,A
+multiselect_1,unrelated_text,A,B
+multiselect_2,unrelated_text,A,c
+multiselect_3,unrelated_text,A,A|b
+multiselect_4,unrelated_text,A,a|B|C
+multiselect_5,unrelated_text,A,  a|   b | 
+multiselect_6,unrelated_text,A, |   | 
+multiselect_7, unrelated_text,A,A|B|C|D|  |E| e| g  

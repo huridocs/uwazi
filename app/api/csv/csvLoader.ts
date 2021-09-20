@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { EventEmitter } from 'events';
 
 import templates from 'api/templates';
@@ -12,8 +13,10 @@ import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
 import csv, { CSVRow } from './csv';
 import importFile from './importFile';
-import { importEntity, translateEntity } from './importEntity';
+import { arrangeThesauri, importEntity, translateEntity } from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
+
+const { performance } = require('perf_hooks')
 
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
@@ -46,29 +49,43 @@ export class CSVLoader extends EventEmitter {
     templateId: ObjectId | string,
     options = { language: 'en', user: {} }
   ) {
+    // console.log('---------------csvLoader.load')
+    let timeInImportAndTranslate = 0;
     const template = await templates.getById(templateId);
     if (!template) {
       throw new Error('template not found!');
     }
+    // console.log(`-----template\n${JSON.stringify(template, null, 2)}\n-----done`)
     const file = importFile(csvPath);
+    // console.log(`-----file\n${file}\n-----done`)
     const availableLanguages: string[] = ensure<LanguageSchema[]>(
       (await settings.get()).languages
     ).map((l: LanguageSchema) => l.key);
     const { newNameGeneration = false } = await settings.get();
+    // console.log(`-----availableLanguages\n${availableLanguages}\n-----done`)
+    console.time('time spent in arrageThesauri');
+    await arrangeThesauri(file, template);
+    console.timeEnd('time spent in arrageThesauri');
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
+        // console.log(row)
         const { rawEntity, rawTranslations } = extractEntity(
           row,
           availableLanguages,
           options.language,
           newNameGeneration
         );
+        // console.log(`-----rawEntity\n${JSON.stringify(rawEntity, null, 2)}\n-----done`)
+        // console.log(`-----rawTranslations\n${JSON.stringify(rawTranslations, null, 2)}\n-----done`)
 
         if (rawEntity) {
+          const t1 = performance.now()
           const entity = await importEntity(rawEntity, template, file, options);
           await translateEntity(entity, rawTranslations, template, file);
           this.emit('entityLoaded', entity);
+          const t2 = performance.now()
+          timeInImportAndTranslate += t2 - t1;
         }
       })
       .onError(async (e: Error, row: CSVRow, index: number) => {
@@ -76,6 +93,7 @@ export class CSVLoader extends EventEmitter {
         this.emit('loadError', e, toSafeName(row), index);
       })
       .read();
+    console.log(`Total time spent in importEntity and translateEntity:${timeInImportAndTranslate}`)
 
     this.throwErrors();
   }
