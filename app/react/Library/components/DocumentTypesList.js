@@ -210,14 +210,18 @@ DocumentTypesList.defaultProps = {
   fromFilters: true,
   templates: Immutable.fromJS([]),
   storeKey: 'library',
+  settings: {},
+  aggregations: Immutable.fromJS({}),
+  libraryFilters: Immutable.fromJS({}),
+  filterDocumentTypes: {},
 };
 
 DocumentTypesList.propTypes = {
-  libraryFilters: PropTypes.instanceOf(Immutable.Map).isRequired,
-  settings: PropTypes.instanceOf(Object).isRequired,
+  libraryFilters: PropTypes.instanceOf(Immutable.Map),
+  settings: PropTypes.instanceOf(Object),
   templates: PropTypes.instanceOf(Immutable.List),
-  filterDocumentTypes: PropTypes.func.isRequired,
-  aggregations: PropTypes.instanceOf(Immutable.Map).isRequired,
+  filterDocumentTypes: PropTypes.func,
+  aggregations: PropTypes.instanceOf(Immutable.Map),
   storeKey: PropTypes.string,
   fromFilters: PropTypes.bool,
 };
