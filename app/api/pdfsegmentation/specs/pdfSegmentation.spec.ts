@@ -1,89 +1,95 @@
-import { ExternalDummyService } from 'api/tasksmanager/specs/ExternalDummyService';
 import { testingDB } from 'api/utils/testing_db';
 import {
+  fixturesFilesWithoutInformationExtraction,
   fixturesOneFile,
-  fixturesPdfName,
+  fixturesOtherFile,
+  fixturesPdfNameA,
   fixturesTwelveFiles,
 } from 'api/pdfsegmentation/specs/fixtures';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import fs from 'fs';
-import {
-  PdfSegmentation,
-  SERVICE_NAME,
-  SegmentationParameters,
-} from 'api/pdfsegmentation/PdfSegmentation';
-import { RedisServer } from 'api/tasksmanager/RedisServer';
-import waitForExpect from 'wait-for-expect';
+import { TaskManager } from 'api/tasksmanager/taskManager';
+import { config } from 'api/config';
+import { SegmentPdfs } from '../segmentPdfs';
+
+jest.mock('api/tasksmanager/taskManager.ts');
 
 describe('pdfSegmentation', () => {
-  let redisServer: RedisServer;
-  let segmentationMockService: ExternalDummyService;
-  let pdfSegmentation: PdfSegmentation;
-  let segmentationConnectionParameters: SegmentationParameters;
-
-  beforeAll(async () => {
-    redisServer = new RedisServer();
-
-    await redisServer.start();
-    segmentationConnectionParameters = {
-      dataUrl: 'http://localhost:1234/data',
-      filesUrl: 'http://localhost:1234/files',
-      resultsUrl: 'http://localhost:1234/results',
-      redisUrl: 'redis://localhost:6379',
-    };
-
-    segmentationMockService = new ExternalDummyService(1234, SERVICE_NAME);
-    await segmentationMockService.start(segmentationConnectionParameters.redisUrl);
-  });
-
-  beforeEach(() => {
-    segmentationMockService.reset();
-  });
+  let segmentPdfs: SegmentPdfs;
 
   afterAll(async () => {
     await testingDB.disconnect();
-    await segmentationMockService.stop();
-    await pdfSegmentation?.stop();
-    await redisServer.stop();
   });
 
-  it('should send one pdfs to segment', async () => {
+  beforeEach(() => {
+    segmentPdfs = new SegmentPdfs();
+  });
+
+  it('should send one pdf to segment', async () => {
     await testingEnvironment.setUp(fixturesOneFile);
 
-    pdfSegmentation = new PdfSegmentation(segmentationConnectionParameters);
-    await pdfSegmentation.start();
+    await segmentPdfs.segmentPdfs();
 
-    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfName}`);
-
-    await waitForExpect(async () => {
-      expect(segmentationMockService.files.length).toEqual(1);
+    expect(TaskManager).toHaveBeenCalledWith({
+      serviceName: 'segmentation',
+      dataUrl: 'http://localhost:1234/data',
+      filesUrl: 'http://localhost:1234/files',
+      resultsUrl: 'http://localhost:1234/results',
+      redisUrl: `redis://${config.redis.host}:${config.redis.host}`,
     });
 
-    expect(segmentationMockService.files[0]).toEqual(file);
-    expect(segmentationMockService.filesNames[0]).toEqual(fixturesPdfName);
-
-    const message = await segmentationMockService.readFirstTaskMessage();
-    expect(message).toEqual(`{"task":"${fixturesPdfName}","tenant":"tenant1"}`);
+    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
+      file,
+      fixturesPdfNameA
+    );
   });
 
-  it('should send 12 pdfs to segment', async () => {
-    await testingEnvironment.setUp(fixturesTwelveFiles);
-    pdfSegmentation = new PdfSegmentation(segmentationConnectionParameters);
-    await pdfSegmentation.start();
+  it('should send other pdf to segment', async () => {
+    await testingEnvironment.setUp(fixturesOtherFile);
 
-    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfName}`);
+    await segmentPdfs.segmentPdfs();
 
-    await waitForExpect(async () => {
-      expect(segmentationMockService.files.length).toEqual(12);
+    expect(TaskManager).toHaveBeenCalledWith({
+      serviceName: 'segmentation',
+      dataUrl: 'http://other-localhost:1234/data',
+      filesUrl: 'http://other-localhost:1234/files',
+      resultsUrl: 'http://other-localhost:1234/results',
+      redisUrl: `redis://${config.redis.host}:${config.redis.host}`,
     });
 
-    expect(segmentationMockService.files[0]).toEqual(file);
-    expect(segmentationMockService.filesNames[0]).toEqual(fixturesPdfName);
-    expect(segmentationMockService.files[9]).toEqual(file);
-    expect(segmentationMockService.filesNames[9]).toEqual(fixturesPdfName);
+    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
+      file,
+      fixturesPdfNameA
+    );
+  });
 
-    const messages = await segmentationMockService.readAllTaskMessages();
-    expect(messages.length).toEqual(12);
-    expect(messages[0]).toEqual(`{"task":"${fixturesPdfName}","tenant":"tenant1"}`);
+  it('should send 10 pdfs to segment', async () => {
+    await testingEnvironment.setUp(fixturesTwelveFiles);
+
+    await segmentPdfs.segmentPdfs();
+
+    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
+      file,
+      fixturesPdfNameA
+    );
+
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(10);
+  });
+
+  it('should send pdfs only from templates with the information extraction on', async () => {
+    await testingEnvironment.setUp(fixturesFilesWithoutInformationExtraction);
+
+    await segmentPdfs.segmentPdfs();
+
+    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
+      file,
+      fixturesPdfNameA
+    );
+
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
   });
 });
