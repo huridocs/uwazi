@@ -28,7 +28,7 @@ export interface MetadataExtractionDashboardStateTypes {
 
 function mapStateToProps({ settings, templates }: any) {
   return {
-    extractionSettings: settings.collection.get('features')?.get('metadata-extraction'),
+    extractionSettings: settings.collection.get('features')?.get('metadataExtraction'),
     templates,
   };
 }
@@ -52,8 +52,8 @@ class MetadataExtractionDashboard extends React.Component<
     const formatted: FormattedSettingsData = {};
 
     this.props.extractionSettings.forEach(setting => {
-      const template = setting.has('id')
-        ? this.props.templates.find(temp => temp?.get('_id') === setting.get('id'))
+      const template = setting.has('template')
+        ? this.props.templates.find(temp => temp?.get('_id') === setting.get('template'))
         : this.props.templates.find(temp => temp?.get('name') === setting.get('name'));
 
       if (!template) {

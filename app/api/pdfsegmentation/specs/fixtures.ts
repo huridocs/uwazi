@@ -5,29 +5,57 @@ const factory = getFixturesFactory();
 
 const settings = [
   {
-    _id: db.id(),
-    languages: [{ key: 'en', default: true }, { key: 'es' }, { key: 'pt' }],
     features: {
-      'metadata-extraction': [
+      metadataExtraction: [
         {
-          id: factory.id('templateToSegmentA'),
+          template: factory.id('templateToSegmentA'),
           properties: ['property1', 'property2'],
         },
         {
-          id: factory.id('templateToSegmentB'),
+          template: factory.id('templateToSegmentB'),
           properties: ['property1'],
         },
       ],
+      segmentation: {
+        dataUrl: 'http://localhost:1234/data',
+        filesUrl: 'http://localhost:1234/files',
+        resultsUrl: 'http://localhost:1234/results',
+      },
     },
   },
 ];
 
-const fixturesPdfName = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const otherSettings = [
+  {
+    _id: db.id(),
+    features: {
+      metadataExtraction: [
+        {
+          template: factory.id('templateToSegmentB'),
+          properties: ['property1'],
+        },
+      ],
+      segmentation: {
+        dataUrl: 'http://other-localhost:1234/data',
+        filesUrl: 'http://other-localhost:1234/files',
+        resultsUrl: 'http://other-localhost:1234/results',
+      },
+    },
+  },
+];
+
+const fixturesPdfNameA = 'f2082bf51b6ef839690485d7153e847a.pdf';
 
 const fixturesOneFile: DBFixture = {
   settings,
   entities: [factory.entity('A1', 'templateToSegmentA')],
-  files: [factory.file('F1', 'A1', 'en', 'document', fixturesPdfName)],
+  files: [factory.file('F1', 'A1', 'document', fixturesPdfNameA)],
+};
+
+const fixturesOtherFile: DBFixture = {
+  settings: otherSettings,
+  entities: [factory.entity('A1', 'templateToSegmentB')],
+  files: [factory.file('F1', 'A1', 'document', fixturesPdfNameA)],
 };
 
 const fixturesTwelveFiles: DBFixture = {
@@ -49,33 +77,41 @@ const fixturesTwelveFiles: DBFixture = {
     factory.entity('A14', 'templateToSegmentA'),
   ],
   files: [
-    factory.file('F1', 'A1', 'en', 'document', fixturesPdfName),
-    factory.file('F2', 'A2', 'en', 'document', fixturesPdfName),
-    factory.file('F3', 'A3', 'en', 'document', fixturesPdfName),
-    factory.file('F4', 'A4', 'en', 'document', fixturesPdfName),
-    factory.file('F5', 'A5', 'en', 'document', fixturesPdfName),
-    factory.file('F6', 'A6', 'en', 'document', fixturesPdfName),
-    factory.file('F7', 'A7', 'en', 'document', fixturesPdfName),
-    factory.file('F8', 'A8', 'en', 'document', fixturesPdfName),
-    factory.file('F9', 'A9', 'en', 'document', fixturesPdfName),
-    factory.file('F10', 'A10', 'en', 'document', fixturesPdfName),
-    factory.file('F11', 'A11', 'en', 'document', fixturesPdfName),
-    factory.file('F12', 'A12', 'en', 'document', fixturesPdfName),
+    factory.file('F1', 'A1', 'document', fixturesPdfNameA),
+    factory.file('F2', 'A2', 'document', fixturesPdfNameA),
+    factory.file('F3', 'A3', 'document', fixturesPdfNameA),
+    factory.file('F4', 'A4', 'document', fixturesPdfNameA),
+    factory.file('F5', 'A5', 'document', fixturesPdfNameA),
+    factory.file('F6', 'A6', 'document', fixturesPdfNameA),
+    factory.file('F7', 'A7', 'document', fixturesPdfNameA),
+    factory.file('F8', 'A8', 'document', fixturesPdfNameA),
+    factory.file('F9', 'A9', 'document', fixturesPdfNameA),
+    factory.file('F10', 'A10', 'document', fixturesPdfNameA),
+    factory.file('F11', 'A11', 'document', fixturesPdfNameA),
+    factory.file('F12', 'A12', 'document', fixturesPdfNameA),
   ],
 };
 
-const fixturesUseDefaultPdfPerLanguage: DBFixture = {
+const fixturesFilesWithoutInformationExtraction: DBFixture = {
   settings,
   entities: [
-    factory.entity('A1', 'templateToSegmentA', {}, { language: 'es' }),
-    factory.entity('B1', 'templateToSegmentB', {}, { language: 'pt' }),
-    factory.entity('B2', 'templateNotSegmentC', {}, { language: 'en' }),
+    factory.entity('A1', 'templateToSegmentA', {}),
+    factory.entity('B1', 'templateToSegmentB', {}),
+    factory.entity('B2', 'templateNotSegmentC', {}),
+    factory.entity('B3', 'templateNotSegmentC', {}),
   ],
   files: [
-    factory.file('F1', 'A1', 'en', 'document', 'test.pdf'),
-    factory.file('F2', 'B1', 'es', 'attachment', 'a.png'),
-    factory.file('F3', 'B2', 'pt', 'document', 'c.pdf'),
+    factory.file('F1', 'A1', 'document', fixturesPdfNameA),
+    factory.file('F2', 'B1', 'document', fixturesPdfNameA),
+    factory.file('F3', 'B2', 'document', fixturesPdfNameA),
+    factory.file('F4', 'B3', 'document', fixturesPdfNameA),
   ],
 };
 
-export { fixturesPdfName, fixturesOneFile, fixturesTwelveFiles, fixturesUseDefaultPdfPerLanguage };
+export {
+  fixturesPdfNameA,
+  fixturesOneFile,
+  fixturesOtherFile,
+  fixturesTwelveFiles,
+  fixturesFilesWithoutInformationExtraction,
+};
