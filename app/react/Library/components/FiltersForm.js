@@ -8,12 +8,11 @@ import { Icon } from 'UI';
 
 import debounce from 'app/utils/debounce';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
-import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
 import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
-import { Switcher } from 'app/ReactReduxForms';
+import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';
 import { PermissionsFilter } from './PermissionsFilter';
 import { PublishedFilters } from './PublishedFilters';
 
@@ -56,8 +55,7 @@ export class FiltersForm extends Component {
   }
 
   render() {
-    const { templates, documentTypes, settings } = this.props;
-    const configuredFilters = settings.collection.toJS().filters?.length > 0;
+    const { templates, documentTypes } = this.props;
     const aggregations = this.props.aggregations.toJS();
     const translationContext =
       documentTypes.get(0) || (templates.get(0) || fromJS({})).get('_id') || 'System';
@@ -73,31 +71,7 @@ export class FiltersForm extends Component {
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           <PublishedFilters onChange={this.activateAutoSearch} aggregations={aggregations} />
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
-
-          <div className="form-group">
-            <ul className="search__filter">
-              {configuredFilters && (
-                <li>
-                  <Translate>Templates</Translate>
-                  <Switcher
-                    className="template-filter-switcher"
-                    model=""
-                    onChange={checked => {
-                      this.setState({ documentTypeFromFilters: checked });
-                    }}
-                    leftLabel="FILTERS"
-                    rightLabel="ALL"
-                  />
-                </li>
-              )}
-              <li className="wide documentTypes-selector">
-                <DocumentTypesList
-                  storeKey={this.props.storeKey}
-                  fromFilters={this.state.documentTypeFromFilters && configuredFilters}
-                />
-              </li>
-            </ul>
-          </div>
+          <TemplatesFilter storeKey={this.props.storeKey} />
           <Filters
             onChange={this.activateAutoSearch}
             properties={fields}
@@ -150,7 +124,6 @@ FiltersForm.propTypes = {
   search: PropTypes.object,
   documentTypes: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string.isRequired,
-  settings: PropTypes.instanceOf(Object).isRequired,
 };
 
 export function mapStateToProps(state, props) {
@@ -159,7 +132,6 @@ export function mapStateToProps(state, props) {
     aggregations: state[props.storeKey].aggregations,
     templates: state.templates,
     documentTypes: state[props.storeKey].filters.get('documentTypes'),
-    settings: state.settings,
   };
 }
 
