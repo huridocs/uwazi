@@ -22,13 +22,6 @@ describe('PDF', () => {
       file: 'file_url',
       filename: 'original.pdf',
       onLoad: jasmine.createSpy('onLoad'),
-      pdfInfo: {
-        1: { chars: 10 },
-        2: { chars: 20 },
-        3: { chars: 30 },
-        4: { chars: 40 },
-        5: { chars: 50 },
-      },
     };
   });
 
