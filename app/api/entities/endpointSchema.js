@@ -91,7 +91,6 @@ const saveSchema = Joi.object()
     uploaded: Joi.boolean(),
     published: Joi.boolean(),
     metadata: metadataSchema,
-    pdfInfo: Joi.any(),
     user: Joi.string(),
   })
   .required();

@@ -49,7 +49,7 @@ const bulkIndex = async (docs, _action = 'index') => {
     let docBody = { documents: [], ...doc };
     docBody.fullText = 'entity';
     const id = doc._id.toString();
-    ['_id', '_rev', 'pdfInfo'].forEach(e => delete docBody[e]);
+    ['_id', '_rev'].forEach(e => delete docBody[e]);
     const action = {};
     action[_action] = { _id: id };
     if (_action === 'update') {

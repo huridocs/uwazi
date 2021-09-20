@@ -27,13 +27,4 @@ export interface FileType {
   };
   toc?: TocSchema[];
   extractedMetadata?: ExtractedMetadataSchema[];
-  pdfInfo?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^[0-9]+$".
-     */
-    [k: string]: {
-      chars?: number;
-    };
-  };
 }

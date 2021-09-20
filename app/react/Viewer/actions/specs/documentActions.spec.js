@@ -224,7 +224,7 @@ describe('documentActions', () => {
           `${APIURL}entities?sharedId=targetId&omitRelationships=true&include=%5B%22permissions%22%5D`,
           {
             body: JSON.stringify({
-              rows: [{ documents: [{ pdfInfo: 'test' }] }],
+              rows: [{ documents: [{}] }],
             }),
           }
         )
@@ -240,7 +240,6 @@ describe('documentActions', () => {
                     {
                       _id: 'pdfCalledWithWrongFilename',
                       filename: 'filename',
-                      pdfInfo: 'processed pdf',
                     },
                   ],
                 },
@@ -252,7 +251,7 @@ describe('documentActions', () => {
           `${APIURL}entities?sharedId=docWithPDFRdy&omitRelationships=true&include=%5B%22permissions%22%5D`,
           {
             body: JSON.stringify({
-              rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
+              rows: [{ documents: [{ _id: 'pdfReady' }] }],
             }),
           }
         )
@@ -317,7 +316,7 @@ describe('documentActions', () => {
       it('should return the document requested', async () => {
         const requestParams = new RequestParams({ sharedId: 'docWithPDFRdy' });
         const doc = await actions.getDocument(requestParams);
-        expect(doc.documents[0].pdfInfo).toBe('processed pdf');
+        expect(doc.documents[0]).toEqual({ _id: 'pdfReady' });
       });
       it('should return empty object if the document is requested with wrong file name', async () => {
         const requestParams = new RequestParams({ sharedId: 'docCalledWithWrongPDFFilename' });
@@ -351,13 +350,11 @@ describe('documentActions', () => {
           defaultDoc: {
             _id: fileId,
             toc: [{ _id: fileId }],
-            pdfInfo: 'PDFINFO',
           },
           documents: [
             {
               _id: fileId,
               toc: [{ _id: fileId }],
-              pdfInfo: 'PDFINFO',
             },
           ],
         };
@@ -369,13 +366,11 @@ describe('documentActions', () => {
           defaultDoc: {
             _id: fileId,
             toc,
-            pdfInfo: 'PDFINFO',
           },
           documents: [
             {
               _id: fileId,
               toc,
-              pdfInfo: 'PDFINFO',
             },
           ],
         };
@@ -454,7 +449,7 @@ describe('documentActions', () => {
         const expectedActions = [
           {
             type: 'viewer/targetDoc/SET',
-            value: { defaultDoc: { pdfInfo: 'test' }, documents: [{ pdfInfo: 'test' }] },
+            value: { defaultDoc: {}, documents: [{}] },
           },
           { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] },
         ];

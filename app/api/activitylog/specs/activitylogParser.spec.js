@@ -957,24 +957,6 @@ describe('Activitylog Parser', () => {
             }
           );
         });
-        it('should beautify as UPDATE with file name for pdfinfo changes', async () => {
-          const body = {
-            _id: fileId,
-            pdfinfo: { 1: { chars: 0 } },
-          };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/files',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Updated file',
-              name: 'Pdf info, My File',
-            }
-          );
-        });
         it('should not break if file is missing from the database.', async () => {
           const body = {
             _id: nonExistentId,

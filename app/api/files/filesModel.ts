@@ -2,12 +2,11 @@ import mongoose from 'mongoose';
 import date from 'api/utils/date.js';
 
 import { instanceModel } from 'api/odm';
-import { FileType } from '../../shared/types/fileType';
+import { FileType } from 'shared/types/fileType';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, default: date.currentUTC },
   fullText: { type: mongoose.Schema.Types.Mixed, select: false },
-  pdfInfo: { type: mongoose.Schema.Types.Mixed, select: false },
   entity: { type: String, index: true },
   type: { type: String, index: true },
   filename: { type: String, index: true },
