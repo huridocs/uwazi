@@ -201,7 +201,7 @@ export default (app: Application) => {
       },
     }),
 
-    async (req, res) => {
+    (req, res) => {
       const loader = new CSVLoader();
       let loaded = 0;
 
@@ -216,7 +216,7 @@ export default (app: Application) => {
 
       req.emitToSessionSocket('IMPORT_CSV_START');
 
-      await loader
+      loader
         .load(req.file.path, req.body.template, { language: req.language, user: req.user })
         .then(() => {
           req.emitToSessionSocket('IMPORT_CSV_END');
