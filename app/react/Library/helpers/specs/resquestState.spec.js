@@ -14,6 +14,7 @@ describe('static requestState()', () => {
       properties: [
         { name: 'p', filter: true, type: 'text', prioritySorting: true },
         { name: 'country', filter: false, type: 'select', content: 'countries' },
+        { name: 'location', filter: false, type: 'geolocation' },
       ],
     },
     { name: 'Ruling', _id: 'abc2', properties: [] },
