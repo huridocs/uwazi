@@ -140,7 +140,7 @@ const testingDB: {
   },
 };
 
-export { testingDB };
+export { testingDB, fixturer };
 
 // deprecated, for backward compatibility
 export default testingDB;
