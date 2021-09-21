@@ -5,7 +5,8 @@ import { FileType } from 'shared/types/fileType';
 import { config } from 'api/config';
 import { Settings } from 'shared/types/settingsType';
 import settings from 'api/settings/settings';
-import entities from 'api/entities';
+import { model as entities } from 'api/entities';
+import { tenants } from 'api/tenants/tenantContext';
 
 class SegmentPdfs {
   SERVICE_NAME = 'segmentation';
@@ -18,6 +19,7 @@ class SegmentPdfs {
 
   async start() {
     const settingsValues = await settings.get();
+
     const metadataExtractionFeatureToggle = settingsValues?.features?.metadataExtraction;
     this.templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(x =>
       x.template.toString()
@@ -40,6 +42,7 @@ class SegmentPdfs {
     if (!nextFile || !nextFile.filename) {
       return;
     }
+
     const file = fs.readFileSync(uploadsPath(nextFile.filename));
     await this.segmentationTaskManager.sendFile(file, nextFile.filename);
     const task = {
@@ -49,25 +52,36 @@ class SegmentPdfs {
     await this.segmentationTaskManager.startTask(task);
   };
 
-  segmentPdfs = async () => {
-    if (!this.segmentationTaskManager) {
-      await this.start();
-    }
+  segmentPdfs = async () =>
+    Promise.all(
+      Object.keys(tenants.tenants).map(async tenant => {
+        await tenants.run(async () => {
+          if (!this.segmentationTaskManager) {
+            await this.start();
+          }
 
-    const nextEntitiesToProcess = await entities.get({
-      template: { $in: this.templatesWithInformationExtraction },
-    });
+          const settingsValues = await settings.get();
+          const metadataExtractionFeatureToggle = settingsValues?.features?.metadataExtraction;
+          const templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(x =>
+            x.template.toString()
+          );
 
-    const sharedIds = nextEntitiesToProcess.map((x: { sharedId: string }) => x.sharedId);
-    const nextFilesToProcess = await files.get({
-      entity: { $in: sharedIds },
-    });
+          const nextEntitiesToProcess = await entities.getUnrestricted({
+            template: { $in: templatesWithInformationExtraction },
+          });
 
-    for (let i = 0; i < 10; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.segmentOnePdf(nextFilesToProcess[i]);
-    }
-  };
+          const sharedIds = nextEntitiesToProcess.map((x: { sharedId: string }) => x.sharedId);
+          const nextFilesToProcess = await files.get({
+            entity: { $in: sharedIds },
+          });
+
+          for (let i = 0; i < 10; i += 1) {
+            // eslint-disable-next-line no-await-in-loop
+            await this.segmentOnePdf(nextFilesToProcess[i]);
+          }
+        }, tenant);
+      })
+    );
 }
 
 export { SegmentPdfs };

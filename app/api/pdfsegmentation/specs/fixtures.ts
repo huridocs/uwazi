@@ -47,14 +47,14 @@ const otherSettings = [
 const fixturesPdfNameA = 'f2082bf51b6ef839690485d7153e847a.pdf';
 
 const fixturesOneFile: DBFixture = {
-  settings,
   entities: [factory.entity('A1', 'templateToSegmentA')],
+  settings,
   files: [factory.file('F1', 'A1', 'document', fixturesPdfNameA)],
 };
 
 const fixturesOtherFile: DBFixture = {
-  settings: otherSettings,
   entities: [factory.entity('A1', 'templateToSegmentB')],
+  settings: otherSettings,
   files: [factory.file('F1', 'A1', 'document', fixturesPdfNameA)],
 };
 
@@ -92,7 +92,7 @@ const fixturesTwelveFiles: DBFixture = {
   ],
 };
 
-const fixturesFilesWithoutInformationExtraction: DBFixture = {
+const fixturesFilesWithtMixedInformationExtraction: DBFixture = {
   settings,
   entities: [
     factory.entity('A1', 'templateToSegmentA', {}),
@@ -108,14 +108,12 @@ const fixturesFilesWithoutInformationExtraction: DBFixture = {
   ],
 };
 
-const fixturesMultiTenant: DBFixture = {
-
-}
+const fixturesMultiTenant: DBFixture = {};
 
 export {
   fixturesPdfNameA,
   fixturesOneFile,
   fixturesOtherFile,
   fixturesTwelveFiles,
-  fixturesFilesWithoutInformationExtraction,
+  fixturesFilesWithtMixedInformationExtraction,
 };
