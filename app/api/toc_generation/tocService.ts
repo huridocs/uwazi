@@ -1,6 +1,6 @@
 import { files, uploadsPath } from 'api/files';
 import { prettifyError } from 'api/utils/handleError';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import request from 'shared/JSONRequest';
 import entities from 'api/entities';
 import { TocSchema } from 'shared/types/commonTypes';

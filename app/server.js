@@ -23,7 +23,7 @@ import { migrator } from './api/migrations/migrator';
 import settings from './api/settings';
 import syncWorker from './api/sync/syncWorker';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
-import handleError from './api/utils/handleError.js';
+import { handleError } from './api/utils';
 import repeater from './api/utils/Repeater';
 import serverRenderingRoutes from './react/server.js';
 import { DB } from './api/odm';

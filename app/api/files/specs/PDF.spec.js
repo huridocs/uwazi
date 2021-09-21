@@ -2,7 +2,7 @@
 
 import path from 'path';
 import fs from 'fs';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { PDF } from '../PDF.js';
 
 describe('PDF', () => {

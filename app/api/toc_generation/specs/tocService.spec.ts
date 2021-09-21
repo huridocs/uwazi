@@ -2,7 +2,7 @@ import request from 'shared/JSONRequest';
 import { testingDB } from 'api/utils/testing_db';
 import { files } from 'api/files';
 import { elasticTesting } from 'api/utils/elastic_testing';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { fixtures } from './fixtures';
 import { tocService } from '../tocService';
 
