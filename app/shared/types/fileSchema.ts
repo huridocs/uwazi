@@ -41,19 +41,6 @@ export const fileSchema = {
       items: tocSchema,
     },
     extractedMetadata: { type: 'array', items: extractedMetadataSchema },
-    pdfInfo: {
-      type: 'object',
-      additionalProperties: false,
-      patternProperties: {
-        '^[0-9]+$': {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            chars: { type: 'number' },
-          },
-        },
-      },
-    },
   },
 };
 

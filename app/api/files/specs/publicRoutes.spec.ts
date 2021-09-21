@@ -6,7 +6,7 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import {
   uploadsPath,
   writeFile,

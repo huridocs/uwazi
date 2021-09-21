@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { detectLanguage } from 'shared/detectLanguage';
 import { spawn } from 'child-process-promise';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { createError } from 'api/utils';
 
 class PDF extends EventEmitter {

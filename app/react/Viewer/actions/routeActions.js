@@ -27,7 +27,7 @@ export async function requestViewerState(requestParams, globalResources) {
 
   const [doc, relationTypes, [connectionsGroups, searchResults, sort]] = await Promise.all([
     getDocument(
-      requestParams.set({ sharedId, withPdfInfo: true }),
+      requestParams.set({ sharedId }),
       defaultLanguage ? defaultLanguage.get('key') : 'en',
       requestParams.data.file
     ),

@@ -2,7 +2,7 @@ import { ConnectionOptions } from 'mongoose';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { config } from 'api/config';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { migrator } from './migrator';
 
 process.on('unhandledRejection', error => {
