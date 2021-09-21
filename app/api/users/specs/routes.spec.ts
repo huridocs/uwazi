@@ -4,7 +4,7 @@ import request from 'supertest';
 import { NextFunction, Request, Response } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userRoutes from '../routes.js';
 import users from '../users.js';

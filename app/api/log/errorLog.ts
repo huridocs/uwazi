@@ -24,7 +24,7 @@ const createConsoleTransport = () =>
     format: formatter(DATABASE_NAME),
   });
 
-export const createErrorLog = () => {
+const createErrorLog = () => {
   DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
   LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : './log';
 
@@ -50,4 +50,6 @@ export const createErrorLog = () => {
   return logger;
 };
 
-export default createErrorLog();
+const errorLog = createErrorLog();
+
+export { errorLog, createErrorLog };

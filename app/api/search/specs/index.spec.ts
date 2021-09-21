@@ -46,8 +46,8 @@ describe('index (search)', () => {
   describe('bulkIndex', () => {
     it('should update docs using the bulk functionality', async () => {
       const toIndexDocs = [
-        { _id: 'id1', title: 'test1', pdfInfo: 'Should not be included' },
-        { _id: 'id2', title: 'test2', pdfInfo: 'Should not be included' },
+        { _id: 'id1', title: 'test1' },
+        { _id: 'id2', title: 'test2' },
       ];
 
       await search.bulkIndex(toIndexDocs);
@@ -152,8 +152,8 @@ describe('index (search)', () => {
   describe('bulkdelete', () => {
     it('should delete documents in a bulk action', async () => {
       const toIndexDocs = [
-        { _id: 'id1', title: 'test1', pdfInfo: 'Should not be included' },
-        { _id: 'id2', title: 'test2', pdfInfo: 'Should not be included' },
+        { _id: 'id1', title: 'test1' },
+        { _id: 'id2', title: 'test2' },
       ];
 
       await search.bulkIndex(toIndexDocs);

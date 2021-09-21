@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { elastic } from 'api/search';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';

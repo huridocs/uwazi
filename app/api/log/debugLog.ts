@@ -4,7 +4,7 @@ import { formatter } from './infoFormat';
 let DATABASE_NAME = 'localhost';
 let LOGS_DIR = './log';
 
-export const createDebugLog = () => {
+const createDebugLog = () => {
   DATABASE_NAME = process.env.DATABASE_NAME || DATABASE_NAME;
   LOGS_DIR = process.env.LOGS_DIR || LOGS_DIR;
 
@@ -19,4 +19,6 @@ export const createDebugLog = () => {
   });
 };
 
-export default createDebugLog();
+const debugLog = createDebugLog();
+
+export { debugLog, createDebugLog };

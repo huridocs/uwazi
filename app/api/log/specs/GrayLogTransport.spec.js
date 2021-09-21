@@ -19,9 +19,9 @@ describe('GrayLogTransport', () => {
     spyOn(aTransport.graylog, 'log');
 
     await tenants.run(async () => {
-      aTransport.log('message', () => {});
+      aTransport.log({ message: 'message', timestamp: 'timestamp' }, () => {});
     });
 
-    expect(aTransport.graylog.log).toHaveBeenCalled();
+    expect(aTransport.graylog.log).toHaveBeenCalledWith('timestamp [some_name] message');
   });
 });

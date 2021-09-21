@@ -1,6 +1,6 @@
 import db from 'api/utils/testing_db';
 import { elasticTesting } from 'api/utils/elastic_testing';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
 import templates from 'api/templates';

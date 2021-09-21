@@ -19,9 +19,7 @@ body: {
  \\"password\\": \\"########\\"
 }
 test error",
-    Object {
-      "shouldBeMultiTenantContext": true,
-    },
+    Object {},
   ],
 ]
 `;

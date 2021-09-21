@@ -1,7 +1,7 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { setUpApp } from 'api/utils/testingRoutes';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
