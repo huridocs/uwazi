@@ -77,24 +77,17 @@ describe('arrangeThesauri', () => {
     fileSpy.mockRestore();
   });
 
-  it('dummy_test_delete_when_done', async () => {
-    fail('dummy_test_delete_when_done')
-  });
-
   it('should not fail on templates with no select or multiselect fields', async () => {
     const noselTemplate = templates.getById(fixtureFactory.id('no_selects_template'));
     const csv = `title,unrelated_text
 first,first
 second,second`;
-    console.log(csv);
     await arrangeThesauri(importFile(stream(csv)), noselTemplate);
   });
 
   it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
     expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
-    console.log(selectThesaurus);
-    console.log(multiselectThesaurus);
   });
 
   it('should not repeat case sensitive values', async () => {

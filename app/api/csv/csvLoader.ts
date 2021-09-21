@@ -56,7 +56,7 @@ export class CSVLoader extends EventEmitter {
       throw new Error('template not found!');
     }
     // console.log(`-----template\n${JSON.stringify(template, null, 2)}\n-----done`)
-    const file = importFile(csvPath);
+    let file = importFile(csvPath);
     // console.log(`-----file\n${file}\n-----done`)
     const availableLanguages: string[] = ensure<LanguageSchema[]>(
       (await settings.get()).languages
@@ -67,16 +67,18 @@ export class CSVLoader extends EventEmitter {
     await arrangeThesauri(file, template);
     console.timeEnd('time spent in arrageThesauri');
 
+    console.log(await thesauri.get());
+
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
-        // console.log(row)
+        console.log(row)
         const { rawEntity, rawTranslations } = extractEntity(
           row,
           availableLanguages,
           options.language,
           newNameGeneration
         );
-        // console.log(`-----rawEntity\n${JSON.stringify(rawEntity, null, 2)}\n-----done`)
+        console.log(`-----rawEntity\n${JSON.stringify(rawEntity, null, 2)}\n-----done`)
         // console.log(`-----rawTranslations\n${JSON.stringify(rawTranslations, null, 2)}\n-----done`)
 
         if (rawEntity) {

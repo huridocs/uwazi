@@ -7,7 +7,10 @@ const { performance } = require('perf_hooks')
 
 export var timeSpentInSelect = 0;
 
-export function normalizeThesaurusLabel(label: string): string | null {
+export function normalizeThesaurusLabel(label?: string | null): string | null {
+  if (label === undefined || label === null) {
+    return null;
+  }
   const trimmed = label.trim().toLowerCase();
   return trimmed.length > 0 ? trimmed : null;
 }
@@ -20,15 +23,15 @@ const select = async (
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
   const thesauriValues = currentThesauri.values || [];
 
-  if (entityToImport[ensure<string>(property.name)].trim() === '') {
+  if (normalizeThesaurusLabel(entityToImport[ensure<string>(property.name)]) === '') {
     const t2 = performance.now()
     timeSpentInSelect += t2 - t1;
     return null;
   }
 
   const thesauriMatching = (v: ThesaurusValueSchema) =>
-    v.label.trim().toLowerCase() ===
-    entityToImport[ensure<string>(property.name)].trim().toLowerCase();
+    normalizeThesaurusLabel(v.label) ===
+    normalizeThesaurusLabel(entityToImport[ensure<string>(property.name)]);
 
   let value = thesauriValues.find(thesauriMatching);
 

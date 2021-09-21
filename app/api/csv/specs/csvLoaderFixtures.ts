@@ -151,4 +151,4 @@ export default {
   ],
 };
 
-export { template1Id, templateWithGeneratedTitle };
+export { template1Id, templateWithGeneratedTitle, thesauri1Id };

@@ -4,10 +4,11 @@ import entities from 'api/entities';
 import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
+import thesauri from 'api/thesauri';
 
 import { CSVLoader } from 'api/csv';
 import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
-import fixtures, { template1Id } from './csvLoaderFixtures';
+import fixtures, { template1Id, thesauri1Id } from './csvLoaderFixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
 
@@ -116,7 +117,6 @@ describe('csvLoader', () => {
       loader.on('entityLoaded', entity => {
         events.push(entity.title);
       });
-
       try {
         await loader.load(csvFile, template1Id, { language: 'en' });
       } catch (e) {
@@ -288,7 +288,7 @@ describe('csvLoader', () => {
   });
 
   describe('when sharedId is provided', () => {
-    it('should update the entitiy', async () => {
+    it('should update the entity', async () => {
       const entity = await entities.save(
         { title: 'entity4444', template: template1Id },
         { user: {}, language: 'en' }

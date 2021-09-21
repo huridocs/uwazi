@@ -119,32 +119,34 @@ const arrangeThesauri = async (file: ImportFile, template: TemplateSchema) => {
       if (readCount % 1000 === 0) {
         console.log(readCount);
       }
-      Object.entries(nameToThesauriIdSelects).forEach(entry => {
-        const name = entry[0];
-        const id = entry[1];
+      Object.entries(nameToThesauriIdSelects).forEach(([name, id]) => {
         const label = row[name];
-        const normalizedLabel = normalizeThesaurusLabel(label);
-        if (
-          normalizedLabel &&
-          !thesauriIdToExistingValues.get(id).has(normalizedLabel) &&
-          !thesauriIdToNormalizedNewValues.get(id).has(normalizedLabel)
-        ) {
-          thesauriIdToNewValues.get(id)?.add(label);
-          thesauriIdToNormalizedNewValues.get(id).add(normalizedLabel);
-        }
-      });
-      Object.entries(nameToThesauriIdMultiselects).forEach(([name, id]) => {
-        const labels = splitMultiselectLabels(row[name]);
-        Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+        if (label) {
+          const normalizedLabel = normalizeThesaurusLabel(label);
           if (
             normalizedLabel &&
             !thesauriIdToExistingValues.get(id).has(normalizedLabel) &&
             !thesauriIdToNormalizedNewValues.get(id).has(normalizedLabel)
           ) {
-            thesauriIdToNewValues.get(id)?.add(originalLabel);
+            thesauriIdToNewValues.get(id)?.add(label);
             thesauriIdToNormalizedNewValues.get(id).add(normalizedLabel);
           }
-        });
+        }
+      });
+      Object.entries(nameToThesauriIdMultiselects).forEach(([name, id]) => {
+        const labels = splitMultiselectLabels(row[name]);
+        if (labels) {
+          Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+            if (
+              normalizedLabel &&
+              !thesauriIdToExistingValues.get(id).has(normalizedLabel) &&
+              !thesauriIdToNormalizedNewValues.get(id).has(normalizedLabel)
+            ) {
+              thesauriIdToNewValues.get(id)?.add(originalLabel);
+              thesauriIdToNormalizedNewValues.get(id).add(normalizedLabel);
+            }
+          });
+        }
       });
     })
     .onError(async (e: Error, row: CSVRow, index: number) => {
@@ -182,8 +184,8 @@ const importEntity = async (
   const { attachments } = toImportEntity;
   delete toImportEntity.attachments;
   const eo = await entityObject(toImportEntity, template, { language });
+  console.log(eo)
   const entity = await entities.save(eo, { user, language }, true, false); // ISSUE_2: then saves the entity as well
-
   //ISSUE_3: same with documents
   if (toImportEntity.file && entity.sharedId) {
     const file = await importFile.extractFile(toImportEntity.file);
