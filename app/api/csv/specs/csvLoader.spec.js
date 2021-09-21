@@ -4,11 +4,10 @@ import entities from 'api/entities';
 import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
-import thesauri from 'api/thesauri';
 
 import { CSVLoader } from 'api/csv';
 import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
-import fixtures, { template1Id, thesauri1Id } from './csvLoaderFixtures';
+import fixtures, { template1Id } from './csvLoaderFixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
 
