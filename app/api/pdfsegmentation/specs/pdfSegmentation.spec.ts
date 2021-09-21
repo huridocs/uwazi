@@ -1,6 +1,6 @@
-import { testingDB } from 'api/utils/testing_db';
+import { testingDB, fixturer } from 'api/utils/testing_db';
 import {
-  fixturesFilesWithoutInformationExtraction,
+  fixturesFilesWithtMixedInformationExtraction,
   fixturesOneFile,
   fixturesOtherFile,
   fixturesPdfNameA,
@@ -10,23 +10,53 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import fs from 'fs';
 import { TaskManager } from 'api/tasksmanager/taskManager';
 import { config } from 'api/config';
+import { tenants } from 'api/tenants/tenantContext';
+import { DB } from 'api/odm';
 import { SegmentPdfs } from '../segmentPdfs';
+import { Db } from 'mongodb';
 
 jest.mock('api/tasksmanager/taskManager.ts');
 
 describe('pdfSegmentation', () => {
   let segmentPdfs: SegmentPdfs;
 
+  const tenantOne = {
+    name: 'tenantOne',
+    dbName: 'tenantOne',
+    indexName: 'tenantOne',
+    uploadedDocuments: `${__dirname}/uploads`,
+    attachments: `${__dirname}/uploads`,
+    customUploads: `${__dirname}/uploads`,
+    temporalFiles: `${__dirname}/uploads`,
+  };
+
+  const tenantTwo = {
+    name: 'tenantTwo',
+    dbName: 'tenantTwo',
+    indexName: 'tenantTwo',
+    uploadedDocuments: `${__dirname}/uploads`,
+    attachments: `${__dirname}/uploads`,
+    customUploads: `${__dirname}/uploads`,
+    temporalFiles: `${__dirname}/uploads`,
+  };
+
+  let dbOne: Db;
+  let dbTwo: Db;
+
   afterAll(async () => {
     await testingDB.disconnect();
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     segmentPdfs = new SegmentPdfs();
+    await DB.connect();
+    dbOne = DB.connectionForDB(tenantOne.dbName).db;
+    dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
+    tenants.tenants = { tenantOne };
   });
 
   it('should send one pdf to segment', async () => {
-    await testingEnvironment.setUp(fixturesOneFile);
+    await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
 
     await segmentPdfs.segmentPdfs();
 
@@ -46,7 +76,7 @@ describe('pdfSegmentation', () => {
   });
 
   it('should send other pdf to segment', async () => {
-    await testingEnvironment.setUp(fixturesOtherFile);
+    await fixturer.clearAllAndLoad(dbOne, fixturesOtherFile);
 
     await segmentPdfs.segmentPdfs();
 
@@ -66,8 +96,7 @@ describe('pdfSegmentation', () => {
   });
 
   it('should send 10 pdfs to segment', async () => {
-    await testingEnvironment.setUp(fixturesTwelveFiles);
-
+    await fixturer.clearAllAndLoad(dbOne, fixturesTwelveFiles);
     await segmentPdfs.segmentPdfs();
 
     const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
@@ -80,7 +109,7 @@ describe('pdfSegmentation', () => {
   });
 
   it('should send pdfs only from templates with the information extraction on', async () => {
-    await testingEnvironment.setUp(fixturesFilesWithoutInformationExtraction);
+    await fixturer.clearAllAndLoad(dbOne, fixturesFilesWithtMixedInformationExtraction);
 
     await segmentPdfs.segmentPdfs();
 
@@ -94,15 +123,11 @@ describe('pdfSegmentation', () => {
   });
 
   it('should send pdfs from different tenants', async () => {
-    await testingEnvironment.setUp(fixturesMultitenant);
+    await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
+    await fixturer.clearAllAndLoad(dbTwo, fixturesOtherFile);
+    tenants.tenants = { tenantOne, tenantTwo };
 
     await segmentPdfs.segmentPdfs();
-
-    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
-      file,
-      fixturesPdfNameA
-    );
 
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
   });
