@@ -74,7 +74,7 @@ export const updatedFile = data => {
   if (data.toc) {
     name = 'ToC, ';
   } else {
-    name = data.pdfinfo ? 'Pdf info, ' : '';
+    name = '';
   }
   return `${name}${data.title}`;
 };

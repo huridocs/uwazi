@@ -59,7 +59,6 @@ describe('sync', () => {
     it('should place document without changing name on /uploads', async () => {
       const response = await requestAPI(app)
         .post('/api/sync/upload')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .attach('file', path.join(__dirname, 'testUpload.txt'));
 
       await expectCorrectFileUpload(response, uploadsPath('testUpload.txt'));
@@ -68,7 +67,6 @@ describe('sync', () => {
     it("should allow uploading collection's custom files", async () => {
       const response = await requestAPI(app)
         .post('/api/sync/upload/custom')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .attach('file', path.join(__dirname, 'testUpload.txt'));
 
       await expectCorrectFileUpload(response, customUploadsPath('testUpload.txt'));

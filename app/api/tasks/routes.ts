@@ -1,7 +1,6 @@
 /**
  * Uwazi routes that start and inspect tasks.
  */
-
 import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { Application, Request, Response } from 'express';

@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { List, Map } from 'immutable';
-
+import { Map } from 'immutable';
 import { ConnectionsList } from 'app/ConnectionsList';
 import { CreateConnectionPanel } from 'app/Connections';
 import { CurrentLocationLink, Icon } from 'app/Layout';
@@ -17,8 +16,6 @@ import Footer from 'app/App/Footer';
 import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
-import { RequestParams } from 'app/utils/RequestParams';
-
 import { PaginatorWithPage } from './Paginator';
 import { addReference as addReferenceAction } from '../actions/referencesActions';
 import {
@@ -28,7 +25,6 @@ import {
 import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
-
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
@@ -36,7 +32,6 @@ import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument.js';
 
 import determineDirection from '../utils/determineDirection';
-import { requestViewerState } from '../actions/routeActions';
 
 export class Viewer extends Component {
   constructor(props) {
@@ -47,34 +42,14 @@ export class Viewer extends Component {
 
   componentDidMount() {
     const { store } = this.context;
-    const { sidepanelTab, file } = this.props;
-
+    const { sidepanelTab } = this.props;
     store.dispatch(openPanel('viewMetadataPanel'));
     if (sidepanelTab === 'connections') {
       store.dispatch(actions.set('viewer.sidepanel.tab', ''));
     }
-
     store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
-
-    if (file && !file.pdfInfo) {
-      this.getPdfInfo();
-    }
-  }
-
-  getPdfInfo() {
-    const { store } = this.context;
-    const { templates, doc } = this.props;
-    const fileName = doc.get('defaultDoc') ? doc.get('defaultDoc').get('filename') : undefined;
-    requestViewerState(new RequestParams({ sharedId: doc.get('sharedId'), file: fileName }), {
-      ...store.getState(),
-      templates: templates.toJS(),
-    }).then(viewerActions => {
-      viewerActions.forEach(action => {
-        store.dispatch(action);
-      });
-    });
   }
 
   handlePlainTextClick() {
@@ -84,19 +59,10 @@ export class Viewer extends Component {
 
   prepareClassName() {
     const { panelIsOpen, targetDoc, showConnections } = this.props;
-
     let className = 'document-viewer with-header';
-
-    if (panelIsOpen) {
-      className += ' with-panel is-active';
-    }
-    if (targetDoc) {
-      className += ' show-target-document';
-    }
-    if (showConnections) {
-      className += ' connections';
-    }
-
+    className += panelIsOpen ? ' with-panel is-active' : '';
+    className += targetDoc ? ' show-target-document' : '';
+    className += showConnections ? ' connections' : '';
     return className;
   }
 
@@ -121,26 +87,13 @@ export class Viewer extends Component {
   }
 
   render() {
-    const {
-      doc,
-      sidepanelTab,
-      targetDoc,
-      changePage,
-      onPageChange,
-      onDocumentReady,
-      addReference,
-      loadTargetDocument,
-      panelIsOpen,
-      showTextSelectMenu,
-      file,
-    } = this.props;
+    const { doc, sidepanelTab, targetDoc, changePage, onPageChange, onDocumentReady } = this.props;
+    const { addReference, loadTargetDocument, panelIsOpen, showTextSelectMenu, file } = this.props;
     const { firstRender } = this.state;
     if (doc.get('_id') && !doc.get('documents').size) {
       return this.renderNoDoc();
     }
-
     const className = this.prepareClassName();
-
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
 
@@ -190,7 +143,6 @@ export class Viewer extends Component {
             <Footer />
           </div>
         </main>
-
         <ConfirmCloseForm />
         <ViewMetadataPanel
           raw={raw || firstRender}
@@ -204,21 +156,15 @@ export class Viewer extends Component {
           onRangedConnect={loadTargetDocument}
           file={file}
         />
-
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <RelationshipMetadata />
-        </ShowIf>
-
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <AddEntitiesPanel />
-        </ShowIf>
-
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <div className="sidepanel-footer">
-            <RelationshipsFormButtons />
-          </div>
-        </ShowIf>
-
+        {sidepanelTab === 'connections' && (
+          <>
+            <RelationshipMetadata />
+            <AddEntitiesPanel />
+            <div className="sidepanel-footer">
+              <RelationshipsFormButtons />
+            </div>
+          </>
+        )}
         <ContextMenu align="bottom" overrideShow show={!panelIsOpen}>
           <ViewerDefaultMenu />
         </ContextMenu>
@@ -237,7 +183,6 @@ Viewer.defaultProps = {
   changePage: () => {},
   onDocumentReady: () => {},
   page: 1,
-  templates: List(),
   doc: Map(),
   file: {},
 };
@@ -262,7 +207,6 @@ Viewer.propTypes = {
   selectedConnectionMetadata: PropTypes.object,
   showTab: PropTypes.func,
   page: PropTypes.number,
-  templates: PropTypes.instanceOf(List),
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
 };
@@ -274,13 +218,11 @@ Viewer.contextTypes = {
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
-
   return {
     pageText: documentViewer.rawText,
     doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
-    templates: state.templates,
     locale: state.locale,
     // TEST!!!!!
     sidepanelTab: documentViewer.sidepanel.tab,

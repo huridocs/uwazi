@@ -53,7 +53,6 @@ describe('Activitylog routes', () => {
       currentUser = adminUser;
       const response = await request(app)
         .get('/api/activitylog')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query(qs.stringify({ method: ['POST'], before: 1628256165 }));
 
       expect(activitylog.get).toHaveBeenCalledWith({
@@ -68,7 +67,6 @@ describe('Activitylog routes', () => {
       currentUser = adminUser;
       await request(app)
         .get('/api/activitylog')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .query({});
       expect(activitylog.get).toHaveBeenCalledWith({ method: undefined, time: undefined });
     });
@@ -93,7 +91,6 @@ describe('Activitylog routes', () => {
           currentUser = adminUser;
           const response = await request(app)
             .get('/api/activitylog')
-            .set('X-Requested-With', 'XMLHttpRequest')
             .query(qs.stringify({ ...validQuery, ...changedProperty }));
           expect(response.status).toBe(400);
           expect(activitylog.get).not.toHaveBeenCalled();

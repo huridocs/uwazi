@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import mongoose, { Model, Document } from 'mongoose';
 import { config } from 'api/config';
 import { DB } from 'api/odm/DB';
-import handleError from 'api/utils/handleError.js';
+import { handleError } from 'api/utils';
 import { MongoError } from 'mongodb';
 
 import { Tenant } from './tenantContext';

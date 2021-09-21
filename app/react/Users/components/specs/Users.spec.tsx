@@ -4,7 +4,7 @@
 import Immutable from 'immutable';
 import { ReactElement } from 'react';
 import { ShallowWrapper } from 'enzyme';
-import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected, renderConnectedMount } from 'app/utils/test/renderConnected';
 import { Users } from 'app/Users/components/Users';
 import { UserList } from 'app/Users/components/UserList';
 import { loadUsers, saveUser, deleteUser, newUser } from 'app/Users/actions/actions';

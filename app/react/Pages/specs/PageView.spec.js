@@ -11,7 +11,7 @@ import { PageViewer } from 'app/Pages/components/PageViewer';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
-import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import PageView from '../PageView';
 import * as assetsUtils from '../utils/getPageAssets';
 

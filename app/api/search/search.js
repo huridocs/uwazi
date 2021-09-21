@@ -7,6 +7,9 @@ import { filterOptions } from 'shared/optionsUtils';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { checkWritePermissions } from 'shared/permissionsUtils';
+import usersModel from 'api/users/users';
+import userGroups from 'api/usergroups/userGroups';
+import { UserRole } from 'shared/types/userSchema';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entities from '../entities';
@@ -247,9 +250,38 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     if (
       !aggregations[key].buckets ||
       aggregations[key].type === 'nested' ||
-      ['_types', 'generatedToc', 'permissions', '_published'].includes(key)
+      ['_types', 'generatedToc', '_permissions.self', '_published'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
+    }
+
+    if (['_permissions.read', '_permissions.write'].includes(key)) {
+      const [users, groups] = await Promise.all([usersModel.get(), userGroups.get()]);
+
+      const info = [
+        ...users.map(u => ({ type: 'user', refId: u._id, label: u.username })),
+        ...groups.map(g => ({ type: 'group', refId: g._id, label: g.name })),
+      ];
+
+      const role = permissionsContext.getUserInContext()?.role;
+      const refIds = permissionsContext.permissionsRefIds();
+
+      const buckets = aggregations[key].buckets
+        .filter(bucket => role === UserRole.ADMIN || refIds.includes(bucket.key))
+        .map(bucket => {
+          const itemInfo = info.find(i => i.refId.toString() === bucket.key);
+
+          if (!itemInfo) return null;
+
+          return {
+            ...bucket,
+            label: itemInfo.label,
+            ...(itemInfo.type === 'group' ? { icon: 'users' } : {}),
+          };
+        })
+        .filter(b => b);
+
+      return Object.assign(denormaLizedAgregations, { [key]: { ...aggregations[key], buckets } });
     }
 
     let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
@@ -304,7 +336,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
     }
 
     //permissions
-    if (aggregationKey === 'permissions') {
+    if (['_permissions.read', '_permissions.write', '_permissions.self'].includes(aggregationKey)) {
       aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
         key: b.key,
         filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
@@ -667,6 +699,10 @@ const search = {
 
     if (query.aggregatePermissionsByLevel) {
       queryBuilder.permissionsLevelAgreggations();
+    }
+
+    if (query.aggregatePermissionsByUsers) {
+      queryBuilder.permissionsUsersAgreggations();
     }
 
     if (query.aggregateGeneratedToc) {

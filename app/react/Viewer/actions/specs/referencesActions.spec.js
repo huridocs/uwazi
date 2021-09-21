@@ -94,7 +94,7 @@ describe('Viewer referencesActions', () => {
           { type: 'viewer.sidepanel.tab/SET', value: 'references' },
         ];
 
-        actions.addReference(references, {}, true)(store.dispatch, getState);
+        actions.addReference(references, true)(store.dispatch, getState);
         expect(store.getActions()).toEqual(expectedActions);
 
         store.clearActions();
@@ -111,7 +111,7 @@ describe('Viewer referencesActions', () => {
           { type: 'viewer.sidepanel.tab/SET', value: 'references' },
         ];
 
-        actions.addReference(references, {}, false)(store.dispatch, getState);
+        actions.addReference(references, false)(store.dispatch, getState);
         expect(store.getActions()).toEqual(expectedActions);
       });
     });

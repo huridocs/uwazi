@@ -1,7 +1,5 @@
 import { Application } from 'express';
-//@ts-ignore
-import debugLog from 'api/log/debugLog';
-import errorLog from 'api/log/errorLog';
+import { debugLog, errorLog } from 'api/log';
 import { processDocument } from 'api/files/processDocument';
 import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';

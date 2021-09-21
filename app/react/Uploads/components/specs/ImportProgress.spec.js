@@ -37,11 +37,11 @@ describe('ImportProgress', () => {
     });
 
     it('should render a state for errors', () => {
-      props.importState.importError = Immutable.fromJS({ message: 'Something bad happened' });
+      props.importState.importError = Immutable.fromJS({ prettyMessage: 'Something bad happened' });
       expectSnapshot();
 
       props.importState.importError = Immutable.fromJS({
-        message: 'validation error',
+        prettyMessage: 'validation error',
         validations: [
           {
             message: 'should be number',

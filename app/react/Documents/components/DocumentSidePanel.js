@@ -383,11 +383,7 @@ export class DocumentSidePanel extends Component {
                   </TocGeneratedLabel>
                 </div>
                 <ShowIf if={!this.props.tocBeingEdited}>
-                  <ShowToc
-                    toc={defaultDocumentToC}
-                    pdfInfo={this.props.file.pdfInfo}
-                    readOnly={readOnly}
-                  />
+                  <ShowToc toc={defaultDocumentToC} readOnly={readOnly} />
                 </ShowIf>
                 <ShowIf if={this.props.tocBeingEdited}>
                   <TocForm

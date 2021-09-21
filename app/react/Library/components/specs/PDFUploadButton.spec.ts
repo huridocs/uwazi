@@ -1,4 +1,4 @@
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import { ShallowWrapper } from 'enzyme';
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
 import * as libraryActions from 'app/Library/actions/libraryActions';

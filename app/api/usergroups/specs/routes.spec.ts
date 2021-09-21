@@ -5,7 +5,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import userGroupRoutes from 'api/usergroups/routes';
 import { testingTenants } from 'api/utils/testingTenants';
 import request, { Response as SuperTestResponse } from 'supertest';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userGroups from '../userGroups';
 
@@ -40,22 +40,18 @@ describe('usergroups routes', () => {
   );
 
   async function getUserGroups(): Promise<SuperTestResponse> {
-    return request(app)
-      .get('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest');
+    return request(app).get('/api/usergroups');
   }
 
   async function postUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
     return request(app)
       .post('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest')
       .send(userGroupData);
   }
 
   async function deleteUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
     return request(app)
       .delete('/api/usergroups')
-      .set('X-Requested-With', 'XMLHttpRequest')
       .query({ _id: userGroupData._id });
   }
 

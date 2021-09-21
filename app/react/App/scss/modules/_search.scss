@@ -234,6 +234,14 @@
 }
 
 .admin-filter {
+  & > ul > li:first-child {
+    color: #2b56c1;
+  }
+
+  & > ul > li.spaced {
+    margin-top: 15px;
+  }
+
   span,
   label {
     color: #2b56c1;
@@ -471,6 +479,10 @@
 
   &:not(:last-child) {
     border-bottom: 1px dotted $c-grey;
+  }
+
+  & > .no-options-message span {
+    color: $c-grey;
   }
 }
 
@@ -767,13 +779,13 @@
   position: relative;
   float: left;
   width: 100%;
-  margin: 5px 0;
   background: $c-white;
   border-radius: 4px;
 
   > span {
     display: inline-block;
-    width: 50px;
+    line-height: 34px;
+    width: 60px;
     position: absolute;
     color: $c-grey-dark;
     padding-left: 10px;
@@ -783,7 +795,7 @@
     z-index: 1;
   }
   input {
-    padding-left: 60px;
+    padding-left: 70px;
     padding-right: 0;
     background: transparent;
   }
@@ -798,7 +810,7 @@
 
 .DatePicker__From,
 .Numeric__From {
-  margin-bottom: 0;
+  margin-bottom: 5px;
 }
 
 .multidate {
