@@ -3,7 +3,7 @@ import entities from 'api/entities';
 import { search } from 'api/search';
 import entitiesModel from 'api/entities/entitiesModel';
 import { processDocument } from 'api/files/processDocument';
-import { RawEntity } from 'api/csv/entityRow';
+import { RawEntity, toSafeName } from 'api/csv/entityRow';
 import { TemplateSchema } from 'shared/types/templateType';
 import { MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -71,9 +71,7 @@ type Options = {
   language: string;
 };
 
-
-
-const arrangeThesauri = async (file: ImportFile, template: TemplateSchema) => {
+const arrangeThesauri = async (file: ImportFile, template: TemplateSchema, errorContext?: any) => {
   const nameToThesauriIdSelects: { [k: string]: string } = {};
   const nameToThesauriIdMultiselects: { [k: string]: string } = {};
   const thesauriIdToExistingValues = new Map();
@@ -117,7 +115,7 @@ const arrangeThesauri = async (file: ImportFile, template: TemplateSchema) => {
       thesauriIdToNormalizedNewValues.get(id).add(normalized);
     }
   }
-  await csv(await file.readStream())
+  await csv(await file.readStream(), errorContext?.stopOnError)
     .onRow(async (row: CSVRow) => {
       Object.entries(nameToThesauriIdSelects).forEach(([name, id]) => {
         const label = row[name];
@@ -136,7 +134,10 @@ const arrangeThesauri = async (file: ImportFile, template: TemplateSchema) => {
       });
     })
     .onError(async (e: Error, row: CSVRow, index: number) => {
-      console.log(e);
+      if (errorContext) {
+        errorContext._errors[index] = e;
+        errorContext.emit('loadError', e, toSafeName(row), index);
+      }
     })
     .read();
   await Promise.all(

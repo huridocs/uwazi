@@ -12,8 +12,6 @@ import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 
-import { timeSpentInSelect } from 'api/csv/typeParsers/select';
-
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
