@@ -1,6 +1,6 @@
 import graylog2 from 'graylog2';
 import winston from 'winston';
-import formatMessage from './formatMessage';
+import { addTenant, formatInfo } from './infoFormat';
 
 export default class GrayLogTransport extends winston.Transport {
   constructor(opts) {
@@ -24,7 +24,7 @@ export default class GrayLogTransport extends winston.Transport {
       this.emit('logged', info);
     });
 
-    this.graylog.log(formatMessage(info, this.instanceName));
+    this.graylog.log(formatInfo(addTenant(info, { instanceName: this.instanceName })));
     callback();
   }
 }

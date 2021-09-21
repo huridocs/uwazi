@@ -1,7 +1,7 @@
 import { detectLanguage } from 'shared/detectLanguage';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
 import { denormalizeInheritedProperties } from 'api/templates/utils';

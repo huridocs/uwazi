@@ -1,10 +1,9 @@
-import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
-import debugLog from 'api/log/debugLog';
+import { errorLog, debugLog } from 'api/log';
 
 import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
 import { appContext } from 'api/utils/AppContext';
-import handleError, { prettifyError } from '../handleError';
+import { handleError, prettifyError } from '../handleError';
 
 const contextRequestId = '1234';
 
