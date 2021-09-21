@@ -1,16 +1,13 @@
 import path from 'path';
 
 import templates from 'api/templates';
+import thesauri from 'api/thesauri';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db from 'api/utils/testing_db';
 
-// import fixtures, { template1Id } from './fixtures';
 import { arrangeThesauri } from '../importEntity';
 import importFile from '../importFile';
 import { stream } from './helpers';
-import entities from 'api/entities';
-import thesauri from 'api/thesauri';
-// import typeParsers from '../../typeParsers';
 
 const fixtureFactory = getFixturesFactory();
 

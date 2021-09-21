@@ -204,8 +204,6 @@ export default (app: Application) => {
     }),
 
     async (req, res) => {
-      console.log('---------------/api/import')
-      console.time('Entire api call time:');
       const loader = new CSVLoader();
       let loaded = 0;
 
@@ -219,7 +217,7 @@ export default (app: Application) => {
       });
 
       req.emitToSessionSocket('IMPORT_CSV_START');
-      
+
       await loader
         .load(req.file.path, req.body.template, { language: req.language, user: req.user })
         .then(() => {
@@ -230,8 +228,6 @@ export default (app: Application) => {
         });
 
       res.json('ok');
-      console.log(`Time spent in select formatter: ${timeSpentInSelect}`)
-      console.timeEnd('Entire api call time:');
     }
   );
 };

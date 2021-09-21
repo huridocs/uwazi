@@ -3,9 +3,6 @@ import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusValueSchema, ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
-const { performance } = require('perf_hooks')
-
-export var timeSpentInSelect = 0;
 
 export function normalizeThesaurusLabel(label?: string | null): string | null {
   if (label === undefined || label === null) {
@@ -19,13 +16,10 @@ const select = async (
   entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<MetadataObjectSchema[] | null> => {
-  const t1 = performance.now()
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
   const thesauriValues = currentThesauri.values || [];
 
   if (normalizeThesaurusLabel(entityToImport[ensure<string>(property.name)]) === '') {
-    const t2 = performance.now()
-    timeSpentInSelect += t2 - t1;
     return null;
   }
 
@@ -33,21 +27,7 @@ const select = async (
     normalizeThesaurusLabel(v.label) ===
     normalizeThesaurusLabel(entityToImport[ensure<string>(property.name)]);
 
-  let value = thesauriValues.find(thesauriMatching);
-
-  // if (!value) {
-  //   const updated = await thesauri.save({
-  //     ...currentThesauri,
-  //     values: thesauriValues.concat([
-  //       {
-  //         label: entityToImport[ensure<string>(property.name)],
-  //       },
-  //     ]),
-  //   });
-  //   value = (updated.values || []).find(thesauriMatching);
-  // }
-  const t2 = performance.now()
-  timeSpentInSelect += t2 - t1;
+  const value = thesauriValues.find(thesauriMatching);
 
   if (value?.id) {
     return [{ value: value.id, label: value.label }];

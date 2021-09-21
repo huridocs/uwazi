@@ -1,5 +1,4 @@
 import thesauri from 'api/thesauri';
-import { unique, emptyString } from 'api/utils/filters';
 import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
@@ -44,38 +43,6 @@ const multiselect = async (
     .map(key => thesauriValues.find(tv => normalizeThesaurusLabel(tv.label) === key))
     .map(tv => tv)
     .map(tv => ({ value: ensure<string>(tv?.id), label: ensure<string>(tv?.label) }));
-
-  // const result = Object.keys(values).map(key => {
-  //   const found = thesauriValues.find(tv => normalizeThesaurusLabel(tv.label) === key);
-  //   return found !== undefined
-  //     ? { value: ensure<string>(found.id), label: found.label }
-  //     : undefined;
-  // });
-  // const values = entityToImport[ensure<string>(property.name)]
-  //   .split('|')
-  //   .map(v => v.trim())
-  //   .filter(emptyString)
-  //   .filter(unique);
-
-  // const newValues = values.filter(
-  //   v => !thesauriValues.find(cv => cv.label.trim().toLowerCase() === v.toLowerCase())
-  // );
-
-  // const lowerCaseValues = values.map(v => v.toLowerCase());
-  // if (!newValues.length) {
-  //   return thesauriValues
-  //     .filter(value => lowerCaseValues.includes(value.label.trim().toLowerCase()))
-  //     .map(value => ({ value: ensure<string>(value.id), label: value.label }));
-  // }
-
-  // const updated = await thesauri.save({
-  //   ...currentThesauri,
-  //   values: thesauriValues.concat(newValues.map(label => ({ label }))),
-  // });
-
-  // return (updated.values || [])
-  //   .filter(value => lowerCaseValues.includes(value.label.toLowerCase()))
-  //   .map(value => ({ value: ensure<string>(value.id), label: value.label }));
 
   return result;
 };
