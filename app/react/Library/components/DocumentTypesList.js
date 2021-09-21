@@ -31,7 +31,7 @@ export class DocumentTypesList extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      !is(this.props.libraryFilters, nextProps.libraryFilters) ||
+      !is(this.props.selectedTemplates, nextProps.selectedTemplates) ||
       !is(this.props.settings, nextProps.settings) ||
       !is(this.props.aggregations, nextProps.aggregations) ||
       this.stateChanged(nextState)
@@ -39,7 +39,7 @@ export class DocumentTypesList extends Component {
   }
 
   changeAll(item, e) {
-    const selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
+    const { selectedTemplates: selectedItems } = this.props;
     if (e.target.checked) {
       item.items.forEach(_item => {
         if (!this.checked(_item)) {
@@ -57,12 +57,11 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.setState({ selectedItems });
     this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
   }
 
   change(item) {
-    const selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
+    const { selectedTemplates: selectedItems } = this.props;
 
     if (selectedItems.includes(item.id)) {
       const index = selectedItems.indexOf(item.id);
@@ -71,7 +70,6 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.setState({ selectedItems });
     this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
   }
 
@@ -114,7 +112,7 @@ export class DocumentTypesList extends Component {
       );
     }
 
-    return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
+    return this.props.selectedTemplates.includes(item.id);
   }
 
   stateChanged(nextState) {
@@ -212,12 +210,12 @@ DocumentTypesList.defaultProps = {
   storeKey: 'library',
   settings: {},
   aggregations: Immutable.fromJS({}),
-  libraryFilters: Immutable.fromJS({}),
+  selectedTemplates: [],
   filterDocumentTypes: {},
 };
 
 DocumentTypesList.propTypes = {
-  libraryFilters: PropTypes.instanceOf(Immutable.Map),
+  selectedTemplates: PropTypes.instanceOf(Array),
   settings: PropTypes.instanceOf(Object),
   templates: PropTypes.instanceOf(Immutable.List),
   filterDocumentTypes: PropTypes.func,
@@ -228,7 +226,6 @@ DocumentTypesList.propTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    libraryFilters: state[props.storeKey].filters,
     settings: state.settings,
     templates: state.templates,
     aggregations: state[props.storeKey].aggregations,

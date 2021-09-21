@@ -55,9 +55,9 @@ describe('DocumentTypesList', () => {
       filterDocumentTypes: jasmine.createSpy('filterDocumentTypes'),
       settings: { collection: Immutable.fromJS({ filters }) },
       aggregations: Immutable.fromJS(aggregations),
-      libraryFilters: Immutable.fromJS({ documentTypes: [2, 5] }),
       storeKey: 'library',
       templates: Immutable.fromJS(allTemplates),
+      selectedTemplates: [2, 5],
     };
   });
 

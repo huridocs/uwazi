@@ -77,6 +77,7 @@ interface EntityDisplayState {
     quickLabelMetadataForm: any;
   };
   search: any;
+  filters: IImmutable<{ documentTypes: [] }>;
 }
 
 export interface ClientTemplateSchema extends TemplateSchema {
