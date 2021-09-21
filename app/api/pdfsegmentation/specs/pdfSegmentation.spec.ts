@@ -122,7 +122,7 @@ describe('pdfSegmentation', () => {
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
   });
 
-  it('should send pdfs from different tenants', async () => {
+  it('should send pdfs from different tenants with the information extraction on', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
     await fixturer.clearAllAndLoad(dbTwo, fixturesOtherFile);
     tenants.tenants = { tenantOne, tenantTwo };
@@ -131,4 +131,14 @@ describe('pdfSegmentation', () => {
 
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
   });
+
+  //TODO
+  // - should call start task
+  // - should store which entities are already segmented
+  // - should only send pdfs not already segmented
+  // - should handle tenants without the information extraction on
+  // - should get the results from the task and store them
+  // - do a load test to checkl the perfomance
+  // - make sure onlye one taskmanager is instanced
+  // - error handling ? task failed ?
 });
