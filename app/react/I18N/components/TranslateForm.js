@@ -16,12 +16,12 @@ export class TranslateForm extends Component {
 
   submit(values) {
     let translations = this.props.translations.toJS();
-    translations = translations.map(t => {
-      const { locale } = t;
-      const context = t.contexts.find(c => c.id === this.props.context);
+    translations = translations.map(translation => {
+      const { locale } = translation;
+      const context = translation.contexts.find(c => c.id === this.props.context);
       context.values[this.props.value] = values[locale];
-      t.contexts = [context];
-      return t;
+      translation.contexts = [context];
+      return translation;
     });
     this.props.saveTranslations(translations);
     this.props.close();
@@ -33,7 +33,7 @@ export class TranslateForm extends Component {
 
   render() {
     const translations = this.props.translations.toJS();
-    const languages = translations.map(t => t.locale);
+    const languages = translations.map(translation => translation.locale);
 
     return (
       <Modal isOpen={this.props.isOpen} type="info">
