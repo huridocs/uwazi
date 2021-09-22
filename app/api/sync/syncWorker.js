@@ -3,7 +3,7 @@ import 'api/entities';
 import urljoin from 'url-join';
 
 import { prettifyError } from 'api/utils/handleError';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 import synchronizer from './synchronizer';

@@ -172,7 +172,7 @@ export function selectSnippet(page, snippet) {
   };
 }
 
-export function activateReference(connection, docInfo, tab, delayActivation = false) {
+export function activateReference(connection, tab, delayActivation = false) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
@@ -185,24 +185,24 @@ export function activateReference(connection, docInfo, tab, delayActivation = fa
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
     if (!delayActivation) {
       setTimeout(() => {
-        scrollTo(connection, docInfo);
+        scrollTo(connection);
       });
     }
   };
 }
 
-export function scrollToActive(reference, docInfo, tab, doScroll) {
+export function scrollToActive(reference, tab, doScroll) {
   return dispatch => {
     if (doScroll) {
       dispatch(goToActive(false));
-      dispatch(activateReference(reference, docInfo, tab));
+      dispatch(activateReference(reference, tab));
     }
   };
 }
 
-export function selectReference(connection, docInfo) {
+export function selectReference(connection) {
   return dispatch => {
-    dispatch(activateReference(connection, docInfo));
+    dispatch(activateReference(connection));
     dispatch(setTargetSelection(connection.reference));
   };
 }

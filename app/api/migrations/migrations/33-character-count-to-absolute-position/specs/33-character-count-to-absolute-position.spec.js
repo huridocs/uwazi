@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
 import testingDB from 'api/utils/testing_db';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { config } from 'api/config';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import {

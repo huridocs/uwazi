@@ -8,7 +8,6 @@ import { shallow } from 'enzyme';
 import { CreateConnectionPanel } from 'app/Connections';
 import ContextMenu from 'app/ContextMenu';
 import ShowIf from 'app/App/ShowIf';
-import { RequestParams } from 'app/utils/RequestParams';
 import { Viewer } from '../Viewer';
 import SourceDocument from '../SourceDocument';
 import TargetDocument from '../TargetDocument';
@@ -24,9 +23,9 @@ describe('Viewer', () => {
       doc: fromJS({
         _id: 'id',
         sharedId: 'sharedId',
-        documents: [{ language: 'eng', pdfInfo: 'already parsed' }],
+        documents: [{ language: 'eng' }],
       }),
-      file: { language: 'eng', pdfInfo: 'already parsed' },
+      file: { language: 'eng' },
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {},
@@ -191,34 +190,6 @@ describe('Viewer', () => {
     it('should loadDefaultViewerMenu()', () => {
       render({ mount: true });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'LOAD_DEFAULT_VIEWER_MENU' });
-    });
-
-    describe('when pdf not yet rendered for the first time', () => {
-      it('should requestViewerState to populate pdfInfo', () => {
-        props.file = { language: 'eng' };
-        render({ mount: true });
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith(
-          new RequestParams({ sharedId: 'sharedId' }),
-          { ...context.store.getState(), templates: [] }
-        );
-        expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action1');
-        expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action2');
-      });
-
-      it('should pass the default document if document has one', () => {
-        props.file = { language: 'eng' };
-        props.doc = fromJS({
-          _id: 'id',
-          sharedId: 'sharedId',
-          documents: [{ language: 'eng', pdfInfo: 'already parsed' }],
-          defaultDoc: { filename: 'filename.jpg' },
-        });
-        render({ mount: true });
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith(
-          new RequestParams({ sharedId: 'sharedId', file: 'filename.jpg' }),
-          { ...context.store.getState(), templates: [] }
-        );
-      });
     });
   });
 });

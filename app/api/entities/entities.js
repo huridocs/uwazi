@@ -343,11 +343,11 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
   }
 };
 
-const withDocuments = async (entities, documentsFullText, withPdfInfo) => {
+const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await files.get(
     { entity: { $in: sharedIds } },
-    (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
+    documentsFullText ? '+fullText ' : ' '
   );
   const idFileMap = new Map();
   allFiles.forEach(file => {
@@ -501,10 +501,10 @@ export default {
   },
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
-    const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
+    const { documentsFullText, ...restOfOptions } = options;
     const extendedSelect = extendSelect(select);
     const entities = await model.getUnrestricted(query, extendedSelect, restOfOptions);
-    return withDocuments(entities, documentsFullText, withPdfInfo);
+    return withDocuments(entities, documentsFullText);
   },
 
   async getUnrestricted(query, select, options) {
@@ -512,10 +512,10 @@ export default {
   },
 
   async get(query, select, options = {}) {
-    const { withoutDocuments, documentsFullText, withPdfInfo, ...restOfOptions } = options;
+    const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
     const entities = await model.get(query, extendedSelect, restOfOptions);
-    return withoutDocuments ? entities : withDocuments(entities, documentsFullText, withPdfInfo);
+    return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
 
   async getWithRelationships(query, select, pagination) {

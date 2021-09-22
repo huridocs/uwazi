@@ -4,7 +4,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { uploadsPath, customUploadsPath, fileExists } from 'api/files/filesystem';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';

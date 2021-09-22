@@ -1,5 +1,5 @@
 import { config } from 'api/config';
-import handleError from 'api/utils/handleError.js';
+import { handleError } from 'api/utils';
 import { appContext } from 'api/utils/AppContext';
 import { TenantsModel } from './tenantsModel';
 

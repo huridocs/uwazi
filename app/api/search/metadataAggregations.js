@@ -177,12 +177,17 @@ export const generatedTocAggregations = baseQuery => {
   return aggregation(path, should, filters);
 };
 
-export const permissionsLevelAgreggations = baseQuery => {
-  const path = 'permissions.level';
+const permissionsAggregations = (baseQuery, path, terms) => {
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
 
-  const baseFilters = filters.filter(f => !(f.nested && f.nested.path === 'permissions'));
+  const baseFilters = filters.filter(
+    f =>
+      !(
+        (f.nested && f.nested.path === 'permissions') ||
+        f?.bool?.should?.find(i => i?.nested?.path === 'permissions')
+      )
+  );
 
   return {
     filter: {
@@ -206,9 +211,7 @@ export const permissionsLevelAgreggations = baseQuery => {
                   bool: {
                     filter: [
                       {
-                        terms: {
-                          'permissions.refId': permissionsContext.permissionsRefIds(),
-                        },
+                        terms,
                       },
                     ],
                   },
@@ -226,6 +229,16 @@ export const permissionsLevelAgreggations = baseQuery => {
     },
   };
 };
+
+export const permissionsLevelAgreggations = baseQuery =>
+  permissionsAggregations(baseQuery, 'permissions.level', {
+    'permissions.refId': permissionsContext.permissionsRefIds(),
+  });
+
+export const permissionsUsersAgreggations = (baseQuery, level) =>
+  permissionsAggregations(baseQuery, 'permissions.refId', {
+    'permissions.level': [level],
+  });
 
 export const publishingStatusAgreggations = baseQuery => {
   const path = 'published';

@@ -9,7 +9,7 @@ jest.mock('app/Viewer/actions/documentActions');
 jest.mock('app/Viewer/referencesAPI');
 
 describe('Viewer routeActions', () => {
-  const document = { _id: '1', sharedId: 'sid', title: 'title', pdfInfo: 'test' };
+  const document = { _id: '1', sharedId: 'sid', title: 'title' };
   const relationTypes = { rows: [{ name: 'Supports', _id: '1' }] };
   const references = [
     { _id: '1', connectedDocument: '1' },

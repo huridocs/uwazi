@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_development.dictionaries"}],"uuid":"1c3338a5b072400e91e5fca438228ae0"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"961ab79fbebc45a7ba574425f95c9368","collectionName":"dictionaries","type":"collection"}

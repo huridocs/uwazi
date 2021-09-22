@@ -5,7 +5,7 @@ import backend from 'fetch-mock';
 
 import 'api/thesauri/dictionariesModel';
 import { model as entitesModel } from 'api/entities';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import 'api/relationships';
 
 import db from 'api/utils/testing_db';

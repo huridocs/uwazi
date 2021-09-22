@@ -2,7 +2,7 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import fixtures, {

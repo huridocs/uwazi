@@ -205,7 +205,7 @@ $c-sidebar: $c-white;
 
   & > *:last-child {
     // firefox hack (related issue #378)
-    padding-bottom: $header-height * 2;
+    padding-bottom: $header-height * 3;
   }
 }
 
