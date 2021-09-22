@@ -16,50 +16,23 @@ describe('migration delete-orphaned-connections', () => {
     expect(migration.delta).toBe(53);
   });
 
-  it('should delete all connections', async () => {
+  it('should delete all connections which do not have an existing entity', async () => {
     await migration.up(testingDB.mongodb);
     const connections = await testingDB.mongodb
       .collection('connections')
       .find()
       .toArray();
-    expect(connections.length).toBe(0);
+    expect(connections.length).toBe(3);
   });
 
-  it('should delete all orphaned connections except two remaining in hub', async () => {
-    const localFixtures = {
-      entities: [...fixtures.entities],
-      connections: [
-        ...fixtures.connections,
-        {
-          entity: 'sharedid2',
-          hub: 'hub1',
-        },
-      ],
-    };
-    await testingDB.clearAllAndLoad(localFixtures);
+  it('should delete all connections who are alone in a hub', async () => {
     await migration.up(testingDB.mongodb);
     const connections = await testingDB.mongodb
       .collection('connections')
       .find()
       .toArray();
-    expect(connections.length).toBe(2);
-  });
-
-  it('should not delete any connection', async () => {
-    const localFixtures = {
-      entities: [...fixtures.entities],
-      connections: [
-        { ...fixtures.connections[0], entity: 'sharedid1' },
-        { ...fixtures.connections[1], entity: 'sharedid2' },
-      ],
-    };
-
-    await testingDB.clearAllAndLoad(localFixtures);
-    await migration.up(testingDB.mongodb);
-    const connections = await testingDB.mongodb
-      .collection('connections')
-      .find()
-      .toArray();
-    expect(connections.length).toBe(2);
+    expect(connections).toEqual(
+      expect.arrayContaining([expect.not.objectContaining({ hub: 'hub3' })])
+    );
   });
 });
