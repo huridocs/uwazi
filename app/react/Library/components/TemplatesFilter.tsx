@@ -43,7 +43,7 @@ export class TemplatesFilterComponent extends React.Component<
     const documentTypeFromFilters = _.isEqual(currentSelection, newSelection);
     this.state = {
       documentTypeFromFilters,
-      selectedTemplates: [],
+      selectedTemplates: newSelection,
       configuredFilters,
     };
   }

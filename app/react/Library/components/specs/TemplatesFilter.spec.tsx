@@ -2,6 +2,10 @@ import { fromJS } from 'immutable';
 import { SettingsFilterSchema } from 'shared/types/settingsType';
 import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';
 import { renderConnected } from 'app/utils/test/renderConnected';
+import { filterDocumentTypes } from 'app/Library/actions/filterActions';
+import * as redux from 'redux';
+
+jest.mock('app/Library/actions/filterActions');
 
 describe('TemplatesFilter', () => {
   let component: any;
@@ -9,7 +13,7 @@ describe('TemplatesFilter', () => {
     templateFilters?: Partial<SettingsFilterSchema>[],
     selectedFilters?: Partial<SettingsFilterSchema>[]
   ) => {
-    const props = {
+    const store = {
       templates: fromJS([]),
       settings: {
         collection: fromJS({
@@ -20,7 +24,11 @@ describe('TemplatesFilter', () => {
         filters: fromJS({ documentTypes: selectedFilters }),
       },
     };
-    component = renderConnected(TemplatesFilter, { storeKey: 'library' }, props);
+    component = renderConnected(
+      TemplatesFilter,
+      { storeKey: 'library', filterDocumentTypes: jasmine.createSpy('deleteAttachment') },
+      store
+    );
   };
 
   describe('documentTypeList mode toggle', () => {
@@ -54,7 +62,11 @@ describe('TemplatesFilter', () => {
 
     describe('libraryFilters', () => {
       it('should remove the library filters not present in filters', () => {
+        spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
         render([{ id: '1', name: 'Judge' }], [{ id: '2' }]);
+        const documentTypesSwitcher = component.find('Switcher');
+        documentTypesSwitcher.props().onChange(true);
+        expect(filterDocumentTypes).toHaveBeenCalledWith([], 'library');
         const documentTypesList = component.find('Connect(DocumentTypesList)');
         expect(documentTypesList.props().selectedTemplates.length).toBe(0);
       });
