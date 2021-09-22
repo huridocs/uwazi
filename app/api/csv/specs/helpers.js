@@ -36,4 +36,7 @@ class ReadableString extends Readable {
 
 const stream = string => new ReadableString(string);
 
-export { stream, createTestingZip, ReadableString };
+const mockCsvFileReadStream = str =>
+  jest.spyOn(fs, 'createReadStream').mockImplementation(() => stream(str));
+
+export { stream, createTestingZip, mockCsvFileReadStream };

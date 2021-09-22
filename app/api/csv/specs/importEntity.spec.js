@@ -7,7 +7,7 @@ import db from 'api/utils/testing_db';
 
 import { arrangeThesauri } from '../importEntity';
 import importFile from '../importFile';
-import { stream } from './helpers';
+import { mockCsvFileReadStream } from './helpers';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -79,7 +79,9 @@ describe('arrangeThesauri', () => {
     const csv = `title,unrelated_text
 first,first
 second,second`;
-    await arrangeThesauri(importFile(stream(csv)), noselTemplate);
+    const readStreamMock = mockCsvFileReadStream(csv);
+    await arrangeThesauri(importFile('mockedFile'), noselTemplate);
+    readStreamMock.mockRestore();
   });
 
   it('should create values in thesauri', async () => {
