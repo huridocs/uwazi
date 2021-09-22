@@ -24,7 +24,9 @@ class I18NMenu extends Component {
       <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
         <NeedAuthorization roles={['admin', 'editor']}>
           <button
-            className={`menuNav-btn btn btn-default${i18nmode ? ' inlineEdit active' : ''}`}
+            className={`menuNav-btn btn btn-default${
+              i18nmode ? ' inlineEdit active' : ' inlineEdit'
+            }`}
             type="button"
             onClick={toggleInlineEdit}
             aria-label={t('System', 'Add/edit translations', null, false)}

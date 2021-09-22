@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { Form, Field } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { actions, Translate } from 'app/I18N';
+import { actions, Translate, t } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 import { FormGroup } from 'app/Forms';
 
@@ -57,10 +57,10 @@ export class TranslateForm extends Component {
 
         <Modal.Footer>
           <button type="button" className="btn btn-default cancel-button" onClick={this.cancel}>
-            <Translate>Cancel</Translate>
+            {t('System', 'Cancel', null, false)}
           </button>
           <button type="submit" form="inlineEdit" className="btn confirm-button btn-primary">
-            <Translate>Submit</Translate>
+            {t('System', 'Submit', null, false)}
           </button>
         </Modal.Footer>
       </Modal>
