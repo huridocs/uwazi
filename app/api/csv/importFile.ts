@@ -1,11 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { Readable } from 'stream';
 
 import { generateFileName, fileFromReadStream, uploadsPath } from 'api/files/filesystem';
 import { createError } from 'api/utils';
 import zipFile from 'api/utils/zipFile';
-import { ReadableString } from './specs/helpers';
 
 const extractFromZip = async (zipPath: string, fileName: string) => {
   const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
@@ -18,19 +16,13 @@ const extractFromZip = async (zipPath: string, fileName: string) => {
 };
 
 export class ImportFile {
-  filePath: string | Readable;
+  filePath: string;
 
-  constructor(filePath: string | Readable) {
+  constructor(filePath: string) {
     this.filePath = filePath;
   }
 
   async readStream(fileName = 'import.csv') {
-    if (this.filePath instanceof ReadableString) {
-      return this.filePath.freshCopy();
-    }
-    if (this.filePath instanceof Readable) {
-      return this.filePath;
-    }
     if (path.extname(this.filePath) === '.zip') {
       return extractFromZip(this.filePath, fileName);
     }
@@ -50,6 +42,6 @@ export class ImportFile {
   }
 }
 
-const importFile = (filePath: string | Readable) => new ImportFile(filePath);
+const importFile = (filePath: string) => new ImportFile(filePath);
 
 export default importFile;
