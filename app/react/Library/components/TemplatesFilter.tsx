@@ -9,6 +9,7 @@ import { Settings } from 'shared/types/settingsType';
 import { bindActionCreators, Dispatch } from 'redux';
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 import { wrapDispatch } from 'app/Multireducer';
+import _ from 'lodash';
 
 interface TemplatesFilterProps {
   settings: { collection: IImmutable<Settings> };
@@ -37,8 +38,11 @@ export class TemplatesFilterComponent extends React.Component<
     const configuredFilters: string[] = (props.settings.collection.toJS().filters || []).map(
       f => f.id!
     );
+    const currentSelection = props.libraryFilters.toJS().documentTypes || [];
+    const newSelection = filterValidSelectedTemplates(configuredFilters, currentSelection);
+    const documentTypeFromFilters = _.isEqual(currentSelection, newSelection);
     this.state = {
-      documentTypeFromFilters: true,
+      documentTypeFromFilters,
       selectedTemplates: [],
       configuredFilters,
     };
