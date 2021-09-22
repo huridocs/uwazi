@@ -13,7 +13,7 @@ describe('migration delete-orphaned-connections', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(51);
+    expect(migration.delta).toBe(53);
   });
 
   it('should delete all connections', async () => {

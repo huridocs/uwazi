@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 export default {
-  delta: 51,
+  delta: 53,
 
   name: 'delete-orphaned-connections',
 
