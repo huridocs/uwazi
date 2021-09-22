@@ -84,6 +84,16 @@ second,second`;
     readStreamMock.mockRestore();
   });
 
+  it('should not fail if the select or multiselect fields are missing from the csv', async () => {
+    const noselTemplate = templates.getById(fixtureFactory.id('template'));
+    const csv = `title,unrelated_property
+first,first
+second,second`;
+    const readStreamMock = mockCsvFileReadStream(csv);
+    await arrangeThesauri(importFile('mockedFile'), noselTemplate);
+    readStreamMock.mockRestore();
+  });
+
   it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
     expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
