@@ -63,30 +63,39 @@ const UploadSupportingFileToEntity = async (entityName: string): Promise<void> =
   await page.goto(`${host}`);
   await expect(page).toClick('span', { text: 'Restricted' });
   await expect(page).toClick('div.item-name > span', { text: entityName });
-  console.log('clicked entity...');
-  await expect(page).toClick('button.upload-button > span', { text: 'Add supporting file' });
-  console.log('clicked supporting files button...');
+  await expect(page).toClick('button[type="button"].upload-button');
   const [fileChooser] = await Promise.all([
     page.waitForFileChooser(),
-    page.click('div.attachments-modal__dropzone'),
+    page.click('div.attachments-modal__dropzone > button'),
   ]);
   await fileChooser.accept([`${__dirname}/test_files/batman.jpg`]);
-  // await expect(page).toUploadFile('#upload-button-input', `${__dirname}/test_files/valid.pdf`);
+};
+
+const convertEntityTemplate = async (entityName: string, targetTemplate: string): Promise<void> => {
+  await page.goto(`${host}`);
+  await expect(page).toClick('span', { text: 'Restricted' });
+  await expect(page).toClick('div.item-name > span', { text: entityName });
+  await expect(page).toClick('div.sidepanel-footer > button[type="button"].edit-metadata');
+};
+
+const setupTest = async () => {
+  await createTemplate('Without image');
+  await createTemplate('With image');
+  await createEntity('Without image');
+  await uploadPDFToEntity('Without image');
+  await UploadSupportingFileToEntity('Without image');
 };
 
 describe('Convert entity template', () => {
   beforeAll(async () => {
     await setupPreFlights();
-    await createTemplate('Without image');
-    await createTemplate('With image');
-    await createEntity('Without image');
-    await uploadPDFToEntity('Without image');
-    console.log('Beginning uploading supporting file...');
-    await UploadSupportingFileToEntity('Without image');
+
+    await convertEntityTemplate('Without image', 'With image');
   });
 
   it('Should create new entity', async () => {
-    expect(true).toEqual(true);
+    await setupTest();
+    await expect(page).toClick('a[(type = "button")].btn');
   });
 
   afterAll(async () => {
