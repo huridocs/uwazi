@@ -2,12 +2,14 @@
 
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { UserRole } from 'shared/types/userSchema';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import {
   propertyToAggregation,
   generatedTocAggregations,
   permissionsLevelAgreggations,
   publishingStatusAgreggations,
+  permissionsUsersAgreggations,
 } from './metadataAggregations';
 
 const nested = (filters, path) => ({
@@ -107,6 +109,27 @@ export default function() {
     baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.filter.push(
       filter
     );
+  }
+
+  function addPermissionsAssigneeFilter(filter) {
+    const user = permissionsContext.getUserInContext();
+    if (!user) return;
+    const ownRefIds = permissionsContext.permissionsRefIds();
+    const values =
+      user?.role === UserRole.ADMIN
+        ? filter.values
+        : filter.values.filter(v => ownRefIds.includes(v.refId));
+
+    addFilter({
+      bool: {
+        [`${filter.and ? 'must' : 'should'}`]: values.map(({ refId, level }) =>
+          nested(
+            [{ term: { 'permissions.refId': refId } }, { term: { 'permissions.level': level } }],
+            'permissions'
+          )
+        ),
+      },
+    });
   }
 
   return {
@@ -277,18 +300,10 @@ export default function() {
 
     customFilters(filters = {}) {
       Object.keys(filters)
-        .filter(key => filters[key].values.length)
+        .filter(key => filters[key].values?.length)
         .forEach(key => {
-          if (key === 'permissions.level') {
-            addFilter(
-              nested(
-                [
-                  { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
-                  { terms: { 'permissions.level': filters[key].values } },
-                ],
-                'permissions'
-              )
-            );
+          if (key === 'permissions') {
+            addPermissionsAssigneeFilter(filters[key]);
             return;
           }
 
@@ -312,7 +327,22 @@ export default function() {
     },
 
     permissionsLevelAgreggations() {
-      baseQuery.aggregations.all.aggregations.permissions = permissionsLevelAgreggations(baseQuery);
+      baseQuery.aggregations.all.aggregations['_permissions.self'] = permissionsLevelAgreggations(
+        baseQuery
+      );
+    },
+
+    permissionsUsersAgreggations() {
+      if (!permissionsContext.getUserInContext()) return;
+
+      baseQuery.aggregations.all.aggregations['_permissions.read'] = permissionsUsersAgreggations(
+        baseQuery,
+        'read'
+      );
+      baseQuery.aggregations.all.aggregations['_permissions.write'] = permissionsUsersAgreggations(
+        baseQuery,
+        'write'
+      );
     },
 
     aggregations(properties, dictionaries) {

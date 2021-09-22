@@ -10,7 +10,7 @@ import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import templatesModel from '../app/api/templates';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
-import errorLog from '../app/api/log/errorLog';
+import { errorLog } from '../app/api/log';
 
 const getIndexUrl = () => {
   const elasticUrl = config.elasticsearch_nodes[0];

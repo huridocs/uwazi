@@ -125,12 +125,7 @@ export const permissionsLevelFixtures: DBFixture = {
     },
   ],
 
-  users: [
-    {
-      _id: users.user3._id,
-      username: 'group1 user',
-    },
-  ],
+  users: Object.values(users),
   usergroups: [
     {
       _id: group1,

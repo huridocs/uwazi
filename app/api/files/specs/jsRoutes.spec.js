@@ -13,7 +13,7 @@ import mailer from 'api/utils/mailer';
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
-import errorLog from '../../log/errorLog';
+import { errorLog } from '../../log';
 import { createDirIfNotExists } from '../filesystem';
 
 const mockExport = jest.fn();

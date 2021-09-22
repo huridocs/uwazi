@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { promisify } from 'util';
 
-import errorLog from 'api/log/errorLog';
+import { errorLog } from 'api/log';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { config } from 'api/config';
 import testingDB from 'api/utils/testing_db';

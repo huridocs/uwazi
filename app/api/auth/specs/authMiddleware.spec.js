@@ -33,18 +33,6 @@ describe('authMiddleware', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return an error when logged in but no X-Requested-With header', () => {
-    req = { get: () => '' };
-
-    const middleWare = authMiddleware(['editor']);
-    req.user = { role: 'editor' };
-    middleWare(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized', message: 'Unauthorized' });
-    expect(next).not.toHaveBeenCalled();
-  });
-
   it('should call next when the user role is in the allowed roles', () => {
     const middleWare = authMiddleware(['editor']);
     req.user = { role: 'editor' };

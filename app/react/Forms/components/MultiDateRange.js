@@ -1,10 +1,8 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import DatePicker from './DatePicker';
 import { Translate } from 'app/I18N';
+import DatePicker from './DatePicker';
 
 export default class MultiDateRange extends Component {
   constructor(props) {
@@ -53,7 +51,7 @@ export default class MultiDateRange extends Component {
             <div key={index} className="multidate-item">
               <div className="multidate-range">
                 <div className="DatePicker__From">
-                  <Translate translationKey='Label date "From"'>From:</Translate>&nbsp;
+                  <Translate translationKey='Label date "From"'>From:</Translate>
                   <DatePicker
                     format={this.props.format}
                     value={value.from}
@@ -61,7 +59,7 @@ export default class MultiDateRange extends Component {
                   />
                 </div>
                 <div className="DatePicker__To">
-                  <Translate translationKey='Label date "to"'>To:</Translate>&nbsp;
+                  <Translate translationKey='Label date "to"'>To:</Translate>
                   <DatePicker
                     format={this.props.format}
                     value={value.to}
@@ -73,6 +71,7 @@ export default class MultiDateRange extends Component {
                   className="react-datepicker__delete-icon"
                   onClick={this.remove.bind(this, index)}
                 />
+                <div className="multidate-range-clear-float"></div>
               </div>
             </div>
           )))()}

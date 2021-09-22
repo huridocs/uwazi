@@ -30,7 +30,6 @@ export class CreateConnectionPanel extends Component {
     const open = Boolean(
       this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument
     );
-    const pdfInfo = this.props.pdfInfo ? this.props.pdfInfo.toJS() : null;
     const className = `${this.props.className} create-reference`;
 
     return (
@@ -77,7 +76,7 @@ export class CreateConnectionPanel extends Component {
             <ActionButton
               action="save"
               onCreate={reference => {
-                this.props.onCreate(reference, pdfInfo);
+                this.props.onCreate(reference);
               }}
             />
           </ShowIf>
@@ -107,7 +106,6 @@ CreateConnectionPanel.propTypes = {
   containerId: PropTypes.string,
   className: PropTypes.string,
   connection: PropTypes.object,
-  pdfInfo: PropTypes.object,
   relationTypes: PropTypes.object,
   setRelationType: PropTypes.func,
   setTargetDocument: PropTypes.func,
@@ -117,9 +115,8 @@ CreateConnectionPanel.propTypes = {
   closePanel: PropTypes.func,
 };
 
-export const mapStateToProps = ({ connections, relationTypes, documentViewer }) => ({
+export const mapStateToProps = ({ connections, relationTypes }) => ({
   uiState: connections.uiState,
-  pdfInfo: documentViewer.doc.get('pdfInfo'),
   connection: connections.connection,
   searchResults: connections.searchResults,
   relationTypes,

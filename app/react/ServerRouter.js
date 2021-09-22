@@ -22,7 +22,7 @@ import Routes from './Routes';
 import settingsApi from '../api/settings/settings';
 import createStore from './store';
 import translationsApi from '../api/i18n/translations';
-import handleError from '../api/utils/handleError';
+import { handleError } from '../api/utils';
 
 let assets = {};
 

@@ -41,6 +41,11 @@ describe('Debug Log', () => {
     expect(debugLog.transports[0].level).toBe('debug');
     expect(getLogResult()).toEqual(expect.stringMatching(/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/));
     expectCorrectLog('[localhost] a debug message', './log', 'debug.log');
+    expectCorrectLog(
+      '[Tenant error] Error: Accessing nonexistent async context',
+      './log',
+      'debug.log'
+    );
   });
 
   it('should respect env vars for tenant (database name) and dir', async () => {
@@ -58,7 +63,7 @@ describe('Debug Log', () => {
     });
 
     await tenants.run(async () => {
-      debugLog.debug('a tenant debug message', { shouldBeMultiTenantContext: true });
+      debugLog.debug('a tenant debug message');
     }, 'tenant');
 
     expectCorrectLog('[tenant] a tenant debug message', './some_dir', 'debug.log');
