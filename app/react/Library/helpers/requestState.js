@@ -60,51 +60,52 @@ export default function requestState(request, globalResources, calculateTableCol
   );
   const markersRequest = request.set({
     ...docsQuery,
-    geolocation: templatesWithGeolocation && true,
+    geolocation: true,
   });
 
-  return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
-    ([documents, markers]) => {
-      const templates = globalResources.templates.toJS();
-      const filterState = libraryHelpers.URLQueryToState(
-        documentsRequest.data,
-        templates,
-        globalResources.thesauris.toJS(),
-        globalResources.relationTypes.toJS(),
-        request.data.quickLabelThesaurus
-          ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
-          : []
-      );
+  return Promise.all([
+    api.search(documentsRequest),
+    templatesWithGeolocation ? api.search(markersRequest) : { rows: [] },
+  ]).then(([documents, markers]) => {
+    const templates = globalResources.templates.toJS();
+    const filterState = libraryHelpers.URLQueryToState(
+      documentsRequest.data,
+      templates,
+      globalResources.thesauris.toJS(),
+      globalResources.relationTypes.toJS(),
+      request.data.quickLabelThesaurus
+        ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
+        : []
+    );
 
-      const state = {
-        library: {
-          filters: {
-            documentTypes: documentsRequest.data.types || [],
-            properties: filterState.properties,
-          },
-          aggregations: documents.aggregations,
-          search: filterState.search,
-          documents,
-          markers,
+    const state = {
+      library: {
+        filters: {
+          documentTypes: documentsRequest.data.types || [],
+          properties: filterState.properties,
         },
-      };
+        aggregations: documents.aggregations,
+        search: filterState.search,
+        documents,
+        markers,
+      },
+    };
 
-      const addinsteadOfSet = Boolean(docsQuery.from);
+    const addinsteadOfSet = Boolean(docsQuery.from);
 
-      const dispatchedActions = [
-        setReduxState(state, 'library', addinsteadOfSet),
-        actions.set('library.sidepanel.quickLabelState', {
-          thesaurus: request.data.quickLabelThesaurus,
-          autoSave: false,
-        }),
-      ];
-      if (calculateTableColumns) {
-        const tableViewColumns = getTableColumns(documents, templates, documentsRequest.data.types);
-        dispatchedActions.push(dispatch =>
-          wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
-        );
-      }
-      return dispatchedActions;
+    const dispatchedActions = [
+      setReduxState(state, 'library', addinsteadOfSet),
+      actions.set('library.sidepanel.quickLabelState', {
+        thesaurus: request.data.quickLabelThesaurus,
+        autoSave: false,
+      }),
+    ];
+    if (calculateTableColumns) {
+      const tableViewColumns = getTableColumns(documents, templates, documentsRequest.data.types);
+      dispatchedActions.push(dispatch =>
+        wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
+      );
     }
-  );
+    return dispatchedActions;
+  });
 }
