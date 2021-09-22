@@ -6,37 +6,41 @@ import rison from 'rison-node';
 import requestState, { processQuery } from '../requestState';
 
 describe('static requestState()', () => {
-  const aggregations = { buckets: [] };
-  const templates = [
-    {
-      name: 'Decision',
-      _id: 'abc1',
-      properties: [
-        { name: 'p', filter: true, type: 'text', prioritySorting: true },
-        { name: 'country', filter: false, type: 'select', content: 'countries' },
-      ],
-    },
-    { name: 'Ruling', _id: 'abc2', properties: [] },
-  ];
-  const relationTypes = [
-    { name: 'Victim', _id: 'abc3', properties: [{ name: 'p', filter: true, type: 'text' }] },
-  ];
-
-  const thesauris = [{ name: 'countries', _id: '1', values: [] }];
-  const documents = {
-    rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }],
-    totalRows: 2,
-    aggregations,
-  };
-  const globalResources = {
-    templates: Immutable.fromJS(templates),
-    settings: { collection: Immutable.fromJS({ features: {} }) },
-    thesauris: Immutable.fromJS(thesauris),
-    relationTypes: Immutable.fromJS(relationTypes),
-    user: Immutable.fromJS({}),
-  };
-
+  let globalResources;
+  let templates;
   beforeEach(() => {
+    const aggregations = { buckets: [] };
+    templates = [
+      {
+        name: 'Decision',
+        _id: 'abc1',
+        properties: [
+          { name: 'p', filter: true, type: 'text', prioritySorting: true },
+          { name: 'country', filter: false, type: 'select', content: 'countries' },
+          { name: 'location', filter: false, type: 'geolocation' },
+        ],
+      },
+      { name: 'Ruling', _id: 'abc2', properties: [] },
+    ];
+    const relationTypes = [
+      { name: 'Victim', _id: 'abc3', properties: [{ name: 'p', filter: true, type: 'text' }] },
+    ];
+
+    const thesauris = [{ name: 'countries', _id: '1', values: [] }];
+    const documents = {
+      rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }],
+      totalRows: 2,
+      aggregations,
+    };
+
+    globalResources = {
+      templates: Immutable.fromJS(templates),
+      settings: { collection: Immutable.fromJS({ features: {} }) },
+      thesauris: Immutable.fromJS(thesauris),
+      relationTypes: Immutable.fromJS(relationTypes),
+      user: Immutable.fromJS({}),
+    };
+
     spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
   });
 
@@ -80,7 +84,38 @@ describe('static requestState()', () => {
       const actions = await requestState(request, globalResources);
 
       expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
+
       expect(actions).toMatchSnapshot();
+    });
+
+    it('should work when there are no geolocation type properties', async () => {
+      templates = [
+        {
+          name: 'Appeal',
+          _id: 'abc2',
+          properties: [
+            { name: 'p', filter: true, type: 'text', prioritySorting: true },
+            { name: 'description', filter: false, type: 'markdown' },
+          ],
+        },
+      ];
+      globalResources.templates = Immutable.fromJS(templates);
+      const query = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
+      const expectedSearch = {
+        data: {
+          sort: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).sort,
+          order: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).order,
+          filters: { something: 1 },
+          types: [],
+          view: undefined,
+        },
+        headers: {},
+      };
+      const request = new RequestParams(query);
+
+      await requestState(request, globalResources);
+
+      expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
     });
   });
 
