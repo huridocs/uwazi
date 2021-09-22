@@ -42,7 +42,10 @@ const fixtures = {
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [{ key: 'en', label: 'English', default: true }],
+      languages: [
+        { key: 'en', label: 'English', default: true },
+        { key: 'es', label: 'Spanish' },
+      ],
     },
   ],
 };
@@ -96,13 +99,28 @@ second,second`;
   });
 
   it('should create values in thesauri', async () => {
-    expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
-    expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
+    expect(selectLabels).toEqual(['A', 'B', 'Bes', 'C', 'Ces', 'd', 'des', 'Aes']);
+    expect(multiselectLabels).toEqual([
+      'A',
+      'B',
+      'Aes',
+      'Bes',
+      'c',
+      'ces',
+      'D',
+      'E',
+      'g',
+      'Des',
+      'Ees',
+      'ges',
+    ]);
   });
 
   it('should not repeat case sensitive values', async () => {
-    ['a', 'b', 'c', 'D'].forEach(letter => expect(selectLabelsSet.has(letter)).toBe(false));
-    ['a', 'b', 'C', 'd', 'e', 'G'].forEach(letter =>
+    ['a', 'aes', 'b', 'bes', 'c', 'ces', 'D', 'Des'].forEach(letter =>
+      expect(selectLabelsSet.has(letter)).toBe(false)
+    );
+    ['a', 'aes', 'b', 'bes', 'C', 'Ces', 'd', 'des', 'e', 'ees', 'G', 'Ges'].forEach(letter =>
       expect(multiselectLabelsSet.has(letter)).toBe(false)
     );
   });
@@ -120,8 +138,4 @@ second,second`;
     expect(selectLabels.length).toBe(selectLabelsSet.size);
     expect(multiselectLabels.length).toBe(multiselectLabelsSet.size);
   });
-
-  it('dummy test', () => {
-    console.log('there');
-  })
 });
