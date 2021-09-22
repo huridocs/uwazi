@@ -98,7 +98,7 @@ const filterPermissionsData = <T>(data: T[], user: UserSchema | undefined) => {
   return filteredData;
 };
 
-const controlPermissionsData = <T>(data: T & { published?: boolean }, user?: UserSchema) => {
+const controlPermissionsData = <T>(data: T, user?: UserSchema) => {
   if (user) {
     if (['admin', 'editor'].includes(user.role)) {
       return data;
