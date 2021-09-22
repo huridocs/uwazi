@@ -6,7 +6,7 @@ import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 import { host } from '../config';
 
-describe('Entities', () => {
+describe('Inline translation', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
@@ -24,16 +24,15 @@ describe('Entities', () => {
     await expect(page).toClick('span.translation', {
       text: 'Create entity',
     });
+
     //edit the translation
     await expect(page).toMatchElement('input#es');
     await expect(page).toFill('input#es', 'Crear entidad');
     await expect(page).toClick('button', {
       text: 'Submit',
     });
+
     //check the translation
-    await expect(page).toClick('a', {
-      text: 'es',
-    });
     await page.goto(`${host}/es`);
     await expect(page).toMatchElement('span.translation', { text: 'Crear entidad' });
   });
