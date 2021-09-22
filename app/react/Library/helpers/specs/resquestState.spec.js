@@ -84,6 +84,7 @@ describe('static requestState()', () => {
       const actions = await requestState(request, globalResources);
 
       expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
+
       expect(actions).toMatchSnapshot();
     });
 
@@ -110,12 +111,11 @@ describe('static requestState()', () => {
         },
         headers: {},
       };
-
       const request = new RequestParams(query);
-      const actions = await requestState(request, globalResources);
+
+      await requestState(request, globalResources);
 
       expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
-      expect(actions).toMatchSnapshot();
     });
   });
 

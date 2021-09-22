@@ -25,16 +25,3 @@ Array [
   },
 ]
 `;
-
-exports[`static requestState() when is for geolocation should work when there are no geolocation type properties 1`] = `
-Array [
-  [Function],
-  Object {
-    "type": "library.sidepanel.quickLabelState/SET",
-    "value": Object {
-      "autoSave": false,
-      "thesaurus": undefined,
-    },
-  },
-]
-`;
