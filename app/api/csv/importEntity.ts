@@ -71,9 +71,24 @@ type Options = {
   language: string;
 };
 
-const arrangeThesauri = async (file: ImportFile, template: TemplateSchema, errorContext?: any) => {
-  const nameToThesauriIdSelects: { [k: string]: string } = {};
-  const nameToThesauriIdMultiselects: { [k: string]: string } = {};
+const filterJSObject = (input: { [k: string]: any }, keys: string[]): { [k: string]: any } => {
+  const result: { [k: string]: any } = {};
+  keys.forEach(k => {
+    if (input.hasOwnProperty(k)) {
+      result[k] = input[k];
+    }
+  });
+  return result;
+};
+
+const arrangeThesauri = async (
+  file: ImportFile,
+  template: TemplateSchema,
+  languages?: string[],
+  errorContext?: any
+) => {
+  let nameToThesauriIdSelects: { [k: string]: string } = {};
+  let nameToThesauriIdMultiselects: { [k: string]: string } = {};
   const thesauriIdToExistingValues = new Map();
   const thesauriIdToNewValues: Map<string, Set<string>> = new Map();
   const thesauriIdToNormalizedNewValues = new Map();
@@ -82,10 +97,17 @@ const arrangeThesauri = async (file: ImportFile, template: TemplateSchema, error
   );
   thesauriRelatedProperties?.forEach(p => {
     if (p.content && p.type) {
+      const thesarusID = p.content.toString();
       if (p.type === propertyTypes.select) {
-        nameToThesauriIdSelects[p.name] = p.content.toString();
+        nameToThesauriIdSelects[p.name] = thesarusID;
+        languages?.forEach(suffix => {
+          nameToThesauriIdSelects[`${p.name}__${suffix}`] = thesarusID;
+        });
       } else if (p.type === propertyTypes.multiselect) {
-        nameToThesauriIdMultiselects[p.name] = p.content.toString();
+        nameToThesauriIdMultiselects[p.name] = thesarusID;
+        languages?.forEach(suffix => {
+          nameToThesauriIdMultiselects[`${p.name}__${suffix}`] = thesarusID;
+        });
       }
     }
   });
@@ -116,7 +138,12 @@ const arrangeThesauri = async (file: ImportFile, template: TemplateSchema, error
     }
   }
   await csv(await file.readStream(), errorContext?.stopOnError)
-    .onRow(async (row: CSVRow) => {
+    .onRow(async (row: CSVRow, index: number) => {
+      if (index === 0) {
+        const columnnames = Object.keys(row);
+        nameToThesauriIdSelects = filterJSObject(nameToThesauriIdSelects, columnnames);
+        nameToThesauriIdMultiselects = filterJSObject(nameToThesauriIdMultiselects, columnnames);
+      }
       Object.entries(nameToThesauriIdSelects).forEach(([name, id]) => {
         const label = row[name];
         if (label) {

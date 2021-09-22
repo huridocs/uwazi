@@ -56,7 +56,7 @@ export class CSVLoader extends EventEmitter {
       (await settings.get()).languages
     ).map((l: LanguageSchema) => l.key);
     const { newNameGeneration = false } = await settings.get();
-    await arrangeThesauri(file, template, this);
+    await arrangeThesauri(file, template, availableLanguages, this);
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
@@ -66,7 +66,6 @@ export class CSVLoader extends EventEmitter {
           options.language,
           newNameGeneration
         );
-
         if (rawEntity) {
           const entity = await importEntity(rawEntity, template, file, options);
           await translateEntity(entity, rawTranslations, template, file);

@@ -2,6 +2,7 @@ import path from 'path';
 
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
+import settings from 'api/settings';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db from 'api/utils/testing_db';
 
@@ -61,7 +62,8 @@ describe('arrangeThesauri', () => {
     await db.clearAllAndLoad(fixtures);
     template = await templates.getById(fixtureFactory.id('template'));
     file = importFile(path.join(__dirname, '/arrangeThesauriTest.csv'));
-    await arrangeThesauri(file, template);
+    const languages = (await settings.get()).languages.map(l => l.key);
+    await arrangeThesauri(file, template, languages);
     selectThesaurus = await thesauri.getById(fixtureFactory.id('select_thesaurus'));
     selectLabels = selectThesaurus.values.map(tv => tv.label);
     selectLabelsSet = new Set(selectLabels);
@@ -85,12 +87,11 @@ second,second`;
   });
 
   it('should not fail if the select or multiselect fields are missing from the csv', async () => {
-    const noselTemplate = templates.getById(fixtureFactory.id('template'));
     const csv = `title,unrelated_property
 first,first
 second,second`;
     const readStreamMock = mockCsvFileReadStream(csv);
-    await arrangeThesauri(importFile('mockedFile'), noselTemplate);
+    await arrangeThesauri(importFile('mockedFile'), template);
     readStreamMock.mockRestore();
   });
 
@@ -119,4 +120,8 @@ second,second`;
     expect(selectLabels.length).toBe(selectLabelsSet.size);
     expect(multiselectLabels.length).toBe(multiselectLabelsSet.size);
   });
+
+  it('dummy test', () => {
+    console.log('there');
+  })
 });
