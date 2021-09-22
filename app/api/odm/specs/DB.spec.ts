@@ -89,7 +89,7 @@ describe('DB', () => {
         text: String,
       });
 
-      updatedSchema.index('value');
+      updatedSchema.index({ value: 1 });
       updatedSchema.index({ text: 'text' });
       const model = instanceModel<TestDoc>('docs', updatedSchema);
 
