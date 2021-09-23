@@ -143,7 +143,9 @@ export function mapStateToProps(state, props) {
     templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation'))
   );
 
-  const numberOfMarkers = numberOfMarkersSelector({ state, storeKey: props.storeKey });
+  const numberOfMarkers = showGeolocation
+    ? numberOfMarkersSelector({ state, storeKey: props.storeKey })
+    : 0;
 
   return {
     searchUrl: encodedSearch(state[props.storeKey]),
