@@ -2,20 +2,15 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { Switcher } from 'app/ReactReduxForms';
 import { IStore } from 'app/istore';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
-import { IImmutable } from 'shared/types/Immutable';
-import { Settings } from 'shared/types/settingsType';
 import { bindActionCreators, Dispatch } from 'redux';
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 import { wrapDispatch } from 'app/Multireducer';
 import _ from 'lodash';
 
 interface TemplatesFilterProps {
-  settings: { collection: IImmutable<Settings> };
-  libraryFilters: IImmutable<{ documentTypes: [] }>;
   storeKey: string;
-  filterDocumentTypes: (documentTypes: string[], storeKey: string) => {};
 }
 
 interface TemplatesFilterState {
@@ -24,16 +19,30 @@ interface TemplatesFilterState {
   configuredFilters: string[];
 }
 
+const mapStateToProps = (state: IStore) => ({
+  settings: state.settings,
+  libraryFilters: state.library.filters,
+});
+
+function mapDispatchToProps(dispatch: Dispatch<IStore>, props: TemplatesFilterProps) {
+  return bindActionCreators({ filterDocumentTypes }, wrapDispatch(dispatch, props.storeKey));
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type MappedProps = ConnectedProps<typeof connector>;
+type ComponentProps = TemplatesFilterProps & MappedProps;
+
 const filterValidSelectedTemplates = (configuredFilters: string[], selectedTemplates: string[]) =>
   configuredFilters.length
     ? selectedTemplates.filter(t => configuredFilters.includes(t))
     : selectedTemplates;
 
 export class TemplatesFilterComponent extends React.Component<
-  TemplatesFilterProps,
+  ComponentProps,
   TemplatesFilterState
 > {
-  constructor(props: TemplatesFilterProps) {
+  constructor(props: ComponentProps) {
     super(props);
     const configuredFilters: string[] = (props.settings.collection.toJS().filters || []).map(
       f => f.id!
@@ -48,7 +57,7 @@ export class TemplatesFilterComponent extends React.Component<
     };
   }
 
-  static getDerivedStateFromProps(props: TemplatesFilterProps, state: TemplatesFilterState) {
+  static getDerivedStateFromProps(props: ComponentProps, state: TemplatesFilterState) {
     const currentSelection = props.libraryFilters.toJS().documentTypes || [];
     const newSelection = state.documentTypeFromFilters
       ? filterValidSelectedTemplates(state.configuredFilters, currentSelection)
@@ -107,16 +116,4 @@ export class TemplatesFilterComponent extends React.Component<
   }
 }
 
-const mapStateToProps = (state: IStore) => ({
-  settings: state.settings,
-  libraryFilters: state.library.filters,
-});
-
-function mapDispatchToProps(dispatch: Dispatch<IStore>, props: TemplatesFilterProps) {
-  return bindActionCreators({ filterDocumentTypes }, wrapDispatch(dispatch, props.storeKey));
-}
-
-export const TemplatesFilter = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TemplatesFilterComponent);
+export const TemplatesFilter = connector(TemplatesFilterComponent);
