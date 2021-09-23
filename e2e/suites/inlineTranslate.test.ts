@@ -35,6 +35,9 @@ describe('Inline translation', () => {
     //check the translation
     await page.goto(`${host}/es`);
     await expect(page).toMatchElement('span.translation', { text: 'Crear entidad' });
+
+    //restore language
+    await page.goto(`${host}/en`);
   });
 
   afterAll(async () => {
