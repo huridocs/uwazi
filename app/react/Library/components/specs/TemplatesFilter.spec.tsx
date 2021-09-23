@@ -61,6 +61,17 @@ describe('TemplatesFilter', () => {
     });
 
     describe('libraryFilters', () => {
+      it('should list all templates if the library filters are not present in configured filters', () => {
+        spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
+        render([{ id: '1', name: 'Judge' }], [{ id: '2' }]);
+        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        expect(documentTypesList.props().fromFilters).toBe(false);
+        expect(documentTypesList.props().selectedTemplates).toEqual([
+          {
+            id: '2',
+          },
+        ]);
+      });
       it('should remove the library filters not present in filters', () => {
         spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
         render([{ id: '1', name: 'Judge' }], [{ id: '2' }]);
