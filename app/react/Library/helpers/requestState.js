@@ -55,9 +55,21 @@ export default function requestState(request, globalResources, calculateTableCol
   const documentsRequest = request.set(
     tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
   );
-  const markersRequest = request.set({ ...docsQuery, geolocation: true });
 
-  return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
+  const templatesWithGeolocation = globalResources.templates.find(template =>
+    template.get('properties').find(property => property.get('type') === 'geolocation')
+  );
+
+  const markersRequest = templatesWithGeolocation
+    ? api.search(
+        request.set({
+          ...docsQuery,
+          geolocation: true,
+        })
+      )
+    : { rows: [] };
+
+  return Promise.all([api.search(documentsRequest), markersRequest]).then(
     ([documents, markers]) => {
       const templates = globalResources.templates.toJS();
       const filterState = libraryHelpers.URLQueryToState(
