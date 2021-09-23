@@ -19,7 +19,6 @@ describe('csvLoader', () => {
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
   });
 
   afterAll(async () => db.disconnect());
@@ -160,6 +159,7 @@ describe('csvLoader', () => {
         'geolocation_geolocation',
         'auto_id',
         'additional_tag(s)',
+        'multi_select_label',
       ]);
     });
 
@@ -167,6 +167,22 @@ describe('csvLoader', () => {
       const textValues = imported.map(i => i.metadata.non_configured).filter(i => i);
 
       expect(textValues.length).toEqual(0);
+    });
+
+    it('should arrange translations for selects and multiselects', async () => {
+      const trs = await translations.get();
+      trs.forEach(tr => {
+        expect(tr.contexts.find(c => c.label === 'thesauri1').values).toMatchObject({
+          thesauri1: 'thesauri1',
+          thesauri2: 'thesauri2',
+        });
+        expect(tr.contexts.find(c => c.label === 'multi_select_thesaurus').values).toMatchObject({
+          multi_select_thesaurus: 'multi_select_thesaurus',
+          multivalue1: 'multivalue1',
+          multivalue2: 'multivalue2',
+          multivalue3: 'multivalue3',
+        });
+      });
     });
 
     describe('metadata parsing', () => {

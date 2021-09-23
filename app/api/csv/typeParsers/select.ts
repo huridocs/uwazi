@@ -1,6 +1,6 @@
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
-import { ThesaurusValueSchema, ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
@@ -19,18 +19,18 @@ const select = async (
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
   const thesauriValues = currentThesauri.values || [];
 
-  if (normalizeThesaurusLabel(entityToImport[ensure<string>(property.name)]) === '') {
+  const propValue = entityToImport[ensure<string>(property.name)];
+  const normalizedPropValue = normalizeThesaurusLabel(propValue);
+  if (!normalizedPropValue) {
     return null;
   }
 
-  const thesauriMatching = (v: ThesaurusValueSchema) =>
-    normalizeThesaurusLabel(v.label) ===
-    normalizeThesaurusLabel(entityToImport[ensure<string>(property.name)]);
+  const thesarusValue = thesauriValues.find(
+    tv => normalizeThesaurusLabel(tv.label) === normalizedPropValue
+  );
 
-  const value = thesauriValues.find(thesauriMatching);
-
-  if (value?.id) {
-    return [{ value: value.id, label: value.label }];
+  if (thesarusValue?.id) {
+    return [{ value: thesarusValue.id, label: thesarusValue.label }];
   }
 
   return null;

@@ -167,20 +167,22 @@ const arrangeThesauri = async (
       }
     })
     .read();
-  await Promise.all(
-    allRelatedThesauri.map(thesaurus => {
-      if (thesaurus !== null) {
-        const newValues: { label: string }[] = Array.from(
-          thesauriIdToNewValues.get(thesaurus._id.toString()) || []
-        ).map(tval => ({ label: tval }));
+  for (let i = 0; i < allRelatedThesauri.length; i += 1) {
+    const thesaurus = allRelatedThesauri[i];
+    if (thesaurus !== null) {
+      const newValues: { label: string }[] = Array.from(
+        thesauriIdToNewValues.get(thesaurus._id.toString()) || []
+      ).map(tval => ({ label: tval }));
+      if (newValues.length > 0) {
         const thesaurusValues = thesaurus.values || [];
-        return thesauri.save({
+        // eslint-disable-next-line no-await-in-loop
+        await thesauri.save({
           ...thesaurus,
           values: thesaurusValues.concat(newValues),
         });
       }
-    })
-  );
+    }
+  }
 };
 
 const importEntity = async (
