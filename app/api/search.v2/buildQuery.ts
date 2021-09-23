@@ -10,7 +10,9 @@ const sharedIdFilter = (query: SearchQuery) =>
 
 const isRange = (
   range: (RangeQuery | string | number | boolean) | undefined
-): range is RangeQuery => typeof range === 'object' && Object.keys(range).includes('from');
+): range is RangeQuery =>
+  typeof range === 'object' &&
+  (Object.keys(range).includes('from') || Object.keys(range).includes('to'));
 
 const metadataFilters = (query: SearchQuery) =>
   Object.keys(query.filter || {})
@@ -19,7 +21,7 @@ const metadataFilters = (query: SearchQuery) =>
       const filterValue = query.filter?.[key];
       if (isRange(filterValue)) {
         return {
-          range: { [`${key}.value`]: { lte: filterValue.to } },
+          range: { [`${key}.value`]: { gte: filterValue.from, lte: filterValue.to } },
         };
       }
       return {
@@ -29,6 +31,35 @@ const metadataFilters = (query: SearchQuery) =>
       };
     });
 
+const fullTextSearch = (
+  searchString: string | undefined,
+  query: SearchQuery,
+  searchMethod: string
+) =>
+  searchString
+    ? [
+        {
+          has_child: {
+            type: 'fullText',
+            score_mode: 'max',
+            inner_hits: {
+              _source: false,
+              ...snippetsHighlight(query),
+            },
+            query: {
+              [searchMethod]: {
+                query: searchString,
+                fields: ['fullText_*'],
+              },
+            },
+          },
+        },
+      ]
+    : [];
+
+const textSearch = (searchString: string | number | undefined, searchMethod: string) =>
+  searchString ? [{ [searchMethod]: { query: searchString } }] : [];
+
 const defaultFields = ['title', 'template', 'sharedId'];
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
   const { searchString, fullTextSearchString, searchMethod } = await extractSearchParams(query);
@@ -36,9 +67,7 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
     _source: {
       includes: query.fields || defaultFields,
     },
-    // const match = { range: {} };
-    // match.range[`${path}.${filter.name}`] = { gte: filter.value.from, lte: filter.value.to };
-    // return match;
+
     query: {
       bool: {
         filter: [
@@ -48,28 +77,9 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
           ...permissionsFilters(query),
         ],
         must: [
-          fullTextSearchString && {
-            has_child: {
-              type: 'fullText',
-              score_mode: 'max',
-              inner_hits: {
-                _source: false,
-                ...snippetsHighlight(query),
-              },
-              query: {
-                [searchMethod]: {
-                  query: fullTextSearchString,
-                  fields: ['fullText_*'],
-                },
-              },
-            },
-          },
-          searchString && {
-            [searchMethod]: {
-              query: searchString,
-            },
-          },
-        ].filter(cleanUp),
+          ...fullTextSearch(fullTextSearchString, query, searchMethod),
+          ...textSearch(searchString, searchMethod),
+        ],
       },
     },
     from: 0,

@@ -100,58 +100,52 @@ describe('Metadata filters', () => {
     expect(body.data).toMatchObject([{ title: 'Entity 2' }]);
   });
 
-  it('should filter by numeric properties', async () => {
-    throw new Error('should support to and from in numeric filters');
+  describe('Numeric range filter', () => {
+    beforeAll(async () => {
+      await load(
+        {
+          templates: [
+            factory.template('templateA', [
+              factory.property('multiselect', 'multiselect'),
+              factory.property('numericPropertyName', 'numeric'),
+            ]),
+          ],
+          entities: [
+            factory.entity('Entity 1', 'templateA', {
+              multiselect: [factory.metadataValue('thesaurusId1')],
+              numericPropertyName: [factory.metadataValue(42)],
+            }),
+            factory.entity('Entity 2', 'templateA', {
+              multiselect: [factory.metadataValue('thesaurusId2')],
+              numericPropertyName: [factory.metadataValue(13)],
+            }),
+            factory.entity('Entity 3', 'templateA', {
+              numericPropertyName: [factory.metadataValue(5)],
+            }),
+          ],
+        },
+        'search.v2.metadata_filters'
+      );
+    });
 
-    await load(
-      {
-        templates: [
-          factory.template('templateA', [
-            factory.property('multiselect', 'multiselect'),
-            factory.property('numericPropertyName', 'numeric'),
-          ]),
-        ],
-        entities: [
-          factory.entity('Entity 1', 'templateA', {
-            multiselect: [factory.metadataValue('thesaurusId1')],
-            numericPropertyName: [factory.metadataValue(42)],
-          }),
-          factory.entity('Entity 2', 'templateA', {
-            multiselect: [factory.metadataValue('thesaurusId2')],
-            numericPropertyName: [factory.metadataValue(13)],
-          }),
-          factory.entity('Entity 3', 'templateA', {
-            numericPropertyName: [factory.metadataValue(5)],
-          }),
-        ],
-      },
-      'search.v2.metadata_filters'
-    );
+    it.each([
+      { filterValue: 42, expected: [{ title: 'Entity 1' }] },
+      { filterValue: { from: 10, to: 25 }, expected: [{ title: 'Entity 2' }] },
+      { filterValue: { to: 25 }, expected: [{ title: 'Entity 2' }, { title: 'Entity 3' }] },
+      { filterValue: { from: 25 }, expected: [{ title: 'Entity 1' }] },
+    ])('should filter by numeric properties -> %o', async ({ filterValue, expected }) => {
+      const query = {
+        filter: {
+          'metadata.numericPropertyName': filterValue,
+        },
+      };
 
-    const query = {
-      filter: {
-        'metadata.numericPropertyName': 42,
-      },
-    };
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query(query)
+        .expect(200);
 
-    const query2 = {
-      filter: {
-        'metadata.numericPropertyName': { from: 10, to: 25 },
-      },
-    };
-
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
-
-    expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
-
-    const { body: newBody } = await request(app)
-      .get('/api/v2/entities')
-      .query(query2)
-      .expect(200);
-
-    expect(newBody.data).toMatchObject([{ title: 'Entity 2' }]);
+      expect(body.data).toMatchObject(expected);
+    });
   });
 });
