@@ -16,7 +16,7 @@ exports[`I18NMenu when there is only one language should only render the inline 
   >
     <button
       aria-label="Add/edit translations"
-      className="menuNav-btn btn btn-default"
+      className="menuNav-btn btn btn-default inlineEdit"
       onClick={[Function]}
       type="button"
     >
