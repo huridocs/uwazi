@@ -148,4 +148,10 @@ describe('Metadata filters', () => {
       expect(body.data).toMatchObject(expected);
     });
   });
+  it('', () => {
+    throw new Error('Add support for dates');
+  });
+  it('', () => {
+    throw new Error('Check why we are supporting numbers in searchString');
+  });
 });

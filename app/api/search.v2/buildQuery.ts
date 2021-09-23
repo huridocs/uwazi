@@ -1,6 +1,6 @@
 import { RangeQuery, SearchQuery } from 'shared/types/SearchQueryType';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
-import { cleanUp, extractSearchParams, snippetsHighlight } from './queryHelpers';
+import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
 
 const languageFilter = (language: string) => [{ term: { language } }];
