@@ -80,6 +80,7 @@ const filterJSObject = (input: { [k: string]: any }, keys: string[]): { [k: stri
   return result;
 };
 
+// eslint-disable-next-line max-statements
 const arrangeThesauri = async (
   file: ImportFile,
   template: TemplateSchema,
@@ -110,11 +111,11 @@ const arrangeThesauri = async (
       }
     }
   });
-  const allRelatedThesauri = await Promise.all(
-    Array.from(
+  const allRelatedThesauri = await thesauri.get({
+    $in: Array.from(
       new Set(thesauriRelatedProperties?.map(p => p.content?.toString()).filter(t => t))
-    ).map(async id => thesauri.getById(id))
-  );
+    ),
+  });
   allRelatedThesauri.forEach(t => {
     if (t) {
       const id = t._id.toString();
