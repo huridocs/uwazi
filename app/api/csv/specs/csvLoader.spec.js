@@ -169,22 +169,6 @@ describe('csvLoader', () => {
       expect(textValues.length).toEqual(0);
     });
 
-    it('should arrange translations for selects and multiselects', async () => {
-      const trs = await translations.get();
-      trs.forEach(tr => {
-        expect(tr.contexts.find(c => c.label === 'thesauri1').values).toMatchObject({
-          thesauri1: 'thesauri1',
-          thesauri2: 'thesauri2',
-        });
-        expect(tr.contexts.find(c => c.label === 'multi_select_thesaurus').values).toMatchObject({
-          multi_select_thesaurus: 'multi_select_thesaurus',
-          multivalue1: 'multivalue1',
-          multivalue2: 'multivalue2',
-          multivalue3: 'multivalue3',
-        });
-      });
-    });
-
     describe('metadata parsing', () => {
       it('should parse metadata properties by type using typeParsers', () => {
         const textValues = imported.map(i => i.metadata.text_label[0].value);

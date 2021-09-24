@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { EventEmitter } from 'events';
 
 import templates from 'api/templates';

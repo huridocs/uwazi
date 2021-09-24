@@ -1,16 +1,44 @@
 import path from 'path';
 
-import templates from 'api/templates';
+import translations from 'api/i18n/translations';
 import thesauri from 'api/thesauri';
-import settings from 'api/settings';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db from 'api/utils/testing_db';
 
-import { arrangeThesauri } from '../arrangeThesauri';
-import importFile from '../importFile';
-import { mockCsvFileReadStream } from './helpers';
+import { CSVLoader } from '../csvLoader';
 
 const fixtureFactory = getFixturesFactory();
+
+const commonTranslationContexts = (id1, id2) => [
+  {
+    id: 'System',
+    label: 'System',
+    values: [
+      { key: 'original 1', value: 'original 1' },
+      { key: 'original 2', value: 'original 2' },
+      { key: 'original 3', value: 'original 3' },
+    ],
+  },
+  {
+    id: id1.toString(),
+    label: 'select_thesaurus',
+    values: [
+      { key: 'select_thesaurus', value: 'select_thesaurus' },
+      { key: 'A', value: 'A' },
+    ],
+    type: 'Dictionary',
+  },
+  {
+    id: id2.toString(),
+    label: 'multiselect_thesaurus',
+    values: [
+      { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
+      { key: 'A', value: 'A' },
+      { key: 'B', value: 'B' },
+    ],
+    type: 'Dictionary',
+  },
+];
 
 const fixtures = {
   dictionaries: [
@@ -48,12 +76,30 @@ const fixtures = {
       ],
     },
   ],
+  translations: [
+    {
+      _id: db.id(),
+      locale: 'en',
+      contexts: commonTranslationContexts(
+        fixtureFactory.id('select_thesaurus'),
+        fixtureFactory.id('multiselect_thesaurus')
+      ),
+    },
+    {
+      _id: db.id(),
+      locale: 'es',
+      contexts: commonTranslationContexts(
+        fixtureFactory.id('select_thesaurus'),
+        fixtureFactory.id('multiselect_thesaurus')
+      ),
+    },
+  ],
 };
 
-describe('arrangeThesauri', () => {
-  let file;
+const loader = new CSVLoader();
+
+describe('loader', () => {
   let fileSpy;
-  let template;
   let selectThesaurus;
   let selectLabels;
   let selectLabelsSet;
@@ -63,10 +109,10 @@ describe('arrangeThesauri', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    template = await templates.getById(fixtureFactory.id('template'));
-    file = importFile(path.join(__dirname, '/arrangeThesauriTest.csv'));
-    const languages = (await settings.get()).languages.map(l => l.key);
-    await arrangeThesauri(file, template, languages);
+    await loader.load(
+      path.join(__dirname, '/arrangeThesauriTest.csv'),
+      fixtureFactory.id('template')
+    );
     selectThesaurus = await thesauri.getById(fixtureFactory.id('select_thesaurus'));
     selectLabels = selectThesaurus.values.map(tv => tv.label);
     selectLabelsSet = new Set(selectLabels);
@@ -77,25 +123,6 @@ describe('arrangeThesauri', () => {
   afterAll(async () => {
     db.disconnect();
     fileSpy.mockRestore();
-  });
-
-  it('should not fail on templates with no select or multiselect fields', async () => {
-    const noselTemplate = templates.getById(fixtureFactory.id('no_selects_template'));
-    const csv = `title,unrelated_text
-first,first
-second,second`;
-    const readStreamMock = mockCsvFileReadStream(csv);
-    await arrangeThesauri(importFile('mockedFile'), noselTemplate);
-    readStreamMock.mockRestore();
-  });
-
-  it('should not fail if the select or multiselect fields are missing from the csv', async () => {
-    const csv = `title,unrelated_property
-first,first
-second,second`;
-    const readStreamMock = mockCsvFileReadStream(csv);
-    await arrangeThesauri(importFile('mockedFile'), template);
-    readStreamMock.mockRestore();
   });
 
   it('should create values in thesauri', async () => {
@@ -137,5 +164,37 @@ second,second`;
   it('should not create repeated values', async () => {
     expect(selectLabels.length).toBe(selectLabelsSet.size);
     expect(multiselectLabels.length).toBe(multiselectLabelsSet.size);
+  });
+
+  it('should arrange translations for selects and multiselects', async () => {
+    const trs = await translations.get();
+    trs.forEach(tr => {
+      expect(tr.contexts.find(c => c.label === 'select_thesaurus').values).toMatchObject({
+        A: 'A',
+        Aes: 'Aes',
+        B: 'B',
+        Bes: 'Bes',
+        C: 'C',
+        Ces: 'Ces',
+        d: 'd',
+        des: 'des',
+        select_thesaurus: 'select_thesaurus',
+      });
+      expect(tr.contexts.find(c => c.label === 'multiselect_thesaurus').values).toMatchObject({
+        A: 'A',
+        Aes: 'Aes',
+        B: 'B',
+        Bes: 'Bes',
+        D: 'D',
+        Des: 'Des',
+        E: 'E',
+        Ees: 'Ees',
+        c: 'c',
+        ces: 'ces',
+        g: 'g',
+        ges: 'ges',
+        multiselect_thesaurus: 'multiselect_thesaurus',
+      });
+    });
   });
 });
