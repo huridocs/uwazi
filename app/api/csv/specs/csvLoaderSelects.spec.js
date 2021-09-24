@@ -166,7 +166,7 @@ describe('loader', () => {
     expect(multiselectLabels.length).toBe(multiselectLabelsSet.size);
   });
 
-  it('should arrange translations for selects and multiselects', async () => {
+  it('should check that the thesauri saving saves all contexts properly', async () => {
     const trs = await translations.get();
     trs.forEach(tr => {
       expect(tr.contexts.find(c => c.label === 'select_thesaurus').values).toMatchObject({
