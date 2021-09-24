@@ -2,21 +2,17 @@ import entities from 'api/entities';
 import { search } from 'api/search';
 import entitiesModel from 'api/entities/entitiesModel';
 import { processDocument } from 'api/files/processDocument';
-import { RawEntity, toSafeName } from 'api/csv/entityRow';
+import { RawEntity } from 'api/csv/entityRow';
 import { TemplateSchema } from 'shared/types/templateType';
 import { MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ImportFile } from 'api/csv/importFile';
-import thesauri from 'api/thesauri';
 import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
 import { attachmentsPath, files } from 'api/files';
 import { generateID } from 'shared/IDGenerator';
 
-import { normalizeThesaurusLabel } from './typeParsers/select';
-import { splitMultiselectLabels } from './typeParsers/multiselect';
 import typeParsers from './typeParsers';
-import csv, { CSVRow } from './csv';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
   typeParsers[prop.type]
@@ -68,131 +64,6 @@ const entityObject = async (
 type Options = {
   user?: {};
   language: string;
-};
-
-const filterJSObject = (input: { [k: string]: any }, keys: string[]): { [k: string]: any } => {
-  const result: { [k: string]: any } = {};
-  keys.forEach(k => {
-    if (input.hasOwnProperty(k)) {
-      result[k] = input[k];
-    }
-  });
-  return result;
-};
-
-class ArrangeThesauriError extends Error {
-  source: Error;
-  row: CSVRow;
-  index: number;
-
-  constructor(source: Error, row: CSVRow, index: number) {
-    super(source.message);
-    this.source = source;
-    this.row = row;
-    this.index = index;
-  }
-}
-
-// eslint-disable-next-line max-statements
-const arrangeThesauri = async (
-  file: ImportFile,
-  template: TemplateSchema,
-  languages?: string[],
-  stopOnError: boolean = true
-) => {
-  let nameToThesauriIdSelects: { [k: string]: string } = {};
-  let nameToThesauriIdMultiselects: { [k: string]: string } = {};
-  const thesauriIdToExistingValues = new Map();
-  const thesauriIdToNewValues: Map<string, Set<string>> = new Map();
-  const thesauriIdToNormalizedNewValues = new Map();
-  const thesauriRelatedProperties = template.properties?.filter(p =>
-    ['select', 'multiselect'].includes(p.type)
-  );
-  thesauriRelatedProperties?.forEach(p => {
-    if (p.content && p.type) {
-      const thesarusID = p.content.toString();
-      if (p.type === propertyTypes.select) {
-        nameToThesauriIdSelects[p.name] = thesarusID;
-        languages?.forEach(suffix => {
-          nameToThesauriIdSelects[`${p.name}__${suffix}`] = thesarusID;
-        });
-      } else if (p.type === propertyTypes.multiselect) {
-        nameToThesauriIdMultiselects[p.name] = thesarusID;
-        languages?.forEach(suffix => {
-          nameToThesauriIdMultiselects[`${p.name}__${suffix}`] = thesarusID;
-        });
-      }
-    }
-  });
-  const allRelatedThesauri = await thesauri.get({
-    $in: Array.from(
-      new Set(thesauriRelatedProperties?.map(p => p.content?.toString()).filter(t => t))
-    ),
-  });
-  allRelatedThesauri.forEach(t => {
-    if (t) {
-      const id = t._id.toString();
-      thesauriIdToExistingValues.set(
-        id,
-        new Set(t.values?.map(v => normalizeThesaurusLabel(v.label)))
-      );
-      thesauriIdToNewValues.set(id, new Set());
-      thesauriIdToNormalizedNewValues.set(id, new Set());
-    }
-  });
-  function handleLabels(id: string, original: string, normalized: string | null) {
-    if (
-      normalized &&
-      !thesauriIdToExistingValues.get(id).has(normalized) &&
-      !thesauriIdToNormalizedNewValues.get(id).has(normalized)
-    ) {
-      thesauriIdToNewValues.get(id)?.add(original);
-      thesauriIdToNormalizedNewValues.get(id).add(normalized);
-    }
-  }
-  await csv(await file.readStream(), stopOnError)
-    .onRow(async (row: CSVRow, index: number) => {
-      if (index === 0) {
-        const columnnames = Object.keys(row);
-        nameToThesauriIdSelects = filterJSObject(nameToThesauriIdSelects, columnnames);
-        nameToThesauriIdMultiselects = filterJSObject(nameToThesauriIdMultiselects, columnnames);
-      }
-      Object.entries(nameToThesauriIdSelects).forEach(([name, id]) => {
-        const label = row[name];
-        if (label) {
-          const normalizedLabel = normalizeThesaurusLabel(label);
-          handleLabels(id, label, normalizedLabel);
-        }
-      });
-      Object.entries(nameToThesauriIdMultiselects).forEach(([name, id]) => {
-        const labels = splitMultiselectLabels(row[name]);
-        if (labels) {
-          Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
-            handleLabels(id, originalLabel, normalizedLabel);
-          });
-        }
-      });
-    })
-    .onError(async (e: Error, row: CSVRow, index: number) => {
-      throw new ArrangeThesauriError(e, row, index);
-    })
-    .read();
-  for (let i = 0; i < allRelatedThesauri.length; i += 1) {
-    const thesaurus = allRelatedThesauri[i];
-    if (thesaurus !== null) {
-      const newValues: { label: string }[] = Array.from(
-        thesauriIdToNewValues.get(thesaurus._id.toString()) || []
-      ).map(tval => ({ label: tval }));
-      if (newValues.length > 0) {
-        const thesaurusValues = thesaurus.values || [];
-        // eslint-disable-next-line no-await-in-loop
-        await thesauri.save({
-          ...thesaurus,
-          values: thesaurusValues.concat(newValues),
-        });
-      }
-    }
-  }
 };
 
 const importEntity = async (
@@ -251,4 +122,4 @@ const translateEntity = async (
   await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
 };
 
-export { arrangeThesauri, importEntity, translateEntity, ArrangeThesauriError };
+export { importEntity, translateEntity };

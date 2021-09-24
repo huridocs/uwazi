@@ -11,14 +11,10 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
+import { arrangeThesauri, ArrangeThesauriError } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
 import importFile from './importFile';
-import {
-  arrangeThesauri,
-  ArrangeThesauriError,
-  importEntity,
-  translateEntity,
-} from './importEntity';
+import { importEntity, translateEntity } from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
 
 export class CSVLoader extends EventEmitter {

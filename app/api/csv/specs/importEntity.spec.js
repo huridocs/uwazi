@@ -6,7 +6,7 @@ import settings from 'api/settings';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db from 'api/utils/testing_db';
 
-import { arrangeThesauri } from '../importEntity';
+import { arrangeThesauri } from '../arrangeThesauri';
 import importFile from '../importFile';
 import { mockCsvFileReadStream } from './helpers';
 
