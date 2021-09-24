@@ -1,4 +1,4 @@
-import { host } from 'e2e/config';
+import { host } from '../config';
 
 export const createTemplate = async (name: string) => {
   await page.goto(`${host}/en/settings/account`);

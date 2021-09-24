@@ -1,4 +1,4 @@
-import { host } from 'e2e/config';
+import { host } from '../config';
 import { ElementHandle } from 'puppeteer';
 
 interface FilesOptions {
@@ -7,7 +7,7 @@ interface FilesOptions {
 }
 
 const uploadPDFToEntity = async (pdfName: string) => {
-  await expect(page).toUploadFile('#upload-button-input', `${__dirname}/test_files/${pdfName}`);
+  await expect(page).toUploadFile('#upload-button-input', pdfName);
 };
 
 const uploadSupportingFileToEntity = async (fileName: string): Promise<void> => {
@@ -16,7 +16,7 @@ const uploadSupportingFileToEntity = async (fileName: string): Promise<void> => 
     page.waitForFileChooser(),
     page.click('div.attachments-modal__dropzone > button'),
   ]);
-  await fileChooser.accept([`${__dirname}/test_files/${fileName}`]);
+  await fileChooser.accept([fileName]);
 };
 
 export const createEntity = async (templateName: string, files: FilesOptions) => {
