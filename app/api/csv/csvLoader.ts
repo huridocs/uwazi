@@ -13,7 +13,12 @@ import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
 import csv, { CSVRow } from './csv';
 import importFile from './importFile';
-import { arrangeThesauri, importEntity, translateEntity } from './importEntity';
+import {
+  arrangeThesauri,
+  ArrangeThesauriError,
+  importEntity,
+  translateEntity,
+} from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
 
 export class CSVLoader extends EventEmitter {
@@ -56,7 +61,16 @@ export class CSVLoader extends EventEmitter {
       (await settings.get()).languages
     ).map((l: LanguageSchema) => l.key);
     const { newNameGeneration = false } = await settings.get();
-    await arrangeThesauri(file, template, availableLanguages, this);
+    try {
+      await arrangeThesauri(file, template, availableLanguages, this.stopOnError);
+    } catch (e) {
+      if (e instanceof ArrangeThesauriError) {
+        const _e: ArrangeThesauriError = e;
+        this.emit('loadError', _e.source, toSafeName(_e.row), _e.index);
+      } else {
+        throw e;
+      }
+    }
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {

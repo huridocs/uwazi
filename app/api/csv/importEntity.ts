@@ -80,12 +80,25 @@ const filterJSObject = (input: { [k: string]: any }, keys: string[]): { [k: stri
   return result;
 };
 
+class ArrangeThesauriError extends Error {
+  source: Error;
+  row: CSVRow;
+  index: number;
+
+  constructor(source: Error, row: CSVRow, index: number) {
+    super(source.message);
+    this.source = source;
+    this.row = row;
+    this.index = index;
+  }
+}
+
 // eslint-disable-next-line max-statements
 const arrangeThesauri = async (
   file: ImportFile,
   template: TemplateSchema,
   languages?: string[],
-  errorContext?: any
+  stopOnError: boolean = true
 ) => {
   let nameToThesauriIdSelects: { [k: string]: string } = {};
   let nameToThesauriIdMultiselects: { [k: string]: string } = {};
@@ -137,7 +150,7 @@ const arrangeThesauri = async (
       thesauriIdToNormalizedNewValues.get(id).add(normalized);
     }
   }
-  await csv(await file.readStream(), errorContext?.stopOnError)
+  await csv(await file.readStream(), stopOnError)
     .onRow(async (row: CSVRow, index: number) => {
       if (index === 0) {
         const columnnames = Object.keys(row);
@@ -161,10 +174,7 @@ const arrangeThesauri = async (
       });
     })
     .onError(async (e: Error, row: CSVRow, index: number) => {
-      if (errorContext) {
-        errorContext._errors[index] = e;
-        errorContext.emit('loadError', e, toSafeName(row), index);
-      }
+      throw new ArrangeThesauriError(e, row, index);
     })
     .read();
   for (let i = 0; i < allRelatedThesauri.length; i += 1) {
@@ -241,4 +251,4 @@ const translateEntity = async (
   await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
 };
 
-export { arrangeThesauri, importEntity, translateEntity };
+export { arrangeThesauri, importEntity, translateEntity, ArrangeThesauriError };
