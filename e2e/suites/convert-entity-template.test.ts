@@ -35,7 +35,6 @@ describe('Convert entity template', () => {
     await page.reload();
     await expect(page).toClick('button.edit-metadata');
     await expect(page).toMatchElement('select.form-control > option');
-    // await page.waitFor(1000);
     const options = await page.$$('select.form-control > option');
 
     const optionsValues = await options.map(async (optionElement: ElementHandle<Element>) => {
