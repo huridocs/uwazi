@@ -75,6 +75,7 @@ interface EntityDisplayState {
     quickLabelState: IImmutable<QuickLabelState>;
     quickLabelMetadata: QuickLabelMetadata;
     quickLabelMetadataForm: any;
+    metadata: ClientEntitySchema;
   };
   search: any;
 }
@@ -89,6 +90,7 @@ export interface ClientFile extends FileType {
 
 export interface ClientEntitySchema extends EntitySchema {
   documents?: ClientFile[];
+  attachements?: ClientFile[];
 }
 
 export interface DocumentViewerUiStateReference {
