@@ -63,7 +63,7 @@ export class Document extends Component {
   }
 
   highlightReference(connection) {
-    return this.props.activateReference(connection, this.props.file.pdfInfo);
+    return this.props.activateReference(connection);
   }
 
   pdfLoaded() {
@@ -71,7 +71,6 @@ export class Document extends Component {
       const references = this.props.references.toJS();
       this.props.scrollToActive(
         references.find(r => r._id === this.props.activeReference),
-        this.props.file.pdfInfo,
         references,
         this.props.doScrollToActive
       );
@@ -91,7 +90,6 @@ export class Document extends Component {
       <PDF
         onPageChange={this.props.onPageChange}
         onPDFReady={this.onDocumentReady}
-        pdfInfo={file.pdfInfo}
         onLoad={this.pdfLoaded}
         file={`${APIURL}files/${file.filename}`}
         filename={file.filename}

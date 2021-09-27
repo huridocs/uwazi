@@ -1,4 +1,4 @@
-import handleError from './handleError';
+import { handleError } from './handleError';
 
 export default (error, req, res, next) => {
   const { message, code, ...rest } = handleError(error, { req });

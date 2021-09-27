@@ -70,10 +70,6 @@ export default {
         2: 'page[[2]] 2[[2]]',
         3: '',
       },
-      pdfInfo: {
-        1: { chars: 10 },
-        2: { chars: 20 },
-      },
     },
     {
       _id: uploadId2,

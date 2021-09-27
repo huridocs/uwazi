@@ -150,7 +150,7 @@ describe('DocumentSidePanel', () => {
       }
       it('should set toc of the loaded file if doc is a new entity', () => {
         props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
-        props.file = { toc, pdfInfo: {} };
+        props.file = { toc };
         expectToCValuesAreTheProvidedInProps();
       });
       it('should set the toc of the default document if doc is a loaded entity', () => {

@@ -3,7 +3,7 @@
  */
 import Immutable from 'immutable';
 
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected } from 'app/utils/test/renderConnected';
 import { TableRow } from 'app/Library/components/TableRow';
 import { TableCell } from 'app/Library/components/TableCell';
 import { EntitySchema } from 'shared/types/entityType';
@@ -58,6 +58,7 @@ describe('TableRow', () => {
     const timestampCreation = Date.UTC(2020, 6, 23).valueOf();
     const timestampProperty = Math.floor(Date.UTC(2019, 4, 20).valueOf() / 1000);
     const storeState = {
+      settings: { collection: Immutable.fromJS({ dateFormat: 'dd-mm-yyyy' }) },
       library: { ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'selectedEntity1' }] }) },
       thesauris: Immutable.fromJS([
         {

@@ -1,9 +1,11 @@
 /* eslint-disable global-require */
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
+import CSRFMiddleware from './auth/CSRFMiddleware';
 import languageMiddleware from './utils/languageMiddleware';
 
 export default (app, server) => {
   //common middlewares
+  app.use(CSRFMiddleware);
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 

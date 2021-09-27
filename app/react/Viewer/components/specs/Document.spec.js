@@ -21,8 +21,8 @@ describe('Document', () => {
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       deactivateReference: jasmine.createSpy('deactivateReference'),
-      doc: Immutable.fromJS({ _id: 'documentId', documents: [{ pdfInfo: { test: 'pdfInfo' } }] }),
-      file: { language: 'eng', _id: 'fileId', pdfInfo: { test: 'pdfInfo' } },
+      doc: Immutable.fromJS({ _id: 'documentId' }),
+      file: { language: 'eng', _id: 'fileId' },
       onDocumentReady: jasmine.createSpy('onDocumentReady'),
       selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
@@ -107,7 +107,7 @@ describe('Document', () => {
 
       component.instance().highlightReference(reference);
 
-      expect(props.activateReference).toHaveBeenCalledWith(reference, props.file.pdfInfo);
+      expect(props.activateReference).toHaveBeenCalledWith(reference);
       expect(props.onClick).not.toHaveBeenCalled();
     });
   });

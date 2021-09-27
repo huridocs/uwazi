@@ -37,21 +37,6 @@ describe('entities routes', () => {
   afterAll(async () => db.disconnect());
 
   describe('GET', () => {
-    it('return pdfInfo if asked in the request', async () => {
-      const responseWithoutPdfInfo: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared' });
-
-      expect(responseWithoutPdfInfo.body.rows[0].documents[0].pdfInfo).toBe(undefined);
-
-      const responseWithPdfInfo: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared', withPdfInfo: true });
-
-      const expectedPdfInfo = fixtures.files[2].pdfInfo;
-      expect(responseWithPdfInfo.body.rows[0].documents[0].pdfInfo).toEqual(expectedPdfInfo);
-    });
-
     it('return asked entities with permissions', async () => {
       const response: SuperTestResponse = await request(app)
         .get('/api/entities')
@@ -67,7 +52,6 @@ describe('entities routes', () => {
       new UserInContextMockFactory().mock(user);
       const response: SuperTestResponse = await request(app)
         .post('/api/entities')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send({ title: 'newEntity' });
       expect(response.body).toEqual(
         expect.objectContaining({

@@ -6,7 +6,6 @@ import { search } from 'api/search';
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
 import { uploadsPath, customUploadsPath, uploadMiddleware } from 'api/files';
-
 import { needsAuthorization } from '../auth';
 
 const storage = multer.diskStorage({

@@ -29,7 +29,6 @@ describe('Pages Routes', () => {
 
       const response = await request(app)
         .post('/api/pages')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .set('content-language', 'en')
         .send(goodData);
 
@@ -41,7 +40,6 @@ describe('Pages Routes', () => {
 
       const response = await request(app)
         .post('/api/pages')
-        .set('X-Requested-With', 'XMLHttpRequest')
         .send(badData);
 
       expect(response.status).toBe(400);

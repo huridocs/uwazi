@@ -46,7 +46,11 @@ export class DocumentSidePanel extends Component {
       prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
       this.props.getDocumentReferences
     ) {
-      this.props.getDocumentReferences(this.props.doc.get('sharedId'), this.props.storeKey);
+      this.props.getDocumentReferences(
+        this.props.doc.get('sharedId'),
+        this.props.file._id,
+        this.props.storeKey
+      );
     }
   }
 
@@ -379,11 +383,7 @@ export class DocumentSidePanel extends Component {
                   </TocGeneratedLabel>
                 </div>
                 <ShowIf if={!this.props.tocBeingEdited}>
-                  <ShowToc
-                    toc={defaultDocumentToC}
-                    pdfInfo={this.props.file.pdfInfo}
-                    readOnly={readOnly}
-                  />
+                  <ShowToc toc={defaultDocumentToC} readOnly={readOnly} />
                 </ShowIf>
                 <ShowIf if={this.props.tocBeingEdited}>
                   <TocForm

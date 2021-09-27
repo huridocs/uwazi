@@ -18,12 +18,12 @@ export class ImportPanel extends Component {
     this.close = this.close.bind(this);
   }
 
-  close() {
-    this.props.closeImportPanel();
-  }
-
   handleSubmit(values) {
     this.props.importData(values.file, values.template);
+  }
+
+  close() {
+    this.props.closeImportPanel();
   }
 
   renderForm() {
@@ -78,7 +78,7 @@ export class ImportPanel extends Component {
           <div className="form-group" />
         </LocalForm>
         <div className="sidepanel-footer">
-          <button form="import" type="submit" className="btn btn-primary">
+          <button form="import" type="submit" className="btn btn-primary" id="import-csv">
             <Icon icon="upload" />
             <span className="btn-label">
               <Translate>Import</Translate>
