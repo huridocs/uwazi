@@ -12,7 +12,6 @@ const setupPreFlights = async (): Promise<void> => {
   await insertFixtures();
   await proxyMock();
   await adminLogin();
-  await disableTransitions();
 };
 
 const setupTest = async () => {
@@ -27,13 +26,16 @@ const setupTest = async () => {
 describe('Convert entity template', () => {
   beforeAll(async () => {
     await setupPreFlights();
+    await setupTest();
+    await disableTransitions();
   });
 
   it('Should select image for image property from supporting files', async () => {
-    await setupTest();
     await expect(page).toClick('a[type="button"]');
-    await page.reload();
-    await expect(page).toClick('button.edit-metadata');
+
+    await expect(page).toClick('.metadata-sidepanel button.edit-metadata', {
+      text: 'Edit',
+    });
     await expect(page).toMatchElement('select.form-control > option');
     const options = await page.$$('select.form-control > option');
 
@@ -46,8 +48,9 @@ describe('Convert entity template', () => {
     });
 
     const optionValues: any[] = await Promise.all(optionsValues);
-    const value = optionValues.find(option => option.text === 'With image').value;
+    const { value } = optionValues.find(option => option.text === 'With image');
 
+    await expect(page).toMatchElement('select.form-control');
     await page.select('select.form-control', value);
     await expect(page).toClick('span', { text: 'Select supporting file' });
     await expect(page).toMatchElement('div.media-grid-card-header > h5', { text: 'batman.jpg' });
