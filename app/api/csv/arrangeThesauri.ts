@@ -1,6 +1,5 @@
 import { ImportFile } from 'api/csv/importFile';
 import thesauri from 'api/thesauri';
-import { propertyTypes } from 'shared/propertyTypes';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -32,31 +31,23 @@ class ArrangeThesauriError extends Error {
   }
 }
 
-const separateSelectAndMultiselectThesauri = (
+const createNameToIdMap = (
   thesauriRelatedProperties: PropertySchema[] | undefined,
   languages?: string[]
-): [{ [k: string]: string }, { [k: string]: string }] => {
-  const nameToThesauriIdSelects: { [k: string]: string } = {};
-  const nameToThesauriIdMultiselects: { [k: string]: string } = {};
+): { [k: string]: string } => {
+  const nameToThesauriId: { [k: string]: string } = {};
 
   thesauriRelatedProperties?.forEach(p => {
     if (p.content && p.type) {
       const thesarusID = p.content.toString();
-      if (p.type === propertyTypes.select) {
-        nameToThesauriIdSelects[p.name] = thesarusID;
-        languages?.forEach(suffix => {
-          nameToThesauriIdSelects[`${p.name}__${suffix}`] = thesarusID;
-        });
-      } else if (p.type === propertyTypes.multiselect) {
-        nameToThesauriIdMultiselects[p.name] = thesarusID;
-        languages?.forEach(suffix => {
-          nameToThesauriIdMultiselects[`${p.name}__${suffix}`] = thesarusID;
-        });
-      }
+      nameToThesauriId[p.name] = thesarusID;
+      languages?.forEach(suffix => {
+        nameToThesauriId[`${p.name}__${suffix}`] = thesarusID;
+      });
     }
   });
 
-  return [nameToThesauriIdSelects, nameToThesauriIdMultiselects];
+  return nameToThesauriId;
 };
 
 type ThesauriValueData = {
@@ -83,22 +74,6 @@ const setupIdValueMaps = (allRelatedThesauri: ThesaurusSchema[]): ThesauriValueD
   });
 
   return { thesauriIdToExistingValues, thesauriIdToNewValues, thesauriIdToNormalizedNewValues };
-};
-
-const handleLabels = (
-  id: string,
-  original: string,
-  normalized: string | null,
-  thesauriValueData: ThesauriValueData
-) => {
-  if (
-    normalized &&
-    !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalized) &&
-    !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalized)
-  ) {
-    thesauriValueData.thesauriIdToNewValues.get(id)?.add(original);
-    thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalized);
-  }
 };
 
 const syncSaveThesauri = async (
@@ -133,10 +108,7 @@ const arrangeThesauri = async (
     ['select', 'multiselect'].includes(p.type)
   );
 
-  let [
-    nameToThesauriIdSelects,
-    nameToThesauriIdMultiselects,
-  ] = separateSelectAndMultiselectThesauri(thesauriRelatedProperties, languages);
+  let nameToThesauriId = createNameToIdMap(thesauriRelatedProperties, languages);
 
   const allRelatedThesauri = await thesauri.get({
     $in: Array.from(
@@ -150,23 +122,20 @@ const arrangeThesauri = async (
     .onRow(async (row: CSVRow, index: number) => {
       if (index === 0) {
         const columnnames = Object.keys(row);
-        nameToThesauriIdSelects = filterJSObject(nameToThesauriIdSelects, columnnames);
-        nameToThesauriIdMultiselects = filterJSObject(nameToThesauriIdMultiselects, columnnames);
+        nameToThesauriId = filterJSObject(nameToThesauriId, columnnames);
       }
-      Object.entries(nameToThesauriIdSelects).forEach(([name, id]) => {
-        const label = row[name];
-        if (label) {
-          const normalizedLabel = normalizeThesaurusLabel(label);
-          handleLabels(id, label, normalizedLabel, thesauriValueData);
-        }
-      });
-      Object.entries(nameToThesauriIdMultiselects).forEach(([name, id]) => {
+      Object.entries(nameToThesauriId).forEach(([name, id]) => {
         const labels = splitMultiselectLabels(row[name]);
-        if (labels) {
-          Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
-            handleLabels(id, originalLabel, normalizedLabel, thesauriValueData);
-          });
-        }
+        Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+          if (
+            normalizedLabel &&
+            !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
+            !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
+          ) {
+            thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
+            thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
+          }
+        });
       });
     })
     .onError(async (e: Error, row: CSVRow, index: number) => {
