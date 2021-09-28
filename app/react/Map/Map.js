@@ -5,9 +5,10 @@ import Immutable from 'immutable';
 import { Icon } from 'UI';
 import Supercluster from 'supercluster'; //eslint-disable-line
 import settingsAPI from 'app/Settings/SettingsAPI';
-import _style from './style.json';
-import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
+// import _style from './styles/terrain.json';
 import { Translate } from 'app/I18N';
+import _style from './styles/satellite.json';
+import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
 setRTLTextPlugin(
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
@@ -375,6 +376,7 @@ export default class Map extends Component {
             {...settings}
             dragRotate
             mapStyle={this.mapStyle}
+            token={this.mapboxToken}
             onViewportChange={this._onViewportChange}
             onViewStateChange={this._onViewStateChange}
             onClick={this.onClick}
