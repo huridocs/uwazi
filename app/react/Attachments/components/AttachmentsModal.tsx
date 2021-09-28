@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
@@ -7,33 +6,32 @@ import { actions as formActions, LocalForm, Field } from 'react-redux-form';
 import Tip from 'app/Layout/Tip';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
+import { store } from 'app/store';
 
-import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
+import { uploadActionsType } from './AttachmentsList';
 
 const validators = {
   name: { required: (val: any) => !!val && val.trim() !== '' },
   url: { required: (val: any) => !!val && val.trim() !== '' },
 };
-
 export interface AttachmentsModalProps {
   isOpen: boolean;
   entitySharedId: string;
   storeKey: string;
   onClose(): void;
-  uploadAttachment(entity: any, file: any, __reducerKey: any, options?: {}): void;
-  uploadAttachmentFromUrl(entity: any, name: any, url: any, __reducerKey: any): void;
+  uploadActions: uploadActionsType;
   getPercentage?: number;
 }
 
-export const AttachmentsModalCmp = ({
+export const AttachmentsModal = ({
   isOpen,
   entitySharedId,
   storeKey,
   onClose,
-  uploadAttachment: uploadAttachmentProp,
-  uploadAttachmentFromUrl: uploadAttachmentFromUrlProp,
   getPercentage,
+  uploadActions,
 }: AttachmentsModalProps) => {
+  const { uploadAttachmentAction, uploadAttachmentFromUrlAction } = uploadActions;
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   let formDispatch: Function = () => {};
 
@@ -46,14 +44,14 @@ export const AttachmentsModalCmp = ({
   const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       [...event.target.files].forEach(file => {
-        uploadAttachmentProp(entitySharedId, file, storeKey);
+        store.dispatch(uploadAttachmentAction(entitySharedId, file, storeKey));
       });
     }
   };
 
   const handleDropFiles = (accepted: File[]) => {
     accepted.forEach(file => {
-      uploadAttachmentProp(entitySharedId, file, storeKey);
+      store.dispatch(uploadAttachmentAction(entitySharedId, file, storeKey));
     });
   };
 
@@ -62,7 +60,9 @@ export const AttachmentsModalCmp = ({
   };
 
   const handleSubmitUrlForm = (formModelData: any) => {
-    uploadAttachmentFromUrlProp(entitySharedId, formModelData.name, formModelData.url, storeKey);
+    store.dispatch(
+      uploadAttachmentFromUrlAction(entitySharedId, formModelData.name, formModelData.url, storeKey)
+    );
     formDispatch(formActions.reset('urlForm'));
   };
 
@@ -162,8 +162,8 @@ export const AttachmentsModalCmp = ({
                       </p>
                       <p>
                         <Translate>
-                          1. Right-click an image or video on the web and copy the image's URL.
-                          Altenatively websites offers share button whereyou can get URL.
+                          1. Right-click an image or video on the web and copy the image`&apos;`s
+                          URL. Altenatively websites offers share button whereyou can get URL.
                         </Translate>
                       </p>
                       <p>
@@ -195,10 +195,3 @@ export const AttachmentsModalCmp = ({
     </ReactModal>
   );
 };
-
-const mapDispatchToProps = {
-  uploadAttachment,
-  uploadAttachmentFromUrl,
-};
-
-export const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);

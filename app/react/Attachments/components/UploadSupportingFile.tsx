@@ -4,17 +4,18 @@ import { connect } from 'react-redux';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
-import { uploadAttachment } from '../actions/actions';
+import { uploadActionsType } from './AttachmentsList';
 import { AttachmentsModal } from './AttachmentsModal';
 
 interface UploadSupportingFileProps {
   entitySharedId: string;
   storeKey: string;
+  uploadActions: uploadActionsType;
   progress?: any;
 }
 
 const UploadSupportingFile = (props: UploadSupportingFileProps) => {
-  const { entitySharedId, storeKey, progress } = props;
+  const { entitySharedId, storeKey, progress, uploadActions } = props;
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setModalOpen(true);
@@ -52,6 +53,7 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
         entitySharedId={entitySharedId}
         storeKey={storeKey}
         getPercentage={getPercentage}
+        uploadActions={uploadActions}
       />
     </>
   );
@@ -63,8 +65,4 @@ export function mapStateToProps({ attachments }: { attachments: any }) {
   };
 }
 
-export const mapDispatchToProps = {
-  uploadAttachment,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(UploadSupportingFile);
+export default connect(mapStateToProps)(UploadSupportingFile);
