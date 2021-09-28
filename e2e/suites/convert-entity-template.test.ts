@@ -23,7 +23,7 @@ const setupTest = async () => {
   });
 };
 
-describe('Convert entity template', () => {
+describe('Image is rendered when switching entity template', () => {
   beforeAll(async () => {
     await setupPreFlights();
     await setupTest();
