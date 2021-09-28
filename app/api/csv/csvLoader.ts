@@ -10,7 +10,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
-import { arrangeThesauri, ArrangeThesauriError } from './arrangeThesauri';
+import { arrangeThesauri } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
 import importFile from './importFile';
 import { importEntity, translateEntity } from './importEntity';
@@ -56,16 +56,7 @@ export class CSVLoader extends EventEmitter {
       (await settings.get()).languages
     ).map((l: LanguageSchema) => l.key);
     const { newNameGeneration = false } = await settings.get();
-    try {
-      await arrangeThesauri(file, template, availableLanguages, this.stopOnError);
-    } catch (e) {
-      if (e instanceof ArrangeThesauriError) {
-        const _e: ArrangeThesauriError = e;
-        this.emit('loadError', _e.source, toSafeName(_e.row), _e.index);
-      } else {
-        throw e;
-      }
-    }
+    await arrangeThesauri(file, template, availableLanguages);
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
