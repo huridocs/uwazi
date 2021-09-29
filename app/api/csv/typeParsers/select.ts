@@ -1,8 +1,13 @@
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
-import { ThesaurusValueSchema, ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
+
+export function normalizeThesaurusLabel(label: string): string | null {
+  const trimmed = label.trim().toLowerCase();
+  return trimmed.length > 0 ? trimmed : null;
+}
 
 const select = async (
   entityToImport: RawEntity,
@@ -11,30 +16,18 @@ const select = async (
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
   const thesauriValues = currentThesauri.values || [];
 
-  if (entityToImport[ensure<string>(property.name)].trim() === '') {
+  const propValue = entityToImport[ensure<string>(property.name)];
+  const normalizedPropValue = normalizeThesaurusLabel(propValue);
+  if (!normalizedPropValue) {
     return null;
   }
 
-  const thesauriMatching = (v: ThesaurusValueSchema) =>
-    v.label.trim().toLowerCase() ===
-    entityToImport[ensure<string>(property.name)].trim().toLowerCase();
+  const thesarusValue = thesauriValues.find(
+    tv => normalizeThesaurusLabel(tv.label) === normalizedPropValue
+  );
 
-  let value = thesauriValues.find(thesauriMatching);
-
-  if (!value) {
-    const updated = await thesauri.save({
-      ...currentThesauri,
-      values: thesauriValues.concat([
-        {
-          label: entityToImport[ensure<string>(property.name)],
-        },
-      ]),
-    });
-    value = (updated.values || []).find(thesauriMatching);
-  }
-
-  if (value?.id) {
-    return [{ value: value.id, label: value.label }];
+  if (thesarusValue?.id) {
+    return [{ value: thesarusValue.id, label: thesarusValue.label }];
   }
 
   return null;
