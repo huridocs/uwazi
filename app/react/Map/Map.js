@@ -29,7 +29,6 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   selectedMarker: null,
   settings: { scrollZoom: true, touchZoom: true },
   showControls: false,
-  style: 'terrain',
 });
 
 export default class Map extends Component {
