@@ -127,7 +127,7 @@ const routes = app => {
       },
       proxyReqOptDecorator(proxyReqOpts) {
         const { tenant, ...headers } = proxyReqOpts.headers;
-        headers.cookie = headers.cookie ? headers.cookie.replace(/connect\.sid=.*/, '') : null;
+        delete headers.cookie;
         return {
           ...proxyReqOpts,
           headers: { ...headers },

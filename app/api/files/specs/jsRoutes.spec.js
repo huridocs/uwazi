@@ -193,7 +193,7 @@ describe('upload routes', () => {
           .expect(200);
 
         const headersOnRemote = JSON.parse(response.text);
-        expect(headersOnRemote.cookie).toEqual('locale=en; SL_G_WPT_TO=en;');
+        expect(headersOnRemote.cookie).toBeUndefined();
         done();
       });
     });
