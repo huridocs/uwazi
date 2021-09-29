@@ -31,7 +31,7 @@ const mongoSchema = new mongoose.Schema(
   { emitIndexErrors: true, minimize: false }
 );
 
-//mongoose types not updated yet for language_override?
+//mongodb types not updated yet for language_override?
 //@ts-ignore
 mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
