@@ -18,12 +18,25 @@ const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
       .on('error', reject);
   });
 
-const stream = string =>
-  new Readable({
-    read() {
-      this.push(string);
-      this.push(null);
-    },
-  });
+class ReadableString extends Readable {
+  constructor(input) {
+    super();
+    this.input = input;
+  }
 
-export { stream, createTestingZip };
+  freshCopy() {
+    return new ReadableString(this.input);
+  }
+
+  _read() {
+    this.push(this.input);
+    this.push(null);
+  }
+}
+
+const stream = string => new ReadableString(string);
+
+const mockCsvFileReadStream = str =>
+  jest.spyOn(fs, 'createReadStream').mockImplementation(() => stream(str));
+
+export { stream, createTestingZip, mockCsvFileReadStream };

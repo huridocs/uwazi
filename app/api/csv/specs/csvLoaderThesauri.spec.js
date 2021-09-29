@@ -5,7 +5,7 @@ import settings from 'api/settings';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures from './fixtures';
-import { stream } from './helpers';
+import { mockCsvFileReadStream } from './helpers';
 
 describe('csvLoader thesauri', () => {
   const loader = new CSVLoader();
@@ -37,7 +37,9 @@ describe('csvLoader thesauri', () => {
                    value 3, valor 3, valeur 3, 3               ,`;
 
       thesauriId = _id;
-      result = await loader.loadThesauri(stream(csv), _id, { language: 'en' });
+      const mockedFile = mockCsvFileReadStream(csv);
+      result = await loader.loadThesauri('mockedFileFromString', _id, { language: 'en' });
+      mockedFile.mockRestore();
     });
 
     const getTranslation = async lang =>
