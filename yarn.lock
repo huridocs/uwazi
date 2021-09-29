@@ -2306,10 +2306,10 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-router@3":
-  version "3.0.20"
-  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-3.0.20.tgz#a711682475ccef70ad9ad9e459859380221e6ee6"
-  integrity sha512-0sx2ThGYgblXPf8we/c+umFzP3RCbBp1bbFmd3pO1UaOYnTDno82iql3MQTVqB09rhopKORNfakDU/9xZ4QR6g==
+"@types/react-router@3.0.25":
+  version "3.0.25"
+  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-3.0.25.tgz#a06d5ce69481cd12a4fdfdaaf1adc7a47ea1eb19"
+  integrity sha512-8G7W+/GbSzC1tiEp6fir/X8JHy3GL561uy1lId/as9rZOGi8x0oM+TvEipzZGrW6N8ILiwTVK1A2vMYFWy4Z3A==
   dependencies:
     "@types/history" "^3"
     "@types/react" "*"
@@ -8272,11 +8272,6 @@ jest-config@^24.8.0:
     micromatch "^3.1.10"
     pretty-format "^24.8.0"
     realpath-native "^1.1.0"
-
-jest-createspyobj@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/jest-createspyobj/-/jest-createspyobj-2.0.0.tgz#683ed22916da2c1f6b9821b11ab236b6b340cadf"
-  integrity sha512-mFSKaPwJ9n6uqZ6mJlxr+rzHWEl+nGCdBc9Pqi4Nd4I8qFmSAgeMF2BUgOVBzmV9DIMmlKz0pevIpKehunhuvg==
 
 jest-dev-server@^4.4.0:
   version "4.4.0"
