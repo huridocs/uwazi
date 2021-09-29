@@ -10,6 +10,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
+import { arrangeThesauri } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
 import importFile from './importFile';
 import { importEntity, translateEntity } from './importEntity';
@@ -55,6 +56,7 @@ export class CSVLoader extends EventEmitter {
       (await settings.get()).languages
     ).map((l: LanguageSchema) => l.key);
     const { newNameGeneration = false } = await settings.get();
+    await arrangeThesauri(file, template, availableLanguages);
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
@@ -64,7 +66,6 @@ export class CSVLoader extends EventEmitter {
           options.language,
           newNameGeneration
         );
-
         if (rawEntity) {
           const entity = await importEntity(rawEntity, template, file, options);
           await translateEntity(entity, rawTranslations, template, file);
