@@ -150,7 +150,11 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
   async getById(id: any, select?: string) {
     const user = permissionsContext.getUserInContext();
     const doc = await this.db.findOne(
-      appendPermissionQuery({ _id: id || null }, AccessLevels.READ, user),
+      appendPermissionQuery(
+        { _id: id || null } as PermissionsUwaziFilterQuery<T>,
+        AccessLevels.READ,
+        user
+      ),
       select
     );
 
