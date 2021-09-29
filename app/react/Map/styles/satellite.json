@@ -259,10 +259,16 @@
         ["==", "$type", "LineString"],
         ["in", "class", "trunk", "primary"]
       ],
-      "layout": {"line-cap": "round", "line-join": "round"},
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
       "paint": {
-        "line-color": "rgba(255, 255, 255, 1)",
-        "line-width": {"base": 1.4, "stops": [[2, 2], [22, 2]]}
+        "line-color": "rgba(255, 255, 255, 0.45)",
+        "line-width": {
+          "base": 1.4,
+          "stops": [[2, 2], [22, 2]]
+        }
       }
     },
     {
@@ -291,10 +297,16 @@
         ["==", "$type", "LineString"],
         ["==", "class", "motorway"]
       ],
-      "layout": {"line-cap": "round", "line-join": "round"},
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
       "paint": {
-        "line-color": "hsl(0, 0%, 100%)",
-        "line-width": {"base": 1.4, "stops": [[8, 1], [16, 10]]},
+        "line-color": "rgba(255, 255, 255, 0.45)",
+        "line-width": {
+          "base": 1.4,
+          "stops": [[8, 1], [16, 10]]
+        },
         "line-offset": 0
       }
     },
