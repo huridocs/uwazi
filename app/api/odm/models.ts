@@ -1,4 +1,4 @@
-import { Document, DocumentQuery, Schema, FilterQuery, UpdateQuery, QueryOptions } from 'mongoose';
+import { Document, Schema, FilterQuery, UpdateQuery, QueryOptions, Query } from 'mongoose';
 import { OdmModel } from './model';
 
 /** WithId<T> represents objects received from MongoDB, which are guaranteed to have
@@ -15,9 +15,9 @@ export type UwaziUpdateQuery<T> = UpdateQuery<DataModelType<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
 export async function QueryForEach<T>(
-  query: DocumentQuery<DataModelType<T>[], DataModelType<T>>,
+  query: Query<DataModelType<T>[], DataModelType<T>, {}, DataModelType<T>>,
   batchSize: number,
-  fn: (e: WithId<T>) => Promise<void>
+  fn: (e: DataModelType<T>) => Promise<void>
 ) {
   const totalNumber = await query.countDocuments();
   let offset = 0;

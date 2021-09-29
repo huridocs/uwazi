@@ -1,5 +1,5 @@
 import entities from 'api/entities';
-import { QueryForEach, WithId } from 'api/odm';
+import { QueryForEach } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { extractSequence, listModels } from 'api/topicclassification';
@@ -23,6 +23,7 @@ export interface SyncArgs {
   autoAcceptConfidence?: number;
 }
 
+// eslint-disable-next-line max-params, max-statements
 async function handlePropOnlynew(
   e: EntitySchema,
   args: SyncArgs,
@@ -56,6 +57,7 @@ async function handlePropOnlynew(
   return true;
 }
 
+// eslint-disable-next-line max-params, max-statements
 async function handlePropAutoaccept(
   e: EntitySchema,
   args: SyncArgs,
@@ -94,6 +96,7 @@ async function handlePropAutoaccept(
   return true;
 }
 
+// eslint-disable-next-line max-params
 export async function syncEntity(
   e: EntitySchema,
   args: SyncArgs,
@@ -162,6 +165,7 @@ async function getAvailableModels(fixedModel?: string) {
 }
 
 class SyncTask extends Task {
+  // eslint-disable-next-line max-statements
   protected async run(args: SyncArgs) {
     this.status.message = `Started with ${util.inspect(args)}`;
     const models = await getAvailableModels(args.model);
@@ -192,7 +196,7 @@ class SyncTask extends Task {
     await QueryForEach(
       entities.getWithoutDocuments({ language: 'en' }).sort('_id'),
       50,
-      async (e: WithId<EntitySchema>) => {
+      async e => {
         if (res.index > (args.limit ?? 1000000)) {
           return;
         }
