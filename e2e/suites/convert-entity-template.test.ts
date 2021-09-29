@@ -1,6 +1,3 @@
-/*global page*/
-
-// import { ElementHandle } from 'puppeteer';
 import { createEntity } from '../helpers/createEntity';
 import { createTemplate } from '../helpers/createTemplate';
 import { adminLogin, logout } from '../helpers/login';
@@ -22,7 +19,7 @@ const setupTest = async () => {
   });
 };
 
-describe('Image is rendered when switching entity template', () => {
+describe('Image is rendered when editing an entity in document view', () => {
   beforeAll(async () => {
     await setupPreFlights();
     await setupTest();
