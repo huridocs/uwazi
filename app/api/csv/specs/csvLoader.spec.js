@@ -1,14 +1,15 @@
 /* eslint-disable max-lines */
+import path from 'path';
+
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
-import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
 
 import { CSVLoader } from 'api/csv';
 import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import fixtures, { template1Id } from './csvLoaderFixtures';
-import { stream } from './helpers';
+import { mockCsvFileReadStream } from './helpers';
 import typeParsers from '../typeParsers';
 
 describe('csvLoader', () => {
@@ -18,7 +19,6 @@ describe('csvLoader', () => {
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
   });
 
   afterAll(async () => db.disconnect());
@@ -33,6 +33,7 @@ describe('csvLoader', () => {
 
   describe('load translations', () => {
     let csv;
+    let readStreamMock;
     beforeEach(async () => {
       await db.clearAllAndLoad(fixtures);
 
@@ -44,8 +45,13 @@ describe('csvLoader', () => {
                    original 3, value 3, valor 3, valeur 3, 3               ,`;
     });
 
+    afterEach(() => {
+      readStreamMock.mockRestore();
+    });
+
     it('should set all translations from csv', async () => {
-      await loader.loadTranslations(stream(csv), 'System');
+      readStreamMock = mockCsvFileReadStream(csv);
+      await loader.loadTranslations('mockedFileFromString', 'System');
       const [english, spanish, french] = await translations.get();
       expect(english.contexts[0].values).toEqual({
         'original 1': 'value 1',
@@ -65,8 +71,9 @@ describe('csvLoader', () => {
     });
 
     it('should not update a language that exists in the system but not in csv', async () => {
+      readStreamMock = mockCsvFileReadStream(csv);
       await translations.addLanguage('aa');
-      await loader.loadTranslations(stream(csv), 'System');
+      await loader.loadTranslations('mockedFileFromString', 'System');
       const [afar] = await translations.get({ locale: 'aa' });
       expect(afar.contexts[0].values).toEqual({
         'original 1': 'original 1',
@@ -78,8 +85,8 @@ describe('csvLoader', () => {
     it('should not remove translations that are not in the csv', async () => {
       const localCsv = `Key, English,
                         original 1, value 1`;
-
-      await loader.loadTranslations(stream(localCsv), 'System');
+      readStreamMock = mockCsvFileReadStream(localCsv);
+      await loader.loadTranslations('mockedFileFromString', 'System');
 
       const [english] = await translations.get();
       expect(english.contexts[0].values).toEqual({
@@ -91,8 +98,8 @@ describe('csvLoader', () => {
     it('should not import empty language translations', async () => {
       const localCsv = `Key, English, Spanish
                         original 1,, sp value 1`;
-
-      await loader.loadTranslations(stream(localCsv), 'System');
+      readStreamMock = mockCsvFileReadStream(localCsv);
+      await loader.loadTranslations('mockedFileFromString', 'System');
 
       const [english, spanish] = await translations.get();
       expect(english.contexts[0].values).toEqual({
@@ -116,7 +123,6 @@ describe('csvLoader', () => {
       loader.on('entityLoaded', entity => {
         events.push(entity.title);
       });
-
       try {
         await loader.load(csvFile, template1Id, { language: 'en' });
       } catch (e) {
@@ -153,6 +159,7 @@ describe('csvLoader', () => {
         'geolocation_geolocation',
         'auto_id',
         'additional_tag(s)',
+        'multi_select_label',
       ]);
     });
 
@@ -288,7 +295,7 @@ describe('csvLoader', () => {
   });
 
   describe('when sharedId is provided', () => {
-    it('should update the entitiy', async () => {
+    it('should update the entity', async () => {
       const entity = await entities.save(
         { title: 'entity4444', template: template1Id },
         { user: {}, language: 'en' }
@@ -296,28 +303,34 @@ describe('csvLoader', () => {
       const csv = `id                , title    ,
                    ${entity.sharedId}, new title,
                                      , title2   ,`;
-
+      const readStreamMock = mockCsvFileReadStream(csv);
       const testingLoader = new CSVLoader();
-      await testingLoader.load(stream(csv), template1Id, { language: 'en' });
+      await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
 
       const [expected] = await entities.get({
         sharedId: entity.sharedId,
         language: 'en',
       });
       expect(expected.title).toBe('new title');
+      readStreamMock.mockRestore();
     });
   });
 
   describe('when the title is not provided', () => {
+    let readStreamMock;
+    afterEach(() => {
+      readStreamMock.mockRestore();
+    });
     describe('title not marked with generated Id option', () => {
       it('should throw a validation error', async () => {
         const csv = `title , numeric label
                        , 10
                  title2, 10`;
+        readStreamMock = mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
 
         try {
-          await testingLoader.load(stream(csv), template1Id, { language: 'en' });
+          await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
         } catch (e) {
           expect(e.message).toEqual('validation failed');
           expect(e.errors[0].dataPath).toEqual('.title');
@@ -329,9 +342,12 @@ describe('csvLoader', () => {
         const csv = `title , numeric label
                        , 10
                  title2, 10`;
+        readStreamMock = mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
 
-        await testingLoader.load(stream(csv), templateWithGeneratedTitle, { language: 'en' });
+        await testingLoader.load('mockedFileFromString', templateWithGeneratedTitle, {
+          language: 'en',
+        });
         const result = await entities.get({
           'metadata.numeric_label.value': 10,
           language: 'en',
@@ -343,8 +359,11 @@ describe('csvLoader', () => {
         const csv = `numeric label
                      20
                      22`;
+        readStreamMock = mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
-        await testingLoader.load(stream(csv), templateWithGeneratedTitle, { language: 'en' });
+        await testingLoader.load('mockedFileFromString', templateWithGeneratedTitle, {
+          language: 'en',
+        });
         const result = await entities.get({
           'metadata.numeric_label.value': { $in: [20, 22] },
           language: 'en',
