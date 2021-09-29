@@ -213,6 +213,7 @@ export default (app: Application) => {
       });
 
       req.emitToSessionSocket('IMPORT_CSV_START');
+
       loader
         .load(req.file.path, req.body.template, { language: req.language, user: req.user })
         .then(() => {
