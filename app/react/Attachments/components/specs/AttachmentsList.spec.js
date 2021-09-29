@@ -1,14 +1,20 @@
 import React from 'react';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
 import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
-import AttachmentsList from '../AttachmentsList';
+import { AttachmentsList } from '../AttachmentsList';
 
 describe('AttachmentsList', () => {
   let component;
   let props;
   let files;
+
+  const mockStore = configureMockStore([thunk]);
+  const store = mockStore({});
 
   beforeEach(() => {
     files = Immutable([
@@ -28,7 +34,11 @@ describe('AttachmentsList', () => {
   });
 
   const render = () => {
-    component = shallow(<AttachmentsList {...props} />);
+    component = shallow(
+      <Provider store={store}>
+        <AttachmentsList {...props} />
+      </Provider>
+    );
   };
 
   it('should render a sorted list of attachments (files)', () => {
@@ -65,6 +75,8 @@ describe('AttachmentsList', () => {
   it('should check authorization roles to upload files', () => {
     render();
     const authorizationProps = component
+      .dive()
+      .dive()
       .find(UploadSupportingFile)
       .parents()
       .at(1)

@@ -6,7 +6,7 @@ import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import { AttachmentsModalCmp, AttachmentsModalProps } from '../AttachmentsModal';
+import { AttachmentsModal, AttachmentsModalProps } from '../AttachmentsModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});
@@ -20,16 +20,22 @@ describe('Attachments Modal', () => {
       entitySharedId: '123',
       storeKey: '456',
       onClose: jasmine.createSpy('onClose'),
-      uploadAttachmentFromUrl: jasmine.createSpy('uploadAttachmentFromUrl'),
       isOpen: true,
-      uploadAttachment: jasmine.createSpy('uploadAttachment'),
+      uploadActions: {
+        uploadAttachmentAction: jasmine
+          .createSpy('uploadAttachment')
+          .and.callFake(() => ({ type: 'mockAction' })),
+        uploadAttachmentFromUrlAction: jasmine
+          .createSpy('uploadAttachmentFromUrl')
+          .and.callFake(() => ({ type: 'mockAction' })),
+      },
     };
   });
 
   const render = (otherProps = {}) => {
     component = shallow(
       <Provider store={store}>
-        <AttachmentsModalCmp {...props} {...otherProps} />
+        <AttachmentsModal {...props} {...otherProps} />
       </Provider>
     ).dive();
   };
@@ -61,7 +67,7 @@ describe('Attachments Modal', () => {
     component.find('.modal-tab-2').simulate('click');
     component.find(LocalForm).simulate('submit', { url: 'http://test.test', name: 'testName' });
 
-    expect(props.uploadAttachmentFromUrl).toHaveBeenCalled();
+    expect(props.uploadActions.uploadAttachmentFromUrlAction).toHaveBeenCalled();
   });
 
   it('Should call onClose', () => {

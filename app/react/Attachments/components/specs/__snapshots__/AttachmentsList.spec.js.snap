@@ -1,213 +1,93 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AttachmentsList When parent is Target Document should treat all Attachments as read only 1`] = `
-<div
-  className="attachments-list-parent"
->
-  <div
-    className="attachments-list-header"
-  >
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <h2>
-        <Connect(Translate)>
-          Supporting files
-        </Connect(Translate)>
-      </h2>
-    </Connect(NeedAuthorization)>
-  </div>
-  <div
-    className="attachments-list"
-  />
-</div>
+<Connect(AttachmentsList)
+  entity={
+    Object {
+      "sharedId": "parentId",
+    }
+  }
+  files={
+    Immutable.List [
+      Immutable.Map {
+        "originalname": "Human name 1",
+        "filename": "filename1.ext",
+      },
+      Immutable.Map {
+        "originalname": "A Human name 2",
+        "filename": "filename2.ext",
+      },
+    ]
+  }
+  isDocumentAttachments={false}
+  isTargetDoc={true}
+  parentId="parentId"
+  parentSharedId="parentSharedId"
+  readOnly={false}
+  storeKey="storeKey"
+/>
 `;
 
 exports[`AttachmentsList should render a sorted list of attachments (files) 1`] = `
-<div
-  className="attachments-list-parent"
->
-  <div
-    className="attachments-list-header"
-  >
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <h2>
-        <Connect(Translate)>
-          Supporting files
-        </Connect(Translate)>
-      </h2>
-    </Connect(NeedAuthorization)>
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <div
-        className="attachment-add"
-      >
-        <Connect(UploadSupportingFile)
-          entitySharedId="parentSharedId"
-          storeKey="storeKey"
-        />
-      </div>
-    </Connect(NeedAuthorization)>
-  </div>
-  <div
-    className="attachments-list"
-  />
-</div>
+<Connect(AttachmentsList)
+  entity={
+    Object {
+      "sharedId": "parentId",
+    }
+  }
+  files={
+    Immutable.List [
+      Immutable.Map {
+        "originalname": "Human name 1",
+        "filename": "filename1.ext",
+      },
+      Immutable.Map {
+        "originalname": "A Human name 2",
+        "filename": "filename2.ext",
+      },
+    ]
+  }
+  isDocumentAttachments={false}
+  parentId="parentId"
+  parentSharedId="parentSharedId"
+  readOnly={false}
+  storeKey="storeKey"
+/>
 `;
 
 exports[`AttachmentsList when files is empty should add button in Downloads section 1`] = `
-<div
-  className="attachments-list-parent"
->
-  <div
-    className="attachments-list-header"
-  >
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <h2>
-        <Connect(Translate)>
-          Supporting files
-        </Connect(Translate)>
-      </h2>
-    </Connect(NeedAuthorization)>
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <div
-        className="attachment-add"
-      >
-        <Connect(UploadSupportingFile)
-          entitySharedId="parentSharedId"
-          storeKey="storeKey"
-        />
-      </div>
-    </Connect(NeedAuthorization)>
-  </div>
-  <div
-    className="attachments-list"
-  />
-</div>
+<Connect(AttachmentsList)
+  entity={
+    Object {
+      "sharedId": "parentId",
+    }
+  }
+  files={Immutable.List []}
+  isDocumentAttachments={false}
+  parentId="parentId"
+  parentSharedId="parentSharedId"
+  readOnly={false}
+  storeKey="storeKey"
+  user={
+    Immutable.Map {
+      "_id": "user",
+    }
+  }
+/>
 `;
 
 exports[`AttachmentsList when files is empty should render nothing if user not logged in 1`] = `
-<div
-  className="attachments-list-parent"
->
-  <div
-    className="attachments-list-header"
-  >
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <h2>
-        <Connect(Translate)>
-          Supporting files
-        </Connect(Translate)>
-      </h2>
-    </Connect(NeedAuthorization)>
-    <Connect(NeedAuthorization)
-      orWriteAccessTo={
-        Array [
-          Object {
-            "sharedId": "parentId",
-          },
-        ]
-      }
-      roles={
-        Array [
-          "admin",
-          "editor",
-        ]
-      }
-    >
-      <div
-        className="attachment-add"
-      >
-        <Connect(UploadSupportingFile)
-          entitySharedId="parentSharedId"
-          storeKey="storeKey"
-        />
-      </div>
-    </Connect(NeedAuthorization)>
-  </div>
-  <div
-    className="attachments-list"
-  />
-</div>
+<Connect(AttachmentsList)
+  entity={
+    Object {
+      "sharedId": "parentId",
+    }
+  }
+  files={Immutable.List []}
+  isDocumentAttachments={false}
+  parentId="parentId"
+  parentSharedId="parentSharedId"
+  readOnly={false}
+  storeKey="storeKey"
+/>
 `;
