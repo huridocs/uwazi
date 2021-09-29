@@ -22,10 +22,39 @@ export class LibraryModeToggleButtons extends Component {
       searchUrl,
       storeKey,
       tableViewMode,
+      mapViewMode,
+      switchMapToSatellite,
+      switchMapToTerrain,
     } = this.props;
     const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
     return (
       <div className="list-view-mode">
+        {mapViewMode && showGeolocation && (
+          <div
+            className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
+              mapViewMode ? 'unpinned-mode' : ''
+            }`}
+          >
+            <button
+              className="btn btn-default"
+              onClick={switchMapToTerrain}
+              type="button"
+              aria-label={t('System', 'Terrain View', null, false)}
+            >
+              <Icon icon="map-marker-alt" />
+              <span className="tab-link-tooltip">{t('System', 'Terrain')}</span>
+            </button>
+            <button
+              className="btn btn-default"
+              onClick={switchMapToSatellite}
+              type="button"
+              aria-label={t('System', 'Satellite View', null, false)}
+            >
+              <Icon icon="map" />
+              <span className="tab-link-tooltip">{t('System', 'Satellite')}</span>
+            </button>
+          </div>
+        )}
         {tableViewMode && (
           <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
@@ -112,14 +141,20 @@ LibraryModeToggleButtons.propTypes = {
   numberOfMarkers: PropTypes.number.isRequired,
   storeKey: PropTypes.string.isRequired,
   tableViewMode: PropTypes.bool,
+  mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
+  switchMapToSatellite: PropTypes.func,
+  switchMapToTerrain: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
   tableViewMode: false,
+  mapViewMode: false,
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},
+  switchMapToSatellite: () => {},
+  switchMapToTerrain: () => {},
 };
 
 export const encodedSearch = createSelector(
