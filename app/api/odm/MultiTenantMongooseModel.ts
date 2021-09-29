@@ -1,10 +1,10 @@
-import mongoose, { Schema, UpdateQuery, ModelUpdateOptions } from 'mongoose';
-import { WithId, UwaziFilterQuery } from './models';
+import mongoose, { Schema } from 'mongoose';
+import { DataModelType, UwaziFilterQuery, UwaziUpdateQuery, UwaziQueryOptions } from './models';
 import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
 
 class MultiTenantMongooseModel<T> {
-  dbs: { [k: string]: mongoose.Model<WithId<T> & mongoose.Document> };
+  dbs: { [k: string]: mongoose.Model<DataModelType<T>> };
 
   collectionName: string;
 
@@ -21,7 +21,7 @@ class MultiTenantMongooseModel<T> {
 
     if (!this.dbs[currentTenant.name]) {
       this.dbs[currentTenant.name] = DB.connectionForDB(currentTenant.dbName).model<
-        WithId<T> & mongoose.Document
+        DataModelType<T>
       >(this.collectionName, this.schema);
     }
 
@@ -38,8 +38,8 @@ class MultiTenantMongooseModel<T> {
 
   async findOneAndUpdate(
     query: UwaziFilterQuery<T>,
-    update: Readonly<Partial<T>> & { _id?: any },
-    options: any = {}
+    update: UwaziUpdateQuery<T>,
+    options: UwaziQueryOptions
   ) {
     return this.dbForCurrentTenant().findOneAndUpdate(query, update, options);
   }
@@ -50,8 +50,8 @@ class MultiTenantMongooseModel<T> {
 
   async _updateMany(
     conditions: UwaziFilterQuery<T>,
-    doc: UpdateQuery<T>,
-    options: ModelUpdateOptions = {}
+    doc: UwaziUpdateQuery<T>,
+    options: UwaziQueryOptions
   ) {
     return this.dbForCurrentTenant().updateMany(conditions, doc, options);
   }
@@ -80,7 +80,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().aggregate(aggregations);
   }
 
-  async updateOne(conditions: UwaziFilterQuery<T>, doc: UpdateQuery<T>) {
+  async updateOne(conditions: UwaziFilterQuery<T>, doc: UwaziUpdateQuery<T>) {
     return this.dbForCurrentTenant().updateOne(conditions, doc);
   }
 }

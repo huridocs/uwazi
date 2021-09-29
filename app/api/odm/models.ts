@@ -1,4 +1,4 @@
-import { Document, DocumentQuery, Schema, FilterQuery } from 'mongoose';
+import { Document, DocumentQuery, Schema, FilterQuery, UpdateQuery, QueryOptions } from 'mongoose';
 import { OdmModel } from './model';
 
 /** WithId<T> represents objects received from MongoDB, which are guaranteed to have
@@ -8,10 +8,14 @@ export type WithId<T> = T & {
   _id: Schema.Types.ObjectId;
 };
 
-export type UwaziFilterQuery<T> = FilterQuery<T> & { _id?: any };
+export type DataModelType<T> = WithId<T> & Document;
+
+export type UwaziFilterQuery<T> = FilterQuery<DataModelType<T>>;
+export type UwaziUpdateQuery<T> = UpdateQuery<DataModelType<T>>;
+export type UwaziQueryOptions = QueryOptions;
 
 export async function QueryForEach<T>(
-  query: DocumentQuery<(WithId<T> & Document)[], WithId<T> & Document>,
+  query: DocumentQuery<DataModelType<T>[], DataModelType<T>>,
   batchSize: number,
   fn: (e: WithId<T>) => Promise<void>
 ) {
