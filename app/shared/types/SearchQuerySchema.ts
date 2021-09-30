@@ -21,7 +21,7 @@ export const SearchQuerySchema = {
         anyOf: [RangeQuerySchema, { type: 'string' }, { type: 'number' }, { type: 'boolean' }],
       },
       properties: {
-        searchString: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+        searchString: { type: 'string' },
         sharedId: { type: 'string' },
         published: { type: 'boolean' },
       },

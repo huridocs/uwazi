@@ -57,7 +57,7 @@ const fullTextSearch = (
       ]
     : [];
 
-const textSearch = (searchString: string | number | undefined, searchMethod: string) =>
+const textSearch = (searchString: string | undefined, searchMethod: string) =>
   searchString ? [{ [searchMethod]: { query: searchString } }] : [];
 
 const defaultFields = ['title', 'template', 'sharedId'];

@@ -101,6 +101,15 @@ describe('entities get searchString', () => {
       expect(bodyEs.data).toEqual([expect.objectContaining({ title: 'titulo to search' })]);
     });
 
+    it('should return entities that match the searchString, when it is a number', async () => {
+      const { body: bodyEn } = await request(app)
+        .get('/api/v2/entities')
+        .query({ filter: { searchString: '2' } })
+        .expect(200);
+
+      expect(bodyEn.data).toEqual([expect.objectContaining({ title: 'title to search 2' })]);
+    });
+
     it('should allow limiting the results and return required links', async () => {
       const {
         body,
@@ -143,16 +152,6 @@ describe('entities get searchString', () => {
         { _id: entity3en.toString(), sharedId: 'entity3SharedId', language: 'en' },
       ]);
     });
-
-    it.each([3, null, ''])(
-      'should throw an error is a field is not a string',
-      async invalidField => {
-        await request(app)
-          .get('/api/v2/entities')
-          .query({ fields: ['sharedId', 'language', invalidField] })
-          .expect(400);
-      }
-    );
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {

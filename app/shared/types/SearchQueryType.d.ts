@@ -11,7 +11,7 @@ export interface SearchQuery {
     limit?: number;
   };
   filter?: {
-    searchString?: string | number;
+    searchString?: string;
     sharedId?: string;
     published?: boolean;
     [k: string]: (RangeQuery | string | number | boolean) | undefined;

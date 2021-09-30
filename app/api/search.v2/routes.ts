@@ -1,9 +1,7 @@
 import { Application, Request, Response } from 'express';
-//@ts-ignore
-import queryTypes from 'query-types';
 
 import { elastic } from 'api/search/elastic';
-import validateRequest from 'api/utils/validateRequest';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
@@ -27,8 +25,7 @@ type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response }
 const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
-    queryTypes.middleware(),
-    validateRequest({
+    validateAndCoerceRequest({
       properties: {
         query: SearchQuerySchema,
       },

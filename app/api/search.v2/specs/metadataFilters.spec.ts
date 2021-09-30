@@ -151,7 +151,4 @@ describe('Metadata filters', () => {
   it('', () => {
     throw new Error('Add support for dates');
   });
-  it('', () => {
-    throw new Error('Check why we are supporting numbers in searchString');
-  });
 });
