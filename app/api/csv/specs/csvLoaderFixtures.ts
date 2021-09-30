@@ -3,9 +3,37 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 
 const template1Id = db.id();
+const multiSelectThesaurusId = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 const templateWithGeneratedTitle = db.id();
+
+const commonTranslationContexts = [
+  {
+    id: 'System',
+    label: 'System',
+    values: [
+      { key: 'original 1', value: 'original 1' },
+      { key: 'original 2', value: 'original 2' },
+      { key: 'original 3', value: 'original 3' },
+    ],
+  },
+  {
+    id: thesauri1Id.toString(),
+    label: 'thesauri1',
+    values: [{ key: 'thesauri1', value: 'thesauri1' }],
+    type: 'Dictionary',
+  },
+  {
+    id: multiSelectThesaurusId.toString(),
+    label: 'multi_select_thesaurus',
+    values: [
+      { key: 'multi_select_thesaurus', value: 'multi_select_thesaurus' },
+      { key: 'multivalue1', value: 'multivalue1' },
+    ],
+    type: 'Dictionary',
+  },
+];
 
 export default {
   templates: [
@@ -32,7 +60,7 @@ export default {
           type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),
-          content: thesauri1Id,
+          content: thesauri1Id.toString(),
         },
         {
           type: 'non_defined_type',
@@ -59,6 +87,12 @@ export default {
           type: propertyTypes.text,
           label: 'additional tag(s)',
           name: templateUtils.safeName('additional tag(s)', true),
+        },
+        {
+          type: propertyTypes.multiselect,
+          label: 'multi_select_label',
+          name: templateUtils.safeName('multi_select_label'),
+          content: multiSelectThesaurusId.toString(),
         },
       ],
     },
@@ -87,6 +121,16 @@ export default {
         },
       ],
     },
+    {
+      _id: multiSelectThesaurusId,
+      name: 'multi_select_thesaurus',
+      values: [
+        {
+          label: 'multivalue1',
+          id: db.id().toString(),
+        },
+      ],
+    },
   ],
 
   settings: [
@@ -106,49 +150,19 @@ export default {
     {
       _id: db.id(),
       locale: 'en',
-      contexts: [
-        {
-          id: 'System',
-          label: 'System',
-          values: [
-            { key: 'original 1', value: 'original 1' },
-            { key: 'original 2', value: 'original 2' },
-            { key: 'original 3', value: 'original 3' },
-          ],
-        },
-      ],
+      contexts: commonTranslationContexts,
     },
     {
       _id: db.id(),
       locale: 'es',
-      contexts: [
-        {
-          id: 'System',
-          label: 'System',
-          values: [
-            { key: 'original 1', value: 'original 1' },
-            { key: 'original 2', value: 'original 2' },
-            { key: 'original 3', value: 'original 3' },
-          ],
-        },
-      ],
+      contexts: commonTranslationContexts,
     },
     {
       _id: db.id(),
       locale: 'fr',
-      contexts: [
-        {
-          id: 'System',
-          label: 'System',
-          values: [
-            { key: 'original 1', value: 'original 1' },
-            { key: 'original 2', value: 'original 2' },
-            { key: 'original 3', value: 'original 3' },
-          ],
-        },
-      ],
+      contexts: commonTranslationContexts,
     },
   ],
 };
 
-export { template1Id, templateWithGeneratedTitle };
+export { template1Id, templateWithGeneratedTitle, thesauri1Id };
