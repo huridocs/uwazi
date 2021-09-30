@@ -5,13 +5,13 @@ import { processDocument } from 'api/files/processDocument';
 import { RawEntity } from 'api/csv/entityRow';
 import { TemplateSchema } from 'shared/types/templateType';
 import { MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 import { ImportFile } from 'api/csv/importFile';
 import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
-
 import { attachmentsPath, files } from 'api/files';
-import { propertyTypes } from 'shared/propertyTypes';
 import { generateID } from 'shared/IDGenerator';
+
 import typeParsers from './typeParsers';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
