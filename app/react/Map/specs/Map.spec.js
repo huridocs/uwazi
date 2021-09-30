@@ -263,6 +263,23 @@ describe('Map', () => {
     });
   });
 
+  describe('style switch behavior', () => {
+    beforeEach(() => {
+      render();
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: 'XYZ' });
+      instance.collectionSettings = settingsAPI;
+    });
+    it('should load satelite view when setStyle is called with "satellite"', () => {
+      instance.setStyle('satellite');
+      expect(instance.mapStyle.getIn(['layers', 0, 'id'])).toContain('satellite');
+      expect(instance.mapStyle.getIn(['sources', 'satellite', 'url'])).toContain('satellite');
+    });
+    it('should load satelite view when setStyle is called with "terrain"', () => {
+      instance.setStyle('terrain');
+      expect(instance.mapStyle.getIn(['layers', 0, 'id'])).not.toContain('satellite');
+    });
+  });
+
   describe('zoom behavior', () => {
     it('should zoom in and out', () => {
       render();
