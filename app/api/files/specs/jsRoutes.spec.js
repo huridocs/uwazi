@@ -156,31 +156,17 @@ describe('upload routes', () => {
     beforeEach(() => {
       app = express();
       uploadRoutes(app);
-      remoteApp = express();
-      remoteApp.post('/api/public', (_req, res) => {
-        res.json(_req.headers);
-      });
     });
 
     afterEach(async () => {
       await remoteServer.close();
     });
 
-    it('should return the captcha and store it', done => {
-      remoteServer = remoteApp.listen(54321, async () => {
-        const response = await request(app)
-          .post('/api/remotepublic')
-          .send({ title: 'Title' })
-          .set('tenant', 'tenant')
-          .expect(200);
-
-        const headersOnRemote = JSON.parse(response.text);
-        expect(headersOnRemote.tenant).not.toBeDefined();
-        done();
+    it('should remove the tenant and cookie from headers', done => {
+      remoteApp = express();
+      remoteApp.post('/api/public', (_req, res) => {
+        res.json(_req.headers);
       });
-    });
-
-    it('should remove the session from the cookie', done => {
       remoteServer = remoteApp.listen(54321, async () => {
         const response = await request(app)
           .post('/api/remotepublic')
@@ -193,6 +179,7 @@ describe('upload routes', () => {
           .expect(200);
 
         const headersOnRemote = JSON.parse(response.text);
+        expect(headersOnRemote.tenant).toBeUndefined();
         expect(headersOnRemote.cookie).toBeUndefined();
         done();
       });
