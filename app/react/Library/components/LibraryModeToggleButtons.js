@@ -30,13 +30,9 @@ export class LibraryModeToggleButtons extends Component {
     return (
       <div className="list-view-mode">
         {mapViewMode && showGeolocation && (
-          <div
-            className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
-              mapViewMode ? 'unpinned-mode' : ''
-            }`}
-          >
+          <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
             <button
-              className="btn btn-default"
+              className="terrain btn btn-default"
               onClick={switchMapToTerrain}
               type="button"
               aria-label={t('System', 'Terrain View', null, false)}
@@ -45,7 +41,7 @@ export class LibraryModeToggleButtons extends Component {
               <span className="tab-link-tooltip">{t('System', 'Terrain')}</span>
             </button>
             <button
-              className="btn btn-default"
+              className="satellite btn btn-default"
               onClick={switchMapToSatellite}
               type="button"
               aria-label={t('System', 'Satellite View', null, false)}
