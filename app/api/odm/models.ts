@@ -1,18 +1,5 @@
-import { Document, Schema, FilterQuery, UpdateQuery, QueryOptions, Query } from 'mongoose';
-import { OdmModel } from './model';
-
-/** WithId<T> represents objects received from MongoDB, which are guaranteed to have
- *  the _id field populated, even though T always has _id? optional for validation reasons.
- */
-export type WithId<T> = T & {
-  _id: Schema.Types.ObjectId;
-};
-
-export type DataModelType<T> = WithId<T> & Document;
-
-export type UwaziFilterQuery<T> = FilterQuery<DataModelType<T>>;
-export type UwaziUpdateQuery<T> = UpdateQuery<DataModelType<T>>;
-export type UwaziQueryOptions = QueryOptions;
+import { Query } from 'mongoose';
+import { OdmModel, DataModelType } from './model';
 
 export async function QueryForEach<T>(
   query: Query<DataModelType<T>[], DataModelType<T>, {}, DataModelType<T>>,

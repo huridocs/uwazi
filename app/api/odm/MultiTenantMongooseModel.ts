@@ -1,5 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
-import { DataModelType, UwaziFilterQuery, UwaziUpdateQuery, UwaziQueryOptions } from './models';
+import {
+  DataModelType,
+  UwaziFilterQuery,
+  UwaziUpdateQuery,
+  UwaziQueryOptions,
+  DataType,
+} from './model';
 import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
 
@@ -28,7 +34,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbs[currentTenant.name];
   }
 
-  findById(id: any | string | number, select?: any) {
+  findById(id: any, select?: any) {
     return this.dbForCurrentTenant().findById(id, select, { lean: true });
   }
 
@@ -44,7 +50,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().findOneAndUpdate(query, update, options);
   }
 
-  async create(data: Readonly<Partial<T>> & { _id?: any }) {
+  async create(data: DataType<T>) {
     return this.dbForCurrentTenant().create(data);
   }
 

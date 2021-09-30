@@ -1,9 +1,10 @@
+/* eslint-disable max-classes-per-file */
 //@ts-ignore
 import PromisePool from '@supercharge/promise-pool';
-import { models, UwaziFilterQuery } from 'api/odm/models';
 import mongoose from 'mongoose';
+import { models } from 'api/odm/models';
 import { model as updatelogsModel } from 'api/updatelogs';
-import { OdmModel } from 'api/odm/model';
+import { OdmModel, UwaziFilterQuery } from 'api/odm/model';
 
 const getBatchSteps = async <T>(
   model: OdmModel<T>,

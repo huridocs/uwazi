@@ -5,8 +5,8 @@ import { UserSchema } from 'shared/types/userType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { createUpdateLogHelper } from './logHelper';
-import { DataType, OdmModel } from './model';
-import { models, UwaziFilterQuery, WithId } from './models';
+import { DataType, OdmModel, WithId, UwaziFilterQuery } from './model';
+import { models } from './models';
 
 export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
   published?: boolean;

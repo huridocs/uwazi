@@ -1,7 +1,26 @@
-import mongoose, { Schema, UpdateQuery, ModelUpdateOptions } from 'mongoose';
-import { WithId, models, UwaziFilterQuery } from './models';
+import { ObjectId } from 'mongodb';
+import mongoose, {
+  Schema,
+  UpdateQuery,
+  ModelUpdateOptions,
+  Document,
+  FilterQuery,
+  QueryOptions,
+} from 'mongoose';
+import { models } from './models';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { createUpdateLogHelper, UpdateLogger } from './logHelper';
+
+/** WithId<T> represents objects received from MongoDB, which are guaranteed to have
+ *  the _id field populated, even though T always has _id? optional for validation reasons.
+ */
+export type WithId<T> = T & { _id: ObjectId };
+
+export type DataModelType<T> = WithId<T> & Document;
+
+export type UwaziFilterQuery<T> = FilterQuery<DataModelType<T>>;
+export type UwaziUpdateQuery<T> = UpdateQuery<DataModelType<T>>;
+export type UwaziQueryOptions = QueryOptions;
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
