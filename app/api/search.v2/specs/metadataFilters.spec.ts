@@ -36,26 +36,39 @@ describe('Metadata filters', () => {
   const factory = getFixturesFactory();
   const app: Application = setUpApp(searchRoutes);
 
-  afterAll(async () => testingDB.disconnect());
-
-  it('should filter by the one metadata property', async () => {
+  beforeAll(async () => {
     await load(
       {
         templates: [
-          factory.template('templateA', [factory.property('selectPropertyName', 'select')]),
+          factory.template('templateA', [
+            factory.property('multiselect', 'multiselect'),
+            factory.property('selectPropertyName', 'select'),
+            factory.property('numericPropertyName', 'numeric'),
+          ]),
         ],
         entities: [
           factory.entity('Entity 1', 'templateA', {
+            multiselect: [factory.metadataValue('thesaurusId1')],
             selectPropertyName: [factory.metadataValue('thesaurusId1')],
+            numericPropertyName: [factory.metadataValue(42)],
           }),
           factory.entity('Entity 2', 'templateA', {
+            multiselect: [factory.metadataValue('thesaurusId2')],
             selectPropertyName: [factory.metadataValue('thesaurusId2')],
+            numericPropertyName: [factory.metadataValue(13)],
+          }),
+          factory.entity('Entity 3', 'templateA', {
+            numericPropertyName: [factory.metadataValue(5)],
           }),
         ],
       },
       'search.v2.metadata_filters'
     );
+  });
 
+  afterAll(async () => testingDB.disconnect());
+
+  it('should filter by the one metadata property', async () => {
     const query = {
       filter: {
         'metadata.selectPropertyName': 'thesaurusId1',
@@ -70,23 +83,6 @@ describe('Metadata filters', () => {
   });
 
   it('should filter by the other metadata property', async () => {
-    await load(
-      {
-        templates: [
-          factory.template('templateA', [factory.property('multiselect', 'multiselect')]),
-        ],
-        entities: [
-          factory.entity('Entity 1', 'templateA', {
-            multiselect: [factory.metadataValue('thesaurusId1')],
-          }),
-          factory.entity('Entity 2', 'templateA', {
-            multiselect: [factory.metadataValue('thesaurusId2')],
-          }),
-        ],
-      },
-      'search.v2.metadata_filters'
-    );
-
     const query = {
       filter: {
         'metadata.multiselect': 'thesaurusId2',
@@ -101,33 +97,6 @@ describe('Metadata filters', () => {
   });
 
   describe('Numeric range filter', () => {
-    beforeAll(async () => {
-      await load(
-        {
-          templates: [
-            factory.template('templateA', [
-              factory.property('multiselect', 'multiselect'),
-              factory.property('numericPropertyName', 'numeric'),
-            ]),
-          ],
-          entities: [
-            factory.entity('Entity 1', 'templateA', {
-              multiselect: [factory.metadataValue('thesaurusId1')],
-              numericPropertyName: [factory.metadataValue(42)],
-            }),
-            factory.entity('Entity 2', 'templateA', {
-              multiselect: [factory.metadataValue('thesaurusId2')],
-              numericPropertyName: [factory.metadataValue(13)],
-            }),
-            factory.entity('Entity 3', 'templateA', {
-              numericPropertyName: [factory.metadataValue(5)],
-            }),
-          ],
-        },
-        'search.v2.metadata_filters'
-      );
-    });
-
     it.each([
       { filterValue: 42, expected: [{ title: 'Entity 1' }] },
       { filterValue: { from: 10, to: 25 }, expected: [{ title: 'Entity 2' }] },
@@ -148,7 +117,12 @@ describe('Metadata filters', () => {
       expect(body.data).toMatchObject(expected);
     });
   });
+
   it('', () => {
     throw new Error('Add support for dates');
+  });
+
+  it('', () => {
+    throw new Error('Refactor request error-expect.');
   });
 });
