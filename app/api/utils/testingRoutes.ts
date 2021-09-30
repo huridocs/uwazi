@@ -26,7 +26,6 @@ const setUpApp = (
 
   route(app);
   app.use(errorHandlingMiddleware);
-
   return app;
 };
 
