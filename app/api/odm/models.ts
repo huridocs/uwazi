@@ -1,5 +1,5 @@
 import { Query } from 'mongoose';
-import { OdmModel, DataType } from './model';
+import { DataType } from './model';
 
 export async function QueryForEach<T>(
   query: Query<DataType<T>[], DataType<T>, {}, DataType<T>>,
@@ -23,8 +23,3 @@ export async function QueryForEach<T>(
     offset += batch.length;
   }
 }
-
-// models are accessed in api/sync, which cannot be type-safe since the document
-// type is a request parameter. Thus, we store all OdmModels as type Document.
-// eslint-disable-next-line
-export let models: { [index: string]: OdmModel<any> } = {};

@@ -2,9 +2,8 @@
 //@ts-ignore
 import PromisePool from '@supercharge/promise-pool';
 import mongoose from 'mongoose';
-import { models } from 'api/odm/models';
 import { model as updatelogsModel } from 'api/updatelogs';
-import { OdmModel, UwaziFilterQuery } from 'api/odm/model';
+import { OdmModel, models, UwaziFilterQuery } from './model';
 
 const getBatchSteps = async <T>(
   model: OdmModel<T>,
