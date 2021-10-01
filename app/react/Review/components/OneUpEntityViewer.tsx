@@ -191,11 +191,7 @@ export class OneUpEntityViewerBase extends Component<
                         <FileList files={entity.documents} entity={entity} />
                         <AttachmentsList
                           attachments={entity.attachments}
-                          parentId={entity._id}
                           parentSharedId={entity.sharedId}
-                          isDocumentAttachments={Boolean(entity.file)}
-                          entityView
-                          processed={entity.processed}
                         />
                       </div>
                     </ShowIf>
