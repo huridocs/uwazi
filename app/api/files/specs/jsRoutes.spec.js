@@ -162,21 +162,25 @@ describe('upload routes', () => {
       await remoteServer.close();
     });
 
-    it('should return the captcha and store it', done => {
+    it('should remove the tenant and cookie from headers', done => {
       remoteApp = express();
       remoteApp.post('/api/public', (_req, res) => {
         res.json(_req.headers);
       });
-
       remoteServer = remoteApp.listen(54321, async () => {
         const response = await request(app)
           .post('/api/remotepublic')
           .send({ title: 'Title' })
+          .set(
+            'cookie',
+            'locale=en; SL_G_WPT_TO=en; connect.sid=s%3AnK04AiZIYyWOjO_p.kFF17AeJhqKr207n95pV8'
+          )
           .set('tenant', 'tenant')
           .expect(200);
 
         const headersOnRemote = JSON.parse(response.text);
-        expect(headersOnRemote.tenant).not.toBeDefined();
+        expect(headersOnRemote.tenant).toBeUndefined();
+        expect(headersOnRemote.cookie).toBeUndefined();
         done();
       });
     });

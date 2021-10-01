@@ -126,7 +126,7 @@ const routes = app => {
         return '/api/public';
       },
       proxyReqOptDecorator(proxyReqOpts) {
-        const { tenant, ...headers } = proxyReqOpts.headers;
+        const { tenant, cookie, ...headers } = proxyReqOpts.headers;
         return {
           ...proxyReqOpts,
           headers: { ...headers },
