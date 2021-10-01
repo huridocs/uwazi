@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { ActionCreator } from 'redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
@@ -6,9 +7,6 @@ import { actions as formActions, LocalForm, Field } from 'react-redux-form';
 import Tip from 'app/Layout/Tip';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { store } from 'app/store';
-
-import { uploadActionsType } from './AttachmentsList';
 
 const validators = {
   name: { required: (val: any) => !!val && val.trim() !== '' },
@@ -19,7 +17,8 @@ export interface AttachmentsModalProps {
   entitySharedId: string;
   storeKey: string;
   onClose(): void;
-  uploadActions: uploadActionsType;
+  uploadAttachmentAction: ActionCreator<any>;
+  uploadAttachmentFromUrlAction: ActionCreator<any>;
   getPercentage?: number;
 }
 
@@ -29,9 +28,9 @@ export const AttachmentsModal = ({
   storeKey,
   onClose,
   getPercentage,
-  uploadActions,
+  uploadAttachmentAction,
+  uploadAttachmentFromUrlAction,
 }: AttachmentsModalProps) => {
-  const { uploadAttachmentAction, uploadAttachmentFromUrlAction } = uploadActions;
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   let formDispatch: Function = () => {};
 
@@ -44,14 +43,14 @@ export const AttachmentsModal = ({
   const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       [...event.target.files].forEach(file => {
-        store.dispatch(uploadAttachmentAction(entitySharedId, file, storeKey));
+        uploadAttachmentAction(entitySharedId, file, storeKey);
       });
     }
   };
 
   const handleDropFiles = (accepted: File[]) => {
     accepted.forEach(file => {
-      store.dispatch(uploadAttachmentAction(entitySharedId, file, storeKey));
+      uploadAttachmentAction(entitySharedId, file, storeKey);
     });
   };
 
@@ -60,9 +59,7 @@ export const AttachmentsModal = ({
   };
 
   const handleSubmitUrlForm = (formModelData: any) => {
-    store.dispatch(
-      uploadAttachmentFromUrlAction(entitySharedId, formModelData.name, formModelData.url, storeKey)
-    );
+    uploadAttachmentFromUrlAction(entitySharedId, formModelData.name, formModelData.url, storeKey);
     formDispatch(formActions.reset('urlForm'));
   };
 

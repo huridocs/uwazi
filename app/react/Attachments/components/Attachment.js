@@ -13,13 +13,7 @@ import { Icon } from 'UI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 
-import {
-  deleteAttachment,
-  renameAttachment,
-  loadForm,
-  submitForm,
-  resetForm,
-} from '../actions/actions';
+import { loadForm, submitForm, resetForm } from '../actions/actions';
 
 const getExtension = filename => (filename ? filename.substr(filename.lastIndexOf('.') + 1) : '');
 
@@ -93,7 +87,7 @@ export class Attachment extends Component {
 
   onRenameSubmit(newFile) {
     const { parentSharedId, model, storeKey } = this.props;
-    this.props.renameAttachment(parentSharedId, model, storeKey, newFile);
+    this.props.renameAttachmentAction(parentSharedId, model, storeKey, newFile);
   }
 
   toggleDropdown() {
@@ -105,7 +99,11 @@ export class Attachment extends Component {
   deleteAttachment(attachment) {
     this.context.confirm({
       accept: () => {
-        this.props.deleteAttachment(this.props.parentSharedId, attachment, this.props.storeKey);
+        this.props.deleteAttachmentAction(
+          this.props.parentSharedId,
+          attachment,
+          this.props.storeKey
+        );
       },
       title: 'Confirm delete',
       message: this.props.deleteMessage,
@@ -266,12 +264,12 @@ Attachment.propTypes = {
   model: PropTypes.string,
   readOnly: PropTypes.bool,
   beingEdited: PropTypes.bool,
-  deleteAttachment: PropTypes.func,
-  renameAttachment: PropTypes.func,
   loadForm: PropTypes.func,
   submitForm: PropTypes.func,
   resetForm: PropTypes.func,
   entity: PropTypes.object,
+  renameAttachmentAction: PropTypes.func.isRequired,
+  deleteAttachmentAction: PropTypes.func.isRequired,
 };
 
 Attachment.contextTypes = {
@@ -287,7 +285,7 @@ export function mapStateToProps({ attachments }, ownProps) {
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
-    { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm },
+    { loadForm, submitForm, resetForm },
     wrapDispatch(dispatch, props.storeKey)
   );
 }
