@@ -3,36 +3,33 @@ import mongoose, {
   Schema,
   UpdateQuery,
   ModelUpdateOptions,
-  Document,
   FilterQuery,
   QueryOptions,
 } from 'mongoose';
-import { models } from './models';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 
 /** WithId<T> represents objects received from MongoDB, which are guaranteed to have
  *  the _id field populated, even though T always has _id? optional for validation reasons.
  */
-export type WithId<T> = T & { _id: ObjectId };
+export type WithId<T> = T & { _id: ObjectId | string };
 
-export type DataModelType<T> = WithId<T> & Document;
+export type DataType<T> = WithId<T>;
+export type PartialDataType<T> = Partial<DataType<T>>;
 
-export type UwaziFilterQuery<T> = FilterQuery<DataModelType<T>>;
-export type UwaziUpdateQuery<T> = UpdateQuery<DataModelType<T>>;
+export type UwaziFilterQuery<T> = FilterQuery<DataType<T>>;
+export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
-
-export type DataType<T> = Readonly<Partial<T>> & { _id?: any };
 
 export class OdmModel<T> {
   db: MultiTenantMongooseModel<T>;
 
   logHelper: UpdateLogger<T>;
 
-  private documentExists(data: DataType<T>) {
+  private documentExists(data: PartialDataType<T>) {
     return this.db.findById(data._id, '_id');
   }
 
@@ -41,29 +38,33 @@ export class OdmModel<T> {
     this.logHelper = logHelper;
   }
 
-  async save(data: DataType<T>, query?: any) {
+  async save(data: PartialDataType<T>, query?: UwaziFilterQuery<T>) {
     if (await this.documentExists(data)) {
-      const saved = await this.db.findOneAndUpdate(query || { _id: data._id }, data, {
-        new: true,
-      });
+      const saved = await this.db.findOneAndUpdate(
+        query || ({ _id: data._id } as UwaziFilterQuery<T>),
+        data as UwaziUpdateQuery<typeof data>,
+        {
+          new: true,
+        }
+      );
       if (saved === null) {
         throw Error('The document was not updated!');
       }
       await this.logHelper.upsertLogOne(saved);
-      return saved.toObject() as WithId<T>;
+      return saved.toObject<WithId<DataType<T>>>();
     }
     const saved = await this.db.create(data);
     await this.logHelper.upsertLogOne(saved);
-    return saved.toObject() as WithId<T>;
+    return saved.toObject<WithId<DataType<T>>>();
   }
 
-  async saveMultiple(data: Readonly<Partial<T>>[]) {
+  async saveMultiple(data: PartialDataType<T>[]) {
     return Promise.all(data.map(async d => this.save(d)));
   }
 
   async updateMany(
     conditions: UwaziFilterQuery<T>,
-    doc: UpdateQuery<T>,
+    doc: UwaziUpdateQuery<T>,
     options: ModelUpdateOptions = {}
   ) {
     await this.logHelper.upsertLogMany(conditions);
@@ -74,11 +75,11 @@ export class OdmModel<T> {
     return this.db.countDocuments(query);
   }
 
-  get(query: UwaziFilterQuery<T> = {}, select: any = '', options = {}) {
+  get(query: UwaziFilterQuery<T> = {}, select: any = '', options: UwaziQueryOptions = {}) {
     return this.db.find(query, select, { lean: true, ...options });
   }
 
-  async getById(id: any | string | number, select?: any) {
+  async getById(id: any, select?: any) {
     return this.db.findById(id, select);
   }
 
@@ -91,6 +92,8 @@ export class OdmModel<T> {
     return this.db.deleteMany(cond);
   }
 }
+
+export const models: { [index: string]: OdmModel<any> } = {};
 
 export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
   const logHelper = createUpdateLogHelper<T>(collectionName);
