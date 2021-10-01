@@ -5,15 +5,20 @@ import { UserSchema } from 'shared/types/userType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { createUpdateLogHelper } from './logHelper';
-import { DataType, OdmModel, WithId, UwaziFilterQuery } from './model';
-import { models } from './models';
+import { OdmModel, WithId, UwaziFilterQuery, DataType, models } from './model';
 
 export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
   published?: boolean;
   permissions?: PermissionSchema[];
 };
 
-const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined) => {
+type WithPermissions<T> = T & { permissions?: PermissionSchema[] };
+type DataTypeWithPermissions<T> = WithPermissions<DataType<T>>;
+
+const appendPermissionData = <T>(
+  data: DataTypeWithPermissions<T>,
+  user: UserSchema | undefined
+) => {
   if (!user) {
     return data;
   }
@@ -71,7 +76,7 @@ const appendPermissionQuery = <T>(
 };
 
 function checkPermissionAccess<T>(
-  elem: T & { permissions?: PermissionSchema[] },
+  elem: WithPermissions<T>,
   userIds: ObjectIdSchema[],
   level: AccessLevels = AccessLevels.WRITE
 ) {
@@ -115,18 +120,19 @@ const controlPermissionsData = <T>(data: T, user?: UserSchema) => {
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
-  async save(data: DataType<T & { permissions?: PermissionSchema[] }>) {
+  async save(data: DataTypeWithPermissions<T>) {
     const user = permissionsContext.getUserInContext();
+    const query = { _id: data._id } as PermissionsUwaziFilterQuery<T>;
     return data._id || data.permissions
-      ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE, user))
+      ? super.save(data, appendPermissionQuery(query, AccessLevels.WRITE, user))
       : super.save(appendPermissionData(data, user));
   }
 
-  async saveUnrestricted(data: DataType<T & { permissions?: PermissionSchema[] }>) {
-    return data._id || data.permissions ? super.save(data, { _id: data._id }) : super.save(data);
+  async saveUnrestricted(data: DataTypeWithPermissions<T>) {
+    return data._id || super.save(data);
   }
 
-  get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+  get(query: PermissionsUwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     const user = permissionsContext.getUserInContext();
     const results = super.get(
       appendPermissionQuery(query, AccessLevels.READ, user),
@@ -138,23 +144,19 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
       : results;
   }
 
-  async count(query: UwaziFilterQuery<T> = {}) {
+  async count(query: PermissionsUwaziFilterQuery<T> = {}) {
     const user = permissionsContext.getUserInContext();
     return super.count(appendPermissionQuery(query, AccessLevels.READ, user));
   }
 
-  getUnrestricted(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+  getUnrestricted(query: PermissionsUwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     return super.get(query, select, options);
   }
 
   async getById(id: any, select?: string) {
     const user = permissionsContext.getUserInContext();
     const doc = await this.db.findOne(
-      appendPermissionQuery(
-        { _id: id || null } as PermissionsUwaziFilterQuery<T>,
-        AccessLevels.READ,
-        user
-      ),
+      appendPermissionQuery({ _id: id || null }, AccessLevels.READ, user),
       select
     );
 
@@ -171,12 +173,9 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
   }
 }
 
-export function instanceModelWithPermissions<T = any>(
-  collectionName: string,
-  schema: mongoose.Schema
-) {
+export function instanceModelWithPermissions<T>(collectionName: string, schema: mongoose.Schema) {
   const logHelper = createUpdateLogHelper<T>(collectionName);
-  const model = new ModelWithPermissions<T>(logHelper, collectionName, schema);
+  const model = new ModelWithPermissions(logHelper, collectionName, schema);
   models[collectionName] = model;
   return model;
 }
