@@ -21,5 +21,4 @@ export interface ThesaurusSchema {
   name: string;
   enable_classification?: boolean;
   values?: ThesaurusValueSchema[];
-  [k: string]: unknown | undefined;
 }

@@ -47,6 +47,7 @@ export const thesaurusSchema = {
   type: 'object',
   required: ['name'],
   definitions: { objectIdSchema, thesaurusValueSchema },
+  additionalProperties: false,
   properties: {
     _id: objectIdSchema,
     type: { type: 'string', enum: ['thesauri'] },
