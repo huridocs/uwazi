@@ -1,4 +1,3 @@
-// import { ObjectId, WithId as _WithId } from 'mongodb';
 import mongoose, {
   Schema,
   UpdateQuery,
@@ -93,8 +92,7 @@ export class OdmModel<T> {
 
 // models are accessed in api/sync, which cannot be type-safe since the document
 // type is a request parameter. Thus, we store all OdmModels as type Document.
-// eslint-disable-next-line
-export let models: { [index: string]: OdmModel<any> } = {};
+export const models: { [index: string]: OdmModel<any> } = {};
 
 export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
   const logHelper = createUpdateLogHelper<T>(collectionName);
