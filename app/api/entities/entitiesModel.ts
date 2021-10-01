@@ -1,5 +1,8 @@
-import { instanceModelWithPermissions } from 'api/odm/ModelWithPermissions';
 import mongoose from 'mongoose';
+import {
+  instanceModelWithPermissions,
+  WithPermissionsDataType,
+} from 'api/odm/ModelWithPermissions';
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
@@ -55,7 +58,7 @@ const supportedLanguages = [
   'tr',
 ];
 
-const setMongoLanguage = (doc: EntitySchema) => {
+const setMongoLanguage = (doc: WithPermissionsDataType<EntitySchema>) => {
   if (!doc.language) {
     return doc;
   }
