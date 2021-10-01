@@ -1,10 +1,10 @@
 import { Query } from 'mongoose';
-import { OdmModel, DataModelType } from './model';
+import { OdmModel, DataType } from './model';
 
 export async function QueryForEach<T>(
-  query: Query<DataModelType<T>[], DataModelType<T>, {}, DataModelType<T>>,
+  query: Query<DataType<T>[], DataType<T>, {}, DataType<T>>,
   batchSize: number,
-  fn: (e: DataModelType<T>) => Promise<void>
+  fn: (e: DataType<T>) => Promise<void>
 ) {
   const totalNumber = await query.countDocuments();
   let offset = 0;

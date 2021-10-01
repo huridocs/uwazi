@@ -1,16 +1,16 @@
 import mongoose, { Schema } from 'mongoose';
 import {
-  DataModelType,
+  DataType,
   UwaziFilterQuery,
   UwaziUpdateQuery,
   UwaziQueryOptions,
-  DataType,
+  PartialDataType,
 } from './model';
 import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
 
 class MultiTenantMongooseModel<T> {
-  dbs: { [k: string]: mongoose.Model<DataModelType<T>> };
+  dbs: { [k: string]: mongoose.Model<DataType<T>> };
 
   collectionName: string;
 
@@ -26,9 +26,10 @@ class MultiTenantMongooseModel<T> {
     const currentTenant = tenants.current();
 
     if (!this.dbs[currentTenant.name]) {
-      this.dbs[currentTenant.name] = DB.connectionForDB(currentTenant.dbName).model<
-        DataModelType<T>
-      >(this.collectionName, this.schema);
+      this.dbs[currentTenant.name] = DB.connectionForDB(currentTenant.dbName).model<DataType<T>>(
+        this.collectionName,
+        this.schema
+      );
     }
 
     return this.dbs[currentTenant.name];
@@ -50,7 +51,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().findOneAndUpdate(query, update, options);
   }
 
-  async create(data: DataType<T>) {
+  async create(data: PartialDataType<T>) {
     return this.dbForCurrentTenant().create(data);
   }
 

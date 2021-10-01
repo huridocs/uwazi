@@ -5,7 +5,7 @@ import { UserSchema } from 'shared/types/userType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { createUpdateLogHelper } from './logHelper';
-import { DataType, OdmModel, WithId, UwaziFilterQuery } from './model';
+import { PartialDataType, OdmModel, WithId, UwaziFilterQuery } from './model';
 import { models } from './models';
 
 export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
@@ -13,7 +13,13 @@ export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
   permissions?: PermissionSchema[];
 };
 
-const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined) => {
+type WithPermissions<T> = T & { permissions?: PermissionSchema[] };
+export type WithPermissionsDataType<T> = WithPermissions<PartialDataType<T>>;
+
+const appendPermissionData = <T>(
+  data: WithPermissionsDataType<T>,
+  user: UserSchema | undefined
+) => {
   if (!user) {
     return data;
   }
@@ -71,7 +77,7 @@ const appendPermissionQuery = <T>(
 };
 
 function checkPermissionAccess<T>(
-  elem: T & { permissions?: PermissionSchema[] },
+  elem: WithPermissions<T>,
   userIds: ObjectIdSchema[],
   level: AccessLevels = AccessLevels.WRITE
 ) {
@@ -115,14 +121,15 @@ const controlPermissionsData = <T>(data: T, user?: UserSchema) => {
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
-  async save(data: DataType<T & { permissions?: PermissionSchema[] }>) {
+  async save(data: WithPermissionsDataType<T>) {
     const user = permissionsContext.getUserInContext();
+    const query = { _id: data._id } as PermissionsUwaziFilterQuery<T>;
     return data._id || data.permissions
-      ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE, user))
+      ? super.save(data, appendPermissionQuery(query, AccessLevels.WRITE, user))
       : super.save(appendPermissionData(data, user));
   }
 
-  async saveUnrestricted(data: DataType<T & { permissions?: PermissionSchema[] }>) {
+  async saveUnrestricted(data: WithPermissionsDataType<T>) {
     return data._id || data.permissions ? super.save(data, { _id: data._id }) : super.save(data);
   }
 

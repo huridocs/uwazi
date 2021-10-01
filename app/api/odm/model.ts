@@ -1,12 +1,12 @@
-import { ObjectId } from 'mongodb';
+// import { ObjectId, WithId as _WithId } from 'mongodb';
 import mongoose, {
   Schema,
   UpdateQuery,
   ModelUpdateOptions,
-  Document,
   FilterQuery,
   QueryOptions,
 } from 'mongoose';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { models } from './models';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { createUpdateLogHelper, UpdateLogger } from './logHelper';
@@ -14,25 +14,24 @@ import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 /** WithId<T> represents objects received from MongoDB, which are guaranteed to have
  *  the _id field populated, even though T always has _id? optional for validation reasons.
  */
-export type WithId<T> = T & { _id: ObjectId };
+export type WithId<T> = T & { _id: ObjectIdSchema };
 
-export type DataModelType<T> = WithId<T> & Document;
+export type DataType<T> = WithId<T>;
+export type PartialDataType<T> = Partial<DataType<T>>;
 
-export type UwaziFilterQuery<T> = FilterQuery<DataModelType<T>>;
-export type UwaziUpdateQuery<T> = UpdateQuery<DataModelType<T>>;
+export type UwaziFilterQuery<T> = FilterQuery<DataType<T>>;
+export type UwaziUpdateQuery<T> = UpdateQuery<PartialDataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
-
-export type DataType<T> = Readonly<Partial<T>> & { _id?: any };
 
 export class OdmModel<T> {
   db: MultiTenantMongooseModel<T>;
 
   logHelper: UpdateLogger<T>;
 
-  private documentExists(data: DataType<T>) {
+  private documentExists(data: PartialDataType<T>) {
     return this.db.findById(data._id, '_id');
   }
 
@@ -41,23 +40,24 @@ export class OdmModel<T> {
     this.logHelper = logHelper;
   }
 
-  async save(data: DataType<T>, query?: any) {
+  async save(data: PartialDataType<T>, query?: any) {
     if (await this.documentExists(data)) {
-      const saved = await this.db.findOneAndUpdate(query || { _id: data._id }, data, {
+      const updateData = data as UwaziUpdateQuery<T>;
+      const saved = await this.db.findOneAndUpdate(query || { _id: data._id }, updateData, {
         new: true,
       });
       if (saved === null) {
         throw Error('The document was not updated!');
       }
       await this.logHelper.upsertLogOne(saved);
-      return saved.toObject() as WithId<T>;
+      return saved.toObject<WithId<T>>();
     }
     const saved = await this.db.create(data);
     await this.logHelper.upsertLogOne(saved);
-    return saved.toObject() as WithId<T>;
+    return saved.toObject<WithId<T>>();
   }
 
-  async saveMultiple(data: Readonly<Partial<T>>[]) {
+  async saveMultiple(data: PartialDataType<T>[]) {
     return Promise.all(data.map(async d => this.save(d)));
   }
 
