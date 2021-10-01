@@ -14,14 +14,9 @@ describe('UploadSupportingFile', () => {
   let store: MockStoreEnhanced;
   let reduxStore: {};
 
-  const uploadActions = {
-    uploadAttachmentAction: jest.fn().mockReturnValue(() => {
-      store.dispatch({ type: 'mockAction' });
-    }),
-    uploadAttachmentFromUrlAction: jest.fn().mockReturnValue(() => {
-      store.dispatch({ type: 'mockAction' });
-    }),
-  };
+  const mockUploadAction = jest.fn().mockReturnValue(() => {
+    store.dispatch({ type: 'mockAction' });
+  });
 
   function updateProgress(progressPercentage?: number) {
     return { attachments: { progress: Immutable.fromJS({ entity1: progressPercentage }) } };
@@ -32,7 +27,8 @@ describe('UploadSupportingFile', () => {
       <UploadSupportingFile
         entitySharedId="entity1"
         storeKey="library"
-        uploadActions={uploadActions}
+        uploadAttachmentAction={mockUploadAction}
+        uploadAttachmentFromUrlAction={mockUploadAction}
       />,
       () => reduxStore
     ));
@@ -66,7 +62,8 @@ describe('UploadSupportingFile', () => {
           <UploadSupportingFile
             entitySharedId="entity1"
             storeKey="library"
-            uploadActions={uploadActions}
+            uploadAttachmentAction={mockUploadAction}
+            uploadAttachmentFromUrlAction={mockUploadAction}
           />
         </Provider>
       );

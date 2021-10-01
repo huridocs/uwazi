@@ -21,14 +21,12 @@ describe('Attachments Modal', () => {
       storeKey: '456',
       onClose: jasmine.createSpy('onClose'),
       isOpen: true,
-      uploadActions: {
-        uploadAttachmentAction: jasmine
-          .createSpy('uploadAttachment')
-          .and.callFake(() => ({ type: 'mockAction' })),
-        uploadAttachmentFromUrlAction: jasmine
-          .createSpy('uploadAttachmentFromUrl')
-          .and.callFake(() => ({ type: 'mockAction' })),
-      },
+      uploadAttachmentAction: jasmine
+        .createSpy('uploadAttachment')
+        .and.callFake(() => ({ type: 'mockAction' })),
+      uploadAttachmentFromUrlAction: jasmine
+        .createSpy('uploadAttachmentFromUrl')
+        .and.callFake(() => ({ type: 'mockAction' })),
     };
   });
 
@@ -67,7 +65,7 @@ describe('Attachments Modal', () => {
     component.find('.modal-tab-2').simulate('click');
     component.find(LocalForm).simulate('submit', { url: 'http://test.test', name: 'testName' });
 
-    expect(props.uploadActions.uploadAttachmentFromUrlAction).toHaveBeenCalled();
+    expect(props.uploadAttachmentFromUrlAction).toHaveBeenCalled();
   });
 
   it('Should call onClose', () => {

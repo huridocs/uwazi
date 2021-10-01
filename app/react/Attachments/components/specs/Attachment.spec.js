@@ -26,8 +26,12 @@ describe('Attachment', () => {
       storeKey: 'storeKey',
       model: 'model',
       parentSharedId: 'parentSharedId',
-      deleteAttachment: jasmine.createSpy('deleteAttachment'),
-      renameAttachment: jasmine.createSpy('renameAttachment'),
+      deleteAttachmentAction: jasmine
+        .createSpy('deleteAttachment')
+        .and.callFake(() => ({ type: 'mockAction' })),
+      renameAttachmentAction: jasmine
+        .createSpy('renameAttachment')
+        .and.callFake(() => ({ type: 'mockAction' })),
       loadForm: jasmine.createSpy('loadForm'),
       submitForm: jasmine.createSpy('submitForm'),
       resetForm: jasmine.createSpy('resetForm'),
@@ -69,7 +73,7 @@ describe('Attachment', () => {
       const newFile = { originalname: 'something new' };
       submit(newFile);
 
-      expect(props.renameAttachment).toHaveBeenCalledWith(
+      expect(props.renameAttachmentAction).toHaveBeenCalledWith(
         'parentSharedId',
         'model',
         'storeKey',
@@ -114,7 +118,7 @@ describe('Attachment', () => {
       expect(context.confirm).toHaveBeenCalled();
 
       context.confirm.calls.argsFor(0)[0].accept();
-      expect(props.deleteAttachment).toHaveBeenCalledWith('parentSharedId', file, 'storeKey');
+      expect(props.deleteAttachmentAction).toHaveBeenCalledWith('parentSharedId', file, 'storeKey');
     });
 
     it('should check authorization roles to listed attachment', () => {
