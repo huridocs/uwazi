@@ -60,6 +60,10 @@ export function unselectDocument(docId) {
   };
 }
 
+export function setMapView(mapViewStyle) {
+  return { type: types.SET_MAP_VIEW_STYLE, mapViewStyle };
+}
+
 export function selectSingleDocument(doc) {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());

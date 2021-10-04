@@ -11,6 +11,7 @@ const initialState = Immutable.fromJS({
   filtersPanel: false,
   zoomLevel: 0,
   tableViewColumns: [],
+  mapViewStyle: 'satellite',
 });
 
 export default function ui(state = initialState, action = {}) {
@@ -120,6 +121,10 @@ export default function ui(state = initialState, action = {}) {
   if (action.type === types.ZOOM_OUT) {
     const minLevel = -3;
     return state.set('zoomLevel', Math.max(state.get('zoomLevel') - 1, minLevel));
+  }
+
+  if (action.type === types.SET_MAP_VIEW_STYLE) {
+    return state.set('mapViewStyle', action.mapViewStyle);
   }
 
   if (action.type === types.SET_TABLE_VIEW_COLUMNS) {
