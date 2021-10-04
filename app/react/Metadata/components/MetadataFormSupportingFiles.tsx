@@ -22,18 +22,19 @@ const MetadataFormSupportingFiles = ({
   inSidePanelEdit,
   storeKey,
 }: ComponentProps) => {
-  const { attachments } =
+  const { attachments = [] } =
     Object.keys(inEntityViewEdit).length === 0 ? inSidePanelEdit : inEntityViewEdit;
 
   return (
     <AttachmentsList
       attachments={attachments}
-      // isTargetDoc={isTargetDoc}
-      isDocumentAttachments={false}
-      // parentId="614c9c9c9bfe6673f2a4d859"
-      parentSharedId={null}
       storeKey={storeKey}
-      // entity={jsDoc}
+      readOnly={false}
+      isTargetDoc={false}
+      uploadAttachmentAction={() => {}}
+      uploadAttachmentFromUrlAction={() => {}}
+      renameAttachmentAction={() => {}}
+      deleteAttachmentAction={() => {}}
     />
   );
 };

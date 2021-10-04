@@ -11,7 +11,22 @@ describe('Metadata form supporting files', () => {
   const mockStoreCreator: MockStoreCreator<object> = configureStore<object>();
 
   beforeEach(() => {
-    store = mockStoreCreator({});
+    store = mockStoreCreator({
+      library: {
+        sidepanel: {
+          metadata: {
+            _id: 'entity_id',
+            attachments: [
+              {
+                _id: 'file_id',
+                originalname: 'fileName.jpg',
+              },
+            ],
+          },
+        },
+      },
+      entityView: { entityForm: {} },
+    });
   });
 
   const render = () => {
@@ -19,11 +34,24 @@ describe('Metadata form supporting files', () => {
       <Provider store={store}>
         <MetadataFormSupportingFiles storeKey="library" />
       </Provider>
-    );
+    )
+      .dive()
+      .dive();
   };
 
-  it('should pass existing attachements if any during edit mode', () => {
+  it('should pass existing attachements if editing an entity', () => {
     render();
-    console.log(component.debug());
+    expect(component.props()).toEqual(
+      expect.objectContaining({ attachments: [{ _id: 'file_id', originalname: 'fileName.jpg' }] })
+    );
+  });
+
+  it('should pass an empty array if there are no attachments', () => {
+    store = mockStoreCreator({
+      library: { sidepanel: { metadata: {} } },
+      entityView: { entityForm: {} },
+    });
+    render();
+    expect(component.props()).toEqual(expect.objectContaining({ attachments: [] }));
   });
 });
