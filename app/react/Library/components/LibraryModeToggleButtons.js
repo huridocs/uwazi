@@ -9,9 +9,21 @@ import { showFilters } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { createSelector } from 'reselect';
+import { setMapView } from '../actions/libraryActions';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
+  constructor(props) {
+    super(props);
+    this.switchMap = this.switchMap.bind(this);
+  }
+
+  switchMap(mapView) {
+    return () => {
+      this.props.setMapView(mapView);
+    };
+  }
+
   render() {
     const {
       numberOfMarkers,
@@ -23,8 +35,6 @@ export class LibraryModeToggleButtons extends Component {
       storeKey,
       tableViewMode,
       mapViewMode,
-      switchMapToSatellite,
-      switchMapToTerrain,
     } = this.props;
     const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
     return (
@@ -33,7 +43,7 @@ export class LibraryModeToggleButtons extends Component {
           <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
             <button
               className="terrain btn btn-default"
-              onClick={switchMapToTerrain}
+              onClick={this.switchMap('terrain')}
               type="button"
               aria-label={t('System', 'Terrain View', null, false)}
             >
@@ -42,7 +52,7 @@ export class LibraryModeToggleButtons extends Component {
             </button>
             <button
               className="satellite btn btn-default"
-              onClick={switchMapToSatellite}
+              onClick={this.switchMap('satellite')}
               type="button"
               aria-label={t('System', 'Satellite View', null, false)}
             >
@@ -139,8 +149,7 @@ LibraryModeToggleButtons.propTypes = {
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
-  switchMapToSatellite: PropTypes.func,
-  switchMapToTerrain: PropTypes.func,
+  setMapView: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -149,8 +158,7 @@ LibraryModeToggleButtons.defaultProps = {
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},
-  switchMapToSatellite: () => {},
-  switchMapToTerrain: () => {},
+  setMapView: () => {},
 };
 
 export const encodedSearch = createSelector(
@@ -192,6 +200,7 @@ export function mapStateToProps(state, props) {
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     {
+      setMapView,
       showFilters,
     },
     wrapDispatch(dispatch, props.storeKey)

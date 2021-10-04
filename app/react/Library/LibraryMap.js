@@ -21,12 +21,6 @@ export default class LibraryMap extends Library {
           zoomOut={() => {
             this.mapView.getWrappedInstance().map.zoomOut();
           }}
-          switchMapToSatellite={() => {
-            this.mapView.getWrappedInstance().map.setStyle('satellite');
-          }}
-          switchMapToTerrain={() => {
-            this.mapView.getWrappedInstance().map.setStyle('terrain');
-          }}
           zoomLevel={0}
           mapViewMode
         />

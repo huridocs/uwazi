@@ -38,7 +38,9 @@ const GeolocationViewer = ({ points, onlyForCards }) => {
     ? { latitude: markers[0].latitude, longitude: markers[0].longitude }
     : {};
 
-  return <Map {...componentProps} height={370} markers={markers} />;
+  return (
+    <Map {...componentProps} height={370} markers={markers} mapStyleSwitcher storeKey="library" />
+  );
 };
 
 GeolocationViewer.defaultProps = {

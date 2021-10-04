@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup, NavigationControl, setRTLTextPlugin } from 'react-map-gl';
 import Immutable from 'immutable';
+import { connect } from 'react-redux';
 import { Icon } from 'UI';
+import { bindActionCreators } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
+import { setMapView } from 'app/Library/actions/libraryActions';
 import Supercluster from 'supercluster'; //eslint-disable-line
 import settingsAPI from 'app/Settings/SettingsAPI';
 import { Translate } from 'app/I18N';
@@ -31,7 +35,7 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   showControls: false,
 });
 
-export default class Map extends Component {
+export class Map extends Component {
   constructor(props) {
     super(props);
     this.state = getStateDefaults(props);
@@ -39,7 +43,7 @@ export default class Map extends Component {
     this.state.settings.touchZoom = props.scrollZoom;
     this.state.showControls = props.showControls;
 
-    this.mapStyle = Immutable.fromJS(_styleTerrain);
+    this.loadMapStyle();
     this.supercluster = new Supercluster({
       radius: _styleTerrain.sources.markers.clusterRadius,
       maxZoom: _styleTerrain.sources.markers.clusterMaxZoom,
@@ -81,6 +85,12 @@ export default class Map extends Component {
       this.updateMapStyle(props);
     }
     this.setState({ viewport: newViewport });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.mapViewStyle !== this.props.mapViewStyle) {
+      this.setStyle(this.props.mapViewStyle);
+    }
   }
 
   componentWillUnmount() {
@@ -171,12 +181,23 @@ export default class Map extends Component {
     this.updateMapStyle(this.props);
   }
 
+  loadMapStyle() {
+    console.log('loadMapStyle: ', this.props.mapViewStyle);
+    if (this.props.mapViewStyle === 'satellite') {
+      this.mapStyle = Immutable.fromJS(_styleSatellite);
+    } else {
+      this.mapStyle = Immutable.fromJS(_styleTerrain);
+    }
+  }
+
   bindActions() {
     this.zoom = this.zoom.bind(this);
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onHover = this.onHover.bind(this);
     this.setStyle = this.setStyle.bind(this);
+    this.loadMapStyle = this.loadMapStyle.bind(this);
+    this.onMapStyleSwitcherClicked = this.onMapStyleSwitcherClicked.bind(this);
   }
 
   assignDefaults() {
@@ -373,6 +394,25 @@ export default class Map extends Component {
     return false;
   }
 
+  onMapStyleSwitcherClicked() {
+    this.props.setMapView(this.props.mapViewStyle === 'satellite' ? 'terrain' : 'satellite');
+  }
+
+  renderMapStyleSwitcher() {
+    const { mapStyleSwitcher } = this.props;
+    if (mapStyleSwitcher) {
+      return (
+        <div className="mapbox-navigation">
+          <a className="btn btn-default" onClick={this.onMapStyleSwitcherClicked}>
+            Switch Map Style
+          </a>
+        </div>
+      );
+    }
+
+    return false;
+  }
+
   render() {
     const { viewport, settings } = this.state;
 
@@ -403,6 +443,7 @@ export default class Map extends Component {
             {this.renderMarkers()}
             {this.renderPopup()}
             {this.renderControls()}
+            {this.renderMapStyleSwitcher()}
             <span className="mapbox-help">
               <Icon icon="question-circle" />
               <span className="mapbox-tooltip">
@@ -427,6 +468,7 @@ Map.defaultProps = {
   clickOnMarker: () => {},
   hoverOnMarker: () => {},
   clickOnCluster: () => {},
+  setMapView: () => {},
   renderPopupInfo: null,
   renderMarker: null,
   cluster: false,
@@ -434,9 +476,14 @@ Map.defaultProps = {
   scrollZoom: true,
   showControls: false,
   interactiveLayerIds: [],
+  mapViewStyle: 'terrain',
+  mapStyleSwitcher: false,
 };
 
 Map.propTypes = {
+  mapStyleSwitcher: PropTypes.bool,
+  setMapView: PropTypes.func,
+  mapViewStyle: PropTypes.string,
   markers: PropTypes.arrayOf(PropTypes.object),
   latitude: PropTypes.number,
   longitude: PropTypes.number,
@@ -455,3 +502,20 @@ Map.propTypes = {
   showControls: PropTypes.bool,
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 };
+
+export function mapStateToProps(state, props) {
+  return {
+    mapViewStyle: state[props.storeKey].ui.get('mapViewStyle'),
+  };
+}
+
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators(
+    {
+      setMapView,
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);
