@@ -131,7 +131,7 @@
       ],
       "layout": {"line-cap": "square", "line-join": "bevel"},
       "paint": {
-        "line-color": "hsl(0, 0%, 97%)",
+        "line-color": "hsl(0, 0%, 50%)",
         "line-dasharray": [1, 1],
         "line-width": {"base": 1.55, "stops": [[4, 0.25], [20, 10]]}
       }
@@ -264,7 +264,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "rgba(255, 255, 255, 0.45)",
+        "line-color": "rgba(255, 255, 255, 0.2)",
         "line-width": {
           "base": 1.4,
           "stops": [[2, 2], [22, 2]]
@@ -283,7 +283,7 @@
       ],
       "layout": {"line-cap": "round", "line-join": "round"},
       "paint": {
-        "line-color": "rgba(255, 255, 255, 0.52)",
+        "line-color": "rgba(255, 255, 255, 0.25)",
         "line-width": {"base": 1.4, "stops": [[6, 0.5], [20, 20]]}
       }
     },
@@ -302,7 +302,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "rgba(255, 255, 255, 0.45)",
+        "line-color": "rgba(255, 255, 255, 0.2)",
         "line-width": {
           "base": 1.4,
           "stops": [[8, 1], [16, 10]]
