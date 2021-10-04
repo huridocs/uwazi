@@ -42,7 +42,9 @@ export class LibraryModeToggleButtons extends Component {
         {mapViewMode && showGeolocation && (
           <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
             <button
-              className="terrain btn btn-default"
+              className={`terrain btn btn-default ${
+                this.props.mapViewStyle === 'terrain' ? 'is-active' : ''
+              }`}
               onClick={this.switchMap('terrain')}
               type="button"
               aria-label={t('System', 'Terrain View', null, false)}
@@ -51,7 +53,9 @@ export class LibraryModeToggleButtons extends Component {
               <span className="tab-link-tooltip">{t('System', 'Terrain')}</span>
             </button>
             <button
-              className="satellite btn btn-default"
+              className={`satellite btn btn-default ${
+                this.props.mapViewStyle === 'satellite' ? 'is-active' : ''
+              }`}
               onClick={this.switchMap('satellite')}
               type="button"
               aria-label={t('System', 'Satellite View', null, false)}
@@ -150,6 +154,7 @@ LibraryModeToggleButtons.propTypes = {
   mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
   setMapView: PropTypes.func,
+  mapViewStyle: PropTypes.string,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -159,6 +164,7 @@ LibraryModeToggleButtons.defaultProps = {
   zoomOut: null,
   showFilters: () => {},
   setMapView: () => {},
+  mapViewStyle: '',
 };
 
 export const encodedSearch = createSelector(
@@ -187,6 +193,7 @@ export function mapStateToProps(state, props) {
     : 0;
 
   return {
+    mapViewStyle: state[props.storeKey].ui.get('mapViewStyle'),
     searchUrl: encodedSearch(state[props.storeKey]),
     showGeolocation,
     numberOfMarkers,

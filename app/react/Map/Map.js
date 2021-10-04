@@ -89,7 +89,19 @@ export class Map extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.mapViewStyle !== this.props.mapViewStyle) {
-      this.setStyle(this.props.mapViewStyle);
+      if (this.props.mapViewStyle === 'satellite') {
+        this.mapStyle = Immutable.fromJS(_styleSatellite);
+      } else {
+        this.mapStyle = Immutable.fromJS(_styleTerrain);
+      }
+      this.replaceKeysMapStyleJson();
+      const { viewport } = this.state;
+      this._onViewStateChange({
+        ...viewport,
+        ...TRANSITION_PROPS,
+      });
+
+      this.updateMapStyle(this.props);
     }
   }
 
@@ -165,24 +177,7 @@ export class Map extends Component {
     this.setState({ viewport: newViewport });
   }
 
-  setStyle(styleName) {
-    if (styleName === 'satellite') {
-      this.mapStyle = Immutable.fromJS(_styleSatellite);
-    } else {
-      this.mapStyle = Immutable.fromJS(_styleTerrain);
-    }
-    this.replaceKeysMapStyleJson();
-    const { viewport } = this.state;
-    this._onViewStateChange({
-      ...viewport,
-      ...TRANSITION_PROPS,
-    });
-
-    this.updateMapStyle(this.props);
-  }
-
   loadMapStyle() {
-    console.log('loadMapStyle: ', this.props.mapViewStyle);
     if (this.props.mapViewStyle === 'satellite') {
       this.mapStyle = Immutable.fromJS(_styleSatellite);
     } else {
@@ -195,7 +190,6 @@ export class Map extends Component {
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onHover = this.onHover.bind(this);
-    this.setStyle = this.setStyle.bind(this);
     this.loadMapStyle = this.loadMapStyle.bind(this);
     this.onMapStyleSwitcherClicked = this.onMapStyleSwitcherClicked.bind(this);
   }
