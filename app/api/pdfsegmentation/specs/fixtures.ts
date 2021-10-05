@@ -90,6 +90,7 @@ const fixturesTwelveFiles: DBFixture = {
     factory.file('F11', 'A11', 'document', fixturesPdfNameA),
     factory.file('F12', 'A12', 'document', fixturesPdfNameA),
   ],
+  segmentation: [{}],
 };
 
 const fixturesFilesWithtMixedInformationExtraction: DBFixture = {
