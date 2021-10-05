@@ -1,11 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import {
-  DataType,
-  UwaziFilterQuery,
-  UwaziUpdateQuery,
-  UwaziQueryOptions,
-  PartialDataType,
-} from './model';
+import { DataType, UwaziFilterQuery, UwaziUpdateQuery, UwaziQueryOptions } from './model';
 import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
 
@@ -51,7 +45,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().findOneAndUpdate(query, update, options);
   }
 
-  async create(data: PartialDataType<T>) {
+  async create(data: Partial<DataType<T>>) {
     return this.dbForCurrentTenant().create(data);
   }
 

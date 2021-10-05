@@ -3,13 +3,13 @@
 import PromisePool from '@supercharge/promise-pool';
 import mongoose from 'mongoose';
 import { model as updatelogsModel } from 'api/updatelogs';
-import { OdmModel, models, UwaziFilterQuery } from './model';
+import { OdmModel, models, UwaziFilterQuery, GetResults } from './model';
 
 const getBatchSteps = async <T>(
   model: OdmModel<T>,
   query: UwaziFilterQuery<T>,
   batchSize: number
-): Promise<T[]> => {
+): Promise<GetResults<T>[]> => {
   const allIds = await model.get(query, '_id', { sort: { _id: 1 } });
 
   const steps = [];
@@ -67,14 +67,17 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
 }
 
 export class NoLogger<T> implements UpdateLogger<T> {
+  // eslint-disable-next-line class-methods-use-this
   async getAffectedIds() {
     return Promise.resolve();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async upsertLogOne() {
     return Promise.resolve();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async upsertLogMany() {
     return Promise.resolve();
   }

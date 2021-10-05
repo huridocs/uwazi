@@ -1,3 +1,4 @@
+import { WithId as _WithId } from 'mongodb';
 import mongoose, {
   Schema,
   UpdateQuery,
@@ -9,16 +10,21 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 
-/** WithId<T> represents objects received from MongoDB, which are guaranteed to have
- *  the _id field populated, even though T always has _id? optional for validation reasons.
+/** Ideas!
+ *  T is the actual model-specific document Schema!
+ *  DataType should be the specific Schema with Document, in order to have _id and other Document specific characteristcs
+ *  WithId should be returned by get model?
+ *  Do we need to type Uwazi specific Filter, Update and Query?
  */
-export type WithId<T> = T & { _id: ObjectIdSchema };
 
-export type DataType<T> = WithId<T>;
-export type PartialDataType<T> = Partial<DataType<T>>;
+export type DataType<T> = T & { _id?: ObjectIdSchema };
+
+export type WithId<T> = _WithId<T>;
+
+export type GetResults<T> = mongoose.EnforceDocument<WithId<DataType<T>>, {}>;
 
 export type UwaziFilterQuery<T> = FilterQuery<DataType<T>>;
-export type UwaziUpdateQuery<T> = UpdateQuery<PartialDataType<T>>;
+export type UwaziUpdateQuery<T> = UpdateQuery<Partial<DataType<T>>>;
 export type UwaziQueryOptions = QueryOptions;
 
 const generateID = mongoose.Types.ObjectId;
@@ -29,21 +35,24 @@ export class OdmModel<T> {
 
   logHelper: UpdateLogger<T>;
 
-  private documentExists(data: PartialDataType<T>) {
+  private documentExists(data: Partial<DataType<T>>) {
     return this.db.findById(data._id, '_id');
   }
 
   constructor(logHelper: UpdateLogger<T>, collectionName: string, schema: Schema) {
-    this.db = new MultiTenantMongooseModel(collectionName, schema);
+    this.db = new MultiTenantMongooseModel<T>(collectionName, schema);
     this.logHelper = logHelper;
   }
 
-  async save(data: PartialDataType<T>, query?: any) {
+  async save(data: Partial<DataType<T>>, query?: any) {
     if (await this.documentExists(data)) {
-      const updateData = data as UwaziUpdateQuery<T>;
-      const saved = await this.db.findOneAndUpdate(query || { _id: data._id }, updateData, {
-        new: true,
-      });
+      const saved = await this.db.findOneAndUpdate(
+        query || { _id: data._id },
+        data as UwaziUpdateQuery<T>,
+        {
+          new: true,
+        }
+      );
       if (saved === null) {
         throw Error('The document was not updated!');
       }
@@ -55,7 +64,7 @@ export class OdmModel<T> {
     return saved.toObject<WithId<T>>();
   }
 
-  async saveMultiple(data: PartialDataType<T>[]) {
+  async saveMultiple(data: Partial<DataType<T>>[]) {
     return Promise.all(data.map(async d => this.save(d)));
   }
 
@@ -72,11 +81,12 @@ export class OdmModel<T> {
     return this.db.countDocuments(query);
   }
 
-  get(query: UwaziFilterQuery<T> = {}, select: any = '', options = {}) {
-    return this.db.find(query, select, { lean: true, ...options });
+  async get(query: UwaziFilterQuery<T> = {}, select: any = '', options: UwaziQueryOptions = {}) {
+    const results = await this.db.find(query, select, { lean: true, ...options });
+    return results as GetResults<T>[];
   }
 
-  async getById(id: any | string | number, select?: any) {
+  async getById(id: any, select?: any) {
     return this.db.findById(id, select);
   }
 
@@ -94,7 +104,7 @@ export class OdmModel<T> {
 // type is a request parameter. Thus, we store all OdmModels as type Document.
 export const models: { [index: string]: OdmModel<any> } = {};
 
-export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
+export function instanceModel<T = any>(collectionName: string, schema: Schema) {
   const logHelper = createUpdateLogHelper<T>(collectionName);
   const model = new OdmModel<T>(logHelper, collectionName, schema);
   models[collectionName] = model;

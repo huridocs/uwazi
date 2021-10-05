@@ -5,15 +5,24 @@ import { UserSchema } from 'shared/types/userType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { createUpdateLogHelper } from './logHelper';
-import { PartialDataType, OdmModel, models, WithId, UwaziFilterQuery } from './model';
+import {
+  DataType,
+  OdmModel,
+  models,
+  WithId,
+  UwaziFilterQuery,
+  UwaziQueryOptions,
+  GetResults,
+} from './model';
 
 export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
   published?: boolean;
   permissions?: PermissionSchema[];
 };
 
+type EnforcedDataType<T> = mongoose.EnforceDocument<DataType<T>, {}>;
 type WithPermissions<T> = T & { permissions?: PermissionSchema[] };
-export type WithPermissionsDataType<T> = WithPermissions<PartialDataType<T>>;
+export type WithPermissionsDataType<T> = WithPermissions<DataType<T>>;
 
 const appendPermissionData = <T>(
   data: WithPermissionsDataType<T>,
@@ -76,7 +85,7 @@ const appendPermissionQuery = <T>(
 };
 
 function checkPermissionAccess<T>(
-  elem: WithPermissions<T>,
+  elem: WithPermissions<EnforcedDataType<T>>,
   userIds: ObjectIdSchema[],
   level: AccessLevels = AccessLevels.WRITE
 ) {
@@ -92,10 +101,13 @@ function checkPermissionAccess<T>(
   return elem;
 }
 
-const filterPermissionsData = <T>(data: T[], user: UserSchema | undefined) => {
+const filterPermissionsData = <T>(
+  data: WithPermissions<EnforcedDataType<T>>[] = [],
+  user: UserSchema | undefined
+) => {
   let filteredData = data;
   if (user && !['admin', 'editor'].includes(user.role)) {
-    if (Array.isArray(data) && data.length > 0) {
+    if (data.length > 0) {
       const userIds = getUserPermissionIds(user as WithId<UserSchema>);
       filteredData = data.map(elem => checkPermissionAccess(elem, userIds));
     }
@@ -103,7 +115,10 @@ const filterPermissionsData = <T>(data: T[], user: UserSchema | undefined) => {
   return filteredData;
 };
 
-const controlPermissionsData = <T>(data: T, user?: UserSchema) => {
+const controlPermissionsData = <T>(
+  data: WithPermissions<EnforcedDataType<T>>,
+  user?: UserSchema
+) => {
   if (user) {
     if (['admin', 'editor'].includes(user.role)) {
       return data;
@@ -132,16 +147,17 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
     return data._id || data.permissions ? super.save(data, { _id: data._id }) : super.save(data);
   }
 
-  get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+  async get(query: UwaziFilterQuery<T> = {}, select: any = '', options: UwaziQueryOptions = {}) {
     const user = permissionsContext.getUserInContext();
-    const results = super.get(
+    const results = (await super.get(
       appendPermissionQuery(query, AccessLevels.READ, user),
       select,
       options
-    );
-    return requestingPermissions(select)
-      ? results.map(data => filterPermissionsData(data, user))
+    )) as WithPermissions<EnforcedDataType<T>>[];
+    const returnResult = requestingPermissions(select)
+      ? filterPermissionsData<T>(results, user)
       : results;
+    return returnResult as GetResults<T>[];
   }
 
   async count(query: UwaziFilterQuery<T> = {}) {
@@ -149,17 +165,17 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
     return super.count(appendPermissionQuery(query, AccessLevels.READ, user));
   }
 
-  getUnrestricted(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+  async getUnrestricted(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     return super.get(query, select, options);
   }
 
   async getById(id: any, select?: string) {
     const user = permissionsContext.getUserInContext();
     const query = { _id: id || null } as PermissionsUwaziFilterQuery<T>;
-    const doc = await this.db.findOne(
+    const doc = (await this.db.findOne(
       appendPermissionQuery(query, AccessLevels.READ, user),
       select
-    );
+    )) as WithPermissions<EnforcedDataType<T>> | null;
 
     if (doc && requestingPermissions(select)) {
       return controlPermissionsData(doc, user);
