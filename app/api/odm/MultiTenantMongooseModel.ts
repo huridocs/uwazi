@@ -1,5 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
-import { DataType, UwaziFilterQuery, UwaziUpdateQuery, UwaziQueryOptions } from './model';
+import {
+  DataType,
+  UwaziFilterQuery,
+  UwaziUpdateQuery,
+  UwaziQueryOptions,
+  EnforcedWithId,
+} from './model';
 import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
 
@@ -33,13 +39,13 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().findById(id, select, { lean: true });
   }
 
-  find(query: UwaziFilterQuery<T>, select = '', options = {}) {
+  find(query: UwaziFilterQuery<DataType<T>>, select = '', options = {}) {
     return this.dbForCurrentTenant().find(query, select, options);
   }
 
   async findOneAndUpdate(
-    query: UwaziFilterQuery<T>,
-    update: UwaziUpdateQuery<T>,
+    query: UwaziFilterQuery<DataType<T>>,
+    update: UwaziUpdateQuery<DataType<T>>,
     options: UwaziQueryOptions
   ) {
     return this.dbForCurrentTenant().findOneAndUpdate(query, update, options);
@@ -50,30 +56,31 @@ class MultiTenantMongooseModel<T> {
   }
 
   async _updateMany(
-    conditions: UwaziFilterQuery<T>,
-    doc: UwaziUpdateQuery<T>,
+    conditions: UwaziFilterQuery<DataType<T>>,
+    doc: UwaziUpdateQuery<DataType<T>>,
     options: UwaziQueryOptions
   ) {
     return this.dbForCurrentTenant().updateMany(conditions, doc, options);
   }
 
-  async findOne(conditions: UwaziFilterQuery<T>, projection: any) {
-    return this.dbForCurrentTenant().findOne(conditions, projection, { lean: true });
+  async findOne(conditions: UwaziFilterQuery<DataType<T>>, projection: any) {
+    const result = await this.dbForCurrentTenant().findOne(conditions, projection, { lean: true });
+    return result as EnforcedWithId<T> | null;
   }
 
-  async replaceOne(conditions: UwaziFilterQuery<T>, replacement: any) {
+  async replaceOne(conditions: UwaziFilterQuery<DataType<T>>, replacement: any) {
     return this.dbForCurrentTenant().replaceOne(conditions, replacement);
   }
 
-  async countDocuments(query: UwaziFilterQuery<T> = {}) {
+  async countDocuments(query: UwaziFilterQuery<DataType<T>> = {}) {
     return this.dbForCurrentTenant().countDocuments(query);
   }
 
-  async distinct(field: string, query: UwaziFilterQuery<T> = {}) {
+  async distinct(field: string, query: UwaziFilterQuery<DataType<T>> = {}) {
     return this.dbForCurrentTenant().distinct(field, query);
   }
 
-  async deleteMany(query: UwaziFilterQuery<T>) {
+  async deleteMany(query: UwaziFilterQuery<DataType<T>>) {
     return this.dbForCurrentTenant().deleteMany(query);
   }
 
@@ -81,7 +88,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().aggregate(aggregations);
   }
 
-  async updateOne(conditions: UwaziFilterQuery<T>, doc: UwaziUpdateQuery<T>) {
+  async updateOne(conditions: UwaziFilterQuery<DataType<T>>, doc: UwaziUpdateQuery<T>) {
     return this.dbForCurrentTenant().updateOne(conditions, doc);
   }
 }

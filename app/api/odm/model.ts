@@ -21,10 +21,10 @@ export type DataType<T> = T & { _id?: ObjectIdSchema };
 
 export type WithId<T> = _WithId<T>;
 
-export type GetResults<T> = mongoose.EnforceDocument<WithId<DataType<T>>, {}>;
+export type EnforcedWithId<T> = WithId<mongoose.EnforceDocument<DataType<T>, {}>>;
 
-export type UwaziFilterQuery<T> = FilterQuery<DataType<T>>;
-export type UwaziUpdateQuery<T> = UpdateQuery<Partial<DataType<T>>>;
+export type UwaziFilterQuery<T> = FilterQuery<T>;
+export type UwaziUpdateQuery<T> = UpdateQuery<Partial<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
 const generateID = mongoose.Types.ObjectId;
@@ -48,7 +48,7 @@ export class OdmModel<T> {
     if (await this.documentExists(data)) {
       const saved = await this.db.findOneAndUpdate(
         query || { _id: data._id },
-        data as UwaziUpdateQuery<T>,
+        data as UwaziUpdateQuery<DataType<T>>,
         {
           new: true,
         }
@@ -69,7 +69,7 @@ export class OdmModel<T> {
   }
 
   async updateMany(
-    conditions: UwaziFilterQuery<T>,
+    conditions: UwaziFilterQuery<DataType<T>>,
     doc: UpdateQuery<T>,
     options: ModelUpdateOptions = {}
   ) {
@@ -77,17 +77,22 @@ export class OdmModel<T> {
     return this.db._updateMany(conditions, doc, options);
   }
 
-  async count(query: UwaziFilterQuery<T> = {}) {
+  async count(query: UwaziFilterQuery<DataType<T>> = {}) {
     return this.db.countDocuments(query);
   }
 
-  async get(query: UwaziFilterQuery<T> = {}, select: any = '', options: UwaziQueryOptions = {}) {
+  async get(
+    query: UwaziFilterQuery<DataType<T>> = {},
+    select: any = '',
+    options: UwaziQueryOptions = {}
+  ) {
     const results = await this.db.find(query, select, { lean: true, ...options });
-    return results as GetResults<T>[];
+    return results as EnforcedWithId<T>[];
   }
 
   async getById(id: any, select?: any) {
-    return this.db.findById(id, select);
+    const results = await this.db.findById(id, select);
+    return results as EnforcedWithId<T> | null;
   }
 
   async delete(condition: any) {

@@ -3,13 +3,13 @@
 import PromisePool from '@supercharge/promise-pool';
 import mongoose from 'mongoose';
 import { model as updatelogsModel } from 'api/updatelogs';
-import { OdmModel, models, UwaziFilterQuery, GetResults } from './model';
+import { OdmModel, models, UwaziFilterQuery, EnforcedWithId, DataType } from './model';
 
 const getBatchSteps = async <T>(
   model: OdmModel<T>,
-  query: UwaziFilterQuery<T>,
+  query: UwaziFilterQuery<DataType<T>>,
   batchSize: number
-): Promise<GetResults<T>[]> => {
+): Promise<EnforcedWithId<T>[]> => {
   const allIds = await model.get(query, '_id', { sort: { _id: 1 } });
 
   const steps = [];
@@ -43,7 +43,7 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
   }
 
   async upsertLogMany(
-    query: UwaziFilterQuery<T>,
+    query: UwaziFilterQuery<DataType<T>>,
     deleted = false,
     batchSize = UpdateLogHelper.batchSizeUpsertMany
   ) {
