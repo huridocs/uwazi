@@ -13,8 +13,6 @@ describe('LibraryModeToggleButtons', () => {
 
   const defaultProps = {
     mapViewMode: true,
-    switchMapToSatellite: jasmine.createSpy('switchMapToSatellite'),
-    switchMapToTerrain: jasmine.createSpy('switchMapToTerrain'),
     searchUrl: '?q="asd"',
     showGeolocation: true,
     zoomIn: jasmine.createSpy('zoomIn'),
@@ -58,16 +56,6 @@ describe('LibraryModeToggleButtons', () => {
 
     it('should show map type buttons', () => {
       expect(component.find('div.map-type-buttons').length).toBe(1);
-    });
-
-    it('should call switchMapToTerrain when terrain button is clicked', () => {
-      component.find('button.terrain').simulate('click');
-      expect(props.switchMapToTerrain).toHaveBeenCalled();
-    });
-
-    it('should call switchMapToSatellite when satellite button is clicked', () => {
-      component.find('button.satellite').simulate('click');
-      expect(props.switchMapToSatellite).toHaveBeenCalled();
     });
 
     it('should hold zoom buttons', () => {

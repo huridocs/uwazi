@@ -183,6 +183,7 @@ export class Map extends Component {
     } else {
       this.mapStyle = Immutable.fromJS(_styleTerrain);
     }
+    this.replaceKeysMapStyleJson();
   }
 
   bindActions() {
@@ -409,7 +410,7 @@ export class Map extends Component {
 
   render() {
     const { viewport, settings } = this.state;
-
+    console.log('rendering...');
     return (
       <div
         className="map-container"
