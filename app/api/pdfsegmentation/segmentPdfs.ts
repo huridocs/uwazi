@@ -7,6 +7,8 @@ import { Settings } from 'shared/types/settingsType';
 import settings from 'api/settings/settings';
 import { model as entities } from 'api/entities';
 import { tenants } from 'api/tenants/tenantContext';
+import { SegmentationModel } from './segmentationModel';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 class SegmentPdfs {
   SERVICE_NAME = 'segmentation';
@@ -50,6 +52,11 @@ class SegmentPdfs {
       tenant: 'tenant1',
     };
     await this.segmentationTaskManager.startTask(task);
+    await this.storeProcess(nextFile._id!, nextFile.filename);
+  };
+
+  storeProcess = async (fileID: ObjectIdSchema, fileName: string) => {
+    await SegmentationModel.save({ fileID, fileName });
   };
 
   segmentPdfs = async () =>
