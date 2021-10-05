@@ -6,13 +6,14 @@ import {
   fixturesPdfNameA,
   fixturesTwelveFiles,
 } from 'api/pdfsegmentation/specs/fixtures';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+
 import fs from 'fs';
 import { TaskManager } from 'api/tasksmanager/taskManager';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
 import { SegmentPdfs } from '../segmentPdfs';
+import { SegmentationModel } from '../segmentationModel';
 import { Db } from 'mongodb';
 
 jest.mock('api/tasksmanager/taskManager.ts');
@@ -132,9 +133,31 @@ describe('pdfSegmentation', () => {
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
   });
 
-  //TODO
-  // - should call start task
-  // - should store which entities are already segmented
+  it('should start the tasks', async () => {
+    await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
+
+    await segmentPdfs.segmentPdfs();
+
+    expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledWith({
+      task: 'f2082bf51b6ef839690485d7153e847a.pdf',
+      tenant: 'tenant1',
+    });
+  });
+
+  it('should store the segmentation process state', async () => {
+    await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
+
+    await segmentPdfs.segmentPdfs();
+    await tenants.run(async () => {
+      const [segmentation] = await SegmentationModel.get();
+      expect(segmentation.status).toBe('pending');
+      expect(segmentation.fileName).toBe(fixturesPdfNameA);
+      expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
+    }, 'tenantOne');
+  });
+
+  //TODO:
+  // - precalculate teanants that have the feature toggle on
   // - should only send pdfs not already segmented
   // - should handle tenants without the information extraction on
   // - should get the results from the task and store them

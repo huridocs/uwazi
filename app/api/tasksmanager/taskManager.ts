@@ -89,7 +89,7 @@ export class TaskManager {
       throw new Error('Redis is not connected');
     }
 
-    await this.redisSMQ?.sendMessageAsync({
+    return this.redisSMQ?.sendMessageAsync({
       qname: this.taskQueue,
       message: JSON.stringify(taskMessage),
     });
