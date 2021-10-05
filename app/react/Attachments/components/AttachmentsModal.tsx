@@ -159,8 +159,8 @@ export const AttachmentsModal = ({
                       </p>
                       <p>
                         <Translate>
-                          1. Right-click an image or video on the web and copy the image`&apos;`s
-                          URL. Altenatively websites offers share button whereyou can get URL.
+                          1. Right-click an image or video on the web and copy the image's URL.
+                          Altenatively websites offers share button whereyou can get URL.
                         </Translate>
                       </p>
                       <p>
