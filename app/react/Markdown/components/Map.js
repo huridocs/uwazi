@@ -45,7 +45,6 @@ export const MapComponent = props => {
               cluster
               scrollZoom={scrollZoom === 'true'}
               showControls={showControls === 'true'}
-              storeKey="library"
             />
           )}
         </Markers>
