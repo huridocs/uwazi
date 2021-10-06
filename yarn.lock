@@ -2375,6 +2375,13 @@
     "@types/history" "^3"
     "@types/react" "*"
 
+"@types/react-table@^7.7.6":
+  version "7.7.6"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-7.7.6.tgz#4899ccc46b4a1de08cc1daf120842e37e112e51e"
+  integrity sha512-ZMFHh1sG5AGDmhVRpz9mgGByGmBFAqnZ7QnyqGa5iAlKtcSC3vb/gul47lM0kJ1uvlawc+qN5k+++pe+GBdJ+g==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-tabs-redux@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/react-tabs-redux/-/react-tabs-redux-4.0.0.tgz#88504398553e0b4dd2d3997e8a986bf147daff48"
@@ -12555,6 +12562,11 @@ react-swipeable@^4.2.2:
   dependencies:
     detect-passive-events "^1.0.4"
     prop-types "^15.5.8"
+
+react-table@^7.7.0:
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.7.0.tgz#e2ce14d7fe3a559f7444e9ecfe8231ea8373f912"
+  integrity sha512-jBlj70iBwOTvvImsU9t01LjFjy4sXEtclBovl3mTiqjz23Reu0DKnRza4zlLtOPACx6j2/7MrQIthIK1Wi+LIA==
 
 react-tabs-redux@2.0.1:
   version "2.0.1"

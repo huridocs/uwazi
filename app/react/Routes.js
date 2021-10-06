@@ -45,6 +45,7 @@ import React from 'react';
 
 import { IndexRoute, Route } from 'react-router';
 import { UserManagement } from 'app/Users/UserManagement';
+import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
 
@@ -142,6 +143,7 @@ const routes = (
         <Route path="edit/:templateId" component={EditTemplate} />
       </Route>
       <Route path="metadata_extraction" component={MetadataExtractionDashboard} />
+      <Route path="metadata_extraction/suggestions" component={EntitySuggestions} />
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />
         <Route path="new" component={NewRelationType} />

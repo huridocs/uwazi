@@ -107,7 +107,10 @@ class MetadataExtractionDashboard extends React.Component<
         <div className="panel-subheading">
           <Translate>Extract information from your documents</Translate>
 
-          <I18NLink to="settings/" className="btn btn-success btn-xs">
+          <I18NLink
+            to="settings/metadata_extraction/suggestions"
+            className="btn btn-success btn-xs"
+          >
             <Icon icon="search" />
             <Translate>Find suggestions</Translate>
           </I18NLink>
