@@ -398,7 +398,7 @@ export default class Map extends Component {
       return (
         <div className="mapbox-navigation">
           <a className="btn btn-default" onClick={this.onMapStyleSwitcherClicked}>
-            Switch Map Style
+            <Translate>Switch Map Style</Translate>
           </a>
         </div>
       );
