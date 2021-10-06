@@ -91,7 +91,7 @@ export default class Geolocation extends Component {
           onClick={this.mapClick}
           height={370}
           autoCenter={false}
-          storeKey="library"
+          mapStyleSwitcher
         />
         <div className="form-row">
           <div className="form-group half-width">

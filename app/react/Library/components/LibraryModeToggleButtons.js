@@ -9,19 +9,26 @@ import { showFilters } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { createSelector } from 'reselect';
-import { setMapView } from '../actions/libraryActions';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   constructor(props) {
     super(props);
-    this.switchMap = this.switchMap.bind(this);
+    this.switchMapToTerrain = this.switchMapToTerrain.bind(this);
+    this.switchMapToSatellite = this.switchMapToSatellite.bind(this);
+    this.state = { mapStyle: 'terrain' };
   }
 
-  switchMap(mapView) {
-    return () => {
-      this.props.setMapView(mapView);
-    };
+  switchMapToTerrain() {
+    console.log('switching to terrain');
+    this.setState({ mapStyle: 'terrain' });
+    this.props.setMapStyle('terrain');
+  }
+
+  switchMapToSatellite() {
+    console.log('switching to satellite');
+    this.setState({ mapStyle: 'satellite' });
+    this.props.setMapStyle('satellite');
   }
 
   render() {
@@ -43,9 +50,9 @@ export class LibraryModeToggleButtons extends Component {
           <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
             <button
               className={`terrain btn btn-default ${
-                this.props.mapViewStyle === 'terrain' ? 'is-active' : ''
+                this.state.mapStyle === 'terrain' ? 'is-active' : ''
               }`}
-              onClick={this.switchMap('terrain')}
+              onClick={this.switchMapToTerrain}
               type="button"
               aria-label={t('System', 'Terrain View', null, false)}
             >
@@ -54,9 +61,9 @@ export class LibraryModeToggleButtons extends Component {
             </button>
             <button
               className={`satellite btn btn-default ${
-                this.props.mapViewStyle === 'satellite' ? 'is-active' : ''
+                this.state.mapStyle === 'satellite' ? 'is-active' : ''
               }`}
-              onClick={this.switchMap('satellite')}
+              onClick={this.switchMapToSatellite}
               type="button"
               aria-label={t('System', 'Satellite View', null, false)}
             >
@@ -153,8 +160,7 @@ LibraryModeToggleButtons.propTypes = {
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
-  setMapView: PropTypes.func,
-  mapViewStyle: PropTypes.string,
+  setMapStyle: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -163,8 +169,7 @@ LibraryModeToggleButtons.defaultProps = {
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},
-  setMapView: () => {},
-  mapViewStyle: '',
+  setMapStyle: () => {},
 };
 
 export const encodedSearch = createSelector(
@@ -193,7 +198,6 @@ export function mapStateToProps(state, props) {
     : 0;
 
   return {
-    mapViewStyle: state[props.storeKey].ui.get('mapViewStyle'),
     searchUrl: encodedSearch(state[props.storeKey]),
     showGeolocation,
     numberOfMarkers,
@@ -207,7 +211,6 @@ export function mapStateToProps(state, props) {
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     {
-      setMapView,
       showFilters,
     },
     wrapDispatch(dispatch, props.storeKey)

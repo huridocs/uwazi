@@ -494,13 +494,6 @@ describe('libraryActions', () => {
     });
   });
 
-  describe('switchMapViewMode', () => {
-    it('should return a SET_MAP_VIEW_MODE action', () => {
-      const action = actions.setMapView('satellite');
-      expect(action).toEqual({ type: types.SET_MAP_VIEW_STYLE, mapViewStyle: 'satellite' });
-    });
-  });
-
   describe('saveEntity', () => {
     it('should save the document and dispatch a notification on success', done => {
       mockID();

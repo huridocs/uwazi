@@ -2,11 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup, NavigationControl, setRTLTextPlugin } from 'react-map-gl';
 import Immutable from 'immutable';
-import { connect } from 'react-redux';
 import { Icon } from 'UI';
-import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
-import { setMapView } from 'app/Library/actions/libraryActions';
 import Supercluster from 'supercluster'; //eslint-disable-line
 import settingsAPI from 'app/Settings/SettingsAPI';
 import { Translate } from 'app/I18N';
@@ -33,9 +29,10 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   selectedMarker: null,
   settings: { scrollZoom: true, touchZoom: true },
   showControls: false,
+  mapViewStyle: 'terrain',
 });
 
-export class Map extends Component {
+export default class Map extends Component {
   constructor(props) {
     super(props);
     this.state = getStateDefaults(props);
@@ -87,22 +84,21 @@ export class Map extends Component {
     this.setState({ viewport: newViewport });
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.mapViewStyle !== this.props.mapViewStyle) {
-      if (this.props.mapViewStyle === 'satellite') {
-        this.mapStyle = Immutable.fromJS(_styleSatellite);
-      } else {
-        this.mapStyle = Immutable.fromJS(_styleTerrain);
-      }
-      this.replaceKeysMapStyleJson();
-      const { viewport } = this.state;
-      this._onViewStateChange({
-        ...viewport,
-        ...TRANSITION_PROPS,
-      });
-
-      this.updateMapStyle(this.props);
+  setMapStyle(mapStyle) {
+    if (mapStyle === 'satellite') {
+      this.mapStyle = Immutable.fromJS(_styleSatellite);
+    } else {
+      this.mapStyle = Immutable.fromJS(_styleTerrain);
     }
+    this.replaceKeysMapStyleJson();
+    const { viewport } = this.state;
+    this._onViewStateChange({
+      ...viewport,
+      ...TRANSITION_PROPS,
+    });
+
+    this.updateMapStyle(this.props);
+    this.setState({ mapViewStyle: mapStyle });
   }
 
   componentWillUnmount() {
@@ -178,12 +174,11 @@ export class Map extends Component {
   }
 
   loadMapStyle() {
-    if (this.props.mapViewStyle === 'satellite') {
+    if (this.state.mapViewStyle === 'satellite') {
       this.mapStyle = Immutable.fromJS(_styleSatellite);
     } else {
       this.mapStyle = Immutable.fromJS(_styleTerrain);
     }
-    this.replaceKeysMapStyleJson();
   }
 
   bindActions() {
@@ -390,7 +385,11 @@ export class Map extends Component {
   }
 
   onMapStyleSwitcherClicked() {
-    this.props.setMapView(this.props.mapViewStyle === 'satellite' ? 'terrain' : 'satellite');
+    if (this.state.mapViewStyle === 'satellite') {
+      this.setMapStyle('terrain');
+    } else {
+      this.setMapStyle('satellite');
+    }
   }
 
   renderMapStyleSwitcher() {
@@ -410,7 +409,6 @@ export class Map extends Component {
 
   render() {
     const { viewport, settings } = this.state;
-    console.log('rendering...');
     return (
       <div
         className="map-container"
@@ -463,7 +461,6 @@ Map.defaultProps = {
   clickOnMarker: () => {},
   hoverOnMarker: () => {},
   clickOnCluster: () => {},
-  setMapView: () => {},
   renderPopupInfo: null,
   renderMarker: null,
   cluster: false,
@@ -471,14 +468,11 @@ Map.defaultProps = {
   scrollZoom: true,
   showControls: false,
   interactiveLayerIds: [],
-  mapViewStyle: 'terrain',
   mapStyleSwitcher: false,
 };
 
 Map.propTypes = {
   mapStyleSwitcher: PropTypes.bool,
-  setMapView: PropTypes.func,
-  mapViewStyle: PropTypes.string,
   markers: PropTypes.arrayOf(PropTypes.object),
   latitude: PropTypes.number,
   longitude: PropTypes.number,
@@ -497,20 +491,3 @@ Map.propTypes = {
   showControls: PropTypes.bool,
   interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 };
-
-export function mapStateToProps(state, props) {
-  return {
-    mapViewStyle: state[props.storeKey].ui.get('mapViewStyle'),
-  };
-}
-
-function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators(
-    {
-      setMapView,
-    },
-    wrapDispatch(dispatch, props.storeKey)
-  );
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Map);

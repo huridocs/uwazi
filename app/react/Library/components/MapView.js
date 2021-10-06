@@ -81,7 +81,6 @@ export class MapView extends Component {
               clickOnCluster={this.clickOnCluster}
               renderPopupInfo={renderInfo}
               cluster
-              storeKey={storeKey}
             />
           )}
         </Markers>
