@@ -193,7 +193,7 @@ class SyncTask extends Task {
     res.total = await entities.count({ language: 'en' });
     res.seen = 0;
     res.index = 0;
-    await QueryForEach(entities.getWithoutDocuments({ language: 'en' }), 50, async e => {
+    await QueryForEach(50, async e => {
       if (res.index > (args.limit ?? 1000000)) {
         return;
       }
