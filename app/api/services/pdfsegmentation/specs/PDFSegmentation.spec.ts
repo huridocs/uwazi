@@ -5,18 +5,18 @@ import {
   fixturesOtherFile,
   fixturesPdfNameA,
   fixturesTwelveFiles,
-} from 'api/pdfsegmentation/specs/fixtures';
+} from 'api/services/pdfsegmentation/specs/fixtures';
 
 import fs from 'fs';
-import { TaskManager } from 'api/tasksmanager/taskManager';
+import { TaskManager } from 'api/services/tasksmanager/taskManager';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
-import { SegmentPdfs } from '../segmentPdfs';
+import { SegmentPdfs } from '../PDFSegmentation';
 import { SegmentationModel } from '../segmentationModel';
 import { Db } from 'mongodb';
 
-jest.mock('api/tasksmanager/taskManager.ts');
+jest.mock('api/services/tasksmanager/taskManager.ts');
 
 describe('pdfSegmentation', () => {
   let segmentPdfs: SegmentPdfs;
@@ -43,6 +43,7 @@ describe('pdfSegmentation', () => {
 
   let dbOne: Db;
   let dbTwo: Db;
+  let file: Buffer;
 
   afterAll(async () => {
     await testingDB.disconnect();
@@ -54,6 +55,7 @@ describe('pdfSegmentation', () => {
     dbOne = DB.connectionForDB(tenantOne.dbName).db;
     dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
     tenants.tenants = { tenantOne };
+    file = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
   });
 
   it('should send one pdf to segment', async () => {
@@ -69,7 +71,6 @@ describe('pdfSegmentation', () => {
       redisUrl: `redis://${config.redis.host}:${config.redis.host}`,
     });
 
-    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
       file,
       fixturesPdfNameA
@@ -89,7 +90,6 @@ describe('pdfSegmentation', () => {
       redisUrl: `redis://${config.redis.host}:${config.redis.host}`,
     });
 
-    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
       file,
       fixturesPdfNameA
@@ -100,7 +100,6 @@ describe('pdfSegmentation', () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesTwelveFiles);
     await segmentPdfs.segmentPdfs();
 
-    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
       file,
       fixturesPdfNameA
@@ -114,7 +113,6 @@ describe('pdfSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
 
-    const file = fs.readFileSync(`app/api/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
       file,
       fixturesPdfNameA

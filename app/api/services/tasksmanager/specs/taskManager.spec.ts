@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import fs from 'fs';
 import waitForExpect from 'wait-for-expect';
-import { TaskManager, Service } from 'api/tasksmanager/taskManager';
+import { TaskManager, Service } from 'api/services/tasksmanager/taskManager';
 import { RedisServer } from '../RedisServer';
 import { ExternalDummyService } from './ExternalDummyService';
 
@@ -13,15 +13,16 @@ describe('taskManager', () => {
   let externalDummyService: ExternalDummyService;
 
   beforeAll(async () => {
+    const port = 6378;
     service = {
       serviceName: 'KonzNGaboHellKitchen',
       dataUrl: 'http://localhost:1234/data',
       filesUrl: 'http://localhost:1234/files',
       resultsUrl: 'http://localhost:1234/results',
-      redisUrl: 'redis://localhost:6379',
+      redisUrl: `redis://localhost:${port}`,
       processResults: jest.fn(),
     };
-    redisServer = new RedisServer();
+    redisServer = new RedisServer(port);
     await redisServer.start();
 
     externalDummyService = new ExternalDummyService(1234, service.serviceName);
@@ -100,7 +101,7 @@ describe('taskManager', () => {
     });
 
     it('should send files to the service', async () => {
-      const file = fs.readFileSync('app/api/tasksmanager/specs/blank.pdf');
+      const file = fs.readFileSync('app/api/services/tasksmanager/specs/blank.pdf');
 
       await taskManager?.sendFile(file, 'blank1.pdf');
       await taskManager?.sendFile(file, 'blank2.pdf');

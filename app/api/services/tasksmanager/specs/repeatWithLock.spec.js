@@ -11,6 +11,7 @@ describe('RepeatWithLock', () => {
   let task;
   let rejectTask;
   let redisServer;
+  let pendingTasks;
 
   beforeAll(async () => {
     redisServer = new RedisServer();
@@ -22,15 +23,19 @@ describe('RepeatWithLock', () => {
   });
 
   beforeEach(async () => {
+    pendingTasks = [];
     task = jasmine.createSpy('callbackone').and.callFake(
       () =>
         new Promise((resolve, reject) => {
+          pendingTasks.push(resolve);
           rejectTask = reject;
-          finishTask = () => {
-            resolve();
-          };
+          finishTask = resolve;
         })
     );
+  });
+
+  afterEach(async () => {
+    await pendingTasks.map(pendingTask => pendingTask());
   });
 
   async function sleepTime(time) {
@@ -44,26 +49,19 @@ describe('RepeatWithLock', () => {
     const nodeTwo = new RepeatWith('my_locked_task', task);
     await nodeOne.start();
     await nodeTwo.start();
-
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(1);
     });
-
     finishTask();
-
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(2);
     });
-
     finishTask();
-
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(3);
     });
-
     finishTask();
     await nodeOne.stop();
-
     finishTask();
     await nodeTwo.stop();
   });
@@ -95,21 +93,23 @@ describe('RepeatWithLock', () => {
   });
 
   it('should continue executing tasks after redis was unavailable for a while', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20);
+    const unstableRedisServer = new RedisServer(6371);
+    await unstableRedisServer.start();
+    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20, 6371);
     await nodeOne.start();
 
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(1);
     });
 
-    await redisServer.stop();
+    await unstableRedisServer.stop();
 
     finishTask();
 
     await sleepTime(50);
     expect(task).toHaveBeenCalledTimes(1);
 
-    await redisServer.start();
+    await unstableRedisServer.start();
 
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(2);
@@ -118,11 +118,12 @@ describe('RepeatWithLock', () => {
     finishTask();
 
     await nodeOne.stop();
+    await unstableRedisServer.stop();
   });
 
   it('should handle when a lock fails for too many retries', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20);
-    const nodeTwo = new RepeatWith('my_locked_task', task, 2000, 0, 20);
+    const nodeOne = new RepeatWith('my_long_locked_task', task, 2000, 0, 20);
+    const nodeTwo = new RepeatWith('my_long_locked_task', task, 2000, 0, 20);
 
     await nodeOne.start();
     await nodeTwo.start();
