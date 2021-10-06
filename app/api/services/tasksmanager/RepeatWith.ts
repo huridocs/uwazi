@@ -9,7 +9,7 @@ export class RepeatWith {
 
   private redlock: Redlock | undefined;
 
-  private stopTask: ((value: unknown) => void) | undefined;
+  private stopTask: Function | undefined;
 
   private redisClient: Redis.RedisClient | undefined;
 
@@ -19,7 +19,7 @@ export class RepeatWith {
 
   private retryDelay: number;
 
-  private id: string;
+  private port: number;
 
   constructor(
     lockName: string,
@@ -27,18 +27,18 @@ export class RepeatWith {
     maxLockTime: number = 2000,
     delayTimeBetweenTasks: number = 0,
     retryDelay: number = 200,
-    id: string = '1'
+    port: number = 6379
   ) {
     this.maxLockTime = maxLockTime;
     this.retryDelay = retryDelay;
     this.delayTimeBetweenTasks = delayTimeBetweenTasks;
     this.lockName = `locks:${lockName}`;
     this.task = task;
-    this.id = id;
+    this.port = port;
   }
 
   async start() {
-    this.redisClient = await Redis.createClient('redis://localhost:6379');
+    this.redisClient = await Redis.createClient(`redis://localhost:${this.port}`);
     this.redlock = await new Redlock([this.redisClient], {
       retryJitter: 0,
       retryDelay: this.retryDelay,
@@ -50,7 +50,8 @@ export class RepeatWith {
       }
     });
 
-    this.lockTask();
+    // eslint-disable-next-line no-void
+    void this.lockTask();
   }
 
   async waitBetweenTasks() {
@@ -86,18 +87,19 @@ export class RepeatWith {
       );
 
       if (this.stopTask) {
-        this.stopTask(true);
-        await lock.unlock();
-      } else {
-        await this.runTask();
-        await lock.unlock();
+        this.stopTask();
+        return;
       }
+
+      await this.runTask();
+      await lock.unlock();
     } catch (error) {
       if (error && error.name !== 'LockError') {
         throw error;
       }
     }
 
-    this.lockTask();
+    // eslint-disable-next-line no-void
+    void this.lockTask();
   }
 }

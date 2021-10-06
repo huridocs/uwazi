@@ -1,4 +1,4 @@
-import { TaskManager } from 'api/tasksmanager/taskManager';
+import { TaskManager } from 'api/services/tasksmanager/taskManager';
 import { files, uploadsPath } from 'api/files';
 import fs from 'fs';
 import { FileType } from 'shared/types/fileType';

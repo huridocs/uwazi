@@ -5,11 +5,14 @@ import Server from 'redis-server';
 export class RedisServer {
   server: Server;
 
+  port: number;
+
   pathToBin: string;
 
-  constructor() {
+  constructor(port = 6379) {
     this.pathToBin = 'redis/redis-stable/src/redis-server';
     this.downloadRedis();
+    this.port = port;
   }
 
   downloadRedis() {
@@ -35,7 +38,7 @@ export class RedisServer {
 
   async start() {
     this.server = new Server({
-      port: 6379,
+      port: this.port,
       bin: this.pathToBin,
     });
     try {
