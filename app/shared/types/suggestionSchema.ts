@@ -3,8 +3,8 @@ import { objectIdSchema } from 'shared/types/commonSchemas';
 export const emitSchemaTypes = true;
 
 export enum SuggestionState {
-  empty = 'empty',
-  filled = 'filled',
+  empty = 'Empty',
+  filled = 'Filled',
 }
 
 export const SuggestionSchema = {

@@ -1,39 +1,43 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Column, HeaderGroup, Row, useTable } from 'react-table';
 import { SuggestionsSampleData } from 'app/MetadataExtraction/SuggestionsSampleData';
 import { SuggestionType } from 'shared/types/suggestionType';
-import { Translate } from 'app/I18N/components/Translate';
+import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { I18NLink } from 'app/I18N';
 
 export const EntitySuggestions = () => {
   const suggestions: SuggestionType[] = React.useMemo(() => SuggestionsSampleData, []);
   const columns: Column<SuggestionType>[] = React.useMemo(
     () => [
       {
-        Header: 'Title / Suggestion',
+        id: 'suggestion',
+        Header: () => <Translate>Title / Suggestion</Translate>,
         Cell: ({ row }: { row: Row<SuggestionType> }) => {
           const suggestion = row.original;
+          const currentValue = suggestion.currentValue || '-';
           return (
             <>
               <h5>
                 <Translate>Title</Translate>
               </h5>
-              <p>
-                <Translate>{suggestion.currentValue || '-'}</Translate>
-              </p>
+              <p>{currentValue}</p>
               <h5>
                 <Translate>Suggestion</Translate>
               </h5>
-              <p className="label-primary">
-                <Translate>{suggestion.suggestedValue}</Translate>
-              </p>
+              <p className="label-primary">suggestion.suggestedValue</p>
             </>
           );
         },
       },
       {
-        Header: 'Action',
+        id: 'action',
+        Header: () => (
+          <>
+            <Translate>Action</Translate>&nbsp;
+            <Icon icon="info-circle" />
+          </>
+        ),
         Cell: () => (
           <div>
             <button type="button" className="btn btn-outline-primary">
@@ -45,20 +49,26 @@ export const EntitySuggestions = () => {
         ),
       },
       {
-        Header: 'Segment',
         accessor: 'segment' as const,
+        Header: () => <Translate>Segment</Translate>,
       },
       {
-        Header: 'Language',
         accessor: 'language' as const,
+        Header: () => <Translate>Language</Translate>,
+        Cell: ({ row }: { row: Row<SuggestionType> }) => (
+          <Translate>{row.original.language}</Translate>
+        ),
       },
       {
-        Header: 'State',
         accessor: 'state' as const,
+        Header: () => <Translate>State</Translate>,
+        Cell: ({ row }: { row: Row<SuggestionType> }) => (
+          <Translate>{row.original.state}</Translate>
+        ),
       },
       {
-        Header: 'Page',
         accessor: 'page' as const,
+        Header: () => <Translate>Page</Translate>,
       },
     ],
     []
@@ -73,7 +83,7 @@ export const EntitySuggestions = () => {
     <div className="panel entity-suggestions">
       <div className="panel-subheading">
         <div>
-          <Translate>Reviewing</Translate>: Title
+          <Translate>Reviewing</Translate>:&nbsp;<Translate>Title</Translate>
         </div>
         <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
           <Translate>Dashboard</Translate>
