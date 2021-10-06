@@ -131,7 +131,7 @@ export class Attachment extends Component {
   }
 
   handleClickOutside(e) {
-    if (!this.myRef.current.contains(e.target)) {
+    if (this.myRef.current && !this.myRef.current.contains(e.target)) {
       this.setState({ dropdownMenuOpen: false });
     }
   }
