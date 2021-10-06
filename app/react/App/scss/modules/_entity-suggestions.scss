@@ -1,0 +1,57 @@
+@import '../../scss/config/colors';
+
+.entity-suggestions{
+  table {
+    empty-cells: hide;
+    width: 100%;
+    white-space: nowrap;
+    text-align: justify;
+    border-collapse: separate;
+    border: 0;
+  }
+
+  th {
+    top: 0;
+    background-color: white;
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
+    height: 30px;
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  td {
+    padding: 8px 16px;
+    border-bottom: 2px solid #e0e0e0;
+
+    button {
+      background: $c-white;
+    }
+  }
+  td:nth-child(3){
+    min-width: 50px;
+    width: max-content;
+    max-width: 332px;
+    text-overflow: fade;
+    overflow: hidden;
+  }
+
+  td > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  tr {
+    &:nth-child(even) > td {
+      background-color: $c-white;
+    }
+
+    &:nth-child(odd) > td {
+      background-color: #f5f5f5;
+    }
+
+    &:hover > td {
+      background-color: #f2f6fb;
+    }
+  }
+}
