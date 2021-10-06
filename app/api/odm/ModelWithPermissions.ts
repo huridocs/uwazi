@@ -112,17 +112,16 @@ const filterPermissionsData = <T>(
   return filteredData;
 };
 
-const controlPermissionsData = <T>(data: EnforcedWithId<WithPermissions<T>>, user?: UserSchema) => {
+const controlPermissionsData = <T>(
+  data: EnforcedWithId<WithPermissions<T>>,
+  user?: DataType<UserSchema>
+) => {
   if (user) {
     if (['admin', 'editor'].includes(user.role)) {
       return data;
     }
 
-    return checkPermissionAccess(
-      data,
-      getUserPermissionIds(user as DataType<UserSchema>),
-      AccessLevels.WRITE
-    );
+    return checkPermissionAccess(data, getUserPermissionIds(user), AccessLevels.WRITE);
   }
 
   return { ...data, permissions: undefined };
@@ -131,7 +130,7 @@ const controlPermissionsData = <T>(data: EnforcedWithId<WithPermissions<T>>, use
 export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
   async save(data: WithPermissionsDataType<T>) {
     const user = permissionsContext.getUserInContext();
-    const query = { _id: data._id } as PermissionsUwaziFilterQuery<T>;
+    const query = { _id: data._id };
     return data._id || data.permissions
       ? super.save(data, appendPermissionQuery(query, AccessLevels.WRITE, user))
       : super.save(appendPermissionData(data, user));
