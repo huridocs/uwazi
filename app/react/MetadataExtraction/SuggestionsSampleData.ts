@@ -1,0 +1,66 @@
+/* eslint-disable max-len */
+
+import { SuggestionType } from 'shared/types/suggestionType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
+
+export const SuggestionsSampleData: SuggestionType[] = [
+  {
+    propertyName: 'Title',
+    currentValue: 'Temporary entity title',
+    suggestedValue: 'HCT-04-CR-SC-0074-2013: Uganda vs Olowo Kamali',
+    segment:
+      'Lorem ipsum dolor HCT-04-CR-SC-0074-2013: Uganda vs Olowo Kamali sit amet, consectetur adipiscing elit. Quisque augue nisi, venenatis eget dictum vel, scelerisque vitae felis. Suspendisse sed eleifend neque, non volutpat ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
+    language: 'English',
+    state: SuggestionState.filled,
+    page: 1,
+  },
+  {
+    propertyName: 'Title',
+    suggestedValue: 'HCT-04-CR-SC-0080-2008: Uganda vs Okiring J.',
+    segment:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque augue nisi, HCT-04-CR-SC-0080-2008: Uganda vs Okiring J.venenatis eget dictum vel, scelerisque vitae felis. Suspendisse sed eleifend neque, non volutpat ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
+    language: 'English',
+    state: SuggestionState.empty,
+    page: 1,
+  },
+  {
+    propertyName: 'Title',
+    currentValue: 'Succession (Amendment) Decree, 1972',
+    suggestedValue: 'Succession (Amendment)',
+    segment:
+      'Lorem ipsum dolor HCT-04-CR-SC-0074-2013: Uganda vs Olowo Kamali sit amet, consectetur adipiscing elit. Quisque augue nisi, Succession (Amendment) Decree, 1972venenatis eget dictum vel, scelerisque vitae felis. Suspendisse sed eleifend neque, non volutpat ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
+    language: 'English',
+    state: SuggestionState.filled,
+    page: 1,
+  },
+  {
+    propertyName: 'Title',
+    currentValue: 'Temporary entity title',
+    suggestedValue: 'Succession Act - Chapter 162',
+    segment:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque augue nisi, venenatis eget dictum vel, scelerisque vitae felis. Succession Act - Chapter 162 Suspendisse sed eleifend neque, non volutpat ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
+    language: 'English',
+    state: SuggestionState.filled,
+    page: 1,
+  },
+  {
+    propertyName: 'Title',
+    currentValue: 'Temporary entity title',
+    suggestedValue: 'Prevention of Trafficking in Persons Act',
+    segment:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque augue nisi, venenatis eget dictum vel, scelerisque vitae felis. Suspendisse sed eleifend neque, non volutpat ex. Prevention of Trafficking in Persons Act Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
+    language: 'English',
+    state: SuggestionState.filled,
+    page: 1,
+  },
+  {
+    propertyName: 'Title',
+    currentValue: 'Temporary entity title',
+    suggestedValue: 'Prevention of Trafficking in Persons Act',
+    segment:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque augue nisi, venenatis eget dictum vel, scelerisque vitae felis. Penal Code (Amendment) Act Suspendisse sed eleifend neque, non volutpat ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
+    language: 'English',
+    state: SuggestionState.filled,
+    page: 1,
+  },
+];
