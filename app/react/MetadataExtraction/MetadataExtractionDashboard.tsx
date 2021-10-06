@@ -112,6 +112,7 @@ class MetadataExtractionDashboard extends React.Component<
             className="btn btn-success btn-xs"
           >
             <Icon icon="search" />
+            &nbsp;
             <Translate>Find suggestions</Translate>
           </I18NLink>
         </div>
