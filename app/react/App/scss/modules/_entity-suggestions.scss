@@ -1,17 +1,14 @@
 @import '../../scss/config/colors';
 
 .entity-suggestions{
+
   table {
-    empty-cells: hide;
     width: 100%;
-    white-space: nowrap;
-    text-align: justify;
     border-collapse: separate;
     border: 0;
   }
 
   th {
-    top: 0;
     background-color: white;
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
     height: 30px;
@@ -22,26 +19,30 @@
   td {
     padding: 8px 16px;
     border-bottom: 2px solid #e0e0e0;
+    text-overflow: fade;
 
     button {
       background: $c-white;
     }
-  }
-  td:nth-child(3){
-    min-width: 50px;
-    width: max-content;
-    max-width: 332px;
-    text-overflow: fade;
-    overflow: hidden;
-  }
 
-  td > div {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+    &:nth-child(1){
+      min-width: 50px;
+      width: 30%;
+      max-width: 300px;
+    }
+
+    &:nth-child(3){
+      width: 60%;
+      min-width: 100px;
+      max-width: 553px;
+      word-break: break-word;
+      overflow-wrap:break-word;
+    }
   }
 
   tr {
+    max-height: 114px;
+    overflow:hidden;
     &:nth-child(even) > td {
       background-color: $c-white;
     }

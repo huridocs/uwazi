@@ -9,6 +9,6 @@ export interface SuggestionType {
   suggestedValue: string;
   segment: string;
   language: string;
-  state: 'empty' | 'filled';
+  state: 'Empty' | 'Filled';
   page: number;
 }
