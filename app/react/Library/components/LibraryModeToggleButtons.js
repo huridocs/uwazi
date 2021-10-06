@@ -57,7 +57,9 @@ export class LibraryModeToggleButtons extends Component {
               aria-label={t('System', 'Terrain View', null, false)}
             >
               <Icon icon="map-marker-alt" />
-              <span className="tab-link-tooltip">{t('System', 'Terrain')}</span>
+              <span className="tab-link-tooltip">
+                <Translate>Terrain</Translate>
+              </span>
             </button>
             <button
               className={`satellite btn btn-default ${
@@ -68,7 +70,9 @@ export class LibraryModeToggleButtons extends Component {
               aria-label={t('System', 'Satellite View', null, false)}
             >
               <Icon icon="map" />
-              <span className="tab-link-tooltip">{t('System', 'Satellite')}</span>
+              <span className="tab-link-tooltip">
+                <Translate>Satellite</Translate>
+              </span>
             </button>
           </div>
         )}
