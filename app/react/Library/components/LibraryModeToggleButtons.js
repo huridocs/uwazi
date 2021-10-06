@@ -20,15 +20,13 @@ export class LibraryModeToggleButtons extends Component {
   }
 
   switchMapToTerrain() {
-    console.log('switching to terrain');
-    this.setState({ mapStyle: 'terrain' });
     this.props.setMapStyle('terrain');
+    this.setState({ mapStyle: 'terrain' });
   }
 
   switchMapToSatellite() {
-    console.log('switching to satellite');
-    this.setState({ mapStyle: 'satellite' });
     this.props.setMapStyle('satellite');
+    this.setState({ mapStyle: 'satellite' });
   }
 
   render() {
