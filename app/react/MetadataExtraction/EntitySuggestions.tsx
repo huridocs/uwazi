@@ -4,6 +4,7 @@ import { SuggestionsSampleData } from 'app/MetadataExtraction/SuggestionsSampleD
 import { SuggestionType } from 'shared/types/suggestionType';
 import { Translate } from 'app/I18N/components/Translate';
 import { Icon } from 'app/UI';
+import { I18NLink } from 'app/I18N';
 
 export const EntitySuggestions = () => {
   const suggestions: SuggestionType[] = React.useMemo(() => SuggestionsSampleData, []);
@@ -69,8 +70,15 @@ export const EntitySuggestions = () => {
   });
 
   return (
-    <div className="entity-suggestions">
-      <Translate>Reviewing</Translate>: Title
+    <div className="panel entity-suggestions">
+      <div className="panel-subheading">
+        <div>
+          <Translate>Reviewing</Translate>: Title
+        </div>
+        <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
+          <Translate>Dashboard</Translate>
+        </I18NLink>
+      </div>
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup: HeaderGroup<SuggestionType>) => (
