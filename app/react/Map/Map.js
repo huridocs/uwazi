@@ -111,6 +111,22 @@ export default class Map extends Component {
     onClick(e);
   }
 
+  onHover(e) {
+    const { markers, cluster } = this.props;
+    const { selectedMarker } = this.state;
+    let feature = null;
+
+    if (e.features) {
+      feature = e.features.find(f => f.layer.id === 'unclustered-point');
+      if (feature) {
+        this.hoverOnMarker(markers[feature.properties.index]);
+      }
+    }
+    if (!feature && selectedMarker && cluster) {
+      this.setState({ selectedMarker: null });
+    }
+  }
+
   setMapStyle(mapStyle) {
     if (mapStyle === 'satellite') {
       this.mapStyle = Immutable.fromJS(_styleSatellite);
@@ -126,22 +142,6 @@ export default class Map extends Component {
 
     this.updateMapStyle(this.props);
     this.setState({ mapViewStyle: mapStyle });
-  }
-
-  onHover(e) {
-    const { markers, cluster } = this.props;
-    const { selectedMarker } = this.state;
-    let feature = null;
-
-    if (e.features) {
-      feature = e.features.find(f => f.layer.id === 'unclustered-point');
-      if (feature) {
-        this.hoverOnMarker(markers[feature.properties.index]);
-      }
-    }
-    if (!feature && selectedMarker && cluster) {
-      this.setState({ selectedMarker: null });
-    }
   }
 
   setDefaultCoordinates() {
