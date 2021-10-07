@@ -5,18 +5,20 @@ import {
   fixturesOtherFile,
   fixturesPdfNameA,
   fixturesTwelveFiles,
+  fixturesFiveFiles,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
 import fs from 'fs';
-import { TaskManager } from 'api/services/tasksmanager/taskManager';
+import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
-import { SegmentPdfs } from '../PDFSegmentation';
-import { SegmentationModel } from '../segmentationModel';
 import { Db } from 'mongodb';
 
-jest.mock('api/services/tasksmanager/taskManager.ts');
+import { SegmentPdfs } from '../PDFSegmentation';
+import { SegmentationModel } from '../segmentationModel';
+
+jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 describe('pdfSegmentation', () => {
   let segmentPdfs: SegmentPdfs;
@@ -154,9 +156,23 @@ describe('pdfSegmentation', () => {
     }, 'tenantOne');
   });
 
+  it('should only send pdfs not already segmented or in the process', async () => {
+    await fixturer.clearAllAndLoad(dbOne, fixturesFiveFiles);
+    await dbOne.collection('segmentation').insertMany([
+      {
+        fileName: fixturesFiveFiles,
+        fileID: fixturesFiveFiles.files![0]._id,
+        status: 'pending',
+      },
+    ]);
+
+    await segmentPdfs.segmentPdfs();
+
+    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(4);
+  });
+
   //TODO:
-  // - precalculate teanants that have the feature toggle on
-  // - should only send pdfs not already segmented
+  // - precalculate teanants that have the feature toggle on ?
   // - should handle tenants without the information extraction on
   // - should get the results from the task and store them
   // - do a load test to checkl the perfomance

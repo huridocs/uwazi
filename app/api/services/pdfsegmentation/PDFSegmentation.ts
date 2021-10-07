@@ -1,5 +1,6 @@
-import { TaskManager } from 'api/services/tasksmanager/taskManager';
+import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { files, uploadsPath } from 'api/files';
+import filesModel from 'api/files/filesModel';
 import fs from 'fs';
 import { FileType } from 'shared/types/fileType';
 import { config } from 'api/config';
@@ -69,22 +70,52 @@ class SegmentPdfs {
 
           const settingsValues = await settings.get();
           const metadataExtractionFeatureToggle = settingsValues?.features?.metadataExtraction;
-          const templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(x =>
-            x.template.toString()
+          const templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(
+            x => x.template
           );
 
-          const nextEntitiesToProcess = await entities.getUnrestricted({
-            template: { $in: templatesWithInformationExtraction },
-          });
+          const filesToSegment = await filesModel.db.aggregate([
+            {
+              $match: {
+                type: 'document',
+              },
+            },
+            {
+              $lookup: {
+                from: 'segmentation',
+                localField: '_id',
+                foreignField: 'fileID',
+                as: 'segmentation',
+              },
+            },
+            {
+              $match: {
+                segmentation: {
+                  $size: 0,
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: 'entities',
+                localField: 'entity',
+                foreignField: 'sharedId',
+                as: 'entity',
+              },
+            },
+            {
+              $match: {
+                'entity.template': { $in: templatesWithInformationExtraction },
+              },
+            },
+            {
+              $limit: 10,
+            },
+          ]);
 
-          const sharedIds = nextEntitiesToProcess.map((x: { sharedId: string }) => x.sharedId);
-          const nextFilesToProcess = await files.get({
-            entity: { $in: sharedIds },
-          });
-
-          for (let i = 0; i < 10; i += 1) {
+          for (let i = 0; i < filesToSegment.length; i += 1) {
             // eslint-disable-next-line no-await-in-loop
-            await this.segmentOnePdf(nextFilesToProcess[i]);
+            await this.segmentOnePdf(filesToSegment[i]);
           }
         }, tenant);
       })
