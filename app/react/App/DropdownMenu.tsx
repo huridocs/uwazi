@@ -38,7 +38,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
         id="navbarDropdownMenuLink"
         onClick={() => setShowing(!showing)}
       >
-        <Translate>{link.get('title')}</Translate>
+        <Translate context="Menu">{link.get('title')}</Translate>
         &nbsp; <Icon icon="caret-down" />
       </a>
       <ul className={`dropdown-menu ${showing ? 'show' : ''} mobile`}>
@@ -48,7 +48,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
             return (
               <li key={index}>
                 <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
-                  <Translate>{sublink?.get('title') as string}</Translate>
+                  <Translate context="Menu">{sublink?.get('title') as string}</Translate>
                 </a>
               </li>
             );
@@ -56,7 +56,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
           return (
             <li key={index}>
               <I18NLink to={url} className="btn dropdown-item">
-                <Translate>{sublink?.get('title') as string}</Translate>
+                <Translate context="Menu">{sublink?.get('title') as string}</Translate>
               </I18NLink>
             </li>
           );
