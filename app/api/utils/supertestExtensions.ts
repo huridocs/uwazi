@@ -3,11 +3,10 @@ import { Response } from 'supertest';
 import Test from 'supertest/lib/test';
 
 function extractStatusDebugInfo(res: Response): string {
-  switch (res.status) {
-    case 400:
-      return JSON.stringify(JSON.parse(res.text), null, 2);
-    default:
-      return '';
+  try {
+    return JSON.stringify(JSON.parse(res.text), null, 2);
+  } catch (e) {
+    return res.text;
   }
 }
 
