@@ -88,6 +88,26 @@ describe('LibraryModeToggleButtons', () => {
     });
   });
 
+  describe('map styles', () => {
+    beforeEach(() => {
+      props = defaultProps;
+      props.mapViewMode = true;
+      props.showGeolocation = true;
+      props.setMapStyle = jasmine.createSpy('setMapStyle');
+      render();
+    });
+    it('should respond to street button click', () => {
+      const streetButton = component.find('div.map-type-buttons > button.street');
+      streetButton.simulate('click');
+      expect(props.setMapStyle).toHaveBeenCalledWith('street');
+    });
+    it('should respond to satellite button click', () => {
+      const streetButton = component.find('div.map-type-buttons > button.satellite');
+      streetButton.simulate('click');
+      expect(props.setMapStyle).toHaveBeenCalledWith('satellite');
+    });
+  });
+
   describe('when showColumnSelector is true', () => {
     it('should render HideColumnsDropdown dropdown list with the storeKey', () => {
       props = defaultProps;

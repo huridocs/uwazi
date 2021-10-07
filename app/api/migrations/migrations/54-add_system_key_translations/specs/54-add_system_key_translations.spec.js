@@ -13,12 +13,12 @@ const newKeyValues = [
     value: 'Satellite View',
   },
   {
-    key: 'Terrain',
-    value: 'Terrain',
+    key: 'Street',
+    value: 'Street',
   },
   {
-    key: 'Terrain View',
-    value: 'Terrain View',
+    key: 'Street View',
+    value: 'Street View',
   },
 ];
 const alreadyInAllContexts = {
@@ -30,7 +30,7 @@ const alreadyInAllContexts = {
 
 describe('migration add_system_key_translations', () => {
   beforeEach(async () => {
-    // spyOn(process.stdout, 'write');
+    spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
   });
 

@@ -14,14 +14,14 @@ import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 export class LibraryModeToggleButtons extends Component {
   constructor(props) {
     super(props);
-    this.switchMapToTerrain = this.switchMapToTerrain.bind(this);
+    this.switchMapToStreet = this.switchMapToStreet.bind(this);
     this.switchMapToSatellite = this.switchMapToSatellite.bind(this);
-    this.state = { mapStyle: 'terrain' };
+    this.state = { mapStyle: 'street' };
   }
 
-  switchMapToTerrain() {
-    this.props.setMapStyle('terrain');
-    this.setState({ mapStyle: 'terrain' });
+  switchMapToStreet() {
+    this.props.setMapStyle('street');
+    this.setState({ mapStyle: 'street' });
   }
 
   switchMapToSatellite() {
@@ -47,16 +47,16 @@ export class LibraryModeToggleButtons extends Component {
         {mapViewMode && showGeolocation && (
           <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
             <button
-              className={`terrain btn btn-default ${
-                this.state.mapStyle === 'terrain' ? 'is-active' : ''
+              className={`street btn btn-default ${
+                this.state.mapStyle === 'street' ? 'is-active' : ''
               }`}
-              onClick={this.switchMapToTerrain}
+              onClick={this.switchMapToStreet}
               type="button"
-              aria-label={t('System', 'Terrain View', null, false)}
+              aria-label={t('System', 'Street View', null, false)}
             >
               <Icon icon="map-marker-alt" />
               <span className="tab-link-tooltip">
-                <Translate>Terrain</Translate>
+                <Translate>Street</Translate>
               </span>
             </button>
             <button

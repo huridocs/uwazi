@@ -6,7 +6,7 @@ import { Icon } from 'UI';
 import Supercluster from 'supercluster'; //eslint-disable-line
 import settingsAPI from 'app/Settings/SettingsAPI';
 import { Translate } from 'app/I18N';
-import _styleTerrain from './styles/terrain.json';
+import _styleStreet from './styles/street.json';
 import _styleSatellite from './styles/satellite.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
@@ -29,7 +29,7 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   selectedMarker: null,
   settings: { scrollZoom: true, touchZoom: true },
   showControls: false,
-  mapViewStyle: 'terrain',
+  mapViewStyle: 'street',
 });
 
 export default class Map extends Component {
@@ -42,8 +42,8 @@ export default class Map extends Component {
 
     this.loadMapStyle();
     this.supercluster = new Supercluster({
-      radius: _styleTerrain.sources.markers.clusterRadius,
-      maxZoom: _styleTerrain.sources.markers.clusterMaxZoom,
+      radius: _styleStreet.sources.markers.clusterRadius,
+      maxZoom: _styleStreet.sources.markers.clusterMaxZoom,
     });
 
     this.updateMapStyle(props);
@@ -115,7 +115,7 @@ export default class Map extends Component {
     if (mapStyle === 'satellite') {
       this.mapStyle = Immutable.fromJS(_styleSatellite);
     } else {
-      this.mapStyle = Immutable.fromJS(_styleTerrain);
+      this.mapStyle = Immutable.fromJS(_styleStreet);
     }
     this.replaceKeysMapStyleJson();
     const { viewport } = this.state;
@@ -177,7 +177,7 @@ export default class Map extends Component {
     if (this.state.mapViewStyle === 'satellite') {
       this.mapStyle = Immutable.fromJS(_styleSatellite);
     } else {
-      this.mapStyle = Immutable.fromJS(_styleTerrain);
+      this.mapStyle = Immutable.fromJS(_styleStreet);
     }
   }
 
@@ -386,7 +386,7 @@ export default class Map extends Component {
 
   onMapStyleSwitcherClicked() {
     if (this.state.mapViewStyle === 'satellite') {
-      this.setMapStyle('terrain');
+      this.setMapStyle('street');
     } else {
       this.setMapStyle('satellite');
     }
