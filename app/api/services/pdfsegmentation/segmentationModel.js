@@ -28,6 +28,6 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-const SegmentationModel = instanceModel('captchas', mongoSchema);
+const SegmentationModel = instanceModel('segmentation', mongoSchema);
 
 export { SegmentationModel };

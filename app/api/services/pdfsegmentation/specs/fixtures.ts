@@ -58,6 +58,24 @@ const fixturesOtherFile: DBFixture = {
   files: [factory.file('F1', 'A1', 'document', fixturesPdfNameA)],
 };
 
+const fixturesFiveFiles: DBFixture = {
+  settings,
+  entities: [
+    factory.entity('A1', 'templateToSegmentA'),
+    factory.entity('A2', 'templateToSegmentA'),
+    factory.entity('A3', 'templateToSegmentA'),
+    factory.entity('A4', 'templateToSegmentA'),
+    factory.entity('A5', 'templateToSegmentA'),
+  ],
+  files: [
+    factory.file('F1', 'A1', 'document', fixturesPdfNameA),
+    factory.file('F2', 'A2', 'document', fixturesPdfNameA),
+    factory.file('F3', 'A3', 'document', fixturesPdfNameA),
+    factory.file('F4', 'A4', 'document', fixturesPdfNameA),
+    factory.file('F5', 'A5', 'document', fixturesPdfNameA),
+  ],
+};
+
 const fixturesTwelveFiles: DBFixture = {
   settings,
   entities: [
@@ -90,7 +108,6 @@ const fixturesTwelveFiles: DBFixture = {
     factory.file('F11', 'A11', 'document', fixturesPdfNameA),
     factory.file('F12', 'A12', 'document', fixturesPdfNameA),
   ],
-  segmentation: [{}],
 };
 
 const fixturesFilesWithtMixedInformationExtraction: DBFixture = {
@@ -117,4 +134,5 @@ export {
   fixturesOtherFile,
   fixturesTwelveFiles,
   fixturesFilesWithtMixedInformationExtraction,
+  fixturesFiveFiles,
 };
