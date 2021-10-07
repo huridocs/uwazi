@@ -6,47 +6,47 @@ import { SuggestionType } from 'shared/types/suggestionType';
 import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'app/UI';
 
+const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
+  const suggestion = row.original;
+  const currentValue = suggestion.currentValue || '-';
+  return (
+    <>
+      <h5>
+        <Translate>Title</Translate>
+      </h5>
+      <p>{currentValue}</p>
+      <h5>
+        <Translate>Suggestion</Translate>
+      </h5>
+      <p className="suggested-value">{suggestion.suggestedValue}</p>
+    </>
+  );
+};
+
+const actionsCell = () => (
+  <div>
+    <button type="button" className="btn btn-outline-primary">
+      <Icon icon="check" />
+      &nbsp;
+      <Translate>Accept</Translate>
+    </button>
+  </div>
+);
+
 export const EntitySuggestions = () => {
   const suggestions: SuggestionType[] = React.useMemo(() => SuggestionsSampleData, []);
+
   const columns: Column<SuggestionType>[] = React.useMemo(
     () => [
       {
         id: 'suggestion',
         Header: () => <Translate>Title / Suggestion</Translate>,
-        Cell: ({ row }: { row: Row<SuggestionType> }) => {
-          const suggestion = row.original;
-          const currentValue = suggestion.currentValue || '-';
-          return (
-            <>
-              <h5>
-                <Translate>Title</Translate>
-              </h5>
-              <p>{currentValue}</p>
-              <h5>
-                <Translate>Suggestion</Translate>
-              </h5>
-              <p className="label-primary">suggestion.suggestedValue</p>
-            </>
-          );
-        },
+        Cell: suggestionCell,
       },
       {
         id: 'action',
-        Header: () => (
-          <>
-            <Translate>Action</Translate>&nbsp;
-            <Icon icon="info-circle" />
-          </>
-        ),
-        Cell: () => (
-          <div>
-            <button type="button" className="btn btn-outline-primary">
-              <Icon icon="check" />
-              &nbsp;
-              <Translate>Accept</Translate>
-            </button>
-          </div>
-        ),
+        Header: () => <Translate>Action</Translate>,
+        Cell: actionsCell,
       },
       {
         accessor: 'segment' as const,
@@ -83,7 +83,12 @@ export const EntitySuggestions = () => {
     <div className="panel entity-suggestions">
       <div className="panel-subheading">
         <div>
-          <Translate>Reviewing</Translate>:&nbsp;<Translate>Title</Translate>
+          <span className="suggestion-header">
+            <Translate>Reviewing</Translate>:&nbsp;
+          </span>
+          <span className="suggestion-property">
+            <Translate>Title</Translate>
+          </span>
         </div>
         <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
           <Translate>Dashboard</Translate>
