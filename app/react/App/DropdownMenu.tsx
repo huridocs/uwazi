@@ -1,4 +1,4 @@
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import React, { useRef, useState, useCallback } from 'react';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
@@ -38,7 +38,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
         id="navbarDropdownMenuLink"
         onClick={() => setShowing(!showing)}
       >
-        {t('Menu', link.get('title'))}
+        <Translate>{link.get('title')}</Translate>
         &nbsp; <Icon icon="caret-down" />
       </a>
       <ul className={`dropdown-menu ${showing ? 'show' : ''} mobile`}>
@@ -48,7 +48,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
             return (
               <li key={index}>
                 <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
-                  {t('Menu', sublink?.get('title'))}
+                  <Translate>{sublink?.get('title') as string}</Translate>
                 </a>
               </li>
             );
@@ -56,7 +56,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
           return (
             <li key={index}>
               <I18NLink to={url} className="btn dropdown-item">
-                {t('Menu', sublink?.get('title'))}
+                <Translate>{sublink?.get('title') as string}</Translate>
               </I18NLink>
             </li>
           );
