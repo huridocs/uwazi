@@ -44,6 +44,7 @@ describe('Metadata filters', () => {
             factory.property('multiselect', 'multiselect'),
             factory.property('selectPropertyName', 'select'),
             factory.property('numericPropertyName', 'numeric'),
+            factory.property('datePropertyName', 'multidate'),
           ]),
         ],
         entities: [
@@ -51,11 +52,13 @@ describe('Metadata filters', () => {
             multiselect: [factory.metadataValue('thesaurusId1')],
             selectPropertyName: [factory.metadataValue('thesaurusId1')],
             numericPropertyName: [factory.metadataValue(42)],
+            datePropertyName: [factory.metadataValue(9001), factory.metadataValue(42)],
           }),
           factory.entity('Entity 2', 'templateA', {
             multiselect: [factory.metadataValue('thesaurusId2')],
             selectPropertyName: [factory.metadataValue('thesaurusId2')],
             numericPropertyName: [factory.metadataValue(13)],
+            datePropertyName: [factory.metadataValue(8999)],
           }),
           factory.entity('Entity 3', 'templateA', {
             numericPropertyName: [factory.metadataValue(5)],
@@ -118,8 +121,25 @@ describe('Metadata filters', () => {
     });
   });
 
+  describe('Date range filters', () => {
+    it('should filter by date property', async () => {
+      const query = {
+        filter: {
+          'metadata.datePropertyName': { from: 9000 },
+        },
+      };
+
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query(query)
+        .expect(200);
+
+      expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
+    });
+  });
+
   it('', () => {
-    throw new Error('Add support for dates');
+    throw new Error('Should support text filters.');
   });
 
   it('', () => {
