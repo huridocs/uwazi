@@ -56,7 +56,7 @@ export default {
     return this.getById(sharedId, language);
   },
 
-  get(query: UwaziFilterQuery<PageType>, select?: string) {
+  async get(query: UwaziFilterQuery<PageType>, select?: string) {
     return model.get(query, select);
   },
 

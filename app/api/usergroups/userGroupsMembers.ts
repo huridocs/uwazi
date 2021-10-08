@@ -3,7 +3,7 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 import userGroups from 'api/usergroups/userGroups';
 import model from './userGroupsModel';
 
-export const getByMemberIdList = (userIds: ObjectIdSchema[]) =>
+export const getByMemberIdList = async (userIds: ObjectIdSchema[]) =>
   model.get({ 'members.refId': { $in: userIds } });
 
 export const updateUserMemberships = async (
