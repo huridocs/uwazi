@@ -4,6 +4,9 @@ import { Response as SuperTestResponse } from 'supertest';
 
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
+import { extendSupertest } from './supertestExtensions';
+
+extendSupertest();
 
 const iosocket = { emit: jasmine.createSpy('emit') };
 
