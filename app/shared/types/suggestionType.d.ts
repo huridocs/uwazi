@@ -4,10 +4,10 @@
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface SuggestionType {
-  propertyName: string;
   currentValue?: string;
   suggestedValue: string;
   segment: string;
+  title?: string;
   language: string;
   state: 'Empty' | 'Filled';
   page: number;

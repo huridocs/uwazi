@@ -5,7 +5,7 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 
 export const SuggestionsSampleData: SuggestionType[] = [
   {
-    propertyName: 'Title',
+    title: 'Temporary entity title',
     currentValue: 'Temporary entity title',
     suggestedValue: 'HCT-04-CR-SC-0074-2013: Uganda vs Olowo Kamali',
     segment:
@@ -15,7 +15,7 @@ export const SuggestionsSampleData: SuggestionType[] = [
     page: 1,
   },
   {
-    propertyName: 'Title',
+    title: 'Temporary entity title',
     suggestedValue: 'HCT-04-CR-SC-0080-2008: Uganda vs Okiring J.',
     segment:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque augue nisi, HCT-04-CR-SC-0080-2008: Uganda vs Okiring J.venenatis eget dictum vel, scelerisque vitae felis. Suspendisse sed eleifend neque, non volutpat ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
@@ -24,7 +24,7 @@ export const SuggestionsSampleData: SuggestionType[] = [
     page: 1,
   },
   {
-    propertyName: 'Title',
+    title: 'Succession (Amendment) Decree, 1972',
     currentValue: 'Succession (Amendment) Decree, 1972',
     suggestedValue: 'Succession (Amendment)',
     segment:
@@ -34,7 +34,7 @@ export const SuggestionsSampleData: SuggestionType[] = [
     page: 1,
   },
   {
-    propertyName: 'Title',
+    title: 'Temporary entity title',
     currentValue: 'Temporary entity title',
     suggestedValue: 'Succession Act - Chapter 162',
     segment:
@@ -44,7 +44,7 @@ export const SuggestionsSampleData: SuggestionType[] = [
     page: 1,
   },
   {
-    propertyName: 'Title',
+    title: 'Temporary entity title',
     currentValue: 'Temporary entity title',
     suggestedValue: 'Prevention of Trafficking in Persons Act',
     segment:
@@ -54,7 +54,7 @@ export const SuggestionsSampleData: SuggestionType[] = [
     page: 1,
   },
   {
-    propertyName: 'Title',
+    title: 'Temporary entity title',
     currentValue: 'Temporary entity title',
     suggestedValue: 'Prevention of Trafficking in Persons Act',
     segment:
