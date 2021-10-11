@@ -1,15 +1,15 @@
+/* eslint-disable max-classes-per-file */
 //@ts-ignore
 import PromisePool from '@supercharge/promise-pool';
-import { models, UwaziFilterQuery } from 'api/odm/models';
 import mongoose from 'mongoose';
 import { model as updatelogsModel } from 'api/updatelogs';
-import { OdmModel } from 'api/odm/model';
+import { OdmModel, models, UwaziFilterQuery, EnforcedWithId, DataType } from './model';
 
 const getBatchSteps = async <T>(
   model: OdmModel<T>,
-  query: UwaziFilterQuery<T>,
+  query: UwaziFilterQuery<DataType<T>>,
   batchSize: number
-): Promise<T[]> => {
+): Promise<EnforcedWithId<T>[]> => {
   const allIds = await model.get(query, '_id', { sort: { _id: 1 } });
 
   const steps = [];
@@ -43,7 +43,7 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
   }
 
   async upsertLogMany(
-    query: UwaziFilterQuery<T>,
+    query: UwaziFilterQuery<DataType<T>>,
     deleted = false,
     batchSize = UpdateLogHelper.batchSizeUpsertMany
   ) {
@@ -67,14 +67,17 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
 }
 
 export class NoLogger<T> implements UpdateLogger<T> {
+  // eslint-disable-next-line class-methods-use-this
   async getAffectedIds() {
     return Promise.resolve();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async upsertLogOne() {
     return Promise.resolve();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async upsertLogMany() {
     return Promise.resolve();
   }

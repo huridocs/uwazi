@@ -1,8 +1,10 @@
 import { UserSchema } from 'shared/types/userType';
 import { appContext } from 'api/utils/AppContext';
+import { DataType } from 'api/odm';
 
 export const permissionsContext = {
-  getUserInContext: (): UserSchema | undefined => <UserSchema | undefined>appContext.get('user'),
+  getUserInContext: (): DataType<UserSchema> | undefined =>
+    <DataType<UserSchema> | undefined>appContext.get('user'),
 
   permissionsRefIds() {
     const user = this.getUserInContext();
