@@ -1,28 +1,23 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router';
+import { Link, withRouter, WithRouterProps } from 'react-router';
 import { CurrentLocationLink } from 'app/Layout';
 import { EntitySchema } from 'shared/types/entityType';
 
 type Props = {
   filename: string;
   entity: EntitySchema;
-  router: {
-    location: {
-      pathname: string;
-    };
-  };
 };
 
 type State = {};
 
-export class ViewDocumentLinkBase extends Component<Props, State> {
+export class ViewDocumentLinkBase extends Component<Props & WithRouterProps, State> {
   render() {
-    const { filename, router, children, entity } = this.props;
-    const onViewer = router.location.pathname.match(/entity/);
+    const { filename, location, children, entity } = this.props;
+    const onViewer = location.pathname.match(/entity/);
     return onViewer ? (
       <CurrentLocationLink
         className="btn btn-default"
-        location={router.location}
+        location={location}
         queryParams={{ file: filename, page: 1 }}
         type="button"
       >
@@ -40,5 +35,4 @@ export class ViewDocumentLinkBase extends Component<Props, State> {
   }
 }
 
-//@ts-ignore
 export const ViewDocumentLink = withRouter(ViewDocumentLinkBase);

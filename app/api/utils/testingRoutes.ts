@@ -8,7 +8,7 @@ import { extendSupertest } from './supertestExtensions';
 
 extendSupertest();
 
-const iosocket = jasmine.createSpyObj('socket', ['emit']);
+const iosocket = { emit: jasmine.createSpy('emit') };
 
 const setUpApp = (
   route: Function,
@@ -36,7 +36,7 @@ const socketEmit = async (eventName: string, performRequest: requestCb) => {
   const eventEmited = new Promise(resolve => {
     iosocket.emit.and.callFake((event: string) => {
       if (event === eventName) {
-        resolve();
+        resolve(event);
       }
     });
   });
