@@ -6,41 +6,56 @@ import { SuggestionType } from 'shared/types/suggestionType';
 import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'app/UI';
 
-const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
-  const suggestion = row.original;
-  const currentValue = suggestion.currentValue || '-';
-  return (
-    <>
-      <h5>
-        <Translate>Title</Translate>
-      </h5>
-      <p>{currentValue}</p>
-      <h5>
-        <Translate>Suggestion</Translate>
-      </h5>
-      <p className="suggested-value">{suggestion.suggestedValue}</p>
-    </>
+interface EntitySuggestionsProps {
+  propertyName: string;
+  suggestions: SuggestionType[];
+}
+export const EntitySuggestions = ({
+  propertyName = 'Title',
+  suggestions = SuggestionsSampleData,
+}: EntitySuggestionsProps) => {
+  const suggestionsData: SuggestionType[] = React.useMemo(() => suggestions, []);
+
+  const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
+    const suggestion = row.original;
+    const currentValue = suggestion.currentValue || '-';
+    return (
+      <>
+        <div>
+          <span className="suggestion-label">
+            <Translate>{propertyName}</Translate>
+          </span>
+          <p>{currentValue}</p>
+        </div>
+        <div>
+          <span className="suggestion-label">
+            <Translate>Suggestion</Translate>
+          </span>
+          <p className="suggested-value">{suggestion.suggestedValue}</p>
+        </div>
+      </>
+    );
+  };
+
+  const actionsCell = () => (
+    <div>
+      <button type="button" className="btn btn-outline-primary">
+        <Icon icon="check" />
+        &nbsp;
+        <Translate>Accept</Translate>
+      </button>
+    </div>
   );
-};
-
-const actionsCell = () => (
-  <div>
-    <button type="button" className="btn btn-outline-primary">
-      <Icon icon="check" />
-      &nbsp;
-      <Translate>Accept</Translate>
-    </button>
-  </div>
-);
-
-export const EntitySuggestions = () => {
-  const suggestions: SuggestionType[] = React.useMemo(() => SuggestionsSampleData, []);
 
   const columns: Column<SuggestionType>[] = React.useMemo(
     () => [
       {
         id: 'suggestion',
-        Header: () => <Translate>Title / Suggestion</Translate>,
+        Header: () => (
+          <>
+            <Translate>{propertyName}</Translate> / <Translate>Suggestion</Translate>
+          </>
+        ),
         Cell: suggestionCell,
       },
       {
@@ -49,8 +64,14 @@ export const EntitySuggestions = () => {
         Cell: actionsCell,
       },
       {
+        id: 'title',
+        accessor: 'title' as const,
+        Header: () => <Translate>Title</Translate>,
+      },
+      {
         accessor: 'segment' as const,
         Header: () => <Translate>Segment</Translate>,
+        width: '45%',
       },
       {
         accessor: 'language' as const,
@@ -74,9 +95,14 @@ export const EntitySuggestions = () => {
     []
   );
 
+  const hiddenColumns = propertyName === 'Title' ? ['title'] : [];
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
     columns,
-    data: suggestions,
+    data: suggestionsData,
+    initialState: {
+      hiddenColumns,
+    },
   });
 
   return (
@@ -87,7 +113,7 @@ export const EntitySuggestions = () => {
             <Translate>Reviewing</Translate>:&nbsp;
           </span>
           <span className="suggestion-property">
-            <Translate>Title</Translate>
+            <Translate>{propertyName}</Translate>
           </span>
         </div>
         <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
