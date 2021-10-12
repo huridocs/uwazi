@@ -1,20 +1,37 @@
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Column, HeaderGroup, Row, useTable } from 'react-table';
-import { SuggestionsSampleData } from 'app/MetadataExtraction/SuggestionsSampleData';
 import { SuggestionType } from 'shared/types/suggestionType';
 import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'app/UI';
+import { getSuggestions } from 'app/MetadataExtraction/SuggestionsAPI';
+import { RequestParams } from 'app/utils/RequestParams';
+import { Pagination } from 'app/UI/BasicTable/Pagination';
 
 interface EntitySuggestionsProps {
   propertyName: string;
   suggestions: SuggestionType[];
 }
-export const EntitySuggestions = ({
-  propertyName = 'Title',
-  suggestions = SuggestionsSampleData,
-}: EntitySuggestionsProps) => {
-  const suggestionsData: SuggestionType[] = React.useMemo(() => suggestions, []);
+export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
+  const [suggestions, setSuggestions] = useState([]);
+
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const retrieveSuggestions = () => {
+    const params = new RequestParams({
+      page: pageIndex,
+    });
+
+    getSuggestions(params)
+      .then((response: any) => {
+        setSuggestions(response.suggestions);
+        setTotalPages(response.totalPages);
+      })
+      .catch(() => {});
+  };
+
+  useEffect(retrieveSuggestions, [pageIndex]);
 
   const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
     const suggestion = row.original;
@@ -99,7 +116,7 @@ export const EntitySuggestions = ({
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
     columns,
-    data: suggestionsData,
+    data: suggestions,
     initialState: {
       hiddenColumns,
     },
@@ -120,6 +137,7 @@ export const EntitySuggestions = ({
           <Translate>Dashboard</Translate>
         </I18NLink>
       </div>
+
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup: HeaderGroup<SuggestionType>) => (
@@ -143,6 +161,8 @@ export const EntitySuggestions = ({
           })}
         </tbody>
       </table>
+
+      <Pagination setPage={setPageIndex} totalPages={totalPages} />
     </div>
   );
 };

@@ -3,7 +3,7 @@
 import { SuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 
-export const SuggestionsSampleData: SuggestionType[] = [
+const SuggestionsSamples: SuggestionType[] = [
   {
     title: 'Temporary entity title',
     currentValue: 'Temporary entity title',
@@ -64,3 +64,6 @@ export const SuggestionsSampleData: SuggestionType[] = [
     page: 1,
   },
 ];
+
+export const SuggestionsSampleData = (page: number) =>
+  SuggestionsSamples.map(sample => ({ ...sample, title: sample.title + page.toString() }));
