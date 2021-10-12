@@ -17,6 +17,7 @@ import validator from '../helpers/validator';
 import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 import { MetadataExtractor } from './MetadataExtractor';
+import { SupportingFiles } from './SupportingFiles';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -168,6 +169,10 @@ export class MetadataForm extends Component {
           highlightedProps={highlightedProps}
           storeKey={storeKey}
         />
+
+        <FormGroup>
+          <SupportingFiles storeKey={storeKey} />
+        </FormGroup>
       </Form>
     );
   }

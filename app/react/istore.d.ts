@@ -72,6 +72,7 @@ interface EntityDisplayState {
     zoomLevel: number;
   }>;
   sidepanel: {
+    metadata: ClientEntitySchema;
     quickLabelState: IImmutable<QuickLabelState>;
     quickLabelMetadata: QuickLabelMetadata;
     quickLabelMetadataForm: any;
@@ -90,6 +91,7 @@ export interface ClientFile extends FileType {
 
 export interface ClientEntitySchema extends EntitySchema {
   documents?: ClientFile[];
+  attachments?: ClientFile[];
 }
 
 export interface DocumentViewerUiStateReference {
