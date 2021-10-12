@@ -20,6 +20,10 @@ const newKeyValues = [
     key: 'Street View',
     value: 'Street View',
   },
+  {
+    key: 'Switch Map Style',
+    value: 'Switch Map Style',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
