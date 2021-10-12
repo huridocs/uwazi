@@ -40,7 +40,7 @@ export default class Map extends Component {
     this.state.settings.touchZoom = props.scrollZoom;
     this.state.showControls = props.showControls;
 
-    this.loadMapStyle();
+    this.loadMapStyle(this.state.mapViewStyle);
     this.supercluster = new Supercluster({
       radius: _styleStreet.sources.markers.clusterRadius,
       maxZoom: _styleStreet.sources.markers.clusterMaxZoom,
@@ -128,11 +128,7 @@ export default class Map extends Component {
   }
 
   setMapStyle(mapStyle) {
-    if (mapStyle === 'satellite') {
-      this.mapStyle = Immutable.fromJS(_styleSatellite);
-    } else {
-      this.mapStyle = Immutable.fromJS(_styleStreet);
-    }
+    this.loadMapStyle(mapStyle);
     this.replaceKeysMapStyleJson();
     const { viewport } = this.state;
     this._onViewStateChange({
@@ -173,8 +169,8 @@ export default class Map extends Component {
     this.setState({ viewport: newViewport });
   }
 
-  loadMapStyle() {
-    if (this.state.mapViewStyle === 'satellite') {
+  loadMapStyle(style) {
+    if (style === 'satellite') {
       this.mapStyle = Immutable.fromJS(_styleSatellite);
     } else {
       this.mapStyle = Immutable.fromJS(_styleStreet);
