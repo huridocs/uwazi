@@ -496,7 +496,7 @@ export default {
     await process(0, totalRows);
   },
 
-  getWithoutDocuments(query, select, options = {}) {
+  async getWithoutDocuments(query, select, options = {}) {
     return model.getUnrestricted(query, select, options);
   },
 

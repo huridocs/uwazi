@@ -17,13 +17,15 @@ const mongoSchema = new mongoose.Schema({
   temporalFiles: String,
 });
 
+type TenantDocument = Document & Tenant;
+
 export class TenantsModel extends EventEmitter {
-  model: Model<Document & Tenant>;
+  model: Model<TenantDocument>;
 
   constructor() {
     super();
     const tenantsDB = DB.connectionForDB(config.SHARED_DB);
-    this.model = tenantsDB.model('tenants', mongoSchema);
+    this.model = tenantsDB.model<TenantDocument>('tenants', mongoSchema);
 
     const changeStream = this.model.watch();
     changeStream.on('change', () => {
@@ -50,6 +52,6 @@ export class TenantsModel extends EventEmitter {
   }
 
   async get() {
-    return this.model.find();
+    return this.model.find({});
   }
 }

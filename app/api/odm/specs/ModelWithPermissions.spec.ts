@@ -222,7 +222,7 @@ describe('ModelWithPermissions', () => {
 
         it('should keep the existing permissions for a cloned entity with permissions ', async () => {
           const permissions = [
-            { _id: 'user3', type: PermissionType.USER, level: AccessLevels.READ },
+            { _id: 'user3', refId: 'refId', type: PermissionType.USER, level: AccessLevels.READ },
           ];
           const saved = await model.save({
             name: 'clonedDoc',
