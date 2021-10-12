@@ -22,8 +22,6 @@ const DB = {
   },
 
   connectionForDB(dbName: string) {
-    //mongoose types not updated yet for useCache
-    //@ts-ignore
     return this.getConnection().useDb(dbName, { useCache: true });
   },
 
