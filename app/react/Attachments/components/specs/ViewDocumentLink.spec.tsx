@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, RouteComponentProps } from 'react-router';
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -7,10 +7,40 @@ import { EntitySchema } from 'shared/types/entityType';
 
 import { ViewDocumentLinkBase as ViewDocumentLink } from '../ViewDocumentLink';
 
-const renderComponent = (entity: EntitySchema, pathname: string = 'entity/') =>
-  shallow(
-    <ViewDocumentLink entity={entity} filename="file.pdf" router={{ location: { pathname } }} />
+const routerMock = {
+  push: () => {},
+  replace: () => {},
+  go: () => {},
+  goBack: () => {},
+  goForward: () => {},
+  setRouteLeaveHook: () => () => {},
+  createPath: (part: any) => part,
+  createHref: (href: any) => href,
+  isActive: () => true,
+};
+
+const renderComponent = (entity: EntitySchema, pathname: string = 'entity/') => {
+  const location: RouteComponentProps<any, any>['location'] = {
+    pathname,
+    search: '',
+    hash: '',
+    key: 'abc',
+    state: {},
+    query: {},
+    action: 'POP',
+  };
+
+  return shallow(
+    <ViewDocumentLink
+      entity={entity}
+      filename="file.pdf"
+      location={location}
+      params={{ param: 'value' }}
+      router={routerMock}
+      routes={[]}
+    />
   );
+};
 
 describe('ViewDocumentLink', () => {
   const entity: EntitySchema = { _id: 'id', sharedId: 'sharedId' };
@@ -24,6 +54,7 @@ describe('ViewDocumentLink', () => {
       });
     });
   });
+
   describe('when outside viewer route', () => {
     it('should link to viewer with specific file', () => {
       const component = renderComponent(entity, 'outside');

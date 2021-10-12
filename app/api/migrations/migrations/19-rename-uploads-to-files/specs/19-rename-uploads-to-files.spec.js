@@ -43,14 +43,19 @@ describe('migration rename-uploads-to-files', () => {
   });
 
   describe('when files already exists', () => {
+    beforeEach(async () => {
+      const collections = await testingDB.mongodb.listCollections().toArray();
+      if (!collections.find(c => c.name === 'files')) {
+        await testingDB.mongodb.createCollection('files');
+      }
+    });
+
     it('should not fail', async () => {
-      await testingDB.mongodb.createCollection('files');
       await migration.up(testingDB.mongodb);
     });
 
     it('should not delete files when uploads does not exists (migration already ran)', async () => {
       await testingDB.mongodb.collection('uploads').drop();
-      await testingDB.mongodb.createCollection('files');
 
       await migration.up(testingDB.mongodb);
       expect((await testingDB.mongodb.listCollections({ name: 'files' }).toArray()).length).toBe(1);
