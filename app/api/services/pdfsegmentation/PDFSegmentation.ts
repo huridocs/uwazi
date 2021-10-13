@@ -30,10 +30,6 @@ class SegmentPdfs {
     const segmentationValues = settingsValues?.features?.segmentation;
     this.segmentationTaskManager = new TaskManager({
       serviceName: this.SERVICE_NAME,
-      dataUrl: segmentationValues.dataUrl,
-      filesUrl: segmentationValues.filesUrl,
-      resultsUrl: segmentationValues.resultsUrl,
-      redisUrl: `redis://${config.redis.host}:${config.redis.host}`,
     });
   }
 
