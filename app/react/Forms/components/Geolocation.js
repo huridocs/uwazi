@@ -86,7 +86,13 @@ export default class Geolocation extends Component {
 
     return (
       <div className="geolocation form-inline">
-        <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false} />
+        <Map
+          markers={markers}
+          onClick={this.mapClick}
+          height={370}
+          autoCenter={false}
+          mapStyleSwitcher
+        />
         <div className="form-row">
           <div className="form-group half-width">
             <label>

@@ -102,6 +102,8 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalL
 import { twoFactorAuth } from 'UI/Icon/two-factor-auth';
 import { infoCircleHollow } from 'UI/Icon/info-circle-hollow';
 import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
+import { faMap } from '@fortawesome/free-solid-svg-icons/faMap';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
 import { importCsv } from './import-csv';
@@ -208,6 +210,8 @@ const icons = {
   faUserCheck,
   faHandPaper,
   faExternalLinkAlt,
+  faMap,
+  faMapMarkerAlt,
   saveAndNext,
   faTasks,
   exportCsv,

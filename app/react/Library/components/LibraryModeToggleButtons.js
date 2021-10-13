@@ -12,6 +12,23 @@ import { createSelector } from 'reselect';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
+  constructor(props) {
+    super(props);
+    this.switchMapToStreet = this.switchMapToStreet.bind(this);
+    this.switchMapToSatellite = this.switchMapToSatellite.bind(this);
+    this.state = { mapStyle: 'street' };
+  }
+
+  switchMapToStreet() {
+    this.props.setMapStyle('street');
+    this.setState({ mapStyle: 'street' });
+  }
+
+  switchMapToSatellite() {
+    this.props.setMapStyle('satellite');
+    this.setState({ mapStyle: 'satellite' });
+  }
+
   render() {
     const {
       numberOfMarkers,
@@ -22,10 +39,41 @@ export class LibraryModeToggleButtons extends Component {
       searchUrl,
       storeKey,
       tableViewMode,
+      mapViewMode,
     } = this.props;
     const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
     return (
       <div className="list-view-mode">
+        {mapViewMode && showGeolocation && (
+          <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
+            <button
+              className={`street btn btn-default ${
+                this.state.mapStyle === 'street' ? 'is-active' : ''
+              }`}
+              onClick={this.switchMapToStreet}
+              type="button"
+              aria-label={t('System', 'Street View', null, false)}
+            >
+              <Icon icon="map-marker-alt" />
+              <span className="tab-link-tooltip">
+                <Translate>Street</Translate>
+              </span>
+            </button>
+            <button
+              className={`satellite btn btn-default ${
+                this.state.mapStyle === 'satellite' ? 'is-active' : ''
+              }`}
+              onClick={this.switchMapToSatellite}
+              type="button"
+              aria-label={t('System', 'Satellite View', null, false)}
+            >
+              <Icon icon="map" />
+              <span className="tab-link-tooltip">
+                <Translate>Satellite</Translate>
+              </span>
+            </button>
+          </div>
+        )}
         {tableViewMode && (
           <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
@@ -112,14 +160,18 @@ LibraryModeToggleButtons.propTypes = {
   numberOfMarkers: PropTypes.number.isRequired,
   storeKey: PropTypes.string.isRequired,
   tableViewMode: PropTypes.bool,
+  mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
+  setMapStyle: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
   tableViewMode: false,
+  mapViewMode: false,
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},
+  setMapStyle: () => {},
 };
 
 export const encodedSearch = createSelector(
