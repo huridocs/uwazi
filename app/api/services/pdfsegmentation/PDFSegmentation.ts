@@ -51,6 +51,11 @@ class SegmentPdfs {
     await SegmentationModel.save({ fileID, fileName });
   };
 
+  storeResult = async task => {
+    // const fileName = task.task;
+    // await SegmentationModel.save({ fileName, segmentation: results, autoexpire: false });
+  };
+
   segmentPdfs = async () =>
     Promise.all(
       Object.keys(tenants.tenants).map(async tenant => {
@@ -67,6 +72,10 @@ class SegmentPdfs {
           const settingsValues = await settings.get();
           const metadataExtractionFeatureToggle = settingsValues?.features?.metadataExtraction;
           const segmentationServiceConfig = settingsValues?.features?.segmentation;
+
+          if (!metadataExtractionFeatureToggle || !segmentationServiceConfig) {
+            return;
+          }
 
           const templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(
             x => x.template

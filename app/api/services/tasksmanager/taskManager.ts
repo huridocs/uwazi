@@ -83,7 +83,7 @@ export class TaskManager {
       if (message.id) {
         if (this.service.processResults) {
           const processedMessage = JSON.parse(message.message);
-          const results = await request.get(processedMessage.resultsUrl, processedMessage);
+          const results = await request.get(processedMessage.results_url, processedMessage);
           this.service.processResults(results.json);
         }
       }
@@ -99,14 +99,6 @@ export class TaskManager {
       qname: this.taskQueue,
       message: JSON.stringify(taskMessage),
     });
-  }
-
-  async sendJSON(data: object) {
-    await request.post(this.service.dataUrl, data);
-  }
-
-  async sendFile(file: Buffer, fileName: string) {
-    await request.uploadFile(this.service.filesUrl, fileName, file);
   }
 
   async stop() {

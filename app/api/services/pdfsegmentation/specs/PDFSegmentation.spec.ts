@@ -172,13 +172,16 @@ describe('pdfSegmentation', () => {
     });
   });
 
-  describe('when there is segmentation config', () => {
-    it('should do nothing', () => {
-      throw new Error('Not implemented');
+  describe('when there is NOT segmentation config', () => {
+    it('should do nothing', async () => {
+      await fixturer.clearAllAndLoad(dbOne, { ...fixturesOneFile, settings: [{}] });
+      await segmentPdfs.segmentPdfs();
+
+      expect(segmentPdfs.segmentationTaskManager?.startTask).not.toHaveBeenCalled();
     });
   });
 
-  describe('when there segmentation finsihes', () => {
+  describe('when the segmentation finsihes', () => {
     it('should store the segmentation', () => {
       throw new Error('Not implemented');
     });
