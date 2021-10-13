@@ -1,15 +1,14 @@
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { files, uploadsPath } from 'api/files';
+import { uploadsPath } from 'api/files';
 import filesModel from 'api/files/filesModel';
 import fs from 'fs';
 import { FileType } from 'shared/types/fileType';
-import { config } from 'api/config';
 import { Settings } from 'shared/types/settingsType';
 import settings from 'api/settings/settings';
-import { model as entities } from 'api/entities';
 import { tenants } from 'api/tenants/tenantContext';
 import { SegmentationModel } from './segmentationModel';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import request from 'shared/JSONRequest';
 
 class SegmentPdfs {
   SERVICE_NAME = 'segmentation';
@@ -38,7 +37,8 @@ class SegmentPdfs {
     }
 
     const file = fs.readFileSync(uploadsPath(nextFile.filename));
-    await this.segmentationTaskManager.sendFile(file, nextFile.filename);
+    await request.uploadFile(url, nextFile.filename, file);
+
     const task = {
       task: nextFile.filename,
       tenant: 'tenant1',
