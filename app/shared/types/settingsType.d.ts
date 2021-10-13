@@ -2,7 +2,6 @@
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from 'shared/types/commonTypes';
-import { ObjectId } from 'mongodb';
 
 export interface ItemSchema {
   id?: string;
@@ -95,8 +94,14 @@ export interface Settings {
     };
     topicClassification?: boolean;
     favorites?: boolean;
+    segmentation?: {
+      url: string;
+    };
+    metadataExtraction?: {
+      template: ObjectIdSchema;
+      properties: string[];
+    }[];
     [k: string]: unknown | undefined;
-    metadataExtraction: {template: ObjectIdSchema, properties: string[]}[]
   };
   mapStartingPoint?: {
     label?: string;

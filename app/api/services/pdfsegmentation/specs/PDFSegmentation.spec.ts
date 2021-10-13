@@ -79,6 +79,10 @@ describe('pdfSegmentation', () => {
     );
   });
 
+  it('should send the file', () => {
+    throw new Error('Not implemented');
+  });
+
   it('should send other pdf to segment', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesOtherFile);
 
@@ -171,11 +175,25 @@ describe('pdfSegmentation', () => {
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(4);
   });
 
+  describe('when there is pending tasks', () => {
+    it('should not put more', () => {
+      throw new Error('Not implemented');
+    });
+  });
+
+  describe('when there is segmentation config', () => {
+    it('should do nothing', () => {
+      throw new Error('Not implemented');
+    });
+  });
+
+  describe('when there segmentation finsihes', () => {
+    it('should store the segmentation', () => {
+      throw new Error('Not implemented');
+    });
+  });
+
   //TODO:
-  // - precalculate teanants that have the feature toggle on ?
-  // - should handle tenants without the information extraction on
-  // - should get the results from the task and store them
-  // - do a load test to checkl the perfomance
-  // - make sure onlye one taskmanager is instanced
+  // - do a load test to checkl the perfomance: Tested in Cejil with 5k files and Plan with 25k and took 0.2s to do an aggregation query
   // - error handling ? task failed ?
 });
