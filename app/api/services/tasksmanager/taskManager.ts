@@ -62,10 +62,12 @@ export class TaskManager {
     });
   }
 
-  countPendingTasks: () => Promise<number> = async () => {
-    const queueAttributes = await this.redisSMQ!.getQueueAttributesAsync({ qname: this.taskQueue });
+  async countPendingTasks(): Promise<number> {
+    const queueAttributes = await this.redisSMQ!.getQueueAttributesAsync({
+      qname: this.taskQueue,
+    });
     return queueAttributes.msgs;
-  };
+  }
 
   subscribeToResults() {
     this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);

@@ -20,20 +20,15 @@ class SegmentPdfs {
 
   features: Settings | undefined;
 
-  async start() {
-    const settingsValues = await settings.get();
+  batchSize = 10;
 
-    const metadataExtractionFeatureToggle = settingsValues?.features?.metadataExtraction;
-    this.templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(x =>
-      x.template.toString()
-    );
-    const segmentationValues = settingsValues?.features?.segmentation;
+  async start() {
     this.segmentationTaskManager = new TaskManager({
       serviceName: this.SERVICE_NAME,
     });
   }
 
-  segmentOnePdf = async (nextFile: FileType) => {
+  segmentOnePdf = async (nextFile: FileType, url: string) => {
     if (!this.segmentationTaskManager) {
       return;
     }
@@ -64,8 +59,15 @@ class SegmentPdfs {
             await this.start();
           }
 
+          const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
+          if (pendingTasks > 0) {
+            return;
+          }
+
           const settingsValues = await settings.get();
           const metadataExtractionFeatureToggle = settingsValues?.features?.metadataExtraction;
+          const segmentationServiceConfig = settingsValues?.features?.segmentation;
+
           const templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(
             x => x.template
           );
@@ -105,13 +107,13 @@ class SegmentPdfs {
               },
             },
             {
-              $limit: 10,
+              $limit: this.batchSize,
             },
           ]);
 
           for (let i = 0; i < filesToSegment.length; i += 1) {
             // eslint-disable-next-line no-await-in-loop
-            await this.segmentOnePdf(filesToSegment[i]);
+            await this.segmentOnePdf(filesToSegment[i], segmentationServiceConfig.url);
           }
         }, tenant);
       })
