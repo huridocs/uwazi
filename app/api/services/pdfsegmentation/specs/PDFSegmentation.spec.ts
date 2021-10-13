@@ -67,10 +67,6 @@ describe('pdfSegmentation', () => {
 
     expect(TaskManager).toHaveBeenCalledWith({
       serviceName: 'segmentation',
-      dataUrl: 'http://localhost:1234/data',
-      filesUrl: 'http://localhost:1234/files',
-      resultsUrl: 'http://localhost:1234/results',
-      redisUrl: `redis://${config.redis.host}:${config.redis.host}`,
     });
 
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
@@ -90,10 +86,6 @@ describe('pdfSegmentation', () => {
 
     expect(TaskManager).toHaveBeenCalledWith({
       serviceName: 'segmentation',
-      dataUrl: 'http://other-localhost:1234/data',
-      filesUrl: 'http://other-localhost:1234/files',
-      resultsUrl: 'http://other-localhost:1234/results',
-      redisUrl: `redis://${config.redis.host}:${config.redis.host}`,
     });
 
     expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
@@ -176,8 +168,15 @@ describe('pdfSegmentation', () => {
   });
 
   describe('when there is pending tasks', () => {
-    it('should not put more', () => {
-      throw new Error('Not implemented');
+    it('should not put more', async () => {
+      await fixturer.clearAllAndLoad(dbOne, fixturesFiveFiles);
+      segmentPdfs.start();
+
+      segmentPdfs.segmentationTaskManager!.countPendingTasks = () => Promise.resolve(10);
+
+      await segmentPdfs.segmentPdfs();
+
+      expect(segmentPdfs.segmentationTaskManager?.startTask).not.toHaveBeenCalled();
     });
   });
 
