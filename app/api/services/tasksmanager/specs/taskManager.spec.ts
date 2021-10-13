@@ -114,7 +114,7 @@ describe('taskManager', () => {
       taskManager.subscribeToResults();
 
       externalDummyService.setResults(expectedResults);
-      const task = { task: 'Tofu', tenant: 'Gabo', resultsUrl: 'http://localhost:1234/results' };
+      const task = { task: 'Tofu', tenant: 'Gabo', results_url: 'http://localhost:1234/results' };
       await externalDummyService.sendFinishedMessage(task);
 
       await waitForExpect(async () => {
@@ -163,7 +163,7 @@ describe('taskManager', () => {
         const task = {
           task: 'Ceviche',
           tenant: 'Mercy',
-          resultsUrl: 'http://localhost:1234/results',
+          results_url: 'http://localhost:1234/results',
         };
 
         await taskManager?.stop();
