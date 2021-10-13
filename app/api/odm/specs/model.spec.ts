@@ -6,8 +6,7 @@ import testingDB from 'api/utils/testing_db';
 import mongoose, { Schema } from 'mongoose';
 import { ensure } from 'shared/tsUtils';
 import { tenants } from 'api/tenants';
-import { instanceModel, OdmModel } from '../model';
-import { models, WithId } from '../models';
+import { instanceModel, OdmModel, models, WithId } from '../model';
 
 const testSchema = new Schema({
   name: String,

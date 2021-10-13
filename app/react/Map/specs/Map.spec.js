@@ -4,7 +4,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
-
 import { Icon } from 'UI';
 import settingsAPI from 'app/Settings/SettingsAPI';
 import Map from '../Map';
@@ -21,6 +20,7 @@ describe('Map', () => {
 
   beforeEach(() => {
     props = {
+      mapStyleSwitcher: false,
       onClick: jasmine.createSpy('onClick'),
       clickOnMarker: jasmine.createSpy('clickOnMarker'),
       hoverOnMarker: jasmine.createSpy('hoverOnMarker'),
@@ -32,6 +32,7 @@ describe('Map', () => {
         { latitude: 2, longitude: 32, properties: { info: 'Some info', color: 'red' } },
         { latitude: 23, longitude: 21 },
       ],
+      mapViewStyle: '',
     };
   });
 
@@ -49,6 +50,7 @@ describe('Map', () => {
     instance.map = { getMap: () => map };
     instance.setState({ mapStyleLoaded: true });
     markers = component.find(Marker);
+    settingsAPI.get.mockResolvedValue({ mapTilerKey: '123' });
   };
 
   const firstMarker = () => markers.first();
@@ -260,6 +262,23 @@ describe('Map', () => {
       await instance.componentDidMount();
       expect(instance.state.viewport.latitude).toBe(mapStartingPoint[0].lat);
       expect(instance.state.viewport.longitude).toBe(mapStartingPoint[0].lon);
+    });
+  });
+
+  describe('style switch behavior', () => {
+    beforeEach(() => {
+      render();
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: 'XYZ' });
+      instance.collectionSettings = settingsAPI;
+    });
+    it('should load satelite view when setStyle is called with "satellite"', () => {
+      instance.setMapStyle('satellite');
+      expect(instance.mapStyle.getIn(['layers', 0, 'id'])).toContain('satellite');
+      expect(instance.mapStyle.getIn(['sources', 'satellite', 'url'])).toContain('satellite');
+    });
+    it('should load satelite view when setStyle is called with "terrain"', () => {
+      instance.setMapStyle('terrain');
+      expect(instance.mapStyle.getIn(['layers', 0, 'id'])).not.toContain('satellite');
     });
   });
 
