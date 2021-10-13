@@ -19,7 +19,7 @@ const props = {
       },
     ],
   },
-  fileID: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
+  file: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
   fileName: { type: String },
 };
 

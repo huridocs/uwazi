@@ -4,6 +4,7 @@ import waitForExpect from 'wait-for-expect';
 import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager';
 import { RedisServer } from '../RedisServer';
 import { ExternalDummyService } from './ExternalDummyService';
+import { config } from 'api/config';
 
 describe('taskManager', () => {
   let taskManager: TaskManager | undefined;
@@ -14,19 +15,18 @@ describe('taskManager', () => {
 
   beforeAll(async () => {
     const port = 6378;
+    config.redis.port = port;
+
+    const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     service = {
       serviceName: 'KonzNGaboHellKitchen',
-      dataUrl: 'http://localhost:1234/data',
-      filesUrl: 'http://localhost:1234/files',
-      resultsUrl: 'http://localhost:1234/results',
-      redisUrl: `redis://localhost:${port}`,
       processResults: jest.fn(),
     };
     redisServer = new RedisServer(port);
     await redisServer.start();
 
     externalDummyService = new ExternalDummyService(1234, service.serviceName);
-    await externalDummyService.start(service.redisUrl);
+    await externalDummyService.start(redisUrl);
 
     taskManager = new TaskManager(service);
     taskManager.subscribeToResults();
@@ -50,9 +50,7 @@ describe('taskManager', () => {
         task: 'CheeseBurger',
         tenant: 'Rafa',
       });
-
       const message = await externalDummyService.readFirstTaskMessage();
-
       expect(message).toBe('{"task":"CheeseBurger","tenant":"Rafa"}');
     });
 
@@ -85,48 +83,38 @@ describe('taskManager', () => {
     });
   });
 
-  describe('sending materials', () => {
-    it('should send materials to the service', async () => {
-      const materials1 = { someData: 3 };
-      const materials2 = { someData: 2 };
-      const materials3 = { someData: 3 };
-      await taskManager?.sendJSON(materials1);
-      await taskManager?.sendJSON(materials2);
-      await taskManager?.sendJSON(materials3);
+  describe('count tasks', () => {
+    it('should count the pending tasks', async () => {
+      await taskManager?.startTask({
+        task: 'CheeseBurger',
+        tenant: 'Rafa',
+      });
 
-      expect(externalDummyService.materials.length).toEqual(3);
-      expect(externalDummyService.materials[0]).toEqual(materials1);
-      expect(externalDummyService.materials[1]).toEqual(materials2);
-      expect(externalDummyService.materials[2]).toEqual(materials3);
-    });
+      await taskManager?.startTask({
+        task: 'Fries',
+        tenant: 'Joan',
+      });
 
-    it('should send files to the service', async () => {
-      const file = fs.readFileSync('app/api/services/tasksmanager/specs/blank.pdf');
+      await taskManager?.startTask({
+        task: 'Ribs',
+        tenant: 'Fede',
+      });
 
-      await taskManager?.sendFile(file, 'blank1.pdf');
-      await taskManager?.sendFile(file, 'blank2.pdf');
-      await taskManager?.sendFile(file, 'blank3.pdf');
-
-      expect(externalDummyService.files.length).toEqual(3);
-      expect(externalDummyService.files[0]).toEqual(file);
-      expect(externalDummyService.filesNames[0]).toEqual('blank1.pdf');
-      expect(externalDummyService.files[1]).toEqual(file);
-      expect(externalDummyService.filesNames[1]).toEqual('blank2.pdf');
-      expect(externalDummyService.files[2]).toEqual(file);
-      expect(externalDummyService.filesNames[2]).toEqual('blank3.pdf');
+      const pendingTasks = await taskManager?.countPendingTasks();
+      expect(pendingTasks).toBe(3);
     });
   });
 
   describe('when the task finishes', () => {
     it('should get the results', async () => {
-      const expectedResults = { results: 'Paella' };
+      const expectedResults = { results: 'Tofu' };
 
       await taskManager?.stop();
       taskManager = new TaskManager(service);
       taskManager.subscribeToResults();
 
       externalDummyService.setResults(expectedResults);
-      const task = { task: 'Tofu', tenant: 'Gabo' };
+      const task = { task: 'Tofu', tenant: 'Gabo', resultsUrl: 'http://localhost:1234/results' };
       await externalDummyService.sendFinishedMessage(task);
 
       await waitForExpect(async () => {
@@ -138,7 +126,7 @@ describe('taskManager', () => {
   describe('when redis server is not available', () => {
     it('taskManager should fail to start task', async () => {
       await redisServer.stop();
-      const task = { task: 'Spagueti', tenant: 'Kon' };
+      const task = { task: 'Spagueti', tenant: 'Konz' };
 
       try {
         await taskManager?.startTask(task);
@@ -151,7 +139,9 @@ describe('taskManager', () => {
 
     describe('and redis comes back', () => {
       it('should send tasks again', async () => {
+        await externalDummyService.resetQueue();
         await redisServer.stop();
+
         const task = { task: 'Ceviche', tenant: 'Mercy' };
 
         try {
@@ -170,10 +160,16 @@ describe('taskManager', () => {
       });
 
       it('should read pending messages', async () => {
-        const task = { task: 'Ceviche', tenant: 'Mercy' };
+        const task = {
+          task: 'Ceviche',
+          tenant: 'Mercy',
+          resultsUrl: 'http://localhost:1234/results',
+        };
 
         await taskManager?.stop();
-        externalDummyService.setResults({ results: 'Paella' });
+        externalDummyService.setResults({
+          results: 'Ceviche',
+        });
         await externalDummyService.sendFinishedMessage(task);
 
         expect(service.processResults).not.toHaveBeenCalled();
@@ -186,7 +182,7 @@ describe('taskManager', () => {
 
         await waitForExpect(async () => {
           expect(service.processResults).toHaveBeenCalledWith({
-            results: 'Paella',
+            results: 'Ceviche',
           });
         });
       });

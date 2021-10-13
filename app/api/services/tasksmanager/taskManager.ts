@@ -2,6 +2,7 @@ import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis, { RedisClient } from 'redis';
 import request from 'shared/JSONRequest';
 import { Repeater } from 'api/utils/Repeater';
+import { config } from 'api/config';
 
 export interface TaskMessage {
   tenant: string;
@@ -10,10 +11,6 @@ export interface TaskMessage {
 
 export interface Service {
   serviceName: string;
-  filesUrl: string;
-  dataUrl: string;
-  resultsUrl: string;
-  redisUrl: string;
   processResults?: (results: object) => void;
 }
 
@@ -38,7 +35,8 @@ export class TaskManager {
   }
 
   start() {
-    this.redisClient = Redis.createClient(this.service.redisUrl);
+    const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
+    this.redisClient = Redis.createClient(redisUrl);
 
     this.redisClient.on('error', error => {
       if (error.code !== 'ECONNREFUSED') {
@@ -52,17 +50,22 @@ export class TaskManager {
 
     this.redisClient.on('connect', () => {
       this.redisSMQ?.createQueue({ qname: this.taskQueue }, err => {
-        if (err.name !== 'queueExists') {
+        if (err && err.name !== 'queueExists') {
           throw err;
         }
       });
       this.redisSMQ?.createQueue({ qname: this.resultsQueue }, err => {
-        if (err.name !== 'queueExists') {
+        if (err && err.name !== 'queueExists') {
           throw err;
         }
       });
     });
   }
+
+  countPendingTasks: () => Promise<number> = async () => {
+    const queueAttributes = await this.redisSMQ!.getQueueAttributesAsync({ qname: this.taskQueue });
+    return queueAttributes.msgs;
+  };
 
   subscribeToResults() {
     this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);
@@ -77,7 +80,8 @@ export class TaskManager {
 
       if (message.id) {
         if (this.service.processResults) {
-          const results = await request.get(this.service.resultsUrl, JSON.parse(message.message));
+          const processedMessage = JSON.parse(message.message);
+          const results = await request.get(processedMessage.resultsUrl, processedMessage);
           this.service.processResults(results.json);
         }
       }
