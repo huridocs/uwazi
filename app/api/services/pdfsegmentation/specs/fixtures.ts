@@ -17,9 +17,7 @@ const settings = [
         },
       ],
       segmentation: {
-        dataUrl: 'http://localhost:1234/data',
-        filesUrl: 'http://localhost:1234/files',
-        resultsUrl: 'http://localhost:1234/results',
+        url: 'http://localhost:1234/files',
       },
     },
   },
@@ -36,15 +34,14 @@ const otherSettings = [
         },
       ],
       segmentation: {
-        dataUrl: 'http://other-localhost:1234/data',
-        filesUrl: 'http://other-localhost:1234/files',
-        resultsUrl: 'http://other-localhost:1234/results',
+        url: 'http://localhost:1234/files',
       },
     },
   },
 ];
 
-const fixturesPdfNameA = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const fixturesPdfNameA = 'documentA.pdf';
+const fixturesPdfNameB = 'documentB.pdf';
 
 const fixturesOneFile: DBFixture = {
   entities: [factory.entity('A1', 'templateToSegmentA')],
@@ -55,7 +52,7 @@ const fixturesOneFile: DBFixture = {
 const fixturesOtherFile: DBFixture = {
   entities: [factory.entity('A1', 'templateToSegmentB')],
   settings: otherSettings,
-  files: [factory.file('F1', 'A1', 'document', fixturesPdfNameA)],
+  files: [factory.file('F1', 'A1', 'document', fixturesPdfNameB)],
 };
 
 const fixturesFiveFiles: DBFixture = {
@@ -130,6 +127,7 @@ const fixturesMultiTenant: DBFixture = {};
 
 export {
   fixturesPdfNameA,
+  fixturesPdfNameB,
   fixturesOneFile,
   fixturesOtherFile,
   fixturesTwelveFiles,

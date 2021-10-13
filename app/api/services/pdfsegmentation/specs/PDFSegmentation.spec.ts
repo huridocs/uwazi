@@ -4,19 +4,21 @@ import {
   fixturesOneFile,
   fixturesOtherFile,
   fixturesPdfNameA,
+  fixturesPdfNameB,
   fixturesTwelveFiles,
   fixturesFiveFiles,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
 import fs from 'fs';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
 import { Db } from 'mongodb';
 
 import { SegmentPdfs } from '../PDFSegmentation';
 import { SegmentationModel } from '../segmentationModel';
+import request from 'shared/JSONRequest';
+import exp from 'constants';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -45,7 +47,8 @@ describe('pdfSegmentation', () => {
 
   let dbOne: Db;
   let dbTwo: Db;
-  let file: Buffer;
+  let fileA: Buffer;
+  let fileB: Buffer;
 
   afterAll(async () => {
     await testingDB.disconnect();
@@ -57,26 +60,21 @@ describe('pdfSegmentation', () => {
     dbOne = DB.connectionForDB(tenantOne.dbName).db;
     dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
     tenants.tenants = { tenantOne };
-    file = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    fileA = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    fileB = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    jest.spyOn(request, 'uploadFile').mockResolvedValue({});
+    jest.resetAllMocks();
   });
 
-  it('should send one pdf to segment', async () => {
+  it('should send the pdf', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
 
     await segmentPdfs.segmentPdfs();
-
-    expect(TaskManager).toHaveBeenCalledWith({
-      serviceName: 'segmentation',
-    });
-
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
-      file,
-      fixturesPdfNameA
+    expect(request.uploadFile).toHaveBeenCalledWith(
+      'http://localhost:1234/files',
+      fixturesPdfNameA,
+      fileA
     );
-  });
-
-  it('should send the file', () => {
-    throw new Error('Not implemented');
   });
 
   it('should send other pdf to segment', async () => {
@@ -84,13 +82,11 @@ describe('pdfSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
 
-    expect(TaskManager).toHaveBeenCalledWith({
-      serviceName: 'segmentation',
-    });
-
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
-      file,
-      fixturesPdfNameA
+    await segmentPdfs.segmentPdfs();
+    expect(request.uploadFile).toHaveBeenCalledWith(
+      'http://localhost:1234/files',
+      fixturesPdfNameB,
+      fileB
     );
   });
 
@@ -98,12 +94,13 @@ describe('pdfSegmentation', () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesTwelveFiles);
     await segmentPdfs.segmentPdfs();
 
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
-      file,
-      fixturesPdfNameA
+    expect(request.uploadFile).toHaveBeenCalledWith(
+      'http://localhost:1234/files',
+      fixturesPdfNameA,
+      fileA
     );
 
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(10);
+    expect(request.uploadFile).toHaveBeenCalledTimes(10);
   });
 
   it('should send pdfs only from templates with the information extraction on', async () => {
@@ -111,12 +108,7 @@ describe('pdfSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
 
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledWith(
-      file,
-      fixturesPdfNameA
-    );
-
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
+    expect(request.uploadFile).toHaveBeenCalledTimes(2);
   });
 
   it('should send pdfs from different tenants with the information extraction on', async () => {
@@ -126,7 +118,7 @@ describe('pdfSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
 
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(2);
+    expect(request.uploadFile).toHaveBeenCalledTimes(2);
   });
 
   it('should start the tasks', async () => {
@@ -135,7 +127,7 @@ describe('pdfSegmentation', () => {
     await segmentPdfs.segmentPdfs();
 
     expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledWith({
-      task: 'f2082bf51b6ef839690485d7153e847a.pdf',
+      task: 'documentA.pdf',
       tenant: 'tenant1',
     });
   });
@@ -164,7 +156,7 @@ describe('pdfSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
 
-    expect(segmentPdfs.segmentationTaskManager?.sendFile).toHaveBeenCalledTimes(4);
+    expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(4);
   });
 
   describe('when there is pending tasks', () => {
