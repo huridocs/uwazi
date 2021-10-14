@@ -13,18 +13,66 @@
   }
 
   table {
+    table-layout: fixed;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     border: 0;
     border-collapse: separate;
     font-size: $f-size-sm;
+    overflow: auto;
 
     .suggested-value {
       color: $c-primary;
     }
   }
 
+  tr {
+    display: flex;
+    overflow:hidden;
+    &:nth-child(even) > td {
+      background-color: #f5f5f5;
+    }
+
+    &:nth-child(odd) > td {
+      background-color: $c-white;
+    }
+  }
+
+  th,
+  td {
+    width: 6%;
+    flex: 0 0 auto;
+    display: flex;
+    height: 120px;
+    align-content: center;
+
+    &.suggestion{
+      width: 20%;
+      text-overflow: fade;
+      overflow: hidden;
+    }
+    &.action{
+      min-width: 90px;
+      width: 6%;
+      padding: 5px;
+    }
+    &.title{
+      width: 10%;
+      text-overflow: fade;
+      overflow: hidden;
+    }
+    &.segment{
+      width: 35%;
+      overflow: scroll;
+    }
+    &.larger-segment{
+      width: 55%;
+      overflow: scroll;
+    }
+  }
+
   th {
-    background-color: white;
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
     height: 30px;
     padding: 8px;
@@ -35,19 +83,16 @@
     padding: 8px 16px;
     border-bottom: 2px solid #e0e0e0;
     border-left: 2px solid #e0e0e0;
-    text-overflow: fade;
-    overflow-wrap:break-word;
 
     button {
       background: $c-white;
       font-size: $f-size-sm;
     }
 
-    &:nth-child(1){
-      width: 25%;
-      min-width: 50px;
-      max-width: 300px;
+    &.suggestion{
       border-left: 0;
+      display: flex;
+      flex-direction: column;
 
       .suggestion-label{
         color: $c-grey-dark;
@@ -55,20 +100,6 @@
         padding-top: 30px;
       }
     }
-
-    &:nth-child(2){
-      padding: 5px;
-    }
   }
 
-  tr {
-    overflow:hidden;
-    &:nth-child(even) > td {
-      background-color: #f5f5f5;
-    }
-
-    &:nth-child(odd) > td {
-      background-color: $c-white;
-    }
-  }
 }

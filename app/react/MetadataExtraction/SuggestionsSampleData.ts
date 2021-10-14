@@ -43,26 +43,6 @@ const SuggestionsSamples: SuggestionType[] = [
     state: SuggestionState.filled,
     page: 1,
   },
-  {
-    title: 'Temporary entity title',
-    currentValue: 'Temporary entity title',
-    suggestedValue: 'Prevention of Trafficking in Persons Act',
-    segment:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque augue nisi, venenatis eget dictum vel, scelerisque vitae felis. Suspendisse sed eleifend neque, non volutpat ex. Prevention of Trafficking in Persons Act Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
-    language: 'English',
-    state: SuggestionState.filled,
-    page: 1,
-  },
-  {
-    title: 'Temporary entity title',
-    currentValue: 'Temporary entity title',
-    suggestedValue: 'Prevention of Trafficking in Persons Act',
-    segment:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque augue nisi, venenatis eget dictum vel, scelerisque vitae felis. Penal Code (Amendment) Act Suspendisse sed eleifend neque, non volutpat ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris semper auctor aliquam. Aenean posuere blandit fermentum. Cras pellentesque cursus arcu. Etiam non maximus nulla. Integer rhoncus libero a dapibus facilisis.',
-    language: 'English',
-    state: SuggestionState.filled,
-    page: 1,
-  },
 ];
 
 export const SuggestionsSampleData = (page: number) =>
