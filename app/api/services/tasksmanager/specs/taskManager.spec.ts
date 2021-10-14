@@ -21,6 +21,7 @@ describe('taskManager', () => {
     service = {
       serviceName: 'KonzNGaboHellKitchen',
       processResults: jest.fn(),
+      processRessultsMessageHiddenTime: 1,
     };
     redisServer = new RedisServer(port);
     await redisServer.start();
@@ -29,7 +30,6 @@ describe('taskManager', () => {
     await externalDummyService.start(redisUrl);
 
     taskManager = new TaskManager(service);
-    taskManager.subscribeToResults();
 
     await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to be ready
   });
@@ -106,20 +106,21 @@ describe('taskManager', () => {
   });
 
   describe('when the task finishes', () => {
-    it('should get the results', async () => {
-      const expectedResults = { results: 'Tofu' };
+    it('should call process results once and delete the result message', async () => {
+      const task = {
+        task: 'Tofu',
+        tenant: 'Gabo',
+        results_url: 'http://localhost:1234/results',
+      };
 
-      await taskManager?.stop();
-      taskManager = new TaskManager(service);
-      taskManager.subscribeToResults();
-
-      externalDummyService.setResults(expectedResults);
-      const task = { task: 'Tofu', tenant: 'Gabo', results_url: 'http://localhost:1234/results' };
       await externalDummyService.sendFinishedMessage(task);
 
       await waitForExpect(async () => {
-        expect(service.processResults).toHaveBeenCalledWith(expectedResults);
+        expect(service.processResults).toHaveBeenCalledWith(task);
       });
+
+      await new Promise(resolve => setTimeout(resolve, 1001)); // wait for another check for results
+      expect(service.processResults).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -176,14 +177,11 @@ describe('taskManager', () => {
         await redisServer.stop();
 
         taskManager?.start();
-        taskManager?.subscribeToResults();
 
         await redisServer.start();
 
         await waitForExpect(async () => {
-          expect(service.processResults).toHaveBeenCalledWith({
-            results: 'Ceviche',
-          });
+          expect(service.processResults).toHaveBeenCalledWith(task);
         });
       });
     });
