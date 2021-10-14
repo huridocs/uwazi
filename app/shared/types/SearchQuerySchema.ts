@@ -6,6 +6,12 @@ export const RangeQuerySchema = {
   properties: { from: { type: 'number' }, to: { type: 'number' } },
 };
 
+export const AdvancedQuerySchema = {
+  title: 'AdvancedQuery',
+  additionalProperties: false,
+  properties: { values: { type: 'array', items: { type: 'string' } } },
+};
+
 export const SearchQuerySchema = {
   title: 'SearchQuery',
   additionalProperties: false,
@@ -18,7 +24,13 @@ export const SearchQuerySchema = {
     filter: {
       type: 'object',
       additionalProperties: {
-        anyOf: [RangeQuerySchema, { type: 'string' }, { type: 'number' }, { type: 'boolean' }],
+        anyOf: [
+          RangeQuerySchema,
+          AdvancedQuerySchema,
+          { type: 'string' },
+          { type: 'number' },
+          { type: 'boolean' },
+        ],
       },
       properties: {
         searchString: { type: 'string' },

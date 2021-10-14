@@ -1,4 +1,4 @@
-import { RangeQuery, SearchQuery } from 'shared/types/SearchQueryType';
+import { RangeQuery, AdvancedQuery, SearchQuery } from 'shared/types/SearchQueryType';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
 import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
@@ -9,10 +9,15 @@ const sharedIdFilter = (query: SearchQuery) =>
   query.filter?.sharedId ? [{ terms: { 'sharedId.raw': [query.filter.sharedId] } }] : [];
 
 const isRange = (
-  range: (RangeQuery | string | number | boolean) | undefined
+  range: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined
 ): range is RangeQuery =>
   typeof range === 'object' &&
   (Object.keys(range).includes('from') || Object.keys(range).includes('to'));
+
+const isAdvanced = (
+  filterValue: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined
+): filterValue is AdvancedQuery =>
+  typeof filterValue === 'object' && Object.keys(filterValue).includes('values');
 
 const metadataFilters = (query: SearchQuery) =>
   Object.keys(query.filter || {})
@@ -24,9 +29,16 @@ const metadataFilters = (query: SearchQuery) =>
           range: { [`${key}.value`]: { gte: filterValue.from, lte: filterValue.to } },
         };
       }
+
+      let queryString = filterValue;
+      // if (isAdvanced(filterValue)) {
+      //   queryString = filterValue.values?.join(' OR ');
+      // }
+
       return {
-        term: {
-          [`${key}.value`]: query.filter?.[key],
+        query_string: {
+          query: queryString,
+          fields: [`${key}.value`],
         },
       };
     });

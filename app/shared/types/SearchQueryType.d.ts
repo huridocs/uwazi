@@ -6,6 +6,10 @@ export interface RangeQuery {
   to?: number;
 }
 
+export interface AdvancedQuery {
+  values?: string[];
+}
+
 export interface SearchQuery {
   page?: {
     limit?: number;
@@ -14,7 +18,7 @@ export interface SearchQuery {
     searchString?: string;
     sharedId?: string;
     published?: boolean;
-    [k: string]: (RangeQuery | string | number | boolean) | undefined;
+    [k: string]: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined;
   };
   fields?: string[];
 }

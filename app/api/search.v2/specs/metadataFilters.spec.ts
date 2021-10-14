@@ -45,6 +45,7 @@ describe('Metadata filters', () => {
             factory.property('selectPropertyName', 'select'),
             factory.property('numericPropertyName', 'numeric'),
             factory.property('datePropertyName', 'multidate'),
+            factory.property('textPropertyName', 'text'),
           ]),
         ],
         entities: [
@@ -53,15 +54,18 @@ describe('Metadata filters', () => {
             selectPropertyName: [factory.metadataValue('thesaurusId1')],
             numericPropertyName: [factory.metadataValue(42)],
             datePropertyName: [factory.metadataValue(9001), factory.metadataValue(42)],
+            textPropertyName: [factory.metadataValue('A small text value')],
           }),
           factory.entity('Entity 2', 'templateA', {
             multiselect: [factory.metadataValue('thesaurusId2')],
             selectPropertyName: [factory.metadataValue('thesaurusId2')],
             numericPropertyName: [factory.metadataValue(13)],
             datePropertyName: [factory.metadataValue(8999)],
+            textPropertyName: [factory.metadataValue('Very different value')],
           }),
           factory.entity('Entity 3', 'templateA', {
             numericPropertyName: [factory.metadataValue(5)],
+            textPropertyName: [factory.metadataValue('Another small text')],
           }),
         ],
       },
@@ -71,32 +75,48 @@ describe('Metadata filters', () => {
 
   afterAll(async () => testingDB.disconnect());
 
-  it('should filter by the one metadata property', async () => {
-    const query = {
-      filter: {
-        'metadata.selectPropertyName': 'thesaurusId1',
-      },
-    };
+  describe('Select and Multiselect filters', () => {
+    it('should filter by one property and one value', async () => {
+      const query = {
+        filter: {
+          'metadata.selectPropertyName': 'thesaurusId1',
+        },
+      };
 
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
-    expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
-  });
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query(query)
+        .expect(200);
+      expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
+    });
 
-  it('should filter by the other metadata property', async () => {
-    const query = {
-      filter: {
-        'metadata.multiselect': 'thesaurusId2',
-      },
-    };
+    it('should filter by one property and multiple values', async () => {
+      const query = {
+        filter: {
+          'metadata.selectPropertyName': { values: ['thesaurusId1', 'thesaurusId2'] },
+        },
+      };
 
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
-    expect(body.data).toMatchObject([{ title: 'Entity 2' }]);
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query(query)
+        .expect(200);
+      expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 2' }]);
+    });
+
+    it('should filter by the other metadata property', async () => {
+      const query = {
+        filter: {
+          'metadata.multiselect': 'thesaurusId2',
+        },
+      };
+
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query(query)
+        .expect(200);
+      expect(body.data).toMatchObject([{ title: 'Entity 2' }]);
+    });
   });
 
   describe('Numeric range filter', () => {
@@ -138,11 +158,33 @@ describe('Metadata filters', () => {
     });
   });
 
-  it('', () => {
-    throw new Error('Should support text filters.');
+  describe('Property-specific text filters', () => {
+    it('should filter by exact text value', async () => {
+      const query = { filter: { 'metadata.textPropertyName': 'small' } };
+
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query(query)
+        .expect(200);
+
+      expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 3' }]);
+    });
+
+    it('should filter by string expressions', async () => {
+      const query = {
+        filter: { 'metadata.textPropertyName': '?alu*' },
+      };
+
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query(query)
+        .expect(200);
+
+      expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 2' }]);
+    });
   });
 
   it('', () => {
-    throw new Error('Refactor request error-expect.');
+    throw new Error('Validate query sintax for text queries');
   });
 });
