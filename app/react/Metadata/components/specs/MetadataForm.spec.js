@@ -69,6 +69,7 @@ describe('MetadataForm', () => {
     component = shallow(<MetadataForm {...props} />);
   };
 
+  // Delete this?
   describe('Icon field', () => {
     it('should remove icon', () => {});
   });

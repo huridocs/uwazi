@@ -4,6 +4,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { ClientFile, IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
+import { FormGroup } from 'app/Forms';
+import { Field } from 'react-redux-form';
 
 type SupportingFilesProps = {
   storeKey?: string;
@@ -26,6 +28,7 @@ type ComponentProps = SupportingFilesProps & mappedProps;
 
 const SupportingFiles = ({ entity }: ComponentProps) => {
   const { attachments = [] } = entity;
+
   return (
     <div>
       <h2>
@@ -33,13 +36,17 @@ const SupportingFiles = ({ entity }: ComponentProps) => {
       </h2>
 
       <div className="attachments-list">
-        {attachments.map((file: ClientFile) => (
+        {attachments.map((file: ClientFile, index: number) => (
           <div className="attachment" key={file._id}>
             <div className="attachment-thumbnail">
               <img src={`/api/files/${file.filename}`} alt={file.originalname} />
             </div>
             <div className="attachment-name">
-              <input type="text" placeholder={file.originalname} />
+              <FormGroup>
+                <Field model={`.attachments.${index}.originalname`}>
+                  <input className="form-control" />
+                </Field>
+              </FormGroup>
             </div>
             <button type="button" className="btn btn-danger">
               <Icon icon="trash-alt" />

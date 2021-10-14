@@ -5,7 +5,22 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import { SupportingFiles } from '../SupportingFiles';
+import { MetadataForm } from '../MetadataForm';
+
+const templates = Immutable.fromJS([
+  {
+    name: 'template1',
+    _id: 'templateId',
+    properties: [{ name: 'field1', label: 'label1', type: 'text' }],
+    commonProperties: [{ name: 'title', label: 'Title' }],
+  },
+  {
+    name: 'template2',
+    _id: 'templateId2',
+    properties: [{ name: 'field1', label: 'label1', type: 'text' }],
+    commonProperties: [{ name: 'title', label: 'Title' }],
+  },
+]);
 
 const entity1 = {
   _id: 'entity_id',
@@ -36,24 +51,6 @@ const entity1 = {
   ],
 };
 
-const entity2 = {
-  _id: 'entity2_id',
-  sharedId: 'entity2_sharedId',
-  attachments: [
-    {
-      _id: 'file1',
-      originalname: 'file1.jpg',
-      mimetype: 'image/jpeg',
-      filename: '1634043075618nraarbdu2ko.jpg',
-      size: 2305089,
-      entity: 'entity2_sharedId',
-      type: 'attachment',
-      creationDate: 1634043075634,
-      __v: 0,
-    },
-  ],
-};
-
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
   library: {
@@ -61,32 +58,51 @@ const store = mockStore({
       metadata: entity1,
     },
   },
-  entityView: {
-    entity: Immutable.fromJS(entity2),
-  },
 });
 
 describe('Supporting files', () => {
   let component: ShallowWrapper;
 
-  const render = (storeKey?: string) => {
+  const render = () => {
     component = shallow(
       <Provider store={store}>
-        <SupportingFiles storeKey={storeKey} />
+        <MetadataForm
+          model="library.sidepanel.metadata"
+          template={templates.get(0)}
+          templateOptions={Immutable.fromJS([
+            { label: 'template1', value: 'templateId' },
+            { label: 'template2', value: 'templateId2' },
+          ])}
+          thesauris={Immutable.fromJS([])}
+          storeKey="library"
+        />
       </Provider>
-    )
-      .dive()
-      .dive();
+    );
   };
-  it('should display existing attachments', () => {
-    render('library');
-    expect(component.find('.attachment-thumbnail')).toHaveLength(2);
 
-    render();
-    expect(component.find('.attachment-thumbnail')).toHaveLength(1);
+  describe('on edit', () => {
+    it('should display existing supporting files when editing on the sidepanel', () => {
+      render();
+      expect(
+        component
+          .dive()
+          .find('Connect(SupportingFiles)')
+          .dive()
+          .dive()
+          .find('.attachment')
+      ).toHaveLength(2);
+    });
+
+    it('', () => {
+      throw new Error('should allow renaming supporting files');
+    });
+
+    it('', () => {
+      throw new Error('should allow deleting supporting files');
+    });
+
+    it('', () => {
+      throw new Error('should contemplate template changes');
+    });
   });
-
-  it('should allow renaming attachments', () => {});
-
-  it('should allow deleting attachments', () => {});
 });

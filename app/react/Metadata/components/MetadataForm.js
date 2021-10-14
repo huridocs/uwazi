@@ -170,9 +170,7 @@ export class MetadataForm extends Component {
           storeKey={storeKey}
         />
 
-        <FormGroup>
-          <SupportingFiles storeKey={storeKey} />
-        </FormGroup>
+        <SupportingFiles storeKey={storeKey} />
       </Form>
     );
   }
