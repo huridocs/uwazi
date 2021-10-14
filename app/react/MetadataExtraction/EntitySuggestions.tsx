@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Column, HeaderGroup, Row, useTable } from 'react-table';
 import { SuggestionType } from 'shared/types/suggestionType';
-import { Translate, I18NLink } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { getSuggestions } from 'app/MetadataExtraction/SuggestionsAPI';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -21,6 +21,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
   const retrieveSuggestions = () => {
     const params = new RequestParams({
       page: pageIndex,
+      limit: 4,
     });
 
     getSuggestions(params)
@@ -74,11 +75,13 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           </>
         ),
         Cell: suggestionCell,
+        className: 'suggestion',
       },
       {
         id: 'action',
         Header: () => <Translate>Action</Translate>,
         Cell: actionsCell,
+        className: 'action',
       },
       {
         id: 'title',
@@ -88,7 +91,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       {
         accessor: 'segment' as const,
         Header: () => <Translate>Segment</Translate>,
-        width: '45%',
+        className: propertyName === 'Title' ? 'segment' : 'larger-segment',
       },
       {
         accessor: 'language' as const,
@@ -113,7 +116,6 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
   );
 
   const hiddenColumns = propertyName === 'Title' ? ['title'] : [];
-
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
     columns,
     data: suggestions,
@@ -143,7 +145,9 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           {headerGroups.map((headerGroup: HeaderGroup<SuggestionType>) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+                <th {...column.getHeaderProps({ className: column.className })}>
+                  {column.render('Header')}
+                </th>
               ))}
             </tr>
           ))}
@@ -154,7 +158,9 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map(cell => (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  <td {...cell.getCellProps({ className: cell.column.className })}>
+                    {cell.render('Cell')}
+                  </td>
                 ))}
               </tr>
             );
