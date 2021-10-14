@@ -15,13 +15,13 @@
   table {
     table-layout: fixed;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
     width: 100%;
     border: 0;
     border-collapse: separate;
     font-size: $f-size-sm;
-    overflow: auto;
-
+    overflow-x: scroll;
     .suggested-value {
       color: $c-primary;
     }
@@ -33,7 +33,6 @@
     &:nth-child(even) > td {
       background-color: #f5f5f5;
     }
-
     &:nth-child(odd) > td {
       background-color: $c-white;
     }
@@ -42,31 +41,30 @@
   th,
   td {
     width: 6%;
-    flex: 0 0 auto;
+    min-width: 70px;
     display: flex;
     height: 120px;
     align-content: center;
+    padding: 10px;
 
     &.suggestion{
       width: 20%;
       text-overflow: fade;
-      overflow: hidden;
     }
     &.action{
-      min-width: 90px;
       width: 6%;
+      min-width: 90px;
       padding: 5px;
     }
     &.title{
-      width: 10%;
+      width: 15%;
       text-overflow: fade;
-      overflow: hidden;
     }
     &.segment{
-      width: 35%;
+      width: 40%;
       overflow: scroll;
     }
-    &.larger-segment{
+    &.long-segment{
       width: 55%;
       overflow: scroll;
     }
@@ -101,5 +99,4 @@
       }
     }
   }
-
 }
