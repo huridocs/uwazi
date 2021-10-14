@@ -42,4 +42,8 @@ describe('LibraryMap', () => {
     libraryButtons.props().zoomOut();
     expect(zoomOut).toHaveBeenCalled();
   });
+  it('should enable mapViewMode', () => {
+    const libraryMode = component.find(LibraryModeToggleButtons);
+    expect(libraryMode.props().mapViewMode).toBe(true);
+  });
 });

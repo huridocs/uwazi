@@ -5,9 +5,10 @@ import Immutable from 'immutable';
 import { Icon } from 'UI';
 import Supercluster from 'supercluster'; //eslint-disable-line
 import settingsAPI from 'app/Settings/SettingsAPI';
-import _style from './style.json';
-import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 import { Translate } from 'app/I18N';
+import _styleStreet from './styles/street.json';
+import _styleSatellite from './styles/satellite.json';
+import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
 setRTLTextPlugin(
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
@@ -28,6 +29,7 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   selectedMarker: null,
   settings: { scrollZoom: true, touchZoom: true },
   showControls: false,
+  mapViewStyle: 'street',
 });
 
 export default class Map extends Component {
@@ -38,10 +40,10 @@ export default class Map extends Component {
     this.state.settings.touchZoom = props.scrollZoom;
     this.state.showControls = props.showControls;
 
-    this.mapStyle = Immutable.fromJS(_style);
+    this.loadMapStyle(this.state.mapViewStyle);
     this.supercluster = new Supercluster({
-      radius: _style.sources.markers.clusterRadius,
-      maxZoom: _style.sources.markers.clusterMaxZoom,
+      radius: _styleStreet.sources.markers.clusterRadius,
+      maxZoom: _styleStreet.sources.markers.clusterMaxZoom,
     });
 
     this.updateMapStyle(props);
@@ -125,6 +127,19 @@ export default class Map extends Component {
     }
   }
 
+  setMapStyle(mapStyle) {
+    this.loadMapStyle(mapStyle);
+    this.replaceKeysMapStyleJson();
+    const { viewport } = this.state;
+    this._onViewStateChange({
+      ...viewport,
+      ...TRANSITION_PROPS,
+    });
+
+    this.updateMapStyle(this.props);
+    this.setState({ mapViewStyle: mapStyle });
+  }
+
   setDefaultCoordinates() {
     const { viewport } = this.state;
     if (viewport.latitude === PRIME_MERIDIAN && viewport.longitude === PRIME_MERIDIAN) {
@@ -154,11 +169,21 @@ export default class Map extends Component {
     this.setState({ viewport: newViewport });
   }
 
+  loadMapStyle(style) {
+    if (style === 'satellite') {
+      this.mapStyle = Immutable.fromJS(_styleSatellite);
+    } else {
+      this.mapStyle = Immutable.fromJS(_styleStreet);
+    }
+  }
+
   bindActions() {
     this.zoom = this.zoom.bind(this);
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onHover = this.onHover.bind(this);
+    this.loadMapStyle = this.loadMapStyle.bind(this);
+    this.onMapStyleSwitcherClicked = this.onMapStyleSwitcherClicked.bind(this);
   }
 
   assignDefaults() {
@@ -355,9 +380,35 @@ export default class Map extends Component {
     return false;
   }
 
+  onMapStyleSwitcherClicked() {
+    if (this.state.mapViewStyle === 'satellite') {
+      this.setMapStyle('street');
+    } else {
+      this.setMapStyle('satellite');
+    }
+  }
+
+  renderMapStyleSwitcher() {
+    const { mapStyleSwitcher } = this.props;
+    if (mapStyleSwitcher) {
+      return (
+        <div className="mapbox-navigation">
+          <button
+            className="btn btn-default"
+            type="button"
+            onClick={this.onMapStyleSwitcherClicked}
+          >
+            <Translate>Switch Map Style</Translate>
+          </button>
+        </div>
+      );
+    }
+
+    return false;
+  }
+
   render() {
     const { viewport, settings } = this.state;
-
     return (
       <div
         className="map-container"
@@ -375,6 +426,7 @@ export default class Map extends Component {
             {...settings}
             dragRotate
             mapStyle={this.mapStyle}
+            token={this.mapboxToken}
             onViewportChange={this._onViewportChange}
             onViewStateChange={this._onViewStateChange}
             onClick={this.onClick}
@@ -384,6 +436,7 @@ export default class Map extends Component {
             {this.renderMarkers()}
             {this.renderPopup()}
             {this.renderControls()}
+            {this.renderMapStyleSwitcher()}
             <span className="mapbox-help">
               <Icon icon="question-circle" />
               <span className="mapbox-tooltip">
@@ -415,9 +468,11 @@ Map.defaultProps = {
   scrollZoom: true,
   showControls: false,
   interactiveLayerIds: [],
+  mapStyleSwitcher: false,
 };
 
 Map.propTypes = {
+  mapStyleSwitcher: PropTypes.bool,
   markers: PropTypes.arrayOf(PropTypes.object),
   latitude: PropTypes.number,
   longitude: PropTypes.number,
