@@ -12,7 +12,7 @@ interface EntitySuggestionsProps {
   propertyName: string;
   suggestions: SuggestionType[];
 }
-export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({ propertyName = 'Title' }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
 
   const [pageIndex, setPageIndex] = useState(1);
@@ -87,11 +87,12 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         id: 'title',
         accessor: 'title' as const,
         Header: () => <Translate>Title</Translate>,
+        className: 'title',
       },
       {
         accessor: 'segment' as const,
         Header: () => <Translate>Segment</Translate>,
-        className: propertyName === 'Title' ? 'segment' : 'larger-segment',
+        className: propertyName === 'Title' ? 'long-segment' : 'segment',
       },
       {
         accessor: 'language' as const,
