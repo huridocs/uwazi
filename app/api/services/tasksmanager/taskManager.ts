@@ -1,6 +1,5 @@
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis, { RedisClient } from 'redis';
-import request from 'shared/JSONRequest';
 import { Repeater } from 'api/utils/Repeater';
 import { config } from 'api/config';
 
@@ -9,15 +8,25 @@ export interface TaskMessage {
   task: string;
 }
 
+/* eslint-disable camelcase */
+export interface ResultsMessage {
+  tenant: string;
+  task: string;
+  data_url?: string;
+  file_url?: string;
+}
+/* eslint-enable camelcase */
+
 export interface Service {
   serviceName: string;
-  processResults?: (results: object) => void;
+  processResults?: (results: ResultsMessage) => Promise<void>;
+  processRessultsMessageHiddenTime?: number;
 }
 
 export class TaskManager {
-  private redisSMQ: RedisSMQ | undefined;
+  redisSMQ: RedisSMQ;
 
-  private readonly service: Service;
+  readonly service: Service;
 
   private readonly taskQueue: string;
 
@@ -25,36 +34,34 @@ export class TaskManager {
 
   private repeater: Repeater | undefined;
 
-  private redisClient: RedisClient | undefined;
+  redisClient: RedisClient;
 
   constructor(service: Service) {
     this.service = service;
     this.taskQueue = `${service.serviceName}_tasks`;
     this.resultsQueue = `${service.serviceName}_results`;
-    this.start();
-  }
-
-  start() {
     const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     this.redisClient = Redis.createClient(redisUrl);
+    this.redisSMQ = new RedisSMQ({ client: this.redisClient });
 
+    this.subscribeToEvents();
+    this.subscribeToResults();
+  }
+
+  subscribeToEvents() {
     this.redisClient.on('error', error => {
       if (error.code !== 'ECONNREFUSED') {
         throw error;
       }
     });
 
-    this.redisSMQ = new RedisSMQ({
-      client: this.redisClient,
-    });
-
     this.redisClient.on('connect', () => {
-      this.redisSMQ?.createQueue({ qname: this.taskQueue }, err => {
+      this.redisSMQ.createQueue({ qname: this.taskQueue }, err => {
         if (err && err.name !== 'queueExists') {
           throw err;
         }
       });
-      this.redisSMQ?.createQueue({ qname: this.resultsQueue }, err => {
+      this.redisSMQ.createQueue({ qname: this.resultsQueue }, err => {
         if (err && err.name !== 'queueExists') {
           throw err;
         }
@@ -69,40 +76,46 @@ export class TaskManager {
     return queueAttributes.msgs;
   }
 
-  subscribeToResults() {
-    this.repeater = new Repeater(this.receiveMessage.bind(this), 1000);
+  private subscribeToResults(): void {
+    this.repeater = new Repeater(this.checkForResults.bind(this), 500);
     this.repeater.start();
   }
 
-  async receiveMessage() {
-    if (this.redisClient?.connected) {
-      const message = (await this.redisSMQ?.receiveMessageAsync({
-        qname: this.resultsQueue,
-      })) as QueueMessage;
+  private async checkForResults() {
+    if (!this.redisClient?.connected) {
+      return;
+    }
 
-      if (message.id) {
-        if (this.service.processResults) {
-          const processedMessage = JSON.parse(message.message);
-          const results = await request.get(processedMessage.results_url, processedMessage);
-          this.service.processResults(results.json);
-        }
-      }
+    const message = (await this.redisSMQ.receiveMessageAsync({
+      qname: this.resultsQueue,
+      vt: this.service.processRessultsMessageHiddenTime,
+    })) as QueueMessage;
+
+    if (message.id && this.service.processResults) {
+      const processedMessage = JSON.parse(message.message);
+
+      await this.service.processResults(processedMessage);
+
+      await this.redisSMQ?.deleteMessageAsync({
+        qname: this.resultsQueue,
+        id: message.id,
+      });
     }
   }
 
   async startTask(taskMessage: TaskMessage) {
-    if (!this.redisClient?.connected) {
+    if (!this.redisClient.connected) {
       throw new Error('Redis is not connected');
     }
 
-    return this.redisSMQ?.sendMessageAsync({
+    return this.redisSMQ.sendMessageAsync({
       qname: this.taskQueue,
       message: JSON.stringify(taskMessage),
     });
   }
 
   async stop() {
-    await this.repeater?.stop();
-    await this.redisClient?.end(true);
+    await this.repeater!.stop();
+    await this.redisClient.end(true);
   }
 }
