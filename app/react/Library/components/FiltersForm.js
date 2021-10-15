@@ -72,7 +72,7 @@ export class FiltersForm extends Component {
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           <PublishedFilters onChange={this.activateAutoSearch} aggregations={aggregations} />
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
-          <TemplatesFilter storeKey={this.props.storeKey} />
+          <TemplatesFilter />
           <Filters
             onChange={this.activateAutoSearch}
             properties={fields}

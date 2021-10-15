@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
 import { connect } from 'react-redux';
-import ShowIf from 'app/App/ShowIf';
+import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
+import ShowIf from 'app/App/ShowIf';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
@@ -57,7 +56,7 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
+    this.props.filterDocumentTypes(selectedItems);
   }
 
   change(item) {
@@ -70,7 +69,7 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
+    this.props.filterDocumentTypes(selectedItems);
   }
 
   toggleOptions(item, e) {
@@ -207,7 +206,6 @@ export class DocumentTypesList extends Component {
 DocumentTypesList.defaultProps = {
   fromFilters: true,
   templates: Immutable.fromJS([]),
-  storeKey: 'library',
   settings: {},
   aggregations: Immutable.fromJS({}),
   selectedTemplates: [],
@@ -217,23 +215,23 @@ DocumentTypesList.defaultProps = {
 DocumentTypesList.propTypes = {
   selectedTemplates: PropTypes.instanceOf(Array),
   settings: PropTypes.instanceOf(Object),
-  templates: PropTypes.instanceOf(Immutable.List),
+  templates: Immutable.List,
   filterDocumentTypes: PropTypes.func,
-  aggregations: PropTypes.instanceOf(Immutable.Map),
-  storeKey: PropTypes.string,
+  aggregations: Immutable.Map,
   fromFilters: PropTypes.bool,
 };
 
-export function mapStateToProps(state, props) {
+export function mapStateToProps(state) {
   return {
     settings: state.settings,
     templates: state.templates,
-    aggregations: state[props.storeKey].aggregations,
+    aggregations: state.library.aggregations,
   };
 }
 
-function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ filterDocumentTypes }, wrapDispatch(dispatch, props.storeKey));
+//parent ts component requires ownProps to inferring types
+function mapDispatchToProps(dispatch, _ownProps) {
+  return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentTypesList);

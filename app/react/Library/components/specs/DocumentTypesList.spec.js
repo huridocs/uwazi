@@ -125,7 +125,7 @@ describe('DocumentTypesList', () => {
         .at(0)
         .find('input')
         .simulate('change');
-      expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 1], props.storeKey);
+      expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 1]);
     });
 
     describe('when is a group', () => {
@@ -137,14 +137,14 @@ describe('DocumentTypesList', () => {
           .find('input')
           .first()
           .simulate('change', { target: { checked: true } });
-        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 4], props.storeKey);
+        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 4]);
 
         liElements
           .at(2)
           .find('input')
           .first()
           .simulate('change', { target: { checked: false } });
-        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2], props.storeKey);
+        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2]);
       });
     });
   });

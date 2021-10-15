@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import Switcher, { SwitcherProps } from '../Switcher';
+import { Switcher, SwitcherProps } from '../Switcher';
 
 describe('Switcher', () => {
   let component: ShallowWrapper<typeof Switcher>;

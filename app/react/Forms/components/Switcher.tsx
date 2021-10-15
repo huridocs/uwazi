@@ -35,4 +35,4 @@ const Switcher = ({
   );
 };
 
-export default Switcher;
+export { Switcher };

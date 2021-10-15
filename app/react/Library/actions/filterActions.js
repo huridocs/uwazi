@@ -5,7 +5,7 @@ import * as libraryActions from 'app/Library/actions/libraryActions';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { actions as formActions } from 'react-redux-form';
 
-export function filterDocumentTypes(documentTypes, storeKey) {
+export function filterDocumentTypes(documentTypes, storeKey = 'library') {
   return (dispatch, getState) => {
     const state = getState();
 
