@@ -12,16 +12,17 @@ interface EntitySuggestionsProps {
   propertyName: string;
   suggestions: SuggestionType[];
 }
-export const EntitySuggestions = ({ propertyName = 'Title' }: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
 
   const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
 
   const retrieveSuggestions = () => {
     const params = new RequestParams({
       page: pageIndex,
-      limit: 4,
+      limit: pageSize,
     });
 
     getSuggestions(params)
@@ -32,7 +33,7 @@ export const EntitySuggestions = ({ propertyName = 'Title' }: EntitySuggestionsP
       .catch(() => {});
   };
 
-  useEffect(retrieveSuggestions, [pageIndex]);
+  useEffect(retrieveSuggestions, [pageIndex, pageSize]);
 
   const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
     const suggestion = row.original;
@@ -125,6 +126,14 @@ export const EntitySuggestions = ({ propertyName = 'Title' }: EntitySuggestionsP
     },
   });
 
+  const handlePageChange = (pageNumber: number) => {
+    setPageIndex(pageNumber);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+  };
+
   return (
     <div className="panel entity-suggestions">
       <div className="panel-subheading">
@@ -140,7 +149,6 @@ export const EntitySuggestions = ({ propertyName = 'Title' }: EntitySuggestionsP
           <Translate>Dashboard</Translate>
         </I18NLink>
       </div>
-
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup: HeaderGroup<SuggestionType>) => (
@@ -168,8 +176,11 @@ export const EntitySuggestions = ({ propertyName = 'Title' }: EntitySuggestionsP
           })}
         </tbody>
       </table>
-
-      <Pagination setPage={setPageIndex} totalPages={totalPages} />
+      <Pagination
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+        totalPages={totalPages}
+      />
     </div>
   );
 };

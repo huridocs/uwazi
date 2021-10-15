@@ -1,5 +1,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faAlignJustify } from '@fortawesome/free-solid-svg-icons/faAlignJustify';
+import { faAngleDoubleLeft } from '@fortawesome/free-solid-svg-icons/faAngleDoubleLeft';
+import { faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons/faAngleDoubleRight';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
@@ -112,6 +114,8 @@ import { funnelFilter } from './funnel-filter';
 
 const icons = {
   faAlignJustify,
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
   faAngleLeft,
   faAngleRight,
   faArrowLeft,

@@ -3,10 +3,10 @@ import { SuggestionsSampleData } from 'app/MetadataExtraction/SuggestionsSampleD
 
 const getSuggestions = async (requestParams: RequestParams) =>
   new Promise(resolve => {
-    const data = SuggestionsSampleData(requestParams.data.page);
+    const data = SuggestionsSampleData(requestParams.data);
     resolve({
       suggestions: data,
-      totalPages: 100,
+      totalPages: 30,
     });
   });
 
