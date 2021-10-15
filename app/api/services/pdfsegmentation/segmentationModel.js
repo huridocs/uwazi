@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { instanceModel } from 'api/odm';
 
 const props = {
-  autoexpire: { type: Date, expires: 360000, default: Date.now },
+  autoexpire: { type: Date, expires: 86400, default: Date.now }, // 24 hours
   status: { type: String, enum: ['pending', 'completed', 'error'], default: 'pending' },
   error: { type: String },
   segmentation: {

@@ -167,16 +167,13 @@ describe('taskManager', () => {
           results_url: 'http://localhost:1234/results',
         };
 
-        await taskManager?.stop();
         externalDummyService.setResults({
           results: 'Ceviche',
         });
+        await redisServer.stop();
         await externalDummyService.sendFinishedMessage(task);
 
         expect(service.processResults).not.toHaveBeenCalled();
-        await redisServer.stop();
-
-        taskManager?.start();
 
         await redisServer.start();
 

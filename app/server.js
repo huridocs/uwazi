@@ -10,6 +10,8 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 import { TaskProvider } from 'shared/tasks/tasks';
+import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
+import { RepeatWith } from 'api/services/tasksmanager/RepeatWith';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
@@ -150,6 +152,15 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           10000
         );
         topicClassificationRepeater.start();
+        const segmentationConnector = new PDFSegmentation();
+        segmentationConnector.start();
+        const segmentationRepeater = new RepeatWith(
+          'segmentation_repeat',
+          segmentationConnector.segmentPdfs,
+          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
+        );
+
+        segmentationRepeater.start();
       }
     });
 
