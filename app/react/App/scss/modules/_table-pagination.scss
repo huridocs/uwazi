@@ -5,6 +5,10 @@
   justify-content: flex-end;
   padding: 20px 10px;
 
+  .page-numbers{
+    display: flex;
+  }
+
   .page-button{
     font-size: 15px;
     outline: none;
