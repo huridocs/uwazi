@@ -28,7 +28,7 @@ export class ExternalDummyService {
 
   private readonly serviceName: string;
 
-  constructor(port: number, serviceName: string) {
+  constructor(port = 1234, serviceName = 'dummy') {
     this.port = port;
     this.serviceName = serviceName;
     this.app = express();
@@ -131,11 +131,13 @@ export class ExternalDummyService {
     return messages;
   }
 
-  async start(redisUrl: string) {
-    this.redisClient = await Redis.createClient(redisUrl);
+  async start(redisUrl?: string) {
+    if (redisUrl) {
+      this.redisClient = await Redis.createClient(redisUrl);
 
-    this.redisSMQ = await new RedisSMQ({ client: this.redisClient });
-    await this.resetQueue();
+      this.redisSMQ = await new RedisSMQ({ client: this.redisClient });
+      await this.resetQueue();
+    }
 
     const start = new Promise<void>(resolve => {
       this.server = this.app.listen(this.port, () => {
