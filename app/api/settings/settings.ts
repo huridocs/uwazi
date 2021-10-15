@@ -47,7 +47,7 @@ const getUpdatesAndDeletes = (
   });
 
   const values = newValues.reduce((result, value) => {
-    const sublinkResults: any = {};
+    const sublinkResults: { [key: string]: string | unknown } = {};
     value.sublinks?.map(sublink => {
       sublinkResults[ensure<string>(sublink[propertyName])] = sublink[propertyName];
     });
