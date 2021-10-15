@@ -1,4 +1,4 @@
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { uploadsPath } from 'api/files';
 import filesModel from 'api/files/filesModel';
 import fs from 'fs';
@@ -10,7 +10,7 @@ import { SegmentationModel } from './segmentationModel';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import request from 'shared/JSONRequest';
 
-class SegmentPdfs {
+class PDFSegmentation {
   SERVICE_NAME = 'segmentation';
 
   public segmentationTaskManager: TaskManager | undefined;
@@ -19,7 +19,7 @@ class SegmentPdfs {
 
   features: Settings | undefined;
 
-  batchSize = 10;
+  batchSize = 1;
 
   async start() {
     this.segmentationTaskManager = new TaskManager({
@@ -27,33 +27,44 @@ class SegmentPdfs {
     });
   }
 
-  segmentOnePdf = async (nextFile: FileType, url: string) => {
+  segmentOnePdf = async (file: FileType, serviceUrl: string, tenant: string) => {
     if (!this.segmentationTaskManager) {
       return;
     }
 
-    if (!nextFile || !nextFile.filename) {
+    if (!file || !file.filename) {
       return;
     }
-
-    const file = fs.readFileSync(uploadsPath(nextFile.filename));
-    await request.uploadFile(url, nextFile.filename, file);
+    console.log('segmentOnePdf', file.filename);
+    const fileBuffer = fs.readFileSync(uploadsPath(file.filename));
+    await request.uploadFile(serviceUrl, file.filename, fileBuffer);
 
     const task = {
-      task: nextFile.filename,
-      tenant: 'tenant1',
+      task: file.filename,
+      tenant,
     };
+    console.log('segmentOnePdf task');
     await this.segmentationTaskManager.startTask(task);
-    await this.storeProcess(nextFile._id!, nextFile.filename);
+    console.log('store process');
+    const segmentationCreated = await this.storeProcess(file._id!, file.filename);
+    console.log(segmentationCreated);
   };
 
-  storeProcess = async (fileID: ObjectIdSchema, fileName: string) => {
-    await SegmentationModel.save({ fileID, fileName });
-  };
+  storeProcess = async (fileID: ObjectIdSchema, fileName: string) =>
+    SegmentationModel.save({ fileID, fileName });
 
-  storeResult = async task => {
-    // const fileName = task.task;
-    // await SegmentationModel.save({ fileName, segmentation: results, autoexpire: false });
+  processResults = async (message: ResultsMessage) => {
+    const response = await request.get(message.data_url);
+    await tenants.run(async () => {
+      const [segmentation] = await SegmentationModel.get({ fileName: message.task });
+      console.log('processing results', message.task);
+      await SegmentationModel.save({
+        ...segmentation,
+        segmentation: response.json,
+        autoexpire: null,
+        status: 'completed',
+      });
+    }, message.tenant);
   };
 
   segmentPdfs = async () =>
@@ -66,6 +77,7 @@ class SegmentPdfs {
 
           const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
           if (pendingTasks > 0) {
+            console.log(`${pendingTasks} tasks are pending`);
             return;
           }
 
@@ -74,6 +86,7 @@ class SegmentPdfs {
           const segmentationServiceConfig = settingsValues?.features?.segmentation;
 
           if (!metadataExtractionFeatureToggle || !segmentationServiceConfig) {
+            console.log('no configuration');
             return;
           }
 
@@ -120,13 +133,15 @@ class SegmentPdfs {
             },
           ]);
 
+          console.log('filesToSegment', filesToSegment.length);
+
           for (let i = 0; i < filesToSegment.length; i += 1) {
             // eslint-disable-next-line no-await-in-loop
-            await this.segmentOnePdf(filesToSegment[i], segmentationServiceConfig.url);
+            await this.segmentOnePdf(filesToSegment[i], segmentationServiceConfig.url, tenant);
           }
         }, tenant);
       })
     );
 }
 
-export { SegmentPdfs };
+export { PDFSegmentation };

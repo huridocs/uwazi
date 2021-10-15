@@ -68,7 +68,10 @@ describe('RepeatWithLock', () => {
 
   it('should wait until the redis server is available to execute the task', async () => {
     await redisServer.stop();
-    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20);
+    const nodeOne = new RepeatWith('my_locked_task', task, {
+      retryDelay: 20,
+      delayTimeBetweenTasks: 0,
+    });
     await nodeOne.start();
 
     await sleepTime(50);
@@ -95,7 +98,11 @@ describe('RepeatWithLock', () => {
   it('should continue executing tasks after redis was unavailable for a while', async () => {
     const unstableRedisServer = new RedisServer(6371);
     await unstableRedisServer.start();
-    const nodeOne = new RepeatWith('my_locked_task', task, 2000, 0, 20, 6371);
+    const nodeOne = new RepeatWith('my_locked_task', task, {
+      retryDelay: 20,
+      delayTimeBetweenTasks: 0,
+      port: 6371,
+    });
     await nodeOne.start();
 
     await waitForExpect(async () => {
@@ -122,8 +129,14 @@ describe('RepeatWithLock', () => {
   });
 
   it('should handle when a lock fails for too many retries', async () => {
-    const nodeOne = new RepeatWith('my_long_locked_task', task, 2000, 0, 20);
-    const nodeTwo = new RepeatWith('my_long_locked_task', task, 2000, 0, 20);
+    const nodeOne = new RepeatWith('my_long_locked_task', task, {
+      retryDelay: 20,
+      delayTimeBetweenTasks: 0,
+    });
+    const nodeTwo = new RepeatWith('my_long_locked_task', task, {
+      retryDelay: 20,
+      delayTimeBetweenTasks: 0,
+    });
 
     await nodeOne.start();
     await nodeTwo.start();
@@ -139,8 +152,14 @@ describe('RepeatWithLock', () => {
   });
 
   it('should handle when a node fails to unlock the lock', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, 50);
-    const nodeTwo = new RepeatWith('my_locked_task', task, 50);
+    const nodeOne = new RepeatWith('my_locked_task', task, {
+      maxLockTime: 50,
+      delayTimeBetweenTasks: 0,
+    });
+    const nodeTwo = new RepeatWith('my_locked_task', task, {
+      maxLockTime: 50,
+      delayTimeBetweenTasks: 0,
+    });
 
     await nodeOne.start();
     await sleepTime(10);
@@ -158,7 +177,10 @@ describe('RepeatWithLock', () => {
   });
 
   it('should continue executing the task if one task fails', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, 500);
+    const nodeOne = new RepeatWith('my_locked_task', task, {
+      maxLockTime: 500,
+      delayTimeBetweenTasks: 0,
+    });
 
     await nodeOne.start();
 
@@ -182,8 +204,16 @@ describe('RepeatWithLock', () => {
 
   // eslint-disable-next-line max-statements
   it('should add a delay between task executions', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, 50, 50, 20);
-    const nodeTwo = new RepeatWith('my_locked_task', task, 50, 50, 20);
+    const nodeOne = new RepeatWith('my_locked_task', task, {
+      maxLockTime: 50,
+      delayTimeBetweenTasks: 50,
+      retryDelay: 20,
+    });
+    const nodeTwo = new RepeatWith('my_locked_task', task, {
+      maxLockTime: 50,
+      delayTimeBetweenTasks: 50,
+      retryDelay: 20,
+    });
 
     await nodeOne.start();
     await nodeTwo.start();

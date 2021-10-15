@@ -69,6 +69,24 @@ export class TaskManager {
     });
   }
 
+  async clearQueue() {
+    while (true) {
+      // eslint-disable-next-line no-await-in-loop
+      const message = (await this.redisSMQ.receiveMessageAsync({
+        qname: this.taskQueue,
+      })) as QueueMessage;
+
+      if (!message.id) {
+        break;
+      }
+      // eslint-disable-next-line no-await-in-loop
+      await this.redisSMQ.deleteMessageAsync({
+        qname: this.taskQueue,
+        id: message.id,
+      });
+    }
+  }
+
   async countPendingTasks(): Promise<number> {
     const queueAttributes = await this.redisSMQ!.getQueueAttributesAsync({
       qname: this.taskQueue,

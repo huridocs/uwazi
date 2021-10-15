@@ -21,29 +21,41 @@ export class RepeatWith {
 
   private port: number;
 
+  private host: string;
+
   constructor(
     lockName: string,
     task: () => void,
-    maxLockTime: number = 2000,
-    delayTimeBetweenTasks: number = 0,
-    retryDelay: number = 200,
-    port: number = 6379
+    options: {
+      maxLockTime?: number;
+      delayTimeBetweenTasks?: number;
+      retryDelay?: number;
+      port?: number;
+    }
   ) {
-    this.maxLockTime = maxLockTime;
-    this.retryDelay = retryDelay;
-    this.delayTimeBetweenTasks = delayTimeBetweenTasks;
+    const _options = {
+      maxLockTime: 2000,
+      delayTimeBetweenTasks: 1000,
+      retryDelay: 200,
+      port: 6379,
+      host: 'localhost',
+      ...options,
+    };
+    this.maxLockTime = _options.maxLockTime;
+    this.retryDelay = _options.retryDelay;
+    this.delayTimeBetweenTasks = _options.delayTimeBetweenTasks;
     this.lockName = `locks:${lockName}`;
     this.task = task;
-    this.port = port;
+    this.port = _options.port;
+    this.host = _options.host;
   }
 
   async start() {
-    this.redisClient = await Redis.createClient(`redis://localhost:${this.port}`);
+    this.redisClient = await Redis.createClient(`redis://${this.host}:${this.port}`);
     this.redlock = await new Redlock([this.redisClient], {
       retryJitter: 0,
       retryDelay: this.retryDelay,
     });
-
     this.redisClient.on('error', error => {
       if (error.code !== 'ECONNREFUSED') {
         throw error;

@@ -10,20 +10,21 @@ import {
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
 import fs from 'fs';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
 import { Db } from 'mongodb';
 
-import { SegmentPdfs } from '../PDFSegmentation';
+import { PDFSegmentation } from '../PDFSegmentation';
 import { SegmentationModel } from '../segmentationModel';
 import request from 'shared/JSONRequest';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import exp from 'constants';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
-describe('pdfSegmentation', () => {
-  let segmentPdfs: SegmentPdfs;
+describe('PDFSegmentation', () => {
+  let segmentPdfs: PDFSegmentation;
 
   const tenantOne = {
     name: 'tenantOne',
@@ -55,7 +56,7 @@ describe('pdfSegmentation', () => {
   });
 
   beforeEach(async () => {
-    segmentPdfs = new SegmentPdfs();
+    segmentPdfs = new PDFSegmentation();
     await DB.connect();
     dbOne = DB.connectionForDB(tenantOne.dbName).db;
     dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
@@ -182,12 +183,57 @@ describe('pdfSegmentation', () => {
   });
 
   describe('when the segmentation finsihes', () => {
-    it('should store the segmentation', () => {
-      throw new Error('Not implemented');
+    let segmentationExternalService: ExternalDummyService;
+    beforeEach(async () => {
+      segmentationExternalService = new ExternalDummyService();
+      await segmentationExternalService.start();
+    });
+
+    afterEach(async () => {
+      await segmentationExternalService.stop();
+    });
+    it('should store the segmentation', async () => {
+      await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
+      const segmentationData = {
+        page_width: 600,
+        page_height: 1200,
+        paragraphs: [
+          {
+            left: 30,
+            top: 45,
+            width: 400,
+            height: 120,
+            page_number: 1,
+            text: 'El veloz murciélago hindú comía feliz cardillo y kiwi.',
+          },
+        ],
+      };
+
+      segmentationExternalService.setResults(segmentationData);
+
+      await segmentPdfs.segmentPdfs();
+
+      await segmentPdfs.processResults({
+        tenant: tenantOne.name,
+        task: 'documentA.pdf',
+        data_url: 'http://localhost:1234/results',
+      });
+
+      await tenants.run(async () => {
+        const segmentations = await SegmentationModel.get();
+        const [segmentation] = segmentations;
+        expect(segmentation.status).toBe('completed');
+        expect(segmentation.fileName).toBe(fixturesPdfNameA);
+        expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
+        expect(segmentation.autoexpire).toBe(null);
+
+        expect(segmentation.segmentation).toEqual(
+          expect.objectContaining({
+            ...segmentationData,
+            paragraphs: [expect.objectContaining(segmentationData.paragraphs[0])],
+          })
+        );
+      }, 'tenantOne');
     });
   });
-
-  //TODO:
-  // - do a load test to checkl the perfomance: Tested in Cejil with 5k files and Plan with 25k and took 0.2s to do an aggregation query
-  // - error handling ? task failed ?
 });
