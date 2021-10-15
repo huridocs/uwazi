@@ -37,12 +37,12 @@ describe('TemplatesFilter', () => {
         render([{ id: '1', name: 'Judge' }]);
       });
 
-      it('should mark FILTERS as the default option', () => {
+      it('should mark FEATURED as the default option', () => {
         const documentTypesList = component.find('Connect(DocumentTypesList)');
         expect(documentTypesList.props().fromFilters).toBe(true);
       });
 
-      it('should allows logged users to switch templates filter between ALL/FILTERS', () => {
+      it('should allows logged users to switch templates filter between ALL/FEATURED', () => {
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(false);
         const documentTypesList = component.find('Connect(DocumentTypesList)');
@@ -77,7 +77,7 @@ describe('TemplatesFilter', () => {
         render([{ id: '1', name: 'Judge' }], [{ id: '2' }]);
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(true);
-        expect(filterDocumentTypes).toHaveBeenCalledWith([], 'library');
+        expect(filterDocumentTypes).toHaveBeenCalledWith([]);
         const documentTypesList = component.find('Connect(DocumentTypesList)');
         expect(documentTypesList.props().selectedTemplates.length).toBe(0);
       });
