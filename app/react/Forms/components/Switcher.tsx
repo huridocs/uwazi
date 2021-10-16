@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 
 export interface SwitcherProps {
   onChange: (checked: boolean) => {};
@@ -22,7 +22,9 @@ const Switcher = ({
 
   return (
     <div className="switcher-wrapper">
-      <span className={value ? 'is-active' : ''}>{t('System', leftLabel)}</span>
+      <span className={value ? 'is-active' : ''}>
+        <Translate>{leftLabel}</Translate>
+      </span>
       <input
         id={`${prefix}switcher`}
         type="checkbox"
@@ -30,7 +32,9 @@ const Switcher = ({
         onChange={onChangeHandler}
       />
       <label htmlFor={`${prefix}switcher`} className="switcher" />
-      <span className={value ? '' : 'is-active'}>{t('System', rightLabel)}</span>
+      <span className={value ? '' : 'is-active'}>
+        <Translate>{rightLabel}</Translate>
+      </span>
     </div>
   );
 };

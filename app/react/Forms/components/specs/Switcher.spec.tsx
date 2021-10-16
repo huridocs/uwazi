@@ -39,8 +39,8 @@ describe('Switcher', () => {
 
   it('should receive alternative labels for values', () => {
     render({ leftLabel: 'ALL', rightLabel: 'NONE' });
-    const label = component.find('span');
-    expect(label.at(0).props().children).toEqual('ALL');
-    expect(label.at(1).props().children).toEqual('NONE');
+    const labels = component.find('Connect(Translate)');
+    expect(labels.at(0).props().children).toEqual('ALL');
+    expect(labels.at(1).props().children).toEqual('NONE');
   });
 });
