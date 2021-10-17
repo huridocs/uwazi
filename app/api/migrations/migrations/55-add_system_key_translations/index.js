@@ -1,4 +1,4 @@
-import { migrateTranslations } from 'api/migrations/translationsMigration';
+import { migrateTranslations } from 'api/migrations/systemTranslationsMigration';
 
 export default {
   delta: 55,
