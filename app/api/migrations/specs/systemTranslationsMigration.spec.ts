@@ -4,7 +4,7 @@ import fixtures, {
   defaultTemplateName,
   defaultTemplateTitle,
 } from './translationsFixtures.js';
-import { migrateTranslationsFromCSV, TranslationContext } from '../translationsMigration';
+import { migrateTranslationsFromCSV, TranslationContext } from '../systemTranslationsMigration';
 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
