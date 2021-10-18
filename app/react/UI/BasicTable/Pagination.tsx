@@ -43,7 +43,7 @@ const Pagination = ({ totalPages, onPageChange, onPageSizeChange }: PaginationPr
   const changePage = (page: number) => {
     if (page !== activePage) {
       setActivePage(page);
-      onPageChange(page);
+      onPageChange(page - 1);
     }
   };
 

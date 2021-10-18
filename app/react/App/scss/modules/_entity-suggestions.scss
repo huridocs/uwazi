@@ -37,6 +37,10 @@
       background-color: $c-white;
     }
   }
+  th {
+    display: flex;
+    align-items: center;
+  }
 
   th,
   td {
