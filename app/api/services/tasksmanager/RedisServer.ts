@@ -35,6 +35,7 @@ export class RedisServer {
     execSync(
       `cd ${this.redisFolder} &&
        cd redis-stable &&
+       make distclean &&
        make`,
       { stdio: 'inherit' }
     );
