@@ -7,8 +7,6 @@ export class RedisServer {
 
   pathToBin: string;
 
-  redisFolder: string;
-
   constructor(port = 6379) {
     this.pathToBin = 'redis-bin/redis-stable/src/redis-server';
     this.port = port;
