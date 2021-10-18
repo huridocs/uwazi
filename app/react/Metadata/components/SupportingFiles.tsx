@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Field } from 'react-redux-form';
 
 import { ClientFile, IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { FormGroup } from 'app/Forms';
-import { Field } from 'react-redux-form';
 
 type SupportingFilesProps = {
   storeKey?: string;
@@ -26,6 +26,38 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = SupportingFilesProps & mappedProps;
 
+const getExtension = (filename: string) =>
+  filename ? filename.substr(filename.lastIndexOf('.') + 1) : '';
+
+const getFileIcon = (file: ClientFile) => {
+  const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
+  let thumbnail = null;
+
+  if (file.filename && getExtension(file.filename) === 'pdf') {
+    thumbnail = (
+      <span no-translate>
+        <Icon icon="file-pdf" /> pdf
+      </span>
+    );
+  }
+
+  if (file.url) {
+    thumbnail = (
+      <span>
+        <Icon icon="link" />
+      </span>
+    );
+  }
+
+  if (
+    file.filename &&
+    acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1
+  ) {
+    thumbnail = <img src={`/api/files/${file.filename}`} alt={file.originalname} />;
+  }
+  return thumbnail;
+};
+
 const SupportingFiles = ({ entity }: ComponentProps) => {
   const { attachments = [] } = entity;
 
@@ -38,9 +70,7 @@ const SupportingFiles = ({ entity }: ComponentProps) => {
       <div className="attachments-list">
         {attachments.map((file: ClientFile, index: number) => (
           <div className="attachment" key={file._id}>
-            <div className="attachment-thumbnail">
-              <img src={`/api/files/${file.filename}`} alt={file.originalname} />
-            </div>
+            <div className="attachment-thumbnail">{getFileIcon(file)}</div>
             <div className="attachment-name">
               <FormGroup>
                 <Field model={`.attachments.${index}.originalname`}>
