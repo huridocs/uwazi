@@ -19,7 +19,7 @@ class PDFSegmentation {
 
   features: Settings | undefined;
 
-  batchSize = 1;
+  batchSize = 10;
 
   constructor() {
     this.segmentationTaskManager = new TaskManager({
