@@ -27,18 +27,36 @@ const getUpdatesAndDeletes = (
     );
 
     if (value[propertyName] && matchValue && matchValue[propertyName] !== value[propertyName]) {
+      if (value.sublinks) {
+        value.sublinks.forEach(sublink => {
+          updatedValues[ensure<string>(sublink[propertyName])] = sublink[propertyName];
+        });
+      }
       updatedValues[ensure<string>(value[propertyName])] = matchValue[propertyName];
     }
     if (!matchValue) {
+      if (value.sublinks) {
+        value.sublinks.forEach(sublink => {
+          if (sublink[propertyName]) {
+            deletedValues.push(ensure<string>(sublink[propertyName] as string));
+          }
+        });
+      }
       deletedValues.push(ensure<string>(value[propertyName]));
     }
   });
 
-  const values = newValues.reduce(
-    (result, value) => ({ ...result, [ensure<string>(value[propertyName])]: value[propertyName] }),
-    {}
-  );
-
+  const values = newValues.reduce((result, value) => {
+    const sublinkResults: { [key: string]: string | unknown } = {};
+    value.sublinks?.map(sublink => {
+      sublinkResults[ensure<string>(sublink[propertyName])] = sublink[propertyName];
+    });
+    return {
+      ...result,
+      [ensure<string>(value[propertyName])]: value[propertyName],
+      ...sublinkResults,
+    };
+  }, {});
   return { updatedValues, deletedValues, values };
 };
 

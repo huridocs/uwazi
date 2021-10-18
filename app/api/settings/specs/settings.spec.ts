@@ -70,6 +70,20 @@ describe('settings', () => {
           })
           .catch(catchErrors(done));
       });
+      it('should create a translation context for passed links with sublinks', async () => {
+        config.links = config.links || [];
+        config.links[0].type = 'group';
+        config.links[0].sublinks = [{ title: 'Page two' }];
+        await settings.save(config);
+        expect(translations.updateContext).toHaveBeenCalledWith(
+          'Menu',
+          'Menu',
+          {},
+          [],
+          { 'Page one': 'Page one', 'Page two': 'Page two' },
+          'Uwazi UI'
+        );
+      });
 
       describe('updating the links', () => {
         it('should update the translation context for the links', done => {
@@ -99,6 +113,29 @@ describe('settings', () => {
               done();
             })
             .catch(catchErrors(done));
+        });
+        it('should update the translation context for the links with sublinks', async () => {
+          config.links = config.links || [];
+          config.links.push({
+            title: 'Page two',
+            type: 'group',
+            sublinks: [{ title: 'Subpage two' }],
+          });
+          const savedConfig = await settings.save(config);
+          const finalConfig = {
+            site_name: 'My collection',
+            links: [{ title: 'Page 1', _id: savedConfig.links?.[0]._id }, { title: 'Page three' }],
+          };
+          await settings.save(finalConfig);
+
+          expect(translations.updateContext).toHaveBeenCalledWith(
+            'Menu',
+            'Menu',
+            { 'Page one': 'Page 1' },
+            ['Subpage two', 'Page two'],
+            { 'Page 1': 'Page 1', 'Page three': 'Page three' },
+            'Uwazi UI'
+          );
         });
       });
     });
