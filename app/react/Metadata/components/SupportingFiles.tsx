@@ -76,7 +76,7 @@ const SupportingFiles = ({ entity }: ComponentProps) => {
                 </Field>
               </FormGroup>
             </div>
-            <button type="button" className="btn btn-danger">
+            <button type="button" className="btn btn-danger delete-supporting-file">
               <Icon icon="trash-alt" />
             </button>
           </div>
