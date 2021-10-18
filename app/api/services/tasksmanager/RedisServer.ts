@@ -1,10 +1,9 @@
 import { execSync, spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import Server from 'redis-server';
 
 export class RedisServer {
-  server: Server;
+  server: any;
 
   port: number;
 
