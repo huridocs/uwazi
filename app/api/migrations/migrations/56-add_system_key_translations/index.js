@@ -1,7 +1,7 @@
 import { migrateTranslations } from 'api/migrations/systemTranslationsMigration';
 
 export default {
-  delta: 55,
+  delta: 56,
 
   name: 'add_system_key_translations',
 

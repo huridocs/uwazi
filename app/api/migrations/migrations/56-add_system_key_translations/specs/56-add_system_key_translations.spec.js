@@ -13,7 +13,7 @@ describe('migration add_system_key_translations', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(55);
+    expect(migration.delta).toBe(56);
   });
 
   it('should insert added translations to system context', async () => {
