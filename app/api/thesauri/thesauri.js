@@ -63,7 +63,7 @@ const updateTranslation = (current, thesauri) => {
     updatedLabels,
     deletedPropertiesByLabel,
     context,
-    'Dictionary'
+    'Thesaurus'
   );
 };
 
