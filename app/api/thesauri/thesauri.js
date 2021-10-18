@@ -41,7 +41,7 @@ const create = async thesauri => {
   context[thesauri.name] = thesauri.name;
 
   const created = await model.save(thesauri);
-  await translations.addContext(created._id, thesauri.name, context, 'Dictionary');
+  await translations.addContext(created._id, thesauri.name, context, 'Thesaurus');
   return created;
 };
 
