@@ -1,6 +1,4 @@
-import { execSync, spawn } from 'child_process';
-import path from 'path';
-import fs from 'fs';
+import { spawn } from 'child_process';
 
 export class RedisServer {
   server: any;
@@ -12,33 +10,8 @@ export class RedisServer {
   redisFolder: string;
 
   constructor(port = 6379) {
-    this.redisFolder = path.join(__dirname, 'redis-bin');
-    this.pathToBin = path.join(this.redisFolder, 'redis-stable/src/redis-server');
-    this.downloadRedis();
+    this.pathToBin = 'redis-bin/redis-stable/src/redis-server';
     this.port = port;
-  }
-
-  downloadRedis() {
-    if (fs.existsSync(this.pathToBin)) {
-      return;
-    }
-
-    execSync(
-      `mkdir ${this.redisFolder} && cd ${this.redisFolder}
-       curl -O http://download.redis.io/redis-stable.tar.gz
-       tar xzvf redis-stable.tar.gz`,
-      { stdio: 'inherit' }
-    );
-
-    execSync(`cd ${this.redisFolder} && tar xzvf redis-stable.tar.gz`);
-
-    execSync(
-      `cd ${this.redisFolder} &&
-       cd redis-stable &&
-       make distclean &&
-       make`,
-      { stdio: 'inherit' }
-    );
   }
 
   start() {

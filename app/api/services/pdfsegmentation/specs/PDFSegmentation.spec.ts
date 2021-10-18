@@ -128,7 +128,7 @@ describe('PDFSegmentation', () => {
 
     expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledWith({
       task: 'documentA.pdf',
-      tenant: 'tenant1',
+      tenant: 'tenantOne',
     });
   });
 
@@ -183,7 +183,7 @@ describe('PDFSegmentation', () => {
   describe('when the segmentation finsihes', () => {
     let segmentationExternalService: ExternalDummyService;
     beforeEach(async () => {
-      segmentationExternalService = new ExternalDummyService();
+      segmentationExternalService = new ExternalDummyService(1235);
       await segmentationExternalService.start();
     });
 
@@ -214,7 +214,7 @@ describe('PDFSegmentation', () => {
       await segmentPdfs.processResults({
         tenant: tenantOne.name,
         task: 'documentA.pdf',
-        data_url: 'http://localhost:1234/results',
+        data_url: 'http://localhost:1235/results',
       });
 
       await tenants.run(async () => {
