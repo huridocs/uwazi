@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis, { RedisClient } from 'redis';
 import { Repeater } from 'api/utils/Repeater';
@@ -70,8 +71,7 @@ export class TaskManager {
   }
 
   async clearQueue() {
-    while (true) {
-      // eslint-disable-next-line no-await-in-loop
+    while ((await this.countPendingTasks()) > 0) {
       const message = (await this.redisSMQ.receiveMessageAsync({
         qname: this.taskQueue,
       })) as QueueMessage;
@@ -79,7 +79,7 @@ export class TaskManager {
       if (!message.id) {
         break;
       }
-      // eslint-disable-next-line no-await-in-loop
+
       await this.redisSMQ.deleteMessageAsync({
         qname: this.taskQueue,
         id: message.id,
