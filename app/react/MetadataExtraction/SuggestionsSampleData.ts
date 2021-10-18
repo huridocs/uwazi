@@ -66,12 +66,18 @@ const SuggestionsSamples: SuggestionType[] = [
   },
 ];
 
-export const SuggestionsSampleData = (options: { page: number; limit: number }) => {
+export const SuggestionsSampleData = (options: {
+  page: number;
+  limit: number;
+  filters: { id: string; value: string }[];
+}) => {
+  const state = options.filters.find(filter => filter.id === 'state' && filter.value !== '')?.value;
   let suggestions = SuggestionsSamples.map(sample => ({
     ...sample,
     currentValue: sample.currentValue
       ? `${sample.currentValue} ${options.page.toString()}`
       : sample.currentValue,
+    state: state || sample.state,
   }));
   while (suggestions.length < options.limit) {
     suggestions = suggestions.concat(suggestions);
