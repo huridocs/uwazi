@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
-import { Column, HeaderGroup, Row, useTable } from 'react-table';
+import { Column, HeaderGroup, Row, useTable, usePagination, useFilters } from 'react-table';
 import { SuggestionType } from 'shared/types/suggestionType';
 import { I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -108,6 +108,14 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         Cell: ({ row }: { row: Row<SuggestionType> }) => (
           <Translate>{row.original.state}</Translate>
         ),
+        Filter: () => (
+          <select>
+            <option value="all">All</option>
+            <option value="filled">Filled</option>
+            <option value="empty">Empty</option>
+          </select>
+        ),
+        className: 'state',
       },
       {
         accessor: 'page' as const,
@@ -116,15 +124,23 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
     ],
     []
   );
-
   const hiddenColumns = propertyName === 'Title' ? ['title'] : [];
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
-    columns,
-    data: suggestions,
-    initialState: {
-      hiddenColumns,
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+    {
+      columns,
+      data: suggestions,
+      manualPagination: true,
+      pageCount: totalPages,
+      initialState: {
+        hiddenColumns,
+        pageIndex,
+        pageSize,
+      },
     },
-  });
+    useFilters,
+    usePagination
+  );
 
   const handlePageChange = (pageNumber: number) => {
     setPageIndex(pageNumber);
@@ -155,7 +171,10 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
                 <th {...column.getHeaderProps({ className: column.className })}>
-                  {column.render('Header')}
+                  <>
+                    {column.render('Header')}
+                    {column.canFilter && column.Filter && column.render('Filter')}
+                  </>
                 </th>
               ))}
             </tr>

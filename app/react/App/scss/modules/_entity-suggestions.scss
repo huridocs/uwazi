@@ -43,7 +43,7 @@
     width: 6%;
     min-width: 70px;
     display: flex;
-    height: 120px;
+    height: 115px;
     align-content: center;
     padding: 10px;
 
@@ -52,9 +52,8 @@
       text-overflow: fade;
     }
     &.action{
-      width: 6%;
       min-width: 90px;
-      padding: 5px;
+      padding-left: 5px;
     }
     &.title{
       width: 15%;
@@ -68,11 +67,23 @@
       width: 55%;
       overflow: scroll;
     }
+    &.state{
+      width: 7%;
+      display: flex;
+      flex-direction: column;
+
+      select {
+        font-size: $f-size-sm;
+        margin-bottom: 0;
+        border-color: $c-grey;
+        color: $c-grey-dark;
+      }
+    }
   }
 
   th {
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
-    height: 30px;
+    height: 50px;
     padding: 8px;
     border-bottom: 2px solid $c-grey;
   }
