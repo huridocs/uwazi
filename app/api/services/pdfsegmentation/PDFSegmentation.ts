@@ -21,7 +21,7 @@ class PDFSegmentation {
 
   batchSize = 1;
 
-  async start() {
+  constructor() {
     this.segmentationTaskManager = new TaskManager({
       serviceName: this.SERVICE_NAME,
     });
