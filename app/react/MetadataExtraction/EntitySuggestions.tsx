@@ -14,26 +14,7 @@ interface EntitySuggestionsProps {
 }
 export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
-
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
-
-  const retrieveSuggestions = () => {
-    const params = new RequestParams({
-      page: pageIndex,
-      limit: pageSize,
-    });
-
-    getSuggestions(params)
-      .then((response: any) => {
-        setSuggestions(response.suggestions);
-        setTotalPages(response.totalPages);
-      })
-      .catch(() => {});
-  };
-
-  useEffect(retrieveSuggestions, [pageIndex, pageSize]);
 
   const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
     const suggestion = row.original;
@@ -126,29 +107,47 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
   );
   const hiddenColumns = propertyName === 'Title' ? ['title'] : [];
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    prepareRow,
+    gotoPage,
+    setPageSize,
+    state: { pageIndex, pageSize, filters },
+  } = useTable(
     {
       columns,
       data: suggestions,
       manualPagination: true,
-      pageCount: totalPages,
       initialState: {
         hiddenColumns,
-        pageIndex,
-        pageSize,
+        pageIndex: 0,
+        pageSize: 5,
       },
+      pageCount: totalPages,
+      autoResetPage: false,
     },
+
     useFilters,
     usePagination
   );
 
-  const handlePageChange = (pageNumber: number) => {
-    setPageIndex(pageNumber);
+  const retrieveSuggestions = () => {
+    const params = new RequestParams({
+      page: pageIndex + 1,
+      limit: pageSize,
+    });
+    getSuggestions(params)
+      .then((response: any) => {
+        setSuggestions(response.suggestions);
+        setTotalPages(response.totalPages);
+      })
+      .catch(() => {});
   };
 
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-  };
+  useEffect(retrieveSuggestions, [pageIndex, pageSize]);
 
   return (
     <div className="panel entity-suggestions">
@@ -181,7 +180,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row: Row<SuggestionType>) => {
+          {page.map((row: Row<SuggestionType>) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
@@ -195,11 +194,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           })}
         </tbody>
       </table>
-      <Pagination
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-        totalPages={totalPages}
-      />
+      <Pagination onPageChange={gotoPage} onPageSizeChange={setPageSize} totalPages={totalPages} />
     </div>
   );
 };
