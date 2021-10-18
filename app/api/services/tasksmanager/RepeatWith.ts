@@ -1,6 +1,6 @@
 import Redis from 'redis';
 import Redlock from 'redlock';
-import handleError from 'api/utils/handleError';
+import { handleError } from 'api/utils/handleError';
 
 export class RepeatWith {
   private lockName: string;
