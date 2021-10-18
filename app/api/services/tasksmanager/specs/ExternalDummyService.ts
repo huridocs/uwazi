@@ -64,16 +64,9 @@ export class ExternalDummyService {
     return this.redisSMQ;
   }
 
-  async deleteQueues() {
+  async deleteQueue(qname: string) {
     try {
-      await this.rsmq.deleteQueueAsync({ qname: `${this.serviceName}_tasks` });
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'queueNotFound') {
-        throw err;
-      }
-    }
-    try {
-      await this.rsmq.deleteQueueAsync({ qname: `${this.serviceName}_results` });
+      await this.rsmq.deleteQueueAsync({ qname });
     } catch (err) {
       if (err instanceof Error && err.name !== 'queueNotFound') {
         throw err;
@@ -81,17 +74,9 @@ export class ExternalDummyService {
     }
   }
 
-  async createQueues() {
+  async createQueue(qname: string) {
     try {
-      await this.rsmq.createQueueAsync({ qname: `${this.serviceName}_tasks` });
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'queueExists') {
-        throw err;
-      }
-    }
-
-    try {
-      await this.rsmq.createQueueAsync({ qname: `${this.serviceName}_results` });
+      await this.rsmq.createQueueAsync({ qname });
     } catch (err) {
       if (err instanceof Error && err.name !== 'queueExists') {
         throw err;
@@ -100,8 +85,11 @@ export class ExternalDummyService {
   }
 
   async resetQueue() {
-    await this.deleteQueues();
-    await this.createQueues();
+    await this.deleteQueue(`${this.serviceName}_tasks`);
+    await this.deleteQueue(`${this.serviceName}_results`);
+
+    await this.createQueue(`${this.serviceName}_tasks`);
+    await this.createQueue(`${this.serviceName}_results`);
   }
 
   async readFirstTaskMessage() {
