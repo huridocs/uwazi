@@ -160,18 +160,21 @@ describe('taskManager', () => {
       });
 
       it('should read pending messages', async () => {
+        await taskManager?.stop();
         const task = {
           task: 'Ceviche',
           tenant: 'Mercy',
           results_url: 'http://localhost:1234/results',
         };
-
         externalDummyService.setResults({
           results: 'Ceviche',
         });
-        await redisServer.stop();
+
         await externalDummyService.sendFinishedMessage(task);
 
+        await redisServer.stop();
+
+        taskManager = new TaskManager(service);
         expect(service.processResults).not.toHaveBeenCalled();
 
         await redisServer.start();

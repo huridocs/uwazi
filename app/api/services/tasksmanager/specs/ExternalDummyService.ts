@@ -154,10 +154,14 @@ export class ExternalDummyService {
   }
 
   async sendFinishedMessage(task: { task: string; tenant: string }) {
-    await this.rsmq.sendMessageAsync({
-      qname: `${this.serviceName}_results`,
-      message: JSON.stringify(task),
-    });
+    try {
+      await this.rsmq.sendMessageAsync({
+        qname: `${this.serviceName}_results`,
+        message: JSON.stringify(task),
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   reset() {
