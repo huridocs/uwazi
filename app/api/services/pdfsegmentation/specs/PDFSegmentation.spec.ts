@@ -19,7 +19,6 @@ import { PDFSegmentation } from '../PDFSegmentation';
 import { SegmentationModel } from '../segmentationModel';
 import request from 'shared/JSONRequest';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
-import exp from 'constants';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -163,9 +162,8 @@ describe('PDFSegmentation', () => {
   describe('when there is pending tasks', () => {
     it('should not put more', async () => {
       await fixturer.clearAllAndLoad(dbOne, fixturesFiveFiles);
-      segmentPdfs.start();
 
-      segmentPdfs.segmentationTaskManager!.countPendingTasks = () => Promise.resolve(10);
+      segmentPdfs.segmentationTaskManager!.countPendingTasks = async () => Promise.resolve(10);
 
       await segmentPdfs.segmentPdfs();
 

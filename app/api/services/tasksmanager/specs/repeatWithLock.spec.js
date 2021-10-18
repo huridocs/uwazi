@@ -1,9 +1,7 @@
-import handleError from 'api/utils/handleError';
+import * as errorHelper from 'api/utils/handleError';
 import waitForExpect from 'wait-for-expect';
 import { RepeatWith } from '../RepeatWith';
 import { RedisServer } from '../RedisServer';
-
-jest.mock('api/utils/handleError.js', () => jest.fn());
 
 /* eslint-disable max-statements */
 describe('RepeatWithLock', () => {
@@ -45,8 +43,8 @@ describe('RepeatWithLock', () => {
   }
 
   it('should run one task at a time', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task);
-    const nodeTwo = new RepeatWith('my_locked_task', task);
+    const nodeOne = new RepeatWith('my_locked_task', task, { delayTimeBetweenTasks: 0 });
+    const nodeTwo = new RepeatWith('my_locked_task', task, { delayTimeBetweenTasks: 0 });
     await nodeOne.start();
     await nodeTwo.start();
     await waitForExpect(async () => {
@@ -177,6 +175,7 @@ describe('RepeatWithLock', () => {
   });
 
   it('should continue executing the task if one task fails', async () => {
+    jest.spyOn(errorHelper, 'handleError').mockImplementation(() => {});
     const nodeOne = new RepeatWith('my_locked_task', task, {
       maxLockTime: 500,
       delayTimeBetweenTasks: 0,
@@ -191,7 +190,7 @@ describe('RepeatWithLock', () => {
     const someError = { error: 'some error' };
     rejectTask(someError);
     await waitForExpect(async () => {
-      expect(handleError).toHaveBeenLastCalledWith(someError);
+      expect(errorHelper.handleError).toHaveBeenLastCalledWith(someError);
     });
 
     finishTask();

@@ -152,8 +152,8 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           10000
         );
         topicClassificationRepeater.start();
+
         const segmentationConnector = new PDFSegmentation();
-        segmentationConnector.start();
         const segmentationRepeater = new RepeatWith(
           'segmentation_repeat',
           segmentationConnector.segmentPdfs,
