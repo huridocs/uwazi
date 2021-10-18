@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-import fs from 'fs';
 import waitForExpect from 'wait-for-expect';
 import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager';
 import { RedisServer } from '../RedisServer';
