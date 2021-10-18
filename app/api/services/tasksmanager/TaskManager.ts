@@ -96,6 +96,7 @@ export class TaskManager {
 
   private subscribeToResults(): void {
     this.repeater = new Repeater(this.checkForResults.bind(this), 500);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.repeater.start();
   }
 

@@ -123,8 +123,6 @@ const fixturesFilesWithtMixedInformationExtraction: DBFixture = {
   ],
 };
 
-const fixturesMultiTenant: DBFixture = {};
-
 export {
   fixturesPdfNameA,
   fixturesPdfNameB,
