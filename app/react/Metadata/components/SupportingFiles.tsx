@@ -6,6 +6,7 @@ import { ClientFile, IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { FormGroup } from 'app/Forms';
+import { getFileExtension } from 'app/utils/getFileExtension';
 
 type SupportingFilesProps = {
   storeKey?: string;
@@ -26,14 +27,11 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = SupportingFilesProps & mappedProps;
 
-const getExtension = (filename: string) =>
-  filename ? filename.substr(filename.lastIndexOf('.') + 1) : '';
-
 const getFileIcon = (file: ClientFile) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
   let thumbnail = null;
 
-  if (file.filename && getExtension(file.filename) === 'pdf') {
+  if (file.filename && getFileExtension(file.filename) === 'pdf') {
     thumbnail = (
       <span no-translate>
         <Icon icon="file-pdf" /> pdf
@@ -51,7 +49,7 @@ const getFileIcon = (file: ClientFile) => {
 
   if (
     file.filename &&
-    acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1
+    acceptedThumbnailExtensions.indexOf(getFileExtension(file.filename.toLowerCase())) !== -1
   ) {
     thumbnail = <img src={`/api/files/${file.filename}`} alt={file.originalname} />;
   }

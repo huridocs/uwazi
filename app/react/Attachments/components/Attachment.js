@@ -12,6 +12,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
+import { getFileExtension as getExtension } from 'app/utils/getFileExtension';
 
 import {
   deleteAttachment,
@@ -20,8 +21,6 @@ import {
   submitForm,
   resetForm,
 } from '../actions/actions';
-
-const getExtension = filename => (filename ? filename.substr(filename.lastIndexOf('.') + 1) : '');
 
 const getItemOptions = (filename, url) => {
   const options = {};
