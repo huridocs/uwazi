@@ -1,6 +1,14 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
-import { Column, HeaderGroup, Row, useTable, usePagination, useFilters } from 'react-table';
+import {
+  Column,
+  HeaderGroup,
+  Row,
+  useTable,
+  usePagination,
+  useFilters,
+  FilterProps,
+} from 'react-table';
 import { SuggestionType } from 'shared/types/suggestionType';
 import { I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -47,6 +55,21 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
     </div>
   );
 
+  function StateFilter({ column: { filterValue, setFilter } }: FilterProps<SuggestionType>) {
+    return (
+      <select
+        value={filterValue}
+        onChange={e => {
+          setFilter(e.target.value || undefined);
+        }}
+      >
+        <option value="">All</option>
+        <option value="filled">Filled</option>
+        <option value="empty">Empty</option>
+      </select>
+    );
+  }
+
   const columns: Column<SuggestionType>[] = React.useMemo(
     () => [
       {
@@ -89,13 +112,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         Cell: ({ row }: { row: Row<SuggestionType> }) => (
           <Translate>{row.original.state}</Translate>
         ),
-        Filter: () => (
-          <select>
-            <option value="all">All</option>
-            <option value="filled">Filled</option>
-            <option value="empty">Empty</option>
-          </select>
-        ),
+        Filter: StateFilter,
         className: 'state',
       },
       {
@@ -121,6 +138,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       columns,
       data: suggestions,
       manualPagination: true,
+      manualFilters: true,
       initialState: {
         hiddenColumns,
         pageIndex: 0,
@@ -128,6 +146,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       },
       pageCount: totalPages,
       autoResetPage: false,
+      autoResetFilters: false,
     },
 
     useFilters,
@@ -138,6 +157,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
     const params = new RequestParams({
       page: pageIndex + 1,
       limit: pageSize,
+      filters,
     });
     getSuggestions(params)
       .then((response: any) => {
@@ -147,7 +167,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       .catch(() => {});
   };
 
-  useEffect(retrieveSuggestions, [pageIndex, pageSize]);
+  useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
 
   return (
     <div className="panel entity-suggestions">
