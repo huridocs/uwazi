@@ -71,10 +71,6 @@ class PDFSegmentation {
     Promise.all(
       Object.keys(tenants.tenants).map(async tenant => {
         await tenants.run(async () => {
-          if (!this.segmentationTaskManager) {
-            await this.start();
-          }
-
           const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
           if (pendingTasks > 0) {
             console.log(`${pendingTasks} tasks are pending`);
