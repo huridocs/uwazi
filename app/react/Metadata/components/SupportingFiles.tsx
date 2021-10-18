@@ -1,28 +1,39 @@
 import React from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { Field } from 'react-redux-form';
+import { actions, Field } from 'react-redux-form';
 
 import { ClientFile, IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { FormGroup } from 'app/Forms';
 import { getFileExtension } from 'app/utils/getFileExtension';
 
 type SupportingFilesProps = {
+  model: string;
   storeKey?: string;
 };
 
 const mapStateToProps = (state: IStore, ownProps: SupportingFilesProps) => {
   const { storeKey } = ownProps;
   const entity =
-    storeKey === 'library' ? state.library.sidepanel.metadata : state.entityView.entity.toJS();
+    storeKey === 'library' ? state.library.sidepanel.metadata : state.entityView.entityForm;
 
   return {
     entity,
   };
 };
 
-const connector = connect(mapStateToProps);
+const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: SupportingFilesProps) => {
+  const { model } = ownProps;
+  return bindActionCreators(
+    {
+      removeSupportingFile: (index: number) => actions.remove(`${model}.attachments`, index),
+    },
+    dispatch
+  );
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = SupportingFilesProps & mappedProps;
@@ -56,7 +67,7 @@ const getFileIcon = (file: ClientFile) => {
   return thumbnail;
 };
 
-const SupportingFiles = ({ entity }: ComponentProps) => {
+const SupportingFiles = ({ entity, removeSupportingFile }: ComponentProps) => {
   const { attachments = [] } = entity;
 
   return (
@@ -70,13 +81,15 @@ const SupportingFiles = ({ entity }: ComponentProps) => {
           <div className="attachment" key={file._id}>
             <div className="attachment-thumbnail">{getFileIcon(file)}</div>
             <div className="attachment-name">
-              <FormGroup>
-                <Field model={`.attachments.${index}.originalname`}>
-                  <input className="form-control" />
-                </Field>
-              </FormGroup>
+              <Field model={`.attachments.${index}.originalname`}>
+                <input className="form-control" />
+              </Field>
             </div>
-            <button type="button" className="btn btn-danger delete-supporting-file">
+            <button
+              type="button"
+              className="btn btn-danger delete-supporting-file"
+              onClick={() => removeSupportingFile(index)}
+            >
               <Icon icon="trash-alt" />
             </button>
           </div>
