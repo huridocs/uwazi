@@ -6,14 +6,15 @@ import { FileType } from 'shared/types/fileType';
 import { Settings } from 'shared/types/settingsType';
 import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
-import { SegmentationModel } from './segmentationModel';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import request from 'shared/JSONRequest';
+import { handleError } from 'api/utils';
+import { SegmentationModel } from './segmentationModel';
 
 class PDFSegmentation {
   SERVICE_NAME = 'segmentation';
 
-  public segmentationTaskManager: TaskManager | undefined;
+  public segmentationTaskManager: TaskManager;
 
   templatesWithInformationExtraction: string[] | undefined;
 
@@ -24,53 +25,58 @@ class PDFSegmentation {
   constructor() {
     this.segmentationTaskManager = new TaskManager({
       serviceName: this.SERVICE_NAME,
+      processResults: this.processResults,
     });
   }
 
   segmentOnePdf = async (file: FileType, serviceUrl: string, tenant: string) => {
-    if (!this.segmentationTaskManager) {
+    if (!file.filename) {
       return;
     }
 
-    if (!file || !file.filename) {
+    const fileBuffer = fs.readFileSync(uploadsPath(file.filename));
+    try {
+      await request.uploadFile(serviceUrl, file.filename, fileBuffer);
+    } catch {
+      handleError(`Error uploading file to segmentation service, tenant: ${tenant}`);
       return;
     }
-    console.log('segmentOnePdf', file.filename);
-    const fileBuffer = fs.readFileSync(uploadsPath(file.filename));
-    await request.uploadFile(serviceUrl, file.filename, fileBuffer);
 
     const task = {
       task: file.filename,
       tenant,
     };
-    console.log('segmentOnePdf task');
+
     await this.segmentationTaskManager.startTask(task);
-    console.log('store process');
-    const segmentationCreated = await this.storeProcess(file._id!, file.filename);
-    console.log(segmentationCreated);
+    await this.storeProcess(file._id!, file.filename);
   };
 
-  storeProcess = async (fileID: ObjectIdSchema, fileName: string) =>
-    SegmentationModel.save({ fileID, fileName });
+  storeProcess = async (fileID: ObjectIdSchema, filename: string) =>
+    SegmentationModel.save({ fileID, filename });
 
   processResults = async (message: ResultsMessage) => {
-    const response = await request.get(message.data_url);
-    await tenants.run(async () => {
-      const [segmentation] = await SegmentationModel.get({ fileName: message.task });
-      console.log('processing results', message.task);
-      await SegmentationModel.save({
-        ...segmentation,
-        segmentation: response.json,
-        autoexpire: null,
-        status: 'completed',
-      });
-    }, message.tenant);
+    try {
+      const response = await request.get(message.data_url);
+
+      await tenants.run(async () => {
+        const [segmentation] = await SegmentationModel.get({ filename: message.task });
+        // eslint-disable-next-line camelcase
+        const { paragraphs, page_height, page_width } = JSON.parse(response.json);
+        await SegmentationModel.save({
+          ...segmentation,
+          segmentation: { page_height, page_width, paragraphs },
+          autoexpire: null,
+          status: 'completed',
+        });
+      }, message.tenant);
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   segmentPdfs = async () => {
     const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
     if (pendingTasks > 0) {
-      console.log(`${pendingTasks} tasks are pending`);
       return;
     }
 
@@ -81,7 +87,6 @@ class PDFSegmentation {
           const segmentationServiceConfig = settingsValues?.features?.segmentation;
 
           if (!segmentationServiceConfig) {
-            console.log('no configuration');
             return;
           }
 
@@ -93,7 +98,7 @@ class PDFSegmentation {
             },
             {
               $lookup: {
-                from: 'segmentation',
+                from: 'segmentations',
                 localField: '_id',
                 foreignField: 'fileID',
                 as: 'segmentation',
@@ -110,8 +115,6 @@ class PDFSegmentation {
               $limit: this.batchSize,
             },
           ]);
-
-          console.log('filesToSegment', filesToSegment.length);
 
           for (let i = 0; i < filesToSegment.length; i += 1) {
             // eslint-disable-next-line no-await-in-loop

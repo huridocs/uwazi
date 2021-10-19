@@ -50,9 +50,9 @@ const fixturesOneFile: DBFixture = {
 };
 
 const fixturesOtherFile: DBFixture = {
-  entities: [factory.entity('A1', 'templateToSegmentB')],
+  entities: [factory.entity('A2', 'templateToSegmentB')],
   settings: otherSettings,
-  files: [factory.file('F1', 'A1', 'document', fixturesPdfNameB)],
+  files: [factory.file('F2', 'A2', 'document', fixturesPdfNameB)],
 };
 
 const fixturesFiveFiles: DBFixture = {

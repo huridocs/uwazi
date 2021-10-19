@@ -49,7 +49,7 @@ export class ExternalDummyService {
     });
 
     this.app.get('/results', (_req, res) => {
-      res.send(this.results);
+      res.json(JSON.stringify(this.results));
     });
   }
 

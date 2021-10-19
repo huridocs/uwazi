@@ -1,4 +1,5 @@
-import { testingDB, fixturer } from 'api/utils/testing_db';
+import { fixturer, testingDB, createNewMongoDB } from 'api/utils/testing_db';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -48,16 +49,24 @@ describe('PDFSegmentation', () => {
   let dbTwo: Db;
   let fileA: Buffer;
   let fileB: Buffer;
+  let mongod: MongoMemoryServer;
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await DB.disconnect();
+    await mongod.stop();
+  });
+
+  beforeAll(async () => {
+    mongod = await createNewMongoDB();
+    const mongoUri = mongod.getUri();
+    await DB.connect(mongoUri);
   });
 
   beforeEach(async () => {
     segmentPdfs = new PDFSegmentation();
-    await DB.connect();
     dbOne = DB.connectionForDB(tenantOne.dbName).db;
     dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
+
     tenants.tenants = { tenantOne };
     fileA = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
     fileB = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
@@ -130,16 +139,16 @@ describe('PDFSegmentation', () => {
     await tenants.run(async () => {
       const [segmentation] = await SegmentationModel.get();
       expect(segmentation.status).toBe('pending');
-      expect(segmentation.fileName).toBe(fixturesPdfNameA);
+      expect(segmentation.filename).toBe(fixturesPdfNameA);
       expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
     }, 'tenantOne');
   });
 
   it('should only send pdfs not already segmented or in the process', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesFiveFiles);
-    await dbOne.collection('segmentation').insertMany([
+    await dbOne.collection('segmentations').insertMany([
       {
-        fileName: fixturesFiveFiles,
+        filename: fixturesFiveFiles.files![0].filename,
         fileID: fixturesFiveFiles.files![0]._id,
         status: 'pending',
       },
@@ -212,7 +221,7 @@ describe('PDFSegmentation', () => {
         const segmentations = await SegmentationModel.get();
         const [segmentation] = segmentations;
         expect(segmentation.status).toBe('completed');
-        expect(segmentation.fileName).toBe(fixturesPdfNameA);
+        expect(segmentation.filename).toBe(fixturesPdfNameA);
         expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
         expect(segmentation.autoexpire).toBe(null);
 
@@ -222,7 +231,7 @@ describe('PDFSegmentation', () => {
             paragraphs: [expect.objectContaining(segmentationData.paragraphs[0])],
           })
         );
-      }, 'tenantOne');
+      }, tenantOne.name);
     });
   });
 });
