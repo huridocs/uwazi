@@ -107,28 +107,11 @@ const fixturesTwelveFiles: DBFixture = {
   ],
 };
 
-const fixturesFilesWithtMixedInformationExtraction: DBFixture = {
-  settings,
-  entities: [
-    factory.entity('A1', 'templateToSegmentA', {}),
-    factory.entity('B1', 'templateToSegmentB', {}),
-    factory.entity('B2', 'templateNotSegmentC', {}),
-    factory.entity('B3', 'templateNotSegmentC', {}),
-  ],
-  files: [
-    factory.file('F1', 'A1', 'document', fixturesPdfNameA),
-    factory.file('F2', 'B1', 'document', fixturesPdfNameA),
-    factory.file('F3', 'B2', 'document', fixturesPdfNameA),
-    factory.file('F4', 'B3', 'document', fixturesPdfNameA),
-  ],
-};
-
 export {
   fixturesPdfNameA,
   fixturesPdfNameB,
   fixturesOneFile,
   fixturesOtherFile,
   fixturesTwelveFiles,
-  fixturesFilesWithtMixedInformationExtraction,
   fixturesFiveFiles,
 };

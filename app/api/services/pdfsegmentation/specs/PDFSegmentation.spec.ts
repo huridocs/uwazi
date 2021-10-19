@@ -1,6 +1,5 @@
 import { testingDB, fixturer } from 'api/utils/testing_db';
 import {
-  fixturesFilesWithtMixedInformationExtraction,
   fixturesOneFile,
   fixturesOtherFile,
   fixturesPdfNameA,
@@ -101,14 +100,6 @@ describe('PDFSegmentation', () => {
     );
 
     expect(request.uploadFile).toHaveBeenCalledTimes(10);
-  });
-
-  it('should send pdfs only from templates with the information extraction on', async () => {
-    await fixturer.clearAllAndLoad(dbOne, fixturesFilesWithtMixedInformationExtraction);
-
-    await segmentPdfs.segmentPdfs();
-
-    expect(request.uploadFile).toHaveBeenCalledTimes(2);
   });
 
   it('should send pdfs from different tenants with the information extraction on', async () => {
