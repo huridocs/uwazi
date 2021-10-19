@@ -7,8 +7,8 @@ import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-
 import { SupportingFiles } from '../SupportingFiles';
+import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
 
 const entity1 = {
   _id: 'entity_id',
@@ -65,6 +65,7 @@ describe('Supporting files', () => {
   describe('on edit', () => {
     beforeEach(() => {
       spyOn(actions, 'remove').and.returnValue({ type: 'deleting' });
+      spyOn(supportingLocalFilesActions, 'uploadLocalAttachment');
     });
 
     it('should display existing supporting files when editing on the sidepanel', () => {
@@ -83,8 +84,14 @@ describe('Supporting files', () => {
 
     it('should allow adding new supporting files', () => {
       render();
-      const addSupportingFileButton = screen.getByText('Add supporting file');
-      expect(addSupportingFileButton).not.toBe(undefined);
+      const addSupportingFileButton = screen.getByText('Add supporting file').parentElement!;
+      fireEvent.click(addSupportingFileButton);
+      const selectFileButton = screen.getByText('Upload and select file');
+      fireEvent.click(selectFileButton);
+      const fileInput = screen.getByTestId('fileInput');
+      const file = new File(['hello'], 'hello.png', { type: 'image/png' });
+      fireEvent.change(fileInput, { target: { files: [file] } });
+      expect(supportingLocalFilesActions.uploadLocalAttachment).toHaveBeenCalled();
     });
   });
 });

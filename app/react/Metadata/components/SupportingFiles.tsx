@@ -8,6 +8,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { getFileExtension } from 'app/utils/getFileExtension';
 import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
+import { uploadLocalAttachment } from '../actions/supportingFilesActions';
 
 type SupportingFilesProps = {
   model: string;
@@ -78,7 +79,11 @@ const SupportingFiles = ({ entity, storeKey, removeSupportingFile }: ComponentPr
       </h2>
 
       <div>
-        <UploadSupportingFile entitySharedId={entity.sharedId} storeKey="library" />
+        <UploadSupportingFile
+          entitySharedId={entity.sharedId}
+          storeKey="library"
+          uploadAttachment={uploadLocalAttachment}
+        />
       </div>
 
       <div className="attachments-list">

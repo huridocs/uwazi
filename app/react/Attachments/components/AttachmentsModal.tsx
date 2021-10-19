@@ -119,7 +119,9 @@ export const AttachmentsModalCmp = ({
                       <Icon icon="link" />
                       &nbsp; <Translate>Upload and select file</Translate>
                     </button>
+                    <label>Upload file:</label>
                     <input
+                      data-testid="fileInput"
                       type="file"
                       onChange={handleInputFileChange}
                       style={{ display: 'none' }}
@@ -196,9 +198,9 @@ export const AttachmentsModalCmp = ({
   );
 };
 
-const mapDispatchToProps = {
-  uploadAttachment,
+const mapDispatchToProps = (_dispatch, ownProps) => ({
+  uploadAttachment: ownProps.uploadAttachment ? ownProps.uploadAttachment : uploadAttachment,
   uploadAttachmentFromUrl,
-};
+});
 
 export const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);
