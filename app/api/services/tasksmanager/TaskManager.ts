@@ -50,19 +50,19 @@ export class TaskManager {
   }
 
   subscribeToEvents() {
-    this.redisClient.on('error', error => {
-      if (error.code !== 'ECONNREFUSED') {
+    this.redisClient.on('error', (error: any | undefined) => {
+      if (error && error.code !== 'ECONNREFUSED') {
         throw error;
       }
     });
 
     this.redisClient.on('connect', () => {
-      this.redisSMQ.createQueue({ qname: this.taskQueue }, err => {
+      this.redisSMQ.createQueue({ qname: this.taskQueue }, (err: Error | undefined) => {
         if (err && err.name !== 'queueExists') {
           throw err;
         }
       });
-      this.redisSMQ.createQueue({ qname: this.resultsQueue }, err => {
+      this.redisSMQ.createQueue({ qname: this.resultsQueue }, (err: Error | undefined) => {
         if (err && err.name !== 'queueExists') {
           throw err;
         }
