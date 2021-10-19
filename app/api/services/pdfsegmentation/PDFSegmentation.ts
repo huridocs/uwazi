@@ -67,28 +67,23 @@ class PDFSegmentation {
     }, message.tenant);
   };
 
-  segmentPdfs = async () =>
-    Promise.all(
+  segmentPdfs = async () => {
+    const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
+    if (pendingTasks > 0) {
+      console.log(`${pendingTasks} tasks are pending`);
+      return;
+    }
+
+    await Promise.all(
       Object.keys(tenants.tenants).map(async tenant => {
         await tenants.run(async () => {
-          const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
-          if (pendingTasks > 0) {
-            console.log(`${pendingTasks} tasks are pending`);
-            return;
-          }
-
           const settingsValues = await settings.get();
-          const metadataExtractionFeatureToggle = settingsValues?.features?.metadataExtraction;
           const segmentationServiceConfig = settingsValues?.features?.segmentation;
 
-          if (!metadataExtractionFeatureToggle || !segmentationServiceConfig) {
+          if (!segmentationServiceConfig) {
             console.log('no configuration');
             return;
           }
-
-          const templatesWithInformationExtraction = metadataExtractionFeatureToggle?.map(
-            x => x.template
-          );
 
           const filesToSegment = await filesModel.db.aggregate([
             {
@@ -112,19 +107,6 @@ class PDFSegmentation {
               },
             },
             {
-              $lookup: {
-                from: 'entities',
-                localField: 'entity',
-                foreignField: 'sharedId',
-                as: 'entity',
-              },
-            },
-            {
-              $match: {
-                'entity.template': { $in: templatesWithInformationExtraction },
-              },
-            },
-            {
               $limit: this.batchSize,
             },
           ]);
@@ -138,6 +120,7 @@ class PDFSegmentation {
         }, tenant);
       })
     );
+  };
 }
 
 export { PDFSegmentation };
