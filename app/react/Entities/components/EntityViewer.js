@@ -176,6 +176,7 @@ export class EntityViewer extends Component {
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
           <div className="sidepanel-footer">
             <MetadataFormButtons
+              includeViewButton={false}
               delete={this.deleteEntity}
               data={this.props.entity}
               formStatePath="entityView.entityForm"
