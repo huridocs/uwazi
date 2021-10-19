@@ -7,12 +7,18 @@ import { config } from 'api/config';
 export interface TaskMessage {
   tenant: string;
   task: string;
+  params?: {
+    [key: string]: any;
+  };
 }
 
 /* eslint-disable camelcase */
 export interface ResultsMessage {
   tenant: string;
   task: string;
+  params?: {
+    [key: string]: any;
+  };
   data_url?: string;
   file_url?: string;
 }
