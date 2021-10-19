@@ -152,7 +152,10 @@ describe('taskManager', () => {
         }
 
         await redisServer.start();
-        await new Promise(resolve => setTimeout(resolve, 200)); // wait for redis to connect
+
+        await waitForExpect(async () => {
+          expect(taskManager?.redisClient.connected).toBe(true);
+        });
         await taskManager?.startTask(task);
 
         const message = await externalDummyService.readFirstTaskMessage();

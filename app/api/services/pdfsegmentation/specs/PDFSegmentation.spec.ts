@@ -14,10 +14,10 @@ import fs from 'fs';
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
 import { Db } from 'mongodb';
+import request from 'shared/JSONRequest';
 
 import { PDFSegmentation } from '../PDFSegmentation';
 import { SegmentationModel } from '../segmentationModel';
-import request from 'shared/JSONRequest';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -127,8 +127,9 @@ describe('PDFSegmentation', () => {
     await segmentPdfs.segmentPdfs();
 
     expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledWith({
-      task: 'documentA.pdf',
+      params: { filename: 'documentA.pdf' },
       tenant: 'tenantOne',
+      task: 'segmentation',
     });
   });
 
@@ -213,8 +214,9 @@ describe('PDFSegmentation', () => {
 
       await segmentPdfs.processResults({
         tenant: tenantOne.name,
-        task: 'documentA.pdf',
+        params: { filename: 'documentA.pdf' },
         data_url: 'http://localhost:1235/results',
+        task: 'segmentation',
       });
 
       await tenants.run(async () => {
