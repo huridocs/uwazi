@@ -13,10 +13,10 @@ type SupportingFilesProps = {
   storeKey?: string;
 };
 
-const mapStateToProps = (state: IStore, ownProps: SupportingFilesProps) => {
+const mapStateToProps = (store: IStore, ownProps: SupportingFilesProps) => {
   const { storeKey } = ownProps;
   const entity =
-    storeKey === 'library' ? state.library.sidepanel.metadata : state.entityView.entityForm;
+    storeKey === 'library' ? store.library.sidepanel.metadata : store.entityView.entityForm;
 
   return {
     entity,

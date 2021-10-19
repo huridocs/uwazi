@@ -1,31 +1,19 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import thunk from 'redux-thunk';
-import Immutable from 'immutable';
-import { shallow, ShallowWrapper } from 'enzyme';
-import configureMockStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
-import { actions, Form } from 'react-redux-form';
+import { fireEvent, screen } from '@testing-library/react';
+import { actions } from 'react-redux-form';
 
-import { MetadataForm } from '../MetadataForm';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 
-const templates = Immutable.fromJS([
-  {
-    name: 'template1',
-    _id: 'templateId',
-    properties: [{ name: 'field1', label: 'label1', type: 'text' }],
-    commonProperties: [{ name: 'title', label: 'Title' }],
-  },
-  {
-    name: 'template2',
-    _id: 'templateId2',
-    properties: [{ name: 'field1', label: 'label1', type: 'text' }],
-    commonProperties: [{ name: 'title', label: 'Title' }],
-  },
-]);
+import { SupportingFiles } from '../SupportingFiles';
 
 const entity1 = {
   _id: 'entity_id',
   sharedId: 'entity_sharedId',
+  title: 'testTitle',
+  metadata: [{ field1: 'field1value' }],
   attachments: [
     {
       _id: 'file1',
@@ -52,44 +40,22 @@ const entity1 = {
   ],
 };
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({
-  library: {
-    sidepanel: {
-      metadata: entity1,
-    },
-  },
-});
-
 describe('Supporting files', () => {
-  let component: ShallowWrapper;
-  const onSubmit = jasmine.createSpy('onSubmit');
-  const changeTemplate = jasmine.createSpy('changeTemplate');
+  let reduxStore = {};
 
   const render = () => {
-    component = shallow(
-      <Provider store={store}>
-        <MetadataForm
-          model="library.sidepanel.metadata"
-          templates={templates}
-          template={templates.get(0)}
-          templateOptions={Immutable.fromJS([
-            { label: 'template1', value: 'templateId' },
-            { label: 'template2', value: 'templateId2' },
-          ])}
-          thesauris={Immutable.fromJS([])}
-          metadata={{
-            _id: [{ value: 'docId' }],
-            template: [{ value: 'templateId' }],
-            title: [{ value: 'testTitle' }],
-            metadata: [{ value: { field1: 'field1value', field2: 'field2value' } }],
-          }}
-          storeKey="library"
-          onSubmit={onSubmit}
-          changeTemplate={changeTemplate}
-        />
-      </Provider>
-    ).dive();
+    reduxStore = {
+      ...defaultState,
+      library: {
+        sidepanel: {
+          metadata: entity1,
+        },
+      },
+    };
+    renderConnectedContainer(
+      <SupportingFiles storeKey="library" model="library.sidepanel.metadata" />,
+      () => reduxStore
+    );
   };
 
   describe('on edit', () => {
@@ -99,41 +65,15 @@ describe('Supporting files', () => {
 
     it('should display existing supporting files when editing on the sidepanel', () => {
       render();
-      expect(
-        component
-          .find('Connect(SupportingFiles)')
-          .dive()
-          .dive()
-          .find('.attachment')
-      ).toHaveLength(2);
-    });
-
-    it('should submit with existing supporting files', () => {
-      const entity = {
-        _id: '123',
-        template: 'templateId',
-        language: 'en',
-        attachments: [{ _id: 'file1', originalname: 'file1.jpeg' }],
-      };
-      render();
-      component.find(Form).simulate('submit', entity);
-      expect(onSubmit).toHaveBeenLastCalledWith(entity, 'library.sidepanel.metadata');
+      const files = screen.queryAllByAltText(/file/);
+      expect(files).toHaveLength(2);
     });
 
     it('should allow deleting supporting files', () => {
       render();
-      component
-        .find('Connect(SupportingFiles)')
-        .dive()
-        .dive()
-        .find('button')
-        .first()
-        .simulate('click');
-      expect(actions.remove).toHaveBeenCalledWith('library.sidepanel.metadata.attachments', 0);
-    });
-
-    it('', () => {
-      throw new Error('should contemplate template changes');
+      const removeFile2button = screen.getAllByRole('button')[1];
+      fireEvent.click(removeFile2button);
+      expect(actions.remove).toHaveBeenCalledWith('library.sidepanel.metadata.attachments', 1);
     });
   });
 });
