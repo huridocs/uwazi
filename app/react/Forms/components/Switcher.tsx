@@ -5,8 +5,8 @@ export interface SwitcherProps {
   onChange: (checked: boolean) => {};
   value: boolean;
   prefix: string;
-  leftLabel?: JSX.Element;
-  rightLabel?: JSX.Element;
+  leftLabel?: JSX.Element | string;
+  rightLabel?: JSX.Element | string;
 }
 
 const Switcher = ({

@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
+import { Translate } from 'app/I18N';
 import { Switcher, SwitcherProps } from '../Switcher';
 
 describe('Switcher', () => {
@@ -37,10 +38,24 @@ describe('Switcher', () => {
     });
   });
 
-  it('should receive alternative labels for values', () => {
-    render({ leftLabel: 'ALL', rightLabel: 'NONE' });
+  it('should receive alternative elements for values', () => {
+    render({ leftLabel: <Translate>ALL</Translate>, rightLabel: <Translate>NONE</Translate> });
     const labels = component.find('Connect(Translate)');
     expect(labels.at(0).props().children).toEqual('ALL');
     expect(labels.at(1).props().children).toEqual('NONE');
+  });
+
+  it('should receive alternative labels for values', () => {
+    render({ leftLabel: 'ALL', rightLabel: 'NONE' });
+    const labels = component.find('span');
+    expect(labels.at(0).props().children).toEqual('ALL');
+    expect(labels.at(1).props().children).toEqual('NONE');
+  });
+
+  it('should render default labels AND/OR', () => {
+    render();
+    const labels = component.find('Connect(Translate)');
+    expect(labels.at(0).props().children).toEqual('AND');
+    expect(labels.at(1).props().children).toEqual('OR');
   });
 });
