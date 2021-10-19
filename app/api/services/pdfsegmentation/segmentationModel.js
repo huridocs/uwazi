@@ -20,7 +20,7 @@ const props = {
     ],
   },
   file: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
-  fileName: { type: String },
+  filename: { type: String },
 };
 
 const mongoSchema = new mongoose.Schema(props, {
@@ -28,6 +28,6 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-const SegmentationModel = instanceModel('segmentation', mongoSchema);
+const SegmentationModel = instanceModel('segmentations', mongoSchema);
 
 export { SegmentationModel };
