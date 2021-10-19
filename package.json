@@ -205,6 +205,7 @@
     "@babel/preset-react": "7.10.4",
     "@babel/preset-typescript": "7.10.4",
     "@babel/traverse": "^7.15.0",
+    "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@types/child-process-promise": "^2.2.1",
     "@types/cookie": "^0.4.0",
