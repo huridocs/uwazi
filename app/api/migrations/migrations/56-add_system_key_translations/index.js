@@ -43,7 +43,7 @@ export default {
 
   name: 'add_system_key_translations',
 
-  description: 'Inserts system keys of added translations.',
+  description: 'Adding missing translations for system keys, through importing from a csv file.',
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
