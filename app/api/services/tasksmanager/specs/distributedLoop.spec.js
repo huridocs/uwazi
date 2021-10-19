@@ -1,10 +1,10 @@
 import * as errorHelper from 'api/utils/handleError';
 import waitForExpect from 'wait-for-expect';
-import { RepeatWith } from '../RepeatWith';
+import { DistributedLoop } from '../DistributedLoop';
 import { RedisServer } from '../RedisServer';
 
 /* eslint-disable max-statements */
-describe('RepeatWithLock', () => {
+describe('DistributedLoopLock', () => {
   let finishTask;
   let task;
   let rejectTask;
@@ -43,8 +43,8 @@ describe('RepeatWithLock', () => {
   }
 
   it('should run one task at a time', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, { delayTimeBetweenTasks: 0 });
-    const nodeTwo = new RepeatWith('my_locked_task', task, { delayTimeBetweenTasks: 0 });
+    const nodeOne = new DistributedLoop('my_locked_task', task, { delayTimeBetweenTasks: 0 });
+    const nodeTwo = new DistributedLoop('my_locked_task', task, { delayTimeBetweenTasks: 0 });
     await nodeOne.start();
     await nodeTwo.start();
     await waitForExpect(async () => {
@@ -66,7 +66,7 @@ describe('RepeatWithLock', () => {
 
   it('should wait until the redis server is available to execute the task', async () => {
     await redisServer.stop();
-    const nodeOne = new RepeatWith('my_locked_task', task, {
+    const nodeOne = new DistributedLoop('my_locked_task', task, {
       retryDelay: 20,
       delayTimeBetweenTasks: 0,
     });
@@ -96,7 +96,7 @@ describe('RepeatWithLock', () => {
   it('should continue executing tasks after redis was unavailable for a while', async () => {
     const unstableRedisServer = new RedisServer(6371);
     await unstableRedisServer.start();
-    const nodeOne = new RepeatWith('my_locked_task', task, {
+    const nodeOne = new DistributedLoop('my_locked_task', task, {
       retryDelay: 20,
       delayTimeBetweenTasks: 0,
       port: 6371,
@@ -127,11 +127,11 @@ describe('RepeatWithLock', () => {
   });
 
   it('should handle when a lock fails for too many retries', async () => {
-    const nodeOne = new RepeatWith('my_long_locked_task', task, {
+    const nodeOne = new DistributedLoop('my_long_locked_task', task, {
       retryDelay: 20,
       delayTimeBetweenTasks: 0,
     });
-    const nodeTwo = new RepeatWith('my_long_locked_task', task, {
+    const nodeTwo = new DistributedLoop('my_long_locked_task', task, {
       retryDelay: 20,
       delayTimeBetweenTasks: 0,
     });
@@ -150,11 +150,11 @@ describe('RepeatWithLock', () => {
   });
 
   it('should handle when a node fails to unlock the lock', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, {
+    const nodeOne = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 50,
       delayTimeBetweenTasks: 0,
     });
-    const nodeTwo = new RepeatWith('my_locked_task', task, {
+    const nodeTwo = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 50,
       delayTimeBetweenTasks: 0,
     });
@@ -176,7 +176,7 @@ describe('RepeatWithLock', () => {
 
   it('should continue executing the task if one task fails', async () => {
     jest.spyOn(errorHelper, 'handleError').mockImplementation(() => {});
-    const nodeOne = new RepeatWith('my_locked_task', task, {
+    const nodeOne = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 500,
       delayTimeBetweenTasks: 0,
     });
@@ -203,12 +203,12 @@ describe('RepeatWithLock', () => {
 
   // eslint-disable-next-line max-statements
   it('should add a delay between task executions', async () => {
-    const nodeOne = new RepeatWith('my_locked_task', task, {
+    const nodeOne = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 50,
       delayTimeBetweenTasks: 50,
       retryDelay: 20,
     });
-    const nodeTwo = new RepeatWith('my_locked_task', task, {
+    const nodeTwo = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 50,
       delayTimeBetweenTasks: 50,
       retryDelay: 20,

@@ -2,7 +2,7 @@ import Redis from 'redis';
 import Redlock from 'redlock';
 import { handleError } from 'api/utils/handleError';
 
-export class RepeatWith {
+export class DistributedLoop {
   private lockName: string;
 
   private task: () => void;
@@ -106,7 +106,7 @@ export class RepeatWith {
       await this.runTask();
       await lock.unlock();
     } catch (error) {
-      if (error && error.name !== 'LockError') {
+      if (error instanceof Error && error.name !== 'LockError') {
         throw error;
       }
     }
