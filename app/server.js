@@ -11,7 +11,7 @@ import path from 'path';
 
 import { TaskProvider } from 'shared/tasks/tasks';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
-import { RepeatWith } from 'api/services/tasksmanager/RepeatWith';
+import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
@@ -154,7 +154,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         topicClassificationRepeater.start();
 
         const segmentationConnector = new PDFSegmentation();
-        const segmentationRepeater = new RepeatWith(
+        const segmentationRepeater = new DistributedLoop(
           'segmentation_repeat',
           segmentationConnector.segmentPdfs,
           { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
