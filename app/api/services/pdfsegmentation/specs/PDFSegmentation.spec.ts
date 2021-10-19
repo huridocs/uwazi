@@ -1,4 +1,4 @@
-import { fixturer, testingDB, createNewMongoDB } from 'api/utils/testing_db';
+import { fixturer, createNewMongoDB } from 'api/utils/testing_db';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
   fixturesOneFile,
