@@ -64,8 +64,8 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         }}
       >
         <option value="">All</option>
-        <option value="filled">Filled</option>
-        <option value="empty">Empty</option>
+        <option value="filled">filled</option>
+        <option value="empty">empty</option>
       </select>
     );
   }

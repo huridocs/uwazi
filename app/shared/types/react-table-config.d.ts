@@ -11,7 +11,6 @@ import {
   UsePaginationInstanceProps,
   UsePaginationOptions,
   UsePaginationState,
-  UseTableOptions,
 } from 'react-table';
 
 interface CustomColumn {

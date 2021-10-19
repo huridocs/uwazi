@@ -1,8 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import _ from 'lodash';
 
 interface PaginationProps {
   totalPages: number;
@@ -11,17 +11,16 @@ interface PaginationProps {
 }
 
 const computeVisiblePages = (activePage: number, totalPages: number) => {
-  let availablePages;
   if (totalPages < 6) {
-    availablePages = _.range(1, totalPages + 1);
-  } else if (activePage % 5 >= 0 && activePage > 4 && activePage + 2 < totalPages) {
-    availablePages = [1, activePage - 1, activePage, activePage + 1, totalPages];
-  } else if (activePage % 5 >= 0 && activePage > 4 && activePage + 2 >= totalPages) {
-    availablePages = [1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
-  } else {
-    availablePages = [1, 2, 3, 4, 5, totalPages];
+    return _.range(1, totalPages + 1);
   }
-  return availablePages;
+  if (activePage % 5 >= 0 && activePage > 4 && activePage + 2 < totalPages) {
+    return [1, activePage - 1, activePage, activePage + 1, totalPages];
+  }
+  if (activePage % 5 >= 0 && activePage > 4 && activePage + 2 >= totalPages) {
+    return [1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+  return [1, 2, 3, 4, 5, totalPages];
 };
 
 function pageLabel(array: number[], index: number, pageNumber: number) {
@@ -47,18 +46,6 @@ const Pagination = ({ totalPages, onPageChange, onPageSizeChange }: PaginationPr
     }
   };
 
-  const gotToNextPage = () => {
-    if (activePage !== totalPages) {
-      changePage(activePage + 1);
-    }
-  };
-
-  const gotToPreviousPage = () => {
-    if (activePage !== 1) {
-      changePage(activePage - 1);
-    }
-  };
-
   function PageNumbers() {
     return visiblePages.map((pageNumber, index, array) => (
       <button
@@ -81,7 +68,11 @@ const Pagination = ({ totalPages, onPageChange, onPageSizeChange }: PaginationPr
               <button
                 type="button"
                 className="page-button"
-                onClick={gotToPreviousPage}
+                onClick={() => {
+                  if (activePage !== 1) {
+                    changePage(activePage - 1);
+                  }
+                }}
                 disabled={activePage === 1}
               >
                 <Icon icon="angle-double-left" />
@@ -94,7 +85,11 @@ const Pagination = ({ totalPages, onPageChange, onPageSizeChange }: PaginationPr
               <button
                 type="button"
                 className="page-button"
-                onClick={gotToNextPage}
+                onClick={() => {
+                  if (activePage !== totalPages) {
+                    changePage(activePage + 1);
+                  }
+                }}
                 disabled={activePage === totalPages}
               >
                 <Translate>Next</Translate>
