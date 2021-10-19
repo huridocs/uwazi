@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 
+// temporal file with sample data, should be deleted at connecting with backend
 import { SuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import _ from 'lodash';
