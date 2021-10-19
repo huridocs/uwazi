@@ -43,8 +43,11 @@ class PDFSegmentation {
     }
 
     const task = {
-      task: file.filename,
+      task: this.SERVICE_NAME,
       tenant,
+      params: {
+        filename: file.filename,
+      },
     };
 
     await this.segmentationTaskManager.startTask(task);
@@ -59,7 +62,7 @@ class PDFSegmentation {
       const response = await request.get(message.data_url);
 
       await tenants.run(async () => {
-        const [segmentation] = await SegmentationModel.get({ filename: message.task });
+        const [segmentation] = await SegmentationModel.get({ filename: message.params!.filename });
         // eslint-disable-next-line camelcase
         const { paragraphs, page_height, page_width } = JSON.parse(response.json);
         await SegmentationModel.save({
