@@ -88,8 +88,8 @@ export class TemplatesFilterComponent extends React.Component<
                     this.state.selectedTemplates
                   )
                 }
-                leftLabel="FEATURED"
-                rightLabel="ALL"
+                leftLabel={<Translate>FEATURED</Translate>}
+                rightLabel={<Translate>ALL</Translate>}
               />
             </li>
           )}
