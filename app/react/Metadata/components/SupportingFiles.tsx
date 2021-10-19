@@ -7,6 +7,7 @@ import { ClientFile, IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { getFileExtension } from 'app/utils/getFileExtension';
+import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
 
 type SupportingFilesProps = {
   model: string;
@@ -67,7 +68,7 @@ const getFileIcon = (file: ClientFile) => {
   return thumbnail;
 };
 
-const SupportingFiles = ({ entity, removeSupportingFile }: ComponentProps) => {
+const SupportingFiles = ({ entity, storeKey, removeSupportingFile }: ComponentProps) => {
   const { attachments = [] } = entity;
 
   return (
@@ -75,6 +76,10 @@ const SupportingFiles = ({ entity, removeSupportingFile }: ComponentProps) => {
       <h2>
         <Translate>Supporting files</Translate>
       </h2>
+
+      <div>
+        <UploadSupportingFile entitySharedId={entity.sharedId} storeKey="library" />
+      </div>
 
       <div className="attachments-list">
         {attachments.map((file: ClientFile, index: number) => (

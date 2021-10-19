@@ -4,6 +4,7 @@
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { actions } from 'react-redux-form';
+import Immutable from 'immutable';
 
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 
@@ -51,6 +52,9 @@ describe('Supporting files', () => {
           metadata: entity1,
         },
       },
+      attachments: {
+        progress: Immutable.fromJS({}),
+      },
     };
     renderConnectedContainer(
       <SupportingFiles storeKey="library" model="library.sidepanel.metadata" />,
@@ -70,10 +74,17 @@ describe('Supporting files', () => {
     });
 
     it('should allow deleting supporting files', () => {
+      //change button selector
       render();
       const removeFile2button = screen.getAllByRole('button')[1];
       fireEvent.click(removeFile2button);
       expect(actions.remove).toHaveBeenCalledWith('library.sidepanel.metadata.attachments', 1);
+    });
+
+    it('should allow adding new supporting files', () => {
+      render();
+      const addSupportingFileButton = screen.getByText('Add supporting file');
+      expect(addSupportingFileButton).not.toBe(undefined);
     });
   });
 });
