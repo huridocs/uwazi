@@ -19,6 +19,21 @@ import { getSuggestions } from './SuggestionsAPI';
 interface EntitySuggestionsProps {
   propertyName: string;
 }
+
+const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<SuggestionType>) => (
+  <select
+    className={filterValue ? 'filtered' : ''}
+    value={filterValue}
+    onChange={e => {
+      setFilter(e.target.value || undefined);
+    }}
+  >
+    <option value="">{t('System', 'All', 'All', false)}</option>
+    <option value="Filled">{t('System', 'Filled', 'Filled', false)}</option>
+    <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
+  </select>
+);
+
 export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -53,21 +68,6 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       </button>
     </div>
   );
-
-  function StateFilter({ column: { filterValue, setFilter } }: FilterProps<SuggestionType>) {
-    return (
-      <select
-        value={filterValue}
-        onChange={e => {
-          setFilter(e.target.value || undefined);
-        }}
-      >
-        <option value="">{t('System', 'All', 'All', false)}</option>
-        <option value="Filled">{t('System', 'Filled', 'Filled', false)}</option>
-        <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
-      </select>
-    );
-  }
 
   const columns: Column<SuggestionType>[] = React.useMemo(
     () => [
@@ -111,7 +111,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         Cell: ({ row }: { row: Row<SuggestionType> }) => (
           <Translate>{row.original.state}</Translate>
         ),
-        Filter: StateFilter,
+        Filter: stateFilter,
         className: 'state',
       },
       {

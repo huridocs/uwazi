@@ -89,11 +89,19 @@
       }
 
       select {
-        width: 15px;
+        width: 17px;
         border: 0;
-        font-size: $f-size-sm;
         margin-bottom: 0;
+        text-indent: 100%;
         color: $c-grey-dark;
+
+        &.filtered {
+          color: $c-primary;
+        }
+
+        option {
+          font-size: $f-size-sm;
+        }
       }
     }
   }

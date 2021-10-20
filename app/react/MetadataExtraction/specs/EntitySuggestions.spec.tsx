@@ -132,12 +132,13 @@ describe('EntitySuggestions', () => {
     it('should retrieve suggestions data when state filter changed', async () => {
       await act(async () => {
         renderComponent('Filter');
-        fireEvent.change(screen.getAllByText('All')[0].parentElement!, {
-          target: { value: 'empty' },
+        const header = screen.getAllByRole('columnheader', { name: 'State All' })[0];
+        fireEvent.change(within(header).getByRole('combobox'), {
+          target: { value: 'Empty' },
         });
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: { filters: [{ id: 'state', value: 'empty' }], limit: 5, page: 1 },
+        data: { filters: [{ id: 'state', value: 'Empty' }], limit: 5, page: 1 },
         headers: {},
       });
     });
