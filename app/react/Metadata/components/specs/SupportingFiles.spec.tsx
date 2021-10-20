@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
 import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
@@ -43,6 +43,7 @@ const entity1 = {
 
 describe('Supporting files', () => {
   let reduxStore = {};
+  let renderResult: RenderResult;
 
   const render = () => {
     reduxStore = {
@@ -56,10 +57,10 @@ describe('Supporting files', () => {
         progress: Immutable.fromJS({}),
       },
     };
-    renderConnectedContainer(
+    ({ renderResult } = renderConnectedContainer(
       <SupportingFiles storeKey="library" model="library.sidepanel.metadata" />,
       () => reduxStore
-    );
+    ));
   };
 
   describe('on edit', () => {
@@ -77,9 +78,11 @@ describe('Supporting files', () => {
     });
 
     it('should allow deleting supporting files', () => {
-      //change button selector
       render();
-      const removeFile2button = screen.getAllByRole('button')[1];
+      const attachmentList = renderResult.container.querySelector(
+        '.attachments-list'
+      ) as HTMLElement;
+      const removeFile2button = within(attachmentList).getAllByRole('button')[1];
       fireEvent.click(removeFile2button);
       expect(actions.remove).toHaveBeenCalledWith('library.sidepanel.metadata.attachments', 1);
     });
