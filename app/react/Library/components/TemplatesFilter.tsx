@@ -1,0 +1,110 @@
+import React from 'react';
+import _ from 'lodash';
+import { connect, ConnectedProps } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Switcher } from 'app/ReactReduxForms';
+import { Translate } from 'app/I18N';
+import { IStore } from 'app/istore';
+import { filterDocumentTypes } from '../actions/filterActions';
+import DocumentTypesList from './DocumentTypesList';
+
+interface TemplatesFilterState {
+  documentTypeFromFilters: boolean;
+  selectedTemplates: string[];
+  configuredFilters: string[];
+}
+
+const mapStateToProps = (state: IStore) => ({
+  collection: state.settings.collection,
+  libraryFilters: state.library.filters,
+});
+
+function mapDispatchToProps(dispatch: Dispatch<IStore>) {
+  return bindActionCreators({ filterDocumentTypes }, dispatch);
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type ComponentProps = ConnectedProps<typeof connector>;
+
+const filterValidSelectedTemplates = (configuredFilters: string[], selectedTemplates: string[]) =>
+  configuredFilters.length
+    ? selectedTemplates.filter(t => configuredFilters.includes(t))
+    : selectedTemplates;
+
+export class TemplatesFilterComponent extends React.Component<
+  ComponentProps,
+  TemplatesFilterState
+> {
+  constructor(props: ComponentProps) {
+    super(props);
+    const configuredFilters: string[] = (props.collection.toJS().filters || []).map(f => f.id!);
+    const currentSelection = props.libraryFilters.toJS().documentTypes || [];
+    const newSelection = filterValidSelectedTemplates(configuredFilters, currentSelection);
+    const documentTypeFromFilters = _.isEqual(currentSelection, newSelection);
+    this.state = {
+      documentTypeFromFilters,
+      selectedTemplates: newSelection,
+      configuredFilters,
+    };
+  }
+
+  static getDerivedStateFromProps(props: ComponentProps, state: TemplatesFilterState) {
+    const currentSelection = props.libraryFilters.toJS().documentTypes || [];
+    const newSelection = state.documentTypeFromFilters
+      ? filterValidSelectedTemplates(state.configuredFilters, currentSelection)
+      : currentSelection;
+    return { selectedTemplates: newSelection };
+  }
+
+  private toggleTemplateFilter(
+    checked: boolean,
+    configuredFilters: string[],
+    selectedTemplates: string[]
+  ) {
+    if (checked) {
+      const newSelectedItems = filterValidSelectedTemplates(configuredFilters, selectedTemplates);
+      this.setState({ selectedTemplates: newSelectedItems });
+      this.props.filterDocumentTypes(newSelectedItems);
+    }
+    this.setState({ documentTypeFromFilters: checked });
+  }
+
+  render() {
+    return (
+      <div className="form-group">
+        <ul className="search__filter">
+          {this.state.configuredFilters.length > 0 && (
+            <li>
+              <Translate>Templates</Translate>
+              <Switcher
+                className="template-filter-switcher"
+                model=""
+                value={this.state.documentTypeFromFilters}
+                onChange={(checked: boolean) =>
+                  this.toggleTemplateFilter(
+                    checked,
+                    this.state.configuredFilters,
+                    this.state.selectedTemplates
+                  )
+                }
+                leftLabel={<Translate>FEATURED</Translate>}
+                rightLabel={<Translate>ALL</Translate>}
+              />
+            </li>
+          )}
+          <li className="wide documentTypes-selector">
+            <DocumentTypesList
+              fromFilters={
+                this.state.documentTypeFromFilters && this.state.configuredFilters.length > 0
+              }
+              selectedTemplates={this.state.selectedTemplates}
+            />
+          </li>
+        </ul>
+      </div>
+    );
+  }
+}
+
+export const TemplatesFilter = connector(TemplatesFilterComponent);
