@@ -112,6 +112,7 @@ export class MetadataForm extends Component {
       version,
       storeKey,
       highlightedProps,
+      entity,
     } = this.props;
 
     if (!template) {
@@ -169,8 +170,7 @@ export class MetadataForm extends Component {
           highlightedProps={highlightedProps}
           storeKey={storeKey}
         />
-
-        <SupportingFiles storeKey={storeKey} model={model} />
+        <SupportingFiles entity={entity} model={model} />
       </Form>
     );
   }
@@ -188,6 +188,7 @@ MetadataForm.defaultProps = {
   onSubmit: () => {},
   highlightedProps: [],
   storeKey: '',
+  entity: {},
 };
 
 MetadataForm.propTypes = {
@@ -207,19 +208,24 @@ MetadataForm.propTypes = {
   componentWillUnmount: PropTypes.func,
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   storeKey: PropTypes.string,
+  entity: PropTypes.instanceOf(Object),
 };
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify: notificationActions.notify }, dispatch);
 }
 
-export const mapStateToProps = (state, ownProps) => ({
-  thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
-  template: ownProps.template
-    ? ownProps.template
-    : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
-      immutableDefaultTemplate,
-  templateOptions: selectTemplateOptions(state),
-});
+export const mapStateToProps = (state, ownProps) => {
+  const entityModel = ownProps.model.split('.').reduce((o, i) => o[i], state);
+  return {
+    thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
+    template: ownProps.template
+      ? ownProps.template
+      : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
+        immutableDefaultTemplate,
+    templateOptions: selectTemplateOptions(state),
+    entity: entityModel,
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

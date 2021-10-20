@@ -6,15 +6,16 @@ import { fireEvent, RenderResult, screen, within } from '@testing-library/react'
 import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
+import { ClientEntitySchema } from 'app/istore';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { SupportingFiles } from '../SupportingFiles';
 import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
 
-const entity1 = {
+const entity1: ClientEntitySchema = {
   _id: 'entity_id',
   sharedId: 'entity_sharedId',
   title: 'testTitle',
-  metadata: [{ field1: 'field1value' }],
+  metadata: { field1: [{ label: 'field1', value: 'things' }] },
   attachments: [
     {
       _id: 'file1',
@@ -25,7 +26,6 @@ const entity1 = {
       entity: 'entity_sharedId',
       type: 'attachment',
       creationDate: 1634043075634,
-      __v: 0,
     },
     {
       _id: 'file2',
@@ -36,7 +36,6 @@ const entity1 = {
       entity: 'entity_sharedId',
       type: 'attachment',
       creationDate: 1634043079601,
-      __v: 0,
     },
   ],
 };
@@ -48,17 +47,12 @@ describe('Supporting files', () => {
   const render = () => {
     reduxStore = {
       ...defaultState,
-      library: {
-        sidepanel: {
-          metadata: entity1,
-        },
-      },
       attachments: {
         progress: Immutable.fromJS({}),
       },
     };
     ({ renderResult } = renderConnectedContainer(
-      <SupportingFiles storeKey="library" model="library.sidepanel.metadata" />,
+      <SupportingFiles entity={entity1} model="library.sidepanel.metadata" />,
       () => reduxStore
     ));
   };
@@ -93,10 +87,14 @@ describe('Supporting files', () => {
       fireEvent.click(addSupportingFileButton);
       const selectFileButton = screen.getByText('Upload and select file');
       fireEvent.click(selectFileButton);
-      const fileInput = screen.getByTestId('fileInput');
+      const fileInput = screen.getByLabelText('fileInput');
       const file = new File(['hello'], 'hello.png', { type: 'image/png' });
       fireEvent.change(fileInput, { target: { files: [file] } });
       expect(supportingLocalFilesActions.uploadLocalAttachment).toHaveBeenCalled();
+    });
+
+    it('', () => {
+      throw new Error('should not render when editing multiple entities');
     });
   });
 });

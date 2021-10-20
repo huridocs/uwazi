@@ -119,7 +119,7 @@ export const AttachmentsModalCmp = ({
                       &nbsp; <Translate>Upload and select file</Translate>
                     </button>
                     <input
-                      data-testid="fileInput"
+                      aria-label="fileInput"
                       type="file"
                       onChange={handleInputFileChange}
                       style={{ display: 'none' }}

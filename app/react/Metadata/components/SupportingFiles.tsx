@@ -3,7 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions, Field } from 'react-redux-form';
 
-import { ClientFile, IStore } from 'app/istore';
+import { ClientEntitySchema, ClientFile } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { getFileExtension } from 'app/utils/getFileExtension';
@@ -15,18 +15,7 @@ import {
 
 type SupportingFilesProps = {
   model: string;
-  storeKey?: string;
-};
-
-const mapStateToProps = (store: IStore, ownProps: SupportingFilesProps) => {
-  //Dont use storekey!! pass this from the parent?
-  const { storeKey } = ownProps;
-  const entity =
-    storeKey === 'library' ? store.library.sidepanel.metadata : store.entityView.entityForm;
-
-  return {
-    entity,
-  };
+  entity: ClientEntitySchema;
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: SupportingFilesProps) => {
@@ -39,7 +28,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: SupportingFilesPro
   );
 };
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(null, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = SupportingFilesProps & mappedProps;
