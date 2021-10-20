@@ -22,9 +22,6 @@
     border-collapse: separate;
     font-size: $f-size-sm;
     overflow-x: scroll;
-    .suggested-value {
-      color: $c-primary;
-    }
   }
 
   tr {
@@ -54,6 +51,7 @@
     &.suggestion{
       width: 20%;
       text-overflow: fade;
+      min-width: 150px;
     }
     &.action{
       min-width: 90px;
@@ -61,10 +59,12 @@
     }
     &.title{
       width: 15%;
+      min-width: 100px;
       text-overflow: fade;
     }
     &.segment{
       width: 40%;
+      min-width: 100px;
       overflow: scroll;
     }
     &.long-segment{
@@ -106,6 +106,19 @@
       border-left: 0;
       display: flex;
       flex-direction: column;
+      position: relative;
+
+      .suggested-value {
+        color: $c-primary;
+        display: block;
+        display: -webkit-box;
+        height: 2.6em;
+        line-height: 1.3em;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
       .suggestion-label{
         color: $c-grey-dark;
