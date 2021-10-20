@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import express from 'express';
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis, { RedisClient } from 'redis';
@@ -26,6 +27,8 @@ export class ExternalDummyService {
 
   redisClient: RedisClient | undefined;
 
+  fileResults: string | undefined;
+
   private readonly serviceName: string;
 
   constructor(port = 1234, serviceName = 'dummy') {
@@ -51,10 +54,23 @@ export class ExternalDummyService {
     this.app.get('/results', (_req, res) => {
       res.json(JSON.stringify(this.results));
     });
+
+    this.app.get('/file', (_req, res) => {
+      if (!this.fileResults) {
+        res.status(404).send('Not found');
+        return;
+      }
+
+      res.sendFile(this.fileResults);
+    });
   }
 
   setResults(results: object) {
     this.results = results;
+  }
+
+  setFileResults(file: string) {
+    this.fileResults = file;
   }
 
   get rsmq() {
@@ -146,7 +162,13 @@ export class ExternalDummyService {
     await this.server?.close();
   }
 
-  async sendFinishedMessage(task: { task: string; tenant: string }) {
+  async sendFinishedMessage(task: {
+    task: string;
+    tenant: string;
+    params: object;
+    data_url: string;
+    file_url: string;
+  }) {
     try {
       await this.rsmq.sendMessageAsync({
         qname: `${this.serviceName}_results`,

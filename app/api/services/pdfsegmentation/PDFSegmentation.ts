@@ -1,7 +1,9 @@
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { uploadsPath } from 'api/files';
+import { uploadsPath, fileFromReadStream, createDirIfNotExists } from 'api/files';
+import { Readable } from 'stream';
 import filesModel from 'api/files/filesModel';
 import fs from 'fs';
+import path from 'path';
 import { FileType } from 'shared/types/fileType';
 import { Settings } from 'shared/types/settingsType';
 import settings from 'api/settings/settings';
@@ -57,26 +59,6 @@ class PDFSegmentation {
   storeProcess = async (fileID: ObjectIdSchema, filename: string) =>
     SegmentationModel.save({ fileID, filename });
 
-  processResults = async (message: ResultsMessage) => {
-    try {
-      const response = await request.get(message.data_url);
-
-      await tenants.run(async () => {
-        const [segmentation] = await SegmentationModel.get({ filename: message.params!.filename });
-        // eslint-disable-next-line camelcase
-        const { paragraphs, page_height, page_width } = JSON.parse(response.json);
-        await SegmentationModel.save({
-          ...segmentation,
-          segmentation: { page_height, page_width, paragraphs },
-          autoexpire: null,
-          status: 'completed',
-        });
-      }, message.tenant);
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
   segmentPdfs = async () => {
     const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
     if (pendingTasks > 0) {
@@ -126,6 +108,40 @@ class PDFSegmentation {
         }, tenant);
       })
     );
+  };
+
+  processResults = async (message: ResultsMessage) => {
+    try {
+      const response = await request.get(message.data_url);
+      const fileStream = ((await fetch(message.file_url!)).body as unknown) as Readable;
+
+      if (!fileStream) {
+        throw new Error(`Error requesting segmentation results, tenant: ${message.tenant}`);
+      }
+
+      await tenants.run(async () => {
+        await createDirIfNotExists(path.join(uploadsPath(), this.SERVICE_NAME));
+        const filePath = path.join(uploadsPath(), this.SERVICE_NAME);
+        const fileName = `${path.basename(
+          message.params!.filename,
+          path.extname(message.params!.filename)
+        )}.xml`;
+
+        await fileFromReadStream(fileName, fileStream, filePath);
+
+        const [segmentation] = await SegmentationModel.get({ filename: message.params!.filename });
+        // eslint-disable-next-line camelcase
+        const { paragraphs, page_height, page_width } = JSON.parse(response.json);
+        await SegmentationModel.save({
+          ...segmentation,
+          segmentation: { page_height, page_width, paragraphs },
+          autoexpire: null,
+          status: 'completed',
+        });
+      }, message.tenant);
+    } catch (error) {
+      handleError(error);
+    }
   };
 }
 
