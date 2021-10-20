@@ -26,7 +26,7 @@ export interface ResultsMessage {
 
 export interface Service {
   serviceName: string;
-  processResults?: (results: ResultsMessage) => Promise<boolean>;
+  processResults?: (results: ResultsMessage) => Promise<Boolean>;
   processRessultsMessageHiddenTime?: number;
 }
 
