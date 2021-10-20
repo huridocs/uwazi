@@ -18,7 +18,6 @@ import { Pagination } from 'app/UI/BasicTable/Pagination';
 
 interface EntitySuggestionsProps {
   propertyName: string;
-  suggestions: SuggestionType[];
 }
 export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
