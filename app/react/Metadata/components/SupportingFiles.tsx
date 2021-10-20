@@ -8,7 +8,10 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { getFileExtension } from 'app/utils/getFileExtension';
 import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
-import { uploadLocalAttachment } from '../actions/supportingFilesActions';
+import {
+  uploadLocalAttachment,
+  uploadLocalAttachmentFromUrl,
+} from '../actions/supportingFilesActions';
 
 type SupportingFilesProps = {
   model: string;
@@ -69,7 +72,7 @@ const getFileIcon = (file: ClientFile) => {
   return thumbnail;
 };
 
-const SupportingFiles = ({ entity, storeKey, removeSupportingFile }: ComponentProps) => {
+const SupportingFiles = ({ entity, removeSupportingFile }: ComponentProps) => {
   const { attachments = [] } = entity;
 
   return (
@@ -83,6 +86,7 @@ const SupportingFiles = ({ entity, storeKey, removeSupportingFile }: ComponentPr
           entitySharedId={entity.sharedId}
           storeKey="library"
           uploadAttachment={uploadLocalAttachment}
+          uploadAttachmentFromUrl={uploadLocalAttachmentFromUrl}
         />
       </div>
 

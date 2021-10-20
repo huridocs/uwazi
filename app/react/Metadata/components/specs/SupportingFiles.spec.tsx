@@ -65,7 +65,9 @@ describe('Supporting files', () => {
   describe('on edit', () => {
     beforeEach(() => {
       spyOn(actions, 'remove').and.returnValue({ type: 'deleting' });
-      spyOn(supportingLocalFilesActions, 'uploadLocalAttachment');
+      spyOn(supportingLocalFilesActions, 'uploadLocalAttachment').and.returnValue({
+        type: 'adding to local form',
+      });
     });
 
     it('should display existing supporting files when editing on the sidepanel', () => {

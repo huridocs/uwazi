@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 import { AttachmentsModal } from './AttachmentsModal';
+import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
 
 interface UploadSupportingFileProps {
   entitySharedId: string;
   storeKey: string;
   progress?: any;
-  uploadAttachment: (...args: any[]) => void;
+  uploadAttachment?: (...args: any[]) => Dispatch<{}>;
+  uploadAttachmentFromUrl?: (...args: any[]) => Dispatch<{}>;
 }
 
 const UploadSupportingFile = (props: UploadSupportingFileProps) => {
@@ -52,7 +55,8 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
         entitySharedId={entitySharedId}
         storeKey={storeKey}
         getPercentage={getPercentage}
-        uploadAttachment={props.uploadAttachment}
+        uploadAttachment={props.uploadAttachment || uploadAttachment}
+        uploadAttachmentFromUrl={props.uploadAttachmentFromUrl || uploadAttachmentFromUrl}
       />
     </>
   );

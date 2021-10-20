@@ -3,12 +3,11 @@ import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
+import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions, LocalForm, Field } from 'react-redux-form';
 import Tip from 'app/Layout/Tip';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-
-import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
 
 const validators = {
   name: { required: (val: any) => !!val && val.trim() !== '' },
@@ -20,8 +19,8 @@ export interface AttachmentsModalProps {
   entitySharedId: string;
   storeKey: string;
   onClose(): void;
-  uploadAttachment(entity: any, file: any, __reducerKey: any, options?: {}): void;
-  uploadAttachmentFromUrl(entity: any, name: any, url: any, __reducerKey: any): void;
+  uploadAttachment(...args: any[]): void;
+  uploadAttachmentFromUrl(...args: any[]): void;
   getPercentage?: number;
 }
 
@@ -119,7 +118,6 @@ export const AttachmentsModalCmp = ({
                       <Icon icon="link" />
                       &nbsp; <Translate>Upload and select file</Translate>
                     </button>
-                    <label>Upload file:</label>
                     <input
                       data-testid="fileInput"
                       type="file"
@@ -198,9 +196,13 @@ export const AttachmentsModalCmp = ({
   );
 };
 
-const mapDispatchToProps = (_dispatch, ownProps) => ({
-  uploadAttachment: ownProps.uploadAttachment ? ownProps.uploadAttachment : uploadAttachment,
-  uploadAttachmentFromUrl,
-});
+const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: AttachmentsModalProps) =>
+  bindActionCreators(
+    {
+      uploadAttachment: ownProps.uploadAttachment,
+      uploadAttachmentFromUrl: ownProps.uploadAttachmentFromUrl,
+    },
+    dispatch
+  );
 
 export const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);
