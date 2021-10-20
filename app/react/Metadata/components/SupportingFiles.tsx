@@ -19,6 +19,7 @@ type SupportingFilesProps = {
 };
 
 const mapStateToProps = (store: IStore, ownProps: SupportingFilesProps) => {
+  //Dont use storekey!! pass this from the parent?
   const { storeKey } = ownProps;
   const entity =
     storeKey === 'library' ? store.library.sidepanel.metadata : store.entityView.entityForm;
@@ -76,12 +77,12 @@ const SupportingFiles = ({ entity, removeSupportingFile }: ComponentProps) => {
   const { attachments = [] } = entity;
 
   return (
-    <div>
-      <h2>
-        <Translate>Supporting files</Translate>
-      </h2>
+    <div className="attachments-list-parent">
+      <div className="attachments-list-header">
+        <h2>
+          <Translate>Supporting files</Translate>
+        </h2>
 
-      <div>
         <UploadSupportingFile
           entitySharedId={entity.sharedId}
           storeKey="library"
@@ -90,7 +91,7 @@ const SupportingFiles = ({ entity, removeSupportingFile }: ComponentProps) => {
         />
       </div>
 
-      <div className="attachments-list">
+      <div className="attachments-list editor">
         {attachments.map((file: ClientFile, index: number) => (
           <div className="attachment" key={file._id}>
             <div className="attachment-thumbnail">{getFileIcon(file)}</div>
