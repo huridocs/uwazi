@@ -1,0 +1,26 @@
+<menu>
+    <food>
+        <name>Ceviche</name>
+        <price>$5.95</price>
+        <description>Cold shrimps soup</description>
+        <calories>450</calories>
+    </food>
+    <food>
+        <name>Fideua</name>
+        <price>$7.95</price>
+        <description>Hot shrimps pasta</description>
+        <calories>600</calories>
+    </food>
+    <food>
+        <name>Tofu</name>
+        <price>$8.95</price>
+        <description>No one really knows</description>
+        <calories>1</calories>
+    </food>
+    <food>
+        <name>Cheese Burger</name>
+        <price>$4.50</price>
+        <description>Hot beef sandwich</description>
+        <calories>950</calories>
+    </food>
+</menu>
