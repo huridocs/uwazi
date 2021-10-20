@@ -8,6 +8,7 @@ import { Form, Field } from 'react-redux-form';
 import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
 import { Select as SimpleSelect } from '../../../Forms';
+import { SupportingFiles } from '../SupportingFiles';
 
 describe('MetadataForm', () => {
   let component;
@@ -68,11 +69,6 @@ describe('MetadataForm', () => {
   const render = () => {
     component = shallow(<MetadataForm {...props} />);
   };
-
-  // Delete this?
-  describe('Icon field', () => {
-    it('should remove icon', () => {});
-  });
 
   it('should render a form with metadata as model', () => {
     render();
@@ -188,11 +184,19 @@ describe('MetadataForm', () => {
 
     beforeEach(() => {
       state = { templates };
-      ownProps = { templates, templateId: templates.get(1).get('_id') };
+      ownProps = { templates, templateId: templates.get(1).get('_id'), model: 'metadata' };
     });
 
     it('should return template based on metadata.template', () => {
       expect(mapStateToProps(state, ownProps).template).toBe(templates.get(1));
+    });
+  });
+
+  describe('multiple edition', () => {
+    it('should not render the supporting files on edit', () => {
+      props.multipleEdition = true;
+      render();
+      expect(component.find(SupportingFiles)).toHaveLength(0);
     });
   });
 });

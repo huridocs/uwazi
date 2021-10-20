@@ -92,9 +92,5 @@ describe('Supporting files', () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
       expect(supportingLocalFilesActions.uploadLocalAttachment).toHaveBeenCalled();
     });
-
-    it('', () => {
-      throw new Error('should not render when editing multiple entities');
-    });
   });
 });

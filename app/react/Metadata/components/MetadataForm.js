@@ -170,7 +170,7 @@ export class MetadataForm extends Component {
           highlightedProps={highlightedProps}
           storeKey={storeKey}
         />
-        <SupportingFiles entity={entity} model={model} />
+        {!multipleEdition && <SupportingFiles entity={entity} model={model} />}
       </Form>
     );
   }
