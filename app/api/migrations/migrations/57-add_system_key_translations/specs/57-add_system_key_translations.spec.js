@@ -41,10 +41,6 @@ const newKeyValues = [
     value: 'Find suggestions',
   },
   {
-    key: 'Find suggestions',
-    value: 'Find suggestions',
-  },
-  {
     key: 'per page',
     value: 'per page',
   },
