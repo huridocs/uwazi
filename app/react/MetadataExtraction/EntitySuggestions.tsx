@@ -63,8 +63,8 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         }}
       >
         <option value="">{t('System', 'All', 'All', false)}</option>
-        <option value="filled">{t('System', 'Filled', 'Filled', false)}</option>
-        <option value="empty">{t('System', 'Empty', 'Empty', false)}</option>
+        <option value="Filled">{t('System', 'Filled', 'Filled', false)}</option>
+        <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
       </select>
     );
   }
@@ -187,14 +187,18 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         <thead>
           {headerGroups.map((headerGroup: HeaderGroup<SuggestionType>) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps({ className: column.className })}>
-                  <>
-                    {column.render('Header')}
-                    {column.canFilter && column.Filter && column.render('Filter')}
-                  </>
-                </th>
-              ))}
+              {headerGroup.headers.map(column => {
+                const className =
+                  column.className + (filters.find(f => f.id === column.id) ? ' filtered' : '');
+                return (
+                  <th {...column.getHeaderProps({ className })}>
+                    <>
+                      {column.render('Header')}
+                      {column.canFilter && column.Filter && column.render('Filter')}
+                    </>
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>

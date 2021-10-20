@@ -65,7 +65,6 @@
     &.segment{
       width: 40%;
       min-width: 100px;
-      overflow: scroll;
     }
     &.long-segment{
       width: 55%;
@@ -73,23 +72,32 @@
     }
     &.state{
       width: 7%;
-      display: flex;
-      flex-direction: column;
-
-      select {
-        font-size: $f-size-sm;
-        margin-bottom: 0;
-        border-color: $c-grey;
-        color: $c-grey-dark;
-      }
     }
   }
 
   th {
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
-    height: 50px;
+    height: 30px;
     padding: 8px;
     border-bottom: 2px solid $c-grey;
+
+    &.state{
+      width: 7%;
+      display: flex;
+      justify-content: space-between;
+
+      &.filtered {
+        color: $c-primary;
+      }
+
+      select {
+        width: 15px;
+        border: 0;
+        font-size: $f-size-sm;
+        margin-bottom: 0;
+        color: $c-grey-dark;
+      }
+    }
   }
 
   td {
@@ -125,6 +133,10 @@
         font-family: $f-special;
         padding-top: 30px;
       }
+    }
+
+    &.segment{
+      overflow-y: scroll;
     }
   }
 }
