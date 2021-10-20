@@ -1,11 +1,11 @@
 /**
  * @jest-environment jsdom
  */
+import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
-import { Pagination } from 'UI/BasicTable/Pagination';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import '@testing-library/jest-dom/extend-expect';
+import { Pagination } from '../Pagination';
 
 describe('Pagination', () => {
   const props = {

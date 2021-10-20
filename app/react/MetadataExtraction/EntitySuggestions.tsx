@@ -9,12 +9,12 @@ import {
   useFilters,
   FilterProps,
 } from 'react-table';
-import { SuggestionType } from 'shared/types/suggestionType';
-import { I18NLink, Translate } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { getSuggestions } from 'app/MetadataExtraction/SuggestionsAPI';
-import { RequestParams } from 'app/utils/RequestParams';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
+import { RequestParams } from 'app/utils/RequestParams';
+import { SuggestionType } from 'shared/types/suggestionType';
+import { getSuggestions } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
   propertyName: string;
@@ -62,9 +62,9 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           setFilter(e.target.value || undefined);
         }}
       >
-        <option value="">All</option>
-        <option value="filled">filled</option>
-        <option value="empty">empty</option>
+        <option value="">{t('System', 'All', 'All', false)}</option>
+        <option value="filled">{t('System', 'Filled', 'Filled', false)}</option>
+        <option value="empty">{t('System', 'Empty', 'Empty', false)}</option>
       </select>
     );
   }
