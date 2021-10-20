@@ -190,7 +190,7 @@ describe('DistributedLoopLock', () => {
     const someError = { error: 'some error' };
     rejectTask(someError);
     await waitForExpect(async () => {
-      expect(errorHelper.handleError).toHaveBeenLastCalledWith(someError);
+      expect(errorHelper.handleError).toHaveBeenLastCalledWith(someError, { useContext: false });
     });
 
     finishTask();
