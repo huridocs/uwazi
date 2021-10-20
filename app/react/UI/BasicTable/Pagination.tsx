@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { t, Translate } from 'app/I18N';
