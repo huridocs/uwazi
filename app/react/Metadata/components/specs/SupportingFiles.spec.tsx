@@ -6,12 +6,11 @@ import { fireEvent, RenderResult, screen, within } from '@testing-library/react'
 import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-import { ClientEntitySchema } from 'app/istore';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { SupportingFiles } from '../SupportingFiles';
 import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
 
-const entity1: ClientEntitySchema = {
+const entity1 = {
   _id: 'entity_id',
   sharedId: 'entity_sharedId',
   title: 'testTitle',
@@ -24,7 +23,6 @@ const entity1: ClientEntitySchema = {
       filename: '1634043075618nraarbdu2ko.jpg',
       size: 2305089,
       entity: 'entity_sharedId',
-      type: 'attachment',
       creationDate: 1634043075634,
     },
     {
@@ -34,7 +32,6 @@ const entity1: ClientEntitySchema = {
       filename: '16340430795962bgts67kme8.jpeg',
       size: 5287,
       entity: 'entity_sharedId',
-      type: 'attachment',
       creationDate: 1634043079601,
     },
   ],
@@ -52,7 +49,11 @@ describe('Supporting files', () => {
       },
     };
     ({ renderResult } = renderConnectedContainer(
-      <SupportingFiles entity={entity1} model="library.sidepanel.metadata" />,
+      <SupportingFiles
+        supportingFiles={entity1.attachments}
+        entitySharedID={entity1.sharedId}
+        model="library.sidepanel.metadata"
+      />,
       () => reduxStore
     ));
   };

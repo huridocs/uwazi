@@ -183,7 +183,7 @@ describe('MetadataForm', () => {
     let ownProps;
 
     beforeEach(() => {
-      state = { templates };
+      state = { templates, metadata: { attachments: [], sharedId: '' } };
       ownProps = { templates, templateId: templates.get(1).get('_id'), model: 'metadata' };
     });
 

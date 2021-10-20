@@ -3,7 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions, Field } from 'react-redux-form';
 
-import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { ClientFile } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { getFileExtension } from 'app/utils/getFileExtension';
@@ -15,7 +15,8 @@ import {
 
 type SupportingFilesProps = {
   model: string;
-  entity: ClientEntitySchema;
+  supportingFiles: ClientFile[];
+  entitySharedID: string;
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: SupportingFilesProps) => {
@@ -62,46 +63,46 @@ const getFileIcon = (file: ClientFile) => {
   return thumbnail;
 };
 
-const SupportingFiles = ({ entity, removeSupportingFile }: ComponentProps) => {
-  const { attachments = [] } = entity;
+const SupportingFiles = ({
+  supportingFiles,
+  entitySharedID,
+  removeSupportingFile,
+}: ComponentProps) => (
+  <div className="attachments-list-parent">
+    <div className="attachments-list-header">
+      <h2>
+        <Translate>Supporting files</Translate>
+      </h2>
 
-  return (
-    <div className="attachments-list-parent">
-      <div className="attachments-list-header">
-        <h2>
-          <Translate>Supporting files</Translate>
-        </h2>
-
-        <UploadSupportingFile
-          entitySharedId={entity.sharedId}
-          storeKey="library"
-          uploadAttachment={uploadLocalAttachment}
-          uploadAttachmentFromUrl={uploadLocalAttachmentFromUrl}
-        />
-      </div>
-
-      <div className="attachments-list editor">
-        {attachments.map((file: ClientFile, index: number) => (
-          <div className="attachment" key={file._id}>
-            <div className="attachment-thumbnail">{getFileIcon(file)}</div>
-            <div className="attachment-name">
-              <Field model={`.attachments.${index}.originalname`}>
-                <input className="form-control" />
-              </Field>
-            </div>
-            <button
-              type="button"
-              className="btn btn-danger delete-supporting-file"
-              onClick={() => removeSupportingFile(index)}
-            >
-              <Icon icon="trash-alt" />
-            </button>
-          </div>
-        ))}
-      </div>
+      <UploadSupportingFile
+        entitySharedId={entitySharedID}
+        storeKey="library"
+        uploadAttachment={uploadLocalAttachment}
+        uploadAttachmentFromUrl={uploadLocalAttachmentFromUrl}
+      />
     </div>
-  );
-};
+
+    <div className="attachments-list editor">
+      {supportingFiles.map((file: ClientFile, index: number) => (
+        <div className="attachment" key={file._id}>
+          <div className="attachment-thumbnail">{getFileIcon(file)}</div>
+          <div className="attachment-name">
+            <Field model={`.attachments.${index}.originalname`}>
+              <input className="form-control" />
+            </Field>
+          </div>
+          <button
+            type="button"
+            className="btn btn-danger delete-supporting-file"
+            onClick={() => removeSupportingFile(index)}
+          >
+            <Icon icon="trash-alt" />
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 const container = connector(SupportingFiles);
 export { container as SupportingFiles };

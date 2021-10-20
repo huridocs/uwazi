@@ -112,7 +112,8 @@ export class MetadataForm extends Component {
       version,
       storeKey,
       highlightedProps,
-      entity,
+      attachments,
+      sharedId,
     } = this.props;
 
     if (!template) {
@@ -170,7 +171,9 @@ export class MetadataForm extends Component {
           highlightedProps={highlightedProps}
           storeKey={storeKey}
         />
-        {!multipleEdition && <SupportingFiles entity={entity} model={model} />}
+        {!multipleEdition && (
+          <SupportingFiles supportingFiles={attachments} entitySharedID={sharedId} model={model} />
+        )}
       </Form>
     );
   }
@@ -188,7 +191,8 @@ MetadataForm.defaultProps = {
   onSubmit: () => {},
   highlightedProps: [],
   storeKey: '',
-  entity: {},
+  attachments: [],
+  sharedId: '',
 };
 
 MetadataForm.propTypes = {
@@ -208,7 +212,8 @@ MetadataForm.propTypes = {
   componentWillUnmount: PropTypes.func,
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   storeKey: PropTypes.string,
-  entity: PropTypes.instanceOf(Object),
+  attachments: PropTypes.instanceOf(Array),
+  sharedId: PropTypes.string,
 };
 
 function mapDispatchToProps(dispatch) {
@@ -217,6 +222,7 @@ function mapDispatchToProps(dispatch) {
 
 export const mapStateToProps = (state, ownProps) => {
   const entityModel = ownProps.model.split('.').reduce((o, i) => o[i], state);
+  const { attachments, sharedId } = entityModel;
   return {
     thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
     template: ownProps.template
@@ -224,7 +230,8 @@ export const mapStateToProps = (state, ownProps) => {
       : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
         immutableDefaultTemplate,
     templateOptions: selectTemplateOptions(state),
-    entity: entityModel,
+    attachments,
+    sharedId,
   };
 };
 
