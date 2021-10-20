@@ -3,7 +3,6 @@ import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis, { RedisClient } from 'redis';
 import { Repeater } from 'api/utils/Repeater';
 import { config } from 'api/config';
-import { handleError } from 'api/utils';
 
 export interface TaskMessage {
   tenant: string;
