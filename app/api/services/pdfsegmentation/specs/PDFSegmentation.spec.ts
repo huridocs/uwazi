@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { fixturer, createNewMongoDB } from 'api/utils/testing_db';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
@@ -10,6 +11,7 @@ import {
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
 import fs from 'fs';
+import path from 'path';
 
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
@@ -87,9 +89,6 @@ describe('PDFSegmentation', () => {
 
   it('should send other pdf to segment', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesOtherFile);
-
-    await segmentPdfs.segmentPdfs();
-
     await segmentPdfs.segmentPdfs();
     expect(request.uploadFile).toHaveBeenCalledWith(
       'http://localhost:1234/files',
@@ -101,13 +100,6 @@ describe('PDFSegmentation', () => {
   it('should send 10 pdfs to segment', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesTwelveFiles);
     await segmentPdfs.segmentPdfs();
-
-    expect(request.uploadFile).toHaveBeenCalledWith(
-      'http://localhost:1234/files',
-      fixturesPdfNameA,
-      fileA
-    );
-
     expect(request.uploadFile).toHaveBeenCalledTimes(10);
   });
 
@@ -183,17 +175,23 @@ describe('PDFSegmentation', () => {
 
   describe('when the segmentation finsihes', () => {
     let segmentationExternalService: ExternalDummyService;
+    let segmentationData: {
+      page_width: number;
+      page_height: number;
+      paragraphs: object[];
+    };
+    let segmentationFolder: string;
     beforeEach(async () => {
+      await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
+      await segmentPdfs.segmentPdfs();
+      segmentationFolder = path.join(tenantOne.uploadedDocuments, 'segmentation');
+      if (fs.existsSync(segmentationFolder)) {
+        fs.rmdirSync(segmentationFolder, { recursive: true });
+      }
       segmentationExternalService = new ExternalDummyService(1235);
       await segmentationExternalService.start();
-    });
 
-    afterEach(async () => {
-      await segmentationExternalService.stop();
-    });
-    it('should store the segmentation', async () => {
-      await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
-      const segmentationData = {
+      segmentationData = {
         page_width: 600,
         page_height: 1200,
         paragraphs: [
@@ -207,15 +205,23 @@ describe('PDFSegmentation', () => {
           },
         ],
       };
-
       segmentationExternalService.setResults(segmentationData);
+      segmentationExternalService.setFileResults(path.join(__dirname, '/uploads/test.xml'));
+    });
 
-      await segmentPdfs.segmentPdfs();
+    afterEach(async () => {
+      await segmentationExternalService.stop();
 
+      if (fs.existsSync(segmentationFolder)) {
+        fs.rmdirSync(segmentationFolder, { recursive: true });
+      }
+    });
+    it('should store the segmentation', async () => {
       await segmentPdfs.processResults({
         tenant: tenantOne.name,
         params: { filename: 'documentA.pdf' },
         data_url: 'http://localhost:1235/results',
+        file_url: 'http://localhost:1235/file',
         task: 'segmentation',
       });
 
@@ -234,6 +240,17 @@ describe('PDFSegmentation', () => {
           })
         );
       }, tenantOne.name);
+    });
+
+    it('should store the xml file', async () => {
+      await segmentPdfs.processResults({
+        tenant: tenantOne.name,
+        params: { filename: 'documentA.pdf' },
+        data_url: 'http://localhost:1235/results',
+        file_url: 'http://localhost:1235/file',
+        task: 'segmentation',
+      });
+      expect(fs.existsSync(path.join(segmentationFolder, 'documentA.xml'))).toBe(true);
     });
   });
 });
