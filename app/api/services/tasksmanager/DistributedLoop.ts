@@ -66,9 +66,9 @@ export class DistributedLoop {
     void this.lockTask();
   }
 
-  async waitBetweenTasks() {
+  async waitBetweenTasks(delay = this.delayTimeBetweenTasks) {
     await new Promise(resolve => {
-      setTimeout(resolve, this.delayTimeBetweenTasks);
+      setTimeout(resolve, delay);
     });
   }
 
@@ -76,7 +76,7 @@ export class DistributedLoop {
     try {
       await this.task();
     } catch (error) {
-      handleError(error);
+      handleError(error, { useContext: false });
     }
 
     await this.waitBetweenTasks();

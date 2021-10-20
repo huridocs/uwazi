@@ -5,6 +5,7 @@ import Redis, { RedisClient } from 'redis';
 import { Server } from 'http';
 import bodyParser from 'body-parser';
 import { uploadMiddleware } from 'api/files';
+import { ResultsMessage } from '../TaskManager';
 
 export class ExternalDummyService {
   private app: express.Application;
@@ -162,13 +163,7 @@ export class ExternalDummyService {
     await this.server?.close();
   }
 
-  async sendFinishedMessage(task: {
-    task: string;
-    tenant: string;
-    params: object;
-    data_url: string;
-    file_url: string;
-  }) {
+  async sendFinishedMessage(task: ResultsMessage) {
     try {
       await this.rsmq.sendMessageAsync({
         qname: `${this.serviceName}_results`,
