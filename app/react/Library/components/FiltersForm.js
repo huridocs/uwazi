@@ -14,7 +14,6 @@ import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';
 import { AssigneeFilter } from 'app/Library/components/AssigneeFilter';
-import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';
 import { PermissionsFilter } from './PermissionsFilter';
 import { PublishedFilters } from './PublishedFilters';
 
