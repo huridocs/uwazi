@@ -132,7 +132,7 @@ function simplifyError(result, error) {
   return simplifiedError;
 }
 
-const handleError = (_error, { req = undefined, uncaught = false } = {}) => {
+const handleError = (_error, { req = undefined, uncaught = false, useContext = true } = {}) => {
   const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
 
   const error = errorData || new Error('Unexpected error has occurred');
@@ -141,7 +141,9 @@ const handleError = (_error, { req = undefined, uncaught = false } = {}) => {
   }
 
   const result = prettifyError(error, { req, uncaught });
-  result.requestId = appContext.get('requestId');
+  if (useContext) {
+    result.requestId = appContext.get('requestId');
+  }
 
   sendLog(result, error, {});
 

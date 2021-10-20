@@ -36,24 +36,30 @@ class PDFSegmentation {
       return;
     }
 
-    const fileBuffer = fs.readFileSync(uploadsPath(file.filename));
     try {
-      await request.uploadFile(serviceUrl, file.filename, fileBuffer);
+      await request.uploadFile(
+        serviceUrl,
+        file.filename,
+        fs.readFileSync(uploadsPath(file.filename))
+      );
+
+      const task = {
+        task: this.SERVICE_NAME,
+        tenant,
+        params: {
+          filename: file.filename,
+        },
+      };
+
+      await this.segmentationTaskManager.startTask(task);
+      await this.storeProcess(file._id!, file.filename);
     } catch {
-      handleError(`Error uploading file to segmentation service, tenant: ${tenant}`);
-      return;
+      handleError(`Error segmenting pdf, tenant: ${tenant}, file: ${file.filename}`);
+
+      await new Promise(resolve => {
+        setTimeout(resolve, 60000);
+      });
     }
-
-    const task = {
-      task: this.SERVICE_NAME,
-      tenant,
-      params: {
-        filename: file.filename,
-      },
-    };
-
-    await this.segmentationTaskManager.startTask(task);
-    await this.storeProcess(file._id!, file.filename);
   };
 
   storeProcess = async (fileID: ObjectIdSchema, filename: string) =>
@@ -110,38 +116,46 @@ class PDFSegmentation {
     );
   };
 
-  processResults = async (message: ResultsMessage) => {
-    try {
-      const response = await request.get(message.data_url);
-      const fileStream = ((await fetch(message.file_url!)).body as unknown) as Readable;
+  requestResults = async (message: ResultsMessage) => {
+    const response = await request.get(message.data_url);
+    const fileStream = ((await fetch(message.file_url!)).body as unknown) as Readable;
 
-      if (!fileStream) {
-        throw new Error(`Error requesting segmentation results, tenant: ${message.tenant}`);
+    return { data: JSON.parse(response.json), fileStream };
+  };
+
+  storeXML = async (filename: string, fileStream: Readable) => {
+    await createDirIfNotExists(path.join(uploadsPath(), this.SERVICE_NAME));
+    const filePath = path.join(uploadsPath(), this.SERVICE_NAME);
+    const xmlname = `${path.basename(filename, path.extname(filename))}.xml`;
+
+    await fileFromReadStream(xmlname, fileStream, filePath);
+  };
+
+  saveSegmentation = async (filename: string, data: any) => {
+    const [segmentation] = await SegmentationModel.get({ filename });
+    // eslint-disable-next-line camelcase
+    const { paragraphs, page_height, page_width } = data;
+    await SegmentationModel.save({
+      ...segmentation,
+      segmentation: { page_height, page_width, paragraphs },
+      autoexpire: null,
+      status: 'completed',
+    });
+  };
+
+  processResults = async (message: ResultsMessage): Promise<Boolean> => {
+    let processed = true;
+    await tenants.run(async () => {
+      try {
+        const { data, fileStream } = await this.requestResults(message);
+        await this.storeXML(message.params!.filename, fileStream);
+        await this.saveSegmentation(message.params!.filename, data);
+      } catch (error) {
+        handleError(error);
+        processed = false;
       }
-
-      await tenants.run(async () => {
-        await createDirIfNotExists(path.join(uploadsPath(), this.SERVICE_NAME));
-        const filePath = path.join(uploadsPath(), this.SERVICE_NAME);
-        const fileName = `${path.basename(
-          message.params!.filename,
-          path.extname(message.params!.filename)
-        )}.xml`;
-
-        await fileFromReadStream(fileName, fileStream, filePath);
-
-        const [segmentation] = await SegmentationModel.get({ filename: message.params!.filename });
-        // eslint-disable-next-line camelcase
-        const { paragraphs, page_height, page_width } = JSON.parse(response.json);
-        await SegmentationModel.save({
-          ...segmentation,
-          segmentation: { page_height, page_width, paragraphs },
-          autoexpire: null,
-          status: 'completed',
-        });
-      }, message.tenant);
-    } catch (error) {
-      handleError(error);
-    }
+    }, message.tenant);
+    return processed;
   };
 }
 

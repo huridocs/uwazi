@@ -19,7 +19,7 @@ describe('taskManager', () => {
     const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     service = {
       serviceName: 'KonzNGaboHellKitchen',
-      processResults: jest.fn(),
+      processResults: jest.fn().mockImplementation(async () => true),
       processRessultsMessageHiddenTime: 1,
     };
     redisServer = new RedisServer(port);
@@ -31,6 +31,10 @@ describe('taskManager', () => {
     taskManager = new TaskManager(service);
 
     await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to be ready
+  });
+
+  beforeEach(() => {
+    service.processResults = jest.fn().mockImplementation(async () => true);
   });
 
   afterAll(async () => {
@@ -109,7 +113,7 @@ describe('taskManager', () => {
       const task = {
         task: 'Tofu',
         tenant: 'Gabo',
-        results_url: 'http://localhost:1234/results',
+        data_url: 'http://localhost:1234/results',
       };
 
       await externalDummyService.sendFinishedMessage(task);
@@ -118,8 +122,33 @@ describe('taskManager', () => {
         expect(service.processResults).toHaveBeenCalledWith(task);
       });
 
-      await new Promise(resolve => setTimeout(resolve, 1001)); // wait for another check for results
-      expect(service.processResults).toHaveBeenCalledTimes(1);
+      const queueAttributes = await taskManager?.redisSMQ!.getQueueAttributesAsync({
+        qname: taskManager.resultsQueue,
+      });
+
+      expect(queueAttributes!.msgs).toBe(0);
+    });
+
+    describe('if the processing goes wrong', () => {
+      it('should not delete the message', async () => {
+        const task = {
+          task: 'Tofu',
+          tenant: 'Gabo',
+          data_url: 'http://localhost:1234/results',
+        };
+        service.processResults = jest.fn().mockImplementation(async () => false);
+        await externalDummyService.sendFinishedMessage(task);
+
+        await waitForExpect(async () => {
+          expect(service.processResults).toHaveBeenCalledWith(task);
+        });
+
+        const queueAttributes = await taskManager?.redisSMQ!.getQueueAttributesAsync({
+          qname: taskManager.resultsQueue,
+        });
+
+        expect(queueAttributes!.msgs).toBe(1);
+      });
     });
   });
 
@@ -134,6 +163,7 @@ describe('taskManager', () => {
       } catch (e) {
         expect(e).toEqual(Error('Redis is not connected'));
       }
+
       await redisServer.start();
     });
 
