@@ -6,18 +6,18 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
-import * as SuggestionsAPI from 'app/MetadataExtraction/SuggestionsAPI';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { EntitySuggestions } from '../EntitySuggestions';
+import * as SuggestionsAPI from '../SuggestionsAPI';
 
 describe('EntitySuggestions', () => {
-  const defaultColumns = [
+  const defaultHeaders = [
     'Other title / Suggestion',
     'Action',
     'Title',
     'Segment',
     'Language',
-    'StateAllfilledempty',
+    'StateAllFilledEmpty',
     'Page',
   ];
 
@@ -60,7 +60,7 @@ describe('EntitySuggestions', () => {
       const suggestionHeaders = screen
         .getAllByRole('columnheader')
         .map(header => header.textContent);
-      expect(suggestionHeaders).toEqual(defaultColumns);
+      expect(suggestionHeaders).toEqual(defaultHeaders);
     });
 
     it('should render the suggestions cells', async () => {
