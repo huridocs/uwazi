@@ -19,7 +19,7 @@ describe('taskManager', () => {
     const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     service = {
       serviceName: 'KonzNGaboHellKitchen',
-      processResults: jest.fn().mockImplementation(async () => true),
+      processResults: jest.fn(),
       processRessultsMessageHiddenTime: 1,
     };
     redisServer = new RedisServer(port);
@@ -31,10 +31,6 @@ describe('taskManager', () => {
     taskManager = new TaskManager(service);
 
     await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to be ready
-  });
-
-  beforeEach(() => {
-    service.processResults = jest.fn().mockImplementation(async () => true);
   });
 
   afterAll(async () => {
@@ -127,28 +123,6 @@ describe('taskManager', () => {
       });
 
       expect(queueAttributes!.msgs).toBe(0);
-    });
-
-    describe('if the processing goes wrong', () => {
-      it('should not delete the message', async () => {
-        const task = {
-          task: 'Tofu',
-          tenant: 'Gabo',
-          data_url: 'http://localhost:1234/results',
-        };
-        service.processResults = jest.fn().mockImplementation(async () => false);
-        await externalDummyService.sendFinishedMessage(task);
-
-        await waitForExpect(async () => {
-          expect(service.processResults).toHaveBeenCalledWith(task);
-        });
-
-        const queueAttributes = await taskManager?.redisSMQ!.getQueueAttributesAsync({
-          qname: taskManager.resultsQueue,
-        });
-
-        expect(queueAttributes!.msgs).toBe(1);
-      });
     });
   });
 
