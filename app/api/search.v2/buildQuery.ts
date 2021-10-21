@@ -31,9 +31,9 @@ const metadataFilters = (query: SearchQuery) =>
       }
 
       let queryString = filterValue;
-      // if (isAdvanced(filterValue)) {
-      //   queryString = filterValue.values?.join(' OR ');
-      // }
+      if (isAdvanced(filterValue)) {
+        queryString = filterValue.values?.join(` ${filterValue.operator || 'OR'} `);
+      }
 
       return {
         query_string: {

@@ -8,6 +8,7 @@ export interface RangeQuery {
 
 export interface AdvancedQuery {
   values?: string[];
+  operator?: 'AND' | 'OR';
 }
 
 export interface SearchQuery {

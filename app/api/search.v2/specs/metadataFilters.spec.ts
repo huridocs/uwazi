@@ -50,14 +50,20 @@ describe('Metadata filters', () => {
         ],
         entities: [
           factory.entity('Entity 1', 'templateA', {
-            multiselect: [factory.metadataValue('thesaurusId1')],
+            multiselect: [
+              factory.metadataValue('thesaurusId1'),
+              factory.metadataValue('thesaurusId3'),
+            ],
             selectPropertyName: [factory.metadataValue('thesaurusId1')],
             numericPropertyName: [factory.metadataValue(42)],
             datePropertyName: [factory.metadataValue(9001), factory.metadataValue(42)],
             textPropertyName: [factory.metadataValue('A small text value')],
           }),
           factory.entity('Entity 2', 'templateA', {
-            multiselect: [factory.metadataValue('thesaurusId2')],
+            multiselect: [
+              factory.metadataValue('thesaurusId2'),
+              factory.metadataValue('thesaurusId3'),
+            ],
             selectPropertyName: [factory.metadataValue('thesaurusId2')],
             numericPropertyName: [factory.metadataValue(13)],
             datePropertyName: [factory.metadataValue(8999)],
@@ -76,24 +82,30 @@ describe('Metadata filters', () => {
   afterAll(async () => testingDB.disconnect());
 
   describe('Select and Multiselect filters', () => {
-    it('should filter by one property and one value', async () => {
+    it.each([{ filterValue: 'thesaurusId1' }, { filterValue: { values: ['thesaurusId1'] } }])(
+      'should filter by one property and one value',
+      async ({ filterValue }) => {
+        const query = {
+          filter: {
+            'metadata.selectPropertyName': filterValue,
+          },
+        };
+
+        const { body } = await request(app)
+          .get('/api/v2/entities')
+          .query(query)
+          .expect(200);
+        expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
+      }
+    );
+
+    it.each([
+      { filterValue: { values: ['thesaurusId1', 'thesaurusId2'] } },
+      { filterValue: { values: ['thesaurusId1', 'thesaurusId2'], operator: 'OR' } },
+    ])('should filter by one property and multiple values', async ({ filterValue }) => {
       const query = {
         filter: {
-          'metadata.selectPropertyName': 'thesaurusId1',
-        },
-      };
-
-      const { body } = await request(app)
-        .get('/api/v2/entities')
-        .query(query)
-        .expect(200);
-      expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
-    });
-
-    it('should filter by one property and multiple values', async () => {
-      const query = {
-        filter: {
-          'metadata.selectPropertyName': { values: ['thesaurusId1', 'thesaurusId2'] },
+          'metadata.selectPropertyName': filterValue,
         },
       };
 
@@ -104,10 +116,13 @@ describe('Metadata filters', () => {
       expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 2' }]);
     });
 
-    it('should filter by the other metadata property', async () => {
+    it.each([
+      { filterValue: 'thesaurusId2' },
+      { filterValue: { values: ['thesaurusId3', 'thesaurusId2'], operator: 'AND' } },
+    ])('should filter by the other metadata property', async ({ filterValue }) => {
       const query = {
         filter: {
-          'metadata.multiselect': 'thesaurusId2',
+          'metadata.multiselect': filterValue,
         },
       };
 

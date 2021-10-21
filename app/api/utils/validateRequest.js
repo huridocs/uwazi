@@ -6,7 +6,7 @@ import createError from './Error';
 
 Joi.objectId = objectId(Joi);
 const ajv = Ajv({ allErrors: true });
-const coercedAjv = Ajv({ allErrors: true, coerceTypes: true });
+const coercedAjv = Ajv({ allErrors: true, coerceTypes: 'array' });
 
 const JoiDeprecatedValidation = (schema, propTovalidate, req, next) => {
   const result = Joi.validate(req[propTovalidate], schema);

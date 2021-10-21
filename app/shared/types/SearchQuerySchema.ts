@@ -9,7 +9,10 @@ export const RangeQuerySchema = {
 export const AdvancedQuerySchema = {
   title: 'AdvancedQuery',
   additionalProperties: false,
-  properties: { values: { type: 'array', items: { type: 'string' } } },
+  properties: {
+    values: { type: 'array', items: { type: 'string' } },
+    operator: { type: 'string', enum: ['AND', 'OR'] },
+  },
 };
 
 export const SearchQuerySchema = {
