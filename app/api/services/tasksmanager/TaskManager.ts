@@ -21,12 +21,14 @@ export interface ResultsMessage {
   };
   data_url?: string;
   file_url?: string;
+  success?: boolean;
+  error?: string;
 }
 /* eslint-enable camelcase */
 
 export interface Service {
   serviceName: string;
-  processResults?: (results: ResultsMessage) => Promise<Boolean>;
+  processResults?: (results: ResultsMessage) => Promise<void>;
   processRessultsMessageHiddenTime?: number;
 }
 
@@ -119,13 +121,12 @@ export class TaskManager {
     if (message.id && this.service.processResults) {
       const processedMessage = JSON.parse(message.message);
 
-      const processed = await this.service.processResults(processedMessage);
-      if (processed) {
-        await this.redisSMQ.deleteMessageAsync({
-          qname: this.resultsQueue,
-          id: message.id,
-        });
-      }
+      await this.service.processResults(processedMessage);
+
+      await this.redisSMQ.deleteMessageAsync({
+        qname: this.resultsQueue,
+        id: message.id,
+      });
     }
   }
 

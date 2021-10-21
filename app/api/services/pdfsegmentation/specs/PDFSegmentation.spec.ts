@@ -223,6 +223,7 @@ describe('PDFSegmentation', () => {
         data_url: 'http://localhost:1235/results',
         file_url: 'http://localhost:1235/file',
         task: 'segmentation',
+        success: true,
       });
 
       await tenants.run(async () => {
@@ -249,6 +250,7 @@ describe('PDFSegmentation', () => {
         data_url: 'http://localhost:1235/results',
         file_url: 'http://localhost:1235/file',
         task: 'segmentation',
+        success: true,
       });
       expect(fs.existsSync(path.join(segmentationFolder, 'documentA.xml'))).toBe(true);
     });
