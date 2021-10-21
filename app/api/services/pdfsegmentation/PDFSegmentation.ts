@@ -143,19 +143,30 @@ class PDFSegmentation {
     });
   };
 
-  processResults = async (message: ResultsMessage): Promise<Boolean> => {
-    let processed = true;
+  saveSegmentationError = async (filename: string) => {
+    const [segmentation] = await SegmentationModel.get({ filename });
+    await SegmentationModel.save({
+      ...segmentation,
+      autoexpire: null,
+      status: 'error',
+    });
+  };
+
+  processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       try {
+        if (!message.success) {
+          await this.saveSegmentationError(message.params!.filename);
+          return;
+        }
+
         const { data, fileStream } = await this.requestResults(message);
         await this.storeXML(message.params!.filename, fileStream);
         await this.saveSegmentation(message.params!.filename, data);
       } catch (error) {
         handleError(error);
-        processed = false;
       }
     }, message.tenant);
-    return processed;
   };
 }
 
