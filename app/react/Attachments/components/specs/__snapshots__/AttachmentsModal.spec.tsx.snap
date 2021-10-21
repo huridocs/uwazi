@@ -97,6 +97,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
               </Connect(Translate)>
             </button>
             <input
+              aria-label="fileInput"
               onChange={[Function]}
               style={
                 Object {
@@ -297,6 +298,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
               </Connect(Translate)>
             </button>
             <input
+              aria-label="fileInput"
               onChange={[Function]}
               style={
                 Object {
