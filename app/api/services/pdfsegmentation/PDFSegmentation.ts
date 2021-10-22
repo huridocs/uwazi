@@ -145,11 +145,13 @@ class PDFSegmentation {
 
   saveSegmentationError = async (filename: string) => {
     const [segmentation] = await SegmentationModel.get({ filename });
-    await SegmentationModel.save({
-      ...segmentation,
-      autoexpire: null,
-      status: 'error',
-    });
+    if (segmentation) {
+      await SegmentationModel.save({
+        ...segmentation,
+        autoexpire: null,
+        status: 'error',
+      });
+    }
   };
 
   processResults = async (message: ResultsMessage): Promise<void> => {
