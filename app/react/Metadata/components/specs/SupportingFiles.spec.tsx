@@ -6,6 +6,7 @@ import { fireEvent, RenderResult, screen, within } from '@testing-library/react'
 import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
+import { ClientFile } from 'app/istore';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { SupportingFiles } from '../SupportingFiles';
 import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
@@ -13,7 +14,7 @@ import * as supportingLocalFilesActions from '../../actions/supportingFilesActio
 describe('Supporting files', () => {
   let reduxStore = {};
   let renderResult: RenderResult;
-  let attachments: any[] = [];
+  let attachments: array<ClientFile & { serializedFile?: string }> = [];
   const entity1 = {
     _id: 'entity_id',
     sharedId: 'entity_sharedId',

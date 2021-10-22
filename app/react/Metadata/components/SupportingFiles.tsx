@@ -34,7 +34,7 @@ const connector = connect(null, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = SupportingFilesProps & mappedProps;
 
-const getFileIcon = (file: ClientFile & { serializedFile: string }) => {
+const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
   let thumbnail = (
     <span no-translate>
