@@ -14,7 +14,7 @@ import * as supportingLocalFilesActions from '../../actions/supportingFilesActio
 describe('Supporting files', () => {
   let reduxStore = {};
   let renderResult: RenderResult;
-  let attachments: array<ClientFile & { serializedFile?: string }> = [];
+  let attachments: Array<ClientFile & { serializedFile?: string }> = [];
   const entity1 = {
     _id: 'entity_id',
     sharedId: 'entity_sharedId',
