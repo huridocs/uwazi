@@ -1,8 +1,7 @@
 import Joi from 'joi';
 import objectId from 'joi-objectid';
 import { search } from 'api/search';
-import { attachmentsPath, files, generateFileName, uploadMiddleware } from 'api/files';
-import fs from 'fs';
+import { attachmentsPath, files, uploadMiddleware } from 'api/files';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
@@ -10,17 +9,6 @@ import needsAuthorization from '../auth/authMiddleware';
 import { parseQuery, validation } from '../utils';
 
 Joi.objectId = objectId(Joi);
-
-const storeFile = (pathFunction, file) =>
-  new Promise((resolve, reject) => {
-    const filename = generateFileName(file);
-    fs.appendFile(pathFunction(filename), file.buffer, err => {
-      if (err) {
-        reject(err);
-      }
-      resolve(Object.assign(file, { filename, destination: pathFunction() }));
-    });
-  });
 
 export default app => {
   app.post(
@@ -49,7 +37,7 @@ export default app => {
         if (req.files.length) {
           await Promise.all(
             req.files.map(file =>
-              storeFile(attachmentsPath, file).then(_file =>
+              files.storeFile(attachmentsPath, file).then(_file =>
                 attachments.push({
                   ..._file,
                   entity: entity.sharedId,
@@ -71,7 +59,7 @@ export default app => {
 
         return res.json(entityWithAttachments);
       } catch (e) {
-        next(e);
+        return next(e);
       }
     }
   );

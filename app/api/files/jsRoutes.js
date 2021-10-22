@@ -15,17 +15,6 @@ import { captchaAuthorization } from '../auth';
 
 import { uploadMiddleware } from './uploadMiddleware';
 
-const storeFile = (pathFunction, file) =>
-  new Promise((resolve, reject) => {
-    const filename = generateFileName(file);
-    fs.appendFile(pathFunction(filename), file.buffer, err => {
-      if (err) {
-        reject(err);
-      }
-      resolve(Object.assign(file, { filename, destination: pathFunction() }));
-    });
-  });
-
 const routes = app => {
   const corsOptions = {
     origin: true,
@@ -103,7 +92,7 @@ const routes = app => {
 
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
-        storeFile(uploadsPath, file).then(async _file => {
+        files.storeFile(uploadsPath, file).then(async _file => {
           await processDocument(newEntity.sharedId, _file);
           await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
           req.emitToSessionSocket('documentProcessed', newEntity.sharedId);

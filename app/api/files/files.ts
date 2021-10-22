@@ -1,8 +1,9 @@
-import { deleteUploadedFiles } from 'api/files/filesystem';
+import { deleteUploadedFiles, generateFileName, pathFunction } from 'api/files/filesystem';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import entities from 'api/entities';
 import request from 'shared/JSONRequest';
+import fs from 'fs';
 import model from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
 import { FileType } from '../../shared/types/fileType';
@@ -59,5 +60,17 @@ export const files = {
     );
 
     return savedFile;
+  },
+
+  async storeFile(filePathFunction: pathFunction, file: any) {
+    return new Promise((resolve, reject) => {
+      const filename = generateFileName(file);
+      fs.appendFile(filePathFunction(filename), file.buffer, err => {
+        if (err) {
+          reject(err);
+        }
+        resolve(Object.assign(file, { filename, destination: filePathFunction() }));
+      });
+    });
   },
 };
