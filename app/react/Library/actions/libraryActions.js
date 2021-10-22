@@ -323,13 +323,16 @@ const saveEntityWithFiles = entity =>
       entity.attachments &&
       entity.attachments.reduce(
         (accumulator, attachmentInfo) => {
-          const { _serializedFile, ...attachment } = attachmentInfo;
+          const { serializedFile, ...attachment } = attachmentInfo;
           accumulator[0].push(attachment);
-          accumulator[1].push(attachmentInfo);
+          if (serializedFile) {
+            accumulator[1].push(getFile(attachmentInfo));
+          }
           return accumulator;
         },
         [[], []]
       );
+
     //remove stringify
     const request = superagent
       .post('/api/entities_with_files')
@@ -343,16 +346,13 @@ const saveEntityWithFiles = entity =>
         })
       );
 
-    supportingFiles
-      .filter(v => v)
-      .forEach((attachment, index) => {
-        const file = getFile(attachment);
-        request.attach(`attachments[${index}]`, file);
-      });
+    supportingFiles.forEach((file, index) => {
+      request.attach(`attachments[${index}]`, file);
+    });
 
     return request.end((err, res) => {
       if (err) return reject(err);
-      resolve(res.body);
+      return resolve(res.body);
     });
   });
 
