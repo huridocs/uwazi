@@ -91,7 +91,7 @@ const SupportingFiles = ({
 
     <div className="attachments-list editor">
       {supportingFiles.map((file: ClientFile, index: number) => (
-        <div className="attachment" key={file._id}>
+        <div className="attachment" key={file._id || file.originalname}>
           <div className="attachment-thumbnail">{getFileIcon(file)}</div>
           <div className="attachment-name">
             <Field model={`.attachments.${index}.originalname`}>

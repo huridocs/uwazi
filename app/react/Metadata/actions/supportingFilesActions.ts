@@ -3,7 +3,7 @@ import { actions } from 'react-redux-form';
 import { EntitySchema } from 'shared/types/entityType';
 
 function uploadLocalAttachment(
-  _entity: EntitySchema,
+  entity: EntitySchema,
   file: File,
   __reducerKey: string,
   model: string
@@ -19,6 +19,7 @@ function uploadLocalAttachment(
           serializedFile: info,
           type: 'attachment',
           mimetype: file.type,
+          ...(entity.sharedId && { entity: entity.sharedId }),
         })
       );
     };
