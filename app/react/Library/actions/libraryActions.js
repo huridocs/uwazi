@@ -318,7 +318,7 @@ function getFile({ serializedFile: base64, originalname }) {
   return new File([fileContent], originalname, { type: fileFormat });
 }
 
-const saveEntityWithFiles = entity =>
+export const saveEntityWithFiles = entity =>
   new Promise((resolve, reject) => {
     const [attachments, supportingFiles] =
       entity.attachments &&

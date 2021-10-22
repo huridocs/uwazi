@@ -5,6 +5,7 @@ import {
   removeDocuments,
   unselectAllDocuments,
   unselectDocument,
+  saveEntityWithFiles,
 } from 'app/Library/actions/libraryActions';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
@@ -12,13 +13,15 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
 
 export function saveEntity(entity) {
-  return dispatch =>
-    api.save(new RequestParams(entity)).then(response => {
+  return async dispatch => {
+    const updatedDoc = await saveEntityWithFiles(entity);
+    return api.save(new RequestParams(updatedDoc)).then(response => {
       dispatch(notificationActions.notify('Entity saved', 'success'));
       dispatch(formActions.reset('entityView.entityForm'));
       dispatch(actions.set('entityView/entity', response));
       dispatch(relationshipActions.reloadRelationships(response.sharedId));
     });
+  };
 }
 
 export function resetForm() {
