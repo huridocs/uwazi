@@ -10,36 +10,17 @@ import { defaultState, renderConnectedContainer } from 'app/utils/test/renderCon
 import { SupportingFiles } from '../SupportingFiles';
 import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
 
-const entity1 = {
-  _id: 'entity_id',
-  sharedId: 'entity_sharedId',
-  title: 'testTitle',
-  metadata: { field1: [{ label: 'field1', value: 'things' }] },
-  attachments: [
-    {
-      _id: 'file1',
-      originalname: 'file1.jpg',
-      mimetype: 'image/jpeg',
-      filename: '1634043075618nraarbdu2ko.jpg',
-      size: 2305089,
-      entity: 'entity_sharedId',
-      creationDate: 1634043075634,
-    },
-    {
-      _id: 'file2',
-      originalname: 'file2.jpeg',
-      mimetype: 'image/jpeg',
-      filename: '16340430795962bgts67kme8.jpeg',
-      size: 5287,
-      entity: 'entity_sharedId',
-      creationDate: 1634043079601,
-    },
-  ],
-};
-
 describe('Supporting files', () => {
   let reduxStore = {};
   let renderResult: RenderResult;
+  let attachments: any[] = [];
+  const entity1 = {
+    _id: 'entity_id',
+    sharedId: 'entity_sharedId',
+    title: 'testTitle',
+    metadata: { field1: [{ label: 'field1', value: 'things' }] },
+    attachments,
+  };
 
   const render = () => {
     reduxStore = {
@@ -58,7 +39,73 @@ describe('Supporting files', () => {
     ));
   };
 
+  describe('render', () => {
+    beforeAll(() => {
+      attachments = [
+        {
+          _id: 'file1',
+          originalname: 'file1.jpg',
+          filename: 'file1.jpg',
+          mimetype: 'image/jpeg',
+          entity: 'entity_sharedId',
+        },
+        {
+          _id: 'file2',
+          originalname: 'file2.pdf',
+          filename: 'file2.pdf',
+          mimetype: 'image/jpeg',
+          entity: 'entity_sharedId',
+        },
+        {
+          _id: 'file3',
+          filename: 'file3',
+          serializedFile: 'serializedBinary',
+          entity: 'entity_sharedId',
+        },
+      ];
+      entity1.attachments = attachments;
+    });
+
+    it('should display the image file for image supporting files', () => {
+      render();
+      const imageFile = screen.getByRole('img');
+      expect(imageFile.getAttribute('src')).toEqual('/api/files/file1.jpg');
+    });
+
+    it('should display an icon for pdfs', () => {
+      render();
+      const pdfFileIcon = screen.getByText('pdf');
+      expect(pdfFileIcon.firstChild?.nodeName).toBe('svg');
+    });
+
+    it('should display an icon for files with serialized info', () => {
+      render();
+      const pdfFileIcon = screen.getByText('file');
+      expect(pdfFileIcon.firstChild?.nodeName).toBe('svg');
+    });
+  });
+
   describe('on edit', () => {
+    beforeAll(() => {
+      attachments = [
+        {
+          _id: 'file1',
+          originalname: 'file1.jpg',
+          filename: 'file1.jpg',
+          mimetype: 'image/jpeg',
+          entity: 'entity_sharedId',
+        },
+        {
+          _id: 'file2',
+          originalname: 'file2.jpeg',
+          filename: 'file2.jpg',
+          mimetype: 'image/jpeg',
+          entity: 'entity_sharedId',
+        },
+      ];
+      entity1.attachments = attachments;
+    });
+
     beforeEach(() => {
       spyOn(actions, 'remove').and.returnValue({ type: 'deleting' });
       spyOn(supportingLocalFilesActions, 'uploadLocalAttachment').and.returnValue({

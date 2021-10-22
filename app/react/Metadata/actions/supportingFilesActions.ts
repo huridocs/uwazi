@@ -10,6 +10,7 @@ function uploadLocalAttachment(_entity: EntitySchema, file: File, __reducerKey: 
       dispatch(
         actions.push('library.sidepanel.metadata.attachments', {
           originalname: file.name,
+          filename: file.name,
           serializedFile: info,
           type: 'attachment',
           mimetype: file.type,

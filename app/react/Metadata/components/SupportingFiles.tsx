@@ -34,9 +34,13 @@ const connector = connect(null, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = SupportingFilesProps & mappedProps;
 
-const getFileIcon = (file: ClientFile) => {
+const getFileIcon = (file: ClientFile & { serializedFile: string }) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
-  let thumbnail = null;
+  let thumbnail = (
+    <span no-translate>
+      <Icon icon="file" /> file
+    </span>
+  );
 
   if (file.filename && getFileExtension(file.filename) === 'pdf') {
     thumbnail = (
@@ -55,6 +59,7 @@ const getFileIcon = (file: ClientFile) => {
   }
 
   if (
+    !file.serializedFile &&
     file.filename &&
     acceptedThumbnailExtensions.indexOf(getFileExtension(file.filename.toLowerCase())) !== -1
   ) {
