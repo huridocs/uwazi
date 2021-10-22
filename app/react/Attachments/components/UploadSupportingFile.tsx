@@ -11,13 +11,14 @@ import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
 interface UploadSupportingFileProps {
   entitySharedId: string;
   storeKey: string;
+  model?: string;
   progress?: any;
   uploadAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
   uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
 }
 
 const UploadSupportingFile = (props: UploadSupportingFileProps) => {
-  const { entitySharedId, storeKey, progress } = props;
+  const { entitySharedId, storeKey, progress, model = '' } = props;
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setModalOpen(true);
@@ -55,6 +56,7 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
         entitySharedId={entitySharedId}
         storeKey={storeKey}
         getPercentage={getPercentage}
+        model={model}
         uploadAttachment={props.uploadAttachment || uploadAttachment}
         uploadAttachmentFromUrl={props.uploadAttachmentFromUrl || uploadAttachmentFromUrl}
       />

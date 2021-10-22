@@ -71,6 +71,7 @@ const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
 const SupportingFiles = ({
   supportingFiles,
   entitySharedID,
+  model,
   removeSupportingFile,
 }: ComponentProps) => (
   <div className="attachments-list-parent">
@@ -84,6 +85,7 @@ const SupportingFiles = ({
         storeKey="library"
         uploadAttachment={uploadLocalAttachment}
         uploadAttachmentFromUrl={uploadLocalAttachmentFromUrl}
+        model={model}
       />
     </div>
 

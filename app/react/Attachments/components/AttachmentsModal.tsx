@@ -18,6 +18,7 @@ export interface AttachmentsModalProps {
   isOpen: boolean;
   entitySharedId: string;
   storeKey: string;
+  model: string;
   onClose(): void;
   uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
   uploadAttachmentFromUrl: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
@@ -28,6 +29,7 @@ export const AttachmentsModalCmp = ({
   isOpen,
   entitySharedId,
   storeKey,
+  model,
   onClose,
   uploadAttachment: uploadAttachmentProp,
   uploadAttachmentFromUrl: uploadAttachmentFromUrlProp,
@@ -45,14 +47,14 @@ export const AttachmentsModalCmp = ({
   const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       [...event.target.files].forEach(file => {
-        uploadAttachmentProp(entitySharedId, file, storeKey);
+        uploadAttachmentProp(entitySharedId, file, storeKey, model);
       });
     }
   };
 
   const handleDropFiles = (accepted: File[]) => {
     accepted.forEach(file => {
-      uploadAttachmentProp(entitySharedId, file, storeKey);
+      uploadAttachmentProp(entitySharedId, file, storeKey, model);
     });
   };
 
@@ -60,8 +62,8 @@ export const AttachmentsModalCmp = ({
     formDispatch = dispatch;
   };
 
-  const handleSubmitUrlForm = (formModelData: any) => {
-    uploadAttachmentFromUrlProp(entitySharedId, formModelData.name, formModelData.url, storeKey);
+  const handleSubmitUrlForm = (formModelData: { url: string; name: string }) => {
+    uploadAttachmentFromUrlProp(entitySharedId, formModelData, storeKey, model);
     formDispatch(formActions.reset('urlForm'));
   };
 

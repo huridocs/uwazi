@@ -66,7 +66,8 @@ export function uploadAttachment(entity, file, __reducerKey) {
   };
 }
 
-export function uploadAttachmentFromUrl(entity, name, url, __reducerKey) {
+export function uploadAttachmentFromUrl(entity, formData, __reducerKey) {
+  const { name, url } = formData;
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     api
