@@ -6,6 +6,7 @@ import { elastic } from 'api/search';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { searchRoutes } from '../routes';
+
 import {
   fixturesTitleSearch,
   entity1en,

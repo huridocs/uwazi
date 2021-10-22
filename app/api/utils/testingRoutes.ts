@@ -4,6 +4,7 @@ import { Response as SuperTestResponse } from 'supertest';
 
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
+import { routesErrorHandler } from 'api/utils/routesErrorHandler';
 import { extendSupertest } from './supertestExtensions';
 
 extendSupertest();
@@ -15,6 +16,7 @@ const setUpApp = (
   ...customMiddleware: ((req: Request, _es: Response, next: NextFunction) => void)[]
 ): Application => {
   const app: Application = express();
+  routesErrorHandler(app);
   app.use(bodyParser.json());
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) => iosocket.emit(event, ...args);

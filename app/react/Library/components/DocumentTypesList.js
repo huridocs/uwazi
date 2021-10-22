@@ -215,9 +215,9 @@ DocumentTypesList.defaultProps = {
 DocumentTypesList.propTypes = {
   selectedTemplates: PropTypes.instanceOf(Array),
   settings: PropTypes.instanceOf(Object),
-  templates: Immutable.List,
+  templates: PropTypes.instanceOf(Immutable.List),
   filterDocumentTypes: PropTypes.func,
-  aggregations: Immutable.Map,
+  aggregations: PropTypes.instanceOf(Immutable.Map),
   fromFilters: PropTypes.bool,
 };
 
