@@ -23,6 +23,7 @@ describe('Attachments Modal', () => {
       uploadAttachmentFromUrl: jasmine.createSpy('uploadAttachmentFromUrl'),
       isOpen: true,
       uploadAttachment: jasmine.createSpy('uploadAttachment'),
+      model: '',
     };
   });
 
