@@ -319,22 +319,36 @@ function getFile({ serializedFile: base64, originalname }) {
 
 const saveEntityWithFiles = entity =>
   new Promise((resolve, reject) => {
-    //remove serializedFile and stringify
-    const supportingFiles =
+    const [attachments, supportingFiles] =
       entity.attachments &&
-      entity.attachments
-        .filter(attachment => attachment.serializedFile)
-        .map(attachment => getFile(attachment));
-
+      entity.attachments.reduce(
+        (accumulator, attachmentInfo) => {
+          const { _serializedFile, ...attachment } = attachmentInfo;
+          accumulator[0].push(attachment);
+          accumulator[1].push(attachmentInfo);
+          return accumulator;
+        },
+        [[], []]
+      );
+    //remove stringify
     const request = superagent
       .post('/api/entities_with_files')
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .field('entity', JSON.stringify(entity));
+      .field(
+        'entity',
+        JSON.stringify({
+          ...entity,
+          attachments,
+        })
+      );
 
-    supportingFiles.forEach((attachment, index) => {
-      request.attach(`attachments[${index}]`, attachment);
-    });
+    supportingFiles
+      .filter(v => v)
+      .forEach((attachment, index) => {
+        const file = getFile(attachment);
+        request.attach(`attachments[${index}]`, file);
+      });
 
     return request.end((err, res) => {
       if (err) return reject(err);

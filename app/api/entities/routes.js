@@ -1,8 +1,7 @@
 import Joi from 'joi';
 import objectId from 'joi-objectid';
 import { search } from 'api/search';
-import { attachmentsPath, files, generateFileName, uploadMiddleware, uploadsPath } from 'api/files';
-import { processDocument } from 'api/files/processDocument';
+import { attachmentsPath, files, generateFileName, uploadMiddleware } from 'api/files';
 import fs from 'fs';
 import entities from './entities';
 import templates from '../templates/templates';
@@ -40,35 +39,40 @@ export default app => {
       // const thumbnailFileName = `${deletedFile._id}.jpg`;
       // await files.delete({ filename: thumbnailFileName });
 
-      const entityToSave = JSON.parse(req.body.entity);
-
-      console.log('ATTACHMENTS ENTITY', entityToSave);
-      const entity = await entities.save(entityToSave, {
-        user: req.user,
-        language: req.language,
-      });
-      const attachments = [];
-      if (req.files.length) {
-        await Promise.all(
-          req.files.map(file =>
-            storeFile(attachmentsPath, file).then(_file =>
-              attachments.push({
-                ..._file,
-                entity: entity.sharedId,
-                type: 'attachment',
-              })
+      try {
+        const entityToSave = JSON.parse(req.body.entity);
+        const entity = await entities.save(entityToSave, {
+          user: req.user,
+          language: req.language,
+        });
+        const attachments = [];
+        if (req.files.length) {
+          await Promise.all(
+            req.files.map(file =>
+              storeFile(attachmentsPath, file).then(_file =>
+                attachments.push({
+                  ..._file,
+                  entity: entity.sharedId,
+                  type: 'attachment',
+                })
+              )
             )
-          )
+          );
+        }
+        await Promise.all(attachments.map(attachment => files.save(attachment)));
+
+        const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
+          {
+            sharedId: entity.sharedId,
+            language: entity.language,
+          },
+          '+permissions'
         );
+
+        return res.json(entityWithAttachments);
+      } catch (e) {
+        next(e);
       }
-      await Promise.all(attachments.map(attachment => files.save(attachment)));
-
-      const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
-        { sharedId: entity.sharedId, language: entity.language },
-        '+permissions'
-      );
-
-      return res.json(entityWithAttachments);
     }
   );
 
