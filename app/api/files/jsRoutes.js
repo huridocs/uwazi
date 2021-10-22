@@ -1,4 +1,3 @@
-import fs from 'fs';
 import proxy from 'express-http-proxy';
 
 import entities from 'api/entities';
@@ -7,7 +6,7 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 import { files } from 'api/files/files';
-import { uploadsPath, attachmentsPath, generateFileName } from 'api/files/filesystem';
+import { uploadsPath, attachmentsPath } from 'api/files/filesystem';
 import cors from 'cors';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
@@ -77,7 +76,7 @@ const routes = app => {
           req.files
             .filter(file => file.fieldname.includes('attachment'))
             .map(file =>
-              storeFile(attachmentsPath, file).then(_file =>
+              files.storeFile(attachmentsPath, file).then(_file =>
                 attachments.push({
                   ..._file,
                   entity: newEntity.sharedId,
