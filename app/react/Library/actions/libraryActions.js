@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
@@ -358,7 +359,7 @@ const saveEntityWithFiles = entity =>
 
 export function saveEntity(entity, formModel) {
   return async dispatch => {
-    const updatedDoc = saveEntityWithFiles(entity);
+    const updatedDoc = await saveEntityWithFiles(entity);
 
     dispatch(formActions.reset(formModel));
     await dispatch(unselectAllDocuments());
