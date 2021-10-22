@@ -12,8 +12,8 @@ interface UploadSupportingFileProps {
   entitySharedId: string;
   storeKey: string;
   progress?: any;
-  uploadAttachment?: (...args: any[]) => Dispatch<{}>;
-  uploadAttachmentFromUrl?: (...args: any[]) => Dispatch<{}>;
+  uploadAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
 }
 
 const UploadSupportingFile = (props: UploadSupportingFileProps) => {

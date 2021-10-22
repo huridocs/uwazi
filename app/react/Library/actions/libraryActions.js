@@ -1,17 +1,18 @@
-import * as types from 'app/Library/actions/actionTypes';
 import qs from 'qs';
-import { notificationActions } from 'app/Notifications';
+import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
+import { browserHistory } from 'react-router';
+import superagent from 'superagent';
+import { store } from 'app/store';
+import * as types from 'app/Library/actions/actionTypes';
 import { actions } from 'app/BasicReducer';
 import { documentsApi } from 'app/Documents';
-import { browserHistory } from 'react-router';
-import rison from 'rison-node';
-import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
-import { toUrlParams } from 'shared/JSONRequest';
+import { notificationActions } from 'app/Notifications';
 import { RequestParams } from 'app/utils/RequestParams';
-import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import { toUrlParams } from 'shared/JSONRequest';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
 
@@ -309,9 +310,42 @@ export function multipleUpdate(entities, values) {
   };
 }
 
+function getFile({ serializedFile: base64, originalname }) {
+  const base64Parts = base64.split(',');
+  const fileFormat = base64Parts[0].split(';')[1];
+  const fileContent = base64Parts[1];
+  return new File([fileContent], originalname, { type: fileFormat });
+}
+
+const postEntityWithAttachments = (entity, supportingFiles) =>
+  new Promise((resolve, reject) => {
+    const request = superagent
+      .post('/api/entities2')
+      .set('Accept', 'application/json')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .field('entity', JSON.stringify(entity));
+
+    if (supportingFiles) {
+      supportingFiles.forEach((attachment, index) => {
+        request.attach(`attachments[${index}]`, attachment);
+      });
+    }
+    return request.end((err, res) => {
+      if (err) return reject(err);
+      resolve(res.body);
+    });
+  });
+
 export function saveEntity(entity, formModel) {
+  const supportingFiles = entity.attachments
+    .filter(attachment => attachment.serializedFile)
+    .map(attachment => getFile(attachment));
+
   return async dispatch => {
-    const updatedDoc = await entitiesAPI.save(new RequestParams(entity));
+    const updatedDoc = await (!supportingFiles
+      ? entitiesAPI.save(new RequestParams(entity))
+      : postEntityWithAttachments(entity, supportingFiles));
+
     dispatch(formActions.reset(formModel));
     await dispatch(unselectAllDocuments());
     if (entity._id) {

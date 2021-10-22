@@ -19,8 +19,8 @@ export interface AttachmentsModalProps {
   entitySharedId: string;
   storeKey: string;
   onClose(): void;
-  uploadAttachment(...args: any[]): Dispatch<{}>;
-  uploadAttachmentFromUrl(...args: any[]): Dispatch<{}>;
+  uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachmentFromUrl: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
   getPercentage?: number;
 }
 

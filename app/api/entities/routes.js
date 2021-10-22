@@ -1,6 +1,9 @@
 import Joi from 'joi';
 import objectId from 'joi-objectid';
 import { search } from 'api/search';
+import { attachmentsPath, files, generateFileName, uploadMiddleware, uploadsPath } from 'api/files';
+import { processDocument } from 'api/files/processDocument';
+import fs from 'fs';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
@@ -9,7 +12,49 @@ import { parseQuery, validation } from '../utils';
 
 Joi.objectId = objectId(Joi);
 
+const storeFile = (pathFunction, file) =>
+  new Promise((resolve, reject) => {
+    const filename = generateFileName(file);
+    fs.appendFile(pathFunction(filename), file.buffer, err => {
+      if (err) {
+        reject(err);
+      }
+      resolve(Object.assign(file, { filename, destination: pathFunction() }));
+    });
+  });
+
 export default app => {
+  app.post(
+    '/api/entities2',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    uploadMiddleware.multiple(),
+    async (req, res, next) => {
+      const entityToSave = JSON.parse(req.body.entity);
+      const entity = await entities.save(entityToSave, {
+        user: req.user,
+        language: req.language,
+      });
+      const attachments = [];
+      if (req.files.length) {
+        await Promise.all(
+          req.files.map(file =>
+            storeFile(attachmentsPath, file).then(_file =>
+              attachments.push({
+                ..._file,
+                entity: entity.sharedId,
+                type: 'attachment',
+              })
+            )
+          )
+        );
+      }
+
+      await Promise.all(attachments.map(attachment => files.save(attachment)));
+
+      return entity;
+    }
+  );
+
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
