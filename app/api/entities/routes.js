@@ -25,11 +25,24 @@ const storeFile = (pathFunction, file) =>
 
 export default app => {
   app.post(
-    '/api/entities2',
+    '/api/entities_with_files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware.multiple(),
     async (req, res, next) => {
+      //remove JSON.parse
+
+      //get files by sharedid
+      //compare/save/delete each file
+      //IMPORTANT! only update originalname (NOT mimetype/size)
+      //files.save(req.body)
+
+      // const [deletedFile] = await files.delete(req.query);
+      // const thumbnailFileName = `${deletedFile._id}.jpg`;
+      // await files.delete({ filename: thumbnailFileName });
+
       const entityToSave = JSON.parse(req.body.entity);
+
+      console.log('ATTACHMENTS ENTITY', entityToSave);
       const entity = await entities.save(entityToSave, {
         user: req.user,
         language: req.language,
@@ -48,10 +61,14 @@ export default app => {
           )
         );
       }
-
       await Promise.all(attachments.map(attachment => files.save(attachment)));
 
-      return entity;
+      const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
+        { sharedId: entity.sharedId, language: entity.language },
+        '+permissions'
+      );
+
+      return res.json(entityWithAttachments);
     }
   );
 

@@ -317,19 +317,25 @@ function getFile({ serializedFile: base64, originalname }) {
   return new File([fileContent], originalname, { type: fileFormat });
 }
 
-const postEntityWithAttachments = (entity, supportingFiles) =>
+const saveEntityWithFiles = entity =>
   new Promise((resolve, reject) => {
+    //remove serializedFile and stringify
+    const supportingFiles =
+      entity.attachments &&
+      entity.attachments
+        .filter(attachment => attachment.serializedFile)
+        .map(attachment => getFile(attachment));
+
     const request = superagent
-      .post('/api/entities2')
+      .post('/api/entities_with_files')
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
       .field('entity', JSON.stringify(entity));
 
-    if (supportingFiles) {
-      supportingFiles.forEach((attachment, index) => {
-        request.attach(`attachments[${index}]`, attachment);
-      });
-    }
+    supportingFiles.forEach((attachment, index) => {
+      request.attach(`attachments[${index}]`, attachment);
+    });
+
     return request.end((err, res) => {
       if (err) return reject(err);
       resolve(res.body);
@@ -337,14 +343,8 @@ const postEntityWithAttachments = (entity, supportingFiles) =>
   });
 
 export function saveEntity(entity, formModel) {
-  const supportingFiles = entity.attachments
-    .filter(attachment => attachment.serializedFile)
-    .map(attachment => getFile(attachment));
-
   return async dispatch => {
-    const updatedDoc = await (!supportingFiles
-      ? entitiesAPI.save(new RequestParams(entity))
-      : postEntityWithAttachments(entity, supportingFiles));
+    const updatedDoc = saveEntityWithFiles(entity);
 
     dispatch(formActions.reset(formModel));
     await dispatch(unselectAllDocuments());
