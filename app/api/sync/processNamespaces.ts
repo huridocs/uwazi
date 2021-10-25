@@ -54,7 +54,7 @@ const getEntityTemplate = async (sharedId: string) => {
 
 const extractAllowedMetadata = (
   { metadata }: WithId<EntitySchema>,
-  templateData: WithId<TemplateSchema>,
+  templateData: TemplateSchema,
   templateConfig: SettingsSyncTemplateSchema
 ) =>
   (templateData.properties || [])
@@ -122,7 +122,7 @@ class ProcessNamespaces {
 
   private isPossibleRightMetadataRel(
     data: any,
-    templateData: WithId<TemplateSchema>,
+    templateData: TemplateSchema,
     hubOtherTemplates: WithId<TemplateSchema>[]
   ) {
     return hubOtherTemplates.reduce((_isRightRelationship: boolean, template) => {
@@ -136,7 +136,7 @@ class ProcessNamespaces {
           const belongsToType =
             (p.relationType || '').toString() === (data.template ? data.template.toString() : null);
           const belongsToSpecificContent =
-            (p.content || '').toString() === templateData._id.toString();
+            (p.content || '').toString() === templateData._id?.toString();
           const belongsToGenericContent = p.content === '';
           if (belongsToType && (belongsToSpecificContent || belongsToGenericContent)) {
             isRightRelationship = true;
@@ -150,7 +150,7 @@ class ProcessNamespaces {
 
   private async shouldSkipRel(
     data: any,
-    templateData: WithId<TemplateSchema>,
+    templateData: TemplateSchema,
     templateHasValidRelationProperties: boolean
   ) {
     const hubOtherConnections = await models.connections.get({

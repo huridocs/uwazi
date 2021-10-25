@@ -74,7 +74,7 @@ export class Attachment extends Component {
     this.toggleDropdown = this.toggleDropdown.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.copyToClipboard = this.copyToClipboard.bind(this);
-    this.myRef = React.createRef();
+    this.attachmentActionsRef = React.createRef();
     this.onRenameSubmit = this.onRenameSubmit.bind(this);
     this.toggleRename = this.toggleRename.bind(this);
   }
@@ -131,7 +131,10 @@ export class Attachment extends Component {
   }
 
   handleClickOutside(e) {
-    if (!this.myRef.current.contains(e.target)) {
+    if (
+      this.attachmentActionsRef.current &&
+      !this.attachmentActionsRef.current.contains(e.target)
+    ) {
       this.setState({ dropdownMenuOpen: false });
     }
   }
@@ -216,7 +219,7 @@ export class Attachment extends Component {
               className="dropdown-menu dropdown-menu-right"
               aria-labelledby="attachment-dropdown-actions"
               style={{ display: this.state.dropdownMenuOpen ? 'block' : 'none' }}
-              ref={this.myRef}
+              ref={this.attachmentActionsRef}
             >
               <li>
                 <button type="button" onClick={() => this.copyToClipboard(item)}>

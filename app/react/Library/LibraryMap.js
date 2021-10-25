@@ -21,7 +21,11 @@ export default class LibraryMap extends Library {
           zoomOut={() => {
             this.mapView.getWrappedInstance().map.zoomOut();
           }}
+          setMapStyle={style => {
+            this.mapView.getWrappedInstance().map.setMapStyle(style);
+          }}
           zoomLevel={0}
+          mapViewMode
         />
         <MapView
           storeKey="library"
