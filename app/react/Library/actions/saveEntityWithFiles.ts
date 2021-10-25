@@ -1,11 +1,13 @@
 import superagent from 'superagent';
 import { ClientEntitySchema, ClientFile } from 'app/istore';
 
-const constructFile = ({ serializedFile: base64, originalname }: ClientFile) => {
+export const constructFile = ({ serializedFile: base64, originalname }: ClientFile) => {
   const fileParts = base64!.split(',');
   const fileFormat = fileParts[0].split(';')[0].split(':')[1];
   const fileContent = fileParts[1];
-  return new File([fileContent], originalname || '', { type: fileFormat });
+
+  const buff = Buffer.from(fileContent, 'base64');
+  return new File([buff], originalname || '', { type: fileFormat });
 };
 
 export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
@@ -37,8 +39,9 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
         })
       );
 
-    supportingFiles.map(async (file, index) => {
-      await request.attach(`attachments[${index}]`, file);
+    supportingFiles.forEach((file, index) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      request.attach(`attachments[${index}]`, file);
     });
 
     return request.end((err, res) => {
