@@ -5,8 +5,8 @@ import {
   removeDocuments,
   unselectAllDocuments,
   unselectDocument,
-  saveEntityWithFiles,
 } from 'app/Library/actions/libraryActions';
+import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';

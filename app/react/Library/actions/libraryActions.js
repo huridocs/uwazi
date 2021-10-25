@@ -3,7 +3,6 @@ import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
 import { browserHistory } from 'react-router';
-import superagent from 'superagent';
 import { store } from 'app/store';
 import * as types from 'app/Library/actions/actionTypes';
 import { actions } from 'app/BasicReducer';
@@ -16,6 +15,7 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import { toUrlParams } from 'shared/JSONRequest';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
+import { saveEntityWithFiles } from './saveEntityWithFiles';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -310,52 +310,6 @@ export function multipleUpdate(entities, values) {
     dispatch(updateEntities(updatedDocs));
   };
 }
-
-function getFile({ serializedFile: base64, originalname }) {
-  const base64Parts = base64.split(',');
-  const fileFormat = base64Parts[0].split(';')[1];
-  const fileContent = base64Parts[1];
-  return new File([fileContent], originalname, { type: fileFormat });
-}
-
-export const saveEntityWithFiles = entity =>
-  new Promise((resolve, reject) => {
-    const [attachments, supportingFiles] = entity.attachments
-      ? entity.attachments.reduce(
-          (accumulator, attachmentInfo) => {
-            const { serializedFile, ...attachment } = attachmentInfo;
-            accumulator[0].push(attachment);
-            if (serializedFile) {
-              accumulator[1].push(getFile(attachmentInfo));
-            }
-            return accumulator;
-          },
-          [[], []]
-        )
-      : [[], []];
-
-    //remove stringify
-    const request = superagent
-      .post('/api/entities_with_files')
-      .set('Accept', 'application/json')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .field(
-        'entity',
-        JSON.stringify({
-          ...entity,
-          attachments,
-        })
-      );
-
-    supportingFiles.forEach((file, index) => {
-      request.attach(`attachments[${index}]`, file);
-    });
-
-    return request.end((err, res) => {
-      if (err) return reject(err);
-      return resolve(res.body);
-    });
-  });
 
 export function saveEntity(entity, formModel) {
   return async dispatch => {

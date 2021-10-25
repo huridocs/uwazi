@@ -1,0 +1,49 @@
+import superagent from 'superagent';
+import { ClientEntitySchema, ClientFile } from 'app/istore';
+
+const constructFile = ({ serializedFile: base64, originalname }: ClientFile) => {
+  if (!base64) return 'no file';
+  const fileParts = base64.split(',');
+  const fileFormat = fileParts[0].split(';')[0].split(':')[1];
+  const fileContent = fileParts[1];
+  return new File([fileContent], originalname || '', { type: fileFormat });
+};
+
+export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
+  new Promise((resolve, reject) => {
+    const [attachments, supportingFiles] = entity.attachments
+      ? entity.attachments.reduce(
+          (accumulator, attachmentInfo) => {
+            const { serializedFile, ...attachment } = attachmentInfo;
+            accumulator[0].push(attachment);
+            if (serializedFile) {
+              accumulator[1].push(constructFile(attachmentInfo));
+            }
+            return accumulator;
+          },
+          [[], []]
+        )
+      : [[], []];
+
+    //remove stringify
+    const request = superagent
+      .post('/api/entities_with_files')
+      .set('Accept', 'application/json')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .field(
+        'entity',
+        JSON.stringify({
+          ...entity,
+          attachments,
+        })
+      );
+
+    supportingFiles.map(async (file, index) => {
+      await request.attach(`attachments[${index}]`, file);
+    });
+
+    return request.end((err, res) => {
+      if (err) return reject(err);
+      return resolve(res.body);
+    });
+  });
