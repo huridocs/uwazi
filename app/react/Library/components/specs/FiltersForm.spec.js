@@ -105,7 +105,7 @@ describe('FiltersForm', () => {
     });
   });
 
-  describe('maped state', () => {
+  describe('mapped state', () => {
     it('should contain the fields', () => {
       const store = {
         library: {

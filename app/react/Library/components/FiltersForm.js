@@ -8,11 +8,11 @@ import { Icon } from 'UI';
 
 import debounce from 'app/utils/debounce';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
-import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
 import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
+import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';
 import { AssigneeFilter } from 'app/Library/components/AssigneeFilter';
 import { PermissionsFilter } from './PermissionsFilter';
 import { PublishedFilters } from './PublishedFilters';
@@ -28,17 +28,19 @@ export class FiltersForm extends Component {
 
     this.submit = this.submit.bind(this);
     this.onChange = this.onChange.bind(this);
-
     this.activateAutoSearch = () => {
       this.autoSearch = true;
     };
+
+    this.state = { documentTypeFromFilters: true };
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     return (
       !is(this.props.fields, nextProps.fields) ||
       !is(this.props.aggregations, nextProps.aggregations) ||
-      !is(this.props.documentTypes, nextProps.documentTypes)
+      !is(this.props.documentTypes, nextProps.documentTypes) ||
+      !is(this.state.documentTypeFromFilters, nextState.documentTypeFromFilters)
     );
   }
 
@@ -55,7 +57,6 @@ export class FiltersForm extends Component {
 
   render() {
     const { templates, documentTypes } = this.props;
-
     const aggregations = this.props.aggregations.toJS();
     const translationContext =
       documentTypes.get(0) || (templates.get(0) || fromJS({})).get('_id') || 'System';
@@ -71,11 +72,7 @@ export class FiltersForm extends Component {
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           <PublishedFilters onChange={this.activateAutoSearch} aggregations={aggregations} />
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
-
-          <div className="documentTypes-selector nested-selector">
-            <DocumentTypesList storeKey={this.props.storeKey} />
-          </div>
-
+          <TemplatesFilter />
           <Filters
             onChange={this.activateAutoSearch}
             properties={fields}

@@ -1,35 +1,36 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import Immutable, { is } from 'immutable';
 import ShowIf from 'app/App/ShowIf';
-import { is } from 'immutable';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 
+const getItemsToShow = (fromFilters, templates, settings) => {
+  let items = fromFilters ? settings.collection.toJS().filters : [];
+  if (!items?.length) {
+    items = templates.toJS().map(tpl => ({
+      id: tpl._id,
+      name: tpl.name,
+    }));
+  }
+  return items;
+};
+
 export class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
-    let items = this.props.settings.collection.toJS().filters || [];
-    if (!items.length || this.props.storeKey === 'uploads') {
-      items = props.templates.toJS().map(tpl => ({ id: tpl._id, name: tpl.name }));
-    }
-
-    if (this.props.storeKey === 'uploads') {
-      items.unshift({ id: 'missing', name: 'No type' });
-    }
     this.state = {
-      items,
       ui: {},
     };
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      !is(this.props.libraryFilters, nextProps.libraryFilters) ||
+      !is(this.props.selectedTemplates, nextProps.selectedTemplates) ||
       !is(this.props.settings, nextProps.settings) ||
       !is(this.props.aggregations, nextProps.aggregations) ||
       this.stateChanged(nextState)
@@ -37,7 +38,7 @@ export class DocumentTypesList extends Component {
   }
 
   changeAll(item, e) {
-    const selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
+    const { selectedTemplates: selectedItems } = this.props;
     if (e.target.checked) {
       item.items.forEach(_item => {
         if (!this.checked(_item)) {
@@ -55,12 +56,11 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.setState({ selectedItems });
-    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
+    this.props.filterDocumentTypes(selectedItems);
   }
 
   change(item) {
-    const selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
+    const { selectedTemplates: selectedItems } = this.props;
 
     if (selectedItems.includes(item.id)) {
       const index = selectedItems.indexOf(item.id);
@@ -69,8 +69,7 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.setState({ selectedItems });
-    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
+    this.props.filterDocumentTypes(selectedItems);
   }
 
   toggleOptions(item, e) {
@@ -112,7 +111,7 @@ export class DocumentTypesList extends Component {
       );
     }
 
-    return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
+    return this.props.selectedTemplates.includes(item.id);
   }
 
   stateChanged(nextState) {
@@ -188,10 +187,12 @@ export class DocumentTypesList extends Component {
   }
 
   render() {
+    const { fromFilters, templates, settings } = this.props;
+    const items = getItemsToShow(fromFilters, templates, settings);
     this.aggs = this.props.aggregations.toJS();
     return (
       <ul className="multiselect is-active">
-        {this.state.items.map((item, index) => {
+        {items.map((item, index) => {
           if (item.items) {
             return this.renderGroupType(item, index);
           }
@@ -202,26 +203,35 @@ export class DocumentTypesList extends Component {
   }
 }
 
-DocumentTypesList.propTypes = {
-  libraryFilters: PropTypes.object,
-  settings: PropTypes.object,
-  templates: PropTypes.object,
-  filterDocumentTypes: PropTypes.func,
-  aggregations: PropTypes.object,
-  storeKey: PropTypes.string,
+DocumentTypesList.defaultProps = {
+  fromFilters: true,
+  templates: Immutable.fromJS([]),
+  settings: {},
+  aggregations: Immutable.fromJS({}),
+  selectedTemplates: [],
+  filterDocumentTypes: {},
 };
 
-export function mapStateToProps(state, props) {
+DocumentTypesList.propTypes = {
+  selectedTemplates: PropTypes.instanceOf(Array),
+  settings: PropTypes.instanceOf(Object),
+  templates: PropTypes.instanceOf(Immutable.List),
+  filterDocumentTypes: PropTypes.func,
+  aggregations: PropTypes.instanceOf(Immutable.Map),
+  fromFilters: PropTypes.bool,
+};
+
+export function mapStateToProps(state) {
   return {
-    libraryFilters: state[props.storeKey].filters,
     settings: state.settings,
     templates: state.templates,
-    aggregations: state[props.storeKey].aggregations,
+    aggregations: state.library.aggregations,
   };
 }
 
-function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ filterDocumentTypes }, wrapDispatch(dispatch, props.storeKey));
+//parent ts component requires ownProps to inferring types
+function mapDispatchToProps(dispatch, _ownProps) {
+  return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentTypesList);

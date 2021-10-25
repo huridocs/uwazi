@@ -47,12 +47,9 @@ describe('Uploads', () => {
   describe('when filtering by type', () => {
     it('should show only the filtered entities', async () => {
       await refreshIndex();
-      await expect(page).toClick(
-        '#filtersForm > div.documentTypes-selector.nested-selector > ul > li',
-        {
-          text: 'Causa',
-        }
-      );
+      await expect(page).toClick('#filtersForm li.wide.documentTypes-selector > ul > li', {
+        text: 'Causa',
+      });
       await expectDocumentCountAfterSearch(page, 1);
     });
   });
