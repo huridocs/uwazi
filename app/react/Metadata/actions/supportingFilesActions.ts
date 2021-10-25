@@ -2,30 +2,28 @@ import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { EntitySchema } from 'shared/types/entityType';
 
-function uploadLocalAttachment(
+const uploadLocalAttachment = (
   entity: EntitySchema,
   file: File,
   __reducerKey: string,
   model: string
-) {
-  return (dispatch: Dispatch<{}>) => {
-    const reader = new FileReader();
-    reader.onload = base64 => {
-      const info = base64.target!.result;
-      dispatch(
-        actions.push(`${model}.attachments`, {
-          originalname: file.name,
-          filename: file.name,
-          serializedFile: info,
-          type: 'attachment',
-          mimetype: file.type,
-          ...(entity.sharedId && { entity: entity.sharedId }),
-        })
-      );
-    };
-    reader.readAsDataURL(file);
+) => (dispatch: Dispatch<{}>) => {
+  const reader = new FileReader();
+  reader.onload = base64 => {
+    const info = base64.target!.result;
+    dispatch(
+      actions.push(`${model}.attachments`, {
+        originalname: file.name,
+        filename: file.name,
+        serializedFile: info,
+        type: 'attachment',
+        mimetype: file.type,
+        ...(entity.sharedId && { entity: entity.sharedId }),
+      })
+    );
   };
-}
+  reader.readAsDataURL(file);
+};
 
 const uploadLocalAttachmentFromUrl = (
   entity: EntitySchema,
