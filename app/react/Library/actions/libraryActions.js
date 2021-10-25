@@ -320,19 +320,19 @@ function getFile({ serializedFile: base64, originalname }) {
 
 export const saveEntityWithFiles = entity =>
   new Promise((resolve, reject) => {
-    const [attachments, supportingFiles] =
-      entity.attachments &&
-      entity.attachments.reduce(
-        (accumulator, attachmentInfo) => {
-          const { serializedFile, ...attachment } = attachmentInfo;
-          accumulator[0].push(attachment);
-          if (serializedFile) {
-            accumulator[1].push(getFile(attachmentInfo));
-          }
-          return accumulator;
-        },
-        [[], []]
-      );
+    const [attachments, supportingFiles] = entity.attachments
+      ? entity.attachments.reduce(
+          (accumulator, attachmentInfo) => {
+            const { serializedFile, ...attachment } = attachmentInfo;
+            accumulator[0].push(attachment);
+            if (serializedFile) {
+              accumulator[1].push(getFile(attachmentInfo));
+            }
+            return accumulator;
+          },
+          [[], []]
+        )
+      : [[], []];
 
     //remove stringify
     const request = superagent

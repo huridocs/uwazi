@@ -4,21 +4,21 @@
 
 import backend from 'fetch-mock';
 import qs from 'qs';
-import { APIURL } from 'app/config.js';
+import superagent from 'superagent';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mockID } from 'shared/uniqueID.js';
 import rison from 'rison-node';
+import { browserHistory } from 'react-router';
+import { APIURL } from 'app/config.js';
 import { RequestParams } from 'app/utils/RequestParams';
-
-import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import * as actions from 'app/Library/actions/libraryActions';
 import { documentsApi } from 'app/Documents';
-import { api } from 'app/Entities';
-import { browserHistory } from 'react-router';
+import { mockID } from 'shared/uniqueID.js';
 
+import { api } from 'app/Entities';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import SearchApi from 'app/Search/SearchAPI';
 
@@ -495,6 +495,16 @@ describe('libraryActions', () => {
   });
 
   describe('saveEntity', () => {
+    const mockSuperAgent = (url = `${APIURL}entities_with_files`) => {
+      const mockUpload = superagent.post(url);
+      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'set').and.returnValue(mockUpload);
+      spyOn(superagent, 'post').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'end').and.returnValue(() => {});
+      return mockUpload;
+    };
+
     it('should save the document and dispatch a notification on success', done => {
       mockID();
       spyOn(api, 'save').and.returnValue(Promise.resolve('response'));
@@ -516,11 +526,12 @@ describe('libraryActions', () => {
         { doc: 'response', type: 'SELECT_SINGLE_DOCUMENT' },
       ];
       const store = mockStore({});
+      mockSuperAgent();
 
       store
         .dispatch(actions.saveEntity(doc, 'library.sidepanel.metadata'))
         .then(() => {
-          expect(api.save).toHaveBeenCalledWith(new RequestParams(doc));
+          expect(superagent.post).toHaveBeenCalledWith(new RequestParams(doc));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
