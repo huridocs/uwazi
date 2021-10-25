@@ -20,7 +20,7 @@ export interface AttachmentsModalProps {
   storeKey: string;
   model: string;
   onClose(): void;
-  uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<void>;
   uploadAttachmentFromUrl: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
   getPercentage?: number;
 }
@@ -44,18 +44,20 @@ export const AttachmentsModalCmp = ({
     }
   };
 
-  const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      [...event.target.files].forEach(file => {
-        uploadAttachmentProp(entitySharedId, file, storeKey, model);
-      });
+      await Promise.all(
+        [...event.target.files].map(file =>
+          uploadAttachmentProp(entitySharedId, file, storeKey, model)
+        )
+      );
     }
   };
 
-  const handleDropFiles = (accepted: File[]) => {
-    accepted.forEach(file => {
-      uploadAttachmentProp(entitySharedId, file, storeKey, model);
-    });
+  const handleDropFiles = async (accepted: File[]) => {
+    await Promise.all(
+      accepted.map(file => uploadAttachmentProp(entitySharedId, file, storeKey, model))
+    );
   };
 
   const attachDispatch = (dispatch: Function) => {

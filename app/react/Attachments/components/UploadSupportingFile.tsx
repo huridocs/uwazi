@@ -13,7 +13,7 @@ interface UploadSupportingFileProps {
   storeKey: string;
   model?: string;
   progress?: any;
-  uploadAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<void>;
   uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
 }
 

@@ -7,23 +7,27 @@ const uploadLocalAttachment = (
   file: File,
   __reducerKey: string,
   model: string
-) => (dispatch: Dispatch<{}>) => {
-  const reader = new FileReader();
-  reader.onload = base64 => {
-    const info = base64.target!.result;
-    dispatch(
-      actions.push(`${model}.attachments`, {
-        originalname: file.name,
-        filename: file.name,
-        serializedFile: info,
-        type: 'attachment',
-        mimetype: file.type,
-        ...(entity.sharedId && { entity: entity.sharedId }),
-      })
-    );
-  };
-  reader.readAsDataURL(file);
-};
+) => async (dispatch: Dispatch<{}>) =>
+  new Promise(resolve => {
+    const reader = new FileReader();
+
+    reader.onload = base64 => {
+      const info = base64.target!.result as ArrayBuffer;
+      resolve(
+        dispatch(
+          actions.push(`${model}.attachments`, {
+            originalname: file.name,
+            filename: file.name,
+            serializedFile: info,
+            type: 'attachment',
+            mimetype: file.type,
+            ...(entity.sharedId && { entity: entity.sharedId }),
+          })
+        )
+      );
+    };
+    reader.readAsDataURL(file);
+  });
 
 const uploadLocalAttachmentFromUrl = (
   entity: EntitySchema,

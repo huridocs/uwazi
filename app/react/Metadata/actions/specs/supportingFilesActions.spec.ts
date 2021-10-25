@@ -3,11 +3,7 @@
  */
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-
 import { ClientEntitySchema } from 'app/istore';
-
 import { uploadLocalAttachment, uploadLocalAttachmentFromUrl } from '../supportingFilesActions';
 
 const entity: ClientEntitySchema = {
@@ -17,10 +13,6 @@ const entity: ClientEntitySchema = {
 const file = new File(['testFile'], 'testFile.txt', {
   type: 'text/plain',
 });
-
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-const store = mockStore({});
 
 describe('upload supporting files', () => {
   let dispatch: Dispatch<{}>;
@@ -47,16 +39,16 @@ describe('upload supporting files', () => {
   });
 
   describe('uploadLocalAttachment', () => {
-    it('should dispatch the action to update the form', () => {
-      const action = uploadLocalAttachment(entity, file, 'reducerKey', 'model.metadata');
-      action(dispatch);
-      // expect(formActions.push).toHaveBeenCalledWith('metadata.model.attachments', {
-      //   originalname: 'myURL',
-      //   url: 'https://test.com',
-      // });
-
-      console.log('getActions: ', store.getActions());
-      console.log('getState: ', store.getState());
+    it('should dispatch the action to update the form', async () => {
+      const action = uploadLocalAttachment(entity, file, 'reducerKey', 'metadata.model');
+      await action(dispatch);
+      expect(formActions.push).toHaveBeenCalledWith('metadata.model.attachments', {
+        filename: 'testFile.txt',
+        mimetype: 'text/plain',
+        originalname: 'testFile.txt',
+        serializedFile: 'data:text/plain;charset=undefined,testFile',
+        type: 'attachment',
+      });
     });
   });
 });
