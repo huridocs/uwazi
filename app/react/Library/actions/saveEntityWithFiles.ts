@@ -2,8 +2,7 @@ import superagent from 'superagent';
 import { ClientEntitySchema, ClientFile } from 'app/istore';
 
 const constructFile = ({ serializedFile: base64, originalname }: ClientFile) => {
-  if (!base64) return 'no file';
-  const fileParts = base64.split(',');
+  const fileParts = base64!.split(',');
   const fileFormat = fileParts[0].split(';')[0].split(':')[1];
   const fileContent = fileParts[1];
   return new File([fileContent], originalname || '', { type: fileFormat });
@@ -21,7 +20,7 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
             }
             return accumulator;
           },
-          [[], []]
+          [[], []] as [ClientFile[], File[]]
         )
       : [[], []];
 
