@@ -24,16 +24,6 @@ interface UwaziReq<T> extends Request {
 
 type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
-const captureError = (
-  callback: (req: Request, res: Response, next: NextFunction) => Promise<void>
-) => async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    await callback(req, res, next);
-  } catch (e) {
-    next(e);
-  }
-};
-
 const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
@@ -43,7 +33,7 @@ const searchRoutes = (app: Application) => {
         query: SearchQuerySchema,
       },
     }),
-    captureError(async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
+    async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
       const { query, language, url } = req;
 
       const response = await elastic.search({ body: await buildQuery(query, language) });
@@ -55,7 +45,7 @@ const searchRoutes = (app: Application) => {
           first: query.page?.limit ? url : undefined,
         },
       });
-    })
+    }
   );
 };
 

@@ -3,6 +3,7 @@
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
+
 import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
@@ -33,10 +34,12 @@ import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { tocService } from './api/toc_generation/tocService';
 import { permissionsContext } from './api/permissions/permissionsContext';
+import { routesErrorHandler } from './api/utils/routesErrorHandler';
 
 mongoose.Promise = Promise;
 
 const app = express();
+routesErrorHandler(app);
 app.use(helmet());
 
 const http = Server(app);
