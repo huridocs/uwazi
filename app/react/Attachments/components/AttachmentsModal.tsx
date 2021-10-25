@@ -20,7 +20,7 @@ export interface AttachmentsModalProps {
   storeKey: string;
   model: string;
   onClose(): void;
-  uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<void>;
+  uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
   uploadAttachmentFromUrl: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
   getPercentage?: number;
 }
