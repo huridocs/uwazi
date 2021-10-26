@@ -1,0 +1,52 @@
+import Ajv from 'ajv';
+import { objectIdSchema } from 'shared/types/commonSchemas';
+import { wrapValidator } from 'shared/tsUtils';
+import { SegmentationType } from './segmentationType';
+
+export const emitSchemaTypes = true;
+
+const ajv = Ajv({ allErrors: true, removeAdditional: true });
+
+export const segmentationSchema = {
+  $schema: 'http://json-schema.org/schema#',
+  $async: true,
+  type: 'object',
+  additionalProperties: false,
+  title: 'SegmentationType',
+  definitions: { objectIdSchema },
+  properties: {
+    _id: objectIdSchema,
+    autoexpire: { oneOf: [{ type: 'number' }, { type: 'null' }] },
+    fileID: objectIdSchema,
+    filename: { type: 'string', minLength: 1 },
+    status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
+    segmentation: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        page_width: { type: 'number' },
+        page_height: { type: 'number' },
+        paragraphs: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              left: { type: 'number' },
+              top: { type: 'number' },
+              width: { type: 'number' },
+              height: { type: 'number' },
+              page_number: { type: 'number' },
+              text: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const validate = wrapValidator(ajv.compile(segmentationSchema));
+
+export const validateFile = async (file: SegmentationType): Promise<SegmentationType> =>
+  validate({ ...file });

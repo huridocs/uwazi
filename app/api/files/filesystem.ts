@@ -136,6 +136,8 @@ const streamToString = async (stream: Readable): Promise<string> =>
 const getFileContent = async (fileName: FilePath): Promise<string> =>
   asyncFS.readFile(uploadsPath(fileName), 'utf8');
 
+const readFile = async (fileName: FilePath): Promise<Buffer> => asyncFS.readFile(fileName);
+
 export {
   setupTestUploadedPaths,
   deleteUploadedFiles,
@@ -154,4 +156,5 @@ export {
   activityLogPath,
   writeFile,
   appendFile,
+  readFile,
 };

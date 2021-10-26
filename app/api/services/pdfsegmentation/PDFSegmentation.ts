@@ -1,8 +1,7 @@
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { uploadsPath, fileFromReadStream, createDirIfNotExists, getFileContent } from 'api/files';
+import { uploadsPath, fileFromReadStream, createDirIfNotExists, readFile } from 'api/files';
 import { Readable } from 'stream';
 import filesModel from 'api/files/filesModel';
-import fs from 'fs';
 import path from 'path';
 import { FileType } from 'shared/types/fileType';
 import { Settings } from 'shared/types/settingsType';
@@ -31,13 +30,13 @@ class PDFSegmentation {
     });
   }
 
-  segmentOnePdf = async (file: FileType, serviceUrl: string, tenant: string) => {
-    if (!file.filename) {
-      return;
-    }
-
+  segmentOnePdf = async (
+    file: FileType & { filename: string; _id: ObjectIdSchema },
+    serviceUrl: string,
+    tenant: string
+  ) => {
     try {
-      const fileContent = await getFileContent(file.filename);
+      const fileContent = await readFile(uploadsPath(file.filename));
       await request.uploadFile(serviceUrl, file.filename, fileContent);
 
       const task = {
@@ -49,7 +48,7 @@ class PDFSegmentation {
       };
 
       await this.segmentationTaskManager.startTask(task);
-      await this.storeProcess(file._id!, file.filename);
+      await this.storeProcess(file._id, file.filename);
     } catch {
       handleError(`Error segmenting pdf, tenant: ${tenant}, file: ${file.filename}`);
 
@@ -63,7 +62,7 @@ class PDFSegmentation {
     SegmentationModel.save({ fileID, filename });
 
   segmentPdfs = async () => {
-    const pendingTasks = await this.segmentationTaskManager!.countPendingTasks();
+    const pendingTasks = await this.segmentationTaskManager.countPendingTasks();
     if (pendingTasks > 0) {
       return;
     }
@@ -78,10 +77,11 @@ class PDFSegmentation {
             return;
           }
 
-          const filesToSegment = await filesModel.db.aggregate([
+          const filesToSegment = (await filesModel.db.aggregate([
             {
               $match: {
                 type: 'document',
+                filename: { $exists: true },
               },
             },
             {
@@ -102,7 +102,7 @@ class PDFSegmentation {
             {
               $limit: this.batchSize,
             },
-          ]);
+          ])) as FileType & { filename: string; _id: ObjectIdSchema }[];
 
           for (let i = 0; i < filesToSegment.length; i += 1) {
             // eslint-disable-next-line no-await-in-loop
@@ -115,17 +115,17 @@ class PDFSegmentation {
 
   requestResults = async (message: ResultsMessage) => {
     const response = await request.get(message.data_url);
-    const fileStream = ((await fetch(message.file_url!)).body as unknown) as Readable;
+    const fileStream = ((await fetch(message.file_url!)).body as unknown) as Readable; // investigart mas sobre esto, instalar typos de node fetch ?
 
     return { data: JSON.parse(response.json), fileStream };
   };
 
   storeXML = async (filename: string, fileStream: Readable) => {
-    await createDirIfNotExists(path.join(uploadsPath(), this.SERVICE_NAME));
-    const filePath = path.join(uploadsPath(), this.SERVICE_NAME);
+    const folderPath = uploadsPath(this.SERVICE_NAME);
+    await createDirIfNotExists(folderPath);
     const xmlname = `${path.basename(filename, path.extname(filename))}.xml`;
 
-    await fileFromReadStream(xmlname, fileStream, filePath);
+    await fileFromReadStream(xmlname, fileStream, folderPath);
   };
 
   saveSegmentation = async (filename: string, data: any) => {
@@ -136,7 +136,7 @@ class PDFSegmentation {
       ...segmentation,
       segmentation: { page_height, page_width, paragraphs },
       autoexpire: null,
-      status: 'completed',
+      status: 'ready',
     });
   };
 
@@ -146,7 +146,7 @@ class PDFSegmentation {
       await SegmentationModel.save({
         ...segmentation,
         autoexpire: null,
-        status: 'error',
+        status: 'failed',
       });
     }
   };
