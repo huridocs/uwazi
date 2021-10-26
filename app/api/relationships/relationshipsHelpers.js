@@ -1,4 +1,3 @@
-import { errorLog } from 'api/log';
 import model from './model';
 
 function groupByHubs(references) {
