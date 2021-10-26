@@ -5,7 +5,6 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
-import { errorLog } from 'api/log';
 
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import fixtures, {
@@ -37,7 +36,6 @@ import { search } from '../../search';
 
 describe('relationships', () => {
   beforeEach(done => {
-    spyOn(errorLog, 'error');
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures)
       .then(done)
