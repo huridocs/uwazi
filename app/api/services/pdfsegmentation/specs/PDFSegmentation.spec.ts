@@ -131,7 +131,7 @@ describe('PDFSegmentation', () => {
     await segmentPdfs.segmentPdfs();
     await tenants.run(async () => {
       const [segmentation] = await SegmentationModel.get();
-      expect(segmentation.status).toBe('pending');
+      expect(segmentation.status).toBe('processing');
       expect(segmentation.filename).toBe(fixturesPdfNameA);
       expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
     }, 'tenantOne');
@@ -143,7 +143,7 @@ describe('PDFSegmentation', () => {
       {
         filename: fixturesFiveFiles.files![0].filename,
         fileID: fixturesFiveFiles.files![0]._id,
-        status: 'pending',
+        status: 'processing',
       },
     ]);
 
@@ -229,7 +229,7 @@ describe('PDFSegmentation', () => {
       await tenants.run(async () => {
         const segmentations = await SegmentationModel.get();
         const [segmentation] = segmentations;
-        expect(segmentation.status).toBe('completed');
+        expect(segmentation.status).toBe('ready');
         expect(segmentation.filename).toBe(fixturesPdfNameA);
         expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
         expect(segmentation.autoexpire).toBe(null);
