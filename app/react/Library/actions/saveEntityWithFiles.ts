@@ -18,8 +18,8 @@ export const constructFile = ({ serializedFile: base64, originalname }: ClientFi
   const fileParts = base64!.split(',');
   const fileFormat = fileParts[0].split(';')[0].split(':')[1];
   const fileContent = fileParts[1];
-
   const buff = Buffer.from(fileContent, 'base64');
+
   return new File([buff], originalname || '', { type: fileFormat });
 };
 
@@ -48,7 +48,7 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
         'entity',
         JSON.stringify({
           ...entity,
-          attachments,
+          ...(attachments.length > 0 && { attachments }),
         })
       );
 

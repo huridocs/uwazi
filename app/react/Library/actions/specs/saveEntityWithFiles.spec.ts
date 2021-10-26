@@ -4,6 +4,7 @@
 import superagent from 'superagent';
 import { APIURL } from 'app/config';
 import { readFileAsBase64, saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
+import { contentForFiles } from './fixtures';
 
 describe('saveEntityWithFiles', () => {
   // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -21,11 +22,12 @@ describe('saveEntityWithFiles', () => {
     return mockUpload;
   };
 
-  //longer content
   it.each`
-    fileContent      | fileName        | fileType             | fileSize
-    ${'Hello world'} | ${'text.txt'}   | ${'text/plain'}      | ${12}
-    ${'Sample PDF'}  | ${'sample.pdf'} | ${'application/pdf'} | ${16}
+    fileContent              | fileName          | fileType                | fileSize
+    ${contentForFiles.text}  | ${'text.txt'}     | ${'text/plain'}         | ${120}
+    ${contentForFiles.text}  | ${'sample.pdf'}   | ${'application/pdf'}    | ${160}
+    ${contentForFiles.image} | ${'image.jpg'}    | ${'image/jpg'}          | ${168}
+    ${contentForFiles.text}  | ${'document.doc'} | ${'application/msword'} | ${160}
   `(
     'should save the entity with attached files',
     async ({ fileContent, fileName, fileType, fileSize }) => {
@@ -43,12 +45,31 @@ describe('saveEntityWithFiles', () => {
         title: 'entity1',
         attachments: [
           {
-            _id: 'file1',
+            _id: 'file_id',
             serializedFile,
             originalname: fileName,
           },
+          {
+            _id: 'file2_id',
+            originalname: 'existing file',
+          },
         ],
       };
+
+      const expectedEntityJson = JSON.stringify({
+        _id: 'entity1',
+        title: 'entity1',
+        attachments: [
+          {
+            _id: 'file_id',
+            originalname: fileName,
+          },
+          {
+            _id: 'file2_id',
+            originalname: 'existing file',
+          },
+        ],
+      });
 
       const mockUpload = mockSuperAgent();
 
@@ -59,7 +80,25 @@ describe('saveEntityWithFiles', () => {
         expect.objectContaining({ size: fileSize, type: fileType })
       );
 
+      expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
+
       expect(updatedEntity).toEqual({ title: 'entity1' });
     }
   );
+
+  it('should save the entity without files', async () => {
+    const entity = {
+      _id: 'entity1',
+      title: 'entity1',
+      metadata: { data: [{ value: 'string' }] },
+    };
+
+    const mockUpload = mockSuperAgent();
+
+    const updatedEntity = await saveEntityWithFiles(entity);
+
+    expect(mockUpload.field).toHaveBeenLastCalledWith('entity', JSON.stringify(entity));
+
+    expect(updatedEntity).toEqual({ title: 'entity1' });
+  });
 });

@@ -34,3 +34,10 @@ export const documents: EntitySchema[] = [
     metadata: { title: [{ value: 'Doc2' }], opts: [{ value: 'v2', label: 'V2' }] },
   },
 ];
+
+export const contentForFiles = {
+  text:
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam metus lorem, imperdiet vel lacus a, dictum laoreet est.',
+  image:
+    '/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBYWFRgWFhYYGBgaGh4cHBwaGRwaHh4dHB4azcGhoaHBwcIS4lHR8sExMT8xND8/a+A9LY+A+t/QhAIQhAIQahB//Z',
+};
