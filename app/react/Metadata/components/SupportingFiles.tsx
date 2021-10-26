@@ -81,7 +81,7 @@ const SupportingFiles = ({
       </h2>
 
       <UploadSupportingFile
-        entitySharedId={entitySharedID}
+        entitySharedId={entitySharedID || 'NEW_ENTITY'}
         storeKey="library"
         uploadAttachment={uploadLocalAttachment}
         uploadAttachmentFromUrl={uploadLocalAttachmentFromUrl}
