@@ -1,5 +1,18 @@
 import superagent from 'superagent';
 import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { ensure } from 'shared/tsUtils';
+
+export const readFileAsBase64 = async (file: Blob, cb: (file: ArrayBuffer) => void) =>
+  new Promise(resolve => {
+    const reader = new FileReader();
+
+    reader.onload = base64 => {
+      const info = ensure<ArrayBuffer>(base64.target!.result);
+      cb(info);
+      resolve();
+    };
+    reader.readAsDataURL(file);
+  });
 
 export const constructFile = ({ serializedFile: base64, originalname }: ClientFile) => {
   const fileParts = base64!.split(',');
