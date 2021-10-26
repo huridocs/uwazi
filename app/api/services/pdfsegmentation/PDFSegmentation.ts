@@ -1,5 +1,5 @@
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { uploadsPath, fileFromReadStream, createDirIfNotExists } from 'api/files';
+import { uploadsPath, fileFromReadStream, createDirIfNotExists, getFileContent } from 'api/files';
 import { Readable } from 'stream';
 import filesModel from 'api/files/filesModel';
 import fs from 'fs';
@@ -37,11 +37,8 @@ class PDFSegmentation {
     }
 
     try {
-      await request.uploadFile(
-        serviceUrl,
-        file.filename,
-        fs.readFileSync(uploadsPath(file.filename))
-      );
+      const fileContent = await getFileContent(file.filename);
+      await request.uploadFile(serviceUrl, file.filename, fileContent);
 
       const task = {
         task: this.SERVICE_NAME,
