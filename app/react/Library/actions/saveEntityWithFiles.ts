@@ -2,7 +2,7 @@ import superagent from 'superagent';
 import { ClientEntitySchema, ClientFile } from 'app/istore';
 import { ensure } from 'shared/tsUtils';
 
-export const readFileAsBase64 = async (file: Blob, cb: (file: ArrayBuffer) => void) =>
+export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise(resolve => {
     const reader = new FileReader();
 

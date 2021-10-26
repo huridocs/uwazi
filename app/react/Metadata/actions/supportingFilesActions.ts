@@ -1,30 +1,24 @@
 import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
+import { readFileAsBase64 } from 'app/Library/actions/saveEntityWithFiles';
 
 const uploadLocalAttachment = (
   entity: string,
   file: File,
   __reducerKey: string,
   model: string
-) => async (dispatch: Dispatch<{}>): Promise<void> =>
-  new Promise(resolve => {
-    const reader = new FileReader();
-
-    reader.onload = base64 => {
-      const info = base64.target!.result;
-      dispatch(
-        actions.push(`${model}.attachments`, {
-          originalname: file.name,
-          filename: file.name,
-          serializedFile: info,
-          type: 'attachment',
-          mimetype: file.type,
-          entity: entity || '',
-        })
-      );
-      resolve();
-    };
-    reader.readAsDataURL(file);
+) => async (dispatch: Dispatch<{}>): Promise<any> =>
+  readFileAsBase64(file, info => {
+    dispatch(
+      actions.push(`${model}.attachments`, {
+        originalname: file.name,
+        filename: file.name,
+        serializedFile: info,
+        type: 'attachment',
+        mimetype: file.type,
+        entity: entity || '',
+      })
+    );
   });
 
 const uploadLocalAttachmentFromUrl = (

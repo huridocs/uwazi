@@ -3,6 +3,7 @@ import api from 'app/Entities/EntitiesAPI';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import * as saveEntityWithFiles from 'app/Library/actions/saveEntityWithFiles';
 import * as actions from '../actions';
 
 describe('Entities actions', () => {
@@ -24,6 +25,8 @@ describe('Entities actions', () => {
       spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
         type: 'reloadRelationships',
       });
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue('data');
+
       actions
         .saveEntity('data')(dispatch)
         .then(() => {
