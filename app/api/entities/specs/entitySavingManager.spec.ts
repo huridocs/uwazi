@@ -126,5 +126,12 @@ describe('entitySavingManager', () => {
         expect(savedEntity.attachments).toMatchObject([textFile]);
       });
     });
+    describe('file save error', () => {
+      it('', () => {
+        throw new Error(
+          'should continue the saving process if saving of one file fails, ie: malformed url'
+        );
+      });
+    });
   });
 });

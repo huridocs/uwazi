@@ -93,7 +93,16 @@ const saveEntity = async (
     const renamedAttachments = filterRenamedAttachments(entity, entityFiles);
     attachments.push(...renamedAttachments);
   }
-  await Promise.all(attachments.map(async attachment => files.save(attachment, false)));
+  await Promise.all(
+    attachments.map(async attachment => {
+      try {
+        await files.save(attachment, false);
+      } catch (e) {
+        //Change this
+        console.log(e);
+      }
+    })
+  );
 
   const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
     {
