@@ -55,6 +55,12 @@ const fixturesOtherFile: DBFixture = {
   files: [factory.file('F2', 'A2', 'document', fixturesPdfNameB)],
 };
 
+const fixturesMissingPdf: DBFixture = {
+  entities: [factory.entity('A1', 'templateToSegmentA')],
+  settings,
+  files: [factory.file('F1', 'A1', 'document', 'missing.pdf')],
+};
+
 const fixturesFiveFiles: DBFixture = {
   settings,
   entities: [
@@ -114,4 +120,5 @@ export {
   fixturesOtherFile,
   fixturesTwelveFiles,
   fixturesFiveFiles,
+  fixturesMissingPdf,
 };
