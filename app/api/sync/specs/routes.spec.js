@@ -123,6 +123,44 @@ describe('sync', () => {
         expect(routes._post('/api/sync/upload', {})).toNeedAuthorization();
       });
     });
+
+    describe('when namespace is translations', () => {
+      it('should respect menu and filters translations', async () => {
+        models.translations = {
+          save: jasmine.createSpy('entities.save'),
+          delete: jasmine.createSpy('entities.delete'),
+          get: jasmine.createSpy('entities.get').and.returnValue(
+            Promise.resolve([
+              {
+                _id: 'id',
+                contexts: [
+                  { id: 'Menu', values: [{ key: 'About us', value: 'About us' }] },
+                  { id: 'Filters', values: [{ key: 'Cause', value: 'Cause' }] },
+                ],
+              },
+            ])
+          ),
+        };
+
+        req.body = {
+          namespace: 'translations',
+          data: {
+            _id: 'id',
+            contexts: [{ id: 'System', values: [{ key: 'Search', value: 'Search' }] }],
+          },
+        };
+
+        await routes.post('/api/sync', req);
+        expect(models.translations.save).toHaveBeenCalledWith({
+          _id: 'id',
+          contexts: [
+            { id: 'System', values: [{ key: 'Search', value: 'Search' }] },
+            { id: 'Menu', values: [{ key: 'About us', value: 'About us' }] },
+            { id: 'Filters', values: [{ key: 'Cause', value: 'Cause' }] },
+          ],
+        });
+      });
+    });
   });
 
   describe('DELETE', () => {
