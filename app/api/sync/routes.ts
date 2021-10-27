@@ -7,6 +7,7 @@ import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
 import { uploadsPath, customUploadsPath, uploadMiddleware } from 'api/files';
 import { needsAuthorization } from '../auth';
+import { TranslationType } from 'shared/translationType';
 
 const storage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -47,12 +48,32 @@ const deleteFromIndex = async (req: Request, file: FileType) => {
   }
 };
 
+const preserveTranslations = async (syncData: TranslationType): Promise<TranslationType> => {
+  const [translation] = (await models.translations.get({ _id: syncData._id })) as TranslationType[];
+  if (!translation) {
+    return syncData;
+  }
+  const menu = translation.contexts?.find(c => c.id === 'Menu');
+  const filters = translation.contexts?.find(c => c.id === 'Filters');
+  if (menu) {
+    syncData.contexts?.push(menu);
+  }
+  if (filters) {
+    syncData.contexts?.push(filters);
+  }
+  return syncData;
+};
+
 export default (app: Application) => {
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
       if (req.body.namespace === 'settings') {
         const [settings] = await models.settings.get({});
         req.body.data._id = settings._id;
+      }
+
+      if (req.body.namespace === 'translations') {
+        req.body.data = await preserveTranslations(req.body.data);
       }
 
       await (Array.isArray(req.body.data)
