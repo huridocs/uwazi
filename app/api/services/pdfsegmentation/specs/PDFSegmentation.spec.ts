@@ -8,6 +8,7 @@ import {
   fixturesPdfNameB,
   fixturesTwelveFiles,
   fixturesFiveFiles,
+  fixturesMissingPdf,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
 import fs from 'fs';
@@ -150,6 +151,20 @@ describe('PDFSegmentation', () => {
     await segmentPdfs.segmentPdfs();
 
     expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(4);
+  });
+
+  describe('if the file is missing', () => {
+    it('should throw an error and store the segmentation as failed', async () => {
+      await fixturer.clearAllAndLoad(dbOne, fixturesMissingPdf);
+
+      await segmentPdfs.segmentPdfs();
+
+      await tenants.run(async () => {
+        const [segmentation] = await SegmentationModel.get();
+        expect(segmentation.status).toBe('failed');
+        expect(segmentation.filename).toBe(fixturesMissingPdf.files![0].filename);
+      }, 'tenantOne');
+    });
   });
 
   describe('when there is pending tasks', () => {
