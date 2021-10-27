@@ -34,7 +34,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
       />
       <span>
         <Connect(Translate)>
-          Close
+          Cancel
         </Connect(Translate)>
       </span>
     </button>
@@ -235,7 +235,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
       />
       <span>
         <Connect(Translate)>
-          Close
+          Cancel
         </Connect(Translate)>
       </span>
     </button>

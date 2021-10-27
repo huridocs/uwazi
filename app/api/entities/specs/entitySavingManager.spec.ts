@@ -13,6 +13,10 @@ import {
 } from './entitySavingManagerFixtures';
 
 describe('entitySavingManager', () => {
+  beforeAll(() => {
+    jest.spyOn(search, 'indexEntities').mockImplementation(jest.fn());
+  });
+
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
   });
@@ -20,6 +24,11 @@ describe('entitySavingManager', () => {
   afterAll(async () => {
     await db.disconnect();
   });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   describe('saveEntity', () => {
     const reqData = { user: editorUser, language: 'en' };
     const buffer = Buffer.from('sample content');
@@ -160,9 +169,6 @@ describe('entitySavingManager', () => {
     });
 
     describe('indexing entities', () => {
-      beforeAll(() => {
-        spyOn(search, 'indexEntities');
-      });
       it('should index entities', async () => {
         const entity = {
           _id: entityId,
