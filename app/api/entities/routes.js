@@ -1,7 +1,8 @@
 import Joi from 'joi';
 import objectId from 'joi-objectid';
 import { search } from 'api/search';
-import { attachmentsPath, files, uploadMiddleware } from 'api/files';
+import { uploadMiddleware } from 'api/files';
+import { saveEntity } from 'api/entities/entityManager';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
@@ -17,47 +18,14 @@ export default app => {
     uploadMiddleware.multiple(),
     async (req, res, next) => {
       //remove JSON.parse
-
-      //get files by sharedid
-      //compare/save/delete each file
-      //IMPORTANT! only update originalname (NOT mimetype/size)
-      //files.save(req.body)
-
-      // const [deletedFile] = await files.delete(req.query);
-      // const thumbnailFileName = `${deletedFile._id}.jpg`;
-      // await files.delete({ filename: thumbnailFileName });
-
       try {
         const entityToSave = JSON.parse(req.body.entity);
-        const entity = await entities.save(entityToSave, {
+        const entity = await saveEntity(entityToSave, {
           user: req.user,
           language: req.language,
+          files: req.files,
         });
-        const attachments = [];
-        if (req.files.length) {
-          await Promise.all(
-            req.files.map(file =>
-              files.storeFile(attachmentsPath, file).then(_file =>
-                attachments.push({
-                  ..._file,
-                  entity: entity.sharedId,
-                  type: 'attachment',
-                })
-              )
-            )
-          );
-        }
-        await Promise.all(attachments.map(attachment => files.save(attachment)));
-
-        const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
-          {
-            sharedId: entity.sharedId,
-            language: entity.language,
-          },
-          '+permissions'
-        );
-
-        return res.json(entityWithAttachments);
+        return res.json(entity);
       } catch (e) {
         return next(e);
       }
