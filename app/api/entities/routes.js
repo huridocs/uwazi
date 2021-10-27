@@ -17,7 +17,6 @@ export default app => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware.multiple(),
     async (req, res, next) => {
-      //remove JSON.parse
       try {
         const entityToSave = JSON.parse(req.body.entity);
         const entity = await saveEntity(entityToSave, {

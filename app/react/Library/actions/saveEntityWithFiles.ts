@@ -39,7 +39,6 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
         )
       : [[], []];
 
-    //remove stringify
     const request = superagent
       .post('/api/entities_with_files')
       .set('Accept', 'application/json')
