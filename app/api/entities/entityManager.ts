@@ -21,23 +21,10 @@ const saveEntity = async (
   // const thumbnailFileName = `${deletedFile._id}.jpg`;
   // await files.delete({ filename: thumbnailFileName });
 
-  if (entity._id && entity.attachments) {
-    const existingAttachments = await files.get({ entity: entity.sharedId, type: 'attachment' });
-
-    const deletedAttachments = existingAttachments.filter(
-      existingAttachment =>
-        existingAttachment._id &&
-        !entity.attachments!.find(
-          attachment => attachment._id?.toString() === existingAttachment._id.toString()
-        )
-    );
-
-    await Promise.all(deletedAttachments.map(async attachment => files.delete(attachment, false)));
-  }
-
   const updatedEntity = await entities.save(entity, { user, language });
 
   const attachments: FileType[] = [];
+  let deletedAttachments: FileType[] = [];
 
   const newFiles = attachedFiles?.filter(attachment => !attachment._id);
   if (newFiles && newFiles.length) {
@@ -55,9 +42,21 @@ const saveEntity = async (
 
   if (entity._id && entity.attachments) {
     const entityFiles: WithId<FileType>[] = await files.get(
-      { entity: entity.sharedId },
+      {
+        entity: entity.sharedId,
+        type: 'attachment',
+      },
       '_id, originalname'
     );
+
+    deletedAttachments = entityFiles.filter(
+      existingAttachment =>
+        existingAttachment._id &&
+        !entity.attachments!.find(
+          attachment => attachment._id?.toString() === existingAttachment._id.toString()
+        )
+    );
+
     const renamedFiles = entity.attachments
       .filter(
         (attachment: FileType) =>
@@ -76,6 +75,9 @@ const saveEntity = async (
     attachments.push(...renamedFiles);
   }
 
+  if (deletedAttachments.length > 0) {
+    await Promise.all(deletedAttachments.map(async attachment => files.delete(attachment)));
+  }
   await Promise.all(attachments.map(async attachment => files.save(attachment, false)));
 
   const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
