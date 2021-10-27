@@ -96,8 +96,17 @@ describe('entityManager', () => {
           },
         ]);
       });
-      it('should remove files for deleted attachments', () => {
-        throw new Error('pending to implement');
+      it('should remove files for deleted attachments', async () => {
+        const entity = {
+          _id: entityId,
+          sharedId: 'shared1',
+          title: 'newEntity',
+          template: templateId,
+          attachments: [{ ...textFile }],
+        };
+
+        const savedEntity = await saveEntity(entity, { ...reqData });
+        expect(savedEntity.attachments).toMatchObject([textFile]);
       });
     });
   });

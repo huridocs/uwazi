@@ -21,6 +21,20 @@ const saveEntity = async (
   // const thumbnailFileName = `${deletedFile._id}.jpg`;
   // await files.delete({ filename: thumbnailFileName });
 
+  if (entity._id && entity.attachments) {
+    const existingAttachments = await files.get({ entity: entity.sharedId, type: 'attachment' });
+
+    const deletedAttachments = existingAttachments.filter(
+      existingAttachment =>
+        existingAttachment._id &&
+        !entity.attachments!.find(
+          attachment => attachment._id?.toString() === existingAttachment._id.toString()
+        )
+    );
+
+    await Promise.all(deletedAttachments.map(async attachment => files.delete(attachment, false)));
+  }
+
   const updatedEntity = await entities.save(entity, { user, language });
 
   const attachments: FileType[] = [];
