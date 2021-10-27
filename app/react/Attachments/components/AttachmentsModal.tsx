@@ -89,7 +89,7 @@ export const AttachmentsModalCmp = ({
         >
           <Icon icon="times" />
           <span>
-            <Translate>Close</Translate>
+            <Translate>Cancel</Translate>
           </span>
         </button>
       </div>
