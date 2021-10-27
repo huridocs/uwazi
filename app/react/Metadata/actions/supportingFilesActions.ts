@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { readFileAsBase64 } from 'app/Library/actions/saveEntityWithFiles';
+import { notify } from 'app/Notifications/actions/notificationsActions';
 import * as types from '../../Attachments/actions/actionTypes';
 
 const uploadLocalAttachment = (
@@ -20,12 +21,8 @@ const uploadLocalAttachment = (
     };
     dispatch(actions.push(`${model}.attachments`, newFile));
     dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });
-    dispatch({
-      type: types.ATTACHMENT_COMPLETE,
-      entity: entitySharedId,
-      file: newFile,
-      __reducerKey,
-    });
+    dispatch({ type: types.ATTACHMENT_LOCAL_COMPLETE, entity: entitySharedId });
+    dispatch(notify('Attachment added', 'success'));
   });
 
 const uploadLocalAttachmentFromUrl = (
@@ -40,14 +37,10 @@ const uploadLocalAttachmentFromUrl = (
     url,
     entity: entitySharedId,
   };
+  dispatch(actions.push(`${model}.attachments`, newUrl));
   dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });
-  dispatch({
-    type: types.ATTACHMENT_COMPLETE,
-    entity: entitySharedId,
-    file: newUrl,
-    __reducerKey,
-  });
-  return dispatch(actions.push(`${model}.attachments`, newUrl));
+  dispatch({ type: types.ATTACHMENT_LOCAL_COMPLETE, entity: entitySharedId });
+  dispatch(notify('Attachment added', 'success'));
 };
 
 export { uploadLocalAttachment, uploadLocalAttachmentFromUrl };

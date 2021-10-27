@@ -38,7 +38,7 @@ const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
   let thumbnail = (
     <span no-translate>
-      <Icon icon="file" /> file
+      <Icon icon="file" />
     </span>
   );
 

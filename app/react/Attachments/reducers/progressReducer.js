@@ -16,5 +16,9 @@ export default function documents(state = initialState, action = {}) {
     return state.delete(action.entity);
   }
 
+  if (action.type === types.ATTACHMENT_LOCAL_COMPLETE) {
+    return state.delete(action.entity);
+  }
+
   return Immutable(state);
 }
