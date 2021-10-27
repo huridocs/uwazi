@@ -1,4 +1,3 @@
-import { errorLog } from 'api/log';
 import model from './model';
 
 function groupByHubs(references) {
@@ -146,15 +145,7 @@ function withConnectedData(relationshipArray, connectedDocuments) {
       entityData: connectedDocuments[relationship.entity],
       ...relationship,
     }))
-    .filter(relationship => {
-      if (!relationship.entityData) {
-        errorLog.error(
-          `There's a connection to entity: ${relationship.entity} on hub: ${relationship.hub}, but no entity data.`
-        );
-        return false;
-      }
-      return true;
-    });
+    .filter(relationship => Boolean(relationship.entityData));
 }
 
 function removeUnpublished(relationshipArray) {
