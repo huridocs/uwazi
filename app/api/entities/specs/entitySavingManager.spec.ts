@@ -1,5 +1,5 @@
 import db from 'api/utils/testing_db';
-import { saveEntity } from 'api/entities/entityManager';
+import { saveEntity } from 'api/entities/entitySavingManager';
 import {
   editorUser,
   entityId,
@@ -7,9 +7,9 @@ import {
   templateId,
   textFile,
   pdfFile,
-} from './entityManagerFixtures';
+} from './entitySavingManagerFixtures';
 
-describe('entityManager', () => {
+describe('entitySavingManager', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
   });

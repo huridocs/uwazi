@@ -2,7 +2,7 @@ import Joi from 'joi';
 import objectId from 'joi-objectid';
 import { search } from 'api/search';
 import { uploadMiddleware } from 'api/files';
-import { saveEntity } from 'api/entities/entityManager';
+import { saveEntity } from 'api/entities/entitySavingManager';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
