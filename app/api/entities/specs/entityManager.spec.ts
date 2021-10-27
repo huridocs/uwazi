@@ -1,6 +1,13 @@
 import db from 'api/utils/testing_db';
 import { saveEntity } from 'api/entities/entityManager';
-import { editorUser, entityId, fixtures, templateId, textFile } from './entityManagerFixtures';
+import {
+  editorUser,
+  entityId,
+  fixtures,
+  templateId,
+  textFile,
+  pdfFile,
+} from './entityManagerFixtures';
 
 describe('entityManager', () => {
   beforeEach(async () => {
@@ -77,7 +84,7 @@ describe('entityManager', () => {
           sharedId: 'shared1',
           title: 'newEntity',
           template: templateId,
-          attachments: [{ ...changedFile }],
+          attachments: [{ ...changedFile }, pdfFile],
         };
 
         const savedEntity = await saveEntity(entity, { ...reqData });

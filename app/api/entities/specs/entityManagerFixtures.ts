@@ -23,6 +23,16 @@ const textFile: FileType = {
   type: 'attachment',
 };
 
+const pdfFile: FileType = {
+  _id: db.id(),
+  entity: 'shared1',
+  language: 'en',
+  originalname: 'Sample PDF File.pdf',
+  filename: 'samplepdffile.pdf',
+  mimetype: 'application/pdf',
+  type: 'attachment',
+};
+
 const fixtures: DBFixture = {
   entities: [
     {
@@ -32,18 +42,7 @@ const fixtures: DBFixture = {
       title: 'entity1',
     },
   ],
-  files: [
-    { ...textFile },
-    {
-      _id: db.id(),
-      entity: 'shared1',
-      language: 'en',
-      originalname: 'Sample PDF File.pdf',
-      filename: 'samplepdffile.pdf',
-      mimetype: 'application/pdf',
-      type: 'attachment',
-    },
-  ],
+  files: [{ ...textFile }, { ...pdfFile }],
   templates: [
     {
       _id: templateId,
@@ -58,4 +57,4 @@ const fixtures: DBFixture = {
   users: [editorUser],
 };
 
-export { fixtures, templateId, editorUser, entityId, textFile };
+export { fixtures, templateId, editorUser, entityId, textFile, pdfFile };
