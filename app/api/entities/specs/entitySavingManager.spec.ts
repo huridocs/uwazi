@@ -163,7 +163,7 @@ describe('entitySavingManager', () => {
       beforeAll(() => {
         spyOn(search, 'indexEntities');
       });
-      fit('should index entities', async () => {
+      it('should index entities', async () => {
         const entity = {
           _id: entityId,
           sharedId: 'shared1',
