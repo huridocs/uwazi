@@ -35,13 +35,23 @@ describe('entitySavingManager', () => {
         ]);
       });
       it('should create an entity with attachments', async () => {
-        const entity = { title: 'newEntity', template: templateId };
+        const entity = {
+          title: 'newEntity',
+          template: templateId,
+          attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
+        };
         const savedEntity = await saveEntity(entity, { ...reqData, files: [file] });
         expect(savedEntity.attachments).toMatchObject([
           {
             mimetype: 'text/plain',
             originalname: 'sampleFile.txt',
             size: 12,
+            type: 'attachment',
+          },
+          {
+            mimetype: 'text/html; charset=ISO-8859-1',
+            originalname: 'Google link',
+            url: 'https://google.com',
             type: 'attachment',
           },
         ]);

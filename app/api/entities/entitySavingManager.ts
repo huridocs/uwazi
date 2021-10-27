@@ -8,10 +8,13 @@ import { ensure } from 'shared/tsUtils';
 
 async function processNewAttachments(
   attachedFiles: FileType[] | undefined,
+  entityAttachments: FileType[] | undefined,
   updatedEntity: EntityWithFilesSchema
 ) {
   const attachments: FileType[] = [];
   const newFiles = attachedFiles?.filter(attachment => !attachment._id);
+  const newUrls = entityAttachments?.filter(attachment => !attachment._id && attachment.url);
+
   if (newFiles && newFiles.length) {
     await Promise.all(
       newFiles.map(async (file: any) => {
@@ -24,6 +27,17 @@ async function processNewAttachments(
       })
     );
   }
+
+  if (newUrls && newUrls.length) {
+    newUrls.map(async (url: any) => {
+      attachments.push({
+        ...url,
+        entity: updatedEntity.sharedId,
+        type: 'attachment',
+      });
+    });
+  }
+
   return attachments;
 }
 
@@ -68,7 +82,7 @@ const saveEntity = async (
   }: { user: UserSchema; language: string; files?: FileType[] }
 ) => {
   const updatedEntity = await entities.save(entity, { user, language });
-  const attachments = await processNewAttachments(attachedFiles, updatedEntity);
+  const attachments = await processNewAttachments(attachedFiles, entity.attachments, updatedEntity);
 
   if (entity._id && entity.attachments) {
     const entityFiles: WithId<FileType>[] = await files.get(
