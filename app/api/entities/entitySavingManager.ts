@@ -1,18 +1,21 @@
 import { WithId } from 'api/odm';
 import { attachmentsPath, files } from 'api/files';
+import { search } from 'api/search';
+import { errorLog } from 'api/log';
 import entities from 'api/entities/entities';
+import { prettifyError } from 'api/utils/handleError';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
 import { ensure } from 'shared/tsUtils';
 
-async function processNewAttachments(
-  attachedFiles: FileType[] | undefined,
+async function prepareNewAttachments(
   entityAttachments: FileType[] | undefined,
+  fileAttachments: FileType[] | undefined,
   updatedEntity: EntityWithFilesSchema
 ) {
   const attachments: FileType[] = [];
-  const newFiles = attachedFiles?.filter(attachment => !attachment._id);
+  const newFiles = fileAttachments?.filter(attachment => !attachment._id);
   const newUrls = entityAttachments?.filter(attachment => !attachment._id && attachment.url);
 
   if (newFiles && newFiles.length) {
@@ -73,16 +76,17 @@ const filterRenamedAttachments = (entity: EntityWithFilesSchema, entityFiles: Wi
         }))
     : [];
 
-const saveEntity = async (
+const processAttachments = async (
   entity: EntityWithFilesSchema,
-  {
-    user,
-    language,
-    files: attachedFiles,
-  }: { user: UserSchema; language: string; files?: FileType[] }
+  updatedEntity: EntityWithFilesSchema,
+  fileAttachments: FileType[] | undefined
 ) => {
-  const updatedEntity = await entities.save(entity, { user, language });
-  const attachments = await processNewAttachments(attachedFiles, entity.attachments, updatedEntity);
+  const attachments = await prepareNewAttachments(
+    entity.attachments,
+    fileAttachments,
+    updatedEntity
+  );
+  const fileSaveErrors: string[] = [];
 
   if (entity._id && entity.attachments) {
     const entityFiles: WithId<FileType>[] = await files.get(
@@ -98,11 +102,28 @@ const saveEntity = async (
       try {
         await files.save(attachment, false);
       } catch (e) {
-        //Change this
-        console.log(e);
+        errorLog.error(prettifyError(e));
+        fileSaveErrors.push(`Could not save supporting file/s: ${attachment.originalname}`);
       }
     })
   );
+
+  return fileSaveErrors;
+};
+
+const saveEntity = async (
+  entity: EntityWithFilesSchema,
+  {
+    user,
+    language,
+    files: fileAttachments,
+  }: { user: UserSchema; language: string; files?: FileType[] }
+) => {
+  const updatedEntity = await entities.save(entity, { user, language });
+
+  const fileSaveErrors = await processAttachments(entity, updatedEntity, fileAttachments);
+
+  await search.indexEntities({ sharedId: updatedEntity.sharedId }, '+fullText');
 
   const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
     {
@@ -111,7 +132,7 @@ const saveEntity = async (
     },
     '+permissions'
   );
-  return entityWithAttachments;
+  return { entity: entityWithAttachments, errors: fileSaveErrors };
 };
 
 export { saveEntity };

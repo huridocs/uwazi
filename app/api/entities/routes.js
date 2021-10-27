@@ -19,12 +19,12 @@ export default app => {
     async (req, res, next) => {
       try {
         const entityToSave = JSON.parse(req.body.entity);
-        const entity = await saveEntity(entityToSave, {
+        const result = await saveEntity(entityToSave, {
           user: req.user,
           language: req.language,
           files: req.files,
         });
-        return res.json(entity);
+        return res.json(result);
       } catch (e) {
         return next(e);
       }

@@ -497,11 +497,15 @@ describe('libraryActions', () => {
     it('should save the document and dispatch a notification on success', async () => {
       mockID();
       const doc = { name: 'entity1' };
-      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({ ...doc });
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
+        entity: doc,
+        errors: '',
+      });
 
       const expectedActions = [
         { model: 'library.sidepanel.metadata', type: 'rrf/reset' },
         { type: 'UNSELECT_ALL_DOCUMENTS' },
+        { doc: { name: 'entity1' }, type: 'ELEMENT_CREATED' },
         {
           notification: {
             id: 'unique_id',
@@ -510,7 +514,6 @@ describe('libraryActions', () => {
           },
           type: 'NOTIFY',
         },
-        { doc: { name: 'entity1' }, type: 'ELEMENT_CREATED' },
         { doc: { name: 'entity1' }, type: 'SELECT_SINGLE_DOCUMENT' },
       ];
       const store = mockStore({});

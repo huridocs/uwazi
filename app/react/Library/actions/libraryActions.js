@@ -312,20 +312,25 @@ export function multipleUpdate(entities, values) {
 }
 
 export function saveEntity(entity, formModel) {
+  // eslint-disable-next-line max-statements
   return async dispatch => {
-    const updatedDoc = await saveEntityWithFiles(entity);
+    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity);
+    let message = '';
 
     dispatch(formActions.reset(formModel));
     await dispatch(unselectAllDocuments());
     if (entity._id) {
-      dispatch(notificationActions.notify('Entity updated', 'success'));
+      message = 'Entity updated';
       dispatch(updateEntity(updatedDoc));
       dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     } else {
-      dispatch(notificationActions.notify('Entity created', 'success'));
+      message = 'Entity created';
       dispatch(elementCreated(updatedDoc));
     }
-
+    if (errors.length) {
+      message = `${message} with the following errors: ${JSON.stringify(errors, null, 2)}`;
+    }
+    await dispatch(notificationActions.notify(message, errors.length ? 'warning' : 'success'));
     await dispatch(selectSingleDocument(updatedDoc));
   };
 }

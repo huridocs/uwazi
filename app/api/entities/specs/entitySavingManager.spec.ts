@@ -1,5 +1,8 @@
 import db from 'api/utils/testing_db';
+import { search } from 'api/search';
 import { saveEntity } from 'api/entities/entitySavingManager';
+import { errorLog } from 'api/log';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 import {
   editorUser,
   entityId,
@@ -29,7 +32,7 @@ describe('entitySavingManager', () => {
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {
         const entity = { title: 'newEntity', template: templateId };
-        const savedEntity = await saveEntity(entity, { ...reqData });
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
         expect(savedEntity.permissions).toEqual([
           { level: 'write', refId: 'userId', type: 'user' },
         ]);
@@ -40,7 +43,7 @@ describe('entitySavingManager', () => {
           template: templateId,
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
-        const savedEntity = await saveEntity(entity, { ...reqData, files: [file] });
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
         expect(savedEntity.attachments).toMatchObject([
           {
             mimetype: 'text/plain',
@@ -65,7 +68,7 @@ describe('entitySavingManager', () => {
           title: 'newEntity',
           template: templateId,
         };
-        const savedEntity = await saveEntity(entity, { ...reqData, files: [file] });
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
         expect(savedEntity.attachments).toMatchObject([
           {
             mimetype: 'text/plain',
@@ -97,7 +100,7 @@ describe('entitySavingManager', () => {
           attachments: [{ ...changedFile }, pdfFile],
         };
 
-        const savedEntity = await saveEntity(entity, { ...reqData });
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
         expect(savedEntity.attachments).toMatchObject([
           {
             mimetype: 'text/plain',
@@ -122,15 +125,58 @@ describe('entitySavingManager', () => {
           attachments: [{ ...textFile }],
         };
 
-        const savedEntity = await saveEntity(entity, { ...reqData });
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
         expect(savedEntity.attachments).toMatchObject([textFile]);
       });
     });
     describe('file save error', () => {
-      it('', () => {
-        throw new Error(
-          'should continue the saving process if saving of one file fails, ie: malformed url'
-        );
+      let entity: EntityWithFilesSchema;
+      let originalSilent: boolean | undefined;
+      beforeAll(() => {
+        originalSilent = errorLog.transports[1].silent;
+        errorLog.transports[1].silent = true;
+        entity = {
+          _id: entityId,
+          sharedId: 'shared1',
+          title: 'newEntity',
+          template: templateId,
+          attachments: [{ ...textFile }, { originalname: 'malformed url', url: 'malformed' }],
+        };
+      });
+
+      afterAll(() => {
+        errorLog.transports[1].silent = originalSilent;
+      });
+
+      it('should continue saving if a file fails to save', async () => {
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+        expect(savedEntity.attachments).toEqual([textFile]);
+      });
+
+      it('should return an error', async () => {
+        const { errors } = await saveEntity(entity, { ...reqData });
+        expect(errors[0]).toBe('Could not save supporting file/s: malformed url');
+      });
+    });
+
+    describe('indexing entities', () => {
+      beforeAll(() => {
+        spyOn(search, 'indexEntities');
+      });
+      fit('should index entities', async () => {
+        const entity = {
+          _id: entityId,
+          sharedId: 'shared1',
+          title: 'newEntity',
+          template: templateId,
+          attachments: [
+            { ...textFile },
+            { ...pdfFile },
+            { originalname: 'new url', url: 'https://google.com' },
+          ],
+        };
+        await saveEntity(entity, { ...reqData });
+        expect(search.indexEntities).toHaveBeenCalledTimes(2);
       });
     });
   });

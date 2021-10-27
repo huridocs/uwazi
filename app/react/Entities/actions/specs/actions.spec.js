@@ -25,7 +25,10 @@ describe('Entities actions', () => {
       spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
         type: 'reloadRelationships',
       });
-      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue('data');
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
+        entity: 'data',
+        errors: [],
+      });
 
       actions
         .saveEntity('data')(dispatch)
@@ -44,6 +47,22 @@ describe('Entities actions', () => {
           expect(relationshipActions.reloadRelationships).toHaveBeenCalledWith('sharedId');
           done();
         });
+    });
+
+    it('should dispatch a warning if there are errors while saving files', async () => {
+      spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
+        type: 'reloadRelationships',
+      });
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
+        entity: 'data',
+        errors: ['file1 save error'],
+      });
+
+      await actions.saveEntity('data')(dispatch);
+      expect(notificationActions.notify).toHaveBeenCalledWith(
+        expect.stringContaining('Entity saved with the following errors:'),
+        'warning'
+      );
     });
   });
 

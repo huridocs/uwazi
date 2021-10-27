@@ -14,9 +14,18 @@ import { actions as formActions } from 'react-redux-form';
 
 export function saveEntity(entity) {
   return async dispatch => {
-    const updatedDoc = await saveEntityWithFiles(entity);
+    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity);
     return api.save(new RequestParams(updatedDoc)).then(response => {
-      dispatch(notificationActions.notify('Entity saved', 'success'));
+      if (!errors.length) {
+        dispatch(notificationActions.notify('Entity saved', 'success'));
+      } else {
+        dispatch(
+          notificationActions.notify(
+            `Entity saved with the following errors: ${JSON.stringify(errors, null, 2)}`,
+            'warning'
+          )
+        );
+      }
       dispatch(formActions.reset('entityView.entityForm'));
       dispatch(actions.set('entityView/entity', response));
       dispatch(relationshipActions.reloadRelationships(response.sharedId));
