@@ -17,13 +17,14 @@ async function addSupportingFile(filePath: string) {
 
 const createEntityWithSupportingFiles = async (
   title: string,
-  file: string,
+  files: string[],
   webAttachment: { name: string; url: string }
 ) => {
   await expect(page).toClick('button', { text: 'Create entity' });
   await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', title);
 
-  await addSupportingFile(file);
+  await addSupportingFile(files[0]);
+  await addSupportingFile(files[1]);
 
   await expect(page).toClick('button', { text: 'Add supporting file' });
   await expect(page).toClick('.tab-link', { text: 'Add from web' });
@@ -47,6 +48,10 @@ describe('Entities', () => {
     name: 'Resource from web',
     url: 'https://fonts.googleapis.com/icon?family=Material+Icons',
   };
+  const filesAttachments = [
+    `${__dirname}/test_files/valid.pdf`,
+    `${__dirname}/test_files/batman.jpg`,
+  ];
 
   it('Should create new entity', async () => {
     await expect(page).toClick('button', { text: 'Create entity' });
@@ -57,17 +62,13 @@ describe('Entities', () => {
 
   it('Should create a new entity with attachments', async () => {
     await goToRestrictedEntities();
-    await createEntityWithSupportingFiles(
-      entityTitle,
-      `${__dirname}/test_files/valid.pdf`,
-      webAttachments
-    );
+    await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
     await refreshIndex();
     await expect(page).toClick('.item-document', {
       text: entityTitle,
     });
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['Resource from web', 'valid.pdf']);
+    expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
   });
 
   it('should rename an attachment', async () => {
@@ -85,7 +86,7 @@ describe('Entities', () => {
       text: entityTitle,
     });
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
+    expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
   });
 
   it('should delete the first attachment', async () => {
@@ -93,16 +94,14 @@ describe('Entities', () => {
       text: entityTitle,
     });
     await expect(page).toClick('button', { text: 'Edit' });
-
     await expect(page).toClick('.delete-supporting-file');
-
     await expect(page).toClick('button', { text: 'Save' });
     await refreshIndex();
     await expect(page).toClick('.item-document', {
       text: entityTitle,
     });
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['Resource from web']);
+    expect(fileList).toEqual(['batman.jpg', 'Resource from web']);
   });
 
   afterAll(async () => {
