@@ -28,6 +28,7 @@ async function assertScreenshot(selector: string) {
 async function addSupportingFile(filePath: string) {
   await expect(page).toClick('button', { text: 'Add supporting file' });
   await uploadSupportingFileToEntity(filePath);
+  await expect(page).toClick('span', { text: 'Attachment added' });
 }
 
 const createEntityWithSupportingFiles = async (
@@ -65,7 +66,7 @@ describe('Entities', () => {
     await expect(page).toClick('button', { text: 'Save' });
   });
 
-  it('Should create a new entity with attachements', async () => {
+  it('Should create a new entity with attachments', async () => {
     const entityTitle = 'Entity with supporting files';
     const filesAttachments = [
       `${__dirname}/test_files/valid.pdf`,
