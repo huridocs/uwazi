@@ -12,6 +12,7 @@ import request from 'shared/JSONRequest';
 
 import { handleError } from 'api/utils';
 import { SegmentationModel } from './segmentationModel';
+import urljoin from 'url-join';
 
 class PDFSegmentation {
   SERVICE_NAME = 'segmentation';
@@ -38,7 +39,7 @@ class PDFSegmentation {
   ) => {
     try {
       const fileContent = await readFile(uploadsPath(file.filename));
-      await request.uploadFile(serviceUrl, file.filename, fileContent);
+      await request.uploadFile(urljoin(serviceUrl, tenant), file.filename, fileContent);
 
       await this.segmentationTaskManager.startTask({
         task: this.SERVICE_NAME,
@@ -142,8 +143,7 @@ class PDFSegmentation {
         }`
       );
     }
-    const stream = Readable.from(fileStream.toString());
-    return { data: JSON.parse(response.json), fileStream: stream };
+    return { data: JSON.parse(response.json), fileStream: (fileStream as unknown) as Readable };
   };
 
   storeXML = async (filename: string, fileStream: Readable) => {

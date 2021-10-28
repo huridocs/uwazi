@@ -13,7 +13,7 @@ import {
   fixturesMissingPdf,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
-import fs from 'fs';
+import asyncFS from 'api/utils/async-fs';
 import path from 'path';
 
 import { tenants } from 'api/tenants/tenantContext';
@@ -73,8 +73,12 @@ describe('PDFSegmentation', () => {
     dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
 
     tenants.tenants = { tenantOne };
-    fileA = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
-    fileB = fs.readFileSync(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    fileA = await asyncFS.readFile(
+      `app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`
+    );
+    fileB = await asyncFS.readFile(
+      `app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`
+    );
     jest.spyOn(request, 'uploadFile').mockResolvedValue({});
     jest.resetAllMocks();
   });
@@ -84,7 +88,7 @@ describe('PDFSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
     expect(request.uploadFile).toHaveBeenCalledWith(
-      'http://localhost:1234/files',
+      'http://localhost:1234/files/tenantOne',
       fixturesPdfNameA,
       fileA
     );
@@ -94,7 +98,7 @@ describe('PDFSegmentation', () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesOtherFile);
     await segmentPdfs.segmentPdfs();
     expect(request.uploadFile).toHaveBeenCalledWith(
-      'http://localhost:1234/files',
+      'http://localhost:1234/files/tenantOne',
       fixturesPdfNameB,
       fileB
     );
@@ -204,8 +208,8 @@ describe('PDFSegmentation', () => {
       await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
       await segmentPdfs.segmentPdfs();
       segmentationFolder = path.join(tenantOne.uploadedDocuments, 'segmentation');
-      if (fs.existsSync(segmentationFolder)) {
-        fs.rmdirSync(segmentationFolder, { recursive: true });
+      if (await asyncFS.exists(segmentationFolder)) {
+        await asyncFS.rmdir(segmentationFolder, { recursive: true });
       }
       segmentationExternalService = new ExternalDummyService(1235);
       await segmentationExternalService.start();
@@ -231,8 +235,8 @@ describe('PDFSegmentation', () => {
     afterEach(async () => {
       await segmentationExternalService.stop();
 
-      if (fs.existsSync(segmentationFolder)) {
-        fs.rmdirSync(segmentationFolder, { recursive: true });
+      if (await asyncFS.exists(segmentationFolder)) {
+        await asyncFS.rmdir(segmentationFolder, { recursive: true });
       }
     });
     it('should store the segmentation', async () => {
@@ -271,7 +275,14 @@ describe('PDFSegmentation', () => {
         task: 'segmentation',
         success: true,
       });
-      expect(fs.existsSync(path.join(segmentationFolder, 'documentA.xml'))).toBe(true);
+      const fileExists = await asyncFS.exists(path.join(segmentationFolder, 'documentA.xml'));
+      const fileContents = await asyncFS.readFile(
+        path.join(segmentationFolder, 'documentA.xml'),
+        'utf8'
+      );
+      expect(fileExists).toBe(true);
+      const xml = '<description>Cold shrimps soup</description>';
+      await expect(fileContents.includes(xml)).toBe(true);
     });
 
     describe('if the segmentation fails', () => {

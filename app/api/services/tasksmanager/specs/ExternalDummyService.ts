@@ -43,7 +43,7 @@ export class ExternalDummyService {
       res.send('ok');
     });
 
-    this.app.post('/files', uploadMiddleware.multiple(), (req, res) => {
+    this.app.post('/files/*', uploadMiddleware.multiple(), (req, res) => {
       if (req.files.length) {
         const files = req.files as { buffer: Buffer; originalname: string }[];
         this.files.push(files[0].buffer);
