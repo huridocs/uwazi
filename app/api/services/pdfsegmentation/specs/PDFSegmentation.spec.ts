@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+/* eslint-disable max-lines */
+
 import { fixturer, createNewMongoDB } from 'api/utils/testing_db';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
@@ -160,9 +162,11 @@ describe('PDFSegmentation', () => {
       await segmentPdfs.segmentPdfs();
 
       await tenants.run(async () => {
-        const [segmentation] = await SegmentationModel.get();
+        const segmentations = await SegmentationModel.get();
+        const [segmentation] = segmentations;
         expect(segmentation.status).toBe('failed');
         expect(segmentation.filename).toBe(fixturesMissingPdf.files![0].filename);
+        expect(segmentations.length).toBe(1);
       }, 'tenantOne');
     });
   });
@@ -268,6 +272,29 @@ describe('PDFSegmentation', () => {
         success: true,
       });
       expect(fs.existsSync(path.join(segmentationFolder, 'documentA.xml'))).toBe(true);
+    });
+
+    describe('if the segmentation fails', () => {
+      it('should store it as failed', async () => {
+        await segmentPdfs.processResults({
+          tenant: tenantOne.name,
+          params: { filename: 'documentA.pdf' },
+          data_url: 'http://localhost:1235/results',
+          file_url: 'http://localhost:1235/file',
+          task: 'segmentation',
+          success: false,
+        });
+
+        await tenants.run(async () => {
+          const segmentations = await SegmentationModel.get();
+          const [segmentation] = segmentations;
+          expect(segmentation.status).toBe('failed');
+          expect(segmentation.filename).toBe(fixturesPdfNameA);
+          expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
+          expect(segmentation.autoexpire).toBe(null);
+          expect(segmentations.length).toBe(1);
+        }, tenantOne.name);
+      });
     });
   });
 });

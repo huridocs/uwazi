@@ -60,13 +60,12 @@ class PDFSegmentation {
     }
   };
 
-  storeProcess = async (fileID: ObjectIdSchema, filename: string, proccessing = true) => {
-    if (!proccessing) {
-      await SegmentationModel.save({ fileID, filename, status: 'failed' });
-    }
-
-    await SegmentationModel.save({ fileID, filename });
-  };
+  storeProcess = async (fileID: ObjectIdSchema, filename: string, proccessing = true) =>
+    SegmentationModel.save({
+      fileID,
+      filename,
+      status: proccessing ? 'processing' : 'failed',
+    });
 
   getFilesToSegment = async (): Promise<FileType & { filename: string; _id: ObjectIdSchema }[]> =>
     filesModel.db.aggregate([
