@@ -82,6 +82,7 @@
     "@types/react-modal": "^3.12.0",
     "@types/redis": "^2.8.31",
     "@types/redlock": "^4.0.2",
+    "@types/url-join": "^4.0.1",
     "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
     "async": "2.6.3",
