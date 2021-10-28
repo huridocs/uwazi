@@ -64,7 +64,7 @@ export function updateRightRelationshipType(index, rightIndex, _id) {
   };
 }
 
-export function addEntity(index, rightIndex, entity, errors) {
+export function addEntity(index, rightIndex, entity, errors = []) {
   return dispatch => {
     const title = entity.title.length > 75 ? `${entity.title.slice(0, 75)}(...)` : entity.title;
     let message = `${title} added to hub`;
