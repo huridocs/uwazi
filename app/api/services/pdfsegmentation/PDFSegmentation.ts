@@ -1,6 +1,7 @@
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { uploadsPath, fileFromReadStream, createDirIfNotExists, readFile } from 'api/files';
 import { Readable } from 'stream';
+import urljoin from 'url-join';
 import filesModel from 'api/files/filesModel';
 import path from 'path';
 import { FileType } from 'shared/types/fileType';
@@ -9,10 +10,8 @@ import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import request from 'shared/JSONRequest';
-
 import { handleError } from 'api/utils';
 import { SegmentationModel } from './segmentationModel';
-import urljoin from 'url-join';
 
 class PDFSegmentation {
   SERVICE_NAME = 'segmentation';
