@@ -187,7 +187,7 @@ describe('Metadata filters', () => {
 
     it('should filter by string expressions', async () => {
       const query = {
-        filter: { 'metadata.textPropertyName': '?alu*' },
+        filter: { 'metadata.textPropertyName': 'A*' },
       };
 
       const { body } = await request(app)
@@ -195,11 +195,7 @@ describe('Metadata filters', () => {
         .query(query)
         .expect(200);
 
-      expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 2' }]);
+      expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 3' }]);
     });
-  });
-
-  it('', () => {
-    throw new Error('Validate query sintax for text queries');
   });
 });

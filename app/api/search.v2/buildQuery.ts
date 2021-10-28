@@ -32,11 +32,12 @@ const metadataFilters = (query: SearchQuery) =>
 
       let queryString = filterValue;
       if (isAdvanced(filterValue)) {
-        queryString = filterValue.values?.join(` ${filterValue.operator || 'OR'} `);
+        const operator = filterValue.operator === 'AND' ? ' + ' : ' | ';
+        queryString = filterValue.values?.join(operator);
       }
 
       return {
-        query_string: {
+        simple_query_string: {
           query: queryString,
           fields: [`${key}.value`],
         },
