@@ -19,7 +19,7 @@ async function assertScreenshot(selector: string) {
   const attachmentsList = ensure<ElementHandle>(await page.$(selector));
   const chartScreenshot = await attachmentsList.screenshot();
   expect(chartScreenshot).toMatchImageSnapshot({
-    failureThreshold: 0.03,
+    failureThreshold: 0.01,
     failureThresholdType: 'percent',
     allowSizeMismatch: true,
   });
@@ -32,8 +32,8 @@ async function addSupportingFile(filePath: string) {
 
 const createEntityWithSupportingFiles = async (
   title: string,
-  files: string[]
-  //webAttachment: { name: string; url: string }
+  files: string[],
+  webAttachment: { name: string; url: string }
 ) => {
   await expect(page).toClick('button', { text: 'Create entity' });
   await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', title);
@@ -41,14 +41,11 @@ const createEntityWithSupportingFiles = async (
   await addSupportingFile(files[0]);
   await addSupportingFile(files[1]);
 
-  //TODO: test attachment from web
-  /*
   await expect(page).toClick('button', { text: 'Add supporting file' });
   await expect(page).toClick('.tab-link', { text: 'Add from web' });
   await expect(page).toFill('.web-attachment-url', webAttachment.url);
   await expect(page).toFill('.web-attachment-name', webAttachment.name);
   await expect(page).toClick('button', { text: 'Add resource' });
-  */
 
   await expect(page).toClick('button', { text: 'Save' });
 };
@@ -74,15 +71,18 @@ describe('Entities', () => {
       `${__dirname}/test_files/valid.pdf`,
       `${__dirname}/test_files/batman.jpg`,
     ];
-    //const webAttachments = { name: 'Name of the image', url: 'https://image.source' };
+    const webAttachments = {
+      name: 'Resource from web',
+      url: 'https://fonts.googleapis.com/icon?family=Material+Icons',
+    };
     await goToRestrictedEntities();
-    await createEntityWithSupportingFiles(entityTitle, filesAttachments);
+    await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
     await refreshIndex();
     await expect(page).toClick('.item-document', {
       text: entityTitle,
     });
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['batman.jpg', 'valid.pdf']);
+    expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
     await assertScreenshot('.attachments-list-parent');
   });
 

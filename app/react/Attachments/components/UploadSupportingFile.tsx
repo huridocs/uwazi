@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
+import { bindActionCreators, Dispatch } from 'redux';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
-
-import { AttachmentsModal } from './AttachmentsModal';
+import { attachmentCompleted } from 'app/Metadata/actions/supportingFilesActions';
 import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
+import { AttachmentsModal } from './AttachmentsModal';
 
 interface UploadSupportingFileProps {
   entitySharedId: string;
@@ -15,14 +14,29 @@ interface UploadSupportingFileProps {
   progress?: any;
   uploadAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
   uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
+  attachmentCompleted: (entity: string) => (dispatch: Dispatch<{}>) => void;
 }
+
+export function mapStateToProps({ attachments }: { attachments: any }) {
+  return {
+    progress: attachments.progress,
+  };
+}
+
+export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators({ attachmentCompleted }, dispatch);
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 const UploadSupportingFile = (props: UploadSupportingFileProps) => {
   const { entitySharedId, storeKey, progress, model = '' } = props;
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => {
+    setModalOpen(false);
+    props.attachmentCompleted(entitySharedId);
+  };
 
   const getPercentage = progress.get(entitySharedId);
 
@@ -64,10 +78,4 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
   );
 };
 
-export function mapStateToProps({ attachments }: { attachments: any }) {
-  return {
-    progress: attachments.progress,
-  };
-}
-
-export default connect(mapStateToProps)(UploadSupportingFile);
+export default connector(UploadSupportingFile);
