@@ -40,13 +40,14 @@ const createEntityWithSupportingFiles = async (
   await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', title);
 
   await addSupportingFile(files[0]);
-  await addSupportingFile(files[1]);
 
   await expect(page).toClick('button', { text: 'Add supporting file' });
   await expect(page).toClick('.tab-link', { text: 'Add from web' });
   await expect(page).toFill('.web-attachment-url', webAttachment.url);
   await expect(page).toFill('.web-attachment-name', webAttachment.name);
   await expect(page).toClick('button', { text: 'Add resource' });
+
+  await addSupportingFile(files[1]);
 
   await expect(page).toClick('button', { text: 'Save' });
 };
