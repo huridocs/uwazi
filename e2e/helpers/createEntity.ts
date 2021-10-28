@@ -1,5 +1,5 @@
-import { host } from '../config';
 import { ElementHandle } from 'puppeteer';
+import { host } from '../config';
 
 interface FilesOptions {
   pdf?: string;
@@ -10,8 +10,7 @@ const uploadPDFToEntity = async (pdfName: string) => {
   await expect(page).toUploadFile('#upload-button-input', pdfName);
 };
 
-const uploadSupportingFileToEntity = async (fileName: string): Promise<void> => {
-  await expect(page).toClick('button[type="button"].upload-button');
+export const uploadSupportingFileToEntity = async (fileName: string): Promise<void> => {
   const [fileChooser] = await Promise.all([
     page.waitForFileChooser(),
     page.click('div.attachments-modal__dropzone > button'),
