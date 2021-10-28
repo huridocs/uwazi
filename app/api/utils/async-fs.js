@@ -12,4 +12,5 @@ export default {
   readFile: promisify(fs.readFile),
   readdir: promisify(fs.readdir),
   mkdir: promisify(fs.mkdir),
+  rmdir: promisify(fs.rmdir),
 };
