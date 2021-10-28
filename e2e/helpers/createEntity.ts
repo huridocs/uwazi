@@ -36,10 +36,12 @@ export const createEntity = async (templateName: string, files: FilesOptions) =>
   await expect(page).toMatchElement('button[form="metadataForm"]', { text: 'Save' });
   await expect(page).toClick('button[form="metadataForm"]', { text: 'Save' });
   await expect(page).toClick('span', { text: 'Entity created' });
-
   if (files) {
     if (files.pdf) await uploadPDFToEntity(files.pdf);
-    if (files.supportingFile) await uploadSupportingFileToEntity(files.supportingFile);
+    if (files.supportingFile) {
+      await expect(page).toClick('button', { text: 'Add supporting file' });
+      await uploadSupportingFileToEntity(files.supportingFile);
+    }
     await expect(page).toClick('span', { text: 'Attachment uploaded' });
   }
 };
