@@ -1,5 +1,5 @@
 /*global page*/
-
+// mport fs from 'fs';
 import { ElementHandle } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
 import { adminLogin, logout } from '../helpers/login';
@@ -71,6 +71,11 @@ describe('Graphs in Page ', () => {
       );
 
       const chartScreenshot = await chartContainer.screenshot();
+      // const contents = Buffer.from(chartScreenshot, 'base64');
+      // fs.writeFile('test.png', contents, err => {
+      //   if (err) console.log('Error');
+      //   console.log('file saved');
+      // });
       expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.03,
         failureThresholdType: 'percent',
