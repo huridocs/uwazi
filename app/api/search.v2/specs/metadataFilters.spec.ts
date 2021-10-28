@@ -198,4 +198,28 @@ describe('Metadata filters', () => {
       expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 3' }]);
     });
   });
+
+  it('', () => {
+    throw new Error('Return snippets');
+  });
+
+  it('', () => {
+    throw new Error('Filter by template');
+  });
+
+  it('', () => {
+    throw new Error('Aggregations');
+  });
+
+  it('', () => {
+    throw new Error('Sorting');
+  });
+
+  it('', () => {
+    throw new Error('Geolocation');
+  });
+
+  it('', () => {
+    throw new Error('Pagination');
+  });
 });
