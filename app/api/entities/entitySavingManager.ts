@@ -128,9 +128,8 @@ const saveEntity = async (
         }
       })
     );
+    await search.indexEntities({ sharedId: updatedEntity.sharedId }, '+fullText');
   }
-
-  await search.indexEntities({ sharedId: updatedEntity.sharedId }, '+fullText');
 
   const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
     {
