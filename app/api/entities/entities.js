@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
+import { orderBy } from 'lodash';
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -365,7 +366,11 @@ const withDocuments = async (entities, documentsFullText) => {
       ? idFileMap.get(entity.sharedId).map(file => ({ ...file }))
       : [];
     entity.documents = entityFiles.filter(f => f.type === 'document');
-    entity.attachments = entityFiles.filter(f => f.type === 'attachment');
+    entity.attachments = orderBy(
+      entityFiles.filter(f => f.type === 'attachment'),
+      [attachment => (attachment.originalname || attachment.filename).toLowerCase()],
+      ['asc']
+    );
     return entity;
   });
   return result;

@@ -120,6 +120,7 @@ export default {
     {
       _id: entityGetTestFileId1,
       entity: 'entityGetTestEntityIdC',
+      originalname: 'file1.name',
       filename: 'file1.name',
       language: 'en',
       type: 'attachment',
@@ -137,6 +138,14 @@ export default {
       filename: 'file3.name',
       language: 'en',
       type: 'document',
+    },
+    {
+      _id: db.id(),
+      entity: 'entityGetTestEntityIdC',
+      originalname: 'File4.name',
+      filename: 'file4.name',
+      language: 'en',
+      type: 'attachment',
     },
   ],
   entities: [

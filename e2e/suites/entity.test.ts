@@ -77,7 +77,7 @@ describe('Entities', () => {
     });
     await expect(page).toClick('button', { text: 'Edit' });
     await expect(page).toFill(
-      'input[name="library.sidepanel.metadata.attachments.0.originalname"]',
+      'input[name="library.sidepanel.metadata.attachments.2.originalname"]',
       'My PDF.pdf'
     );
     await expect(page).toClick('button', { text: 'Save' });
@@ -101,7 +101,7 @@ describe('Entities', () => {
       text: entityTitle,
     });
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['batman.jpg', 'Resource from web']);
+    expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
   });
 
   afterAll(async () => {
