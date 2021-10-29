@@ -97,18 +97,8 @@ const processAttachments = async (
     const renamedAttachments = filterRenamedAttachments(entity, entityFiles);
     attachments.push(...renamedAttachments);
   }
-  await Promise.all(
-    attachments.map(async attachment => {
-      try {
-        await files.save(attachment, false);
-      } catch (e) {
-        errorLog.error(prettifyError(e));
-        fileSaveErrors.push(`Could not save supporting file/s: ${attachment.originalname}`);
-      }
-    })
-  );
 
-  return fileSaveErrors;
+  return { attachments, fileSaveErrors };
 };
 
 const saveEntity = async (
@@ -121,7 +111,24 @@ const saveEntity = async (
 ) => {
   const updatedEntity = await entities.save(entity, { user, language });
 
-  const fileSaveErrors = await processAttachments(entity, updatedEntity, fileAttachments);
+  const { attachments, fileSaveErrors } = await processAttachments(
+    entity,
+    updatedEntity,
+    fileAttachments
+  );
+
+  if (attachments.length) {
+    await Promise.all(
+      attachments.map(async attachment => {
+        try {
+          await files.save(attachment, false);
+        } catch (e) {
+          errorLog.error(prettifyError(e));
+          fileSaveErrors.push(`Could not save supporting file/s: ${attachment.originalname}`);
+        }
+      })
+    );
+  }
 
   await search.indexEntities({ sharedId: updatedEntity.sharedId }, '+fullText');
 
