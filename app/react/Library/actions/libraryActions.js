@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
