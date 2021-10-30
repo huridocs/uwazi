@@ -1,6 +1,8 @@
 import superagent from 'superagent';
+import { Dispatch } from 'redux';
 import { ClientEntitySchema, ClientFile } from 'app/istore';
 import { ensure } from 'shared/tsUtils';
+import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 
 export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
@@ -23,7 +25,7 @@ export const constructFile = ({ serializedFile: base64, originalname }: ClientFi
   return new File([buff], originalname || '', { type: fileFormat });
 };
 
-export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
+export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) =>
   new Promise((resolve, reject) => {
     const [attachments, supportingFiles] = entity.attachments
       ? entity.attachments.reduce(
@@ -50,6 +52,17 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema) =>
           ...(attachments.length > 0 && { attachments }),
         })
       );
+
+    if (dispatch) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      request.on('progress', data => {
+        dispatch({
+          type: attachmentsTypes.ATTACHMENT_PROGRESS,
+          entity: entity.sharedId || 'NEW_ENTITY',
+          progress: Math.floor(data.percent || 0),
+        });
+      });
+    }
 
     supportingFiles.forEach((file, index) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises

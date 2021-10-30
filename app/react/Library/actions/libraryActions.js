@@ -313,7 +313,7 @@ export function multipleUpdate(entities, values) {
 export function saveEntity(entity, formModel) {
   // eslint-disable-next-line max-statements
   return async dispatch => {
-    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity);
+    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity, dispatch);
     let message = '';
 
     dispatch(formActions.reset(formModel));

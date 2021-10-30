@@ -21,7 +21,6 @@ const uploadLocalAttachment = (
     };
     dispatch(actions.push(`${model}.attachments`, newFile));
     dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });
-    dispatch(notify('Attachment added', 'success'));
   });
 
 const uploadLocalAttachmentFromUrl = (
@@ -38,7 +37,6 @@ const uploadLocalAttachmentFromUrl = (
   };
   dispatch(actions.push(`${model}.attachments`, newUrl));
   dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });
-  dispatch(notify('Attachment added', 'success'));
 };
 
 const attachmentCompleted = (entitySharedId: string) => (dispatch: Dispatch<{}>) => {

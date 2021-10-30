@@ -14,7 +14,7 @@ import { actions as formActions } from 'react-redux-form';
 
 export function saveEntity(entity) {
   return async dispatch => {
-    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity);
+    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity, dispatch);
     return api.save(new RequestParams(updatedDoc)).then(response => {
       if (!errors.length) {
         dispatch(notificationActions.notify('Entity saved', 'success'));

@@ -22,6 +22,8 @@ describe('saveEntityWithFiles', () => {
     return mockUpload;
   };
 
+  const dispatch = jasmine.createSpy('dispatch');
+
   it.each`
     fileContent              | fileName          | fileType                | fileSize
     ${contentForFiles.text}  | ${'text.txt'}     | ${'text/plain'}         | ${120}
@@ -73,7 +75,7 @@ describe('saveEntityWithFiles', () => {
 
       const mockUpload = mockSuperAgent();
 
-      const updatedEntity = await saveEntityWithFiles(entity);
+      const updatedEntity = await saveEntityWithFiles(entity, dispatch);
 
       expect(mockUpload.attach).toHaveBeenCalledWith(
         'attachments[0]',
@@ -81,7 +83,6 @@ describe('saveEntityWithFiles', () => {
       );
 
       expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
-
       expect(updatedEntity).toEqual({ title: 'entity1' });
     }
   );
@@ -94,8 +95,7 @@ describe('saveEntityWithFiles', () => {
     };
 
     const mockUpload = mockSuperAgent();
-
-    const updatedEntity = await saveEntityWithFiles(entity);
+    const updatedEntity = await saveEntityWithFiles(entity, dispatch);
 
     expect(mockUpload.field).toHaveBeenLastCalledWith('entity', JSON.stringify(entity));
 

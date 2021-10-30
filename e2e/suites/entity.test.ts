@@ -12,7 +12,6 @@ import { getContentBySelector } from '../helpers/selectorUtils';
 async function addSupportingFile(filePath: string) {
   await expect(page).toClick('button', { text: 'Add supporting file' });
   await uploadSupportingFileToEntity(filePath);
-  await expect(page).toClick('span', { text: 'Attachment added' });
 }
 
 const createEntityWithSupportingFiles = async (
