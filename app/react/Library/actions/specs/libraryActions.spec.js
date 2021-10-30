@@ -518,7 +518,10 @@ describe('libraryActions', () => {
       ];
       const store = mockStore({});
       await store.dispatch(actions.saveEntity(doc, 'library.sidepanel.metadata'));
-      expect(saveEntityWithFiles.saveEntityWithFiles).toHaveBeenCalledWith(doc);
+      expect(saveEntityWithFiles.saveEntityWithFiles).toHaveBeenCalledWith(
+        doc,
+        expect.any(Function)
+      );
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

@@ -1,7 +1,6 @@
 import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { readFileAsBase64 } from 'app/Library/actions/saveEntityWithFiles';
-import { notify } from 'app/Notifications/actions/notificationsActions';
 import * as types from '../../Attachments/actions/actionTypes';
 
 const uploadLocalAttachment = (
