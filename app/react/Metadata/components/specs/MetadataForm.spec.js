@@ -176,6 +176,18 @@ describe('MetadataForm', () => {
       component.find(Form).simulate('submit', UnwrapedEntity);
       expect(props.onSubmit).toHaveBeenCalledWith(WrapedEntity, 'metadata');
     });
+
+    it('should disable the form while uploading supporting files', () => {
+      props.progress = 50;
+      render();
+      expect(component.find('fieldset').props()).toMatchObject({ disabled: true });
+    });
+
+    it('should enable the form when files are not uploading', () => {
+      props.progress = undefined;
+      render();
+      expect(component.find('fieldset').props()).toMatchObject({ disabled: false });
+    });
   });
 
   describe('mapStateToProps', () => {
@@ -183,7 +195,11 @@ describe('MetadataForm', () => {
     let ownProps;
 
     beforeEach(() => {
-      state = { templates, metadata: { attachments: [], sharedId: '' } };
+      state = {
+        templates,
+        metadata: { attachments: [], sharedId: 'entitySharedId' },
+        attachments: { progress: Immutable.fromJS({}) },
+      };
       ownProps = { templates, templateId: templates.get(1).get('_id'), model: 'metadata' };
     });
 

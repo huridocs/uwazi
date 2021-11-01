@@ -114,12 +114,12 @@ export class MetadataForm extends Component {
       highlightedProps,
       attachments,
       sharedId,
+      progress,
     } = this.props;
 
     if (!template) {
       return <div />;
     }
-
     const titleLabel = template.get('commonProperties')
       ? template
           .get('commonProperties')
@@ -128,53 +128,59 @@ export class MetadataForm extends Component {
       : 'Title';
 
     return (
-      <Form
-        id={id}
-        model={model}
-        onSubmit={this.onSubmit}
-        validators={validator.generate(template.toJS(), multipleEdition)}
-        onSubmitFailed={this.onSubmitFailed}
-      >
-        {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
-          <FormGroup model=".title">
-            <ul className="search__filter">
-              <li>
-                <label>
-                  <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
-                  <span className="required">*</span>
-                </label>
-              </li>
-              <li className="wide">
-                <div className="metadata-extractor-container">
-                  {storeKey === 'documentViewer' && (
-                    <MetadataExtractor fieldName="title" model={`${model}.title`} />
-                  )}
-                  <Field model=".title">
-                    <textarea className="form-control" />
-                  </Field>
-                </div>
-              </li>
-              <IconField model={model} />
-            </ul>
-          </FormGroup>
-        )}
-
-        {(!showSubset || showSubset.includes('template')) &&
-          this.renderTemplateSelect(templateOptions, template)}
-        <MetadataFormFields
-          multipleEdition={multipleEdition}
-          thesauris={this.props.thesauris}
+      <fieldset disabled={progress !== undefined}>
+        <Form
+          id={id}
           model={model}
-          template={template}
-          showSubset={showSubset}
-          version={version}
-          highlightedProps={highlightedProps}
-          storeKey={storeKey}
-        />
-        {!multipleEdition && (
-          <SupportingFiles supportingFiles={attachments} entitySharedID={sharedId} model={model} />
-        )}
-      </Form>
+          onSubmit={this.onSubmit}
+          validators={validator.generate(template.toJS(), multipleEdition)}
+          onSubmitFailed={this.onSubmitFailed}
+        >
+          {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
+            <FormGroup model=".title">
+              <ul className="search__filter">
+                <li>
+                  <label>
+                    <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
+                    <span className="required">*</span>
+                  </label>
+                </li>
+                <li className="wide">
+                  <div className="metadata-extractor-container">
+                    {storeKey === 'documentViewer' && (
+                      <MetadataExtractor fieldName="title" model={`${model}.title`} />
+                    )}
+                    <Field model=".title">
+                      <textarea className="form-control" />
+                    </Field>
+                  </div>
+                </li>
+                <IconField model={model} />
+              </ul>
+            </FormGroup>
+          )}
+
+          {(!showSubset || showSubset.includes('template')) &&
+            this.renderTemplateSelect(templateOptions, template)}
+          <MetadataFormFields
+            multipleEdition={multipleEdition}
+            thesauris={this.props.thesauris}
+            model={model}
+            template={template}
+            showSubset={showSubset}
+            version={version}
+            highlightedProps={highlightedProps}
+            storeKey={storeKey}
+          />
+          {!multipleEdition && (
+            <SupportingFiles
+              supportingFiles={attachments}
+              entitySharedID={sharedId}
+              model={model}
+            />
+          )}
+        </Form>
+      </fieldset>
     );
   }
 }
@@ -193,6 +199,7 @@ MetadataForm.defaultProps = {
   storeKey: '',
   attachments: [],
   sharedId: '',
+  progress: undefined,
 };
 
 MetadataForm.propTypes = {
@@ -214,6 +221,7 @@ MetadataForm.propTypes = {
   storeKey: PropTypes.string,
   attachments: PropTypes.instanceOf(Array),
   sharedId: PropTypes.string,
+  progress: PropTypes.number,
 };
 
 function mapDispatchToProps(dispatch) {
@@ -232,6 +240,9 @@ export const mapStateToProps = (state, ownProps) => {
     templateOptions: selectTemplateOptions(state),
     attachments,
     sharedId,
+    progress: sharedId
+      ? state.attachments.progress.get(sharedId)
+      : state.attachments.progress.get('NEW_ENTITY'),
   };
 };
 
