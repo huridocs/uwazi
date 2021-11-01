@@ -75,7 +75,7 @@ const SupportingFiles = ({
   removeSupportingFile,
 }: ComponentProps) => (
   <div className="attachments-list-parent">
-    <div className="attachments-list-header">
+    <div className="attachments-list-header editor">
       <h2>
         <Translate>Supporting files</Translate>
       </h2>
@@ -90,23 +90,26 @@ const SupportingFiles = ({
     </div>
 
     <div className="attachments-list editor">
-      {supportingFiles.map((file: ClientFile, index: number) => (
-        <div className="attachment" key={file._id || file.size}>
-          <div className="attachment-thumbnail">{getFileIcon(file)}</div>
-          <div className="attachment-name">
-            <Field model={`.attachments.${index}.originalname`}>
-              <input className="form-control" />
-            </Field>
+      {supportingFiles.map((file: ClientFile, index: number) => {
+        const attachmentClass = file._id ? 'attachment' : 'attachment new';
+        return (
+          <div className={attachmentClass} key={file._id || file.size}>
+            <div className="attachment-thumbnail">{getFileIcon(file)}</div>
+            <div className="attachment-name">
+              <Field model={`.attachments.${index}.originalname`}>
+                <input className="form-control" />
+              </Field>
+            </div>
+            <button
+              type="button"
+              className="btn btn-danger delete-supporting-file"
+              onClick={() => removeSupportingFile(index)}
+            >
+              <Icon icon="trash-alt" />
+            </button>
           </div>
-          <button
-            type="button"
-            className="btn btn-danger delete-supporting-file"
-            onClick={() => removeSupportingFile(index)}
-          >
-            <Icon icon="trash-alt" />
-          </button>
-        </div>
-      ))}
+        );
+      })}
     </div>
   </div>
 );
