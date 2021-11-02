@@ -7,6 +7,7 @@ import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
+import { NeedAuthorization } from 'app/Auth';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;
@@ -75,23 +76,25 @@ export class TemplatesFilterComponent extends React.Component<
       <div className="form-group">
         <ul className="search__filter">
           {this.state.configuredFilters.length > 0 && (
-            <li>
-              <Translate>Templates</Translate>
-              <Switcher
-                className="template-filter-switcher"
-                model=""
-                value={this.state.documentTypeFromFilters}
-                onChange={(checked: boolean) =>
-                  this.toggleTemplateFilter(
-                    checked,
-                    this.state.configuredFilters,
-                    this.state.selectedTemplates
-                  )
-                }
-                leftLabel={<Translate>FEATURED</Translate>}
-                rightLabel={<Translate>ALL</Translate>}
-              />
-            </li>
+            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+              <li>
+                &nbsp;
+                <Switcher
+                  className="template-filter-switcher"
+                  model=""
+                  value={this.state.documentTypeFromFilters}
+                  onChange={(checked: boolean) =>
+                    this.toggleTemplateFilter(
+                      checked,
+                      this.state.configuredFilters,
+                      this.state.selectedTemplates
+                    )
+                  }
+                  leftLabel={<Translate>FEATURED</Translate>}
+                  rightLabel={<Translate>ALL</Translate>}
+                />
+              </li>
+            </NeedAuthorization>
           )}
           <li className="wide documentTypes-selector">
             <DocumentTypesList
