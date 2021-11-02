@@ -1,5 +1,5 @@
 /*global page*/
-// mport fs from 'fs';
+import sharp from 'sharp';
 import { ElementHandle } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
 import { adminLogin, logout } from '../helpers/login';
@@ -76,7 +76,10 @@ describe('Graphs in Page ', () => {
       //   if (err) console.log('Error');
       //   console.log('file saved');
       // });
-      expect(chartScreenshot).toMatchImageSnapshot({
+      const resizedChart = await sharp(chartScreenshot)
+        .resize(1000, 320)
+        .toBuffer();
+      expect(resizedChart).toMatchImageSnapshot({
         failureThreshold: 0.03,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
