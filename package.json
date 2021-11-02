@@ -175,6 +175,7 @@
     "rtlcss": "^2.6.0",
     "sanitize-filename": "^1.6.3",
     "serialize-javascript": "^5.0.1",
+    "sharp": "^0.29.2",
     "sift": "^13.3.5",
     "socket.io": "4.1.2",
     "socket.io-client": "4.1.2",
