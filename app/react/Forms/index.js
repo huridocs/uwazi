@@ -16,11 +16,12 @@ import Numeric from './components/Numeric';
 import NumericRange from './components/NumericRange';
 import NumericRangeSlide from './components/NumericRangeSlide';
 import RadioButtons from './components/RadioButtons';
-import Switcher from './components/Switcher';
+import { Switcher } from './components/Switcher';
 import Geolocation from './components/Geolocation';
 import LinkField from './components/LinkField';
 import FormValue from './components/FormValue';
 import MediaField from './components/MediaField';
+
 export * from './components/MultiSuggest';
 
 export {
