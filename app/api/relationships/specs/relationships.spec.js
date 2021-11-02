@@ -1,8 +1,10 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
+
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
-import { errorLog } from 'api/log';
 
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import fixtures, {
@@ -34,7 +36,6 @@ import { search } from '../../search';
 
 describe('relationships', () => {
   beforeEach(done => {
-    spyOn(errorLog, 'error');
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures)
       .then(done)
@@ -87,9 +88,9 @@ describe('relationships', () => {
       expect(result.map(e => e.file).includes('file1')).toBe(false);
     });
 
-    it('should exclude ghost / delted entities with error reporting', async () => {
-      await relationships.getByDocument('entity2', 'en');
-      expect(errorLog.error.calls.argsFor(0)[0]).toContain('missingEntity');
+    it('should exclude ghost / deleted / restricted entities', async () => {
+      const result = await relationships.getByDocument('entity2', 'en');
+      expect(result.find(r => r.entity === 'missingEntity')).toBeUndefined();
     });
 
     it('should return text references only for the relations that match the filename of the entity', async () => {
