@@ -92,7 +92,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Pie chart graph in page with no more than a 3% difference', async () => {
+    it('should display Pie chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
       const chartContainer = ensure<ElementHandle>(
         await graphsPage.$('.recharts-responsive-container')
@@ -115,7 +115,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display List chart graph in page with no more than a 3% difference', async () => {
+    it('should display List chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
       const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart '));
 
@@ -144,7 +144,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Bar chart graph in page with no more than a 3% difference', async () => {
+    it('should display Bar chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
       const chartContainer = ensure<ElementHandle>(
         await graphsPage.$('.recharts-responsive-container')
@@ -169,7 +169,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Pie chart graph in page with no more than a 3% difference', async () => {
+    it('should display Pie chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
       const chartContainer = ensure<ElementHandle>(
         await graphsPage.$('.recharts-responsive-container')
@@ -191,7 +191,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display List chart graph in page with no more than a 3% difference', async () => {
+    it('should display List chart graph in page with no more than a 8% difference', async () => {
       const graphsPage = await displayGraph();
       const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart '));
 
