@@ -22,7 +22,7 @@ describe('Entities actions', () => {
         type: 'reloadRelationships',
       });
       spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
-        entity: 'data',
+        entity: { _id: 'newId', _rev: 'newRev', sharedId: 'sharedId' },
         errors: [],
       });
 
