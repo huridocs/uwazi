@@ -11,10 +11,6 @@ describe('Entities actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-
-    spyOn(api, 'save').and.returnValue(
-      Promise.resolve({ _id: 'newId', _rev: 'newRev', sharedId: 'sharedId' })
-    );
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(api, 'deleteMultiple').and.returnValue(Promise.resolve());
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
@@ -33,7 +29,7 @@ describe('Entities actions', () => {
       actions
         .saveEntity('data')(dispatch)
         .then(() => {
-          expect(api.save).toHaveBeenCalledWith(new RequestParams('data'));
+          expect(saveEntityWithFiles.saveEntityWithFiles).toHaveBeenCalledWith('data', dispatch);
           expect(notificationActions.notify).toHaveBeenCalledWith('Entity saved', 'success');
           expect(dispatch).toHaveBeenCalledWith({
             type: 'entityView/entity/SET',
