@@ -13,8 +13,6 @@ const localSelectors = {
   createdPageLink: '.document-viewer > div.alert-info a',
 };
 
-let graphsPage: any;
-
 const graphs = {
   barChart: '<BarChart property="tipo" context="58ada34c299e8267485450fb" />',
   pieChart: '<PieChart property="tipo" context="58ada34c299e8267485450fb" />',
@@ -65,9 +63,6 @@ describe('Graphs in Page ', () => {
   });
 
   describe('Graphs for regular thesauri', () => {
-    beforeEach(async () => {
-      graphsPage = await displayGraph();
-    });
     it('should insert Bar chart graph in created page', async () => {
       const pageContentsInput = await page.$eval(
         localSelectors.pageContentsInput,
@@ -80,6 +75,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Bar chart graph in page with no more than a 7% difference', async () => {
+      const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
@@ -101,6 +97,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Pie chart graph in page with no more than a 7% difference', async () => {
+      const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
@@ -122,6 +119,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display List chart graph in page with no more than a 7% difference', async () => {
+      const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
       const resizedChart = await resizeImage(chartScreenshot, 1000, 526);
 
@@ -135,6 +133,7 @@ describe('Graphs in Page ', () => {
   });
 
   describe('Graphs with nested thesaurus', () => {
+    let graphsPage: any;
     beforeEach(async () => {
       graphsPage = await displayGraph();
     });
