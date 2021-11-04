@@ -108,7 +108,11 @@ const saveEntity = async (
     files: fileAttachments,
   }: { user: UserSchema; language: string; files?: FileType[] }
 ) => {
-  const updatedEntity = await entities.save(entity, { user, language });
+  const updatedEntity = await entities.save(
+    entity,
+    { user, language },
+    { includeDocuments: false }
+  );
 
   const { attachments, fileSaveErrors } = await processAttachments(
     entity,
@@ -137,6 +141,7 @@ const saveEntity = async (
     },
     '+permissions'
   );
+
   return { entity: entityWithAttachments, errors: fileSaveErrors };
 };
 

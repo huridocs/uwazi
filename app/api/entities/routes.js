@@ -11,6 +11,17 @@ import { parseQuery, validation } from '../utils';
 
 Joi.objectId = objectId(Joi);
 
+async function updateThesauriWithEntity(entity, req) {
+  const template = await templates.getById(entity.template);
+  const templateTransformed = await thesauri.templateToThesauri(
+    template,
+    req.language,
+    req.user,
+    await search.countPerTemplate(req.language)
+  );
+  req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
+}
+
 export default app => {
   app.post(
     '/api/entities_with_files',
@@ -24,6 +35,7 @@ export default app => {
           language: req.language,
           files: req.files,
         });
+        await updateThesauriWithEntity(result.entity, req);
         return res.json(result);
       } catch (e) {
         return next(e);
@@ -34,25 +46,18 @@ export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    (req, res, next) =>
-      entities
-        .save(req.body, { user: req.user, language: req.language })
-        .then(response => {
-          res.json(response);
-          return templates.getById(response.template);
-        })
-        .then(async template =>
-          thesauri.templateToThesauri(
-            template,
-            req.language,
-            req.user,
-            await search.countPerTemplate(req.language)
-          )
-        )
-        .then(templateTransformed => {
-          req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
-        })
-        .catch(next)
+    async (req, res, next) => {
+      try {
+        const entity = await entities.save(req.body, {
+          user: req.user,
+          language: req.language,
+        });
+        await updateThesauriWithEntity(entity, req);
+        return res.json(entity);
+      } catch (e) {
+        return next(e);
+      }
+    }
   );
 
   app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>
