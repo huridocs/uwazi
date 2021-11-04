@@ -12,7 +12,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
-import { getFileExtension as getExtension } from 'app/utils/getFileExtension';
+import { getFileExtension } from 'app/utils/getFileExtension';
 
 import {
   deleteAttachment,
@@ -40,7 +40,7 @@ export class Attachment extends Component {
     const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
     let thumbnail = null;
 
-    if (file.filename && getExtension(file.filename) === 'pdf') {
+    if (file.filename && getFileExtension(file.filename) === 'pdf') {
       thumbnail = (
         <span no-translate>
           <Icon icon="file-pdf" /> pdf
@@ -58,7 +58,7 @@ export class Attachment extends Component {
 
     if (
       file.filename &&
-      acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1
+      acceptedThumbnailExtensions.indexOf(getFileExtension(file.filename.toLowerCase())) !== -1
     ) {
       thumbnail = <img src={item.downloadHref} alt={file.filename} />;
     }

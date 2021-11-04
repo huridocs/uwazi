@@ -6,7 +6,7 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 import { files } from 'api/files/files';
-import { uploadsPath, attachmentsPath } from 'api/files/filesystem';
+import { uploadsPath, attachmentsPath, storeFile } from 'api/files/filesystem';
 import cors from 'cors';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
@@ -76,7 +76,7 @@ const routes = app => {
           req.files
             .filter(file => file.fieldname.includes('attachment'))
             .map(file =>
-              files.storeFile(attachmentsPath, file).then(_file =>
+              storeFile(attachmentsPath, file).then(_file =>
                 attachments.push({
                   ..._file,
                   entity: newEntity.sharedId,
@@ -91,7 +91,7 @@ const routes = app => {
 
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
-        files.storeFile(uploadsPath, file).then(async _file => {
+        storeFile(uploadsPath, file).then(async _file => {
           await processDocument(newEntity.sharedId, _file);
           await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
           req.emitToSessionSocket('documentProcessed', newEntity.sharedId);

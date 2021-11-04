@@ -136,6 +136,20 @@ const streamToString = async (stream: Readable): Promise<string> =>
 const getFileContent = async (fileName: FilePath): Promise<string> =>
   asyncFS.readFile(uploadsPath(fileName), 'utf8');
 
+const storeFile: (filePathFunction: pathFunction, file: any) => Promise<FileType> = async (
+  filePathFunction,
+  file
+) =>
+  new Promise((resolve, reject) => {
+    const filename = generateFileName(file);
+    fs.appendFile(filePathFunction(filename), file.buffer, err => {
+      if (err) {
+        reject(err);
+      }
+      resolve(Object.assign(file, { filename, destination: filePathFunction() }));
+    });
+  });
+
 export {
   setupTestUploadedPaths,
   deleteUploadedFiles,
@@ -154,4 +168,5 @@ export {
   activityLogPath,
   writeFile,
   appendFile,
+  storeFile,
 };

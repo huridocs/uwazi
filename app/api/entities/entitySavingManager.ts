@@ -1,5 +1,5 @@
 import { WithId } from 'api/odm';
-import { attachmentsPath, files } from 'api/files';
+import { attachmentsPath, files, storeFile } from 'api/files';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
 import entities from 'api/entities/entities';
@@ -7,21 +7,20 @@ import { prettifyError } from 'api/utils/handleError';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
-import { ensure } from 'shared/tsUtils';
 
 async function prepareNewAttachments(
-  entityAttachments: FileType[] | undefined,
-  fileAttachments: FileType[] | undefined,
+  entityAttachments: FileType[] = [],
+  fileAttachments: FileType[] = [],
   updatedEntity: EntityWithFilesSchema
 ) {
   const attachments: FileType[] = [];
-  const newFiles = fileAttachments?.filter(attachment => !attachment._id);
-  const newUrls = entityAttachments?.filter(attachment => !attachment._id && attachment.url);
+  const newFiles = fileAttachments.filter(attachment => !attachment._id);
+  const newUrls = entityAttachments.filter(attachment => !attachment._id && attachment.url);
 
-  if (newFiles && newFiles.length) {
+  if (newFiles.length) {
     await Promise.all(
       newFiles.map(async (file: any) => {
-        const savedFile = ensure<FileType>(await files.storeFile(attachmentsPath, file));
+        const savedFile = await storeFile(attachmentsPath, file);
         attachments.push({
           ...savedFile,
           entity: updatedEntity.sharedId,
