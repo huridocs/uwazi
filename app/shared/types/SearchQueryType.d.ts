@@ -21,5 +21,6 @@ export interface SearchQuery {
     published?: boolean;
     [k: string]: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined;
   };
+  sort?: string;
   fields?: string[];
 }

@@ -21,17 +21,6 @@ const load = async (data: DBFixture, index?: string) =>
     index
   );
 
-// FORMAT
-// const query3 = {
-//   filter: {
-//     title: '',
-//     'metadata.text': '',
-//     'metadata.multiSelect': { values: [], operator: 'and' },
-//     'metadata.numeric': 42,
-//     'metadata.numeric': {from: 15, to: 25},
-//   },
-// };
-
 describe('Metadata filters', () => {
   const factory = getFixturesFactory();
   const app: Application = setUpApp(searchRoutes);
@@ -47,6 +36,7 @@ describe('Metadata filters', () => {
             factory.property('datePropertyName', 'multidate'),
             factory.property('textPropertyName', 'text'),
           ]),
+          factory.template('templateB'),
         ],
         entities: [
           factory.entity('Entity 1', 'templateA', {
@@ -73,6 +63,7 @@ describe('Metadata filters', () => {
             numericPropertyName: [factory.metadataValue(5)],
             textPropertyName: [factory.metadataValue('Another small text')],
           }),
+          factory.entity('Entity 4', 'templateB', {}),
         ],
       },
       'search.v2.metadata_filters'
@@ -95,6 +86,7 @@ describe('Metadata filters', () => {
           .get('/api/v2/entities')
           .query(query)
           .expect(200);
+
         expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
       }
     );
@@ -113,6 +105,7 @@ describe('Metadata filters', () => {
         .get('/api/v2/entities')
         .query(query)
         .expect(200);
+
       expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 2' }]);
     });
 
@@ -130,6 +123,7 @@ describe('Metadata filters', () => {
         .get('/api/v2/entities')
         .query(query)
         .expect(200);
+
       expect(body.data).toMatchObject([{ title: 'Entity 2' }]);
     });
   });
@@ -199,27 +193,26 @@ describe('Metadata filters', () => {
     });
   });
 
-  it('', () => {
-    throw new Error('Return snippets');
+  it('should filter by templates', async () => {
+    const query = {
+      filter: { template: factory.id('templateA').toString() },
+    };
+
+    const { body } = await request(app)
+      .get('/api/v2/entities')
+      .query(query)
+      .expect(200);
+
+    expect(body.data).toMatchObject([
+      { title: 'Entity 1' },
+      { title: 'Entity 2' },
+      { title: 'Entity 3' },
+    ]);
   });
 
-  it('', () => {
-    throw new Error('Filter by template');
-  });
+  it.todo('Pagination');
 
-  it('', () => {
-    throw new Error('Aggregations');
-  });
+  it.todo('Geolocation');
 
-  it('', () => {
-    throw new Error('Sorting');
-  });
-
-  it('', () => {
-    throw new Error('Geolocation');
-  });
-
-  it('', () => {
-    throw new Error('Pagination');
-  });
+  it.todo('Aggregations');
 });

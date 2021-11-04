@@ -3,11 +3,6 @@ import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
 import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
 
-const languageFilter = (language: string) => [{ term: { language } }];
-
-const sharedIdFilter = (query: SearchQuery) =>
-  query.filter?.sharedId ? [{ terms: { 'sharedId.raw': [query.filter.sharedId] } }] : [];
-
 const isRange = (
   range: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined
 ): range is RangeQuery =>
@@ -70,8 +65,13 @@ const fullTextSearch = (
       ]
     : [];
 
+const languageFilter = (language: string) => [{ term: { language } }];
+
 const textSearch = (searchString: string | undefined, searchMethod: string) =>
   searchString ? [{ [searchMethod]: { query: searchString } }] : [];
+
+const termsFilter = (query: SearchQuery, propertyName: string) =>
+  query.filter?.[propertyName] ? [{ terms: { [propertyName]: [query.filter[propertyName]] } }] : [];
 
 const defaultFields = ['title', 'template', 'sharedId'];
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
@@ -85,9 +85,10 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
       bool: {
         filter: [
           ...metadataFilters(query),
-          ...sharedIdFilter(query),
-          ...languageFilter(language),
           ...permissionsFilters(query),
+          ...languageFilter(language),
+          ...termsFilter(query, 'template'),
+          ...termsFilter(query, 'sharedId'),
         ],
         must: [
           ...fullTextSearch(fullTextSearchString, query, searchMethod),

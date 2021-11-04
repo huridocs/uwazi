@@ -41,6 +41,7 @@ export const SearchQuerySchema = {
         published: { type: 'boolean' },
       },
     },
+    sort: { type: 'string' },
     fields: { type: 'array', items: { type: 'string', minlength: 1 } },
   },
 };
