@@ -13,6 +13,8 @@ const localSelectors = {
   createdPageLink: '.document-viewer > div.alert-info a',
 };
 
+let graphsPage: any;
+
 const graphs = {
   barChart: '<BarChart property="tipo" context="58ada34c299e8267485450fb" />',
   pieChart: '<PieChart property="tipo" context="58ada34c299e8267485450fb" />',
@@ -40,6 +42,11 @@ const savePage = async () => {
   await expect(page).toMatch('(view page)');
 };
 
+const getChartContainerScreenshot = async (page: any, className: string) => {
+  const chartContainer = ensure<ElementHandle>(await page.$(className));
+  return chartContainer.screenshot();
+};
+
 describe('Graphs in Page ', () => {
   beforeAll(async () => {
     await insertFixtures();
@@ -58,6 +65,9 @@ describe('Graphs in Page ', () => {
   });
 
   describe('Graphs for regular thesauri', () => {
+    beforeEach(async () => {
+      graphsPage = await displayGraph();
+    });
     it('should insert Bar chart graph in created page', async () => {
       const pageContentsInput = await page.$eval(
         localSelectors.pageContentsInput,
@@ -69,13 +79,11 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Bar chart graph in page with no more than a 3% difference', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(
-        await graphsPage.$('.recharts-responsive-container')
+    it('should display Bar chart graph in page with no more than a 7% difference', async () => {
+      const chartScreenshot = await getChartContainerScreenshot(
+        graphsPage,
+        '.recharts-responsive-container'
       );
-
-      const chartScreenshot = await chartContainer.screenshot();
       const resizedChart = await resizeImage(chartScreenshot, 1000, 320);
 
       expect(resizedChart).toMatchImageSnapshot({
@@ -93,12 +101,10 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Pie chart graph in page with no more than a 7% difference', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(
-        await graphsPage.$('.recharts-responsive-container')
+      const chartScreenshot = await getChartContainerScreenshot(
+        graphsPage,
+        '.recharts-responsive-container'
       );
-
-      const chartScreenshot = await chartContainer.screenshot();
       const resizedChart = await resizeImage(chartScreenshot, 1000, 222);
 
       expect(resizedChart).toMatchImageSnapshot({
@@ -116,10 +122,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display List chart graph in page with no more than a 7% difference', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart '));
-
-      const chartScreenshot = await chartContainer.screenshot();
+      const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
       const resizedChart = await resizeImage(chartScreenshot, 1000, 526);
 
       expect(resizedChart).toMatchImageSnapshot({
@@ -132,6 +135,9 @@ describe('Graphs in Page ', () => {
   });
 
   describe('Graphs with nested thesaurus', () => {
+    beforeEach(async () => {
+      graphsPage = await displayGraph();
+    });
     it('should insert Bar chart graph in created page', async () => {
       const pageContentsInput = await page.$eval(
         localSelectors.pageContentsInput,
@@ -145,12 +151,10 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Bar chart graph in page with no more than a 7% difference', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(
-        await graphsPage.$('.recharts-responsive-container')
+      const chartScreenshot = await getChartContainerScreenshot(
+        graphsPage,
+        '.recharts-responsive-container'
       );
-
-      const chartScreenshot = await chartContainer.screenshot();
       const resizedChart = await resizeImage(chartScreenshot, 1000, 320);
       expect(resizedChart).toMatchImageSnapshot({
         failureThreshold: 0.07,
@@ -170,12 +174,10 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Pie chart graph in page with no more than a 7% difference', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(
-        await graphsPage.$('.recharts-responsive-container')
+      const chartScreenshot = await getChartContainerScreenshot(
+        graphsPage,
+        '.recharts-responsive-container'
       );
-
-      const chartScreenshot = await chartContainer.screenshot();
       const resizedChart = await resizeImage(chartScreenshot, 1000, 222);
       expect(resizedChart).toMatchImageSnapshot({
         failureThreshold: 0.07,
@@ -192,10 +194,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display List chart graph in page with no more than a 8% difference', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart '));
-
-      const chartScreenshot = await chartContainer.screenshot();
+      const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
       const resizedChart = await resizeImage(chartScreenshot, 1000, 408);
       expect(resizedChart).toMatchImageSnapshot({
         failureThreshold: 0.08,
