@@ -99,6 +99,7 @@ describe('Entities', () => {
     await expect(page).toClick('.item-document', {
       text: entityTitle,
     });
+    await page.waitForSelector('.attachment-name');
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
     expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
   });
