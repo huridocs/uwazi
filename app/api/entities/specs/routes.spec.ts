@@ -65,5 +65,34 @@ describe('entities routes', () => {
         })
       );
     });
+
+    describe('/api/entities_with_files', () => {
+      const entityToSave = {
+        title: 'my entity',
+      };
+      beforeEach(() => {
+        new UserInContextMockFactory().mock(user);
+      });
+
+      it('should return the saved entity', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities_with_files')
+          .field('entity', JSON.stringify(entityToSave));
+
+        expect(response.body).toMatchObject({
+          entity: {
+            title: 'my entity',
+            permissions: [
+              {
+                refId: user._id.toString(),
+                type: PermissionType.USER,
+                level: AccessLevels.WRITE,
+              },
+            ],
+          },
+          errors: [],
+        });
+      });
+    });
   });
 });
