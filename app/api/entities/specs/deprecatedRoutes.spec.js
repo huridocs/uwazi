@@ -52,8 +52,10 @@ describe('entities', () => {
       spyOn(thesauri, 'templateToThesauri').and.returnValue(
         new Promise(resolve => resolve('document'))
       );
-
-      routes.post('/api/entities', req).then(document => {
+      const sockets = {
+        emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
+      };
+      routes.post('/api/entities', { ...req, sockets }).then(document => {
         expect(document).toBe('entity');
         expect(entities.save).toHaveBeenCalledWith(req.body, {
           user: req.user,
