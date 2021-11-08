@@ -120,7 +120,7 @@ export default {
     {
       _id: entityGetTestFileId1,
       entity: 'entityGetTestEntityIdC',
-      originalname: 'file1.name',
+      originalname: 'my file1.name',
       filename: 'file1.name',
       language: 'en',
       type: 'attachment',

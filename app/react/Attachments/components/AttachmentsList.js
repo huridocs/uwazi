@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { advancedSort } from 'app/utils/advancedSort';
 import { Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
@@ -9,10 +7,6 @@ import Attachment from 'app/Attachments/components/Attachment';
 import UploadSupportingFile from './UploadSupportingFile';
 
 export default class AttachmentsList extends Component {
-  static arrangeFiles(files = []) {
-    return advancedSort(files, { property: 'originalname' });
-  }
-
   render() {
     const label = (
       <h2>
@@ -20,7 +14,7 @@ export default class AttachmentsList extends Component {
       </h2>
     );
 
-    const { parentId, parentSharedId, readOnly, storeKey, entity } = this.props;
+    const { parentId, parentSharedId, readOnly, storeKey, entity, attachments } = this.props;
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
     let uploadAttachmentButton = null;
@@ -34,7 +28,6 @@ export default class AttachmentsList extends Component {
       );
     }
 
-    const attachments = AttachmentsList.arrangeFiles(this.props.attachments);
     return (
       <div className="attachments-list-parent">
         <div className="attachments-list-header">

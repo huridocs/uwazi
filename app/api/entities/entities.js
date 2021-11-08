@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { orderBy } from 'lodash';
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -348,7 +347,8 @@ const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await files.get(
     { entity: { $in: sharedIds } },
-    documentsFullText ? '+fullText ' : ' '
+    documentsFullText ? '+fullText ' : ' ',
+    { sort: { originalname: 1 } }
   );
   const idFileMap = new Map();
   allFiles.forEach(file => {
@@ -366,11 +366,7 @@ const withDocuments = async (entities, documentsFullText) => {
       ? idFileMap.get(entity.sharedId).map(file => ({ ...file }))
       : [];
     entity.documents = entityFiles.filter(f => f.type === 'document');
-    entity.attachments = orderBy(
-      entityFiles.filter(f => f.type === 'attachment'),
-      [attachment => (attachment.originalname || attachment.filename).toLowerCase()],
-      ['asc']
-    );
+    entity.attachments = entityFiles.filter(f => f.type === 'attachment');
     return entity;
   });
   return result;
