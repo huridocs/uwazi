@@ -67,7 +67,7 @@ describe('Entities', () => {
       text: entityTitle,
     });
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
+    expect(fileList).toEqual(['Resource from web', 'batman.jpg', 'valid.pdf']);
   });
 
   it('should rename an attachment', async () => {
@@ -85,7 +85,7 @@ describe('Entities', () => {
       text: entityTitle,
     });
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
+    expect(fileList).toEqual(['My PDF.pdf', 'Resource from web', 'batman.jpg']);
   });
 
   it('should delete the first attachment', async () => {
@@ -101,7 +101,7 @@ describe('Entities', () => {
     });
     await page.waitForSelector('.attachment-name');
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
+    expect(fileList).toEqual(['Resource from web', 'batman.jpg']);
   });
 
   afterAll(async () => {
