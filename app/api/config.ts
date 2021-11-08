@@ -47,6 +47,7 @@ export const config = {
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
   },
+  externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
 
   redis: {
     activated: CLUSTER_MODE,
