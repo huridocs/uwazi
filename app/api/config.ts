@@ -13,8 +13,6 @@ const {
   DBHOST,
 } = process.env;
 
-console.log(ACTIVITY_LOGS);
-
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
 
 // this needs to be true in order for uwazi to work properly
