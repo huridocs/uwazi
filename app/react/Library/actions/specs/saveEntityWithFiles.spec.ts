@@ -8,7 +8,7 @@ import { contentForFiles } from './fixtures';
 
 describe('saveEntityWithFiles', () => {
   // eslint-disable-next-line @typescript-eslint/promise-function-async
-  const mockSuperAgent = (url = `${APIURL}entities_with_files`) => {
+  const mockSuperAgent = (url = `${APIURL}entities`) => {
     const mockUpload = superagent.post(url);
     spyOn(mockUpload, 'field').and.returnValue(mockUpload);
     spyOn(mockUpload, 'attach').and.returnValue(mockUpload);

@@ -24,36 +24,20 @@ async function updateThesauriWithEntity(entity, req) {
 
 export default app => {
   app.post(
-    '/api/entities_with_files',
+    '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware.multiple(),
     async (req, res, next) => {
       try {
-        const entityToSave = JSON.parse(req.body.entity);
+        const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
         const result = await saveEntity(entityToSave, {
           user: req.user,
           language: req.language,
           files: req.files,
         });
-        await updateThesauriWithEntity(result.entity, req);
-        return res.json(result);
-      } catch (e) {
-        return next(e);
-      }
-    }
-  );
-
-  app.post(
-    '/api/entities',
-    needsAuthorization(['admin', 'editor', 'collaborator']),
-    async (req, res, next) => {
-      try {
-        const entity = await entities.save(req.body, {
-          user: req.user,
-          language: req.language,
-        });
+        const { entity } = result;
         await updateThesauriWithEntity(entity, req);
-        return res.json(entity);
+        return res.json(req.body.entity ? result : entity);
       } catch (e) {
         return next(e);
       }

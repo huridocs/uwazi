@@ -48,13 +48,39 @@ describe('entities routes', () => {
   });
 
   describe('POST', () => {
-    it('should return the permissions added to the entity', async () => {
+    const entityToSave = {
+      title: 'my entity',
+    };
+
+    beforeEach(() => {
+      new UserInContextMockFactory().mock(user);
+    });
+
+    it('should return saved entity when passed as data (`legacy`) with its permissions', async () => {
       new UserInContextMockFactory().mock(user);
       const response: SuperTestResponse = await request(app)
         .post('/api/entities')
-        .send({ title: 'newEntity' });
-      expect(response.body).toEqual(
-        expect.objectContaining({
+        .send(entityToSave);
+      expect(response.body).toMatchObject({
+        title: 'my entity',
+        permissions: [
+          {
+            refId: user._id.toString(),
+            type: PermissionType.USER,
+            level: AccessLevels.WRITE,
+          },
+        ],
+      });
+    });
+
+    it('should return the saved entity when passed as a field with its permissions', async () => {
+      const response: SuperTestResponse = await request(app)
+        .post('/api/entities')
+        .field('entity', JSON.stringify(entityToSave));
+
+      expect(response.body).toMatchObject({
+        entity: {
+          title: 'my entity',
           permissions: [
             {
               refId: user._id.toString(),
@@ -62,36 +88,8 @@ describe('entities routes', () => {
               level: AccessLevels.WRITE,
             },
           ],
-        })
-      );
-    });
-
-    describe('/api/entities_with_files', () => {
-      const entityToSave = {
-        title: 'my entity',
-      };
-      beforeEach(() => {
-        new UserInContextMockFactory().mock(user);
-      });
-
-      it('should return the saved entity', async () => {
-        const response: SuperTestResponse = await request(app)
-          .post('/api/entities_with_files')
-          .field('entity', JSON.stringify(entityToSave));
-
-        expect(response.body).toMatchObject({
-          entity: {
-            title: 'my entity',
-            permissions: [
-              {
-                refId: user._id.toString(),
-                type: PermissionType.USER,
-                level: AccessLevels.WRITE,
-              },
-            ],
-          },
-          errors: [],
-        });
+        },
+        errors: [],
       });
     });
   });

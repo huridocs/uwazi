@@ -42,7 +42,7 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
       : [[], []];
 
     const request = superagent
-      .post('/api/entities_with_files')
+      .post('/api/entities')
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
       .field(
