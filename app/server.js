@@ -153,14 +153,16 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         );
         topicClassificationRepeater.start();
 
-        const segmentationConnector = new PDFSegmentation();
-        const segmentationRepeater = new DistributedLoop(
-          'segmentation_repeat',
-          segmentationConnector.segmentPdfs,
-          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
-        );
+        if (config.externalServices) {
+          const segmentationConnector = new PDFSegmentation();
+          const segmentationRepeater = new DistributedLoop(
+            'segmentation_repeat',
+            segmentationConnector.segmentPdfs,
+            { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
+          );
 
-        segmentationRepeater.start();
+          segmentationRepeater.start();
+        }
       }
     });
 
