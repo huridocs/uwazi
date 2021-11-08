@@ -22,9 +22,11 @@ const graphs = {
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
 };
 
-const resizeImage = async (image: any, length: number, width: number) =>
+const DEFAULT_HEIGHT = 1000;
+
+const resizeImage = async (image: any) =>
   sharp(image)
-    .resize(length, width)
+    .resize(DEFAULT_HEIGHT)
     .toBuffer();
 
 const insertChart = async (chart: string, chartName: string) => {
@@ -42,7 +44,7 @@ const savePage = async () => {
 
 const getChartContainerScreenshot = async (page: any, className: string) => {
   const chartContainer = ensure<ElementHandle>(await page.$(className));
-  return chartContainer.screenshot();
+  return resizeImage(await chartContainer.screenshot());
 };
 
 describe('Graphs in Page ', () => {
@@ -80,9 +82,8 @@ describe('Graphs in Page ', () => {
         graphsPage,
         '.recharts-responsive-container'
       );
-      const resizedChart = await resizeImage(chartScreenshot, 1000, 320);
 
-      expect(resizedChart).toMatchImageSnapshot({
+      expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
@@ -102,9 +103,8 @@ describe('Graphs in Page ', () => {
         graphsPage,
         '.recharts-responsive-container'
       );
-      const resizedChart = await resizeImage(chartScreenshot, 1000, 222);
 
-      expect(resizedChart).toMatchImageSnapshot({
+      expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
@@ -121,9 +121,8 @@ describe('Graphs in Page ', () => {
     it('should display List chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
-      const resizedChart = await resizeImage(chartScreenshot, 1000, 526);
 
-      expect(resizedChart).toMatchImageSnapshot({
+      expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
@@ -154,8 +153,8 @@ describe('Graphs in Page ', () => {
         graphsPage,
         '.recharts-responsive-container'
       );
-      const resizedChart = await resizeImage(chartScreenshot, 1000, 320);
-      expect(resizedChart).toMatchImageSnapshot({
+
+      expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
@@ -177,8 +176,8 @@ describe('Graphs in Page ', () => {
         graphsPage,
         '.recharts-responsive-container'
       );
-      const resizedChart = await resizeImage(chartScreenshot, 1000, 222);
-      expect(resizedChart).toMatchImageSnapshot({
+
+      expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
@@ -194,8 +193,7 @@ describe('Graphs in Page ', () => {
 
     it('should display List chart graph in page with no more than a 8% difference', async () => {
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
-      const resizedChart = await resizeImage(chartScreenshot, 1000, 408);
-      expect(resizedChart).toMatchImageSnapshot({
+      expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.08,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
