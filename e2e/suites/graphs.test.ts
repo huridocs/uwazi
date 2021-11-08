@@ -22,11 +22,11 @@ const graphs = {
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
 };
 
-const DEFAULT_HEIGHT = 1000;
+const DEFAULT_WIDTH = 1000;
 
 const resizeImage = async (image: any) =>
   sharp(image)
-    .resize(DEFAULT_HEIGHT)
+    .resize(DEFAULT_WIDTH)
     .toBuffer();
 
 const insertChart = async (chart: string, chartName: string) => {
