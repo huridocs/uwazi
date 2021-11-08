@@ -12,7 +12,6 @@ import { FileType } from '../../shared/types/fileType';
 
 export type FilePath = string;
 export type pathFunction = (fileName?: string) => FilePath;
-const LOGS_DIR = './log';
 
 const uploadsPath: pathFunction = (fileName: string = ''): FilePath =>
   path.join(tenants.current().uploadedDocuments, fileName);
@@ -27,7 +26,7 @@ const temporalFilesPath: pathFunction = (fileName: string = ''): FilePath =>
   path.join(tenants.current().temporalFiles, fileName);
 
 const activityLogPath: pathFunction = (): FilePath =>
-  path.join(LOGS_DIR, `${tenants.current().name}_activity.log`);
+  path.join(tenants.current().activityLogs, `${tenants.current().name}_activity.log`);
 
 async function deleteFile(file: FilePath) {
   return new Promise((resolve, reject) => {

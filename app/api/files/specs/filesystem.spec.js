@@ -28,9 +28,9 @@ describe('files', () => {
     });
   });
   describe('activityLogPath', () => {
-    it('should return the activity file name of the tenant in the log folder', async () => {
-      testingTenants.mockCurrentTenant({ name: 'default' });
-      const logPath = await activityLogPath();
+    it('should return the activity file name of the tenant in the log folder', () => {
+      testingTenants.mockCurrentTenant({ name: 'default', activityLogs: 'log/' });
+      const logPath = activityLogPath();
       expect(logPath).toBe('log/default_activity.log');
     });
   });

@@ -6,11 +6,14 @@ const {
   UPLOADS_FOLDER,
   CUSTOM_UPLOADS_FOLDER,
   TEMPORAL_FILES_FOLDER,
+  ACTIVITY_LOGS,
   USER_SESSION_SECRET,
   MONGO_URI,
   ELASTICSEARCH_URL,
   DBHOST,
 } = process.env;
+
+console.log(ACTIVITY_LOGS);
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
 
@@ -46,6 +49,7 @@ export const config = {
     attachments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
+    activityLogs: ACTIVITY_LOGS || `${rootPath}/log/`,
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
 
