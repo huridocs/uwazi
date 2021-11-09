@@ -110,8 +110,9 @@
         width: 100%;
         max-width: 350px;
 
+        input,
         .form-group {
-          margin-bottom: 22px;
+          margin-bottom: 4px;
         }
 
         .btn {
@@ -124,10 +125,6 @@
           right: 7px;
           width: 17px;
           color: $c-primary;
-        }
-
-        .validation-error {
-          text-align: left;
         }
       }
 

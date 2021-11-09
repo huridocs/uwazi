@@ -4,10 +4,11 @@ import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
 import { bindActionCreators, Dispatch } from 'redux';
-import { actions as formActions, LocalForm, Field, Errors } from 'react-redux-form';
+import { actions as formActions, LocalForm, Field } from 'react-redux-form';
 import Tip from 'app/Layout/Tip';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
+import { FormGroup } from 'app/Forms';
 
 const validators = {
   name: { required: (val: any) => !!val && val.trim() !== '' },
@@ -152,20 +153,12 @@ export const AttachmentsModalCmp = ({
                   model="urlForm"
                   validators={validators}
                 >
-                  <div className="form-group has-feedback">
+                  <FormGroup className="form-group has-feedback" model=".url">
                     <Field model=".url">
                       <input
                         type="text"
                         className="form-control web-attachment-url"
                         placeholder="Paste URL here"
-                      />
-                      <Errors
-                        className="validation-error"
-                        model=".url"
-                        show="touched"
-                        messages={{
-                          required: 'Url is required',
-                        }}
                       />
                     </Field>
                     <Tip icon="info-circle" position="right">
@@ -184,25 +177,17 @@ export const AttachmentsModalCmp = ({
                         </Translate>
                       </p>
                     </Tip>
-                  </div>
+                  </FormGroup>
 
-                  <div className="form-group">
+                  <FormGroup className="form-group" model=".name">
                     <Field model=".name" className="field">
                       <input
                         type="text"
                         className="form-control web-attachment-name"
                         placeholder="Title"
                       />
-                      <Errors
-                        className="validation-error"
-                        model=".name"
-                        show="touched"
-                        messages={{
-                          required: 'Title is required',
-                        }}
-                      />
                     </Field>
-                  </div>
+                  </FormGroup>
 
                   <button type="submit" className="btn btn-success">
                     <Icon icon="link" />
