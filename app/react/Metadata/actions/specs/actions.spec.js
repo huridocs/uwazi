@@ -25,6 +25,11 @@ describe('Metadata Actions', () => {
         title: 'updated title',
         template: 'templateId',
         metadata: { test: [{ value: 'test' }], test2: [{ value: 'test2' }] },
+        attachments: [
+          { originalname: 'z file' },
+          { originalname: 'B file' },
+          { originalname: 'a file' },
+        ],
       };
       api.get.and.returnValue(Promise.resolve([doc]));
       const templates = [
@@ -51,6 +56,11 @@ describe('Metadata Actions', () => {
         title: 'updated title',
         template: 'templateId',
         metadata: { test: 'test', id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) },
+        attachments: [
+          { originalname: 'a file' },
+          { originalname: 'B file' },
+          { originalname: 'z file' },
+        ],
       };
 
       expect(dispatch).toHaveBeenCalledWith('formload');
