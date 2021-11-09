@@ -3,7 +3,7 @@
 import { advancedSort } from 'app/utils/advancedSort';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+import { t } from 'app/I18N';
 export default class Select extends Component {
   render() {
     const { options, optionsValue, optionsLabel, placeholder, sort } = this.props;
@@ -17,7 +17,7 @@ export default class Select extends Component {
 
     return (
       <select className="form-control" onChange={this.props.onChange} value={value}>
-        `<option value="">{placeholder}</option>`;
+        <option value="">{t('System', placeholder, null, false)}</option>
         {_options.map((option, index) => {
           const key = option._id || option.id || index;
           if (option.options) {
