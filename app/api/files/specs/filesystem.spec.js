@@ -30,7 +30,7 @@ describe('files', () => {
   describe('activityLogPath', () => {
     it('should return the activity file name of the tenant in the log folder', () => {
       testingTenants.mockCurrentTenant({ name: 'default', activityLogs: 'log/' });
-      const logPath = activityLogPath();
+      const logPath = activityLogPath('default_activity.log');
       expect(logPath).toBe('log/default_activity.log');
     });
   });
