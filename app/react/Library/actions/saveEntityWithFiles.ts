@@ -59,7 +59,7 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
         dispatch({
           type: attachmentsTypes.ATTACHMENT_PROGRESS,
           entity: entity.sharedId || 'NEW_ENTITY',
-          progress: Math.floor(data.percent || 0),
+          progress: data.percent ? Math.floor(data.percent) : data.percent,
         });
       });
     }

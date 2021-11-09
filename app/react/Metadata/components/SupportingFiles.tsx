@@ -3,6 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions, Field } from 'react-redux-form';
 
+import uniqueID from 'shared/uniqueID';
 import { ClientFile } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -93,7 +94,7 @@ const SupportingFiles = ({
       {supportingFiles.map((file: ClientFile, index: number) => {
         const attachmentClass = file._id ? 'attachment' : 'attachment new';
         return (
-          <div className={attachmentClass} key={file._id || file.size}>
+          <div className={attachmentClass} key={file._id || uniqueID()}>
             <div className="attachment-thumbnail">{getFileIcon(file)}</div>
             <div className="attachment-name">
               <Field model={`.attachments.${index}.originalname`}>
