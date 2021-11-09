@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import documentRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
+import * as entitiesSavingManager from '../entitySavingManager';
 import templates from '../../templates/templates';
 import thesauri from '../../thesauri';
 import fixtures, { templateId, unpublishedDocId, batmanFinishesId } from './fixtures.js';
@@ -47,7 +48,9 @@ describe('entities', () => {
     });
 
     it('should create a new document with current user', done => {
-      spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
+      spyOn(entitiesSavingManager, 'saveEntity').and.returnValue(
+        Promise.resolve({ entity: 'entity', errors: [] })
+      );
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve({ values: [] })));
       spyOn(thesauri, 'templateToThesauri').and.returnValue(
         new Promise(resolve => resolve('document'))
@@ -57,7 +60,7 @@ describe('entities', () => {
       };
       routes.post('/api/entities', { ...req, sockets }).then(document => {
         expect(document).toBe('entity');
-        expect(entities.save).toHaveBeenCalledWith(req.body, {
+        expect(entitiesSavingManager.saveEntity).toHaveBeenCalledWith(req.body, {
           user: req.user,
           language: 'lang',
         });
@@ -104,7 +107,9 @@ describe('entities', () => {
         },
       };
 
-      spyOn(entities, 'save').and.returnValue(Promise.resolve({ _id: 'id' }));
+      spyOn(entitiesSavingManager, 'saveEntity').and.returnValue(
+        Promise.resolve({ entity: { _id: 'id' }, errors: [] })
+      );
       spyOn(entities, 'getWithRelationships').and.returnValue(
         Promise.resolve(['entityWithRelationShips'])
       );
