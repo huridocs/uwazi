@@ -1,31 +1,43 @@
-import repeater from '../Repeater';
+import { Repeater } from '../Repeater';
 
-describe('repeat', () => {
-  let callback;
-  let counter = 0;
-  const stopOn = 15;
+describe('Repeater', () => {
+  let callbackOne;
+  let callbackTwo;
 
-  beforeEach(() => {
-    counter = 1;
-    callback = jasmine.createSpy('callback').and.callFake(
-      () =>
-        new Promise(resolve => {
-          setTimeout(() => {
-            if (counter === stopOn) {
-              resolve();
-              repeater.stop();
-            } else {
-              counter += 1;
-              resolve();
-            }
-          }, 1);
-        })
-    );
+  let repeaterOne;
+  let repeaterTwo;
+
+  // one does not simply test timeouts
+  function advanceTime(time) {
+    jest.advanceTimersByTime(time);
+    return new Promise(resolve => setImmediate(resolve));
+  }
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
-  it('should repeat callback call when callback finishes', async () => {
-    await repeater.start(callback, 0);
-    expect(callback).toHaveBeenCalledTimes(stopOn);
-    expect(counter).toBe(stopOn);
+  beforeEach(() => {
+    jest.useFakeTimers();
+
+    callbackOne = jasmine.createSpy('callbackone').and.callFake(() => Promise.resolve());
+    callbackTwo = jasmine.createSpy('callbackone').and.callFake(() => Promise.resolve());
+  });
+
+  it('should be able to have two independant repeaters', async () => {
+    repeaterOne = new Repeater(callbackOne, 1);
+    repeaterTwo = new Repeater(callbackTwo, 1);
+
+    repeaterTwo.start();
+    repeaterOne.start();
+
+    await advanceTime(1);
+
+    repeaterOne.stop();
+
+    await advanceTime(1);
+
+    expect(callbackOne).toHaveBeenCalledTimes(1);
+    expect(callbackTwo).toHaveBeenCalledTimes(2);
   });
 });
