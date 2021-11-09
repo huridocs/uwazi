@@ -55,6 +55,7 @@ exports[`PublicForm should enable remote captcha 1`] = `
       </ul>
     </Connect(FormGroup)>
     <Connect(MetadataFormFields)
+      boundChange={[Function]}
       model="publicform"
       template={
         Immutable.Map {
@@ -102,6 +103,125 @@ exports[`PublicForm should enable remote captcha 1`] = `
             model=".captcha"
             refresh={[Function]}
             remote={true}
+          />
+        </li>
+      </ul>
+    </Connect(FormGroup)>
+    <button
+      className="btn btn-success"
+      type="submit"
+    >
+      <Connect(Translate)>
+        Submit
+      </Connect(Translate)>
+    </button>
+  </div>
+</LocalForm>
+`;
+
+exports[`PublicForm should render a form 1`] = `
+<LocalForm
+  getDispatch={[Function]}
+  initialState={Object {}}
+  model="publicform"
+  onSubmit={[Function]}
+  validators={
+    Object {
+      "captcha": Object {
+        "required": [Function],
+      },
+      "title": Object {
+        "required": [Function],
+      },
+    }
+  }
+>
+  <div
+    className="public-form"
+  >
+    <Connect(FormGroup)
+      key="title"
+      model=".title"
+    >
+      <ul
+        className="search__filter"
+      >
+        <li>
+          <label
+            htmlFor="title"
+          >
+            <Connect(Translate)
+              context="123"
+            >
+              Title changed
+            </Connect(Translate)>
+            <span
+              className="required"
+            >
+              *
+            </span>
+          </label>
+        </li>
+        <li
+          className="wide"
+        >
+          <DefaultConnectedControlText
+            className="form-control"
+            id="title"
+            model=".title"
+          />
+        </li>
+      </ul>
+    </Connect(FormGroup)>
+    <Connect(MetadataFormFields)
+      boundChange={[Function]}
+      model="publicform"
+      template={
+        Immutable.Map {
+          "_id": "123",
+          "commonProperties": Immutable.List [
+            Immutable.Map {
+              "label": "Title changed",
+              "name": "title",
+              "generatedId": false,
+            },
+          ],
+          "properties": Immutable.List [
+            Immutable.Map {
+              "type": "text",
+              "name": "text",
+            },
+          ],
+        }
+      }
+      thesauris={Immutable.List []}
+    />
+    <Connect(FormGroup)
+      key="captcha"
+      model=".captcha"
+    >
+      <ul
+        className="search__filter"
+      >
+        <li>
+          <label>
+            <Connect(Translate)>
+              Captcha
+            </Connect(Translate)>
+            <span
+              className="required"
+            >
+              *
+            </span>
+          </label>
+        </li>
+        <li
+          className="wide"
+        >
+          <Captcha
+            model=".captcha"
+            refresh={[Function]}
+            remote={false}
           />
         </li>
       </ul>
@@ -173,6 +293,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       </ul>
     </Connect(FormGroup)>
     <Connect(MetadataFormFields)
+      boundChange={[Function]}
       model="publicform"
       template={
         Immutable.Map {
@@ -343,124 +464,6 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
         </li>
       </ul>
     </div>
-    <Connect(FormGroup)
-      key="captcha"
-      model=".captcha"
-    >
-      <ul
-        className="search__filter"
-      >
-        <li>
-          <label>
-            <Connect(Translate)>
-              Captcha
-            </Connect(Translate)>
-            <span
-              className="required"
-            >
-              *
-            </span>
-          </label>
-        </li>
-        <li
-          className="wide"
-        >
-          <Captcha
-            model=".captcha"
-            refresh={[Function]}
-            remote={false}
-          />
-        </li>
-      </ul>
-    </Connect(FormGroup)>
-    <button
-      className="btn btn-success"
-      type="submit"
-    >
-      <Connect(Translate)>
-        Submit
-      </Connect(Translate)>
-    </button>
-  </div>
-</LocalForm>
-`;
-
-exports[`PublicForm should render a form without defaultValue in title 1`] = `
-<LocalForm
-  getDispatch={[Function]}
-  initialState={Object {}}
-  model="publicform"
-  onSubmit={[Function]}
-  validators={
-    Object {
-      "captcha": Object {
-        "required": [Function],
-      },
-      "title": Object {
-        "required": [Function],
-      },
-    }
-  }
->
-  <div
-    className="public-form"
-  >
-    <Connect(FormGroup)
-      key="title"
-      model=".title"
-    >
-      <ul
-        className="search__filter"
-      >
-        <li>
-          <label
-            htmlFor="title"
-          >
-            <Connect(Translate)
-              context="123"
-            >
-              Title changed
-            </Connect(Translate)>
-            <span
-              className="required"
-            >
-              *
-            </span>
-          </label>
-        </li>
-        <li
-          className="wide"
-        >
-          <DefaultConnectedControlText
-            className="form-control"
-            id="title"
-            model=".title"
-          />
-        </li>
-      </ul>
-    </Connect(FormGroup)>
-    <Connect(MetadataFormFields)
-      model="publicform"
-      template={
-        Immutable.Map {
-          "_id": "123",
-          "commonProperties": Immutable.List [
-            Immutable.Map {
-              "label": "Title changed",
-              "name": "title",
-              "generatedId": false,
-            },
-          ],
-          "properties": Immutable.List [
-            Immutable.Map {
-              "type": "text",
-              "name": "text",
-            },
-          ],
-        }
-      }
-      thesauris={Immutable.List []}
-    />
     <Connect(FormGroup)
       key="captcha"
       model=".captcha"
