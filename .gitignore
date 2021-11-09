@@ -37,3 +37,6 @@ custom_uploads/*
 test
 app/api/files/specs/file1
 app/api/files/specs/file2
+**/redis-bin
+dump.rdb
+
