@@ -13,20 +13,20 @@ import { FileType } from '../../shared/types/fileType';
 export type FilePath = string;
 export type pathFunction = (fileName?: string) => FilePath;
 
-const uploadsPath: pathFunction = (fileName: string = ''): FilePath =>
+const uploadsPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().uploadedDocuments, fileName);
 
-const attachmentsPath: pathFunction = (fileName: string = ''): FilePath =>
+const attachmentsPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().attachments, fileName);
 
-const customUploadsPath: pathFunction = (fileName: string = ''): FilePath =>
+const customUploadsPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().customUploads, fileName);
 
-const temporalFilesPath: pathFunction = (fileName: string = ''): FilePath =>
+const temporalFilesPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().temporalFiles, fileName);
 
-const activityLogPath: pathFunction = (): FilePath =>
-  path.join(tenants.current().activityLogs, `${tenants.current().name}_activity.log`);
+const activityLogPath: pathFunction = (fileName = ''): FilePath =>
+  path.join(tenants.current().activityLogs, fileName);
 
 async function deleteFile(file: FilePath) {
   return new Promise((resolve, reject) => {
@@ -63,6 +63,7 @@ const generateUploadsPath = async (subPath: string) => {
     attachments: `${__dirname}/specs/uploads/${subPath}`,
     customUploads: `${__dirname}/specs/customUploads/${subPath}`,
     temporalFiles: `${__dirname}/specs/uploads/${subPath}`,
+    activityLogs: `${__dirname}/specs/uploads/${subPath}`,
   };
 };
 
