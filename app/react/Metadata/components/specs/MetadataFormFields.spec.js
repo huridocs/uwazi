@@ -1,10 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import * as redux from 'redux';
 import { fromJS } from 'immutable';
+import { actions as formActions } from 'react-redux-form';
+
 import { FormGroup } from 'app/Forms';
-import { MetadataFormFields } from '../MetadataFormFields';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
 import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms';
+import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields';
 
 describe('MetadataFormFields with one entity to edit ', () => {
   let component;
@@ -54,12 +57,14 @@ describe('MetadataFormFields with one entity to edit ', () => {
       ]),
       dateFormat: '',
       model: 'metadata',
+      storeKey: 'library',
       change: jest.fn(),
     };
   });
 
   const render = args => {
     const componentProps = { ...props, ...args };
+    // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<MetadataFormFields {...componentProps} />);
   };
 
@@ -113,5 +118,28 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
     secondRelationshipField.simulate('change', ['123', '456']);
     expect(props.change).toHaveBeenCalledWith('publicform.metadata.field2', ['123', '456']);
+  });
+
+  describe('MapDispatchToProps', () => {
+    beforeEach(() => {
+      spyOn(redux, 'bindActionCreators');
+    });
+
+    it('should allow passing an already-bound change (for LocalForm implementations)', () => {
+      const dispatch = {};
+      const boundChange = () => {};
+      mapDispatchToProps(dispatch, {});
+
+      expect(redux.bindActionCreators).toHaveBeenCalledWith(
+        expect.objectContaining({ change: formActions.change }),
+        dispatch
+      );
+
+      redux.bindActionCreators.calls.reset();
+
+      const mappedProps = mapDispatchToProps(dispatch, { boundChange });
+      expect(redux.bindActionCreators).not.toHaveBeenCalled();
+      expect(mappedProps.change).toBe(boundChange);
+    });
   });
 });
