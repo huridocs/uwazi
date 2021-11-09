@@ -55,15 +55,15 @@ describe('entitySavingManager', () => {
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
         expect(savedEntity.attachments).toMatchObject([
           {
-            mimetype: 'text/html; charset=ISO-8859-1',
-            originalname: 'Google link',
-            url: 'https://google.com',
-            type: 'attachment',
-          },
-          {
             mimetype: 'text/plain',
             originalname: 'sampleFile.txt',
             size: 12,
+            type: 'attachment',
+          },
+          {
+            mimetype: 'text/html; charset=ISO-8859-1',
+            originalname: 'Google link',
+            url: 'https://google.com',
             type: 'attachment',
           },
         ]);
@@ -80,15 +80,15 @@ describe('entitySavingManager', () => {
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
         expect(savedEntity.attachments).toMatchObject([
           {
-            mimetype: 'application/pdf',
-            originalname: 'Sample PDF File.pdf',
-            filename: 'samplepdffile.pdf',
-            type: 'attachment',
-          },
-          {
             mimetype: 'text/plain',
             originalname: 'Sample Text File.txt',
             filename: 'samplefile.txt',
+            type: 'attachment',
+          },
+          {
+            mimetype: 'application/pdf',
+            originalname: 'Sample PDF File.pdf',
+            filename: 'samplepdffile.pdf',
             type: 'attachment',
           },
           {
@@ -112,15 +112,15 @@ describe('entitySavingManager', () => {
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
         expect(savedEntity.attachments).toMatchObject([
           {
-            mimetype: 'application/pdf',
-            originalname: 'Sample PDF File.pdf',
-            filename: 'samplepdffile.pdf',
-            type: 'attachment',
-          },
-          {
             mimetype: 'text/plain',
             originalname: 'newName.txt',
             filename: 'samplefile.txt',
+            type: 'attachment',
+          },
+          {
+            mimetype: 'application/pdf',
+            originalname: 'Sample PDF File.pdf',
+            filename: 'samplepdffile.pdf',
             type: 'attachment',
           },
         ]);

@@ -707,14 +707,14 @@ describe('entities', () => {
       const result = await entities.get({ template: entityGetTestTemplateId });
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
       checkEntityGetResult(result[1], 'TitleB', [], []);
-      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file4.name', 'file1.name']);
+      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name', 'file4.name']);
     });
 
     it('should return documents and attachments properly while using a select clause in the query.', async () => {
       const result = await entities.get({ template: entityGetTestTemplateId }, { title: true });
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
       checkEntityGetResult(result[1], 'TitleB', [], []);
-      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file4.name', 'file1.name']);
+      checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name', 'file4.name']);
     });
 
     it('should not return documents and attachments, when not requested.', async () => {
