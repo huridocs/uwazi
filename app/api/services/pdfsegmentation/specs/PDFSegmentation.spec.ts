@@ -38,6 +38,7 @@ describe('PDFSegmentation', () => {
     attachments: `${__dirname}/uploads`,
     customUploads: `${__dirname}/uploads`,
     temporalFiles: `${__dirname}/uploads`,
+    activityLogs: `${__dirname}/uploads`,
   };
 
   const tenantTwo = {
@@ -48,6 +49,7 @@ describe('PDFSegmentation', () => {
     attachments: `${__dirname}/uploads`,
     customUploads: `${__dirname}/uploads`,
     temporalFiles: `${__dirname}/uploads`,
+    activityLogs: `${__dirname}/uploads`,
   };
 
   let dbOne: Db;
