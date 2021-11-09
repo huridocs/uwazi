@@ -42,7 +42,7 @@ describe('PublicForm', () => {
     instance.formDispatch = jasmine.createSpy('formDispatch');
   };
 
-  it('should render a form', () => {
+  it('should render a form without defaultValue in title', () => {
     render();
     expect(component).toMatchSnapshot();
   });

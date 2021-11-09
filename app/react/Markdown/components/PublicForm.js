@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -19,7 +20,14 @@ import { generateID } from 'shared/IDGenerator';
 class PublicForm extends Component {
   static renderTitle(template) {
     const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
-    const defaultTitle = titleProperty.get('generatedId') ? generateID(3, 4, 4) : '';
+    const useGeneratedId = Boolean(titleProperty.get('generatedId'));
+
+    let input = <Control.text id="title" className="form-control" model=".title" />;
+
+    if (useGeneratedId) {
+      input = React.cloneElement(input, { defaultValue: generateID(3, 4, 4) });
+    }
+
     return (
       <FormGroup key="title" model=".title">
         <ul className="search__filter">
@@ -29,14 +37,7 @@ class PublicForm extends Component {
               <span className="required">*</span>
             </label>
           </li>
-          <li className="wide">
-            <Control.text
-              id="title"
-              className="form-control"
-              defaultValue={defaultTitle}
-              model=".title"
-            />
-          </li>
+          <li className="wide">{input}</li>
         </ul>
       </FormGroup>
     );
