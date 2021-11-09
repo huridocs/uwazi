@@ -149,6 +149,16 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
                     placeholder="Paste URL here"
                     type="text"
                   />
+                  <Modeled(Connect(Errors))
+                    className="validation-error"
+                    messages={
+                      Object {
+                        "required": "Url is required",
+                      }
+                    }
+                    model=".url"
+                    show="touched"
+                  />
                 </Modeled(Connect(Field))>
                 <Tip
                   icon="info-circle"
@@ -171,15 +181,30 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
                   </p>
                 </Tip>
               </div>
-              <Modeled(Connect(Field))
-                model=".name"
+              <div
+                className="form-group"
               >
-                <input
-                  className="form-control web-attachment-name"
-                  placeholder="Title"
-                  type="text"
-                />
-              </Modeled(Connect(Field))>
+                <Modeled(Connect(Field))
+                  className="field"
+                  model=".name"
+                >
+                  <input
+                    className="form-control web-attachment-name"
+                    placeholder="Title"
+                    type="text"
+                  />
+                  <Modeled(Connect(Errors))
+                    className="validation-error"
+                    messages={
+                      Object {
+                        "required": "Title is required",
+                      }
+                    }
+                    model=".name"
+                    show="touched"
+                  />
+                </Modeled(Connect(Field))>
+              </div>
               <button
                 className="btn btn-success"
                 type="submit"
@@ -201,7 +226,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
 </Modal>
 `;
 
-exports[`Attachments Modal Should match render of web form 1`] = `
+exports[`Attachments Modal web form Should match render of web form 1`] = `
 <Modal
   ariaHideApp={false}
   bodyOpenClassName="ReactModal__Body--open"
@@ -350,6 +375,16 @@ exports[`Attachments Modal Should match render of web form 1`] = `
                     placeholder="Paste URL here"
                     type="text"
                   />
+                  <Modeled(Connect(Errors))
+                    className="validation-error"
+                    messages={
+                      Object {
+                        "required": "Url is required",
+                      }
+                    }
+                    model=".url"
+                    show="touched"
+                  />
                 </Modeled(Connect(Field))>
                 <Tip
                   icon="info-circle"
@@ -372,15 +407,30 @@ exports[`Attachments Modal Should match render of web form 1`] = `
                   </p>
                 </Tip>
               </div>
-              <Modeled(Connect(Field))
-                model=".name"
+              <div
+                className="form-group"
               >
-                <input
-                  className="form-control web-attachment-name"
-                  placeholder="Title"
-                  type="text"
-                />
-              </Modeled(Connect(Field))>
+                <Modeled(Connect(Field))
+                  className="field"
+                  model=".name"
+                >
+                  <input
+                    className="form-control web-attachment-name"
+                    placeholder="Title"
+                    type="text"
+                  />
+                  <Modeled(Connect(Errors))
+                    className="validation-error"
+                    messages={
+                      Object {
+                        "required": "Title is required",
+                      }
+                    }
+                    model=".name"
+                    show="touched"
+                  />
+                </Modeled(Connect(Field))>
+              </div>
               <button
                 className="btn btn-success"
                 type="submit"
