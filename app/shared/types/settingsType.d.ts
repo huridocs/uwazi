@@ -94,6 +94,13 @@ export interface Settings {
     };
     topicClassification?: boolean;
     favorites?: boolean;
+    segmentation?: {
+      url: string;
+    };
+    metadataExtraction?: {
+      template: ObjectIdSchema;
+      properties: string[];
+    }[];
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {

@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
 import { PropertySchema, MetadataSchema } from 'shared/types/commonTypes';
+import { FileType } from 'shared/types/fileType';
 
 export function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -42,6 +43,20 @@ export function getFixturesFactory() {
         ...props,
       };
     },
+
+    file: (
+      id: string,
+      entity: string,
+      type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
+      filename: string,
+      language: string = 'en'
+    ): FileType => ({
+      _id: idMapper(`${id}`),
+      entity,
+      language,
+      type,
+      filename,
+    }),
 
     inherit(name: string, content: string, property: string, props = {}): PropertySchema {
       return this.relationshipProp(name, content, {

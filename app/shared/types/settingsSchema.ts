@@ -148,6 +148,26 @@ export const settingsSchema = {
         },
         topicClassification: { type: 'boolean' },
         favorites: { type: 'boolean' },
+        segmentation: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['url'],
+          properties: {
+            url: { type: 'string' },
+          },
+        },
+        metadataExtraction: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['template', 'properties'],
+            properties: {
+              template: objectIdSchema,
+              properties: { type: 'array', items: { type: 'string' } },
+            },
+          },
+        },
       },
     },
     mapStartingPoint: geolocationSchema,
