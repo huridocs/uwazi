@@ -11,7 +11,7 @@ describe('TemplatesFilter', () => {
   let component: any;
   const render = (
     templateFilters?: Partial<SettingsFilterSchema>[],
-    selectedFilters?: Partial<SettingsFilterSchema>[]
+    selectedFilters?: String[]
   ) => {
     const store = {
       templates: fromJS([]),
@@ -63,23 +63,28 @@ describe('TemplatesFilter', () => {
     describe('libraryFilters', () => {
       it('should list all templates if the library filters are not present in configured filters', () => {
         spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
-        render([{ id: '1', name: 'Judge' }], [{ id: '2' }]);
+        render([{ id: '1', name: 'Judge' }], ['2']);
         const documentTypesList = component.find('Connect(DocumentTypesList)');
         expect(documentTypesList.props().fromFilters).toBe(false);
-        expect(documentTypesList.props().selectedTemplates).toEqual([
-          {
-            id: '2',
-          },
-        ]);
+        expect(documentTypesList.props().selectedTemplates).toEqual(['2']);
       });
       it('should remove the library filters not present in filters', () => {
         spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
-        render([{ id: '1', name: 'Judge' }], [{ id: '2' }]);
+        render([{ id: '1', name: 'Judge' }], ['2']);
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(true);
         expect(filterDocumentTypes).toHaveBeenCalledWith([]);
         const documentTypesList = component.find('Connect(DocumentTypesList)');
         expect(documentTypesList.props().selectedTemplates.length).toBe(0);
+      });
+
+      it('should take in to account groups', () => {
+        spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
+        render([{ id: '1', name: 'Judge', items: [{ id: '2' }] }], ['2']);
+        const documentTypesSwitcher = component.find('Switcher');
+        documentTypesSwitcher.props().onChange(true);
+        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        expect(documentTypesList.props().selectedTemplates).toEqual(['2']);
       });
     });
   });

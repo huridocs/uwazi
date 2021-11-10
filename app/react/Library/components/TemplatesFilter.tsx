@@ -34,12 +34,11 @@ const filterValidSelectedTemplates = (configuredFilters: string[], selectedTempl
     ? selectedTemplates.filter(t => configuredFilters.includes(t))
     : selectedTemplates;
 
-const flattenConfiguredFillters = (configuredFilters: SettingsFilterSchema[]) =>
+const flattenConfiguredFilters = (configuredFilters: SettingsFilterSchema[]) =>
   configuredFilters.reduce((result: string[], filter) => {
     if (filter.items && filter.items.length) {
       const items = filter.items.map(item => item.id!);
-      // eslint-disable-next-line no-param-reassign
-      result = result.concat(items);
+      result.push(...items);
     }
     result.push(filter.id!);
     return result;
@@ -51,12 +50,13 @@ export class TemplatesFilterComponent extends React.Component<
 > {
   constructor(props: ComponentProps) {
     super(props);
-    const configuredFilters: string[] = flattenConfiguredFillters(
+    const configuredFilters: string[] = flattenConfiguredFilters(
       props.collection.toJS().filters || []
     );
     const currentSelection = props.libraryFilters.toJS().documentTypes || [];
     const newSelection = filterValidSelectedTemplates(configuredFilters, currentSelection);
     const documentTypeFromFilters = _.isEqual(currentSelection, newSelection);
+
     this.state = {
       documentTypeFromFilters,
       selectedTemplates: newSelection,
