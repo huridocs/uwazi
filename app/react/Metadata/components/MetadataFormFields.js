@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 import { FormGroup } from 'app/Forms';
 import { t, Translate } from 'app/I18N';
 import { preloadOptionsLimit } from 'shared/config';
@@ -373,8 +375,11 @@ export const mapStateToProps = (state, ownProps) => {
   };
 };
 
-function mapDispatchToProps(dispatch) {
+export const mapDispatchToProps = (dispatch, ownProps) => {
+  if (ownProps.boundChange) {
+    return { change: ownProps.boundChange };
+  }
   return bindActionCreators({ change: formActions.change }, dispatch);
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);
