@@ -181,7 +181,7 @@
     "socket.io-redis": "^5.4.0",
     "superagent": "^6.1.0",
     "svg-captcha": "^1.4.0",
-    "swagger-jsdoc": "^3.5.0",
+    "swagger-jsdoc": "^6.1.0",
     "tiny-cookie": "^2.3.2",
     "typescript": "3.9.10",
     "url-join": "^4.0.1",
