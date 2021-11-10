@@ -30,10 +30,7 @@ jest.mock('api/services/tasksmanager/TaskManager.ts');
 describe('PDFSegmentation', () => {
   let segmentPdfs: PDFSegmentation;
 
-  const tenantOne = {
-    name: 'tenantOne',
-    dbName: 'tenantOne',
-    indexName: 'tenantOne',
+  const folders = {
     uploadedDocuments: `${__dirname}/uploads`,
     attachments: `${__dirname}/uploads`,
     customUploads: `${__dirname}/uploads`,
@@ -41,15 +38,18 @@ describe('PDFSegmentation', () => {
     activityLogs: `${__dirname}/uploads`,
   };
 
+  const tenantOne = {
+    name: 'tenantOne',
+    dbName: 'tenantOne',
+    indexName: 'tenantOne',
+    ...folders,
+  };
+
   const tenantTwo = {
     name: 'tenantTwo',
     dbName: 'tenantTwo',
     indexName: 'tenantTwo',
-    uploadedDocuments: `${__dirname}/uploads`,
-    attachments: `${__dirname}/uploads`,
-    customUploads: `${__dirname}/uploads`,
-    temporalFiles: `${__dirname}/uploads`,
-    activityLogs: `${__dirname}/uploads`,
+    ...folders,
   };
 
   let dbOne: Db;
