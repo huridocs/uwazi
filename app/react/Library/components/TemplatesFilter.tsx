@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _, { flatten } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from 'app/ReactReduxForms';
@@ -8,6 +8,7 @@ import { IStore } from 'app/istore';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
 import { NeedAuthorization } from 'app/Auth';
+import { SettingsFilterSchema } from 'shared/types/settingsType';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;
@@ -33,13 +34,26 @@ const filterValidSelectedTemplates = (configuredFilters: string[], selectedTempl
     ? selectedTemplates.filter(t => configuredFilters.includes(t))
     : selectedTemplates;
 
+const flattenConfiguredFillters = (configuredFilters: SettingsFilterSchema[]) =>
+  configuredFilters.reduce((result: string[], filter) => {
+    if (filter.items && filter.items.length) {
+      const items = filter.items.map(item => item.id!);
+      // eslint-disable-next-line no-param-reassign
+      result = result.concat(items);
+    }
+    result.push(filter.id!);
+    return result;
+  }, []);
+
 export class TemplatesFilterComponent extends React.Component<
   ComponentProps,
   TemplatesFilterState
 > {
   constructor(props: ComponentProps) {
     super(props);
-    const configuredFilters: string[] = (props.collection.toJS().filters || []).map(f => f.id!);
+    const configuredFilters: string[] = flattenConfiguredFillters(
+      props.collection.toJS().filters || []
+    );
     const currentSelection = props.libraryFilters.toJS().documentTypes || [];
     const newSelection = filterValidSelectedTemplates(configuredFilters, currentSelection);
     const documentTypeFromFilters = _.isEqual(currentSelection, newSelection);
