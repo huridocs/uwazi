@@ -1,5 +1,5 @@
 import React from 'react';
-import _, { flatten } from 'lodash';
+import _ from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from 'app/ReactReduxForms';
