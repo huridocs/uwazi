@@ -39,6 +39,12 @@ export default (req, _res, next) => {
   try {
     const { url, method, params, query, body, user = {} } = req;
     const baseurl = url.split('?').shift();
+    try {
+      const path = activityLogPath(`${tenants.current().name}$_activity.log`);
+      console.log(path);
+    } catch (e) {
+      console.log(e);
+    }
     if (mustBeLogged(baseurl, method, body)) {
       const expireAt = date.addYearsToCurrentDate(1);
       const bodyLog = { ...body };

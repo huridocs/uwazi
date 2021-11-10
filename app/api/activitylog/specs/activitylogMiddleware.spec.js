@@ -1,3 +1,4 @@
+import { tenants } from 'api/tenants';
 import { appendFile } from 'api/files';
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 import date from 'api/utils/date';
@@ -6,13 +7,24 @@ import activitylog from '../activitylog';
 
 jest.mock('api/files', () => ({
   appendFile: jest.fn(),
-  activityLogPath: jest.fn().mockImplementation(() => './log/default_activity.log'),
 }));
+
+const tenantOne = {
+  name: 'tenantOne',
+  dbName: 'tenantOne',
+  indexName: 'tenantOne',
+  uploadedDocuments: `${__dirname}/uploads`,
+  attachments: `${__dirname}/uploads`,
+  customUploads: `${__dirname}/uploads`,
+  temporalFiles: `${__dirname}/uploads`,
+  activityLogs: `${__dirname}/uploads`,
+};
 
 describe('activitylogMiddleware', () => {
   let req;
   let res;
   let next;
+  tenants.current = () => tenantOne;
 
   beforeEach(() => {
     req = {
