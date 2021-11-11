@@ -34,31 +34,22 @@ function mustBeLogged(baseurl, method, body) {
   return isLoggedRequest && validBody;
 }
 
-// eslint-disable-next-line max-statements
 export default (req, _res, next) => {
   try {
-    const { url, method, params, query, body, user = {} } = req;
-    const baseurl = url.split('?').shift();
-    try {
-      const path = activityLogPath(`${tenants.current().name}$_activity.log`);
-      console.log(path);
-    } catch (e) {
-      console.log(e);
-    }
-    if (mustBeLogged(baseurl, method, body)) {
-      const expireAt = date.addYearsToCurrentDate(1);
-      const bodyLog = { ...body };
+    const baseurl = req.url.split('?').shift();
+    if (mustBeLogged(baseurl, req.method, req.body)) {
+      const bodyLog = { ...req.body };
       if (bodyLog.password) bodyLog.password = '*****';
       const entry = {
         url: baseurl,
-        method,
-        params: JSON.stringify(params),
-        query: JSON.stringify(query),
+        method: req.method,
+        params: JSON.stringify(req.params),
+        query: JSON.stringify(req.query),
         body: JSON.stringify(bodyLog),
-        user: user._id,
-        username: user.username,
+        user: req.user._id,
+        username: req.user.username,
         time: Date.now(),
-        expireAt,
+        expireAt: date.addYearsToCurrentDate(1),
       };
       activitylog.save(entry);
       appendFile(
