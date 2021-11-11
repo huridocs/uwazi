@@ -76,6 +76,21 @@ const termsFilter = (query: SearchQuery, propertyName: string) =>
 const defaultFields = ['title', 'template', 'sharedId'];
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
   const { searchString, fullTextSearchString, searchMethod } = await extractSearchParams(query);
+
+  let sort = [];
+  if (query.sort) {
+    let order = 'asc';
+    let sortProp = query.sort;
+    if (query.sort.startsWith('-')) {
+      order = 'desc';
+      sortProp = sortProp.substring(1);
+    }
+    sort = [{ [`${sortProp}.sort`]: order }];
+    if (sortProp.startsWith('metadata.')) {
+      sort = [{ [`${sortProp}.value.sort`]: order }];
+    }
+  }
+
   return {
     _source: {
       includes: query.fields || defaultFields,
@@ -96,6 +111,7 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
         ],
       },
     },
+    sort,
     from: 0,
     size: query.page?.limit || 30,
   };
