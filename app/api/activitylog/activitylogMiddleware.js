@@ -34,23 +34,30 @@ function mustBeLogged(baseurl, method, body) {
   return isLoggedRequest && validBody;
 }
 
+const createEntry = req => {
+  const { url, method, params, query, body, user = {} } = req;
+  const expireAt = date.addYearsToCurrentDate(1);
+  const bodyLog = { ...body };
+  if (bodyLog.password) bodyLog.password = '*****';
+  return {
+    url,
+    method,
+    params: JSON.stringify(params),
+    query: JSON.stringify(query),
+    body: JSON.stringify(bodyLog),
+    user: user._id,
+    username: user.username,
+    time: Date.now(),
+    expireAt,
+  };
+};
+
 export default (req, _res, next) => {
   try {
-    const baseurl = req.url.split('?').shift();
-    if (mustBeLogged(baseurl, req.method, req.body)) {
-      const bodyLog = { ...req.body };
-      if (bodyLog.password) bodyLog.password = '*****';
-      const entry = {
-        url: baseurl,
-        method: req.method,
-        params: JSON.stringify(req.params),
-        query: JSON.stringify(req.query),
-        body: JSON.stringify(bodyLog),
-        user: req.user._id,
-        username: req.user.username,
-        time: Date.now(),
-        expireAt: date.addYearsToCurrentDate(1),
-      };
+    const { url, method, body = {} } = req;
+    const baseurl = url.split('?').shift();
+    if (mustBeLogged(baseurl, method, body)) {
+      const entry = createEntry({ ...req, url: baseurl });
       activitylog.save(entry);
       appendFile(
         activityLogPath(`${tenants.current().name}$_activity.log`),
