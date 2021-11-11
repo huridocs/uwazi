@@ -114,7 +114,7 @@
     "html-to-react": "^1.4.3",
     "htmlparser2": "^3.9.2",
     "immutable": "^3.7.6",
-    "is-reachable": "5.0.0",
+    "is-reachable": "^5.1.0",
     "isomorphic-fetch": "2.2.1",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
