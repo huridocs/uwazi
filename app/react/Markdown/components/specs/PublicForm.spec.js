@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { LocalForm } from 'react-redux-form';
+import { MetadataFormFields } from 'app/Metadata';
 import PublicForm from '../PublicForm.js';
 
 describe('PublicForm', () => {
@@ -45,6 +46,16 @@ describe('PublicForm', () => {
   it('should render a form', () => {
     render();
     expect(component).toMatchSnapshot();
+  });
+
+  it('should bind the MetadataFormFields change to this form', () => {
+    render();
+    const metadataFormFields = component.find(MetadataFormFields);
+    metadataFormFields.props().boundChange('publicForm.title', 'New Title');
+
+    expect(instance.formDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ value: 'New Title', model: 'publicForm.title' })
+    );
   });
 
   it('should render a generated ID as title if the option is marked', () => {

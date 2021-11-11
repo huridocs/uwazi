@@ -48,7 +48,6 @@ exports[`PublicForm should enable remote captcha 1`] = `
         >
           <DefaultConnectedControlText
             className="form-control"
-            defaultValue=""
             id="title"
             model=".title"
           />
@@ -56,6 +55,7 @@ exports[`PublicForm should enable remote captcha 1`] = `
       </ul>
     </Connect(FormGroup)>
     <Connect(MetadataFormFields)
+      boundChange={[Function]}
       model="publicform"
       template={
         Immutable.Map {
@@ -167,7 +167,6 @@ exports[`PublicForm should render a form 1`] = `
         >
           <DefaultConnectedControlText
             className="form-control"
-            defaultValue=""
             id="title"
             model=".title"
           />
@@ -175,6 +174,7 @@ exports[`PublicForm should render a form 1`] = `
       </ul>
     </Connect(FormGroup)>
     <Connect(MetadataFormFields)
+      boundChange={[Function]}
       model="publicform"
       template={
         Immutable.Map {
@@ -286,7 +286,6 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
         >
           <DefaultConnectedControlText
             className="form-control"
-            defaultValue=""
             id="title"
             model=".title"
           />
@@ -294,6 +293,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       </ul>
     </Connect(FormGroup)>
     <Connect(MetadataFormFields)
+      boundChange={[Function]}
       model="publicform"
       template={
         Immutable.Map {
