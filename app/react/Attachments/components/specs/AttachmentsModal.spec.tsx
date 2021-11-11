@@ -1,11 +1,11 @@
 import React from 'react';
 import thunk from 'redux-thunk';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { LocalForm } from 'react-redux-form';
 import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
+import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResource';
 import { AttachmentsModalCmp, AttachmentsModalProps } from '../AttachmentsModal';
 
 const mockStore = configureMockStore([thunk]);
@@ -60,9 +60,15 @@ describe('Attachments Modal', () => {
     render();
 
     component.find('.modal-tab-2').simulate('click');
-    component.find(LocalForm).simulate('submit', { url: 'http://test.test', name: 'testName' });
-
-    expect(props.uploadAttachmentFromUrl).toHaveBeenCalled();
+    const form = component.find(WebMediaResourceForm).at(0);
+    const formData = { url: 'http://test.test', name: 'testName' };
+    form.props().handleSubmit(formData);
+    expect(props.uploadAttachmentFromUrl).toHaveBeenCalledWith(
+      props.entitySharedId,
+      formData,
+      props.storeKey,
+      ''
+    );
   });
 
   it('Should call onClose', () => {

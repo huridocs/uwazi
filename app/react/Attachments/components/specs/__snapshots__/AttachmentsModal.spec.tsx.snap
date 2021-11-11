@@ -122,84 +122,11 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
           <div
             className="wrapper-web"
           >
-            <LocalForm
-              getDispatch={[Function]}
-              initialState={Object {}}
-              model="urlForm"
-              onSubmit={[Function]}
-              validators={
-                Object {
-                  "name": Object {
-                    "required": [Function],
-                  },
-                  "url": Object {
-                    "required": [Function],
-                  },
-                }
-              }
-            >
-              <Connect(FormGroup)
-                className="form-group has-feedback"
-                model=".url"
-              >
-                <Modeled(Connect(Field))
-                  model=".url"
-                >
-                  <input
-                    className="form-control web-attachment-url"
-                    placeholder="Paste URL here"
-                    type="text"
-                  />
-                </Modeled(Connect(Field))>
-                <Tip
-                  icon="info-circle"
-                  position="right"
-                >
-                  <p>
-                    <Connect(Translate)>
-                      To get resource from web:
-                    </Connect(Translate)>
-                  </p>
-                  <p>
-                    <Connect(Translate)>
-                      1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
-                    </Connect(Translate)>
-                  </p>
-                  <p>
-                    <Connect(Translate)>
-                      2. Return here and paste the URL in this field (Ctrl+V or Command+V)
-                    </Connect(Translate)>
-                  </p>
-                </Tip>
-              </Connect(FormGroup)>
-              <Connect(FormGroup)
-                className="form-group"
-                model=".name"
-              >
-                <Modeled(Connect(Field))
-                  className="field"
-                  model=".name"
-                >
-                  <input
-                    className="form-control web-attachment-name"
-                    placeholder="Title"
-                    type="text"
-                  />
-                </Modeled(Connect(Field))>
-              </Connect(FormGroup)>
-              <button
-                className="btn btn-success"
-                type="submit"
-              >
-                <Connect(Icon)
-                  icon="link"
-                />
-                  
-                <Connect(Translate)>
-                  Add resource
-                </Connect(Translate)>
-              </button>
-            </LocalForm>
+            <WebMediaResourceForm
+              dispatch={[Function]}
+              handleSubmit={[Function]}
+              hasName={true}
+            />
           </div>
         </TabContent>
       </div>
@@ -330,84 +257,11 @@ exports[`Attachments Modal Should match render of web form 1`] = `
           <div
             className="wrapper-web"
           >
-            <LocalForm
-              getDispatch={[Function]}
-              initialState={Object {}}
-              model="urlForm"
-              onSubmit={[Function]}
-              validators={
-                Object {
-                  "name": Object {
-                    "required": [Function],
-                  },
-                  "url": Object {
-                    "required": [Function],
-                  },
-                }
-              }
-            >
-              <Connect(FormGroup)
-                className="form-group has-feedback"
-                model=".url"
-              >
-                <Modeled(Connect(Field))
-                  model=".url"
-                >
-                  <input
-                    className="form-control web-attachment-url"
-                    placeholder="Paste URL here"
-                    type="text"
-                  />
-                </Modeled(Connect(Field))>
-                <Tip
-                  icon="info-circle"
-                  position="right"
-                >
-                  <p>
-                    <Connect(Translate)>
-                      To get resource from web:
-                    </Connect(Translate)>
-                  </p>
-                  <p>
-                    <Connect(Translate)>
-                      1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
-                    </Connect(Translate)>
-                  </p>
-                  <p>
-                    <Connect(Translate)>
-                      2. Return here and paste the URL in this field (Ctrl+V or Command+V)
-                    </Connect(Translate)>
-                  </p>
-                </Tip>
-              </Connect(FormGroup)>
-              <Connect(FormGroup)
-                className="form-group"
-                model=".name"
-              >
-                <Modeled(Connect(Field))
-                  className="field"
-                  model=".name"
-                >
-                  <input
-                    className="form-control web-attachment-name"
-                    placeholder="Title"
-                    type="text"
-                  />
-                </Modeled(Connect(Field))>
-              </Connect(FormGroup)>
-              <button
-                className="btn btn-success"
-                type="submit"
-              >
-                <Connect(Icon)
-                  icon="link"
-                />
-                  
-                <Connect(Translate)>
-                  Add resource
-                </Connect(Translate)>
-              </button>
-            </LocalForm>
+            <WebMediaResourceForm
+              dispatch={[Function]}
+              handleSubmit={[Function]}
+              hasName={true}
+            />
           </div>
         </TabContent>
       </div>

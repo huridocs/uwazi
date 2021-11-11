@@ -4,16 +4,10 @@ import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
 import { bindActionCreators, Dispatch } from 'redux';
-import { actions as formActions, LocalForm, Field } from 'react-redux-form';
-import Tip from 'app/Layout/Tip';
+import { actions as formActions } from 'react-redux-form';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { FormGroup } from 'app/Forms';
-
-const validators = {
-  name: { required: (val: any) => !!val && val.trim() !== '' },
-  url: { required: (val: any) => !!val && val.trim() !== '' },
-};
+import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResource';
 
 export interface AttachmentsModalProps {
   isOpen: boolean;
@@ -59,10 +53,6 @@ export const AttachmentsModalCmp = ({
     await Promise.all(
       accepted.map(file => uploadAttachmentProp(entitySharedId, file, storeKey, model))
     );
-  };
-
-  const attachDispatch = (dispatch: Function) => {
-    formDispatch = dispatch;
   };
 
   const handleSubmitUrlForm = (formModelData: { url: string; name: string }) => {
@@ -147,53 +137,13 @@ export const AttachmentsModalCmp = ({
             </TabContent>
             <TabContent for="uploadWeb" className="tab-content centered">
               <div className="wrapper-web">
-                <LocalForm
-                  getDispatch={(dispatch: Function) => attachDispatch(dispatch)}
-                  onSubmit={handleSubmitUrlForm}
-                  model="urlForm"
-                  validators={validators}
-                >
-                  <FormGroup className="form-group has-feedback" model=".url">
-                    <Field model=".url">
-                      <input
-                        type="text"
-                        className="form-control web-attachment-url"
-                        placeholder="Paste URL here"
-                      />
-                    </Field>
-                    <Tip icon="info-circle" position="right">
-                      <p>
-                        <Translate>To get resource from web:</Translate>
-                      </p>
-                      <p>
-                        <Translate>
-                          1. Right-click an image or video on the web and copy the image's URL.
-                          Altenatively websites offers share button whereyou can get URL.
-                        </Translate>
-                      </p>
-                      <p>
-                        <Translate>
-                          2. Return here and paste the URL in this field (Ctrl+V or Command+V)
-                        </Translate>
-                      </p>
-                    </Tip>
-                  </FormGroup>
-
-                  <FormGroup className="form-group" model=".name">
-                    <Field model=".name" className="field">
-                      <input
-                        type="text"
-                        className="form-control web-attachment-name"
-                        placeholder="Title"
-                      />
-                    </Field>
-                  </FormGroup>
-
-                  <button type="submit" className="btn btn-success">
-                    <Icon icon="link" />
-                    &nbsp; <Translate>Add resource</Translate>
-                  </button>
-                </LocalForm>
+                <WebMediaResourceForm
+                  handleSubmit={handleSubmitUrlForm}
+                  dispatch={(dispatch: Function) => {
+                    formDispatch = dispatch;
+                  }}
+                  hasName
+                />
               </div>
             </TabContent>
           </div>
