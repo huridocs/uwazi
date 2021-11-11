@@ -5,7 +5,7 @@ import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResource';
+import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 import { AttachmentsModalCmp, AttachmentsModalProps } from '../AttachmentsModal';
 
 const mockStore = configureMockStore([thunk]);

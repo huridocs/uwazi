@@ -1,0 +1,151 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should match render of wem media form 1`] = `
+<LocalForm
+  initialState={
+    Object {
+      "url": undefined,
+    }
+  }
+  model="urlForm"
+  onSubmit={[MockFunction]}
+  validators={
+    Object {
+      "url": Object {
+        "required": [Function],
+      },
+    }
+  }
+>
+  <Connect(FormGroup)
+    className="has-feedback"
+    model=".url"
+  >
+    <Modeled(Connect(Field))
+      model=".url"
+    >
+      <input
+        className="form-control web-attachment-url"
+        placeholder="Paste URL here"
+        type="text"
+      />
+    </Modeled(Connect(Field))>
+    <Tip
+      icon="info-circle"
+      position="right"
+    >
+      <p>
+        <Connect(Translate)>
+          To get resource from web:
+        </Connect(Translate)>
+      </p>
+      <p>
+        <Connect(Translate)>
+          1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
+        </Connect(Translate)>
+      </p>
+      <p>
+        <Connect(Translate)>
+          2. Return here and paste the URL in this field (Ctrl+V or Command+V)
+        </Connect(Translate)>
+      </p>
+    </Tip>
+  </Connect(FormGroup)>
+  <button
+    className="btn btn-success"
+    type="submit"
+  >
+    <Connect(Icon)
+      icon="link"
+    />
+      
+    <Connect(Translate)>
+      Add resource
+    </Connect(Translate)>
+  </button>
+</LocalForm>
+`;
+
+exports[`should also display a name field when hasName is true 1`] = `
+<LocalForm
+  initialState={
+    Object {
+      "url": undefined,
+    }
+  }
+  model="urlForm"
+  onSubmit={[MockFunction]}
+  validators={
+    Object {
+      "name": Object {
+        "required": [Function],
+      },
+      "url": Object {
+        "required": [Function],
+      },
+    }
+  }
+>
+  <Connect(FormGroup)
+    className="has-feedback"
+    model=".url"
+  >
+    <Modeled(Connect(Field))
+      model=".url"
+    >
+      <input
+        className="form-control web-attachment-url"
+        placeholder="Paste URL here"
+        type="text"
+      />
+    </Modeled(Connect(Field))>
+    <Tip
+      icon="info-circle"
+      position="right"
+    >
+      <p>
+        <Connect(Translate)>
+          To get resource from web:
+        </Connect(Translate)>
+      </p>
+      <p>
+        <Connect(Translate)>
+          1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
+        </Connect(Translate)>
+      </p>
+      <p>
+        <Connect(Translate)>
+          2. Return here and paste the URL in this field (Ctrl+V or Command+V)
+        </Connect(Translate)>
+      </p>
+    </Tip>
+  </Connect(FormGroup)>
+  <Connect(FormGroup)
+    className="form-group"
+    model=".name"
+  >
+    <Modeled(Connect(Field))
+      className="field"
+      model=".name"
+    >
+      <input
+        className="form-control web-attachment-name"
+        placeholder="Title"
+        type="text"
+      />
+    </Modeled(Connect(Field))>
+  </Connect(FormGroup)>
+  <button
+    className="btn btn-success"
+    type="submit"
+  >
+    <Connect(Icon)
+      icon="link"
+    />
+      
+    <Connect(Translate)>
+      Add resource
+    </Connect(Translate)>
+  </button>
+</LocalForm>
+`;

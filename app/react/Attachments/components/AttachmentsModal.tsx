@@ -7,7 +7,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResource';
+import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 
 export interface AttachmentsModalProps {
   isOpen: boolean;

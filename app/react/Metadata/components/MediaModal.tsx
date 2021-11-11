@@ -7,7 +7,7 @@ import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments';
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResource';
+import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 
 export enum MediaModalType {
   Image,
