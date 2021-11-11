@@ -1,30 +1,21 @@
-import { tenants } from 'api/tenants';
-import { appendFile } from 'api/files';
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 import date from 'api/utils/date';
+import asyncFS from 'api/utils/async-fs';
+import { testingTenants } from 'api/utils/testingTenants';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
-
-jest.mock('api/files', () => ({
-  appendFile: jest.fn(),
-}));
-
-const tenantOne = {
-  name: 'tenantOne',
-  dbName: 'tenantOne',
-  indexName: 'tenantOne',
-  uploadedDocuments: `${__dirname}/uploads`,
-  attachments: `${__dirname}/uploads`,
-  customUploads: `${__dirname}/uploads`,
-  temporalFiles: `${__dirname}/uploads`,
-  activityLogs: `${__dirname}/uploads`,
-};
 
 describe('activitylogMiddleware', () => {
   let req;
   let res;
   let next;
-  tenants.current = () => tenantOne;
+
+  beforeAll(() => {
+    testingTenants.mockCurrentTenant({
+      name: 'tenant1',
+      activityLogs: `${__dirname}/../../files/specs/uploads`,
+    });
+  });
 
   beforeEach(() => {
     req = {
@@ -83,22 +74,12 @@ describe('activitylogMiddleware', () => {
     });
   });
 
-  it('should save the log entry on filesystem', () => {
+  it('should save the log entry on filesystem', async () => {
     activitylogMiddleware(req, res, next);
-    expect(appendFile).toHaveBeenCalledWith(
-      './log/default_activity.log',
-      `${JSON.stringify({
-        url: '/api/entities',
-        method: 'POST',
-        params: '{"some":"params"}',
-        query: '{"a":"query"}',
-        body: '{"title":"Hi","password":"*****"}',
-        user: 123,
-        username: 'admin',
-        time: 1,
-        expireAt: date.addYearsToCurrentDate(1),
-      })}\r\n`
+    const file = await asyncFS.exists(
+      `${__dirname}/../../files/specs/uploads/tenant1$_activity.log`
     );
+    expect(file).toBe(true);
   });
 
   describe('non registered entries', () => {
