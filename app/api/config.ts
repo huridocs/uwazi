@@ -6,7 +6,7 @@ const {
   UPLOADS_FOLDER,
   CUSTOM_UPLOADS_FOLDER,
   TEMPORAL_FILES_FOLDER,
-  ACTIVITY_LOGS,
+  ACTIVITY_LOGS_FOLDER,
   USER_SESSION_SECRET,
   MONGO_URI,
   ELASTICSEARCH_URL,
@@ -47,7 +47,7 @@ export const config = {
     attachments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
-    activityLogs: ACTIVITY_LOGS || `${rootPath}/log/`,
+    activityLogs: ACTIVITY_LOGS_FOLDER || `${rootPath}/log/`,
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
 
