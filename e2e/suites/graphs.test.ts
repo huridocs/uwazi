@@ -1,12 +1,10 @@
 /*global page*/
-import sharp from 'sharp';
-import { ElementHandle } from 'puppeteer';
-import { ensure } from 'shared/tsUtils';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import { displayGraph } from '../helpers/graphs';
 import disableTransitions from '../helpers/disableTransitions';
+import { getContainerScreenshot } from '../helpers/elementSnapshot';
 
 const localSelectors = {
   pageContentsInput: '.tab-content > textarea',
@@ -22,13 +20,6 @@ const graphs = {
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
 };
 
-const DEFAULT_WIDTH = 1000;
-
-const resizeImage = async (image: any) =>
-  sharp(image)
-    .resize(DEFAULT_WIDTH)
-    .toBuffer();
-
 const insertChart = async (chart: string, chartName: string) => {
   await expect(page).toFill('input[name="page.data.title"]', chartName);
   await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
@@ -40,11 +31,6 @@ const savePage = async () => {
   await expect(page).toClick('button', { text: 'Save' });
   await expect(page).toMatch('Saved successfully.');
   await expect(page).toMatch('(view page)');
-};
-
-const getChartContainerScreenshot = async (page: any, className: string) => {
-  const chartContainer = ensure<ElementHandle>(await page.$(className));
-  return resizeImage(await chartContainer.screenshot());
 };
 
 describe('Graphs in Page ', () => {
@@ -78,7 +64,7 @@ describe('Graphs in Page ', () => {
 
     it('should display Bar chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
-      const chartScreenshot = await getChartContainerScreenshot(
+      const chartScreenshot = await getContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
@@ -99,7 +85,7 @@ describe('Graphs in Page ', () => {
 
     it('should display Pie chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
-      const chartScreenshot = await getChartContainerScreenshot(
+      const chartScreenshot = await getContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
@@ -120,7 +106,7 @@ describe('Graphs in Page ', () => {
 
     it('should display List chart graph in page with no more than a 7% difference', async () => {
       const graphsPage = await displayGraph();
-      const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
+      const chartScreenshot = await getContainerScreenshot(graphsPage, '.ListChart');
 
       expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.07,
@@ -149,7 +135,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Bar chart graph in page with no more than a 7% difference', async () => {
-      const chartScreenshot = await getChartContainerScreenshot(
+      const chartScreenshot = await getContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
@@ -172,7 +158,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Pie chart graph in page with no more than a 7% difference', async () => {
-      const chartScreenshot = await getChartContainerScreenshot(
+      const chartScreenshot = await getContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
@@ -192,7 +178,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display List chart graph in page with no more than a 8% difference', async () => {
-      const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
+      const chartScreenshot = await getContainerScreenshot(graphsPage, '.ListChart');
       expect(chartScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.08,
         failureThresholdType: 'percent',
