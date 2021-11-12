@@ -14,6 +14,7 @@ export const getContainerScreenshot = async (
   className: string,
   width: number = DEFAULT_WIDTH
 ) => {
+  await page.waitForSelector(className);
   const chartContainer = ensure<ElementHandle>(await page.$(className));
   return resizeImage(await chartContainer.screenshot(), width);
 };

@@ -20,6 +20,7 @@ describe('Settings', () => {
   it('should display Account with no more than a 7% difference', async () => {
     await expect(page).toClick('a.settings-section');
     await expect(page).toClick('span', { text: 'Account' });
+    // await page.waitForSelector('div.account-settings');
     const accountsScreenshot = await getContainerScreenshot(page, 'div.account-settings');
     expect(accountsScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,
@@ -133,6 +134,44 @@ describe('Settings', () => {
         failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
+      });
+    });
+
+    describe('Thesauri', () => {
+      it('should display Thesaurus page with no more than a 7% difference', async () => {
+        await expect(page).toClick('a.settings-section');
+        await expect(page).toClick('span', { text: 'Thesauri' });
+        const templatesScreenshot = await getContainerScreenshot(page, 'div.settings-content');
+        expect(templatesScreenshot).toMatchImageSnapshot({
+          failureThreshold: 0.07,
+          failureThresholdType: 'percent',
+          allowSizeMismatch: true,
+        });
+      });
+      it('should display new Thesaurus page with no more than a 7% difference', async () => {
+        await expect(page).toClick('a.settings-section');
+        await expect(page).toClick('span', { text: 'Thesauri' });
+        await expect(page).toClick('div.settings-footer > a');
+        const templatesScreenshot = await getContainerScreenshot(page, 'div.settings-content');
+        expect(templatesScreenshot).toMatchImageSnapshot({
+          failureThreshold: 0.07,
+          failureThresholdType: 'percent',
+          allowSizeMismatch: true,
+        });
+      });
+      it('should display new Thesaurus with groups page with no more than a 7% difference', async () => {
+        await expect(page).toClick('a.settings-section');
+        await expect(page).toClick('span', { text: 'Thesauri' });
+        await expect(page).toClick('div.settings-footer > a');
+        await expect(page).toClick('div.settings-footer > button');
+        await expect(page).toClick('div.settings-footer > button');
+        await expect(page).toClick('div.settings-footer > button');
+        const templatesScreenshot = await getContainerScreenshot(page, 'div.settings-content');
+        expect(templatesScreenshot).toMatchImageSnapshot({
+          failureThreshold: 0.07,
+          failureThresholdType: 'percent',
+          allowSizeMismatch: true,
+        });
       });
     });
   });
