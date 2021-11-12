@@ -1,7 +1,8 @@
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import asyncFS from 'api/utils/async-fs';
-import { testingTenants } from 'api/utils/testingTenants';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
 
@@ -11,10 +12,7 @@ describe('activitylogMiddleware', () => {
   let next;
 
   beforeAll(() => {
-    testingTenants.mockCurrentTenant({
-      name: 'tenant1',
-      activityLogs: `${__dirname}/../../files/specs/uploads`,
-    });
+    testingEnvironment.setTenant();
   });
 
   beforeEach(() => {
@@ -76,10 +74,10 @@ describe('activitylogMiddleware', () => {
 
   it('should save the log entry on filesystem', async () => {
     activitylogMiddleware(req, res, next);
-    const file = await asyncFS.exists(
-      `${__dirname}/../../files/specs/uploads/tenant1_activity.log`
+    const file = await asyncFS.readFile(
+      `${tenants.current().activityLogs}/${tenants.current().name}_activity.log`
     );
-    expect(file).toBe(true);
+    expect(file.length).toBeGreaterThan(0);
   });
 
   describe('non registered entries', () => {
