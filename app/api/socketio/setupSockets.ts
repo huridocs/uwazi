@@ -1,13 +1,13 @@
 //@ts-ignore
-import redis from 'redis';
+import { RedisClient } from 'redis';
 //@ts-ignore
-import redisAdapter from 'socket.io-redis';
 import cookie from 'cookie';
 import { Server } from 'http';
 import { Server as SocketIoServer } from 'socket.io';
 import { Application, Request, Response, NextFunction } from 'express';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
+import { createAdapter } from '@socket.io/redis-adapter';
 
 declare global {
   namespace Express {
@@ -45,16 +45,9 @@ const setupSockets = (server: Server, app: Application) => {
   };
 
   if (config.redis.activated) {
-    io.adapter(
-      redisAdapter({
-        pubClient: redis.createClient(config.redis.port, config.redis.host, {
-          retry_strategy: () => 3000,
-        }),
-        subClient: redis.createClient(config.redis.port, config.redis.host, {
-          retry_strategy: () => 3000,
-        }),
-      })
-    );
+    const pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
+    const subClient = pubClient.duplicate();
+    io.adapter(createAdapter(pubClient, subClient));
   }
 
   app.use((req, _res, next) => {
