@@ -21,9 +21,6 @@ describe('templates routes', () => {
       templates: [{ name: 'testing template', properties: [{ name: 'name', type: 'text' }] }],
     });
     spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
-    spyOn(entitiesIndex, 'checkMapping').and.returnValue(
-      Promise.resolve({ errors: [], valid: true })
-    );
     spyOn(reindex, 'checkIfReindex').and.returnValue(true);
   });
 
@@ -133,12 +130,10 @@ describe('templates routes', () => {
 
     describe('when there is an error', () => {
       it('should return the error in the response', async () => {
-        spyOn(templates, 'save').and.returnValue(Promise.reject(new Error('error')));
-
         try {
           await routes.post('/api/templates', { body: {} });
         } catch (error) {
-          expect(error).toEqual(new Error('error'));
+          expect(error).toEqual(new Error('validation failed'));
         }
       });
     });
@@ -186,14 +181,6 @@ describe('templates routes', () => {
           done();
         })
         .catch(catchErrors(done));
-    });
-  });
-
-  describe('/api/templates/check_mapping', () => {
-    it('should check if a template is valid vs the current elasticsearch mapping', async () => {
-      const req = { body: { _id: 'abc1', properties: [] }, socket: mocketSocketIo() };
-      const result = await routes.post('/api/templates/check_mapping', req);
-      expect(result).toEqual({ errors: [], valid: true });
     });
   });
 });
