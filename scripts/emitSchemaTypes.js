@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { compile } = require('json-schema-to-typescript');
 
-const rootPath = `..`;
+const rootPath = '..';
 
 const opts = {
   strictIndexSignatures: true,
@@ -97,8 +97,6 @@ const writeSchema = async (schemas, file) => {
       return compile(schema, schema.title || firstUp(name), opts);
     })
   );
-
-
 
   const contents = fs.readFileSync(path.join(__dirname, file)).toString();
   writeTypeFile(file, typeImports(contents.match(typeImportFindRegex)), snippets);
