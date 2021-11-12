@@ -1,4 +1,6 @@
+/* eslint-disable max-statements */
 import Joi from 'joi';
+import { Application } from 'express';
 
 import settings from 'api/settings';
 import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
@@ -9,8 +11,7 @@ import templates from './templates';
 import { generateNamesAndIds } from './utils';
 import { checkIfReindex } from './reindex';
 
-export default app => {
-  // eslint-disable-next-line max-statements
+export default (app: Application) => {
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
       const { reindex: fullReindex } = req.body;
@@ -29,7 +30,7 @@ export default app => {
 
       if (fullReindex) {
         const allTemplates = await templates.get();
-        reindexAll(allTemplates, search);
+        await reindexAll(allTemplates, search);
       }
       res.json(response);
     } catch (error) {
@@ -76,10 +77,10 @@ export default app => {
       'query'
     ),
     (req, res, next) => {
-      const template = { _id: req.query._id };
+      const template = { _id: req.query._id, name: req.query.name };
       templates
         .delete(template)
-        .then(() => settings.removeTemplateFromFilters(template._id))
+        .then(async () => settings.removeTemplateFromFilters(template._id))
         .then(newSettings => {
           res.json(template);
           req.sockets.emitToCurrentTenant('updateSettings', newSettings);

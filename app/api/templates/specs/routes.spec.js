@@ -4,7 +4,7 @@ import settings from 'api/settings/settings';
 import db from 'api/utils/testing_db';
 import * as entitiesIndex from 'api/search/entitiesIndex';
 import templates from '../templates';
-import templateRoutes from '../routes.js';
+import templateRoutes from '../routes';
 
 import * as reindex from '../reindex';
 
