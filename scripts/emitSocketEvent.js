@@ -1,6 +1,4 @@
-import { Emitter } from '@socket.io/redis-emitter';
-import { createClient } from 'redis';
-import { config } from '../app/api/config';
+import { emitSocketEvent } from '../app/api/socketio/standaloneEmitSocketEvent';
 
 const { tenant, event } = require('yargs')
   .option('tenant', {
@@ -16,18 +14,4 @@ const { tenant, event } = require('yargs')
   })
   .demandOption(['tenant', 'event'], '\n\n').argv;
 
-const redisClient = createClient({ host: config.redis.host, port: config.redis.port });
-
-redisClient.on('error', e => {
-  throw e;
-});
-
-redisClient.on('ready', () => {
-  const io = new Emitter(redisClient);
-  if (tenant === 'all') {
-    io.emit(event);
-  } else {
-    io.to(tenant).emit(event);
-  }
-  redisClient.quit();
-});
+emitSocketEvent(tenant, event, '');
