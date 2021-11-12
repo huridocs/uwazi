@@ -6,6 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const { compile } = require('json-schema-to-typescript');
 
+const rootPath = `${__dirname}/../app`;
+
 const opts = {
   strictIndexSignatures: true,
   enableConstEnums: false,
@@ -40,7 +42,7 @@ const typeImports = matches => {
   return matches.reduce((res, match) => {
     const file = match.match(typeImportRegex)[1];
     const typeFile = typesFileName(file);
-    const schemas = require(`./app/${file}`);
+    const schemas = require(`${rootPath}/${file}`);
     let final = match.replace(file, typeFile);
     Object.entries(schemas).forEach(([name, schema]) => {
       if (name.match(/Schema/)) {
@@ -108,12 +110,10 @@ const emitSchemaTypes = async file => {
     }
 
     if (file.match(/shared\/types/) || file.match(/Schema/)) {
-      const schemas = require(`./${file}`);
-
+      const schemas = require(file);
       if (!schemas.emitSchemaTypes) {
         return;
       }
-
       writeSchema(schemas, file);
     }
   } catch (err) {
@@ -138,4 +138,4 @@ function walk(dir, callback) {
   });
 }
 
-walk('./app', emitSchemaTypes);
+walk(rootPath, emitSchemaTypes);
