@@ -60,7 +60,7 @@ export default (req, _res, next) => {
       const entry = createEntry({ ...req, url: baseurl });
       activitylog.save(entry);
       appendFile(
-        activityLogPath(`${tenants.current().name}$_activity.log`),
+        activityLogPath(`${tenants.current().name}_activity.log`),
         `${JSON.stringify(entry)}\r\n`
       );
     }

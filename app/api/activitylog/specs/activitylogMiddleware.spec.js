@@ -77,7 +77,7 @@ describe('activitylogMiddleware', () => {
   it('should save the log entry on filesystem', async () => {
     activitylogMiddleware(req, res, next);
     const file = await asyncFS.exists(
-      `${__dirname}/../../files/specs/uploads/tenant1$_activity.log`
+      `${__dirname}/../../files/specs/uploads/tenant1_activity.log`
     );
     expect(file).toBe(true);
   });
