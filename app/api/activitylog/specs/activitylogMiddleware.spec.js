@@ -1,18 +1,19 @@
-import { appendFile } from 'api/files';
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
+import asyncFS from 'api/utils/async-fs';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
-
-jest.mock('api/files', () => ({
-  appendFile: jest.fn(),
-  activityLogPath: jest.fn().mockImplementation(() => './log/default_activity.log'),
-}));
 
 describe('activitylogMiddleware', () => {
   let req;
   let res;
   let next;
+
+  beforeAll(() => {
+    testingEnvironment.setTenant();
+  });
 
   beforeEach(() => {
     req = {
@@ -71,22 +72,12 @@ describe('activitylogMiddleware', () => {
     });
   });
 
-  it('should save the log entry on filesystem', () => {
+  it('should save the log entry on filesystem', async () => {
     activitylogMiddleware(req, res, next);
-    expect(appendFile).toHaveBeenCalledWith(
-      './log/default_activity.log',
-      `${JSON.stringify({
-        url: '/api/entities',
-        method: 'POST',
-        params: '{"some":"params"}',
-        query: '{"a":"query"}',
-        body: '{"title":"Hi","password":"*****"}',
-        user: 123,
-        username: 'admin',
-        time: 1,
-        expireAt: date.addYearsToCurrentDate(1),
-      })}\r\n`
+    const file = await asyncFS.readFile(
+      `${tenants.current().activityLogs}/${tenants.current().name}_activity.log`
     );
+    expect(file.length).toBeGreaterThan(0);
   });
 
   describe('non registered entries', () => {
