@@ -1,5 +1,7 @@
 import { activityLogPath, appendFile } from 'api/files';
 import date from 'api/utils/date';
+import createError from 'api/utils/Error';
+import { tenants } from 'api/tenants';
 import activitylog from './activitylog';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
@@ -32,26 +34,40 @@ function mustBeLogged(baseurl, method, body) {
   return isLoggedRequest && validBody;
 }
 
-export default (req, _res, next) => {
+const createEntry = req => {
   const { url, method, params, query, body, user = {} } = req;
-  const baseurl = url.split('?').shift();
-  if (mustBeLogged(baseurl, method, body)) {
-    const expireAt = date.addYearsToCurrentDate(1);
-    const bodyLog = { ...body };
-    if (bodyLog.password) bodyLog.password = '*****';
-    const entry = {
-      url: baseurl,
-      method,
-      params: JSON.stringify(params),
-      query: JSON.stringify(query),
-      body: JSON.stringify(bodyLog),
-      user: user._id,
-      username: user.username,
-      time: Date.now(),
-      expireAt,
-    };
-    activitylog.save(entry);
-    appendFile(activityLogPath(), `${JSON.stringify(entry)}\r\n`);
+  const expireAt = date.addYearsToCurrentDate(1);
+  const bodyLog = { ...body };
+  if (bodyLog.password) bodyLog.password = '*****';
+  return {
+    url,
+    method,
+    params: JSON.stringify(params),
+    query: JSON.stringify(query),
+    body: JSON.stringify(bodyLog),
+    user: user._id,
+    username: user.username,
+    time: Date.now(),
+    expireAt,
+  };
+};
+
+export default (req, _res, next) => {
+  try {
+    const { url, method, body = {} } = req;
+    const baseurl = url.split('?').shift();
+    if (mustBeLogged(baseurl, method, body)) {
+      const entry = createEntry({ ...req, url: baseurl });
+      activitylog.save(entry);
+      appendFile(
+        activityLogPath(`${tenants.current().name}_activity.log`),
+        `${JSON.stringify(entry)}\r\n`
+      );
+    }
+    next();
+  } catch (e) {
+    //this is due to Jest returning false for ==> e instanceof Error
+    //https://github.com/facebook/jest/issues/11808
+    next(createError(e.message));
   }
-  next();
 };
