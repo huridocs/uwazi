@@ -3,7 +3,7 @@ import settings from 'api/settings';
 import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
 import { TemplateSchema } from 'shared/types/templateType';
-import { validation } from '../utils';
+import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 import { generateNamesAndIds } from './utils';
@@ -41,7 +41,7 @@ export default (app: Application) => {
     try {
       const { template, fullReindex, valid, error } = await prepareRequest(req.body);
 
-      if (!valid && !fullReindex) return res.json({ error: `Reindex requiered: ${error}` });
+      if (!valid && !fullReindex) throw createError(error, 409);
 
       const response = await saveTemplate(template, req.language, fullReindex);
 
@@ -56,19 +56,11 @@ export default (app: Application) => {
 
       if (fullReindex) await reindexAllTemplates();
 
-      return res.json(response);
+      res.json(response);
     } catch (error) {
       next(error);
     }
   });
-
-  // app.post('/api/templates/check_mapping', needsAuthorization(), async (req, res, next) => {
-  //   const template = req.body;
-  //   template.properties = await generateNamesAndIds(template.properties);
-  //   checkMapping(template)
-  //     .then(response => res.json(response))
-  //     .catch(next);
-  // });
 
   app.post(
     '/api/templates/setasdefault',
@@ -76,6 +68,7 @@ export default (app: Application) => {
     validation.validateRequest({
       properties: {
         body: {
+          required: ['_id'],
           properties: {
             _id: { type: 'string' },
           },
@@ -109,6 +102,7 @@ export default (app: Application) => {
     validation.validateRequest({
       properties: {
         query: {
+          required: ['_id'],
           properties: {
             _id: { type: 'string' },
           },
@@ -134,6 +128,7 @@ export default (app: Application) => {
     validation.validateRequest({
       properties: {
         query: {
+          required: ['_id'],
           properties: {
             _id: { type: 'string' },
           },

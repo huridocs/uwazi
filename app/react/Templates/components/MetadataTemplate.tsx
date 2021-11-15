@@ -88,26 +88,6 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  // onSubmit = async (_template: TemplateSchema) => {
-  //   const template = { ..._template };
-  //   template.properties = template.properties?.map(_prop => {
-  //     const prop = { ..._prop };
-  //     prop.label = _prop.label.trim();
-  //     return prop;
-  //   });
-  //   const mappingValidation = await validateMapping(template);
-  //   if (!mappingValidation.valid) {
-  //     return this.confirmAndSaveTemplate(template, 'templateConflict');
-  //   }
-  //   if (template._id) {
-  //     const entitiesCountOfTemplate = await countByTemplate(template);
-  //     const lengthyReindexFloorCount = 30000;
-  //     if (entitiesCountOfTemplate >= lengthyReindexFloorCount) {
-  //       return this.confirmAndSaveTemplate(template, 'largeNumberOfEntities');
-  //     }
-  //   }
-  //   this.props.saveTemplate(template);
-  // };
   onSubmit = async (_template: TemplateSchema) => {
     const template = { ..._template };
     template.properties = template.properties?.map(_prop => {
@@ -122,10 +102,10 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
         return this.confirmAndSaveTemplate(template, 'largeNumberOfEntities');
       }
     }
-    const { error } = await this.props.saveTemplate(template);
-
-    if (error) {
-      return this.confirmAndSaveTemplate(template, 'templateConflict');
+    try {
+      await this.props.saveTemplate(template);
+    } catch (e) {
+      if (e.status === 409) return this.confirmAndSaveTemplate(template, 'templateConflict');
     }
   };
 
