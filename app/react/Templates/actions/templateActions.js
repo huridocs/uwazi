@@ -110,16 +110,14 @@ export function saveTemplate(data) {
     return api
       .save(new RequestParams(template))
       .then(response => {
-        if (!response.error) {
-          dispatch({ type: types.TEMPLATE_SAVED, data: response });
-          dispatch(actions.update('templates', response));
-          dispatch(formActions.merge('template.data', response));
-          dispatch(notificationActions.notify('Saved successfully.', 'success'));
-        }
-        return { response, error: response.error };
+        dispatch({ type: types.TEMPLATE_SAVED, data: response });
+        dispatch(actions.update('templates', response));
+        dispatch(formActions.merge('template.data', response));
+        dispatch(notificationActions.notify('Saved successfully.', 'success'));
       })
-      .catch(() => {
+      .catch(e => {
         dispatch({ type: types.TEMPLATE_SAVED, data });
+        throw e;
       });
   };
 }
