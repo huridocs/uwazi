@@ -17,6 +17,7 @@ import validator from '../helpers/validator';
 import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 import { MetadataExtractor } from './MetadataExtractor';
+import { SupportingFiles } from './SupportingFiles';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -111,12 +112,14 @@ export class MetadataForm extends Component {
       version,
       storeKey,
       highlightedProps,
+      attachments,
+      sharedId,
+      progress,
     } = this.props;
 
     if (!template) {
       return <div />;
     }
-
     const titleLabel = template.get('commonProperties')
       ? template
           .get('commonProperties')
@@ -125,50 +128,59 @@ export class MetadataForm extends Component {
       : 'Title';
 
     return (
-      <Form
-        id={id}
-        model={model}
-        onSubmit={this.onSubmit}
-        validators={validator.generate(template.toJS(), multipleEdition)}
-        onSubmitFailed={this.onSubmitFailed}
-      >
-        {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
-          <FormGroup model=".title">
-            <ul className="search__filter">
-              <li>
-                <label>
-                  <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
-                  <span className="required">*</span>
-                </label>
-              </li>
-              <li className="wide">
-                <div className="metadata-extractor-container">
-                  {storeKey === 'documentViewer' && (
-                    <MetadataExtractor fieldName="title" model={`${model}.title`} />
-                  )}
-                  <Field model=".title">
-                    <textarea className="form-control" />
-                  </Field>
-                </div>
-              </li>
-              <IconField model={model} />
-            </ul>
-          </FormGroup>
-        )}
-
-        {(!showSubset || showSubset.includes('template')) &&
-          this.renderTemplateSelect(templateOptions, template)}
-        <MetadataFormFields
-          multipleEdition={multipleEdition}
-          thesauris={this.props.thesauris}
+      <fieldset disabled={progress !== undefined}>
+        <Form
+          id={id}
           model={model}
-          template={template}
-          showSubset={showSubset}
-          version={version}
-          highlightedProps={highlightedProps}
-          storeKey={storeKey}
-        />
-      </Form>
+          onSubmit={this.onSubmit}
+          validators={validator.generate(template.toJS(), multipleEdition)}
+          onSubmitFailed={this.onSubmitFailed}
+        >
+          {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
+            <FormGroup model=".title">
+              <ul className="search__filter">
+                <li>
+                  <label>
+                    <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
+                    <span className="required">*</span>
+                  </label>
+                </li>
+                <li className="wide">
+                  <div className="metadata-extractor-container">
+                    {storeKey === 'documentViewer' && (
+                      <MetadataExtractor fieldName="title" model={`${model}.title`} />
+                    )}
+                    <Field model=".title">
+                      <textarea className="form-control" />
+                    </Field>
+                  </div>
+                </li>
+                <IconField model={model} />
+              </ul>
+            </FormGroup>
+          )}
+
+          {(!showSubset || showSubset.includes('template')) &&
+            this.renderTemplateSelect(templateOptions, template)}
+          <MetadataFormFields
+            multipleEdition={multipleEdition}
+            thesauris={this.props.thesauris}
+            model={model}
+            template={template}
+            showSubset={showSubset}
+            version={version}
+            highlightedProps={highlightedProps}
+            storeKey={storeKey}
+          />
+          {!multipleEdition && (
+            <SupportingFiles
+              supportingFiles={attachments}
+              entitySharedID={sharedId}
+              model={model}
+            />
+          )}
+        </Form>
+      </fieldset>
     );
   }
 }
@@ -185,6 +197,9 @@ MetadataForm.defaultProps = {
   onSubmit: () => {},
   highlightedProps: [],
   storeKey: '',
+  attachments: [],
+  sharedId: '',
+  progress: undefined,
 };
 
 MetadataForm.propTypes = {
@@ -204,19 +219,31 @@ MetadataForm.propTypes = {
   componentWillUnmount: PropTypes.func,
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   storeKey: PropTypes.string,
+  attachments: PropTypes.instanceOf(Array),
+  sharedId: PropTypes.string,
+  progress: PropTypes.number,
 };
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify: notificationActions.notify }, dispatch);
 }
 
-export const mapStateToProps = (state, ownProps) => ({
-  thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
-  template: ownProps.template
-    ? ownProps.template
-    : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
-      immutableDefaultTemplate,
-  templateOptions: selectTemplateOptions(state),
-});
+export const mapStateToProps = (state, ownProps) => {
+  const entityModel = ownProps.model.split('.').reduce((o, i) => o[i], state);
+  const { attachments, sharedId } = entityModel;
+  return {
+    thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
+    template: ownProps.template
+      ? ownProps.template
+      : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
+        immutableDefaultTemplate,
+    templateOptions: selectTemplateOptions(state),
+    attachments,
+    sharedId,
+    progress: sharedId
+      ? state.attachments.progress.get(sharedId)
+      : state.attachments.progress.get('NEW_ENTITY'),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

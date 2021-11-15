@@ -8,7 +8,7 @@ import { validateFile } from '../../shared/types/fileSchema';
 import { FileType } from '../../shared/types/fileType';
 
 export const files = {
-  async save(_file: FileType) {
+  async save(_file: FileType, index = true) {
     const file = { ..._file };
     if (file.url && !file._id) {
       const response = await request.head(file.url);
@@ -17,7 +17,9 @@ export const files = {
     }
 
     const savedFile = await model.save(await validateFile(file));
-    await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
+    if (index) {
+      await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
+    }
     return savedFile;
   },
 

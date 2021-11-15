@@ -138,6 +138,15 @@ const getFileContent = async (fileName: FilePath): Promise<string> =>
 
 const readFile = async (fileName: FilePath): Promise<Buffer> => asyncFS.readFile(fileName);
 
+const storeFile: (filePathFunction: pathFunction, file: any) => Promise<FileType> = async (
+  filePathFunction,
+  file
+) => {
+  const filename = generateFileName(file);
+  await appendFile(filePathFunction(filename), file.buffer);
+  return Object.assign(file, { filename, destination: filePathFunction() });
+};
+
 export {
   setupTestUploadedPaths,
   deleteUploadedFiles,
@@ -157,4 +166,5 @@ export {
   writeFile,
   appendFile,
   readFile,
+  storeFile,
 };

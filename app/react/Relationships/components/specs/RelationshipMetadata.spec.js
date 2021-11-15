@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { ShowMetadata, MetadataForm } from 'app/Metadata';
 import { api as entitiesAPI } from 'app/Entities';
-import { RequestParams } from 'app/utils/RequestParams';
+import * as saveEntityWithFiles from '../../../Library/actions/saveEntityWithFiles';
 import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata';
 import * as routeUtils from '../../utils/routeUtils';
 
@@ -23,7 +23,10 @@ describe('RelationshipMetadata', () => {
   };
 
   beforeEach(() => {
-    spyOn(entitiesAPI, 'save').and.returnValue(Promise.resolve(testingEntity));
+    spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
+      entity: testingEntity,
+      errors: [''],
+    });
     spyOn(entitiesAPI, 'delete').and.returnValue(Promise.resolve());
   });
 
@@ -90,18 +93,27 @@ describe('RelationshipMetadata', () => {
         renderComponent(true);
 
         await instance.saveEntity(testingEntity, 'relationships.metadata');
-        expect(entitiesAPI.save).toHaveBeenCalledWith(new RequestParams(testingEntity));
+        expect(saveEntityWithFiles.saveEntityWithFiles).toHaveBeenCalledWith({
+          metadata: {},
+          sharedId: 'ab146',
+          title: 'A test to remember',
+        });
       });
 
       describe('when the values to add a new connection are set', () => {
         it('should add the connection after save', async () => {
           renderComponent(true, 0, 0);
           await instance.saveEntity(testingEntity, 'relationships.metadata');
-          expect(props.addEntity).toHaveBeenLastCalledWith(0, 0, {
-            metadata: {},
-            sharedId: 'ab146',
-            title: 'A test to remember',
-          });
+          expect(props.addEntity).toHaveBeenLastCalledWith(
+            0,
+            0,
+            {
+              metadata: {},
+              sharedId: 'ab146',
+              title: 'A test to remember',
+            },
+            ['']
+          );
           expect(props.setAddToData).toHaveBeenLastCalledWith(null, null);
         });
       });

@@ -12,6 +12,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { api as entitiesAPI } from 'app/Entities';
 import { RequestParams } from 'app/utils/RequestParams';
+import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
 import {
   unselectConnection,
   updateRelationshipEntityData,
@@ -50,11 +51,16 @@ export class RelationshipMetadata extends Component {
   async saveEntity(entity, formModel) {
     this.props.resetForm(formModel);
     this.props.unselectConnection();
-    const savedEntity = await entitiesAPI.save(new RequestParams(entity));
+    const { entity: savedEntity, errors } = await saveEntityWithFiles(entity);
     this.props.updateRelationshipEntityData(savedEntity);
 
     if (Number.isInteger(this.props.hubIndex)) {
-      this.props.addEntity(this.props.hubIndex, this.props.rightRelationshipIndex, savedEntity);
+      this.props.addEntity(
+        this.props.hubIndex,
+        this.props.rightRelationshipIndex,
+        savedEntity,
+        errors
+      );
       this.props.setAddToData(null, null);
     }
   }

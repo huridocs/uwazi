@@ -1,19 +1,20 @@
-import * as types from 'app/Library/actions/actionTypes';
 import qs from 'qs';
-import { notificationActions } from 'app/Notifications';
+import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
+import { browserHistory } from 'react-router';
+import { store } from 'app/store';
+import * as types from 'app/Library/actions/actionTypes';
 import { actions } from 'app/BasicReducer';
 import { documentsApi } from 'app/Documents';
-import { browserHistory } from 'react-router';
-import rison from 'rison-node';
-import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
-import { toUrlParams } from 'shared/JSONRequest';
+import { notificationActions } from 'app/Notifications';
 import { RequestParams } from 'app/utils/RequestParams';
-import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import { toUrlParams } from 'shared/JSONRequest';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
+import { saveEntityWithFiles } from './saveEntityWithFiles';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -310,19 +311,25 @@ export function multipleUpdate(entities, values) {
 }
 
 export function saveEntity(entity, formModel) {
+  // eslint-disable-next-line max-statements
   return async dispatch => {
-    const updatedDoc = await entitiesAPI.save(new RequestParams(entity));
+    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity, dispatch);
+    let message = '';
+
     dispatch(formActions.reset(formModel));
     await dispatch(unselectAllDocuments());
     if (entity._id) {
-      dispatch(notificationActions.notify('Entity updated', 'success'));
+      message = 'Entity updated';
       dispatch(updateEntity(updatedDoc));
       dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     } else {
-      dispatch(notificationActions.notify('Entity created', 'success'));
+      message = 'Entity created';
       dispatch(elementCreated(updatedDoc));
     }
-
+    if (errors.length) {
+      message = `${message} with the following errors: ${JSON.stringify(errors, null, 2)}`;
+    }
+    await dispatch(notificationActions.notify(message, errors.length ? 'warning' : 'success'));
     await dispatch(selectSingleDocument(updatedDoc));
   };
 }

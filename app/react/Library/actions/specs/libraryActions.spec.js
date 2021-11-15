@@ -4,23 +4,23 @@
 
 import backend from 'fetch-mock';
 import qs from 'qs';
-import { APIURL } from 'app/config.js';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mockID } from 'shared/uniqueID.js';
 import rison from 'rison-node';
+import { browserHistory } from 'react-router';
+import { APIURL } from 'app/config.js';
 import { RequestParams } from 'app/utils/RequestParams';
-
-import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import * as actions from 'app/Library/actions/libraryActions';
 import { documentsApi } from 'app/Documents';
-import { api } from 'app/Entities';
-import { browserHistory } from 'react-router';
+import { mockID } from 'shared/uniqueID.js';
 
+import { api } from 'app/Entities';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import SearchApi from 'app/Search/SearchAPI';
+import * as saveEntityWithFiles from '../saveEntityWithFiles';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -345,7 +345,6 @@ describe('libraryActions', () => {
       it('should save the document and dispatch a notification on success', done => {
         mockID();
         spyOn(documentsApi, 'save').and.returnValue(Promise.resolve('response'));
-        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
         const doc = { name: 'doc' };
 
         const expectedActions = [
@@ -495,15 +494,18 @@ describe('libraryActions', () => {
   });
 
   describe('saveEntity', () => {
-    it('should save the document and dispatch a notification on success', done => {
+    it('should save the document and dispatch a notification on success', async () => {
       mockID();
-      spyOn(api, 'save').and.returnValue(Promise.resolve('response'));
-      spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
-      const doc = { name: 'doc' };
+      const doc = { name: 'entity1' };
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
+        entity: doc,
+        errors: '',
+      });
 
       const expectedActions = [
         { model: 'library.sidepanel.metadata', type: 'rrf/reset' },
         { type: 'UNSELECT_ALL_DOCUMENTS' },
+        { doc: { name: 'entity1' }, type: 'ELEMENT_CREATED' },
         {
           notification: {
             id: 'unique_id',
@@ -512,19 +514,15 @@ describe('libraryActions', () => {
           },
           type: 'NOTIFY',
         },
-        { doc: 'response', type: 'ELEMENT_CREATED' },
-        { doc: 'response', type: 'SELECT_SINGLE_DOCUMENT' },
+        { doc: { name: 'entity1' }, type: 'SELECT_SINGLE_DOCUMENT' },
       ];
       const store = mockStore({});
-
-      store
-        .dispatch(actions.saveEntity(doc, 'library.sidepanel.metadata'))
-        .then(() => {
-          expect(api.save).toHaveBeenCalledWith(new RequestParams(doc));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+      await store.dispatch(actions.saveEntity(doc, 'library.sidepanel.metadata'));
+      expect(saveEntityWithFiles.saveEntityWithFiles).toHaveBeenCalledWith(
+        doc,
+        expect.any(Function)
+      );
+      expect(store.getActions()).toEqual(expectedActions);
     });
   });
 });

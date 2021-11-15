@@ -81,6 +81,10 @@ describe('Attachments actions', () => {
 
   describe('uploadAttachmentFromUrl', () => {
     it('should post the url and dispatch the upload progress and notification upon completion', () => {
+      const formData = {
+        name: 'fileName',
+        url: 'URL',
+      };
       spyOn(api, 'post').and.returnValue({ then: cb => cb({ json: { text: 'file' } }) });
       const expectedActions = [
         { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
@@ -99,7 +103,7 @@ describe('Attachments actions', () => {
           },
         },
       ];
-      store.dispatch(actions.uploadAttachmentFromUrl('sharedId', 'fileName', 'URL', 'storeKey'));
+      store.dispatch(actions.uploadAttachmentFromUrl('sharedId', formData, 'storeKey'));
       expect(store.getActions()).toMatchObject(expectedActions);
     });
   });

@@ -3,6 +3,7 @@ import api from 'app/Entities/EntitiesAPI';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import * as saveEntityWithFiles from 'app/Library/actions/saveEntityWithFiles';
 import * as actions from '../actions';
 
 describe('Entities actions', () => {
@@ -10,10 +11,6 @@ describe('Entities actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-
-    spyOn(api, 'save').and.returnValue(
-      Promise.resolve({ _id: 'newId', _rev: 'newRev', sharedId: 'sharedId' })
-    );
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(api, 'deleteMultiple').and.returnValue(Promise.resolve());
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
@@ -24,10 +21,15 @@ describe('Entities actions', () => {
       spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
         type: 'reloadRelationships',
       });
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
+        entity: { _id: 'newId', _rev: 'newRev', sharedId: 'sharedId' },
+        errors: [],
+      });
+
       actions
         .saveEntity('data')(dispatch)
         .then(() => {
-          expect(api.save).toHaveBeenCalledWith(new RequestParams('data'));
+          expect(saveEntityWithFiles.saveEntityWithFiles).toHaveBeenCalledWith('data', dispatch);
           expect(notificationActions.notify).toHaveBeenCalledWith('Entity saved', 'success');
           expect(dispatch).toHaveBeenCalledWith({
             type: 'entityView/entity/SET',
@@ -41,6 +43,22 @@ describe('Entities actions', () => {
           expect(relationshipActions.reloadRelationships).toHaveBeenCalledWith('sharedId');
           done();
         });
+    });
+
+    it('should dispatch a warning if there are errors while saving files', async () => {
+      spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
+        type: 'reloadRelationships',
+      });
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.returnValue({
+        entity: 'data',
+        errors: ['file1 save error'],
+      });
+
+      await actions.saveEntity('data')(dispatch);
+      expect(notificationActions.notify).toHaveBeenCalledWith(
+        expect.stringContaining('Entity saved with the following errors:'),
+        'warning'
+      );
     });
   });
 

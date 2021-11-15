@@ -27,6 +27,7 @@ describe('MetadataFormButtons', () => {
       includeViewButton: true,
       exclusivelyViewButton: false,
       copyFrom: jasmine.createSpy('copyFrom'),
+      uploadFileprogress: undefined,
     };
   });
 
@@ -81,14 +82,21 @@ describe('MetadataFormButtons', () => {
   });
 
   describe('save', () => {
-    beforeEach(() => {
-      render();
-    });
-
     it('should have a submit button that submits the formName passed', () => {
+      render();
       const submit = component.find('button[type="submit"]');
       expect(submit.props().form).toBe(props.formName);
     });
+
+    it.each(['.cancel-edit-metadata', 'button[type="submit"]', '.copy-from-btn'])(
+      'should disable cancel, edit, and copy from buttons if its processing files',
+      selector => {
+        props.uploadFileprogress = 10;
+        render();
+        const button = component.find(selector);
+        expect(button.props()).toMatchObject({ disabled: true });
+      }
+    );
   });
 
   describe('delete', () => {
