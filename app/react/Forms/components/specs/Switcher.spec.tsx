@@ -1,11 +1,11 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-
-import Switcher from '../Switcher';
+import { shallow, ShallowWrapper } from 'enzyme';
+import { Translate } from 'app/I18N';
+import { Switcher, SwitcherProps } from '../Switcher';
 
 describe('Switcher', () => {
-  let component;
-  let props;
+  let component: ShallowWrapper<typeof Switcher>;
+  let props: SwitcherProps;
 
   beforeEach(() => {
     props = {
@@ -38,10 +38,24 @@ describe('Switcher', () => {
     });
   });
 
+  it('should receive alternative elements for values', () => {
+    render({ leftLabel: <Translate>ALL</Translate>, rightLabel: <Translate>NONE</Translate> });
+    const labels = component.find('Connect(Translate)');
+    expect(labels.at(0).props().children).toEqual('ALL');
+    expect(labels.at(1).props().children).toEqual('NONE');
+  });
+
   it('should receive alternative labels for values', () => {
     render({ leftLabel: 'ALL', rightLabel: 'NONE' });
-    const label = component.find('span');
-    expect(label.at(0).props().children).toEqual('ALL');
-    expect(label.at(1).props().children).toEqual('NONE');
+    const labels = component.find('span');
+    expect(labels.at(0).props().children).toEqual('ALL');
+    expect(labels.at(1).props().children).toEqual('NONE');
+  });
+
+  it('should render default labels AND/OR', () => {
+    render();
+    const labels = component.find('Connect(Translate)');
+    expect(labels.at(0).props().children).toEqual('AND');
+    expect(labels.at(1).props().children).toEqual('OR');
   });
 });
