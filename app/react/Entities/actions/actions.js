@@ -6,19 +6,29 @@ import {
   unselectAllDocuments,
   unselectDocument,
 } from 'app/Library/actions/libraryActions';
+import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
 
 export function saveEntity(entity) {
-  return dispatch =>
-    api.save(new RequestParams(entity)).then(response => {
+  return async dispatch => {
+    const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity, dispatch);
+    if (!errors.length) {
       dispatch(notificationActions.notify('Entity saved', 'success'));
-      dispatch(formActions.reset('entityView.entityForm'));
-      dispatch(actions.set('entityView/entity', response));
-      dispatch(relationshipActions.reloadRelationships(response.sharedId));
-    });
+    } else {
+      dispatch(
+        notificationActions.notify(
+          `Entity saved with the following errors: ${JSON.stringify(errors, null, 2)}`,
+          'warning'
+        )
+      );
+    }
+    dispatch(formActions.reset('entityView.entityForm'));
+    dispatch(actions.set('entityView/entity', updatedDoc));
+    dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
+  };
 }
 
 export function resetForm() {

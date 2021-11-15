@@ -21,7 +21,7 @@ const saveToc = async (file: FileType, toc: TocSchema[]) => {
       generatedToc: true,
     },
     { user: {}, language: entity.language },
-    false
+    { updateRelationships: false }
   );
 };
 

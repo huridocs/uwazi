@@ -14,7 +14,13 @@ import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
   render() {
-    const { entityBeingEdited, exclusivelyViewButton, formName, hideDelete } = this.props;
+    const {
+      entityBeingEdited,
+      exclusivelyViewButton,
+      formName,
+      hideDelete,
+      uploadFileprogress,
+    } = this.props;
     const data = this.props.data.toJS();
 
     const ViewButton = (
@@ -61,6 +67,7 @@ export class MetadataFormButtons extends Component {
         <ShowIf if={entityBeingEdited}>
           <button
             type="button"
+            disabled={uploadFileprogress !== undefined}
             onClick={() => this.props.resetForm(this.props.formStatePath)}
             className="cancel-edit-metadata btn btn-primary"
           >
@@ -72,7 +79,12 @@ export class MetadataFormButtons extends Component {
         </ShowIf>
         <ShowIf if={entityBeingEdited}>
           <>
-            <button type="submit" form={formName} className="btn btn-success">
+            <button
+              type="submit"
+              form={formName}
+              className="btn btn-success"
+              disabled={uploadFileprogress !== undefined}
+            >
               <Icon icon="save" />
               <span className="btn-label">
                 <Translate>Save</Translate>
@@ -82,6 +94,7 @@ export class MetadataFormButtons extends Component {
               type="button"
               className="btn btn-success copy-from-btn"
               onClick={this.props.copyFrom}
+              disabled={uploadFileprogress !== undefined}
             >
               <Icon icon="copy-from" transform="left-0.07 up-0.06" />
               <span className="btn-label">
@@ -126,6 +139,7 @@ MetadataFormButtons.defaultProps = {
   delete: () => {},
   copyFrom: () => {},
   storeKey: undefined,
+  uploadFileprogress: undefined,
 };
 
 MetadataFormButtons.propTypes = {
@@ -143,9 +157,18 @@ MetadataFormButtons.propTypes = {
   hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
   storeKey: PropTypes.string,
+  uploadFileprogress: PropTypes.number,
 };
 
-const mapStateToProps = ({ templates }) => ({ templates });
+const mapStateToProps = (state, ownProps) => {
+  const { sharedId } = ownProps.data.toJS();
+  return {
+    templates: state.templates,
+    uploadFileprogress: sharedId
+      ? state.attachments.progress.get(sharedId)
+      : state.attachments.progress.get('NEW_ENTITY'),
+  };
+};
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
