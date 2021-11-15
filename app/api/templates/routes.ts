@@ -1,29 +1,49 @@
-/* eslint-disable max-statements */
 import { Application } from 'express';
 import settings from 'api/settings';
 import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
+import { TemplateSchema } from 'shared/types/templateType';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 import { generateNamesAndIds } from './utils';
 import { checkIfReindex } from './reindex';
 
+const reindexAllTemplates = async () => {
+  const allTemplates = await templates.get();
+  return reindexAll(allTemplates, search);
+};
+
+const checkTemplateMappings = async (template: TemplateSchema) => {
+  const templateProperties = await generateNamesAndIds(template.properties);
+  const { valid, error } = await checkMapping({ ...template, properties: templateProperties });
+  return { valid, error };
+};
+
+const saveTemplate = async (template: TemplateSchema, language: string, fullReindex?: boolean) => {
+  const reindex = fullReindex ? false : await checkIfReindex(template);
+  return templates.save(template, language, reindex);
+};
+
+const prepareRequest = async (body: TemplateSchema & { reindex?: boolean }) => {
+  const request = { ...body };
+  const { reindex: fullReindex } = request;
+
+  delete request.reindex;
+
+  const template = { ...request };
+  const { valid, error } = await checkTemplateMappings(template);
+  return { template, fullReindex, valid, error };
+};
+
 export default (app: Application) => {
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
-      const { reindex: fullReindex } = req.body;
-      delete req.body.reindex;
-      const templateProperties = await generateNamesAndIds(req.body.properties);
-      const template = { ...req.body, properties: templateProperties };
-      const { valid, error } = await checkMapping(template);
+      const { template, fullReindex, valid, error } = await prepareRequest(req.body);
 
-      if (!valid && !fullReindex) {
-        return res.json({ error: `Reindex requiered: ${error}` });
-      }
+      if (!valid && !fullReindex) return res.json({ error: `Reindex requiered: ${error}` });
 
-      const reindex = fullReindex ? false : await checkIfReindex(req.body);
-      const response = await templates.save(req.body, req.language, reindex);
+      const response = await saveTemplate(template, req.language, fullReindex);
 
       req.sockets.emitToCurrentTenant('templateChange', response);
 
@@ -32,14 +52,9 @@ export default (app: Application) => {
         response.name
       );
 
-      if (updatedSettings) {
-        req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
-      }
+      if (updatedSettings) req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
 
-      if (fullReindex) {
-        const allTemplates = await templates.get();
-        await reindexAll(allTemplates, search);
-      }
+      if (fullReindex) await reindexAllTemplates();
 
       return res.json(response);
     } catch (error) {
