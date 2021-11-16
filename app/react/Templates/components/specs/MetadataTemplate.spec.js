@@ -22,6 +22,7 @@ import {
 } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
+import * as templateActions from '../../actions/templateActions';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
@@ -248,6 +249,9 @@ describe('MetadataTemplate', () => {
 
       describe('when the mapping has conflicts', () => {
         it('should ask for a reindex', async () => {
+          props.saveTemplate = jest
+            .spyOn(templateActions, 'saveTemplate')
+            .mockRejectedValueOnce({ status: 409 });
           await submitTemplate(templateWithId);
           context.confirm.calls.mostRecent().args[0].accept();
           expect(props.saveTemplate).toHaveBeenCalledWith({
