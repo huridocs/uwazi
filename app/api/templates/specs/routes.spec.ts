@@ -2,11 +2,11 @@ import { Application, NextFunction } from 'express';
 import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import translations from 'api/i18n';
 import { UserRole } from 'shared/types/userSchema';
 import templateRoutes from '../routes';
 import templates from '../templates';
+import { templateCommonProperties, fixtures, fixtureFactory } from './fixtures/routesFixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -21,49 +21,6 @@ jest.mock(
     next();
   }
 );
-
-const templateCommonProperties = [
-  {
-    _id: '6193bf8c86a5e87060962287',
-    localID: 'commonTitle',
-    label: 'Title',
-    name: 'title',
-    isCommonProperty: true,
-    type: 'text',
-    prioritySorting: false,
-    generatedId: false,
-  },
-  {
-    _id: '6193bf8c86a5e87060962288',
-    localID: 'commonCreationDate',
-    label: 'Date added',
-    name: 'creationDate',
-    isCommonProperty: true,
-    type: 'date',
-    prioritySorting: false,
-  },
-  {
-    _id: '6193bf8c86a5e87060962289',
-    localID: 'commonEditDate',
-    label: 'Date modified',
-    name: 'editDate',
-    isCommonProperty: true,
-    type: 'date',
-    prioritySorting: false,
-  },
-];
-
-const fixtureFactory = getFixturesFactory();
-const fixtures = {
-  templates: [
-    {
-      ...fixtureFactory.template('template1', []),
-      commonProperties: templateCommonProperties,
-    },
-    fixtureFactory.template('template2', []),
-    fixtureFactory.template('template3', []),
-  ],
-};
 
 const emitToCurrentTenantSpy = jasmine.createSpy('emitToCurrentTenant');
 
@@ -165,8 +122,8 @@ describe('templates routes', () => {
   });
 
   describe('/templates/count_by_thesauri', () => {
-    it('should have a validation schema', () => {});
     it('should return the number of templates using a thesauri', () => {});
+    it('should have a validation schema', () => {});
   });
 
   describe('/api/templates/setasdefault', () => {
