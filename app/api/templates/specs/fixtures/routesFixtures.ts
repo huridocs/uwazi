@@ -33,13 +33,54 @@ const templateCommonProperties = [
 
 const fixtureFactory = getFixturesFactory();
 const fixtures = {
+  dictionaries: [
+    fixtureFactory.thesauri('select_thesaurus', ['A']),
+    fixtureFactory.thesauri('multiselect_thesaurus', ['A', 'B']),
+    {
+      name: 'select_thesaurus_2',
+      _id: '123456789',
+      values: [
+        {
+          _id: 'abc',
+          id: 'A',
+          label: 'A',
+        },
+      ],
+    },
+  ],
   templates: [
     {
       ...fixtureFactory.template('template1', []),
       commonProperties: templateCommonProperties,
+      default: true,
     },
-    fixtureFactory.template('template2', []),
-    fixtureFactory.template('template3', []),
+    fixtureFactory.template('template2', [
+      fixtureFactory.property('select_property', 'select', {
+        content: fixtureFactory.id('select_thesaurus'),
+      }),
+      fixtureFactory.property('multiselect_property', 'multiselect', {
+        content: fixtureFactory.id('multiselect_thesaurus'),
+      }),
+    ]),
+    fixtureFactory.template('template3', [
+      fixtureFactory.property('select_property', 'select', {
+        content: fixtureFactory.id('select_thesaurus'),
+      }),
+    ]),
+    {
+      _id: 'template_with_select_id',
+      name: 'template_with_select',
+      properties: [
+        {
+          _id: 'zxc',
+          id: 'select_property',
+          label: 'select_property',
+          name: 'select_property',
+          type: 'select',
+          content: '123456789',
+        },
+      ],
+    },
   ],
 };
 
