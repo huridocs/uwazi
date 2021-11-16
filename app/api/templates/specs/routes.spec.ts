@@ -59,8 +59,9 @@ describe('templates routes', () => {
 
   describe('DELETE', () => {
     it('should delete a template', async () => {
+      const templateId = fixtureFactory.id('template2');
       await request(app)
-        .delete(`/api/templates?_id=${fixtureFactory.template('template2', [])._id}`)
+        .delete(`/api/templates?_id=${templateId}`)
         .expect(200);
       const remainingTemplates = await templates.get();
       expect(remainingTemplates).toContainEqual(expect.objectContaining({ name: 'template1' }));
@@ -122,17 +123,40 @@ describe('templates routes', () => {
   });
 
   describe('/templates/count_by_thesauri', () => {
-    it('should return the number of templates using a thesauri', () => {});
-    it('should have a validation schema', () => {});
+    it('should return the number of templates using a thesauri', async () => {
+      const { body } = await request(app)
+        .get('/api/templates/count_by_thesauri?_id=123456789')
+        .expect(200);
+
+      expect(body).toBe(1);
+    });
+    it('should have a validation schema', async () => {
+      const { body } = await request(app).get('/api/templates/count_by_thesauri');
+      expect(body.error).toBe('validation failed');
+    });
   });
 
   describe('/api/templates/setasdefault', () => {
-    it('should have a validation schema', () => {});
+    it('should call templates to set the new default', async () => {
+      const template2Id = fixtureFactory.id('template2');
+      await request(app)
+        .post('/api/templates/setasdefault')
+        .send({ _id: template2Id })
+        .expect(200);
 
-    it('should call templates to set the new default', () => {});
-  });
+      const savedTemplates = await templates.get();
 
-  describe('check mappings', () => {
-    it('should check if a template is valid vs the current elasticsearch mapping', () => {});
+      expect(savedTemplates).toContainEqual(
+        expect.objectContaining({ name: 'template1', default: false })
+      );
+      expect(savedTemplates).toContainEqual(
+        expect.objectContaining({ name: 'template2', default: true })
+      );
+    });
+
+    it('should have a validation schema', async () => {
+      const { body } = await request(app).post('/api/templates/setasdefault');
+      expect(body.error).toBe('validation failed');
+    });
   });
 });
