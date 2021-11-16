@@ -98,9 +98,12 @@ export interface Settings {
       url: string;
     };
     metadataExtraction?: {
-      template: ObjectIdSchema;
-      properties: string[];
-    }[];
+      url: string;
+      templates?: {
+        template: ObjectIdSchema;
+        properties: string[];
+      }[];
+    };
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {

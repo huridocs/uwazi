@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema, MetadataSchema } from 'shared/types/commonTypes';
+import { PropertySchema, MetadataSchema, ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 
 export function getIdMapper() {
@@ -49,13 +49,15 @@ export function getFixturesFactory() {
       entity: string,
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
       filename: string,
-      language: string = 'en'
+      language: string = 'en',
+      extractedMetadata: ExtractedMetadataSchema[] = []
     ): FileType => ({
       _id: idMapper(`${id}`),
       entity,
       language,
       type,
       filename,
+      extractedMetadata,
     }),
 
     inherit(name: string, content: string, property: string, props = {}): PropertySchema {
