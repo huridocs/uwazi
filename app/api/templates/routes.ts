@@ -14,12 +14,6 @@ const reindexAllTemplates = async () => {
   return reindexAll(allTemplates, search);
 };
 
-const checkTemplateMappings = async (template: TemplateSchema) => {
-  const templateProperties = await generateNamesAndIds(template.properties);
-  const { valid, error } = await checkMapping({ ...template, properties: templateProperties });
-  return { valid, error };
-};
-
 const saveTemplate = async (template: TemplateSchema, language: string, fullReindex?: boolean) => {
   const reindex = fullReindex ? false : await checkIfReindex(template);
   return templates.save(template, language, reindex);
@@ -28,11 +22,12 @@ const saveTemplate = async (template: TemplateSchema, language: string, fullRein
 const prepareRequest = async (body: TemplateSchema & { reindex?: boolean }) => {
   const request = { ...body };
   const { reindex: fullReindex } = request;
-
   delete request.reindex;
-
   const template = { ...request };
-  const { valid, error } = await checkTemplateMappings(template);
+
+  const templateProperties = await generateNamesAndIds(template.properties);
+  const { valid, error } = await checkMapping({ ...template, properties: templateProperties });
+
   return { template, fullReindex, valid, error };
 };
 
