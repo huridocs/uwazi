@@ -155,7 +155,7 @@ describe('templates routes', () => {
   });
 
   describe('check mappings', () => {
-    beforeEach(async () => {
+    it('should throw an error if template is invalid vs the current elasticsearch mapping', async () => {
       await postToEnpoint('/api/templates', {
         ...templateToSave,
         properties: [
@@ -168,8 +168,6 @@ describe('templates routes', () => {
           },
         ],
       });
-    });
-    it('should throw an error if template is invalid vs the current elasticsearch mapping', async () => {
       const savedTemplate = await templates.get({ name: 'template4' });
       try {
         await postToEnpoint('/api/templates', {
