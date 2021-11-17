@@ -8,7 +8,7 @@ import { MongoError } from 'mongodb';
 import { Tenant } from './tenantContext';
 
 const mongoSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, unique: true },
   dbName: String,
   indexName: String,
   uploadedDocuments: String,
