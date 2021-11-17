@@ -14,7 +14,7 @@ describe('Settings', () => {
     await proxyMock();
     await adminLogin();
     await disableTransitions();
-    await page.setViewport({ width: 1800, height: 1000, deviceScaleFactor: 2 });
+    await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 2 });
   });
 
   it('should display Account with no more than a 7% difference', async () => {
@@ -69,17 +69,6 @@ describe('Settings', () => {
       await expect(page).toClick('span', { text: 'Filters' });
       const filtersScreenshot = await getContainerScreenshot(page, 'div.settings-content');
       expect(filtersScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
-    });
-    it('should display filters page with no more than a 7% difference', async () => {
-      await expect(page).toClick('a.settings-section');
-      await expect(page).toClick('span', { text: 'Filters' });
-      await expect(page).toClick('div.list-group-item:first-child > div > button');
-      const filtersPageScreenshot = await getContainerScreenshot(page, 'div.settings-content');
-      expect(filtersPageScreenshot).toMatchImageSnapshot({
         failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,

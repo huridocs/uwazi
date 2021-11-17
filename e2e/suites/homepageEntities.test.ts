@@ -22,7 +22,7 @@ describe('Homepage entities', () => {
     await proxyMock();
     await adminLogin();
     await disableTransitions();
-    await page.setViewport({ width: 1300, height: 1000, deviceScaleFactor: 4 });
+    await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 4 });
   });
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
