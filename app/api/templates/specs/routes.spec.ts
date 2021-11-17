@@ -22,6 +22,12 @@ jest.mock(
   }
 );
 
+const templateToSave = {
+  name: 'template4',
+  properties: [],
+  commonProperties: templateCommonProperties,
+};
+
 const emitToCurrentTenantSpy = jasmine.createSpy('emitToCurrentTenant');
 
 describe('templates routes', () => {
@@ -79,12 +85,6 @@ describe('templates routes', () => {
 
   describe('POST', () => {
     it('should create a template', async () => {
-      const templateToSave = {
-        name: 'template4',
-        properties: [],
-        commonProperties: templateCommonProperties,
-      };
-
       await postToEnpoint('/api/templates', templateToSave);
 
       const savedTemplates = await templates.get();
@@ -110,12 +110,6 @@ describe('templates routes', () => {
     });
 
     it('should not emit settings update when settings not modified', async () => {
-      const templateToSave = {
-        name: 'new template',
-        properties: [],
-        commonProperties: templateCommonProperties,
-      };
-
       await postToEnpoint('/api/templates', templateToSave);
 
       expect(emitToCurrentTenantSpy).not.toHaveBeenCalledWith('updateSettings');
@@ -157,6 +151,43 @@ describe('templates routes', () => {
     it('should have a validation schema', async () => {
       const { body } = await request(app).post('/api/templates/setasdefault');
       expect(body.error).toBe('validation failed');
+    });
+  });
+
+  describe('check mappings', () => {
+    beforeEach(async () => {
+      await postToEnpoint('/api/templates', {
+        ...templateToSave,
+        properties: [
+          {
+            label: 'Numeric',
+            type: 'numeric',
+            localID: 'byhrp7qv54i',
+            name: 'numeric',
+            id: 'Numeric',
+          },
+        ],
+      });
+    });
+    it('should throw an error if template is invalid vs the current elasticsearch mapping', async () => {
+      const savedTemplate = await templates.get({ name: 'template4' });
+      try {
+        await postToEnpoint('/api/templates', {
+          ...savedTemplate,
+          properties: [
+            {
+              label: 'Numeric',
+              type: 'text',
+              localID: 'byhrp7qv54i',
+              name: 'numeric',
+              id: 'text',
+            },
+          ],
+          reindex: false,
+        });
+      } catch (error) {
+        expect(error.message).toContain('expected 200 "OK", got 409 "Conflict"');
+      }
     });
   });
 });
