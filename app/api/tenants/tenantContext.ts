@@ -1,7 +1,7 @@
 import { config } from 'api/config';
 import { handleError } from 'api/utils';
 import { appContext } from 'api/utils/AppContext';
-import { TenantsModel } from './tenantsModel';
+import { TenantDocument, TenantsModel } from './tenantsModel';
 
 export type Tenant = {
   name: string;
@@ -34,8 +34,8 @@ class Tenants {
   async updateTenants(model: TenantsModel) {
     const tenants = await model.get();
 
-    tenants.forEach((tenant: Tenant) => {
-      this.add(tenant);
+    tenants.forEach((tenant: TenantDocument) => {
+      this.add(tenant.toObject());
     });
   }
 
@@ -70,10 +70,18 @@ class Tenants {
   }
 
   add(tenant: Tenant) {
-    this.tenants[tenant.name] = tenant;
+    const tenantWithDefaults = {
+      ...tenant,
+      uploadedDocuments: tenant.uploadedDocuments || config.defaultTenant.uploadedDocuments,
+      attachments: tenant.attachments || config.defaultTenant.attachments,
+      customUploads: tenant.customUploads || config.defaultTenant.customUploads,
+      temporalFiles: tenant.temporalFiles || config.defaultTenant.temporalFiles,
+      activityLogs: tenant.activityLogs || config.defaultTenant.activityLogs,
+    };
+
+    this.tenants[tenant.name] = tenantWithDefaults;
   }
 }
-
 const tenants = new Tenants();
 
 export { tenants };

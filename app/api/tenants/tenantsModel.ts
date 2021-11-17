@@ -18,7 +18,7 @@ const mongoSchema = new mongoose.Schema({
   activityLogs: String,
 });
 
-type TenantDocument = Document & Tenant;
+export type TenantDocument = Document & Tenant;
 
 export class TenantsModel extends EventEmitter {
   model: Model<TenantDocument>;
