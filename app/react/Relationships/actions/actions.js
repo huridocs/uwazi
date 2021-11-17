@@ -64,13 +64,17 @@ export function updateRightRelationshipType(index, rightIndex, _id) {
   };
 }
 
-export function addEntity(index, rightIndex, entity) {
+export function addEntity(index, rightIndex, entity, errors = []) {
   return dispatch => {
     const title = entity.title.length > 75 ? `${entity.title.slice(0, 75)}(...)` : entity.title;
+    let message = `${title} added to hub`;
+    if (errors.length) {
+      message = `${message} with the following errors: ${JSON.stringify(errors, null)}`;
+    }
     dispatch(
       notificationActions.notify(
-        `${title} added to hub.  Save your work to make change permanent.`,
-        'success'
+        `${message}. Save your work to make change permanent.`,
+        errors.length ? 'warning' : 'success'
       )
     );
     dispatch({ type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity });

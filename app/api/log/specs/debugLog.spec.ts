@@ -60,6 +60,7 @@ describe('Debug Log', () => {
       attachments: '',
       customUploads: '',
       temporalFiles: '',
+      activityLogs: '',
     });
 
     await tenants.run(async () => {

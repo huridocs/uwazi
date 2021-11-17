@@ -1,4 +1,3 @@
-import fs from 'fs';
 import proxy from 'express-http-proxy';
 
 import entities from 'api/entities';
@@ -7,24 +6,13 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 import { files } from 'api/files/files';
-import { uploadsPath, attachmentsPath, generateFileName } from 'api/files/filesystem';
+import { uploadsPath, attachmentsPath, storeFile } from 'api/files/filesystem';
 import cors from 'cors';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
 import { captchaAuthorization } from '../auth';
 
 import { uploadMiddleware } from './uploadMiddleware';
-
-const storeFile = (pathFunction, file) =>
-  new Promise((resolve, reject) => {
-    const filename = generateFileName(file);
-    fs.appendFile(pathFunction(filename), file.buffer, err => {
-      if (err) {
-        reject(err);
-      }
-      resolve(Object.assign(file, { filename, destination: pathFunction() }));
-    });
-  });
 
 const routes = app => {
   const corsOptions = {

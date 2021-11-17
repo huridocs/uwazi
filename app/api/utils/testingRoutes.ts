@@ -20,6 +20,9 @@ const setUpApp = (
   app.use(bodyParser.json());
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) => iosocket.emit(event, ...args);
+    req.sockets = {
+      emitToCurrentTenant: (event: string, ...args: any[]) => iosocket.emit(event, ...args),
+    };
     next();
   });
 

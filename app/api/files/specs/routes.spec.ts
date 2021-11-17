@@ -183,7 +183,8 @@ describe('files routes', () => {
         .send({
           originalname: 'Dont bring me down - 1979',
           entity: entityId,
-        });
+        })
+        .expect(200);
 
       const [attachment] = await files.get({ entity: entityId.toString() });
       expect(attachment).toEqual(

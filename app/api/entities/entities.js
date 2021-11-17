@@ -400,20 +400,22 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  async save(_doc, { user, language }, updateRelationships = true, index = true) {
+  async save(_doc, { user, language }, options = {}) {
+    const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
     await saveSelections(_doc);
     const doc = _doc;
+
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
       doc.published = false;
     }
-
     const sharedId = doc.sharedId || ID();
     const template = await this.getEntityTemplate(doc, language);
     let docTemplate = template;
     doc.editDate = date.currentUTC();
+
     if (doc.sharedId) {
       await this.updateEntity(this.sanitize(doc, template), template);
     } else {
@@ -430,10 +432,9 @@ export default {
       await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     }
 
-    const [entity] = await this.getUnrestrictedWithDocuments(
-      { sharedId, language },
-      '+permissions'
-    );
+    const [entity] = includeDocuments
+      ? await this.getUnrestrictedWithDocuments({ sharedId, language }, '+permissions')
+      : await this.getUnrestricted({ sharedId, language }, '+permissions');
 
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
@@ -500,15 +501,15 @@ export default {
     return model.getUnrestricted(query, select, options);
   },
 
-  async getUnrestrictedWithDocuments(query, select, options = {}) {
-    const { documentsFullText, ...restOfOptions } = options;
+  async getUnrestricted(query, select, options) {
     const extendedSelect = extendSelect(select);
-    const entities = await model.getUnrestricted(query, extendedSelect, restOfOptions);
-    return withDocuments(entities, documentsFullText);
+    return model.getUnrestricted(query, extendedSelect, options);
   },
 
-  async getUnrestricted(query, select, options) {
-    return model.getUnrestricted(query, select, options);
+  async getUnrestrictedWithDocuments(query, select, options = {}) {
+    const { documentsFullText, ...restOfOptions } = options;
+    const entities = await this.getUnrestricted(query, select, restOfOptions);
+    return withDocuments(entities, documentsFullText);
   },
 
   async get(query, select, options = {}) {
