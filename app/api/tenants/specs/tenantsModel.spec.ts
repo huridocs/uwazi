@@ -94,6 +94,32 @@ describe('tenantsModel', () => {
     });
   });
 
+  it('should requiere a unique name for tenants', async () => {
+    try {
+      await db.collection('tenants').insertMany([
+        {
+          name: 'tenant one',
+        },
+      ]);
+    } catch (e) {
+      expect(e.code).toBe(11000);
+    }
+    const tenants = await model.get();
+    expect(tenants).not.toEqual([
+      expect.objectContaining({
+        _id: expect.any(ObjectID),
+        name: 'tenant one',
+        dbName: 'tenant_one',
+      }),
+      expect.objectContaining({
+        _id: expect.any(ObjectID),
+        name: 'tenant two',
+        dbName: 'tenant_two',
+      }),
+      expect.objectContaining({ _id: expect.any(ObjectID), name: 'tenant one' }),
+    ]);
+  });
+
   describe('on error', () => {
     it('watch not supported should close the connection', () => {
       errorEvent({
