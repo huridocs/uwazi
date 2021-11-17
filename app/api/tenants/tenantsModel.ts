@@ -15,6 +15,7 @@ const mongoSchema = new mongoose.Schema({
   attachments: String,
   customUploads: String,
   temporalFiles: String,
+  activityLogs: String,
 });
 
 type TenantDocument = Document & Tenant;

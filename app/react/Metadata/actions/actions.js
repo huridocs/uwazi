@@ -131,7 +131,12 @@ export function loadInReduxForm(form, _entity, templates) {
     (_entity.sharedId
       ? api.get(new RequestParams({ sharedId: _entity.sharedId }))
       : Promise.resolve([_entity])
-    ).then(([entity]) => {
+    ).then(([response]) => {
+      const { attachments } = response;
+      const sortedAttachments = attachments
+        ? advancedSort(attachments, { property: 'originalname' })
+        : attachments;
+      const entity = { ...response, attachments: sortedAttachments };
       loadFetchedInReduxForm(form, entity, templates).forEach(action => dispatch(action));
     });
   };

@@ -1,6 +1,8 @@
 import Joi from 'joi';
 import objectId from 'joi-objectid';
 import { search } from 'api/search';
+import { uploadMiddleware } from 'api/files';
+import { saveEntity } from 'api/entities/entitySavingManager';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
@@ -9,29 +11,37 @@ import { parseQuery, validation } from '../utils';
 
 Joi.objectId = objectId(Joi);
 
+async function updateThesauriWithEntity(entity, req) {
+  const template = await templates.getById(entity.template);
+  const templateTransformed = await thesauri.templateToThesauri(
+    template,
+    req.language,
+    req.user,
+    await search.countPerTemplate(req.language)
+  );
+  req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
+}
+
 export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    (req, res, next) =>
-      entities
-        .save(req.body, { user: req.user, language: req.language })
-        .then(response => {
-          res.json(response);
-          return templates.getById(response.template);
-        })
-        .then(async template =>
-          thesauri.templateToThesauri(
-            template,
-            req.language,
-            req.user,
-            await search.countPerTemplate(req.language)
-          )
-        )
-        .then(templateTransformed => {
-          req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
-        })
-        .catch(next)
+    uploadMiddleware.multiple(),
+    async (req, res, next) => {
+      try {
+        const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+        const result = await saveEntity(entityToSave, {
+          user: req.user,
+          language: req.language,
+          files: req.files,
+        });
+        const { entity } = result;
+        await updateThesauriWithEntity(entity, req);
+        return res.json(req.body.entity ? result : entity);
+      } catch (e) {
+        return next(e);
+      }
+    }
   );
 
   app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>

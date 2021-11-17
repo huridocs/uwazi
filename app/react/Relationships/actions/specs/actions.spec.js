@@ -151,19 +151,41 @@ describe('Relationships actions', () => {
   });
 
   describe('addEntity', () => {
-    it('should notify success and pass action with index, rightIndex and entity', () => {
+    let store;
+    let entity;
+
+    beforeEach(() => {
       mockID();
-      const store = mockStore({});
-      const entity = { title: 'a short title' };
-      actions.addEntity(3, 7, entity)(store.dispatch);
+      store = mockStore({});
+      entity = { title: 'a short title' };
+    });
+
+    it('should notify success and pass action with index, rightIndex and entity', () => {
+      actions.addEntity(3, 7, entity, [])(store.dispatch);
 
       expect(store.getActions()).toEqual([
         {
           type: 'NOTIFY',
           notification: {
             id: 'unique_id',
-            message: 'a short title added to hub.  Save your work to make change permanent.',
+            message: 'a short title added to hub. Save your work to make change permanent.',
             type: 'success',
+          },
+        },
+        { type: types.ADD_RELATIONSHIPS_ENTITY, index: 3, rightIndex: 7, entity },
+      ]);
+    });
+    it('should notify errors for supporting file save process', () => {
+      actions.addEntity(3, 7, entity, ['some errors'])(store.dispatch);
+
+      expect(store.getActions()).toEqual([
+        {
+          type: 'NOTIFY',
+          notification: {
+            id: 'unique_id',
+            message:
+              'a short title added to hub with the following errors: ["some errors"]. Save your work to make change permanent.',
+            type: 'warning',
           },
         },
         { type: types.ADD_RELATIONSHIPS_ENTITY, index: 3, rightIndex: 7, entity },

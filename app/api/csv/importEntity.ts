@@ -75,7 +75,11 @@ const importEntity = async (
   const { attachments } = toImportEntity;
   delete toImportEntity.attachments;
   const eo = await entityObject(toImportEntity, template, { language });
-  const entity = await entities.save(eo, { user, language }, true, false);
+  const entity = await entities.save(
+    eo,
+    { user, language },
+    { updateRelationships: true, index: false }
+  );
 
   if (toImportEntity.file && entity.sharedId) {
     const file = await importFile.extractFile(toImportEntity.file);

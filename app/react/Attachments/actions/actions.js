@@ -41,7 +41,7 @@ export function deleteFile(file, entity) {
 }
 
 export function uploadAttachment(entity, file, __reducerKey) {
-  return dispatch => {
+  return async dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     superagent
       .post(`${APIURL}files/upload/attachment`)
@@ -66,7 +66,8 @@ export function uploadAttachment(entity, file, __reducerKey) {
   };
 }
 
-export function uploadAttachmentFromUrl(entity, name, url, __reducerKey) {
+export function uploadAttachmentFromUrl(entity, formData, __reducerKey) {
+  const { name, url } = formData;
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     api
