@@ -42,6 +42,7 @@ describe('Settings', () => {
   it('should display Collection with no more than a 7% difference', async () => {
     await expect(page).toClick('a.settings-section');
     await expect(page).toClick('span', { text: 'Collection' });
+    await page.waitForSelector('.mapboxgl-map');
     const collectionScreenshot = await getContainerScreenshot(page, 'div.collection-settings');
     expect(collectionScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,

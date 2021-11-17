@@ -26,6 +26,7 @@ describe('Homepage entities', () => {
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
     await expect(page).toClick('a', { text: 'Uwazi' });
+    await page.waitForSelector('.item-group');
     const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
     expect(homepageScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,
