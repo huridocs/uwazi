@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema, MetadataSchema } from 'shared/types/commonTypes';
+import { PropertySchema, MetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 
 export function getIdMapper() {
@@ -86,7 +86,7 @@ export function getFixturesFactory() {
       ...props,
     }),
 
-    metadataValue: (value: string) => ({ value }),
+    metadataValue: (value: PropertyValueSchema) => ({ value }),
 
     thesauri: (name: string, values: Array<string | [string, string]>) => ({
       name,
