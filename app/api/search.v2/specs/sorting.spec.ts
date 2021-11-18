@@ -5,9 +5,10 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import entities from 'api/entities';
+import { SearchQuery } from 'shared/types/SearchQueryType';
 
 import { searchRoutes } from '../routes';
-import entities from 'api/entities';
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(
@@ -27,26 +28,26 @@ describe('Sorting', () => {
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
-    const entityA = factory.entity('A Entity', 'templateA', {
-      textProperty: [factory.metadataValue('property c')],
+    const entityA = factory.entity('A First title', 'templateA', {
+      textProperty: [factory.metadataValue('c Third property')],
       numberProperty: [factory.metadataValue(100)],
-      selectProperty: [factory.metadataValue('a')],
+      selectProperty: [factory.metadataValue('a First select')],
     });
 
-    const entityC = factory.entity('c entity', 'templateA', {
-      textProperty: [factory.metadataValue('property D')],
+    const entityC = factory.entity('c Second title', 'templateA', {
+      textProperty: [factory.metadataValue('D Last property')],
       numberProperty: [factory.metadataValue(-10)],
-      selectProperty: [factory.metadataValue('D')],
+      selectProperty: [factory.metadataValue('D Last select')],
     });
-    const entityZ = factory.entity('Z Entity', 'templateA', {
-      textProperty: [factory.metadataValue('property a')],
+    const entityZ = factory.entity('Z Last title', 'templateA', {
+      textProperty: [factory.metadataValue('a First property')],
       numberProperty: [factory.metadataValue(1)],
-      selectProperty: [factory.metadataValue('B')],
+      selectProperty: [factory.metadataValue('B Second select')],
     });
-    const entityJ = factory.entity('j Entity', 'templateA', {
-      textProperty: [factory.metadataValue('property B')],
+    const entityJ = factory.entity('j Third title', 'templateA', {
+      textProperty: [factory.metadataValue('B Second property')],
       numberProperty: [factory.metadataValue(2)],
-      selectProperty: [factory.metadataValue('c')],
+      selectProperty: [factory.metadataValue('c Third select')],
     });
 
     await load(
@@ -60,7 +61,14 @@ describe('Sorting', () => {
             }),
           ]),
         ],
-        dictionaries: [factory.thesauri('thesaurus', ['a', 'B', 'c', 'D'])],
+        dictionaries: [
+          factory.thesauri('thesaurus', [
+            'a First select',
+            'B Second select',
+            'c Third select',
+            'D Last select',
+          ]),
+        ],
         entities: [entityA, entityC, entityZ, entityJ],
       },
       'search.v2.sorting'
@@ -75,7 +83,7 @@ describe('Sorting', () => {
   afterAll(async () => testingDB.disconnect());
 
   it('should sort by title', async () => {
-    const query = {
+    const query: SearchQuery = {
       sort: 'title',
     };
 
@@ -85,16 +93,17 @@ describe('Sorting', () => {
       .expect(200);
 
     expect(body.data).toMatchObject([
-      { title: 'A Entity' },
-      { title: 'c entity' },
-      { title: 'j Entity' },
-      { title: 'Z Entity' },
+      { title: 'A First title' },
+      { title: 'c Second title' },
+      { title: 'j Third title' },
+      { title: 'Z Last title' },
     ]);
   });
 
   it('should sort by metadata text property', async () => {
-    const query = {
+    const query: SearchQuery = {
       sort: '-metadata.textProperty',
+      fields: ['metadata.textProperty'],
     };
 
     const { body } = await request(app)
@@ -103,16 +112,17 @@ describe('Sorting', () => {
       .expect(200);
 
     expect(body.data).toMatchObject([
-      { title: 'c entity' },
-      { title: 'A Entity' },
-      { title: 'j Entity' },
-      { title: 'Z Entity' },
+      { metadata: { textProperty: [{ value: 'D Last property' }] } },
+      { metadata: { textProperty: [{ value: 'c Third property' }] } },
+      { metadata: { textProperty: [{ value: 'B Second property' }] } },
+      { metadata: { textProperty: [{ value: 'a First property' }] } },
     ]);
   });
 
   it('should sort by metadata number property', async () => {
-    const query = {
+    const query: SearchQuery = {
       sort: 'metadata.numberProperty',
+      fields: ['metadata.numberProperty'],
     };
 
     const { body } = await request(app)
@@ -121,16 +131,17 @@ describe('Sorting', () => {
       .expect(200);
 
     expect(body.data).toMatchObject([
-      { title: 'c entity' },
-      { title: 'Z Entity' },
-      { title: 'j Entity' },
-      { title: 'A Entity' },
+      { metadata: { numberProperty: [{ value: -10 }] } },
+      { metadata: { numberProperty: [{ value: 1 }] } },
+      { metadata: { numberProperty: [{ value: 2 }] } },
+      { metadata: { numberProperty: [{ value: 100 }] } },
     ]);
   });
 
   it('should sort by metadata select property', async () => {
-    const query = {
+    const query: SearchQuery = {
       sort: 'metadata.selectProperty',
+      fields: ['metadata.selectProperty'],
     };
 
     const { body } = await request(app)
@@ -138,16 +149,13 @@ describe('Sorting', () => {
       .query(query)
       .expect(200);
 
-    fail('this should be failing');
     expect(body.data).toMatchObject([
-      { title: 'A Entity' },
-      { title: 'Z Entity' },
-      { title: 'j Entity' },
-      { title: 'c entity' },
+      { metadata: { selectProperty: [{ value: 'a First select' }] } },
+      { metadata: { selectProperty: [{ value: 'B Second select' }] } },
+      { metadata: { selectProperty: [{ value: 'c Third select' }] } },
+      { metadata: { selectProperty: [{ value: 'D Last select' }] } },
     ]);
   });
 
-  it.todo('we need factory.thesaurusValue that do not adds label')
-  it.todo('we do not want factory.metadataValue to add a label')
-  it.todo('we want to improve readability of tests (not use title when ordering by other props)')
+  it.todo('we need factory.thesaurusValue that do not adds label');
 });
