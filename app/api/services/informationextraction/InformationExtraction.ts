@@ -8,8 +8,8 @@ import request from 'shared/JSONRequest';
 import { handleError } from 'api/utils';
 import { FileType } from 'shared/types/fileType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { IXSuggestionsModel } from './IXSuggestionsModel';
 import filesModel from 'api/files/filesModel';
+import { IXSuggestionsModel } from '../../suggestions/IXSuggestionsModel';
 
 class InformationExtraction {
   SERVICE_NAME = 'informationextraction';
