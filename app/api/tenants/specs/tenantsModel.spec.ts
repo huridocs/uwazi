@@ -105,19 +105,7 @@ describe('tenantsModel', () => {
       expect(e.code).toBe(11000);
     }
     const tenants = await model.get();
-    expect(tenants).not.toEqual([
-      expect.objectContaining({
-        _id: expect.any(ObjectID),
-        name: 'tenant one',
-        dbName: 'tenant_one',
-      }),
-      expect.objectContaining({
-        _id: expect.any(ObjectID),
-        name: 'tenant two',
-        dbName: 'tenant_two',
-      }),
-      expect.objectContaining({ _id: expect.any(ObjectID), name: 'tenant one' }),
-    ]);
+    expect(tenants).toMatchObject([{ name: 'tenant one' }, { name: 'tenant two' }]);
   });
 
   describe('on error', () => {
