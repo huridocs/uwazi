@@ -7,6 +7,19 @@ import { MongoError } from 'mongodb';
 
 import { Tenant } from './tenantContext';
 
+const schemaValidator = {
+  $jsonSchema: {
+    bsonType: 'object',
+    properties: {
+      name: {
+        bsonType: 'string',
+        description: 'must be a string and is required',
+        minLength: 1,
+      },
+    },
+  },
+};
+
 const mongoSchema = new mongoose.Schema({
   name: { type: String, unique: true },
   dbName: String,
@@ -18,15 +31,24 @@ const mongoSchema = new mongoose.Schema({
   activityLogs: String,
 });
 
-export type TenantDocument = Document & Tenant;
+export type DBTenant = Partial<Tenant> & { name: string };
+export type TenantDocument = Document & DBTenant;
 
 export class TenantsModel extends EventEmitter {
-  model: Model<TenantDocument>;
+  model?: Model<TenantDocument>;
+
+  tenantsDB: mongoose.Connection;
+
+  collectionName: string;
 
   constructor() {
     super();
-    const tenantsDB = DB.connectionForDB(config.SHARED_DB);
-    this.model = tenantsDB.model<TenantDocument>('tenants', mongoSchema);
+    this.collectionName = 'tenants';
+    this.tenantsDB = DB.connectionForDB(config.SHARED_DB);
+  }
+
+  private initializeModel() {
+    this.model = this.tenantsDB.model<TenantDocument>(this.collectionName, mongoSchema);
 
     const changeStream = this.model.watch();
     changeStream.on('change', () => {
@@ -47,12 +69,42 @@ export class TenantsModel extends EventEmitter {
     });
   }
 
+  async initialize() {
+    const collections = (await this.tenantsDB.db.listCollections().toArray()).map(c => c.name);
+
+    if (collections.includes(this.collectionName)) {
+      await this.tenantsDB.db.command({
+        collMod: this.collectionName,
+        validator: schemaValidator,
+      });
+    } else {
+      await this.tenantsDB.db.createCollection(this.collectionName, {
+        validator: schemaValidator,
+      });
+    }
+
+    this.initializeModel();
+  }
+
   async change() {
     const tenants = await this.get();
     this.emit('change', tenants);
   }
 
   async get() {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
     return this.model.find({});
   }
 }
+
+const tenantsModel = async () => {
+  const model = new TenantsModel();
+  await model.initialize();
+  return model;
+};
+
+export { tenantsModel };

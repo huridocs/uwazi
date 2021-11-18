@@ -1,7 +1,7 @@
 import { config } from 'api/config';
 import { handleError } from 'api/utils';
 import { appContext } from 'api/utils/AppContext';
-import { TenantDocument, TenantsModel } from './tenantsModel';
+import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel';
 
 export type Tenant = {
   name: string;
@@ -27,7 +27,7 @@ class Tenants {
   }
 
   async setupTenants() {
-    const model = new TenantsModel();
+    const model = await tenantsModel();
     model.on('change', () => {
       this.updateTenants(model).catch(handleError);
     });
@@ -72,10 +72,7 @@ class Tenants {
     return this.tenants[tenantName];
   }
 
-  add(tenant: Partial<Tenant>) {
-    if (!tenant.name) {
-      throw new Error('the tenant added has no name, name is required');
-    }
+  add(tenant: DBTenant) {
     this.tenants[tenant.name] = { ...this.defaultTenant, ...tenant };
   }
 }
