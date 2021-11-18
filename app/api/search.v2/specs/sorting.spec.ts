@@ -33,7 +33,6 @@ describe('Sorting', () => {
       numberProperty: [factory.metadataValue(100)],
       selectProperty: [factory.metadataValue('a First select')],
     });
-
     const entityC = factory.entity('c Second title', 'templateA', {
       textProperty: [factory.metadataValue('D Last property')],
       numberProperty: [factory.metadataValue(-10)],
@@ -43,11 +42,13 @@ describe('Sorting', () => {
       textProperty: [factory.metadataValue('a First property')],
       numberProperty: [factory.metadataValue(1)],
       selectProperty: [factory.metadataValue('B Second select')],
+      inheritedProperty: [factory.metadataValue('c Second title')],
     });
     const entityJ = factory.entity('j Third title', 'templateA', {
       textProperty: [factory.metadataValue('B Second property')],
       numberProperty: [factory.metadataValue(2)],
       selectProperty: [factory.metadataValue('c Third select')],
+      inheritedProperty: [factory.metadataValue('Z Last title')],
     });
 
     await load(
@@ -59,6 +60,7 @@ describe('Sorting', () => {
             factory.property('selectProperty', 'select', {
               content: factory.id('thesaurus').toString(),
             }),
+            factory.inherit('inheritedProperty', 'templateA', 'numericProperty'),
           ]),
         ],
         dictionaries: [
@@ -142,6 +144,25 @@ describe('Sorting', () => {
     const query: SearchQuery = {
       sort: 'metadata.selectProperty',
       fields: ['metadata.selectProperty'],
+    };
+
+    const { body } = await request(app)
+      .get('/api/v2/entities')
+      .query(query)
+      .expect(200);
+
+    expect(body.data).toMatchObject([
+      { metadata: { selectProperty: [{ value: 'a First select' }] } },
+      { metadata: { selectProperty: [{ value: 'B Second select' }] } },
+      { metadata: { selectProperty: [{ value: 'c Third select' }] } },
+      { metadata: { selectProperty: [{ value: 'D Last select' }] } },
+    ]);
+  });
+
+  it('should sort by inherited values', async () => {
+    const query: SearchQuery = {
+      sort: 'metadata.inheritedProperty',
+      fields: ['metadata.inheritedProperty'],
     };
 
     const { body } = await request(app)

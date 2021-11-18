@@ -209,10 +209,10 @@ describe('Metadata filters', () => {
       { title: 'Entity 3' },
     ]);
   });
-
-  it.todo('Pagination');
-
-  it.todo('Geolocation');
-
-  it.todo('Aggregations');
 });
+
+it.todo('Pagination');
+
+it.todo('Geolocation');
+
+it.todo('Aggregations');
