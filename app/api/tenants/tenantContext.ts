@@ -17,9 +17,12 @@ export type Tenant = {
 class Tenants {
   tenants: { [k: string]: Tenant };
 
-  constructor() {
+  defaultTenant: Tenant;
+
+  constructor(defaultTenant: Tenant) {
+    this.defaultTenant = defaultTenant;
     this.tenants = {
-      [config.defaultTenant.name]: config.defaultTenant,
+      [config.defaultTenant.name]: defaultTenant,
     };
   }
 
@@ -69,19 +72,13 @@ class Tenants {
     return this.tenants[tenantName];
   }
 
-  add(tenant: Tenant) {
-    const tenantWithDefaults = {
-      ...tenant,
-      uploadedDocuments: tenant.uploadedDocuments || config.defaultTenant.uploadedDocuments,
-      attachments: tenant.attachments || config.defaultTenant.attachments,
-      customUploads: tenant.customUploads || config.defaultTenant.customUploads,
-      temporalFiles: tenant.temporalFiles || config.defaultTenant.temporalFiles,
-      activityLogs: tenant.activityLogs || config.defaultTenant.activityLogs,
-    };
-
-    this.tenants[tenant.name] = tenantWithDefaults;
+  add(tenant: Partial<Tenant>) {
+    if (!tenant.name) {
+      throw new Error('the tenant added has no name, name is required');
+    }
+    this.tenants[tenant.name] = { ...this.defaultTenant, ...tenant };
   }
 }
-const tenants = new Tenants();
 
+const tenants = new Tenants(config.defaultTenant);
 export { tenants };
