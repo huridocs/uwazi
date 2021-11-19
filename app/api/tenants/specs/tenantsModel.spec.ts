@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { TenantsModel } from '../tenantsModel';
+import { TenantsModel, tenantsModel } from '../tenantsModel';
 
 describe('tenantsModel', () => {
   let db: Db;
@@ -35,7 +35,7 @@ describe('tenantsModel', () => {
     };
 
     spyOn(Model, 'watch').and.returnValue(mockChangeStream);
-    model = new TenantsModel();
+    model = await tenantsModel();
 
     await db.collection('tenants').deleteMany({});
     await db.collection('tenants').insertMany([
@@ -92,6 +92,32 @@ describe('tenantsModel', () => {
     await waitForExpect(async () => {
       expect(list.length).toEqual(3);
     });
+  });
+
+  it('should require name', async () => {
+    try {
+      await db.collection('tenants').insertOne({ name: '' });
+      await db.collection('tenants').insertOne({});
+      fail('should fail with required error');
+    } catch (e) {
+      const validationFailed = 121;
+      expect(e.code).toBe(validationFailed);
+    }
+  });
+
+  it('should requiere a unique name for tenants', async () => {
+    try {
+      await db.collection('tenants').insertMany([
+        {
+          name: 'tenant one',
+        },
+      ]);
+    } catch (e) {
+      const duplicateKeyError = 11000;
+      expect(e.code).toBe(duplicateKeyError);
+    }
+    const tenants = await model.get();
+    expect(tenants).toMatchObject([{ name: 'tenant one' }, { name: 'tenant two' }]);
   });
 
   describe('on error', () => {
