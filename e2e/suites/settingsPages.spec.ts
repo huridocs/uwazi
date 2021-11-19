@@ -20,7 +20,6 @@ describe('Settings', () => {
   it('should display Account with no more than a 7% difference', async () => {
     await expect(page).toClick('a.settings-section');
     await expect(page).toClick('span', { text: 'Account' });
-    // await page.waitForSelector('div.account-settings');
     const accountsScreenshot = await getContainerScreenshot(page, 'div.account-settings');
     expect(accountsScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,

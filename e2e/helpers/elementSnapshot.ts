@@ -1,16 +1,16 @@
 import sharp from 'sharp';
-import { ElementHandle } from 'puppeteer';
+import { ElementHandle, Page } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
 
 const DEFAULT_WIDTH = 1000;
 
-const resizeImage = async (image: any, width: number) =>
+const resizeImage = async (image: string, width: number) =>
   sharp(image)
     .resize(width)
     .toBuffer();
 
 export const getContainerScreenshot = async (
-  page: any,
+  page: Page,
   className: string,
   width: number = DEFAULT_WIDTH
 ) => {

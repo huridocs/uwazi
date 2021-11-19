@@ -26,7 +26,6 @@ describe('Homepage entities', () => {
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
     await page.goto(host, { waitUntil: 'domcontentloaded' });
-    // await page.waitForNavigation();
     const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
     expect(homepageScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,
@@ -37,8 +36,7 @@ describe('Homepage entities', () => {
 
   it('should display entity details with no more than a 7% difference', async () => {
     await expect(page).toClick('div.item-document:first-child');
-    await page.waitForSelector('.closeSidepanel');
-    await page.waitFor(200);
+    await page.waitForSelector('.metadata.tab-content-visible');
     const entityDetailsScreenshot = await getContainerScreenshot(page, '.metadata-sidepanel');
     expect(entityDetailsScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,
@@ -47,9 +45,7 @@ describe('Homepage entities', () => {
     });
   });
   it('should display entity view page with no more than a 7% difference', async () => {
-    // await expect(page).toClick('div.item-document');
     await page.goto(`${host}/entity/oiejku12qn0zfr`, { waitUntil: 'domcontentloaded' });
-    // await expect(page).toClick('span', { text: 'View' });
     const entityMetadataScreenshot = await getContainerScreenshot(page, 'div.entity-metadata');
     expect(entityMetadataScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,
