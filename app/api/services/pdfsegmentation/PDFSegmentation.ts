@@ -145,10 +145,13 @@ class PDFSegmentation {
     return { data: JSON.parse(response.json), fileStream: (fileStream as unknown) as Readable };
   };
 
+  static getXMLNAme = (filename: string) =>
+    `${path.basename(filename, path.extname(filename))}.xml`;
+
   storeXML = async (filename: string, fileStream: Readable) => {
     const folderPath = uploadsPath(this.SERVICE_NAME);
     await createDirIfNotExists(folderPath);
-    const xmlname = `${path.basename(filename, path.extname(filename))}.xml`;
+    const xmlname = PDFSegmentation.getXMLNAme(filename);
 
     await fileFromReadStream(xmlname, fileStream, folderPath);
   };
