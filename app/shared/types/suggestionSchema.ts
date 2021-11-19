@@ -1,4 +1,4 @@
-import { objectIdSchema } from 'shared/types/commonSchemas';
+import {metadataObjectSchema, objectIdSchema} from 'shared/types/commonSchemas';
 
 export const emitSchemaTypes = true;
 
@@ -7,19 +7,32 @@ export enum SuggestionState {
   filled = 'Filled',
 }
 
+export const IXSuggestionSchema = {
+  type: 'object',
+  additionalProperties: false,
+  title: 'IXSuggestionType',
+  definitions: {objectIdSchema},
+  properties: {
+    _id: objectIdSchema,
+    entity: objectIdSchema,
+    propertyName: {type: 'string', minLength: 1},
+    suggestedValue: {type: 'string', minLength: 1}, //text
+    segment: {type: 'string', minLength: 1}, //segment/text
+    language: {type: 'string', minLength: 1},
+    state: {type: 'string', enum: Object.values(SuggestionState)}, //?
+    page: {type: 'number', minimum: 1},
+  },
+  required: ['propertyName', 'entity', 'suggestedValue', 'segment', 'language', 'state', 'page'],
+};
+
 export const SuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'SuggestionType',
-  definitions: { objectIdSchema },
+  definitions: {objectIdSchema, metadataObjectSchema},
   properties: {
-    currentValue: { type: 'string' },
-    suggestedValue: { type: 'string', minLength: 1 },
-    segment: { type: 'string', minLength: 1 },
-    title: { type: 'string', minLength: 1 },
-    language: { type: 'string', minLength: 1 },
-    state: { type: 'string', enum: Object.values(SuggestionState) },
-    page: { type: 'number', minimum: 1 },
+    ...IXSuggestionSchema,
+    currentValue: {type: metadataObjectSchema},
+    title: {type: 'string', minLength: 1},
   },
-  required: ['propertyName', 'suggestedValue', 'segment', 'language', 'state', 'page'],
 };

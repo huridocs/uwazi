@@ -1,20 +1,21 @@
 import mongoose, { Connection } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Db } from 'mongodb';
-import { FileType } from 'shared/types/fileType';
-import { EntitySchema } from 'shared/types/entityType';
-import { PageType } from 'shared/types/pageType';
-import { DB } from 'api/odm';
-import { setupTestUploadedPaths } from 'api/files/filesystem';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { UserGroupSchema } from 'shared/types/userGroupType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { elasticTesting } from './elastic_testing';
-import { testingTenants } from './testingTenants';
+import {FileType} from 'shared/types/fileType';
+import {EntitySchema} from 'shared/types/entityType';
+import {PageType} from 'shared/types/pageType';
+import {DB} from 'api/odm';
+import {setupTestUploadedPaths} from 'api/files/filesystem';
+import {ThesaurusSchema} from 'shared/types/thesaurusType';
+import {UserGroupSchema} from 'shared/types/userGroupType';
+import {ObjectIdSchema} from 'shared/types/commonTypes';
+import {IXSuggestionType} from 'shared/types/suggestionType';
+import {UserInContextMockFactory} from 'api/utils/testingUserInContext';
+import {ensure} from 'shared/tsUtils';
 import uniqueID from 'shared/uniqueID';
-import { createMongoInstance } from './createMongoInstance';
-import { ensure } from 'shared/tsUtils';
+import {elasticTesting} from './elastic_testing';
+import {testingTenants} from './testingTenants';
+import {createMongoInstance} from './createMongoInstance';
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
@@ -28,6 +29,7 @@ export type DBFixture = {
   dictionaries?: ThesaurusSchema[];
   usergroups?: UserGroupSchema[];
   pages?: PageType[];
+  ixsuggestions: IXSuggestionType[];
   [k: string]: any;
 };
 

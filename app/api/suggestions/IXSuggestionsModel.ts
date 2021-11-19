@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { instanceModel } from 'api/odm';
-import { SegmentationType } from 'shared/types/segmentationType';
+import {instanceModel} from 'api/odm';
+import {IXSuggestionType} from 'shared/types/suggestionType';
 
 const props = {};
 
@@ -9,6 +9,6 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-const IXSuggestionsModel = instanceModel<SegmentationType>('ixsuggestions', mongoSchema);
+const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 
 export { IXSuggestionsModel };
