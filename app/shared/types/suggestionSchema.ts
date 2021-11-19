@@ -1,10 +1,13 @@
 import { metadataObjectSchema, objectIdSchema } from 'shared/types/commonSchemas';
+import { fileSchema } from 'shared/types/fileSchema';
+import { entitySchema } from 'shared/types/entitySchema';
 
 export const emitSchemaTypes = true;
 
 export enum SuggestionState {
   empty = 'Empty',
-  filled = 'Filled',
+  matching = 'Matching',
+  pending = 'Pending',
 }
 
 export const IXSuggestionSchema = {
@@ -30,9 +33,13 @@ export const SuggestionSchema = {
   additionalProperties: false,
   title: 'SuggestionType',
   definitions: { objectIdSchema, metadataObjectSchema },
-  properties: {
-    ...IXSuggestionSchema,
-    currentValue: { type: metadataObjectSchema },
-    title: { type: 'string', minLength: 1 },
-  },
+  allOf: [
+    IXSuggestionSchema,
+    {
+      properties: {
+        currentValue: { type: metadataObjectSchema },
+        title: { type: 'string', minLength: 1 },
+      },
+    },
+  ],
 };

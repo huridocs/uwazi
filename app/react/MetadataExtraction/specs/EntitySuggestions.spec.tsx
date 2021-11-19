@@ -29,7 +29,7 @@ describe('EntitySuggestions', () => {
         suggestedValue: 'Olowo Kamali',
         segment: 'Olowo Kamali Case',
         language: 'English',
-        state: SuggestionState.filled,
+        state: SuggestionState.matching,
         page: 5,
       },
       {

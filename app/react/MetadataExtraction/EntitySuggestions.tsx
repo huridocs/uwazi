@@ -29,8 +29,9 @@ const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<Suggest
     }}
   >
     <option value="">{t('System', 'All', 'All', false)}</option>
-    <option value="Filled">{t('System', 'Filled', 'Filled', false)}</option>
+    <option value="Matching">{t('System', 'Matching', 'Matching', false)}</option>
     <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
+    <option value="Pending">{t('System', 'Pending', 'Pending', false)}</option>
   </select>
 );
 

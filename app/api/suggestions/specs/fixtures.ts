@@ -9,7 +9,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'HCT-04-CR-SC-0074-2013: Uganda vs Olowo Kamali',
       segment: 'Lorem ipsum dolor HCT-04-CR-SC-0074-2013: Uganda vs Olowo Kamali sit amet.',
       language: 'en',
-      state: SuggestionState.filled,
+      state: SuggestionState.matching,
       page: 1,
     },
     {
@@ -18,7 +18,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'first suggestion',
       segment: 'segment with first suggestion test',
       language: 'en',
-      state: SuggestionState.filled,
+      state: SuggestionState.matching,
       page: 1,
     },
   ],
