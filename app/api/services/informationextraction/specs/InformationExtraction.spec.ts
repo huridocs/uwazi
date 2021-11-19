@@ -2,8 +2,6 @@
 /* eslint-disable max-lines */
 
 import asyncFS from 'api/utils/async-fs';
-import path from 'path';
-
 import request from 'shared/JSONRequest';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setupTestUploadedPaths } from 'api/files';
