@@ -26,6 +26,7 @@ export const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       sharedId: 'shared1',
+      template: 'template1',
       type: 'entity',
       language: 'en',
       title: 'Entity 1',

@@ -29,9 +29,10 @@ describe('suggestions routes', () => {
         .get('/api/suggestions')
         .query({});
       expect(response.body).toMatchObject([
-        { title: 'Entity 1', propertyName: 'title' },
+        { title: 'Entity 1', template: 'template1', propertyName: 'title' },
         {
           title: 'Entity 1',
+          template: 'template1',
           propertyName: 'property_1',
           currentValue: [{ value: 'value 1' }],
         },

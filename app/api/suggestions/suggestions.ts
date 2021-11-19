@@ -13,13 +13,18 @@ export const Suggestions = {
     );
     const entitiesData = await entities.get(
       { sharedId: { $in: entitiesIds }, language: 'en' },
-      { title: true, sharedId: true, ...propertiesNames },
+      { title: true, sharedId: true, template: true, ...propertiesNames },
       { withoutDocuments: true }
     );
     const entitiesBySharedId = _.keyBy(entitiesData, 'sharedId');
     return ixSuggestions.map(s => {
       const entity = entitiesBySharedId[s.entity.toString()];
-      return { ...s, title: entity.title, currentValue: entity.metadata[s.propertyName] };
+      return {
+        ...s,
+        title: entity.title,
+        template: entity.template,
+        currentValue: entity.metadata[s.propertyName],
+      };
     });
   },
 };
