@@ -45,6 +45,7 @@ describe('EntityViewer', () => {
           ],
         },
       ]),
+      hasPageView: false,
       deleteConnection: jasmine.createSpy('deleteConnection'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
       deleteEntity: jasmine.createSpy('deleteEntity'),
@@ -128,17 +129,18 @@ describe('EntityViewer', () => {
   });
 
   describe('closing side panel', () => {
-    beforeEach(() => {
+    it('should close the side panel when close button is clicked', () => {
       render();
       component.find('.closeSidepanel').simulate('click');
       component.update();
-    });
-    it('should close the side panel when close button is clicked', () => {
       expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(false);
       expect(component.find('.entity-connections').prop('open')).toBe(false);
       expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(true);
     });
     it('should reveal side panel when context menu is clicked', () => {
+      render();
+      component.find('.closeSidepanel').simulate('click');
+      component.update();
       expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(false);
 
       component.find('.show-info-sidepanel-menu').prop('openPanel')();
@@ -147,6 +149,13 @@ describe('EntityViewer', () => {
       expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(true);
       expect(component.find('.entity-connections').prop('open')).toBe(true);
       expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(false);
+    });
+    it('should have the sidepanel closed by default when entity has page view', () => {
+      props.hasPageView = true;
+      render();
+      expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(false);
+      expect(component.find('.entity-connections').prop('open')).toBe(false);
+      expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(true);
     });
   });
 
