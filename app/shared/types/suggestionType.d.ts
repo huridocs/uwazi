@@ -1,27 +1,35 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { MetadataObjectSchema, ObjectIdSchema } from 'shared/types/commonTypes';
-
-import { FileType } from 'shared/types/fileType';
-
-import { EntitySchema } from 'shared/types/entityType';
+import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
-  entity: ObjectIdSchema;
+  entityId?: ObjectIdSchema;
+  entityTitle?: string;
   propertyName: string;
+  propertyType?:
+    | 'date'
+    | 'daterange'
+    | 'geolocation'
+    | 'image'
+    | 'link'
+    | 'markdown'
+    | 'media'
+    | 'multidate'
+    | 'multidaterange'
+    | 'multiselect'
+    | 'nested'
+    | 'numeric'
+    | 'preview'
+    | 'relationship'
+    | 'select'
+    | 'text'
+    | 'generatedid';
   suggestedValue: string;
+  currentValue?: PropertyValueSchema;
   segment: string;
   language: string;
   state: 'Empty' | 'Matching' | 'Pending';
   page: number;
 }
-
-export type SuggestionType = IXSuggestionType & {
-  currentValue?: {
-    [k: string]: unknown | undefined;
-  };
-  title?: string;
-  [k: string]: unknown | undefined;
-};

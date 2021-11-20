@@ -1,6 +1,5 @@
-import { metadataObjectSchema, objectIdSchema } from 'shared/types/commonSchemas';
-import { fileSchema } from 'shared/types/fileSchema';
-import { entitySchema } from 'shared/types/entitySchema';
+import { objectIdSchema, propertyValueSchema } from 'shared/types/commonSchemas';
+import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
@@ -14,32 +13,19 @@ export const IXSuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'IXSuggestionType',
-  definitions: { objectIdSchema },
+  definitions: { objectIdSchema, propertyTypes, propertyValueSchema },
   properties: {
     _id: objectIdSchema,
-    entity: objectIdSchema,
+    entityId: objectIdSchema,
+    entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
+    propertyType: { type: 'string', enum: Object.values(propertyTypes) },
     suggestedValue: { type: 'string', minLength: 1 }, //text
+    currentValue: propertyValueSchema,
     segment: { type: 'string', minLength: 1 }, //segment/text
     language: { type: 'string', minLength: 1 },
     state: { type: 'string', enum: Object.values(SuggestionState) }, //?
     page: { type: 'number', minimum: 1 },
   },
   required: ['propertyName', 'entity', 'suggestedValue', 'segment', 'language', 'state', 'page'],
-};
-
-export const SuggestionSchema = {
-  type: 'object',
-  additionalProperties: false,
-  title: 'SuggestionType',
-  definitions: { objectIdSchema, metadataObjectSchema },
-  allOf: [
-    IXSuggestionSchema,
-    {
-      properties: {
-        currentValue: { type: metadataObjectSchema },
-        title: { type: 'string', minLength: 1 },
-      },
-    },
-  ],
 };

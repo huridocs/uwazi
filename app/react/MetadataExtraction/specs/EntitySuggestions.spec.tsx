@@ -7,6 +7,7 @@ import React from 'react';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
 
@@ -17,14 +18,16 @@ describe('EntitySuggestions', () => {
     'Title',
     'Segment',
     'Language',
-    'StateAllFilledEmpty',
+    'StateAllMatchingEmptyPending',
     'Page',
   ];
 
-  const suggestionsData = {
+  const suggestionsData: { suggestions: IXSuggestionType[]; totalPages: number } = {
     suggestions: [
       {
-        title: 'Entity title1',
+        entityId: 'shared1',
+        propertyName: 'property1',
+        entityTitle: 'Entity title1',
         currentValue: 'Entity title1',
         suggestedValue: 'Olowo Kamali',
         segment: 'Olowo Kamali Case',
@@ -33,7 +36,9 @@ describe('EntitySuggestions', () => {
         page: 5,
       },
       {
-        title: 'Título entidad',
+        entityId: 'shared2',
+        propertyName: 'property1',
+        entityTitle: 'Título entidad',
         currentValue: '',
         suggestedValue: 'Violación caso 1',
         segment: 'Detalle Violación caso 1',
@@ -77,7 +82,7 @@ describe('EntitySuggestions', () => {
         'Entity title1',
         'Olowo Kamali Case',
         'English',
-        'Filled',
+        'Matching',
         '5',
       ]);
       const secondRow = within(rows[2])

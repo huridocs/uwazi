@@ -13,14 +13,14 @@ import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
-import { SuggestionType } from 'shared/types/suggestionType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { getSuggestions } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
   propertyName: string;
 }
 
-const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<SuggestionType>) => (
+const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSuggestionType>) => (
   <select
     className={filterValue ? 'filtered' : ''}
     value={filterValue}
@@ -39,7 +39,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
-  const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
+  const suggestionCell = ({ row }: { row: Row<IXSuggestionType> }) => {
     const suggestion = row.original;
     const currentValue = suggestion.currentValue || '-';
     return (
@@ -70,7 +70,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
     </div>
   );
 
-  const columns: Column<SuggestionType>[] = React.useMemo(
+  const columns: Column<IXSuggestionType>[] = React.useMemo(
     () => [
       {
         id: 'suggestion',
@@ -89,8 +89,8 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         className: 'action',
       },
       {
-        id: 'title',
-        accessor: 'title' as const,
+        id: 'entityTitle',
+        accessor: 'entityTitle' as const,
         Header: () => <Translate>Title</Translate>,
         className: 'title',
       },
@@ -102,14 +102,14 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       {
         accessor: 'language' as const,
         Header: () => <Translate>Language</Translate>,
-        Cell: ({ row }: { row: Row<SuggestionType> }) => (
+        Cell: ({ row }: { row: Row<IXSuggestionType> }) => (
           <Translate>{row.original.language}</Translate>
         ),
       },
       {
         accessor: 'state' as const,
         Header: () => <Translate>State</Translate>,
-        Cell: ({ row }: { row: Row<SuggestionType> }) => (
+        Cell: ({ row }: { row: Row<IXSuggestionType> }) => (
           <Translate>{row.original.state}</Translate>
         ),
         Filter: stateFilter,
@@ -122,7 +122,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
     ],
     []
   );
-  const hiddenColumns = propertyName === 'Title' ? ['title'] : [];
+  const hiddenColumns = propertyName === 'Title' ? ['entityTitle'] : [];
 
   const {
     getTableProps,
@@ -186,7 +186,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       </div>
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup: HeaderGroup<SuggestionType>) => (
+          {headerGroups.map((headerGroup: HeaderGroup<IXSuggestionType>) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => {
                 const className =
@@ -204,7 +204,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row: Row<SuggestionType>) => {
+          {page.map((row: Row<IXSuggestionType>) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
