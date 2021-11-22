@@ -13,7 +13,6 @@ import filesModel from 'api/files/filesModel';
 import { PDFSegmentation } from '../pdfsegmentation/PDFSegmentation';
 import { SegmentationType } from 'shared/types/segmentationType';
 import { Settings } from 'shared/types/settingsType';
-import { IXSuggestionsModel } from '../../suggestions/IXSuggestionsModel';
 
 interface FileWithNameAndId extends FileType {
   filename: string;
