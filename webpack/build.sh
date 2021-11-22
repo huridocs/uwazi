@@ -12,9 +12,9 @@ yarn webpack --config ./webpack.production.config.js --progress --profile --colo
 yarn babel -D -d prod/app --extensions .js,.ts,.tsx --ignore ./**/specs/* app
 yarn babel -D -d prod/ message.js
 yarn babel -D -d prod/database --extensions .js,.ts,.tsx database
+yarn babel -D -d prod/scripts --extensions .js,.ts,.tsx scripts
 
 cp ./server.js ./prod/server.js
-cp ./run.js ./prod/run.js
 cp ./package.json ./prod/package.json
 yarn install --production=true --modules-folder=./prod/node_modules
 mkdir ./prod/log

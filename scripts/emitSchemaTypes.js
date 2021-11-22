@@ -6,6 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const { compile } = require('json-schema-to-typescript');
 
+const rootPath = '..';
+
 const opts = {
   strictIndexSignatures: true,
   enableConstEnums: false,
@@ -18,8 +20,8 @@ const opts = {
 const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to update.*/\n';
 
 const customImports = {
-  'app/shared/types/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
-  'app/shared/types/connectionSchema.ts': ["import { FileType } from 'shared/types/fileType';"],
+  '../app/shared/types/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
+  '../app/shared/types/connectionSchema.ts': ["import { FileType } from 'shared/types/fileType';"],
 };
 
 const dryCheck = !!process.argv[2] && process.argv[2] === '--check';
@@ -40,7 +42,7 @@ const typeImports = matches => {
   return matches.reduce((res, match) => {
     const file = match.match(typeImportRegex)[1];
     const typeFile = typesFileName(file);
-    const schemas = require(`./app/${file}`);
+    const schemas = require(path.join(`${rootPath}/app`, file));
     let final = match.replace(file, typeFile);
     Object.entries(schemas).forEach(([name, schema]) => {
       if (name.match(/Schema/)) {
@@ -57,8 +59,8 @@ const checkTypeFile = (file, content) => {
     process.exit(1);
   };
 
-  if (fs.existsSync(file)) {
-    const oldContent = fs.readFileSync(file).toString();
+  if (fs.existsSync(path.join(__dirname, file))) {
+    const oldContent = fs.readFileSync(path.join(__dirname, file)).toString();
 
     if (oldContent !== content) endProcess();
   } else {
@@ -81,7 +83,7 @@ const writeTypeFile = (file, commonImport, snippets) => {
     if (dryCheck) {
       checkTypeFile(typeFile, content);
     } else {
-      fs.writeFileSync(typeFile, content);
+      fs.writeFileSync(path.join(__dirname, typeFile), content);
     }
   }
 };
@@ -96,8 +98,7 @@ const writeSchema = async (schemas, file) => {
     })
   );
 
-  const contents = fs.readFileSync(file).toString();
-
+  const contents = fs.readFileSync(path.join(__dirname, file)).toString();
   writeTypeFile(file, typeImports(contents.match(typeImportFindRegex)), snippets);
 };
 
@@ -108,12 +109,10 @@ const emitSchemaTypes = async file => {
     }
 
     if (file.match(/shared\/types/) || file.match(/Schema/)) {
-      const schemas = require(`./${file}`);
-
+      const schemas = require(file);
       if (!schemas.emitSchemaTypes) {
         return;
       }
-
       writeSchema(schemas, file);
     }
   } catch (err) {
@@ -131,7 +130,7 @@ function walk(dir, callback) {
         if (stats.isDirectory()) {
           walk(filepath, callback);
         } else if (stats.isFile()) {
-          callback(filepath, stats);
+          callback(path.join(rootPath, filepath), stats);
         }
       });
     });
