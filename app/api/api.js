@@ -9,10 +9,8 @@ export default (app, server) => {
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 
-  //module routes
-  //require('./auth/routes.js')(app);
-
   require('./socketio/setupSockets').setupSockets(server, app);
+
   require('./auth2fa/routes').default(app);
   require('./relationships/routes').default(app);
   require('./activitylog/routes').default(app);
