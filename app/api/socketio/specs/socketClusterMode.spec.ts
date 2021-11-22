@@ -217,7 +217,7 @@ describe('socket middlewares setup', () => {
     it('should emit event to the specified tenant', async () => {
       const socketEvents = captureEvents('event');
 
-      await emitSocketEvent('tenant1', 'event', 'data');
+      await emitSocketEvent('event', 'tenant1', 'data');
 
       await waitForExpect(async () => {
         expect(socketEvents).toMatchObject({
@@ -232,7 +232,7 @@ describe('socket middlewares setup', () => {
     it('should emit to all tenants when specifiyng "all"', async () => {
       const socketEvents = captureEvents('event');
 
-      await emitSocketEvent('all', 'event', 'data');
+      await emitSocketEvent('event', '', 'data');
 
       await waitForExpect(async () => {
         expect(socketEvents).toMatchObject({

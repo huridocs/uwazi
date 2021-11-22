@@ -2,7 +2,7 @@ import { Emitter } from '@socket.io/redis-emitter';
 import { createClient } from 'redis';
 import { config } from 'api/config';
 
-const emitSocketEvent = async (tenant: string, event: string, data: string) =>
+const emitSocketEvent = async (event: string, tenant: string = '', data?: string) =>
   new Promise((resolve, reject) => {
     const redisClient = createClient({ host: config.redis.host, port: config.redis.port });
 
@@ -11,7 +11,7 @@ const emitSocketEvent = async (tenant: string, event: string, data: string) =>
 
     redisClient.on('ready', () => {
       const io = new Emitter(redisClient);
-      if (tenant === 'all') {
+      if (tenant === '') {
         io.emit(event, data);
       } else {
         io.to(tenant).emit(event, data);

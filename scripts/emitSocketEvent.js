@@ -4,7 +4,8 @@ const { tenant, event } = require('yargs')
   .option('tenant', {
     alias: 't',
     type: 'string',
-    describe: 'tenant to send event to, "all" sends to all tenants.',
+    describe: 'tenant to send event to, defaults to all tenants.',
+    default: '',
   })
   .option('event', {
     alias: 'e',
@@ -12,6 +13,6 @@ const { tenant, event } = require('yargs')
     describe: 'event name to sent to clients connected',
     choices: ['forceReconnect'],
   })
-  .demandOption(['tenant', 'event'], '\n\n').argv;
+  .demandOption(['event'], '\n\n').argv;
 
-emitSocketEvent(tenant, event, '');
+emitSocketEvent(event, tenant, '');
