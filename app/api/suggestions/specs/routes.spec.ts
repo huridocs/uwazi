@@ -29,11 +29,16 @@ describe('suggestions routes', () => {
         .get('/api/suggestions')
         .query({});
       expect(response.body).toMatchObject([
-        { title: 'Entity 1', propertyName: 'title' },
         {
-          title: 'Entity 1',
+          entityTitle: 'Entity 1',
+          propertyName: 'title',
+          currentValue: 'wrong data',
+          suggestedValue: 'HCT-04-CR-SC-0074',
+        },
+        {
+          entityTitle: 'Entity 2',
           propertyName: 'property_1',
-          currentValue: [{ value: 'value 1' }],
+          suggestedValue: 'first suggestion',
         },
       ]);
     });

@@ -29,7 +29,7 @@ export type DBFixture = {
   dictionaries?: ThesaurusSchema[];
   usergroups?: UserGroupSchema[];
   pages?: PageType[];
-  ixsuggestions: IXSuggestionType[];
+  ixsuggestions?: IXSuggestionType[];
   [k: string]: any;
 };
 
