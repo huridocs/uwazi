@@ -131,6 +131,17 @@ describe('MultiSelect', () => {
         .simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option2']);
     });
+
+    it('should not render options with the `any` id', () => {
+      props.options.push({
+        id: 'any',
+        value: 'any',
+        label: 'Any',
+        results: 13,
+      });
+      render();
+      expect(component.find('li[title="Any"]').length).toBe(0);
+    });
   });
 
   describe('checking a group', () => {
