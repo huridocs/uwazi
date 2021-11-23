@@ -1,7 +1,12 @@
 import { ObjectId } from 'mongodb';
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema, MetadataSchema, PropertyValueSchema, ExtractedMetadataSchema } from 'shared/types/commonTypes';
+import {
+  PropertySchema,
+  MetadataSchema,
+  PropertyValueSchema,
+  ExtractedMetadataSchema,
+} from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 
 export function getIdMapper() {
