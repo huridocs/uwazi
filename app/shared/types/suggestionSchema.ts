@@ -19,13 +19,13 @@ export const IXSuggestionSchema = {
     entityId: objectIdSchema,
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
-    propertyType: { type: 'string', enum: Object.values(propertyTypes) },
     suggestedValue: { type: 'string', minLength: 1 }, //text
     currentValue: propertyValueSchema,
     segment: { type: 'string', minLength: 1 }, //segment/text
     language: { type: 'string', minLength: 1 },
     state: { type: 'string', enum: Object.values(SuggestionState) }, //?
     page: { type: 'number', minimum: 1 },
+    creationDate: { type: 'number' },
   },
   required: ['propertyName', 'entity', 'suggestedValue', 'segment', 'language', 'state', 'page'],
 };
