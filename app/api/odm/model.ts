@@ -103,6 +103,10 @@ export class OdmModel<T> {
     await this.logHelper.upsertLogMany(cond, true);
     return this.db.deleteMany(cond);
   }
+
+  async facet(aggregations: any[], pipelines: any, project: any) {
+    return this.db.facet(aggregations, pipelines, project);
+  }
 }
 
 // models are accessed in api/sync, which cannot be type-safe since the document

@@ -8,28 +8,11 @@ export interface IXSuggestionType {
   entityId?: ObjectIdSchema;
   entityTitle?: string;
   propertyName: string;
-  propertyType?:
-    | 'date'
-    | 'daterange'
-    | 'geolocation'
-    | 'image'
-    | 'link'
-    | 'markdown'
-    | 'media'
-    | 'multidate'
-    | 'multidaterange'
-    | 'multiselect'
-    | 'nested'
-    | 'numeric'
-    | 'preview'
-    | 'relationship'
-    | 'select'
-    | 'text'
-    | 'generatedid';
   suggestedValue: string;
   currentValue?: PropertyValueSchema;
   segment: string;
   language: string;
   state: 'Empty' | 'Matching' | 'Pending';
   page: number;
+  creationDate?: number;
 }

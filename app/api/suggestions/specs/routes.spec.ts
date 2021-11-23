@@ -7,7 +7,8 @@ import { fixtures } from 'api/suggestions/specs/fixtures';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
-  () => (_req: Request, _res: Response, next: NextFunction) => {
+  () => (req: Request, _res: Response, next: NextFunction) => {
+    req.language = 'en';
     next();
   }
 );
@@ -24,23 +25,31 @@ describe('suggestions routes', () => {
   });
 
   describe('GET', () => {
-    it('should return the suggestions', async () => {
+    it('should return the suggestions filtered by the request language and the property name', async () => {
       const response = await request(app)
         .get('/api/suggestions')
-        .query({});
+        .query({ propertyName: 'super powers' });
       expect(response.body).toMatchObject([
         {
-          entityTitle: 'Entity 1',
-          propertyName: 'title',
-          currentValue: 'wrong data',
-          suggestedValue: 'HCT-04-CR-SC-0074',
-        },
-        {
-          entityTitle: 'Entity 2',
-          propertyName: 'property_1',
-          suggestedValue: 'first suggestion',
+          entityTitle: 'Robin',
+          propertyName: 'super powers',
+          suggestedValue: 'scientific knowledge',
+          language: 'en',
         },
       ]);
+    });
+
+    describe('pagination', () => {
+      it('should return the requested page sorted by date by default', async () => {
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({ page: 2, size: 2 });
+        expect(response.body).toMatchObject([
+          { entityTitle: 'Entity 1' },
+          { entityTitle: 'Entity 2' },
+        ]);
+        expect(response.body.totalPages).toBe(3);
+      });
     });
   });
 });
