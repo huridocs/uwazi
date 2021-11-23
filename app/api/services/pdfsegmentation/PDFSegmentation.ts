@@ -185,7 +185,7 @@ class PDFSegmentation {
     await tenants.run(async () => {
       try {
         if (!message.success) {
-          await this.saveSegmentationError(message.params!.filename);
+          await this.saveSegmentationError(message.params?.filename);
           return;
         }
 

@@ -9,10 +9,6 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { fixtures, factory } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
-import entitiesModel from 'api/entities/entitiesModel';
-import filesModel from 'api/files/filesModel';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { tenants } from 'api/tenants';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -200,15 +196,13 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await tenants.run(async () => {
-        await informationExtraction.processResults({
-          params: { property_name: 'property1' },
-          tenant: 'tenant1',
-          task: 'suggestions',
-          success: true,
-          data_url: 'http://localhost:1234/suggestions_results',
-        });
-      }, 'otherTenant');
+      await informationExtraction.processResults({
+        params: { property_name: 'property1' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
 
       const suggestions = await IXSuggestionsModel.get();
       expect(suggestions.length).toBe(2);

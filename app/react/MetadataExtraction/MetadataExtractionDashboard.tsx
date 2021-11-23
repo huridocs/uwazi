@@ -9,6 +9,7 @@ import Icons from 'app/Templates/components/Icons';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
+import api from 'app/utils/api';
 
 export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
@@ -28,7 +29,10 @@ export interface MetadataExtractionDashboardStateTypes {
 
 function mapStateToProps({ settings, templates }: any) {
   return {
-    extractionSettings: settings.collection.get('features')?.get('metadataExtraction'),
+    extractionSettings: settings.collection
+      .get('features')
+      ?.get('metadataExtraction')
+      .get('templates'),
     templates,
   };
 }
@@ -46,6 +50,12 @@ class MetadataExtractionDashboard extends React.Component<
 
   componentDidMount() {
     this.arrangeTemplatesAndProperties();
+  }
+
+  trainModels() {
+    api.post('suggestions/train').then(() => {
+      store?.dispatch(notify('Training started', 'success'));
+    });
   }
 
   arrangeTemplatesAndProperties() {
@@ -107,14 +117,11 @@ class MetadataExtractionDashboard extends React.Component<
         <div className="panel-subheading">
           <Translate>Extract information from your documents</Translate>
 
-          <I18NLink
-            to="settings/metadata_extraction/suggestions"
-            className="btn btn-success btn-xs"
-          >
+          <button type="button" onClick={this.trainModels}>
             <Icon icon="search" />
             &nbsp;
             <Translate>Find suggestions</Translate>
-          </I18NLink>
+          </button>
         </div>
         <div className="metadata-extraction-table">
           <table className="table">

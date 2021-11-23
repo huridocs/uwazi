@@ -154,6 +154,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         topicClassificationRepeater.start();
 
         if (config.externalServices) {
+          console.info('==> 📥  starting external segmentation service ....');
           const segmentationConnector = new PDFSegmentation();
           const segmentationRepeater = new DistributedLoop(
             'segmentation_repeat',

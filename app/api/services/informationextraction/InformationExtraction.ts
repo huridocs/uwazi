@@ -282,14 +282,16 @@ class InformationExtraction {
   };
 
   processResults = async (message: ResultsMessage): Promise<void> => {
-    if (message.task === 'create_model') {
-      await this.getSuggestions(message.params!.property_name);
-    }
+    await tenants.run(async () => {
+      if (message.task === 'create_model') {
+        await this.getSuggestions(message.params!.property_name);
+      }
 
-    if (message.task === 'suggestions') {
-      await this.saveSuggestions(message);
-      await this.getSuggestions(message.params!.property_name);
-    }
+      if (message.task === 'suggestions') {
+        await this.saveSuggestions(message);
+        await this.getSuggestions(message.params!.property_name);
+      }
+    }, message.tenant);
   };
 }
 
