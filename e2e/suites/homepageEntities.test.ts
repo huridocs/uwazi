@@ -1,5 +1,4 @@
 /*global page*/
-import sharp from 'sharp';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { getContainerScreenshot } from '../helpers/elementSnapshot';
 import { host } from '../config';
@@ -9,11 +8,6 @@ import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 
 expect.extend({ toMatchImageSnapshot });
-
-const resizeImage = async (image: any, length: number, width: number) =>
-  sharp(image)
-    .resize(length, width)
-    .toBuffer();
 
 describe('Homepage entities', () => {
   beforeAll(async () => {
@@ -73,8 +67,7 @@ describe('Homepage entities', () => {
       page,
       'div.relationships-graph'
     );
-    const entityMetadataFormScreenshot = await resizeImage(entityConnectionsScreenshot, 1305, 783);
-    expect(entityMetadataFormScreenshot).toMatchImageSnapshot({
+    expect(entityConnectionsScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
