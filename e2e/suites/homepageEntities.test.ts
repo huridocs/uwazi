@@ -1,5 +1,7 @@
 /*global page*/
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
+import { ElementHandle } from 'puppeteer';
+import { ensure } from 'shared/tsUtils';
 import { getContainerScreenshot } from '../helpers/elementSnapshot';
 import { host } from '../config';
 import { adminLogin, logout } from '../helpers/login';
@@ -15,25 +17,35 @@ describe('Homepage entities', () => {
     await proxyMock();
     await adminLogin();
     await disableTransitions();
-    await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 4 });
+    await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 1 });
   });
 
-  it('should display entities in homepage with no more than a 7% difference', async () => {
+  fit('should display entities in homepage with no more than a 7% difference', async () => {
     await page.goto(host, { waitUntil: 'domcontentloaded' });
-    const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
-    expect(homepageScreenshot).toMatchImageSnapshot({
+    // await expect(page).toClick('a', { text: 'Uwazi' });
+    const className = '.row.panels-layout';
+    // const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
+    await page.waitForSelector(className);
+    const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
+
+    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot({
       failureThreshold: 0.07,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
     });
   });
 
-  it('should display entity details with no more than a 7% difference', async () => {
+  fit('should display entity details with no more than a 7% difference', async () => {
+    await disableTransitions();
     await expect(page).toClick('div.item-document:first-child');
     await page.waitForSelector('.metadata.tab-content-visible');
     await page.waitFor(200);
-    const entityDetailsScreenshot = await getContainerScreenshot(page, '.metadata-sidepanel');
-    expect(entityDetailsScreenshot).toMatchImageSnapshot({
+    const className = '.metadata-sidepanel';
+    // const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
+    await page.waitForSelector(className);
+    const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
+    // const entityDetailsScreenshot = await getContainerScreenshot(page, '.metadata-sidepanel');
+    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot({
       failureThreshold: 0.07,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
