@@ -29,25 +29,23 @@ describe('suggestions routes', () => {
       const response = await request(app)
         .get('/api/suggestions')
         .query({ propertyName: 'super powers' });
-      expect(response.body).toMatchObject([
+      expect(response.body.suggestions).toMatchObject([
         {
-          entityTitle: 'Robin',
+          entityTitle: 'Batman',
           propertyName: 'super powers',
           suggestedValue: 'scientific knowledge',
           language: 'en',
         },
       ]);
+      expect(response.body.totalPages).toBe(1);
     });
 
     describe('pagination', () => {
       it('should return the requested page sorted by date by default', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ page: 2, size: 2 });
-        expect(response.body).toMatchObject([
-          { entityTitle: 'Entity 1' },
-          { entityTitle: 'Entity 2' },
-        ]);
+          .query({ propertyName: 'title', page: 2, size: 2 });
+        expect(response.body.suggestions).toMatchObject([{ entityTitle: 'The Penguin' }]);
         expect(response.body.totalPages).toBe(3);
       });
     });
