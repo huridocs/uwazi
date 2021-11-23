@@ -3,7 +3,6 @@ import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import translations from 'api/i18n';
-import { UserRole } from 'shared/types/userSchema';
 import templateRoutes from '../routes';
 import templates from '../templates';
 import { templateCommonProperties, fixtures, fixtureFactory } from './fixtures/routesFixtures';
@@ -32,10 +31,6 @@ const emitToCurrentTenantSpy = jasmine.createSpy('emitToCurrentTenant');
 
 describe('templates routes', () => {
   const app: Application = setUpApp(templateRoutes, (req, _res, next: NextFunction) => {
-    (req as any).user = {
-      role: UserRole.ADMIN,
-      username: 'admin',
-    };
     req.sockets = { emitToCurrentTenant: emitToCurrentTenantSpy };
     next();
   });
