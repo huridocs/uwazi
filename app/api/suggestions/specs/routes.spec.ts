@@ -45,7 +45,7 @@ describe('suggestions routes', () => {
         const response = await request(app)
           .get('/api/suggestions/')
           .query({ propertyName: 'title', page: 2, size: 2 });
-        expect(response.body.suggestions).toMatchObject([{ entityTitle: 'The Penguin' }]);
+        expect(response.body.suggestions).toMatchObject([{ entityTitle: 'Poison Ivy' }]);
         expect(response.body.totalPages).toBe(3);
       });
     });

@@ -5,9 +5,8 @@ export const Suggestions = {
     const offset = options && options.page ? options.size * options.page : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options?.size || DEFAULT_LIMIT;
-    //[{ $sort: { propertyName: 1 } }],
     const [{ data, count }] = await IXSuggestionsModel.facet(
-      [{ $match: { ...filter } }],
+      [{ $match: { ...filter } }, { $sort: { creationDate: 1 } }],
       {
         stage1: [{ $group: { _id: null, count: { $sum: 1 } } }],
         stage2: [{ $skip: offset }, { $limit: limit }],
