@@ -13,7 +13,6 @@ const testingRoutes = (app: Application) => {
 
 describe('multitenant middleware', () => {
   it('should execute next middlewares inside a tenant async context', async () => {
-    //@ts-ignore
     tenants.add({ name: 'test' });
 
     const app: Application = express();
@@ -25,6 +24,6 @@ describe('multitenant middleware', () => {
       .get('/api/testGET')
       .set('tenant', 'test');
 
-    expect(response.text).toBe(JSON.stringify({ name: 'test' }));
+    expect(JSON.parse(response.text)).toMatchObject({ name: 'test' });
   });
 });

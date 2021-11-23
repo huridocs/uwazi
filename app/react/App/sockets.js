@@ -2,7 +2,7 @@ import { actions } from 'app/BasicReducer';
 import { t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { store } from '../store';
-import socket from '../socket';
+import socket, { reconnectSocket } from '../socket';
 
 let disconnectNotifyId;
 let disconnectTimeoutMessage;
@@ -34,9 +34,14 @@ socket.on('reconnect', () => {
   }
 });
 
+socket.on('forceReconnect', () => {
+  reconnectSocket();
+});
+
 socket.on('templateChange', template => {
   store.dispatch(actions.update('templates', template));
 });
+
 socket.on('templateDelete', template => {
   store.dispatch(actions.remove('templates', { _id: template.id }));
 });

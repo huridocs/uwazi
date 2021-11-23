@@ -1,7 +1,7 @@
 import { config } from 'api/config';
 import { handleError } from 'api/utils';
 import { appContext } from 'api/utils/AppContext';
-import { TenantsModel } from './tenantsModel';
+import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel';
 
 export type Tenant = {
   name: string;
@@ -17,14 +17,17 @@ export type Tenant = {
 class Tenants {
   tenants: { [k: string]: Tenant };
 
-  constructor() {
+  defaultTenant: Tenant;
+
+  constructor(defaultTenant: Tenant) {
+    this.defaultTenant = defaultTenant;
     this.tenants = {
-      [config.defaultTenant.name]: config.defaultTenant,
+      [config.defaultTenant.name]: defaultTenant,
     };
   }
 
   async setupTenants() {
-    const model = new TenantsModel();
+    const model = await tenantsModel();
     model.on('change', () => {
       this.updateTenants(model).catch(handleError);
     });
@@ -34,8 +37,8 @@ class Tenants {
   async updateTenants(model: TenantsModel) {
     const tenants = await model.get();
 
-    tenants.forEach((tenant: Tenant) => {
-      this.add(tenant);
+    tenants.forEach((tenant: TenantDocument) => {
+      this.add(tenant.toObject());
     });
   }
 
@@ -69,11 +72,10 @@ class Tenants {
     return this.tenants[tenantName];
   }
 
-  add(tenant: Tenant) {
-    this.tenants[tenant.name] = tenant;
+  add(tenant: DBTenant) {
+    this.tenants[tenant.name] = { ...this.defaultTenant, ...tenant };
   }
 }
 
-const tenants = new Tenants();
-
+const tenants = new Tenants(config.defaultTenant);
 export { tenants };

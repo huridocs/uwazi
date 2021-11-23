@@ -187,7 +187,7 @@ const CollectionSettings = ({
           </ToggleChildren>
         </SettingsFormElement>
 
-        <SettingsFormElement label="Motomo Analytics" tip={tips.analytics}>
+        <SettingsFormElement label="Matomo Analytics" tip={tips.analytics}>
           <ToggleChildren
             toggled={Boolean(watch('matomoConfig'))}
             onToggleOff={() => {
