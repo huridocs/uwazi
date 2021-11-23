@@ -35,7 +35,7 @@ const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSugge
   </select>
 );
 
-export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({ propertyName = 'title' }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -156,7 +156,8 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
   const retrieveSuggestions = () => {
     const params = new RequestParams({
       page: pageIndex + 1,
-      limit: pageSize,
+      size: pageSize,
+      propertyName,
       filters,
     });
     getSuggestions(params)
