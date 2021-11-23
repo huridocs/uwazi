@@ -16,7 +16,7 @@ export const IXSuggestionSchema = {
   definitions: { objectIdSchema, propertyTypes, propertyValueSchema },
   properties: {
     _id: objectIdSchema,
-    entityId: objectIdSchema,
+    entityId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
     propertyType: { type: 'string', enum: Object.values(propertyTypes) },

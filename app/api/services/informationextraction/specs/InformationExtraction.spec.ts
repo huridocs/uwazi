@@ -2,34 +2,51 @@
 /* eslint-disable max-lines */
 
 import asyncFS from 'api/utils/async-fs';
-import request from 'shared/JSONRequest';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
-import { setupTestUploadedPaths } from 'api/files';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+
 import { fixtures, factory } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
-import { tenants } from 'api/tenants/tenantContext';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import entitiesModel from 'api/entities/entitiesModel';
+import filesModel from 'api/files/filesModel';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
+import { tenants } from 'api/tenants';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 describe('InformationExtraction', () => {
   let informationExtraction: InformationExtraction;
+  let IXExternalService: ExternalDummyService;
   let xmlA: Buffer;
+
+  beforeAll(async () => {
+    IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
+      materialsFiles: '/xml_file/:tenant/:property',
+      materialsData: '(/labeled_data|/prediction_data)',
+      resultsData: '/suggestions_results',
+    });
+
+    await IXExternalService.start();
+  });
 
   beforeEach(async () => {
     informationExtraction = new InformationExtraction();
+
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
     });
+    // await testingEnvironment.setFixtures(fixtures);
 
-    jest.spyOn(request, 'uploadFile').mockResolvedValue({});
-    jest.spyOn(request, 'post').mockResolvedValue({});
+    IXExternalService.reset();
     jest.resetAllMocks();
   });
 
   afterAll(async () => {
+    await IXExternalService.stop();
     await testingEnvironment.tearDown();
   });
 
@@ -45,28 +62,33 @@ describe('InformationExtraction', () => {
         'app/api/services/informationExtraction/specs/uploads/documentA.xml'
       );
 
-      expect(request.uploadFile).toHaveBeenCalledWith(
-        'http://localhost:1234/xml_file/tenant1/property1',
-        'documentA.xml',
-        xmlA
+      const xmlC = await asyncFS.readFile(
+        'app/api/services/informationExtraction/specs/uploads/documentC.xml'
+      );
+
+      expect(IXExternalService.materialsFilePartams).toEqual({
+        property: 'property1',
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
+      expect(IXExternalService.filesNames.sort()).toEqual(
+        ['documentA.xml', 'documentC.xml'].sort()
       );
     });
 
-    it('should send labeled date', async () => {
+    it('should send labeled data', async () => {
       await informationExtraction.trainModel(
         [factory.id('templateToSegmentA')],
         'property1',
         'http://localhost:1234'
       );
 
-      expect(request.post).toHaveBeenCalledWith('http://localhost:1234/labeled_data', {
-        label_text: 'something',
-        language_iso: 'en',
-        page_height: 841,
-        page_width: 595,
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
+        xml_file_name: 'documentA.xml',
         property_name: 'property1',
         tenant: 'tenant1',
-        xml_file_name: 'documentA.xml',
         xml_segments_boxes: [
           {
             left: 58,
@@ -77,6 +99,10 @@ describe('InformationExtraction', () => {
             text: 'something something',
           },
         ],
+        page_width: 595,
+        page_height: 841,
+        language_iso: 'en',
+        label_text: 'something',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
     });
@@ -109,13 +135,18 @@ describe('InformationExtraction', () => {
         'app/api/services/informationExtraction/specs/uploads/documentA.xml'
       );
 
-      expect(request.uploadFile).toHaveBeenCalledWith(
-        'http://localhost:1234/xml_file/tenant1/property1',
-        'documentA.xml',
-        xmlA
-      );
+      expect(IXExternalService.materialsFilePartams).toEqual({
+        property: 'property1',
+        tenant: 'tenant1',
+      });
 
-      expect(request.post).toHaveBeenCalledWith('http://localhost:1234/prediction_data', {
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA]));
+      expect(IXExternalService.files.length).toBe(5);
+      expect(IXExternalService.filesNames.sort()).toEqual(
+        ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml', 'documentF.xml'].sort()
+      );
+      expect(IXExternalService.materials.length).toBe(5);
+      expect(IXExternalService.materials.find(m => m.xml_segments_boxes.length)).toEqual({
         xml_file_name: 'documentA.xml',
         property_name: 'property1',
         tenant: 'tenant1',
@@ -132,9 +163,66 @@ describe('InformationExtraction', () => {
           },
         ],
       });
+    });
 
-      expect(request.uploadFile).toHaveBeenCalledTimes(4);
-      expect(request.post).toHaveBeenCalledTimes(4);
+    it('should create the task for the suggestions', async () => {
+      await informationExtraction.processResults({
+        params: { property_name: 'property1' },
+        tenant: 'tenant1',
+        task: 'create_model',
+        success: true,
+      });
+
+      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+        params: { property_name: 'property1' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+      });
+    });
+  });
+
+  describe('when suggestions are ready', () => {
+    it('should store the suggestions', async () => {
+      IXExternalService.setResults([
+        {
+          tenant: 'tenant1',
+          property_name: 'property1',
+          xml_file_name: 'documentA.xml',
+          text: 'suggestion_text_1',
+          segment_text: 'segment_text_1',
+        },
+        {
+          tenant: 'tenant1',
+          property_name: 'property1',
+          xml_file_name: 'documentC.xml',
+          text: 'suggestion_text_2',
+          segment_text: 'segment_text_2',
+        },
+      ]);
+
+      await tenants.run(async () => {
+        await informationExtraction.processResults({
+          params: { property_name: 'property1' },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+      }, 'otherTenant');
+
+      const suggestions = await IXSuggestionsModel.get();
+      expect(suggestions.length).toBe(2);
+      expect(suggestions.find(s => s.suggestedValue === 'suggestion_text_1')).toEqual(
+        expect.objectContaining({
+          entityId: 'A1',
+          entityTitle: 'A1',
+          language: 'en',
+          propertyName: 'property1',
+          suggestedValue: 'suggestion_text_1',
+          segment: 'segment_text_1',
+          currentValue: 1088985600,
+        })
+      );
     });
   });
 });

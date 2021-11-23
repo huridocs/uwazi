@@ -164,6 +164,7 @@ class PDFSegmentation {
       ...segmentation,
       segmentation: { page_height, page_width, paragraphs },
       autoexpire: null,
+      xmlname: PDFSegmentation.getXMLNAme(filename),
       status: 'ready',
     });
   };

@@ -28,11 +28,21 @@ const settings = [
 
 const fixturesPdfNameA = 'documentA.pdf';
 const fixturesPdfNameB = 'documentB.pdf';
+const fixturesPdfNameC = 'documentC.pdf';
+const fixturesPdfNameD = 'documentD.pdf';
+const fixturesPdfNameE = 'documentE.pdf';
+const fixturesPdfNameF = 'documentF.pdf';
 
 const fixtures: DBFixture = {
   settings,
   entities: [
-    factory.entity('A1', 'templateToSegmentA'),
+    factory.entity('A1', 'templateToSegmentA', {
+      property1: [
+        {
+          value: 1088985600,
+        },
+      ],
+    }),
     factory.entity('A2', 'templateToSegmentA'),
     factory.entity('A3', 'templateToSegmentA'),
     factory.entity('A4', 'templateToSegmentA'),
@@ -66,7 +76,16 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F3', 'A3', 'document', fixturesPdfNameA, 'en', [
+    factory.file('F3', 'A3', 'document', fixturesPdfNameC, 'en', [
+      {
+        name: 'property1',
+        selection: {
+          text: 'something',
+          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        },
+      },
+    ]),
+    factory.file('F4', 'A4', 'document', fixturesPdfNameD, 'en', [
       {
         name: 'property2',
         selection: {
@@ -75,20 +94,14 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F4', 'A4', 'document', fixturesPdfNameA),
-    factory.file('F5', 'A5', 'document', fixturesPdfNameA),
-    factory.file('F6', 'A6', 'document', fixturesPdfNameA),
-    factory.file('F7', 'A7', 'document', fixturesPdfNameA),
-    factory.file('F8', 'A8', 'document', fixturesPdfNameA),
-    factory.file('F9', 'A9', 'document', fixturesPdfNameA),
-    factory.file('F10', 'A10', 'document', fixturesPdfNameA),
-    factory.file('F11', 'A11', 'document', fixturesPdfNameA),
-    factory.file('F12', 'A12', 'document', fixturesPdfNameA),
+    factory.file('F5', 'A5', 'document', fixturesPdfNameE),
+    factory.file('F6', 'A6', 'document', fixturesPdfNameF),
   ],
   segmentations: [
     {
       _id: factory.id('S1'),
       filename: fixturesPdfNameA,
+      xmlname: 'documentA.xml',
       fileID: factory.id('F1'),
       segmentation: {
         page_height: 841,
@@ -107,26 +120,37 @@ const fixtures: DBFixture = {
     },
     {
       _id: factory.id('S2'),
-      filename: fixturesPdfNameA,
+      filename: fixturesPdfNameB,
+      xmlname: 'documentB.xml',
       fileID: factory.id('F2'),
       segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
     },
     {
       _id: factory.id('S3'),
-      filename: fixturesPdfNameA,
+      filename: fixturesPdfNameC,
+      xmlname: 'documentC.xml',
       fileID: factory.id('F3'),
       segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
     },
     {
       _id: factory.id('S4'),
-      filename: fixturesPdfNameA,
+      filename: fixturesPdfNameD,
+      xmlname: 'documentD.xml',
       fileID: factory.id('F4'),
       segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
     },
     {
       _id: factory.id('S5'),
-      filename: fixturesPdfNameA,
+      filename: fixturesPdfNameE,
+      xmlname: 'documentE.xml',
       fileID: factory.id('F5'),
+      segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
+    },
+    {
+      _id: factory.id('S6'),
+      filename: fixturesPdfNameF,
+      xmlname: 'documentF.xml',
+      fileID: factory.id('F6'),
       segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
     },
   ],

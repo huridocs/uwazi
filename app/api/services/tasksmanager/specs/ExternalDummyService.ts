@@ -18,13 +18,13 @@ export class ExternalDummyService {
 
   currentTask: string | undefined;
 
-  materials: string[] = [];
+  materials: any[] = [];
 
   files: Buffer[] = [];
 
   filesNames: String[] = [];
 
-  results: object | undefined;
+  results: any | undefined;
 
   redisClient: RedisClient | undefined;
 
@@ -32,31 +32,51 @@ export class ExternalDummyService {
 
   private readonly serviceName: string;
 
-  constructor(port = 1234, serviceName = 'dummy') {
+  materialsDataPartams: any;
+
+  materialsFilePartams: any;
+
+  resutlsDataParams: any;
+
+  resutlsFileParams: any;
+
+  constructor(port = 1234, serviceName = 'dummy', urlOptions = {}) {
     this.port = port;
     this.serviceName = serviceName;
     this.app = express();
     this.app.use(bodyParser.json());
 
-    this.app.post('/data', (req, res) => {
+    const urls = {
+      materialsData: '/data',
+      materialsFiles: '/files/*',
+      resultsData: '/results',
+      resultsFile: '/file',
+      ...urlOptions,
+    };
+
+    this.app.post(urls.materialsData, (req, res) => {
       this.materials.push(req.body);
+      this.materialsDataPartams = req.params;
       res.send('ok');
     });
 
-    this.app.post('/files/*', uploadMiddleware.multiple(), (req, res) => {
+    this.app.post(urls.materialsFiles, uploadMiddleware.multiple(), (req, res) => {
       if (req.files.length) {
         const files = req.files as { buffer: Buffer; originalname: string }[];
         this.files.push(files[0].buffer);
         this.filesNames.push(files[0].originalname);
       }
+      this.materialsFilePartams = req.params;
       res.send('received');
     });
 
-    this.app.get('/results', (_req, res) => {
+    this.app.get(urls.resultsData, (req, res) => {
+      this.resutlsDataParams = req.params;
       res.json(JSON.stringify(this.results));
     });
 
-    this.app.get('/file', (_req, res) => {
+    this.app.get(urls.resultsFile, (req, res) => {
+      this.resutlsFileParams = req.params;
       if (!this.fileResults) {
         res.status(404).send('Not found');
         return;
@@ -66,7 +86,7 @@ export class ExternalDummyService {
     });
   }
 
-  setResults(results: object) {
+  setResults(results: any) {
     this.results = results;
   }
 
@@ -177,5 +197,6 @@ export class ExternalDummyService {
   reset() {
     this.files = [];
     this.filesNames = [];
+    this.materials = [];
   }
 }

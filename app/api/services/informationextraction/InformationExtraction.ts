@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import urljoin from 'url-join';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { uploadsPath, readFile, fileExists } from 'api/files';
@@ -9,23 +10,35 @@ import request from 'shared/JSONRequest';
 import { handleError } from 'api/utils';
 import { FileType } from 'shared/types/fileType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+
 import filesModel from 'api/files/filesModel';
-import { PDFSegmentation } from '../pdfsegmentation/PDFSegmentation';
 import { SegmentationType } from 'shared/types/segmentationType';
 import { Settings } from 'shared/types/settingsType';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+
+import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
+import entities from 'api/entities/entities';
+import { EntitySchema } from 'shared/types/entityType';
 
 interface FileWithNameAndId extends FileType {
   filename: string;
   _id: ObjectId;
   segmentation: SegmentationType[];
 }
+type RawSuggestion = {
+  tenant: string;
+  property_name: string;
+  xml_file_name: string;
+  text: string;
+  segment_text: string;
+};
 
 class InformationExtraction {
   SERVICE_NAME = 'informationextraction';
 
   public taskManager: TaskManager;
 
-  batchSize = 10;
+  batchSize = 50;
 
   constructor() {
     this.taskManager = new TaskManager({
@@ -37,7 +50,7 @@ class InformationExtraction {
   requestResults = async (message: ResultsMessage) => {
     const response = await request.get(message.data_url);
 
-    return { data: JSON.parse(response.json) };
+    return JSON.parse(response.json);
   };
 
   static sendXmlToService = async (url: string, xmlName: string) => {
@@ -53,7 +66,7 @@ class InformationExtraction {
   ) => {
     await Promise.all(
       files.map(async file => {
-        const xmlName = PDFSegmentation.getXMLNAme(file.filename);
+        const xmlName = file.segmentation[0].xmlname!;
         const xmlExists = await fileExists(uploadsPath(xmlName));
 
         const propertyLabeledData = file.extractedMetadata?.find(
@@ -92,8 +105,49 @@ class InformationExtraction {
     );
   };
 
-  saveSuggestions = async (data: any) => {
-    // eslint-disable-next-line camelcase
+  _getEntityFromSuggestion = async (rawSuggestion: RawSuggestion): Promise<void | EntitySchema> => {
+    const [segmentation] = await SegmentationModel.get({
+      xmlname: rawSuggestion.xml_file_name,
+    });
+    if (!segmentation) {
+      return;
+    }
+    const [file] = await filesModel.get({ _id: segmentation.fileID });
+    if (!file) {
+      return;
+    }
+    const [entity] = await entities.getUnrestricted({
+      sharedId: file.entity,
+      language: file.language,
+    });
+
+    return entity;
+  };
+
+  saveSuggestions = async (message: ResultsMessage) => {
+    const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
+    return Promise.all(
+      rawSuggestions.map(async rawSuggestion => {
+        const entity = await this._getEntityFromSuggestion(rawSuggestion);
+        if (!entity) {
+          return;
+        }
+        const property = entity.metadata![rawSuggestion.property_name];
+        const currentValue = property && property[0] ? property[0].value : '';
+
+        const suggestion = {
+          entityId: entity.sharedId,
+          entityTitle: entity.title,
+          language: entity.language,
+          propertyName: rawSuggestion.property_name,
+          suggestedValue: rawSuggestion.text,
+          segment: rawSuggestion.segment_text,
+          currentValue,
+        };
+
+        return IXSuggestionsModel.save(suggestion);
+      })
+    );
   };
 
   getFiles = async (
@@ -229,6 +283,11 @@ class InformationExtraction {
 
   processResults = async (message: ResultsMessage): Promise<void> => {
     if (message.task === 'create_model') {
+      await this.getSuggestions(message.params!.property_name);
+    }
+
+    if (message.task === 'suggestions') {
+      await this.saveSuggestions(message);
       await this.getSuggestions(message.params!.property_name);
     }
   };
