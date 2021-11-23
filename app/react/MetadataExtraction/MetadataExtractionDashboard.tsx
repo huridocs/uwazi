@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import { I18NLink, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import Icons from 'app/Templates/components/Icons';

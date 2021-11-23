@@ -5,7 +5,7 @@ import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
-  entityId?: ObjectIdSchema;
+  entityId?: string;
   entityTitle?: string;
   propertyName: string;
   suggestedValue: string;

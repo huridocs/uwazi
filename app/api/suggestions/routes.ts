@@ -17,7 +17,7 @@ export const suggestionsRoutes = (app: Application) => {
     res.json(suggestionsList);
   });
 
-  app.post('/api/suggestions/train', async (req, res, _next) => {
+  app.post('/api/suggestions/train', async (_req, res, _next) => {
     await IX.trainAllModels();
     res.json({});
   });
