@@ -2,7 +2,6 @@
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { ElementHandle } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
-import { getContainerScreenshot } from '../helpers/elementSnapshot';
 import { host } from '../config';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
