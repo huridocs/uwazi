@@ -63,7 +63,6 @@
     "lodash-es": "^4.17.21",
     "bl": "^4.0.3",
     "trim": "0.0.3",
-    "url-parse": "1.5.0",
     "normalize-url": "6.0.1"
   },
   "dependencies": {
@@ -116,7 +115,7 @@
     "html-to-react": "^1.4.3",
     "htmlparser2": "^3.9.2",
     "immutable": "^3.7.6",
-    "is-reachable": "5.1.0",
+    "is-reachable": "^5.1.1",
     "isomorphic-fetch": "2.2.1",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
