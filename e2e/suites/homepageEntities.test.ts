@@ -20,7 +20,7 @@ describe('Homepage entities', () => {
     await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 1 });
   });
 
-  fit('should display entities in homepage with no more than a 7% difference', async () => {
+  it('should display entities in homepage with no more than a 7% difference', async () => {
     await page.goto(host, { waitUntil: 'domcontentloaded' });
     // await expect(page).toClick('a', { text: 'Uwazi' });
     const className = '.row.panels-layout';
@@ -35,7 +35,7 @@ describe('Homepage entities', () => {
     });
   });
 
-  fit('should display entity details with no more than a 7% difference', async () => {
+  it('should display entity details with no more than a 7% difference', async () => {
     await disableTransitions();
     await expect(page).toClick('div.item-document:first-child');
     await page.waitForSelector('.metadata.tab-content-visible');
@@ -53,8 +53,10 @@ describe('Homepage entities', () => {
   });
   it('should display entity view page with no more than a 7% difference', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`, { waitUntil: 'domcontentloaded' });
-    const entityMetadataScreenshot = await getContainerScreenshot(page, 'div.entity-metadata');
-    expect(entityMetadataScreenshot).toMatchImageSnapshot({
+    const className = 'div.entity-metadata';
+    await page.waitForSelector(className);
+    const viewPage = ensure<ElementHandle>(await page.$(className));
+    expect(await viewPage.screenshot()).toMatchImageSnapshot({
       failureThreshold: 0.07,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
@@ -62,9 +64,10 @@ describe('Homepage entities', () => {
   });
   it('should display entity edit page with no more than a 7% difference', async () => {
     await expect(page).toClick('span', { text: 'Edit' });
-    const entityMetadataFormScreenshot = await getContainerScreenshot(page, 'div.entity-metadata');
-
-    expect(entityMetadataFormScreenshot).toMatchImageSnapshot({
+    const className = 'div.entity-metadata';
+    await page.waitForSelector(className);
+    const editPage = ensure<ElementHandle>(await page.$(className));
+    expect(await editPage.screenshot()).toMatchImageSnapshot({
       failureThreshold: 0.07,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
@@ -74,12 +77,10 @@ describe('Homepage entities', () => {
   it('should display entity connections page with no more than a 7% difference', async () => {
     await page.goto(`${host}/entity/7amlebw43dw8kt9`);
     await expect(page).toClick('div[aria-label="Connections"]');
-
-    const entityConnectionsScreenshot = await getContainerScreenshot(
-      page,
-      'div.relationships-graph'
-    );
-    expect(entityConnectionsScreenshot).toMatchImageSnapshot({
+    const className = 'div.relationships-graph';
+    await page.waitForSelector(className);
+    const connections = ensure<ElementHandle>(await page.$(className));
+    expect(await connections.screenshot()).toMatchImageSnapshot({
       failureThreshold: 0.07,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
