@@ -147,7 +147,7 @@ describe('EntitySuggestions', () => {
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
-          filter: { id: 'state', value: 'Empty', propertyName: 'Other title' },
+          filter: { state: 'Empty', propertyName: 'Other title' },
           page: { size: 5, number: 1 },
         },
         headers: {},

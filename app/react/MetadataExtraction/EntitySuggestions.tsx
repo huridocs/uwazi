@@ -154,9 +154,13 @@ export const EntitySuggestions = ({ propertyName = 'title' }: EntitySuggestionsP
   );
 
   const retrieveSuggestions = () => {
+    const queryFilter = filters.reduce(
+      (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
+      {}
+    );
     const params = new RequestParams({
       page: { number: pageIndex + 1, size: pageSize },
-      filter: { ...filters[0], propertyName },
+      filter: { ...queryFilter, propertyName },
     });
     getSuggestions(params)
       .then((response: any) => {

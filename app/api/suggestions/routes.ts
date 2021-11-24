@@ -2,7 +2,7 @@ import { Application } from 'express';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import validateRequest, { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 
 const IX = new InformationExtraction();

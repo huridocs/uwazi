@@ -20,6 +20,7 @@ export interface IXSuggestionType {
 export interface IXSuggestionsQuery {
   filter?: {
     propertyName?: string;
+    state?: 'Empty' | 'Matching' | 'Pending';
   };
   page?: {
     number?: number;
