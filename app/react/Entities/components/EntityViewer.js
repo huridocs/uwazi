@@ -36,7 +36,7 @@ export class EntityViewer extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      panelOpen: true,
+      panelOpen: !this.props.hasPageView,
       copyFrom: false,
       copyFromProps: [],
     };
