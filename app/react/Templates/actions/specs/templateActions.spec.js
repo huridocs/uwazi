@@ -220,15 +220,12 @@ describe('templateActions', () => {
 
       describe('on error', () => {
         it('should dispatch template_saved', async () => {
-          spyOn(api, 'save').and.callFake(() => Promise.reject(new Error()));
+          jest.spyOn(api, 'save').mockRejectedValueOnce('error');
           spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
 
           const originalTemplateData = {
             name: 'my template',
-            properties: [
-              { localID: 'a1b2', label: 'my property' },
-              { localID: 'a1b3', label: 'my property' },
-            ],
+            properties: [{ localID: 'a1b2', label: 'my property' }],
           };
 
           const expectedActions = [
@@ -238,8 +235,11 @@ describe('templateActions', () => {
 
           const store = mockStore({});
 
-          await store.dispatch(actions.saveTemplate(originalTemplateData));
-          expect(store.getActions()).toEqual(expectedActions);
+          try {
+            await store.dispatch(actions.saveTemplate(originalTemplateData));
+          } catch {
+            expect(store.getActions()).toEqual(expectedActions);
+          }
         });
       });
     });
