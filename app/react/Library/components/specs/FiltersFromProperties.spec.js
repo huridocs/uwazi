@@ -10,6 +10,7 @@ import NestedFilter from '../NestedFilter';
 import NumberRangeFilter from '../NumberRangeFilter';
 import SelectFilter from '../SelectFilter';
 import TextFilter from '../TextFilter';
+import { defaultProperties } from './fixtures/FiltersFromPropertiesFixtures';
 
 jest.mock('app/I18N', () => ({
   __esModule: true,
@@ -44,33 +45,21 @@ const render = () => {
 };
 
 describe('FiltersFromProperties', () => {
-  it('should concat the modelPrefix with the model', () => {
-    props.properties = [
-      {
-        name: 'textFilter',
-        label: 'textLabel',
-      },
-    ];
+  beforeEach(() => {
+    props.properties = defaultProperties;
+  });
 
+  it('should concat the modelPrefix with the model', () => {
     props.modelPrefix = '.prefix';
 
     render();
-
     const textFilter = component.find(TextFilter);
     expect(textFilter).toMatchSnapshot();
   });
 
   describe('when type is text', () => {
     it('should render a text filter', () => {
-      props.properties = [
-        {
-          name: 'textFilter',
-          label: 'textLabel',
-        },
-      ];
-
       render();
-
       const textFilter = component.find(TextFilter);
       expect(textFilter).toMatchSnapshot();
     });
@@ -78,31 +67,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is select, multiselect or relationship', () => {
     it('should render a select filter', () => {
-      props.properties = [
-        {
-          content: 'aContent',
-          name: 'selectFilter',
-          label: 'selectLabel',
-          type: 'select',
-          options: [{ label: 'option1' }],
-        },
-        {
-          content: 'aContent',
-          name: 'multiselectFilter',
-          label: 'multiselectLabel',
-          type: 'multiselect',
-          options: [{ label: 'option3' }],
-        },
-        {
-          content: 'aContent',
-          name: 'relationshipFilter',
-          label: 'relationshipLabel',
-          type: 'relationship',
-          options: [{ label: 'option2' }],
-        },
-      ];
       render();
-
       const selectFilter = component.find(SelectFilter);
       expect(selectFilter).toMatchSnapshot();
     });
@@ -192,35 +157,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is date, multidate, multidaterange or daterange', () => {
     it('should render a date filter', () => {
-      props.properties = [
-        {
-          content: 'oneContent',
-          name: 'dateFilter',
-          label: 'dateLabel',
-          type: 'date',
-        },
-        {
-          content: 'oneContent',
-          name: 'daterange',
-          label: 'daterangeLabel',
-          type: 'daterange',
-        },
-        {
-          content: 'oneContent',
-          name: 'multidate',
-          label: 'multidateLabel',
-          type: 'multidate',
-        },
-        {
-          content: 'oneContent',
-          name: 'multidaterange',
-          label: 'multidaterangeLabel',
-          type: 'multidaterange',
-        },
-      ];
-
       render();
-
       const dateFilter = component.find(DateFilter);
       expect(dateFilter).toMatchSnapshot();
     });
@@ -228,16 +165,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is numeric', () => {
     it('should render a number range filter', () => {
-      props.properties = [
-        {
-          name: 'numericFilter',
-          label: 'numericLabel',
-          type: 'numeric',
-        },
-      ];
-
       render();
-
       const numberRangeFilter = component.find(NumberRangeFilter);
       expect(numberRangeFilter).toMatchSnapshot();
     });
@@ -245,16 +173,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is nested', () => {
     it('should render a number range filter', () => {
-      props.properties = [
-        {
-          name: 'nestedFilter',
-          label: 'nestedLabel',
-          type: 'nested',
-        },
-      ];
-
       render();
-
       const nestedFilter = component.find(NestedFilter);
       expect(nestedFilter).toMatchSnapshot();
     });
