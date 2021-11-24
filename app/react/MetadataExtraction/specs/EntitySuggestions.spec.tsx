@@ -114,7 +114,10 @@ describe('EntitySuggestions', () => {
       });
       fireEvent.click(screen.getByText('4'));
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: { filters: [], size: 5, page: 4, propertyName: 'Other title' },
+        data: {
+          filter: { propertyName: 'Other title' },
+          page: { size: 5, number: 4 },
+        },
         headers: {},
       });
     });
@@ -127,7 +130,7 @@ describe('EntitySuggestions', () => {
         target: { value: 10 },
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: { filters: [], size: 10, page: 1, propertyName: 'Other title' },
+        data: { filter: { propertyName: 'Other title' }, page: { size: 10, number: 1 } },
         headers: {},
       });
     });
@@ -144,10 +147,8 @@ describe('EntitySuggestions', () => {
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
-          filters: [{ id: 'state', value: 'Empty' }],
-          size: 5,
-          page: 1,
-          propertyName: 'Other title',
+          filter: { id: 'state', value: 'Empty', propertyName: 'Other title' },
+          page: { size: 5, number: 1 },
         },
         headers: {},
       });

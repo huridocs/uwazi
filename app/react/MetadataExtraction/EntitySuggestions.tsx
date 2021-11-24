@@ -155,10 +155,8 @@ export const EntitySuggestions = ({ propertyName = 'title' }: EntitySuggestionsP
 
   const retrieveSuggestions = () => {
     const params = new RequestParams({
-      page: pageIndex + 1,
-      size: pageSize,
-      propertyName,
-      filters,
+      page: { number: pageIndex + 1, size: pageSize },
+      filter: { ...filters[0], propertyName },
     });
     getSuggestions(params)
       .then((response: any) => {

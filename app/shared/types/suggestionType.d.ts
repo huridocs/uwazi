@@ -16,3 +16,13 @@ export interface IXSuggestionType {
   page: number;
   creationDate?: number;
 }
+
+export interface IXSuggestionsQuery {
+  filter?: {
+    propertyName?: string;
+  };
+  page?: {
+    number?: number;
+    size?: number;
+  };
+}
