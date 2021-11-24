@@ -112,12 +112,12 @@ export function saveTemplate(data) {
       .then(response => {
         dispatch({ type: types.TEMPLATE_SAVED, data: response });
         dispatch(actions.update('templates', response));
-
         dispatch(formActions.merge('template.data', response));
         dispatch(notificationActions.notify('Saved successfully.', 'success'));
       })
-      .catch(() => {
+      .catch(e => {
         dispatch({ type: types.TEMPLATE_SAVED, data });
+        throw e;
       });
   };
 }

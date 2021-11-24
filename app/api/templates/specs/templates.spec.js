@@ -23,7 +23,7 @@ import fixtures, {
   relatedTo,
   thesauriId1,
   thesauriId2,
-} from './fixtures.js';
+} from './fixtures/fixtures.js';
 
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
