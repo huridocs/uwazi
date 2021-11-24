@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import { Translate } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import Icons from 'app/Templates/components/Icons';
@@ -149,6 +149,16 @@ class MetadataExtractionDashboard extends React.Component<
                         {index !== data.templates.length - 1 ? ',' : ''}
                       </div>
                     ))}
+                  </td>
+                  <td>
+                    <I18NLink
+                      to={`settings/metadata_extraction/suggestions/${data.properties[0].type}/${data.properties[0].name}`}
+                      className="btn btn-success btn-xs"
+                    >
+                      <Icon icon="bars" />
+                      &nbsp;
+                      <Translate>Review</Translate>
+                    </I18NLink>
                   </td>
                 </tr>
               ))}

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
+
 import {
   Column,
   HeaderGroup,
@@ -17,7 +18,10 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { getSuggestions } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
-  propertyName: string;
+  routeParams: {
+    propertyName: string;
+    propertyType: string;
+  };
 }
 
 const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSuggestionType>) => (
@@ -35,7 +39,9 @@ const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSugge
   </select>
 );
 
-export const EntitySuggestions = ({ propertyName = 'title' }: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({
+  routeParams: { propertyName, propertyType },
+}: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
