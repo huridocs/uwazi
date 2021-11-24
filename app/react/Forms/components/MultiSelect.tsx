@@ -317,27 +317,24 @@ abstract class MultiSelectBase<ValueType> extends Component<
   renderOption(option: Option, index: number, groupIndex = '') {
     const { optionsValue, optionsLabel, prefix } = this.props;
     const key = `${groupIndex}${index}`;
-    const isNotAnyOption = option.id !== 'any';
     return (
-      isNotAnyOption && (
-        <li
-          className="multiselectItem"
-          key={key}
-          title={option.title ? option.title : option[optionsLabel]}
-        >
-          <input
-            type="checkbox"
-            className={`multiselectItem-input${
-              this.checked(option) === SelectStates.PARTIAL ? ' partial' : ''
-            }`}
-            value={option[optionsValue]}
-            id={prefix + option[optionsValue]}
-            onChange={this.change.bind(this, option)}
-            checked={this.checked(option) !== SelectStates.OFF}
-          />
-          {this.label(option)}
-        </li>
-      )
+      <li
+        className="multiselectItem"
+        key={key}
+        title={option.title ? option.title : option[optionsLabel]}
+      >
+        <input
+          type="checkbox"
+          className={`multiselectItem-input${
+            this.checked(option) === SelectStates.PARTIAL ? ' partial' : ''
+          }`}
+          value={option[optionsValue]}
+          id={prefix + option[optionsValue]}
+          onChange={this.change.bind(this, option)}
+          checked={this.checked(option) !== SelectStates.OFF}
+        />
+        {this.label(option)}
+      </li>
     );
   }
 
