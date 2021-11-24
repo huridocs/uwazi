@@ -17,28 +17,33 @@ jest.mock('app/I18N', () => ({
   default: jest.fn(),
 }));
 
+let props = {};
+let component;
+
+beforeEach(() => {
+  t.mockImplementation((_context, label) => label);
+  const state = {
+    settings: { collection: Immutable.fromJS({ dateFormat: 'dateFormat' }) },
+    library: { aggregations: Immutable.fromJS({ aggregations: 'aggregations' }) },
+    templates: Immutable.fromJS([
+      {
+        name: 'blah',
+        properties: [
+          { _id: '1234', type: 'date', name: 'age' },
+          { _id: '4567', type: 'text', name: 'name' },
+        ],
+      },
+    ]),
+  };
+  props = mapStateToProps(state, { storeKey: 'library' });
+  props.translationContext = 'oneContext';
+});
+
+const render = () => {
+  component = shallow(<FiltersFromProperties {...props} />);
+};
+
 describe('FiltersFromProperties', () => {
-  let props = {};
-
-  beforeEach(() => {
-    t.mockImplementation((_context, label) => label);
-    const state = {
-      settings: { collection: Immutable.fromJS({ dateFormat: 'dateFormat' }) },
-      library: { aggregations: Immutable.fromJS({ aggregations: 'aggregations' }) },
-      templates: Immutable.fromJS([
-        {
-          name: 'blah',
-          properties: [
-            { _id: '1234', type: 'date', name: 'age' },
-            { _id: '4567', type: 'text', name: 'name' },
-          ],
-        },
-      ]),
-    };
-
-    props = mapStateToProps(state, { storeKey: 'library' });
-  });
-
   it('should concat the modelPrefix with the model', () => {
     props.properties = [
       {
@@ -46,11 +51,13 @@ describe('FiltersFromProperties', () => {
         label: 'textLabel',
       },
     ];
-    props.translationContext = 'oneContext';
+
     props.modelPrefix = '.prefix';
 
-    const component = shallow(<FiltersFromProperties {...props} />).find(TextFilter);
-    expect(component).toMatchSnapshot();
+    render();
+
+    const textFilter = component.find(TextFilter);
+    expect(textFilter).toMatchSnapshot();
   });
 
   describe('when type is text', () => {
@@ -61,10 +68,11 @@ describe('FiltersFromProperties', () => {
           label: 'textLabel',
         },
       ];
-      props.translationContext = 'oneContext';
 
-      const component = shallow(<FiltersFromProperties {...props} />).find(TextFilter);
-      expect(component).toMatchSnapshot();
+      render();
+
+      const textFilter = component.find(TextFilter);
+      expect(textFilter).toMatchSnapshot();
     });
   });
 
@@ -93,10 +101,10 @@ describe('FiltersFromProperties', () => {
           options: [{ label: 'option2' }],
         },
       ];
-      props.translationContext = 'oneContext';
+      render();
 
-      const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
-      expect(component).toMatchSnapshot();
+      const selectFilter = component.find(SelectFilter);
+      expect(selectFilter).toMatchSnapshot();
     });
 
     it('should translate the options of filter with thesaurus', () => {
@@ -116,15 +124,18 @@ describe('FiltersFromProperties', () => {
           options: [{ label: 'option2' }],
         },
       ];
-      props.translationContext = 'oneContext';
+
       t.mockImplementation(() => 'translatedOption');
-      const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
+
+      render();
+
+      const selectFilter = component.find(SelectFilter);
       const _text = undefined;
       const returnComponent = false;
       expect(t).toHaveBeenCalledWith('thesaurus1', 'option1', _text, returnComponent);
       expect(t).toHaveBeenCalledWith('thesaurus2', 'option2', _text, returnComponent);
-      expect(component.get(0).props.options[0].label).toBe('translatedOption');
-      expect(component.get(1).props.options[0].label).toBe('translatedOption');
+      expect(selectFilter.get(0).props.options[0].label).toBe('translatedOption');
+      expect(selectFilter.get(1).props.options[0].label).toBe('translatedOption');
     });
 
     it('should translate the options of filter with nested thesauris', () => {
@@ -144,15 +155,18 @@ describe('FiltersFromProperties', () => {
           options: [{ label: 'option2', options: [{ label: 'suboption2' }] }],
         },
       ];
-      props.translationContext = 'oneContext';
+
       t.mockImplementation(() => 'translatedOption');
-      const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
+
+      render();
+
+      const selectFilter = component.find(SelectFilter);
       const _text = undefined;
       const returnComponent = false;
       expect(t).toHaveBeenCalledWith('thesaurus1', 'suboption1', _text, returnComponent);
       expect(t).toHaveBeenCalledWith('thesaurus2', 'suboption2', _text, returnComponent);
-      expect(component.get(0).props.options[0].options[0].label).toBe('translatedOption');
-      expect(component.get(1).props.options[0].options[0].label).toBe('translatedOption');
+      expect(selectFilter.get(0).props.options[0].options[0].label).toBe('translatedOption');
+      expect(selectFilter.get(1).props.options[0].options[0].label).toBe('translatedOption');
     });
   });
 
@@ -168,9 +182,11 @@ describe('FiltersFromProperties', () => {
           options: [{ label: 'option2' }],
         },
       ];
-      props.translationContext = 'oneContext';
-      const component = shallow(<FiltersFromProperties {...props} />).find(DateFilter);
-      expect(component.length).toBe(1);
+
+      render();
+
+      const dateFilter = component.find(DateFilter);
+      expect(dateFilter.length).toBe(1);
     });
   });
 
@@ -202,10 +218,11 @@ describe('FiltersFromProperties', () => {
           type: 'multidaterange',
         },
       ];
-      props.translationContext = 'oneContext';
 
-      const component = shallow(<FiltersFromProperties {...props} />).find(DateFilter);
-      expect(component).toMatchSnapshot();
+      render();
+
+      const dateFilter = component.find(DateFilter);
+      expect(dateFilter).toMatchSnapshot();
     });
   });
 
@@ -218,10 +235,11 @@ describe('FiltersFromProperties', () => {
           type: 'numeric',
         },
       ];
-      props.translationContext = 'oneContext';
 
-      const component = shallow(<FiltersFromProperties {...props} />).find(NumberRangeFilter);
-      expect(component).toMatchSnapshot();
+      render();
+
+      const numberRangeFilter = component.find(NumberRangeFilter);
+      expect(numberRangeFilter).toMatchSnapshot();
     });
   });
 
@@ -234,10 +252,58 @@ describe('FiltersFromProperties', () => {
           type: 'nested',
         },
       ];
-      props.translationContext = 'oneContext';
 
-      const component = shallow(<FiltersFromProperties {...props} />).find(NestedFilter);
-      expect(component).toMatchSnapshot();
+      render();
+
+      const nestedFilter = component.find(NestedFilter);
+      expect(nestedFilter).toMatchSnapshot();
     });
+  });
+
+  it('should not render `any` options', () => {
+    props.properties = [
+      {
+        localID: 'srhkbn1bbqi',
+        name: 'property',
+        type: 'multiselect',
+        options: [
+          {
+            id: '7ycel666l65vobt9',
+            value: '7ycel666l65vobt9',
+            label: 'Option 1',
+            results: 10,
+          },
+          {
+            id: 'mbpzxhzlfep6tj4i',
+            value: 'mbpzxhzlfep6tj4i',
+            label: 'Option 2',
+            results: 5,
+          },
+          {
+            id: 'any',
+            value: 'any',
+            label: 'Any',
+            results: 15,
+          },
+        ],
+      },
+    ];
+
+    render();
+    const { options } = component.find(SelectFilter).props();
+    expect(options).toMatchObject([
+      {
+        id: '7ycel666l65vobt9',
+        value: '7ycel666l65vobt9',
+        label: 'Option 1',
+        results: 10,
+      },
+      {
+        id: 'mbpzxhzlfep6tj4i',
+        value: 'mbpzxhzlfep6tj4i',
+        label: 'Option 2',
+        results: 5,
+      },
+    ]);
   });
 });
