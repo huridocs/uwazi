@@ -74,6 +74,7 @@ const termsFilter = (query: SearchQuery, propertyName: string) =>
   query.filter?.[propertyName] ? [{ terms: { [propertyName]: [query.filter[propertyName]] } }] : [];
 
 const defaultFields = ['title', 'template', 'sharedId'];
+
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
   const { searchString, fullTextSearchString, searchMethod } = await extractSearchParams(query);
 
@@ -87,7 +88,10 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
     }
     sort = [{ [`${sortProp}.sort`]: order }];
     if (sortProp.startsWith('metadata.')) {
-      sort = [{ [`${sortProp}.value.sort`]: order }];
+      sort = [
+        { [`${sortProp}.label.sort`]: { unmapped_type: 'keyword', order } },
+        { [`${sortProp}.value.sort`]: { order } },
+      ];
     }
   }
 

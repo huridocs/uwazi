@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { Application } from 'express';
 import request from 'supertest';
 
@@ -9,6 +10,7 @@ import entities from 'api/entities';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
 import { searchRoutes } from '../routes';
+import { elasticTesting } from 'api/utils/elastic_testing';
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(
@@ -31,24 +33,24 @@ describe('Sorting', () => {
     const entityA = factory.entity('A First title', 'templateA', {
       textProperty: [factory.metadataValue('c Third property')],
       numberProperty: [factory.metadataValue(100)],
-      selectProperty: [factory.metadataValue('a First select')],
+      selectProperty: [factory.metadataValue('zFirst')],
     });
     const entityC = factory.entity('c Second title', 'templateA', {
       textProperty: [factory.metadataValue('D Last property')],
       numberProperty: [factory.metadataValue(-10)],
-      selectProperty: [factory.metadataValue('D Last select')],
+      selectProperty: [factory.metadataValue('aLast')],
     });
     const entityZ = factory.entity('Z Last title', 'templateA', {
       textProperty: [factory.metadataValue('a First property')],
       numberProperty: [factory.metadataValue(1)],
-      selectProperty: [factory.metadataValue('B Second select')],
-      inheritedProperty: [factory.metadataValue('c Second title')],
+      selectProperty: [factory.metadataValue('mSecond')],
+      inheritedProperty: [factory.metadataValue('inherited entity 1')],
     });
     const entityJ = factory.entity('j Third title', 'templateA', {
       textProperty: [factory.metadataValue('B Second property')],
       numberProperty: [factory.metadataValue(2)],
-      selectProperty: [factory.metadataValue('c Third select')],
-      inheritedProperty: [factory.metadataValue('Z Last title')],
+      selectProperty: [factory.metadataValue('yThird')],
+      inheritedProperty: [factory.metadataValue('inherited entity 2')],
     });
 
     await load(
@@ -60,18 +62,30 @@ describe('Sorting', () => {
             factory.property('selectProperty', 'select', {
               content: factory.id('thesaurus').toString(),
             }),
-            factory.inherit('inheritedProperty', 'templateA', 'numericProperty'),
+            factory.inherit('inheritedProperty', 'templateB', 'numberProperty'),
           ]),
+          factory.template('templateB', [factory.property('numberProperty', 'numeric')]),
         ],
         dictionaries: [
           factory.thesauri('thesaurus', [
-            'a First select',
-            'B Second select',
-            'c Third select',
-            'D Last select',
+            ['zFirst', 'a First select'],
+            ['mSecond', 'B Second select'],
+            ['yThird', 'c Third select'],
+            ['aLast', 'D Last select'],
           ]),
         ],
-        entities: [entityA, entityC, entityZ, entityJ],
+        entities: [
+          entityA,
+          entityC,
+          entityZ,
+          entityJ,
+          factory.entity('inherited entity 1', 'templateB', {
+            numberProperty: [factory.metadataValue(5)],
+          }),
+          factory.entity('inherited entity 2', 'templateB', {
+            numberProperty: [factory.metadataValue(3)],
+          }),
+        ],
       },
       'search.v2.sorting'
     );
@@ -80,6 +94,8 @@ describe('Sorting', () => {
     await entities.save(entityC, { language: 'en', user: {} }, true);
     await entities.save(entityZ, { language: 'en', user: {} }, true);
     await entities.save(entityJ, { language: 'en', user: {} }, true);
+
+    await elasticTesting.refresh();
   });
 
   afterAll(async () => testingDB.disconnect());
@@ -87,6 +103,7 @@ describe('Sorting', () => {
   it('should sort by title', async () => {
     const query: SearchQuery = {
       sort: 'title',
+      filter: { template: factory.id('templateA').toString() },
     };
 
     const { body } = await request(app)
@@ -106,6 +123,7 @@ describe('Sorting', () => {
     const query: SearchQuery = {
       sort: '-metadata.textProperty',
       fields: ['metadata.textProperty'],
+      filter: { template: factory.id('templateA').toString() },
     };
 
     const { body } = await request(app)
@@ -125,6 +143,7 @@ describe('Sorting', () => {
     const query: SearchQuery = {
       sort: 'metadata.numberProperty',
       fields: ['metadata.numberProperty'],
+      filter: { template: factory.id('templateA').toString() },
     };
 
     const { body } = await request(app)
@@ -140,10 +159,11 @@ describe('Sorting', () => {
     ]);
   });
 
-  it('should sort by metadata select property', async () => {
+  it('should sort by metadata select property label', async () => {
     const query: SearchQuery = {
       sort: 'metadata.selectProperty',
       fields: ['metadata.selectProperty'],
+      filter: { template: factory.id('templateA').toString() },
     };
 
     const { body } = await request(app)
@@ -152,18 +172,20 @@ describe('Sorting', () => {
       .expect(200);
 
     expect(body.data).toMatchObject([
-      { metadata: { selectProperty: [{ value: 'a First select' }] } },
-      { metadata: { selectProperty: [{ value: 'B Second select' }] } },
-      { metadata: { selectProperty: [{ value: 'c Third select' }] } },
-      { metadata: { selectProperty: [{ value: 'D Last select' }] } },
+      { metadata: { selectProperty: [{ label: 'a First select' }] } },
+      { metadata: { selectProperty: [{ label: 'B Second select' }] } },
+      { metadata: { selectProperty: [{ label: 'c Third select' }] } },
+      { metadata: { selectProperty: [{ label: 'D Last select' }] } },
     ]);
   });
 
   it('should sort by inherited values', async () => {
     const query: SearchQuery = {
-      sort: 'metadata.inheritedProperty',
+      sort: 'metadata.inheritedProperty.inheritedValue',
       fields: ['metadata.inheritedProperty'],
     };
+
+    await elasticTesting.refresh();
 
     const { body } = await request(app)
       .get('/api/v2/entities')
@@ -171,12 +193,15 @@ describe('Sorting', () => {
       .expect(200);
 
     expect(body.data).toMatchObject([
-      { metadata: { selectProperty: [{ value: 'a First select' }] } },
-      { metadata: { selectProperty: [{ value: 'B Second select' }] } },
-      { metadata: { selectProperty: [{ value: 'c Third select' }] } },
-      { metadata: { selectProperty: [{ value: 'D Last select' }] } },
+      { metadata: { inheritedProperty: [{ value: 'a First select' }] } },
+      { metadata: { inheritedProperty: [{ value: 'B Second select' }] } },
+      { metadata: { inheritedProperty: [{ value: 'c Third select' }] } },
+      { metadata: { inheritedProperty: [{ value: 'D Last select' }] } },
     ]);
   });
 
   it.todo('we need factory.thesaurusValue that do not adds label');
+  it.todo(
+    'discuss if we want to sort by inherited properties exposing the structure or something more semantic'
+  );
 });
