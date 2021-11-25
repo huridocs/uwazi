@@ -33,6 +33,10 @@ const newKeyValues = [
     value: 'State',
   },
   {
+    key: 'Review',
+    value: 'Review',
+  },
+  {
     key: 'Reviewing',
     value: 'Reviewing',
   },

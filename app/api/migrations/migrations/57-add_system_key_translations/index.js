@@ -81,6 +81,10 @@ export default {
         value: 'Reviewing',
       },
       {
+        key: 'Review',
+        value: 'Review',
+      },
+      {
         key: 'Dashboard',
         value: 'Dashboard',
       },

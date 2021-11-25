@@ -10,18 +10,17 @@ import {
   useFilters,
   FilterProps,
 } from 'react-table';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IXSuggestionType } from 'shared/types/suggestionType';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { getSuggestions } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
-  routeParams: {
-    propertyName: string;
-    propertyType: string;
-  };
+  property: PropertySchema;
+  onClose: () => void;
 }
 
 const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSuggestionType>) => (
@@ -40,7 +39,8 @@ const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSugge
 );
 
 export const EntitySuggestions = ({
-  routeParams: { propertyName, propertyType },
+  property: reviewedProperty,
+  onClose,
 }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -52,7 +52,7 @@ export const EntitySuggestions = ({
       <>
         <div>
           <span className="suggestion-label">
-            <Translate>{propertyName}</Translate>
+            <Translate>{reviewedProperty.label}</Translate>
           </span>
           <p>{currentValue}</p>
         </div>
@@ -82,7 +82,7 @@ export const EntitySuggestions = ({
         id: 'suggestion',
         Header: () => (
           <>
-            <Translate>{propertyName}</Translate> / <Translate>Suggestion</Translate>
+            <Translate>{reviewedProperty.label}</Translate> / <Translate>Suggestion</Translate>
           </>
         ),
         Cell: suggestionCell,
@@ -103,7 +103,7 @@ export const EntitySuggestions = ({
       {
         accessor: 'segment' as const,
         Header: () => <Translate>Segment</Translate>,
-        className: propertyName === 'Title' ? 'long-segment' : 'segment',
+        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
       },
       {
         accessor: 'language' as const,
@@ -128,7 +128,7 @@ export const EntitySuggestions = ({
     ],
     []
   );
-  const hiddenColumns = propertyName === 'Title' ? ['entityTitle'] : [];
+  const hiddenColumns = reviewedProperty.label === 'Title' ? ['entityTitle'] : [];
 
   const {
     getTableProps,
@@ -166,7 +166,7 @@ export const EntitySuggestions = ({
     );
     const params = new RequestParams({
       page: { number: pageIndex + 1, size: pageSize },
-      filter: { ...queryFilter, propertyName },
+      filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
       .then((response: any) => {
@@ -186,12 +186,12 @@ export const EntitySuggestions = ({
             <Translate>Reviewing</Translate>:&nbsp;
           </span>
           <span className="suggestion-property">
-            <Translate>{propertyName}</Translate>
+            <Translate>{reviewedProperty.label}</Translate>
           </span>
         </div>
-        <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
+        <button className="btn btn-outline-primary" onClick={() => onClose()}>
           <Translate>Dashboard</Translate>
-        </I18NLink>
+        </button>
       </div>
       <table {...getTableProps()}>
         <thead>
