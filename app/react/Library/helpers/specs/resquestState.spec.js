@@ -81,7 +81,7 @@ describe('static requestState()', () => {
       };
 
       const request = new RequestParams(query);
-      const actions = await requestState(request, globalResources);
+      const actions = await requestState(request, globalResources, { geolocation: true });
 
       expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
 

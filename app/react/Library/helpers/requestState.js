@@ -53,7 +53,7 @@ export function processQuery(params, globalResources, key) {
 export default function requestState(
   request,
   globalResources,
-  options = { calculateTableColumns: false, mapMarkers: false }
+  options = { calculateTableColumns: false, geolocation: false }
 ) {
   const docsQuery = processQuery(request.data, globalResources, 'library');
 
@@ -61,7 +61,7 @@ export default function requestState(
     tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
   );
 
-  if (options.mapMarkers) {
+  if (options.geolocation) {
     documentsRequest = request.set({ ...docsQuery, geolocation: true });
   }
 
