@@ -1,0 +1,19 @@
+@media print {
+  header,
+  .side-panel,
+  .sidepanel-footer,
+  .ContextMenu-bottom {
+    display: none;
+  }
+
+  .entity-viewer {
+    .filelist,
+    .attachments-list-parent {
+      display: none;
+    }
+
+    a {
+      border-bottom: none !important;
+    }
+  }
+}
