@@ -39,7 +39,6 @@ export default storeKey =>
     search: modelReducer(`${storeKey}.search`, defaultSearch),
     searchForm: formReducer(`${storeKey}.search`, defaultSearch),
     selectedSorting: createReducer(`${storeKey}.selectedSorting`, {}),
-    markers: createReducer(`${storeKey}.markers`, { rows: [] }),
     //
     sidepanel: combineReducers({
       metadata: modelReducer(`${storeKey}.sidepanel.metadata`, {}),

@@ -99,7 +99,7 @@ MapView.propTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    markers: state[props.storeKey].markers,
+    markers: state[props.storeKey].documents,
   };
 }
 

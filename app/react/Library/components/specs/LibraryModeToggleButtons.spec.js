@@ -18,7 +18,6 @@ describe('LibraryModeToggleButtons', () => {
     zoomIn: jasmine.createSpy('zoomIn'),
     zoomOut: jasmine.createSpy('zoomOut'),
     zoomLevel: 3,
-    numberOfMarkers: 23,
     storeKey: 'library',
   };
 
@@ -121,7 +120,6 @@ describe('LibraryModeToggleButtons', () => {
           search: {},
           filters: Immutable.fromJS({ properties: [] }),
           ui: Immutable.fromJS({ zoomLevel: 1, tableViewColumns: [] }),
-          markers: Immutable.fromJS({ rows: [] }),
           storeKey: 'library',
         },
         templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }]),

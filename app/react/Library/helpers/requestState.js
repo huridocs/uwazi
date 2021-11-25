@@ -86,7 +86,6 @@ export default function requestState(
         aggregations: documents.aggregations,
         search: filterState.search,
         documents,
-        markers: documents,
       },
     };
 

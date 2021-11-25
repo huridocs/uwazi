@@ -5,7 +5,6 @@ import {
   initializeFiltersForm,
 } from 'app/Library/actions/libraryActions';
 import { actions as formActions } from 'react-redux-form';
-import { actions } from 'app/BasicReducer';
 
 export default function setReduxState(state, key, addinsteadOfSet) {
   return _dispatch => {
@@ -23,9 +22,5 @@ export default function setReduxState(state, key, addinsteadOfSet) {
     dispatch(
       addinsteadOfSet ? addDocuments(state[key].documents) : setDocuments(state[key].documents)
     );
-
-    if (key === 'library') {
-      dispatch(actions.set('library.markers', state[key].markers));
-    }
   };
 }
