@@ -7,7 +7,7 @@ import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleBu
 
 export default class LibraryMap extends Library {
   static async requestState(requestParams, globalResources) {
-    return requestState(requestParams, globalResources, 'markers');
+    return requestState(requestParams, globalResources, { mapMarkers: true });
   }
 
   render() {

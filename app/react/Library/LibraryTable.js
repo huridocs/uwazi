@@ -8,7 +8,7 @@ import requestState from 'app/Library/helpers/requestState';
    make Library and LibraryTable subclasses of the same base class. */
 class LibraryOverrideRequestState extends Library {
   static async requestState(requestParams, globalResources) {
-    return requestState(requestParams, globalResources, true);
+    return requestState(requestParams, globalResources, { calculateTableColumns: true });
   }
 }
 
