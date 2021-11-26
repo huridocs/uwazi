@@ -1,19 +1,44 @@
 @media print {
+  #app {
+    display: block;
+    width: auto;
+    height: auto;
+  }
+
+  * {
+    overflow: visible !important;
+  }
+
+  .content {
+    @media print {
+      display: block;
+    }
+  }
+
   header,
   .side-panel,
   .sidepanel-footer,
-  .ContextMenu-bottom {
+  .ContextMenu-bottom,
+  .mapbox-improve-map {
     display: none;
+  }
+
+  @page {
+    margin: 2cm;
   }
 
   .entity-viewer {
     .filelist,
-    .attachments-list-parent {
+    .attachments-list-parent,
+    .mapbox-navigation {
       display: none;
     }
 
     a {
       border-bottom: none !important;
+      &:after {
+        content: none;
+      }
     }
   }
 }
