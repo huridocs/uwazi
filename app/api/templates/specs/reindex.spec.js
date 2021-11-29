@@ -3,7 +3,7 @@ import { search } from 'api/search';
 import { propertyTypes } from 'shared/propertyTypes';
 import templates from '../templates';
 import { checkIfReindex } from '../reindex';
-import fixtures, { templateWithContents } from './fixtures';
+import fixtures, { templateWithContents } from './fixtures/fixtures';
 
 const getAndUpdateTemplate = async props => {
   const [template] = await templates.get({ _id: templateWithContents });
