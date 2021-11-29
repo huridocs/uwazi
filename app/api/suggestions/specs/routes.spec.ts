@@ -27,11 +27,11 @@ describe('suggestions routes', () => {
     it('should return the suggestions filtered by the request language and the property name', async () => {
       const response = await request(app)
         .get('/api/suggestions')
-        .query({ filter: { propertyName: 'super powers' } });
+        .query({ filter: { propertyName: 'super_powers' } });
       expect(response.body.suggestions).toMatchObject([
         {
           entityTitle: 'Batman',
-          propertyName: 'super powers',
+          propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge',
           language: 'en',
         },
@@ -56,8 +56,11 @@ describe('suggestions routes', () => {
       it('should filter by state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'title', state: SuggestionState.pending } });
-        expect(response.body.suggestions).toMatchObject([{ entityTitle: 'Alfred' }]);
+          .query({ filter: { propertyName: 'age', state: SuggestionState.empty } });
+        expect(response.body.suggestions).toMatchObject([
+          { entityTitle: 'Alfred' },
+          { entityTitle: 'Joker' },
+        ]);
       });
     });
 

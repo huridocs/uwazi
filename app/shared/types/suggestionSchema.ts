@@ -19,7 +19,7 @@ export const IXSuggestionSchema = {
     entityId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
-    suggestedValue: { type: 'string', minLength: 1 },
+    suggestedValue: propertyValueSchema,
     currentValue: propertyValueSchema,
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
@@ -27,21 +27,25 @@ export const IXSuggestionSchema = {
     page: { type: 'number', minimum: 1 },
     creationDate: { type: 'number' },
   },
-  required: ['propertyName', 'entity', 'suggestedValue', 'segment', 'language', 'state', 'page'],
+  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language', 'page'],
+};
+
+export const SuggestionsQueryFilterSchema = {
+  type: 'object',
+  title: 'IXSuggestionsFilter',
+  additionalProperties: false,
+  properties: {
+    propertyName: { type: 'string' },
+    state: { type: 'string', enum: Object.values(SuggestionState) },
+  },
 };
 
 export const IXSuggestionsQuerySchema = {
   title: 'IXSuggestionsQuery',
   additionalProperties: false,
+  definitions: { SuggestionsQueryFilterSchema },
   properties: {
-    filter: {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        propertyName: { type: 'string' },
-        state: { type: 'string', enum: Object.values(SuggestionState) },
-      },
-    },
+    filter: SuggestionsQueryFilterSchema,
     page: {
       type: 'object',
       additionalProperties: false,

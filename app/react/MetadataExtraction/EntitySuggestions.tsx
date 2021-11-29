@@ -116,7 +116,7 @@ export const EntitySuggestions = ({
         accessor: 'state' as const,
         Header: () => <Translate>State</Translate>,
         Cell: ({ row }: { row: Row<IXSuggestionType> }) => (
-          <Translate>{row.original.state}</Translate>
+          <Translate>{row.original.state || ''}</Translate>
         ),
         Filter: stateFilter,
         className: 'state',
