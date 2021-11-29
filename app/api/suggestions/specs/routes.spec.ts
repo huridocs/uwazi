@@ -15,11 +15,22 @@ jest.mock(
 );
 
 describe('suggestions routes', () => {
-  const app: Application = setUpApp(suggestionsRoutes);
+  let user: { username: string; role: string } | undefined;
+  const getUser = () => user;
 
   beforeAll(async () => {
+    user = { username: 'user 1', role: 'admin' };
+
     await testingEnvironment.setUp(fixtures);
   });
+
+  const app: Application = setUpApp(
+    suggestionsRoutes,
+    (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = getUser();
+      next();
+    }
+  );
 
   afterAll(async () => testingEnvironment.tearDown());
 
@@ -71,6 +82,16 @@ describe('suggestions routes', () => {
           .get('/api/suggestions/')
           .query(invalidQuery);
         expect(response.status).toBe(400);
+      });
+    });
+
+    describe('authentication', () => {
+      it('should reject with unauthorized when user has not admin role', async () => {
+        user = { username: 'user 1', role: 'editor' };
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({});
+        expect(response.unauthorized).toBe(true);
       });
     });
   });
