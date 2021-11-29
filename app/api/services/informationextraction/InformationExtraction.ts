@@ -21,8 +21,9 @@ import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationMode
 import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
 import entities from 'api/entities/entities';
 import { EntitySchema } from 'shared/types/entityType';
-import { IXModelsModel } from './IXModelsModel';
 import languages from 'shared/languages';
+import { IXSuggestionType } from 'shared/types/suggestionType';
+import { IXModelsModel } from './IXModelsModel';
 
 interface FileWithAggregation extends FileType {
   filename: string;
@@ -157,10 +158,10 @@ class InformationExtraction {
           propertyName: rawSuggestion.property_name,
         });
 
-        const suggestion = {
+        const suggestion: IXSuggestionType = {
           ...currentSuggestion,
-          entityId: entity.sharedId,
-          language: entity.language,
+          entityId: entity.sharedId!,
+          language: entity.language!,
           propertyName: rawSuggestion.property_name,
           suggestedValue: rawSuggestion.text,
           segment: rawSuggestion.segment_text,
@@ -183,11 +184,10 @@ class InformationExtraction {
       propertyName,
       language: entity.language,
     });
-    const suggestion = {
+    const suggestion: IXSuggestionType = {
       ...existingSuggestions,
-      entityId: entity.sharedId,
-      entityTitle: entity.title,
-      language: entity.language,
+      entityId: entity.sharedId!,
+      language: entity.language!,
       propertyName,
       status: 'processing',
       date: new Date().getTime(),
@@ -353,7 +353,7 @@ class InformationExtraction {
 
         await IXModelsModel.save({
           ...currentModel,
-          status: 'success',
+          status: 'ready',
           creationDate: new Date().getTime(),
         });
         await this.getSuggestions(message.params!.property_name);

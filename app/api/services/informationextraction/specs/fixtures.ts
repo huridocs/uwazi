@@ -162,6 +162,7 @@ const fixtures: DBFixture = {
       suggestedValue: 'suggestion_text_1',
       segment: 'segment_text_1',
       status: 'ready',
+      page: 1,
       date: 100,
     },
   ],

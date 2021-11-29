@@ -35,20 +35,22 @@ const templates = Immutable.fromJS([
 const settings = {
   collection: Immutable.fromJS({
     features: {
-      metadataExtraction: [
-        {
-          template: factory.id('templateA'),
-          properties: ['AonlyText', 'ABsharedDate', 'ACsharedMarkdown', 'ABC shared Number'],
-        },
-        {
-          template: factory.id('templateB'),
-          properties: ['BonlyText', 'ABsharedDate', 'BCsharedMarkdown', 'ABC shared number'],
-        },
-        {
-          template: factory.id('templateC'),
-          properties: ['ConlyText', 'ACsharedMarkdown', 'BCsharedMarkdown', 'abc shared number'],
-        },
-      ],
+      metadataExtraction: {
+        templates: [
+          {
+            template: factory.id('templateA'),
+            properties: ['aonlytext', 'abshareddate', 'acsharedmarkdown', 'abc_shared_number'],
+          },
+          {
+            template: factory.id('templateB'),
+            properties: ['bonlytext', 'abshareddate', 'bcsharedmarkdown', 'abc_shared_number'],
+          },
+          {
+            template: factory.id('templateC'),
+            properties: ['conlytext', 'acsharedmarkdown', 'bcsharedmarkdown', 'abc_shared_number'],
+          },
+        ],
+      },
     },
   }),
 };
