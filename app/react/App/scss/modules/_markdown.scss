@@ -39,6 +39,9 @@
 
 .markdownEditor,
 .markdown-viewer {
+  .print-view-alt {
+    display: none;
+  }
   blockquote {
     max-width: 66%;
     padding: 0;
@@ -73,7 +76,8 @@
   img {
     max-width: 100%;
   }
-  p, li {
+  p,
+  li {
     font-family: $f-regular;
     font-size: $f-size-lg;
     line-height: 1.5em;
@@ -86,7 +90,8 @@
     width: 100%;
     table-layout: fixed;
   }
-  th, td {
+  th,
+  td {
     padding: 7px 10px;
   }
   th {
@@ -142,21 +147,21 @@
 }
 
 .video-container > div:first-child {
-    position: relative;
-    padding-bottom: 73.25%;
-    height: 0;
-    overflow: hidden;
-    margin-top: 5px;
-    margin-bottom: 5px;
+  position: relative;
+  padding-bottom: 73.25%;
+  height: 0;
+  overflow: hidden;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 .video-container iframe,
 .video-container object,
 .video-container embed {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .video-container.compact > div:first-child {
@@ -211,21 +216,27 @@
   margin-right: auto;
 }
 
-.page-viewer .video-container{
+.page-viewer .video-container {
   padding-bottom: 36%;
 }
 
-.page-viewer .item .video-container{
+.page-viewer .item .video-container {
   padding-bottom: 0;
 }
 
 .side-panel,
 .entity-viewer {
   .markdown-viewer {
-    p, li {
+    p,
+    li {
       font-size: $f-size;
     }
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       font-weight: bold;
       letter-spacing: 0;
       text-transform: none;

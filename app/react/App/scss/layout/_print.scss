@@ -38,6 +38,18 @@
       break-before: avoid;
       break-after: avoid;
     }
+
+    .markdown-viewer {
+      .video-container {
+        & > div {
+          display: none;
+        }
+      }
+      .print-view-alt {
+        display: block;
+        text-align: left;
+      }
+    }
   }
 
   .page-viewer {
