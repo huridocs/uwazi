@@ -3,6 +3,11 @@
     margin: 2cm;
   }
 
+  #app {
+    width: 100%;
+    height: 100%;
+  }
+
   a {
     border-bottom: none !important;
     &:after {
@@ -14,10 +19,8 @@
     display: none;
   }
 
-  #app {
-    display: inline-block;
-    width: 100%;
-    height: 100%;
+  .alert-wrapper {
+    display: none;
   }
 
   header,
@@ -34,11 +37,6 @@
       display: none;
     }
 
-    .metadata-type-geolocation_group {
-      break-before: avoid;
-      break-after: avoid;
-    }
-
     .markdown-viewer {
       .video-container {
         & > div {
@@ -49,6 +47,10 @@
         display: block;
         text-align: left;
       }
+    }
+
+    .pills-container {
+      display: none !important;
     }
   }
 
