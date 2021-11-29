@@ -12,5 +12,6 @@ export const IXModelSchema = {
     _id: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     creationDate: { type: 'number' },
+    status: { type: String, enum: ['processing', 'failed', 'ready'], default: 'processing' },
   },
 };

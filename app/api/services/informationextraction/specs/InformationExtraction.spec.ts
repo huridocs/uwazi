@@ -19,7 +19,7 @@ describe('InformationExtraction', () => {
 
   beforeAll(async () => {
     IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
-      materialsFiles: '/xml_file/:tenant/:property',
+      materialsFiles: '(/xml_to_train/:tenant/:property|/xml_to_predict/:tenant/:property)',
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
     });
@@ -35,7 +35,6 @@ describe('InformationExtraction', () => {
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
     });
-    // await testingEnvironment.setFixtures(fixtures);
 
     IXExternalService.reset();
     jest.resetAllMocks();
@@ -55,14 +54,15 @@ describe('InformationExtraction', () => {
       );
 
       xmlA = await asyncFS.readFile(
-        'app/api/services/informationExtraction/specs/uploads/documentA.xml'
+        'app/api/services/informationExtraction/specs/uploads/segmentation/documentA.xml'
       );
 
       const xmlC = await asyncFS.readFile(
-        'app/api/services/informationExtraction/specs/uploads/documentC.xml'
+        'app/api/services/informationExtraction/specs/uploads/segmentation/documentC.xml'
       );
 
       expect(IXExternalService.materialsFilePartams).toEqual({
+        0: '/xml_to_train/tenant1/property1',
         property: 'property1',
         tenant: 'tenant1',
       });
@@ -119,28 +119,42 @@ describe('InformationExtraction', () => {
   });
 
   describe('when model is trained', () => {
-    it('should send the materials for the suggestions', async () => {
+    it('should call getSuggestions', async () => {
+      jest
+        .spyOn(informationExtraction, 'getSuggestions')
+        .mockImplementation(async () => Promise.resolve());
+
       await informationExtraction.processResults({
         params: { property_name: 'property1' },
         tenant: 'tenant1',
         task: 'create_model',
         success: true,
       });
+      expect(informationExtraction.getSuggestions).toHaveBeenCalledWith('property1');
+      jest.clearAllMocks();
+    });
+  });
+
+  describe('getSuggestions()', () => {
+    it('should send the materials for the suggestions', async () => {
+      await informationExtraction.getSuggestions('property1');
 
       xmlA = await asyncFS.readFile(
-        'app/api/services/informationExtraction/specs/uploads/documentA.xml'
+        'app/api/services/informationExtraction/specs/uploads/segmentation/documentA.xml'
       );
 
       expect(IXExternalService.materialsFilePartams).toEqual({
+        0: '/xml_to_predict/tenant1/property1',
         property: 'property1',
         tenant: 'tenant1',
       });
 
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA]));
       expect(IXExternalService.files.length).toBe(5);
       expect(IXExternalService.filesNames.sort()).toEqual(
         ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml', 'documentF.xml'].sort()
       );
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA]));
+
       expect(IXExternalService.materials.length).toBe(5);
       expect(IXExternalService.materials.find(m => m.xml_segments_boxes.length)).toEqual({
         xml_file_name: 'documentA.xml',
@@ -162,12 +176,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should create the task for the suggestions', async () => {
-      await informationExtraction.processResults({
-        params: { property_name: 'property1' },
-        tenant: 'tenant1',
-        task: 'create_model',
-        success: true,
-      });
+      await informationExtraction.getSuggestions('property1');
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
         params: { property_name: 'property1' },
@@ -175,10 +184,22 @@ describe('InformationExtraction', () => {
         task: 'suggestions',
       });
     });
+
+    it('should create the suggestions placeholder with status processing', async () => {
+      await informationExtraction.getSuggestions('property1');
+      const suggestions = await IXSuggestionsModel.get();
+      expect(suggestions.length).toBe(5);
+      expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
+        expect.objectContaining({
+          entityId: 'A1',
+          status: 'processing',
+        })
+      );
+    });
   });
 
   describe('when suggestions are ready', () => {
-    it('should store the suggestions', async () => {
+    it('should request and store the suggestions', async () => {
       IXExternalService.setResults([
         {
           tenant: 'tenant1',
@@ -204,17 +225,16 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const suggestions = await IXSuggestionsModel.get();
+      const suggestions = await IXSuggestionsModel.get({ status: 'ready' });
       expect(suggestions.length).toBe(2);
       expect(suggestions.find(s => s.suggestedValue === 'suggestion_text_1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',
-          entityTitle: 'A1',
           language: 'en',
           propertyName: 'property1',
           suggestedValue: 'suggestion_text_1',
           segment: 'segment_text_1',
-          currentValue: 1088985600,
+          status: 'ready',
         })
       );
     });

@@ -26,6 +26,8 @@ export const IXSuggestionSchema = {
     state: { type: 'string', enum: Object.values(SuggestionState) }, //?
     page: { type: 'number', minimum: 1 },
     creationDate: { type: 'number' },
+    status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
+    date: { type: 'number' },
   },
   required: ['propertyName', 'entity', 'suggestedValue', 'segment', 'language', 'state', 'page'],
 };

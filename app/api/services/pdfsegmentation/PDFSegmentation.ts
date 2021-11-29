@@ -14,7 +14,7 @@ import { handleError } from 'api/utils';
 import { SegmentationModel } from './segmentationModel';
 
 class PDFSegmentation {
-  SERVICE_NAME = 'segmentation';
+  static SERVICE_NAME = 'segmentation';
 
   public segmentationTaskManager: TaskManager;
 
@@ -26,7 +26,7 @@ class PDFSegmentation {
 
   constructor() {
     this.segmentationTaskManager = new TaskManager({
-      serviceName: this.SERVICE_NAME,
+      serviceName: PDFSegmentation.SERVICE_NAME,
       processResults: this.processResults,
     });
   }
@@ -41,7 +41,7 @@ class PDFSegmentation {
       await request.uploadFile(urljoin(serviceUrl, tenant), file.filename, fileContent);
 
       await this.segmentationTaskManager.startTask({
-        task: this.SERVICE_NAME,
+        task: PDFSegmentation.SERVICE_NAME,
         tenant,
         params: {
           filename: file.filename,
@@ -60,11 +60,11 @@ class PDFSegmentation {
     }
   };
 
-  storeProcess = async (fileID: ObjectIdSchema, filename: string, proccessing = true) =>
+  storeProcess = async (fileID: ObjectIdSchema, filename: string, processing = true) =>
     SegmentationModel.save({
       fileID,
       filename,
-      status: proccessing ? 'processing' : 'failed',
+      status: processing ? 'processing' : 'failed',
     });
 
   getFilesToSegment = async (): Promise<FileType & { filename: string; _id: ObjectIdSchema }[]> =>
@@ -149,7 +149,7 @@ class PDFSegmentation {
     `${path.basename(filename, path.extname(filename))}.xml`;
 
   storeXML = async (filename: string, fileStream: Readable) => {
-    const folderPath = uploadsPath(this.SERVICE_NAME);
+    const folderPath = uploadsPath(PDFSegmentation.SERVICE_NAME);
     await createDirIfNotExists(folderPath);
     const xmlname = PDFSegmentation.getXMLNAme(filename);
 

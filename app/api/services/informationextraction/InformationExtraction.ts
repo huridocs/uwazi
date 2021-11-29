@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable camelcase */
 import urljoin from 'url-join';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
@@ -6,7 +7,7 @@ import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
 import { ObjectId } from 'mongodb';
 import request from 'shared/JSONRequest';
-
+import path from 'path';
 import { handleError } from 'api/utils';
 import { FileType } from 'shared/types/fileType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
@@ -17,13 +18,17 @@ import { Settings } from 'shared/types/settingsType';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
+import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
 import entities from 'api/entities/entities';
 import { EntitySchema } from 'shared/types/entityType';
+import { IXModelsModel } from './IXModelsModel';
+import languages from 'shared/languages';
 
-interface FileWithNameAndId extends FileType {
+interface FileWithAggregation extends FileType {
   filename: string;
   _id: ObjectId;
   segmentation: SegmentationType[];
+  entityData: EntitySchema[];
 }
 type RawSuggestion = {
   tenant: string;
@@ -34,7 +39,7 @@ type RawSuggestion = {
 };
 
 class InformationExtraction {
-  SERVICE_NAME = 'informationextraction';
+  static SERVICE_NAME = 'information_extraction';
 
   public taskManager: TaskManager;
 
@@ -42,7 +47,7 @@ class InformationExtraction {
 
   constructor() {
     this.taskManager = new TaskManager({
-      serviceName: this.SERVICE_NAME,
+      serviceName: InformationExtraction.SERVICE_NAME,
       processResults: this.processResults,
     });
   }
@@ -53,13 +58,22 @@ class InformationExtraction {
     return JSON.parse(response.json);
   };
 
-  static sendXmlToService = async (url: string, xmlName: string) => {
-    const fileContent = await readFile(uploadsPath(xmlName));
+  static sendXmlToService = async (
+    serviceUrl: string,
+    xmlName: string,
+    property: string,
+    type: string
+  ) => {
+    const fileContent = await readFile(
+      uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+    );
+    const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
+    const url = urljoin(serviceUrl, endpoint, tenants.current().name, property);
     return request.uploadFile(url, xmlName, fileContent);
   };
 
-  static sendMaterials = async (
-    files: FileWithNameAndId[],
+  sendMaterials = async (
+    files: FileWithAggregation[],
     property: string,
     serviceUrl: string,
     type = 'labeled_data'
@@ -67,18 +81,20 @@ class InformationExtraction {
     await Promise.all(
       files.map(async file => {
         const xmlName = file.segmentation[0].xmlname!;
-        const xmlExists = await fileExists(uploadsPath(xmlName));
+        const xmlExists = await fileExists(
+          uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+        );
 
         const propertyLabeledData = file.extractedMetadata?.find(
           labeledData => labeledData.name === property
         );
+
         if (!xmlExists || (type === 'labeled_data' && !propertyLabeledData)) {
           return;
         }
-        await InformationExtraction.sendXmlToService(
-          urljoin(serviceUrl, 'xml_file', tenants.current().name, property),
-          xmlName
-        );
+
+        await InformationExtraction.sendXmlToService(serviceUrl, xmlName, property, type);
+
         //eslint-disable-next-line camelcase
         let data: any = {
           xml_file_name: xmlName,
@@ -92,7 +108,7 @@ class InformationExtraction {
         if (type === 'labeled_data' && propertyLabeledData) {
           data = {
             ...data,
-            language_iso: file.language,
+            language_iso: languages.get(file.language!, 'ISO639_1'),
             label_text: propertyLabeledData.selection?.text,
             label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
               const { page, ...selection } = r;
@@ -101,6 +117,9 @@ class InformationExtraction {
           };
         }
         await request.post(urljoin(serviceUrl, type), data);
+        if (type === 'prediction_data') {
+          await this.saveSuggestionProcess(file, property);
+        }
       })
     );
   };
@@ -118,7 +137,7 @@ class InformationExtraction {
     }
     const [entity] = await entities.getUnrestricted({
       sharedId: file.entity,
-      language: file.language,
+      language: languages.get(file.language!, 'ISO639_1'),
     });
 
     return entity;
@@ -132,30 +151,75 @@ class InformationExtraction {
         if (!entity) {
           return;
         }
-        const property = entity.metadata![rawSuggestion.property_name];
-        const currentValue = property && property[0] ? property[0].value : '';
+
+        const [currentSuggestion] = await IXSuggestionsModel.get({
+          entityId: entity.sharedId,
+          propertyName: rawSuggestion.property_name,
+        });
 
         const suggestion = {
+          ...currentSuggestion,
           entityId: entity.sharedId,
-          entityTitle: entity.title,
           language: entity.language,
           propertyName: rawSuggestion.property_name,
           suggestedValue: rawSuggestion.text,
           segment: rawSuggestion.segment_text,
-          currentValue,
+          status: 'ready',
+          date: new Date().getTime(),
         };
-
         return IXSuggestionsModel.save(suggestion);
       })
     );
+  };
+
+  saveSuggestionProcess = async (file: FileWithAggregation, propertyName: string) => {
+    const [entity] = await entities.getUnrestricted({
+      sharedId: file.entityData[0].sharedId,
+      language: languages.get(file.language!, 'ISO639_1'),
+    });
+
+    const [existingSuggestions] = await IXSuggestionsModel.get({
+      entityId: entity.sharedId,
+      propertyName,
+      language: entity.language,
+    });
+    const suggestion = {
+      ...existingSuggestions,
+      entityId: entity.sharedId,
+      entityTitle: entity.title,
+      language: entity.language,
+      propertyName,
+      status: 'processing',
+      date: new Date().getTime(),
+    };
+
+    return IXSuggestionsModel.save(suggestion);
+  };
+
+  getSuggestions = async (property: string) => {
+    const settingsValues = await settings.get();
+    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    if (!serviceUrl) {
+      handleError(new Error('No url for metadata extraction service'));
+      return;
+    }
+    const modelsToTrain = await this.getPropertiesToTrain(settingsValues);
+    const files = await this.getFiles(modelsToTrain[property], property, false);
+
+    await this.sendMaterials(files, property, serviceUrl, 'prediction_data');
+    await this.taskManager.startTask({
+      task: 'suggestions',
+      tenant: tenants.current().name,
+      params: { property_name: property },
+    });
   };
 
   getFiles = async (
     templates: ObjectIdSchema[],
     property: string,
     toTrain: boolean = true
-  ): Promise<FileWithNameAndId[]> => {
-    const agg: any = [
+  ): Promise<FileWithAggregation[]> => {
+    let agg: any = [
       {
         $match: {
           type: 'document',
@@ -167,7 +231,7 @@ class InformationExtraction {
           from: 'entities',
           localField: 'entity',
           foreignField: 'sharedId',
-          as: 'entity',
+          as: 'entityData',
         },
       },
       {
@@ -180,8 +244,8 @@ class InformationExtraction {
       },
       {
         $match: {
-          'entity.template': { $in: templates },
-          segmentation: { $ne: [] }, //only files with segmentation done
+          'entityData.template': { $in: templates },
+          segmentation: { $ne: [] },
         },
       },
     ];
@@ -189,30 +253,36 @@ class InformationExtraction {
     if (toTrain) {
       agg.push({
         $match: {
-          'extractedMetadata.name': property, //when training the model only files with labeled data
+          'extractedMetadata.name': property,
         },
       });
     }
 
     if (!toTrain) {
-      agg.concat([
+      const [currentModel] = await IXModelsModel.get({ propertyName: property });
+      agg = agg.concat([
         {
           $lookup: {
-            from: 'suggestions',
-            localField: 'entity.sharedId',
-            foreignField: 'entity',
+            from: 'ixsuggestions',
+            localField: 'entity',
+            foreignField: 'entityId',
             as: 'suggestions',
           },
         },
         {
           $match: {
-            suggestions: {
-              $size: 0, //when asking for suggestions, only files that dont have suggestions already
-            },
+            $or: [
+              {
+                suggestions: {
+                  $size: 0,
+                },
+              },
+              { 'suggestions.date': { $lte: currentModel.creationDate } },
+            ],
           },
         },
         {
-          $limit: this.batchSize, //limit the number of files to be processed
+          $limit: this.batchSize,
         },
       ]);
     }
@@ -221,28 +291,21 @@ class InformationExtraction {
 
   trainModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
     const files = await this.getFiles(templates, property);
-    await InformationExtraction.sendMaterials(files, property, serviceUrl);
+    await this.sendMaterials(files, property, serviceUrl);
     await this.taskManager.startTask({
       task: 'create_model',
       tenant: tenants.current().name,
       params: { property_name: property },
     });
-  };
+    const [currentModel] = await IXModelsModel.get({
+      propertyName: property,
+    });
 
-  getSuggestions = async (property: string) => {
-    const settingsValues = await settings.get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
-    if (!serviceUrl) {
-      handleError(new Error('No url for metadata extraction service'));
-      return;
-    }
-    const modelsToTrain = await this.getPropertiesToTrain(settingsValues);
-    const files = await this.getFiles(modelsToTrain[property], property, false);
-    await InformationExtraction.sendMaterials(files, property, serviceUrl, 'prediction_data');
-    await this.taskManager.startTask({
-      task: 'suggestions',
-      tenant: tenants.current().name,
-      params: { property_name: property },
+    await IXModelsModel.save({
+      ...currentModel,
+      status: 'processing',
+      creationDate: new Date().getTime(),
+      propertyName: property,
     });
   };
 
@@ -253,7 +316,7 @@ class InformationExtraction {
           if (!result[property]) {
             result[property] = [];
           }
-          result[property].push(template.template);
+          result[property].push(new ObjectId(template.template));
         });
 
         return result;
@@ -284,6 +347,15 @@ class InformationExtraction {
   processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       if (message.task === 'create_model') {
+        const [currentModel] = await IXModelsModel.get({
+          propertyName: message.params!.property_name,
+        });
+
+        await IXModelsModel.save({
+          ...currentModel,
+          status: 'success',
+          creationDate: new Date().getTime(),
+        });
         await this.getSuggestions(message.params!.property_name);
       }
 

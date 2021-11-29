@@ -58,7 +58,7 @@ const fixtures: DBFixture = {
     factory.entity('A14', 'templateToSegmentA'),
   ],
   files: [
-    factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'en', [
+    factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'eng', [
       {
         name: 'property1',
         selection: {
@@ -67,7 +67,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F2', 'A2', 'document', fixturesPdfNameB, 'en', [
+    factory.file('F2', 'A2', 'document', fixturesPdfNameB, 'eng', [
       {
         name: 'text',
         selection: {
@@ -76,7 +76,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F3', 'A3', 'document', fixturesPdfNameC, 'en', [
+    factory.file('F3', 'A3', 'document', fixturesPdfNameC, 'eng', [
       {
         name: 'property1',
         selection: {
@@ -85,7 +85,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F4', 'A4', 'document', fixturesPdfNameD, 'en', [
+    factory.file('F4', 'A4', 'document', fixturesPdfNameD, 'eng', [
       {
         name: 'property2',
         selection: {
@@ -94,8 +94,8 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F5', 'A5', 'document', fixturesPdfNameE),
-    factory.file('F6', 'A6', 'document', fixturesPdfNameF),
+    factory.file('F5', 'A5', 'document', fixturesPdfNameE, 'eng'),
+    factory.file('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
   ],
   segmentations: [
     {
@@ -154,6 +154,18 @@ const fixtures: DBFixture = {
       segmentation: { page_height: 1, page_width: 2, paragraphs: [] },
     },
   ],
+  ixsuggestions: [
+    {
+      entityId: 'A1',
+      language: 'en',
+      propertyName: 'property1',
+      suggestedValue: 'suggestion_text_1',
+      segment: 'segment_text_1',
+      status: 'ready',
+      date: 100,
+    },
+  ],
+  ixmodels: [{ propertyName: 'property1', creationDate: 200, status: 'ready' }],
 };
 
 export { fixtures, factory };

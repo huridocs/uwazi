@@ -9,6 +9,6 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-const IXSuggestionsModel = instanceModel<IXModelType>('ixsuggestions', mongoSchema);
+const IXModelsModel = instanceModel<IXModelType>('ixmodels', mongoSchema);
 
-export { IXSuggestionsModel };
+export { IXModelsModel };

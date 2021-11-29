@@ -7,4 +7,5 @@ export interface IXModelType {
   _id?: ObjectIdSchema;
   propertyName: string;
   creationDate: number;
+  status?: 'processing' | 'failed' | 'ready';
 }
