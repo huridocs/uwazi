@@ -17,6 +17,25 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    propertyName: { type: 'string', minLength: 1 },
+    suggestedValue: propertyValueSchema,
+    segment: { type: 'string', minLength: 1 },
+    language: { type: 'string', minLength: 1 },
+    page: { type: 'number', minimum: 1 },
+    status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
+    date: { type: 'number' },
+  },
+  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language', 'page'],
+};
+
+export const EntitySuggestionSchema = {
+  type: 'object',
+  additionalProperties: false,
+  title: 'EntitySuggestionType',
+  definitions: { objectIdSchema, propertyTypes, propertyValueSchema },
+  properties: {
+    _id: objectIdSchema,
+    entityId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
@@ -25,11 +44,20 @@ export const IXSuggestionSchema = {
     language: { type: 'string', minLength: 1 },
     state: { type: 'string', enum: Object.values(SuggestionState) },
     page: { type: 'number', minimum: 1 },
-    creationDate: { type: 'number' },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     date: { type: 'number' },
   },
-  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language', 'page'],
+  required: [
+    'propertyName',
+    'entityTitle',
+    'entityId',
+    'suggestedValue',
+    'segment',
+    'language',
+    'page',
+    'state',
+    'date',
+  ],
 };
 
 export const SuggestionsQueryFilterSchema = {

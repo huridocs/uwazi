@@ -82,7 +82,7 @@ export const Suggestions = {
           },
         },
         ...(state ? [{ $match: { $expr: { $eq: ['$state', state] } } }] : []),
-        { $sort: { creationDate: 1, state: -1 } },
+        { $sort: { date: 1, state: -1 } },
         {
           $project: {
             entityTitle: '$entity.title',
