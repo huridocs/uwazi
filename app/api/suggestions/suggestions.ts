@@ -89,6 +89,7 @@ export const Suggestions = {
             language: 1,
             propertyName: 1,
             suggestedValue: 1,
+            segment: 1,
             currentValue: 1,
             state: 1,
           },

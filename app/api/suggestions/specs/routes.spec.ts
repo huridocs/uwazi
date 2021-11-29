@@ -44,6 +44,7 @@ describe('suggestions routes', () => {
           entityTitle: 'Batman',
           propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge',
+          segment: 'he relies on his own scientific knowledge',
           language: 'en',
         },
       ]);
