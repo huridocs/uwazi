@@ -13,6 +13,28 @@ import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
 
+const prepareOptions = property => {
+  const filteredProperty = {
+    ...property,
+    options: property.options.filter(option => option.id !== 'any'),
+  };
+  return filteredProperty.options.map(option => {
+    const finalTranslatedOption = {
+      ...option,
+      label: t(filteredProperty.content, option.label, undefined, false),
+    };
+
+    if (option.options) {
+      const translatedSubOptions = option.options.map(subOption => ({
+        ...subOption,
+        label: t(filteredProperty.content, subOption.label, undefined, false),
+      }));
+      finalTranslatedOption.options = translatedSubOptions;
+    }
+    return finalTranslatedOption;
+  });
+};
+
 export const FiltersFromProperties = ({
   onChange,
   properties,
@@ -32,24 +54,7 @@ export const FiltersFromProperties = ({
         onChange,
       };
 
-      const propertyOptions = property.options
-        ? property.options.map(option => {
-            const finalTranslatedOption = {
-              ...option,
-              label: t(property.content, option.label, undefined, false),
-            };
-
-            if (option.options) {
-              const translatedSubOptions = option.options.map(subOption => ({
-                ...subOption,
-                label: t(property.content, subOption.label, undefined, false),
-              }));
-              finalTranslatedOption.options = translatedSubOptions;
-            }
-
-            return finalTranslatedOption;
-          })
-        : [];
+      const propertyOptions = property.options ? prepareOptions(property) : [];
 
       let filter = <TextFilter {...commonProps} />;
 

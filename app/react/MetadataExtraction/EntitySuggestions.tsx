@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
+
 import {
   Column,
   HeaderGroup,
@@ -9,15 +10,17 @@ import {
   useFilters,
   FilterProps,
 } from 'react-table';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IXSuggestionType } from 'shared/types/suggestionType';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { getSuggestions } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
-  propertyName: string;
+  property: PropertySchema;
+  onClose: () => void;
 }
 
 const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSuggestionType>) => (
@@ -35,7 +38,10 @@ const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<IXSugge
   </select>
 );
 
-export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({
+  property: reviewedProperty,
+  onClose,
+}: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -46,7 +52,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       <>
         <div>
           <span className="suggestion-label">
-            <Translate>{propertyName}</Translate>
+            <Translate>{reviewedProperty.label}</Translate>
           </span>
           <p>{currentValue}</p>
         </div>
@@ -76,7 +82,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         id: 'suggestion',
         Header: () => (
           <>
-            <Translate>{propertyName}</Translate> / <Translate>Suggestion</Translate>
+            <Translate>{reviewedProperty.label}</Translate> / <Translate>Suggestion</Translate>
           </>
         ),
         Cell: suggestionCell,
@@ -97,7 +103,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       {
         accessor: 'segment' as const,
         Header: () => <Translate>Segment</Translate>,
-        className: propertyName === 'Title' ? 'long-segment' : 'segment',
+        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
       },
       {
         accessor: 'language' as const,
@@ -110,7 +116,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         accessor: 'state' as const,
         Header: () => <Translate>State</Translate>,
         Cell: ({ row }: { row: Row<IXSuggestionType> }) => (
-          <Translate>{row.original.state}</Translate>
+          <Translate>{row.original.state || ''}</Translate>
         ),
         Filter: stateFilter,
         className: 'state',
@@ -122,7 +128,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
     ],
     []
   );
-  const hiddenColumns = propertyName === 'Title' ? ['entityTitle'] : [];
+  const hiddenColumns = reviewedProperty.label === 'Title' ? ['entityTitle'] : [];
 
   const {
     getTableProps,
@@ -154,10 +160,13 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
   );
 
   const retrieveSuggestions = () => {
+    const queryFilter = filters.reduce(
+      (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
+      {}
+    );
     const params = new RequestParams({
-      page: pageIndex + 1,
-      limit: pageSize,
-      filters,
+      page: { number: pageIndex + 1, size: pageSize },
+      filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
       .then((response: any) => {
@@ -177,12 +186,12 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
             <Translate>Reviewing</Translate>:&nbsp;
           </span>
           <span className="suggestion-property">
-            <Translate>{propertyName}</Translate>
+            <Translate>{reviewedProperty.label}</Translate>
           </span>
         </div>
-        <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
+        <button className="btn btn-outline-primary" onClick={() => onClose()}>
           <Translate>Dashboard</Translate>
-        </I18NLink>
+        </button>
       </div>
       <table {...getTableProps()}>
         <thead>

@@ -13,8 +13,12 @@ const newKeyValues = [
     value: 'All',
   },
   {
-    key: 'Filled',
-    value: 'Filled',
+    key: 'Matching',
+    value: 'Matching',
+  },
+  {
+    key: 'Pending',
+    value: 'Pending',
   },
   {
     key: 'Empty',
@@ -27,6 +31,10 @@ const newKeyValues = [
   {
     key: 'State',
     value: 'State',
+  },
+  {
+    key: 'Review',
+    value: 'Review',
   },
   {
     key: 'Reviewing',

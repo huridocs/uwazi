@@ -8,7 +8,7 @@ import fixtures, {
   propertyC,
   propertyD,
   templateWithExtractedMetadata,
-} from './fixtures';
+} from './fixtures/fixtures';
 
 describe('updateExtractedMetadataProperties()', () => {
   beforeEach(async () => {

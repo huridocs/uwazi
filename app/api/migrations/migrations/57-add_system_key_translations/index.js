@@ -57,8 +57,12 @@ export default {
         value: 'All',
       },
       {
-        key: 'Filled',
-        value: 'Filled',
+        key: 'Matching',
+        value: 'Matching',
+      },
+      {
+        key: 'Pending',
+        value: 'Pending',
       },
       {
         key: 'Empty',
@@ -75,6 +79,10 @@ export default {
       {
         key: 'Reviewing',
         value: 'Reviewing',
+      },
+      {
+        key: 'Review',
+        value: 'Review',
       },
       {
         key: 'Dashboard',
