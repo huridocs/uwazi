@@ -24,8 +24,16 @@ declare global {
   }
 }
 
+let io: SocketIoServer;
+const emtiToTenant = (tenantName: string, event: string, ...data: any[]) => {
+  if (!io) {
+    throw new Error('Socket.io Server not initialized');
+  }
+  io.to(tenantName).emit(event, ...data);
+};
+
 const setupSockets = (server: Server, app: Application) => {
-  const io = new SocketIoServer(server);
+  io = new SocketIoServer(server);
 
   io.on('connection', socket => {
     //eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -37,7 +45,7 @@ const setupSockets = (server: Server, app: Application) => {
     }
   });
 
-  const sockets = {
+  sockets = {
     emitToCurrentTenant: (event: string, ...args: any[]) => {
       io.to(tenants.current().name).emit(event, ...args);
     },
@@ -67,4 +75,4 @@ const setupSockets = (server: Server, app: Application) => {
   });
 };
 
-export { setupSockets };
+export { setupSockets, emtiToTenant };

@@ -9,8 +9,10 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { fixtures, factory } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { emtiToTenant } from 'api/socketio/setupSockets';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
+jest.mock('api/socketio/setupSockets');
 
 describe('InformationExtraction', () => {
   let informationExtraction: InformationExtraction;

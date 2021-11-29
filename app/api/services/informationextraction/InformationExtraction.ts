@@ -23,6 +23,7 @@ import entities from 'api/entities/entities';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXModelsModel } from './IXModelsModel';
 import languages from 'shared/languages';
+import { emtiToTenant } from 'api/socketio/setupSockets';
 
 interface FileWithAggregation extends FileType {
   filename: string;
@@ -356,6 +357,7 @@ class InformationExtraction {
           status: 'success',
           creationDate: new Date().getTime(),
         });
+        emtiToTenant(message.tenant, 'ix_model_ready', message.params!.property_name);
         await this.getSuggestions(message.params!.property_name);
       }
 
