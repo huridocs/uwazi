@@ -64,10 +64,6 @@ describe('PDF', () => {
       await deleteThumbnail();
     });
 
-    afterEach(async () => {
-      await deleteThumbnail();
-    });
-
     it('should create thumbnail', async () => {
       await pdf.createThumbnail('documentId');
       expect(await fileExists(thumbnailName)).toBe(true);
@@ -91,7 +87,7 @@ describe('PDF', () => {
       await pdf.createThumbnail('documentId');
       expect(await fileExists(thumbnailName)).toBe(true);
       await pdf.deleteThumbnail('documentId');
-      // expect(await fileExists(thumbnailName)).toBe(false);
+      expect(await fileExists(thumbnailName)).toBe(false);
     });
   });
 });
