@@ -1,8 +1,4 @@
 @media print {
-  @page {
-    margin: 2cm;
-  }
-
   #app {
     width: 100%;
     height: 100%;
@@ -30,6 +26,11 @@
     display: none;
   }
 
+  .print-view-alt {
+    display: block !important;
+    text-align: left !important;
+  }
+
   .entity-viewer {
     .filelist,
     .attachments-list-parent,
@@ -50,10 +51,10 @@
           display: none;
         }
       }
-      .print-view-alt {
-        display: block;
-        text-align: left;
-      }
+    }
+
+    .map-container {
+      display: none;
     }
 
     .metadata-type-link > dd > a:after {
