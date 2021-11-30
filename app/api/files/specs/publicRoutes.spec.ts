@@ -7,13 +7,7 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { errorLog } from 'api/log';
-import {
-  uploadsPath,
-  writeFile,
-  setupTestUploadedPaths,
-  fileExists,
-  attachmentsPath,
-} from 'api/files/filesystem';
+import { fs, uploadsPath, setupTestUploadedPaths, fileExists, attachmentsPath } from 'api/files';
 import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
 import entities from 'api/entities';
 import mailer from 'api/utils/mailer';
@@ -50,7 +44,7 @@ describe('public routes', () => {
 
   describe('POST /api/public', () => {
     it('should create the entity and store the files', async () => {
-      await writeFile(path.join(os.tmpdir(), 'attachment.txt'), 'attachment');
+      await fs.writeFile(path.join(os.tmpdir(), 'attachment.txt'), 'attachment');
 
       await socketEmit('documentProcessed', async () =>
         request(app)

@@ -1,4 +1,4 @@
-/* eslint-disable no-await-in-loop, max-statements */
+/* eslint-disable no-await-in-loop, max-statements, node/no-restricted-import */
 import fs from 'fs';
 import path from 'path';
 
