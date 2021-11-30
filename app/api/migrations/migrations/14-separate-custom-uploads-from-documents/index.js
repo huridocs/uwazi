@@ -1,7 +1,11 @@
 /* eslint-disable no-await-in-loop */
+//eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 import path from 'path';
+import util from 'util';
 import { config } from 'api/config';
-import fs from '../../../utils/async-fs';
+
+const rename = util.promisify(fs.rename);
 
 export default {
   delta: 14,
@@ -21,7 +25,7 @@ export default {
       const oldPath = path.join(config.defaultTenant.uploadedDocuments, filename);
       const newPath = path.join(config.defaultTenant.customUploads, filename);
       try {
-        await fs.rename(oldPath, newPath);
+        await rename(oldPath, newPath);
       } catch (e) {
         if (e.code !== 'ENOENT') {
           throw e;

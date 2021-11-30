@@ -6,7 +6,6 @@ After copy pasting:
   - change the tests, if necessary
 */
 
-// eslint-disable-next-line max-statements
 async function insertSystemKeys(db, newKeys) {
   const translations = await db
     .collection('translations')

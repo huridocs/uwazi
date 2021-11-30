@@ -2,23 +2,18 @@ import db from 'api/utils/testing_db';
 import { files } from 'api/files/files';
 import { search } from 'api/search';
 import path from 'path';
-import fs from 'fs';
 import * as filesystem from 'api/files/filesystem';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 
 import { createTestingZip } from './helpers';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 const removeTestingZip = async () =>
-  new Promise(resolve => {
-    fs.unlink(path.join(__dirname, '/zipData/test.zip'), () => {
-      resolve();
-    });
-  });
+  filesystem.deleteFile(path.join(__dirname, 'zipData/test.zip'));
 
 describe('csvLoader zip file', () => {
   let imported: FileType[];

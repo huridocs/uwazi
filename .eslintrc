@@ -10,9 +10,18 @@
   "parserOptions": {
     "ecmaVersion": 2020
   },
-  "plugins": ["react", "jest", "@typescript-eslint", "prettier"],
+  "plugins": ["react", "jest", "@typescript-eslint", "prettier", "node"],
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": false }],
+    "node/no-restricted-import": [
+      "error",
+      [
+        {
+          "name": "fs",
+          "message": "Please use { fs } from api/files"
+        }
+      ]
+    ],
     "indent": "off", // handled by prettier
     "operator-linebreak": "off", // handled by prettier
     "space-before-function-paren": "off", // handled by prettier

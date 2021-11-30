@@ -1,4 +1,5 @@
-import * as fs from 'fs';
+//eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 
 import csv from 'api/csv/csv';
 

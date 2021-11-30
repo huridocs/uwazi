@@ -1,6 +1,5 @@
 /* eslint-disable max-statements, max-lines */
 
-import fs from 'fs';
 import backend from 'fetch-mock';
 
 import 'api/thesauri/dictionariesModel';
@@ -12,7 +11,7 @@ import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 import { settingsModel } from 'api/settings/settingsModel';
-import { attachmentsPath, customUploadsPath } from 'api/files';
+import { fs, attachmentsPath, customUploadsPath } from 'api/files';
 
 import fixtures, {
   settingsId,
@@ -59,22 +58,22 @@ describe('syncWorker', () => {
     spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
     syncWorker.stopped = false;
-    fs.writeFileSync(attachmentsPath(`${newDoc1.toString()}.jpg`), '');
-    fs.writeFileSync(attachmentsPath('test_attachment.txt'), '');
-    fs.writeFileSync(attachmentsPath('test_attachment2.txt'), '');
-    fs.writeFileSync(attachmentsPath('test.txt'), '');
-    fs.writeFileSync(attachmentsPath('test2.txt'), '');
-    fs.writeFileSync(customUploadsPath('customUpload.gif'), '');
+    await fs.writeFile(attachmentsPath(`${newDoc1.toString()}.jpg`), '');
+    await fs.writeFile(attachmentsPath('test_attachment.txt'), '');
+    await fs.writeFile(attachmentsPath('test_attachment2.txt'), '');
+    await fs.writeFile(attachmentsPath('test.txt'), '');
+    await fs.writeFile(attachmentsPath('test2.txt'), '');
+    await fs.writeFile(customUploadsPath('customUpload.gif'), '');
   });
 
   afterAll(async () => {
     await db.disconnect();
-    fs.unlinkSync(attachmentsPath(`${newDoc1.toString()}.jpg`));
-    fs.unlinkSync(attachmentsPath('test_attachment.txt'));
-    fs.unlinkSync(attachmentsPath('test_attachment2.txt'));
-    fs.unlinkSync(attachmentsPath('test1.txt'));
-    fs.unlinkSync(attachmentsPath('test2.txt'));
-    fs.unlinkSync(customUploadsPath('customUpload.gif'));
+    await fs.unlink(attachmentsPath(`${newDoc1.toString()}.jpg`));
+    await fs.unlink(attachmentsPath('test_attachment.txt'));
+    await fs.unlink(attachmentsPath('test_attachment2.txt'));
+    await fs.unlink(attachmentsPath('test1.txt'));
+    await fs.unlink(attachmentsPath('test2.txt'));
+    await fs.unlink(customUploadsPath('customUpload.gif'));
   });
 
   const syncWorkerWithConfig = async config =>
@@ -360,11 +359,16 @@ describe('syncWorker', () => {
       });
     });
 
-    const expectUploadFile = (path, filename, pathFunction = attachmentsPath, name = 'slave1') => {
+    const expectUploadFile = async (
+      path,
+      filename,
+      pathFunction = attachmentsPath,
+      name = 'slave1'
+    ) => {
       expect(request.uploadFile).toHaveBeenCalledWith(
         `url-${name}${path}`,
         filename,
-        fs.readFileSync(pathFunction(filename)),
+        await fs.readFile(pathFunction(filename)),
         `${name} cookie`
       );
     };
@@ -379,12 +383,12 @@ describe('syncWorker', () => {
 
         expect(request.uploadFile.calls.count()).toBe(6);
 
-        expectUploadFile('/api/sync/upload', 'test2.txt');
-        expectUploadFile('/api/sync/upload', 'test.txt');
-        expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
-        expectUploadFile('/api/sync/upload', 'test_attachment.txt');
-        expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
-        expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
+        await expectUploadFile('/api/sync/upload', 'test2.txt');
+        await expectUploadFile('/api/sync/upload', 'test.txt');
+        await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
+        await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
+        await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
+        await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
       });
     });
 
