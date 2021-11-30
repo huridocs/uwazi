@@ -6,7 +6,7 @@ export const Suggestions = {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
-    const { state, ...filters } = filter;
+    const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
       [
         { $match: { ...filters } },
@@ -81,6 +81,7 @@ export const Suggestions = {
             },
           },
         },
+        { $match: { $expr: { $eq: ['$entity.language', language] } } },
         ...(state ? [{ $match: { $expr: { $eq: ['$state', state] } } }] : []),
         { $sort: { date: 1, state: -1 } },
         {

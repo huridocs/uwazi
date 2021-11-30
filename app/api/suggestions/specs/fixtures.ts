@@ -110,13 +110,19 @@ export const fixtures: DBFixture = {
     },
     {
       sharedId: 'shared1',
-      title: 'Robin',
+      title: 'Robin es',
       language: 'es',
     },
     {
       sharedId: 'shared2',
       title: 'Batman',
       language: 'en',
+      metadata: { super_powers: [{ value: 'scientific knowledge' }] },
+    },
+    {
+      sharedId: 'shared2',
+      title: 'Batman es',
+      language: 'es',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
     },
     { sharedId: 'shared3', title: 'Alfred', language: 'en', metadata: { age: [{ value: '' }] } },
