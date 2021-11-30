@@ -8,7 +8,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'Red Robin',
       segment: 'Red Robin, a variation on the traditional Robin persona.',
       language: 'en',
-      creationDate: 5,
+      date: 5,
       page: 2,
     },
     {
@@ -17,7 +17,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'HCT-04-CR-SC-0074',
       segment: 'Robin Rojo, una variante del Robin tradicional',
       language: 'es',
-      creationDate: 5,
+      date: 5,
       page: 2,
     },
     {
@@ -26,7 +26,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'scientific knowledge',
       segment: 'he relies on his own scientific knowledge',
       language: 'en',
-      creationDate: 1,
+      date: 1,
       page: 5,
     },
     {
@@ -35,7 +35,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'conocimiento científico',
       segment: 'el confía en su propio conocimiento científico',
       language: 'es',
-      creationDate: 1,
+      date: 1,
       page: 5,
     },
     {
@@ -44,7 +44,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'Alfred Pennyworth',
       segment: "Batman's butler, Alfred Pennyworth",
       language: 'en',
-      creationDate: 4,
+      date: 4,
       page: 3,
     },
     {
@@ -53,7 +53,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 67,
       segment: 'Alfred 67 years old',
       language: 'en',
-      creationDate: 4,
+      date: 4,
       page: 3,
     },
     {
@@ -62,7 +62,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'Joker',
       segment: ' Joker is a homicidal psychopath',
       language: 'en',
-      creationDate: 3,
+      date: 3,
       page: 1,
     },
     {
@@ -71,7 +71,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 45,
       segment: 'Joker age is 45',
       language: 'en',
-      creationDate: 4,
+      date: 4,
       page: 3,
     },
     {
@@ -80,7 +80,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'Poison Ivy',
       segment: 'Poison Ivy is a fictional character appearing in comic books',
       language: 'en',
-      creationDate: 6,
+      date: 6,
       page: 2,
     },
     {
@@ -89,7 +89,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 25,
       segment: 'Poison Ivy 45 years old',
       language: 'en',
-      creationDate: 4,
+      date: 4,
       page: 3,
     },
     {
@@ -98,7 +98,7 @@ export const fixtures: DBFixture = {
       suggestedValue: 'Penguin',
       segment: 'The Penguin is a Gotham City mobster.',
       language: 'en',
-      creationDate: 2,
+      date: 2,
       page: 12,
     },
   ],

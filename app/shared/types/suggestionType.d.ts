@@ -6,17 +6,28 @@ import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
-  entityTitle?: string;
+  propertyName: string;
+  suggestedValue: PropertyValueSchema;
+  segment: string;
+  language: string;
+  page: number;
+  status?: 'processing' | 'failed' | 'ready';
+  date?: number;
+}
+
+export interface EntitySuggestionType {
+  _id?: ObjectIdSchema;
+  entityId: string;
+  entityTitle: string;
   propertyName: string;
   suggestedValue: PropertyValueSchema;
   currentValue?: PropertyValueSchema;
   segment: string;
   language: string;
-  state?: 'Empty' | 'Matching' | 'Pending';
+  state: 'Empty' | 'Matching' | 'Pending';
   page: number;
-  creationDate?: number;
   status?: 'processing' | 'failed' | 'ready';
-  date?: number;
+  date: number;
 }
 
 export interface IXSuggestionsFilter {

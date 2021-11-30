@@ -7,7 +7,7 @@ import React from 'react';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
@@ -23,7 +23,7 @@ describe('EntitySuggestions', () => {
     'Page',
   ];
 
-  const suggestionsData: { suggestions: IXSuggestionType[]; totalPages: number } = {
+  const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {
     suggestions: [
       {
         entityId: 'shared1',
@@ -34,6 +34,7 @@ describe('EntitySuggestions', () => {
         segment: 'Olowo Kamali Case',
         language: 'English',
         state: SuggestionState.matching,
+        date: 1,
         page: 5,
       },
       {
@@ -45,6 +46,7 @@ describe('EntitySuggestions', () => {
         segment: 'Detalle Violación caso 1',
         language: 'Spanish',
         state: SuggestionState.empty,
+        date: 2,
         page: 2,
       },
     ],
