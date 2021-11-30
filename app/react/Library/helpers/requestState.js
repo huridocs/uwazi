@@ -57,53 +57,61 @@ export default function requestState(
 ) {
   const docsQuery = processQuery(request.data, globalResources, 'library');
 
-  let documentsRequest = request.set(
+  const documentsRequest = request.set(
     tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
   );
 
-  if (options.geolocation) {
-    documentsRequest = request.set({ ...docsQuery, geolocation: true });
-  }
+  const markersRequest = options.geolocation
+    ? api.search(
+        request.set({
+          ...docsQuery,
+          geolocation: true,
+        })
+      )
+    : { rows: [] };
 
-  return api.search(documentsRequest).then(documents => {
-    const templates = globalResources.templates.toJS();
-    const filterState = libraryHelpers.URLQueryToState(
-      documentsRequest.data,
-      templates,
-      globalResources.thesauris.toJS(),
-      globalResources.relationTypes.toJS(),
-      request.data.quickLabelThesaurus
-        ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
-        : []
-    );
-
-    const state = {
-      library: {
-        filters: {
-          documentTypes: documentsRequest.data.types || [],
-          properties: filterState.properties,
-        },
-        aggregations: documents.aggregations,
-        search: filterState.search,
-        documents,
-      },
-    };
-
-    const addinsteadOfSet = Boolean(docsQuery.from);
-
-    const dispatchedActions = [
-      setReduxState(state, 'library', addinsteadOfSet),
-      actions.set('library.sidepanel.quickLabelState', {
-        thesaurus: request.data.quickLabelThesaurus,
-        autoSave: false,
-      }),
-    ];
-    if (options.calculateTableColumns) {
-      const tableViewColumns = getTableColumns(documents, templates, documentsRequest.data.types);
-      dispatchedActions.push(dispatch =>
-        wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
+  return Promise.all([api.search(documentsRequest), markersRequest]).then(
+    ([documents, markers]) => {
+      const templates = globalResources.templates.toJS();
+      const filterState = libraryHelpers.URLQueryToState(
+        documentsRequest.data,
+        templates,
+        globalResources.thesauris.toJS(),
+        globalResources.relationTypes.toJS(),
+        request.data.quickLabelThesaurus
+          ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
+          : []
       );
+
+      const state = {
+        library: {
+          filters: {
+            documentTypes: documentsRequest.data.types || [],
+            properties: filterState.properties,
+          },
+          aggregations: documents.aggregations,
+          search: filterState.search,
+          documents,
+          markers,
+        },
+      };
+
+      const addinsteadOfSet = Boolean(docsQuery.from);
+
+      const dispatchedActions = [
+        setReduxState(state, 'library', addinsteadOfSet),
+        actions.set('library.sidepanel.quickLabelState', {
+          thesaurus: request.data.quickLabelThesaurus,
+          autoSave: false,
+        }),
+      ];
+      if (options.calculateTableColumns) {
+        const tableViewColumns = getTableColumns(documents, templates, documentsRequest.data.types);
+        dispatchedActions.push(dispatch =>
+          wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
+        );
+      }
+      return dispatchedActions;
     }
-    return dispatchedActions;
-  });
+  );
 }

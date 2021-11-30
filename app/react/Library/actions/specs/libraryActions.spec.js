@@ -354,6 +354,7 @@ describe('libraryActions', () => {
           },
           { type: 'rrf/reset', model: 'library.sidepanel.metadata' },
           { type: types.UPDATE_DOCUMENT, doc: 'response' },
+          { type: 'library.markers/UPDATE_IN', key: ['rows'], value: 'response' },
           { type: types.SELECT_SINGLE_DOCUMENT, doc: 'response' },
         ];
         const store = mockStore({});

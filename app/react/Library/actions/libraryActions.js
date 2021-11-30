@@ -296,6 +296,7 @@ export function saveDocument(doc, formKey) {
     dispatch(notificationActions.notify('Document updated', 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
+    dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     await dispatch(selectSingleDocument(updatedDoc));
   };
 }
