@@ -45,7 +45,7 @@ const setupSockets = (server: Server, app: Application) => {
     }
   });
 
-  sockets = {
+  const sockets = {
     emitToCurrentTenant: (event: string, ...args: any[]) => {
       io.to(tenants.current().name).emit(event, ...args);
     },
