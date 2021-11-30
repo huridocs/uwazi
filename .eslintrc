@@ -87,6 +87,8 @@
 
     //import
     "import/no-duplicates": ["warn"],
+    "import/no-default-export": ["warn"],
+    "import/exports-last": ["warn"],
     "import/no-named-as-default": ["warn"],
     "import/prefer-default-export": ["off"],
     "import/first": ["warn"],
