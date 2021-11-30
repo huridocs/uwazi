@@ -49,6 +49,10 @@
       }
     }
 
+    .metadata-type-link > dd > a:after {
+      content: ' - ' attr(href) !important;
+    }
+
     .pills-container {
       display: none !important;
     }
