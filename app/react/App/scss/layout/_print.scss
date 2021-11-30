@@ -4,6 +4,11 @@
     height: 100%;
   }
 
+  p {
+    display: block;
+    break-inside: avoid;
+  }
+
   a {
     border-bottom: none !important;
     &:after {
@@ -36,13 +41,6 @@
     .attachments-list-parent,
     .mapbox-navigation {
       display: none;
-    }
-
-    .view {
-      dl {
-        display: block !important;
-        break-inside: avoid !important;
-      }
     }
 
     .markdown-viewer {
