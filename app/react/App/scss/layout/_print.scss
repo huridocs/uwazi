@@ -1,8 +1,4 @@
 @media print {
-  .view {
-    display: block !important;
-  }
-
   thead {
     display: table-row-group;
   }
@@ -52,6 +48,10 @@
     margin: 10px 0 10px 0;
   }
 
+  .view {
+    display: block !important;
+  }
+
   .entity-viewer {
     .filelist,
     .attachments-list-parent,
@@ -73,6 +73,15 @@
 
     .metadata-type-link > dd > a:after {
       content: ' - ' attr(href) !important;
+    }
+
+    li {
+      float: left !important;
+      padding: 2px !important;
+
+      &:after {
+        content: ' | ' !important;
+      }
     }
   }
 
