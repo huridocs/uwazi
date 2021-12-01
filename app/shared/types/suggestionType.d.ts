@@ -31,6 +31,7 @@ export interface EntitySuggestionType {
 }
 
 export interface IXSuggestionsFilter {
+  language?: string;
   propertyName?: string;
   state?: 'Empty' | 'Matching' | 'Pending';
 }

@@ -13,7 +13,7 @@ import {
   fixturesMissingPdf,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
-import asyncFS from 'api/utils/async-fs';
+import { fs, fileExists } from 'api/files';
 import path from 'path';
 
 import { tenants } from 'api/tenants/tenantContext';
@@ -75,12 +75,8 @@ describe('PDFSegmentation', () => {
     dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
 
     tenants.tenants = { tenantOne };
-    fileA = await asyncFS.readFile(
-      `app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`
-    );
-    fileB = await asyncFS.readFile(
-      `app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`
-    );
+    fileA = await fs.readFile(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
+    fileB = await fs.readFile(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);
     jest.spyOn(request, 'uploadFile').mockResolvedValue({});
     jest.resetAllMocks();
   });
@@ -210,8 +206,8 @@ describe('PDFSegmentation', () => {
       await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
       await segmentPdfs.segmentPdfs();
       segmentationFolder = path.join(tenantOne.uploadedDocuments, 'segmentation');
-      if (await asyncFS.exists(segmentationFolder)) {
-        await asyncFS.rmdir(segmentationFolder, { recursive: true });
+      if (await fileExists(segmentationFolder)) {
+        await fs.rmdir(segmentationFolder, { recursive: true });
       }
       segmentationExternalService = new ExternalDummyService(1235);
       await segmentationExternalService.start();
@@ -237,8 +233,8 @@ describe('PDFSegmentation', () => {
     afterEach(async () => {
       await segmentationExternalService.stop();
 
-      if (await asyncFS.exists(segmentationFolder)) {
-        await asyncFS.rmdir(segmentationFolder, { recursive: true });
+      if (await fileExists(segmentationFolder)) {
+        await fs.rmdir(segmentationFolder, { recursive: true });
       }
     });
     it('should store the segmentation', async () => {
@@ -277,14 +273,13 @@ describe('PDFSegmentation', () => {
         task: 'segmentation',
         success: true,
       });
-      const fileExists = await asyncFS.exists(path.join(segmentationFolder, 'documentA.xml'));
-      const fileContents = await asyncFS.readFile(
+      const fileContents = await fs.readFile(
         path.join(segmentationFolder, 'documentA.xml'),
         'utf8'
       );
-      expect(fileExists).toBe(true);
+      expect(await fileExists(path.join(segmentationFolder, 'documentA.xml'))).toBe(true);
       const xml = '<description>Cold shrimps soup</description>';
-      await expect(fileContents.includes(xml)).toBe(true);
+      expect(fileContents.includes(xml)).toBe(true);
     });
 
     describe('if the segmentation fails', () => {

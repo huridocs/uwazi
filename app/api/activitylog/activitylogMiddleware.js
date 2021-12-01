@@ -1,4 +1,4 @@
-import { activityLogPath, appendFile } from 'api/files';
+import { fs, activityLogPath } from 'api/files';
 import date from 'api/utils/date';
 import createError from 'api/utils/Error';
 import { tenants } from 'api/tenants';
@@ -59,7 +59,7 @@ export default (req, _res, next) => {
     if (mustBeLogged(baseurl, method, body)) {
       const entry = createEntry({ ...req, url: baseurl });
       activitylog.save(entry);
-      appendFile(
+      fs.appendFile(
         activityLogPath(`${tenants.current().name}_activity.log`),
         `${JSON.stringify(entry)}\r\n`
       );

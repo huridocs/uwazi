@@ -1,6 +1,5 @@
 /*eslint-disable max-lines*/
-import fs from 'fs';
-import path from 'path';
+import { fs } from 'api/files';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
@@ -14,7 +13,7 @@ import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import { errorLog } from '../../log';
-import { createDirIfNotExists } from '../filesystem';
+import { createDirIfNotExists, deleteFiles } from '../filesystem';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>
@@ -37,19 +36,11 @@ describe('upload routes', () => {
       'importcsv.csv',
       'f2082bf51b6ef839690485d7153e847a.pdf',
     ];
-    fs.readdir(directory, (err, filesList) => {
-      if (err) throw err;
-
-      filesList.forEach(fileName => {
-        if (dontDeleteFiles.includes(fileName)) {
-          return;
-        }
-        fs.unlink(path.join(directory, fileName), error => {
-          if (error) throw error;
-        });
-      });
-      cb();
-    });
+    const filesToDelete = (await fs.readdir(directory)).filter(filename =>
+      dontDeleteFiles.includes(filename)
+    );
+    await deleteFiles(filesToDelete);
+    cb();
   };
 
   beforeEach(async done => {
@@ -85,10 +76,10 @@ describe('upload routes', () => {
 
   describe('api/public', () => {
     beforeEach(async done => {
-      await deleteAllFiles(() => {
+      await deleteAllFiles(async () => {
         spyOn(Date, 'now').and.returnValue(1000);
         spyOn(mailer, 'send');
-        const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
+        const buffer = await fs.readFile(`${__dirname}/12345.test.pdf`);
         file = {
           fieldname: 'file',
           originalname: 'gadgets-01.pdf',

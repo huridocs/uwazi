@@ -6,20 +6,30 @@ export const Suggestions = {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
-    const { state, ...filters } = filter;
+    const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
       [
         { $match: { ...filters } },
         {
           $lookup: {
             from: 'entities',
-            localField: 'entityId',
-            foreignField: 'sharedId',
+            let: {
+              localField: '$entityId',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$sharedId', '$$localField'] },
+                      { $eq: ['$language', language] },
+                    ],
+                  },
+                },
+              },
+            ],
             as: 'entity',
           },
-        },
-        {
-          $match: { 'entity.language': 'en' },
         },
         {
           $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },

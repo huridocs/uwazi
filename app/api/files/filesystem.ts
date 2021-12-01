@@ -1,13 +1,11 @@
-import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 
 import ID from 'shared/uniqueID';
-import asyncFS from 'api/utils/async-fs';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
-import { promisify } from 'util';
 
+import { uwaziFS as fs } from './uwaziFS';
 import { FileType } from '../../shared/types/fileType';
 
 export type FilePath = string;
@@ -29,14 +27,13 @@ const activityLogPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().activityLogs, fileName);
 
 async function deleteFile(file: FilePath) {
-  return new Promise((resolve, reject) => {
-    fs.unlink(file, err => {
-      if (err && err.code !== 'ENOENT') {
-        reject(err);
-      }
-      resolve();
-    });
-  });
+  try {
+    await fs.unlink(file);
+  } catch (err) {
+    if (err && err.code !== 'ENOENT') {
+      throw err;
+    }
+  }
 }
 
 async function deleteFiles(files: FilePath[]) {
@@ -45,7 +42,7 @@ async function deleteFiles(files: FilePath[]) {
 
 const createDirIfNotExists = async (dirPath: string) => {
   try {
-    await asyncFS.mkdir(dirPath);
+    await fs.mkdir(dirPath);
   } catch (e) {
     if (!e.message.match(/file already exists/)) {
       throw e;
@@ -83,23 +80,19 @@ const deleteUploadedFiles = async (files: FileType[]) =>
       })
   );
 
-const writeFile = promisify(fs.writeFile);
-const appendFile = promisify(fs.appendFile);
-
-const fileExists = async (filePath: FilePath): Promise<boolean> =>
-  new Promise((resolve, reject) => {
-    fs.access(filePath, err => {
-      if (err === null) {
-        resolve(true);
-      }
-      if (err?.code === 'ENOENT') {
-        resolve(false);
-      }
-      if (err) {
-        reject(err);
-      }
-    });
-  });
+const fileExists = async (filePath: FilePath): Promise<boolean> => {
+  try {
+    await fs.access(filePath);
+  } catch (err) {
+    if (err?.code === 'ENOENT') {
+      return false;
+    }
+    if (err) {
+      throw err;
+    }
+  }
+  return true;
+};
 
 const generateFileName = ({ originalname = '' }: FileType) =>
   Date.now() + ID() + path.extname(originalname);
@@ -134,16 +127,16 @@ const streamToString = async (stream: Readable): Promise<string> =>
   });
 
 const getFileContent = async (fileName: FilePath): Promise<string> =>
-  asyncFS.readFile(uploadsPath(fileName), 'utf8');
+  fs.readFile(uploadsPath(fileName), 'utf8');
 
-const readFile = async (fileName: FilePath): Promise<Buffer> => asyncFS.readFile(fileName);
+const readFile = async (fileName: FilePath): Promise<Buffer> => fs.readFile(fileName);
 
 const storeFile: (filePathFunction: pathFunction, file: any) => Promise<FileType> = async (
   filePathFunction,
   file
 ) => {
   const filename = generateFileName(file);
-  await appendFile(filePathFunction(filename), file.buffer);
+  await fs.appendFile(filePathFunction(filename), file.buffer);
   return Object.assign(file, { filename, destination: filePathFunction() });
 };
 
@@ -163,8 +156,6 @@ export {
   temporalFilesPath,
   attachmentsPath,
   activityLogPath,
-  writeFile,
-  appendFile,
   readFile,
   storeFile,
 };

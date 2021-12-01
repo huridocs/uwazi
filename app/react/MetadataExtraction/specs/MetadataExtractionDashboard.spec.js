@@ -5,6 +5,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
+import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import MetadataExtractionDashboard from '../MetadataExtractionDashboard';
 
@@ -120,6 +121,25 @@ describe('MetadataExtractionDashboard', () => {
     it('should fetch template and properties into expected format.', () => {
       render();
       expect(component.state()).toMatchObject(expectedFormattedData);
+    });
+  });
+
+  describe('review suggestions', () => {
+    it('should not show entity suggestions by default', () => {
+      render();
+      const reviewPanel = component.find(EntitySuggestions).at(0);
+      expect(reviewPanel.length).toBe(0);
+    });
+
+    it('should show entity suggestions of a property', () => {
+      render();
+      component
+        .find('tr')
+        .find('button')
+        .at(0)
+        .simulate('click');
+      const reviewPanel = component.find(EntitySuggestions).at(0);
+      expect(reviewPanel.length).toBe(1);
     });
   });
 });

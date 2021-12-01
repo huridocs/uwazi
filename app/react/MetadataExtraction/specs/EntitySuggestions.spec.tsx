@@ -93,7 +93,7 @@ describe('EntitySuggestions', () => {
         .map(cell => cell.textContent);
       expect(firstRow).toEqual([
         'Other titleEntity title1SuggestionOlowo Kamali',
-        ' Accept',
+        '',
         'Entity title1',
         'Olowo Kamali Case',
         'English',
