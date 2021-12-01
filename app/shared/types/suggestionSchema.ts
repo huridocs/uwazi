@@ -36,6 +36,7 @@ export const EntitySuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    sharedId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
@@ -51,6 +52,7 @@ export const EntitySuggestionSchema = {
     'propertyName',
     'entityTitle',
     'entityId',
+    'sharedId',
     'suggestedValue',
     'segment',
     'language',

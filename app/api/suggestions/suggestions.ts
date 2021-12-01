@@ -95,6 +95,8 @@ export const Suggestions = {
         { $sort: { date: 1, state: -1 } },
         {
           $project: {
+            entityId: '$entity._id',
+            sharedId: '$entity.sharedId',
             entityTitle: '$entity.title',
             language: 1,
             propertyName: 1,
