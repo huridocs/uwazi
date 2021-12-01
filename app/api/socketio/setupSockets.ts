@@ -25,7 +25,7 @@ declare global {
 }
 
 let io: SocketIoServer;
-const emtiToTenant = (tenantName: string, event: string, ...data: any[]) => {
+const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   if (!io) {
     throw new Error('Socket.io Server not initialized');
   }
@@ -75,4 +75,4 @@ const setupSockets = (server: Server, app: Application) => {
   });
 };
 
-export { setupSockets, emtiToTenant };
+export { setupSockets, emitToTenant };

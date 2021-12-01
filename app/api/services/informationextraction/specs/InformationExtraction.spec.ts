@@ -1,15 +1,12 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
-
-import asyncFS from 'api/utils/async-fs';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-
+import { fs } from 'api/files';
 import { fixtures, factory } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
-import { emtiToTenant } from 'api/socketio/setupSockets';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -55,11 +52,11 @@ describe('InformationExtraction', () => {
         'http://localhost:1234'
       );
 
-      xmlA = await asyncFS.readFile(
+      xmlA = await fs.readFile(
         'app/api/services/informationExtraction/specs/uploads/segmentation/documentA.xml'
       );
 
-      const xmlC = await asyncFS.readFile(
+      const xmlC = await fs.readFile(
         'app/api/services/informationExtraction/specs/uploads/segmentation/documentC.xml'
       );
 
@@ -141,7 +138,7 @@ describe('InformationExtraction', () => {
     it('should send the materials for the suggestions', async () => {
       await informationExtraction.getSuggestions('property1');
 
-      xmlA = await asyncFS.readFile(
+      xmlA = await fs.readFile(
         'app/api/services/informationExtraction/specs/uploads/segmentation/documentA.xml'
       );
 

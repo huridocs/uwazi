@@ -22,7 +22,7 @@ import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
 import entities from 'api/entities/entities';
 import { EntitySchema } from 'shared/types/entityType';
 import languages from 'shared/languages';
-import { emtiToTenant } from 'api/socketio/setupSockets';
+import {emitToTenant} from 'api/socketio/setupSockets';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { IXModelsModel } from './IXModelsModel';
 
@@ -357,7 +357,7 @@ class InformationExtraction {
           status: 'ready',
           creationDate: new Date().getTime(),
         });
-        emtiToTenant(message.tenant, 'ix_model_ready', message.params!.property_name);
+        emitToTenant(message.tenant, 'ix_model_ready', message.params!.property_name);
         await this.getSuggestions(message.params!.property_name);
       }
 
