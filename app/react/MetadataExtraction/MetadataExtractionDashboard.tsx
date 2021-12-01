@@ -10,7 +10,6 @@ import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
-import api from 'app/utils/api';
 
 export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
@@ -53,12 +52,6 @@ class MetadataExtractionDashboard extends React.Component<
 
   componentDidMount() {
     this.arrangeTemplatesAndProperties();
-  }
-
-  trainModels() {
-    api.post('suggestions/train').then(() => {
-      store?.dispatch(notify('Training started', 'success'));
-    });
   }
 
   arrangeTemplatesAndProperties() {
@@ -121,12 +114,6 @@ class MetadataExtractionDashboard extends React.Component<
             </div>
             <div className="panel-subheading">
               <Translate>Extract information from your documents</Translate>
-
-              <button type="button" onClick={this.trainModels}>
-                <Icon icon="search" />
-                &nbsp;
-                <Translate>Find suggestions</Translate>
-              </button>
             </div>
             <div className="metadata-extraction-table">
               <table className="table">

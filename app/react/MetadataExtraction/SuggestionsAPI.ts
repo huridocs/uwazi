@@ -9,4 +9,14 @@ const getSuggestions = async (requestParams: RequestParams) => {
   };
 };
 
-export { getSuggestions };
+const trainModel = async (requestParams: RequestParams) => {
+  const { json: response } = await api.post('suggestions/train', requestParams);
+  return response;
+};
+
+const status = async (requestParams: RequestParams) => {
+  const { json: response } = await api.get('suggestions/status', requestParams);
+  return response;
+};
+
+export { getSuggestions, trainModel, status };

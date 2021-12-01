@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
 
@@ -16,7 +18,9 @@ import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { getSuggestions } from './SuggestionsAPI';
+import { getSuggestions, trainModel } from './SuggestionsAPI';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { store } from 'app/store';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -176,6 +180,16 @@ export const EntitySuggestions = ({
       .catch(() => {});
   };
 
+  const _trainModel = async () => {
+    const params = new RequestParams({
+      property: reviewedProperty.name,
+    });
+
+    const response = await trainModel(params);
+    const type = response.status === 'error' ? 'danger' : 'success';
+    store?.dispatch(notify(response.message, type));
+  };
+
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
 
   return (
@@ -185,10 +199,14 @@ export const EntitySuggestions = ({
           <span className="suggestion-header">
             <Translate>Reviewing</Translate>:&nbsp;
           </span>
+
           <span className="suggestion-property">
             <Translate>{reviewedProperty.label}</Translate>
           </span>
         </div>
+        <button type="button" className="btn service-request-button" onClick={_trainModel}>
+          <Translate>Find suggestions</Translate>
+        </button>
         <button className="btn btn-outline-primary" onClick={() => onClose()}>
           <Translate>Dashboard</Translate>
         </button>

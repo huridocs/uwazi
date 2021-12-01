@@ -1,7 +1,30 @@
 @import '../../scss/config/colors';
 @import '../../scss/config/typography';
 
-.entity-suggestions{
+.service-request-button {
+  border-color: #e0e0e0;
+  background-color: white;
+  font-weight: 600;
+
+  &.proccessing {
+    color: #90a4ae;
+    font-style: italic;
+    cursor: progress;
+  }
+
+  &.error {
+    color: #d1d1d1;
+    border-color: #505050;
+    background-color: #505050;
+    cursor: not-allowed;
+  }
+
+  &.success {
+    color: #579849;
+  }
+}
+
+.entity-suggestions {
   .panel-subheading {
     font-size: $f-size-lg;
   }
@@ -47,28 +70,28 @@
     align-content: center;
     padding: 10px;
 
-    &.suggestion{
+    &.suggestion {
       width: 20%;
       text-overflow: fade;
       min-width: 150px;
     }
-    &.action{
+    &.action {
       min-width: 90px;
       padding-left: 5px;
     }
-    &.title{
+    &.title {
       width: 15%;
       min-width: 100px;
       text-overflow: fade;
     }
-    &.segment{
+    &.segment {
       width: 40%;
       min-width: 100px;
     }
-    &.long-segment{
+    &.long-segment {
       width: 55%;
     }
-    &.state{
+    &.state {
       width: 7%;
     }
   }
@@ -79,7 +102,7 @@
     padding: 8px;
     border-bottom: 2px solid $c-grey;
 
-    &.state{
+    &.state {
       width: 7%;
       display: flex;
       justify-content: space-between;
@@ -116,7 +139,7 @@
       font-size: $f-size-sm;
     }
 
-    &.suggestion{
+    &.suggestion {
       border-left: 0;
       display: flex;
       flex-direction: column;
@@ -134,7 +157,7 @@
         text-overflow: ellipsis;
       }
 
-      .suggestion-label{
+      .suggestion-label {
         color: $c-grey-dark;
         font-family: $f-special;
         padding-top: 30px;
