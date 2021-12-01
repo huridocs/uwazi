@@ -65,6 +65,7 @@ export const SuggestionsQueryFilterSchema = {
   title: 'IXSuggestionsFilter',
   additionalProperties: false,
   properties: {
+    language: { type: 'string' },
     propertyName: { type: 'string' },
     state: { type: 'string', enum: Object.values(SuggestionState) },
   },

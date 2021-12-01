@@ -13,13 +13,23 @@ export const Suggestions = {
         {
           $lookup: {
             from: 'entities',
-            localField: 'entityId',
-            foreignField: 'sharedId',
+            let: {
+              localField: '$entityId',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$sharedId', '$$localField'] },
+                      { $eq: ['$language', language] },
+                    ],
+                  },
+                },
+              },
+            ],
             as: 'entity',
           },
-        },
-        {
-          $match: { 'entity.language': 'en' },
         },
         {
           $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
@@ -81,7 +91,6 @@ export const Suggestions = {
             },
           },
         },
-        { $match: { $expr: { $eq: ['$entity.language', language] } } },
         ...(state ? [{ $match: { $expr: { $eq: ['$state', state] } } }] : []),
         { $sort: { date: 1, state: -1 } },
         {

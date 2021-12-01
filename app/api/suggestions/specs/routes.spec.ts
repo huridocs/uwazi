@@ -45,6 +45,7 @@ describe('suggestions routes', () => {
           propertyName: 'super_powers',
           suggestedValue: 'conocimiento científico',
           segment: 'el confía en su propio conocimiento científico',
+          state: 'Pending',
           language: 'es',
         },
         {
@@ -52,6 +53,7 @@ describe('suggestions routes', () => {
           propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge',
           segment: 'he relies on his own scientific knowledge',
+          state: 'Matching',
           language: 'en',
         },
       ]);
