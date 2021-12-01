@@ -190,7 +190,7 @@
     "world-countries": "4.0.0",
     "wrap-range-text": "^1.0.1",
     "xml-js": "^1.6.11",
-    "yargs": "^16.0.3",
+    "yargs": "17.2.1",
     "yauzl": "^2.10.0",
     "yazl": "^2.5.1"
   },
@@ -274,6 +274,7 @@
     "eslint-plugin-jasmine": "2.9.2",
     "eslint-plugin-jest": "v24.0.1",
     "eslint-plugin-jsx-a11y": "6.3.1",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "v7.20.0",
     "fetch-mock": "^9.10.7",
@@ -308,8 +309,7 @@
     "webpack-cli": "3.3.12",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "^2.25.1",
-    "winston-transport": "^4.4.0",
-    "yargs": "^16.0.3"
+    "winston-transport": "^4.4.0"
   },
   "config": {
     "mongodbMemoryServer": {

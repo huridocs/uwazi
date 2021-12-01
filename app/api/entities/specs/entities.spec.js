@@ -6,10 +6,10 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
 import entitiesModel from 'api/entities/entitiesModel';
-import fs from 'fs';
+import { fs } from 'api/files';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
-import { uploadsPath } from 'api/files/filesystem';
+import { uploadsPath, fileExists } from 'api/files/filesystem';
 
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
@@ -1194,26 +1194,26 @@ describe('entities', () => {
         .catch(catchErrors(done)));
 
     it('should delete the original file', async () => {
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
-      fs.writeFileSync(uploadsPath(`${uploadId1}.jpg`), '');
-      fs.writeFileSync(uploadsPath(`${uploadId2}.jpg`), '');
+      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
+      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
+      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
+      await fs.writeFile(uploadsPath(`${uploadId1}.jpg`), '');
+      await fs.writeFile(uploadsPath(`${uploadId2}.jpg`), '');
 
-      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(true);
-      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(true);
-      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(true);
-      expect(fs.existsSync(uploadsPath(`${uploadId1}.jpg`))).toBe(true);
-      expect(fs.existsSync(uploadsPath(`${uploadId2}.jpg`))).toBe(true);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(true);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(true);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(true);
+      expect(await fileExists(uploadsPath(`${uploadId1}.jpg`))).toBe(true);
+      expect(await fileExists(uploadsPath(`${uploadId2}.jpg`))).toBe(true);
 
       await entities.delete('shared');
 
-      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
-      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
-      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
 
-      expect(fs.existsSync(uploadsPath(`${uploadId1}.jpg`))).toBe(false);
-      expect(fs.existsSync(uploadsPath(`${uploadId2}.jpg`))).toBe(false);
+      expect(await fileExists(uploadsPath(`${uploadId1}.jpg`))).toBe(false);
+      expect(await fileExists(uploadsPath(`${uploadId2}.jpg`))).toBe(false);
     });
 
     describe('when entity is being used as thesauri', () => {

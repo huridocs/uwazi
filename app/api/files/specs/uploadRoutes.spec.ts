@@ -1,11 +1,10 @@
 import path from 'path';
-import fs from 'fs';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
-import { uploadsPath, customUploadsPath, fileExists } from 'api/files/filesystem';
+import { fs, uploadsPath, customUploadsPath, fileExists } from 'api/files';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
@@ -94,7 +93,7 @@ describe('upload routes', () => {
       });
 
       expect(language).toBe('other');
-      expect(fs.readFileSync(uploadsPath(filename))).toBeDefined();
+      expect(await fs.readFile(uploadsPath(filename))).toBeDefined();
     });
 
     describe('Language detection', () => {
@@ -163,7 +162,7 @@ describe('upload routes', () => {
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
-      expect(fs.readFileSync(customUploadsPath(file.filename || ''))).toBeDefined();
+      expect(await fs.readFile(customUploadsPath(file.filename || ''))).toBeDefined();
     });
   });
 
