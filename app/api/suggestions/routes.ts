@@ -27,8 +27,30 @@ export const suggestionsRoutes = (app: Application) => {
     }
   );
 
-  app.post('/api/suggestions/train', async (_req, res, _next) => {
-    await IX.trainAllModels();
-    res.json({});
-  });
+  app.post(
+    '/api/suggestions/train',
+    validateAndCoerceRequest({
+      properties: {
+        property: { type: 'string' },
+      },
+    }),
+    async (req, res, _next) => {
+      console.log('train', req.body);
+      const status = await IX.trainModel(req.body.property);
+      res.json(status);
+    }
+  );
+
+  app.get(
+    '/api/suggestions/status',
+    validateAndCoerceRequest({
+      properties: {
+        query: { property: { type: 'string' } },
+      },
+    }),
+    async (req, res, _next) => {
+      const status = await IX.status(req.query.property);
+      res.json(status);
+    }
+  );
 };

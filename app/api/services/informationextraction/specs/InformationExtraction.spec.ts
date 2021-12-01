@@ -10,6 +10,7 @@ import { fixtures, factory } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { emtiToTenant } from 'api/socketio/setupSockets';
+import * as errorHelper from 'api/utils/handleError';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -49,11 +50,7 @@ describe('InformationExtraction', () => {
 
   describe('trainModel', () => {
     it('should send xmls', async () => {
-      await informationExtraction.trainModel(
-        [factory.id('templateToSegmentA')],
-        'property1',
-        'http://localhost:1234'
-      );
+      await informationExtraction.trainModel('property1');
 
       xmlA = await asyncFS.readFile(
         'app/api/services/informationExtraction/specs/uploads/segmentation/documentA.xml'
@@ -76,11 +73,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data', async () => {
-      await informationExtraction.trainModel(
-        [factory.id('templateToSegmentA')],
-        'property1',
-        'http://localhost:1234'
-      );
+      await informationExtraction.trainModel('property1');
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
@@ -106,11 +99,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model', async () => {
-      await informationExtraction.trainModel(
-        [factory.id('templateToSegmentA')],
-        'property1',
-        'http://localhost:1234'
-      );
+      await informationExtraction.trainModel('property1');
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
         params: { property_name: 'property1' },

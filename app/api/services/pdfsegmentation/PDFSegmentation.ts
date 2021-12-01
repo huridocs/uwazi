@@ -113,7 +113,6 @@ class PDFSegmentation {
             }
 
             const filesToSegment = await this.getFilesToSegment();
-
             for (let i = 0; i < filesToSegment.length; i += 1) {
               // eslint-disable-next-line no-await-in-loop
               await this.segmentOnePdf(filesToSegment[i], segmentationServiceConfig.url, tenant);

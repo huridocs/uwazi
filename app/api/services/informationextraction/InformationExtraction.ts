@@ -14,7 +14,6 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 import filesModel from 'api/files/filesModel';
 import { SegmentationType } from 'shared/types/segmentationType';
-import { Settings } from 'shared/types/settingsType';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
@@ -197,22 +196,34 @@ class InformationExtraction {
     return IXSuggestionsModel.save(suggestion);
   };
 
-  getSuggestions = async (property: string) => {
+  serviceUrl = async () => {
     const settingsValues = await settings.get();
     const serviceUrl = settingsValues.features?.metadataExtraction?.url;
     if (!serviceUrl) {
-      handleError(new Error('No url for metadata extraction service'));
-      return;
+      throw new Error('No url for metadata extraction service');
     }
-    const modelsToTrain = await this.getPropertiesToTrain(settingsValues);
-    const files = await this.getFiles(modelsToTrain[property], property, false);
 
-    await this.sendMaterials(files, property, serviceUrl, 'prediction_data');
+    return serviceUrl;
+  };
+
+  getSuggestions = async (property: string) => {
+    await this.materialsForSuggestions(property);
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
       params: { property_name: property },
     });
+  };
+
+  materialsForSuggestions = async (property: string) => {
+    const serviceUrl = await this.serviceUrl();
+    const templates = await this.getTemplatesWithProperty(property);
+    const files = await this.getFiles(templates, property, false);
+    if (files.length === 0) {
+      emtiToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
+      return;
+    }
+    await this.sendMaterials(files, property, serviceUrl, 'prediction_data');
   };
 
   getFiles = async (
@@ -290,14 +301,56 @@ class InformationExtraction {
     return filesModel.db.aggregate(agg);
   };
 
-  trainModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
-    const files = await this.getFiles(templates, property);
-    await this.sendMaterials(files, property, serviceUrl);
+  trainModel = async (property: string) => {
+    const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
+    const serviceUrl = await this.serviceUrl();
+    const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
+    if (!materialsSent) {
+      return { status: 'error', message: 'No labeled data' };
+    }
+
     await this.taskManager.startTask({
       task: 'create_model',
       tenant: tenants.current().name,
       params: { property_name: property },
     });
+
+    await this.saveModelProcess(property);
+    return { status: 'processing', message: 'Training model' };
+  };
+
+  status = async (property: string) => {
+    const [currentModel] = await IXModelsModel.get({
+      propertyName: property,
+      status: 'processing',
+    });
+
+    const [suggestion] = await IXSuggestionsModel.get({
+      propertyName: property,
+      status: 'processing',
+    });
+
+    if (currentModel) {
+      return { status: 'processing', message: 'Training model' };
+    }
+
+    if (suggestion) {
+      return { status: 'processing', message: 'Getting suggestions' };
+    }
+
+    return { status: 'ready', message: 'Ready' };
+  };
+
+  materialsForModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
+    const files = await this.getFiles(templates, property);
+    if (!files.length) {
+      return false;
+    }
+    await this.sendMaterials(files, property, serviceUrl);
+    return true;
+  };
+
+  saveModelProcess = async (property: string) => {
     const [currentModel] = await IXModelsModel.get({
       propertyName: property,
     });
@@ -310,44 +363,20 @@ class InformationExtraction {
     });
   };
 
-  getPropertiesToTrain = async (settingsValues: Settings) => {
-    const modelsToTrain = settingsValues.features?.metadataExtraction?.templates?.reduce(
-      (result: { [key: string]: ObjectIdSchema[] }, template) => {
-        template.properties.forEach(property => {
-          if (!result[property]) {
-            result[property] = [];
-          }
-          result[property].push(new ObjectId(template.template));
-        });
-
-        return result;
-      },
-      {}
-    );
-
-    return modelsToTrain || {};
-  };
-
-  trainAllModels = async () => {
+  getTemplatesWithProperty = async (property: string) => {
     const settingsValues = await settings.get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
-    if (!serviceUrl) {
-      handleError(new Error('No url for metadata extraction service'));
-      return;
-    }
-
-    const modelsToTrain = await this.getPropertiesToTrain(settingsValues);
-
-    await Promise.all(
-      Object.keys(modelsToTrain).map(async property => {
-        await this.trainModel(modelsToTrain[property], property, serviceUrl);
-      })
-    );
+    const templates: ObjectIdSchema[] = [];
+    settingsValues.features?.metadataExtraction?.templates?.forEach(t => {
+      if (t.properties.includes(property)) {
+        templates.push(new ObjectId(t.template));
+      }
+    });
+    return templates;
   };
 
   processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
-      if (message.task === 'create_model') {
+      if (message.task === 'create_model' && message.success) {
         const [currentModel] = await IXModelsModel.get({
           propertyName: message.params!.property_name,
         });
@@ -357,11 +386,17 @@ class InformationExtraction {
           status: 'ready',
           creationDate: new Date().getTime(),
         });
-        emtiToTenant(message.tenant, 'ix_model_ready', message.params!.property_name);
+        emtiToTenant(
+          message.tenant,
+          'ix_model_status',
+          message.params!.property_name,
+          'proccesing',
+          'Getting suggestions'
+        );
         await this.getSuggestions(message.params!.property_name);
       }
 
-      if (message.task === 'suggestions') {
+      if (message.task === 'suggestions' && message.success) {
         await this.saveSuggestions(message);
         await this.getSuggestions(message.params!.property_name);
       }

@@ -11,7 +11,7 @@ const settings = [
         templates: [
           {
             template: factory.id('templateToSegmentA'),
-            properties: ['property1', 'property2'],
+            properties: ['property1', 'property2', 'property3'],
           },
           {
             template: factory.id('templateToSegmentB'),
