@@ -16,6 +16,7 @@ import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestions } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
@@ -66,15 +67,20 @@ export const EntitySuggestions = ({
     );
   };
 
-  const actionsCell = () => (
-    <div>
-      <button type="button" className="btn btn-outline-primary">
-        <Icon icon="check" />
-        &nbsp;
-        <Translate>Accept</Translate>
-      </button>
-    </div>
-  );
+  const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
+    const suggestion = row.original;
+    return (
+      <div>
+        {suggestion.state !== SuggestionState.matching && (
+          <button type="button" className="btn btn-outline-primary">
+            <Icon icon="check" />
+            &nbsp;
+            <Translate>Accept</Translate>
+          </button>
+        )}
+      </div>
+    );
+  };
 
   const columns: Column<EntitySuggestionType>[] = React.useMemo(
     () => [
