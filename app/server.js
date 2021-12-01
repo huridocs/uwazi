@@ -47,7 +47,6 @@ app.use(helmet());
 const http = Server(app);
 
 const uncaughtError = error => {
-  console.log(error);
   handleError(error, { uncaught: true });
   throw error;
 };
