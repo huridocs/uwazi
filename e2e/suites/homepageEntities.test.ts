@@ -18,7 +18,7 @@ describe('Homepage entities', () => {
     await disableTransitions();
     await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 1 });
     await page.addStyleTag({
-      content: "font-family: 'Roboto', sans-serif;",
+      content: "font-family: 'Arial', sans-serif;",
     })
   });
 
