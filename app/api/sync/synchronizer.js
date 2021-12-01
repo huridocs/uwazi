@@ -1,12 +1,9 @@
-import fs from 'fs';
-import util from 'util';
 import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
-import { customUploadsPath, uploadsPath } from 'api/files';
+import { fs, customUploadsPath, uploadsPath } from 'api/files';
 
 const oneSecond = 1000;
-const readFile = util.promisify(fs.readFile);
 
 const uploadFile = async (url, filename, type = 'document', cookie) => {
   let pathFunction = uploadsPath;
@@ -18,7 +15,7 @@ const uploadFile = async (url, filename, type = 'document', cookie) => {
   }
 
   const filepath = pathFunction(filename);
-  const file = await readFile(filepath);
+  const file = await fs.readFile(filepath);
   return request.uploadFile(urljoin(url, apiEndpoint), filename, file, cookie);
 };
 

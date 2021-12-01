@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { files } from 'api/files/files';
@@ -13,11 +12,7 @@ import fixtures, { template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
 
 const removeTestingZip = async () =>
-  new Promise(resolve => {
-    fs.unlink(path.join(__dirname, 'zipData/testLanguages.zip'), () => {
-      resolve();
-    });
-  });
+  filesystem.deleteFile(path.join(__dirname, 'zipData/testLanguages.zip'));
 
 describe('csvLoader languages', () => {
   let imported: EntitySchema[];
