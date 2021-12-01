@@ -20,6 +20,7 @@ describe('Homepage entities', () => {
     await page.addStyleTag({
       content: `*: {
         font-family: 'Arial', sans-serif;
+        font-size: 1em;
       }`,
     })
   });
