@@ -17,6 +17,9 @@ describe('Homepage entities', () => {
     await adminLogin();
     await disableTransitions();
     await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 1 });
+    await page.addStyleTag({
+      content: "font-family: 'Roboto', sans-serif;",
+    })
   });
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
