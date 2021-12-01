@@ -1,6 +1,6 @@
 import path from 'path';
 import yazl from 'yazl';
-import fs from 'fs';
+import { fs } from 'api/files';
 import { Readable } from 'stream';
 
 const createTestingZip = (filesToZip, fileName, directory = __dirname) =>

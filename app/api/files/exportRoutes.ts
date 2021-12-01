@@ -1,5 +1,5 @@
 import { Application, Request, Response, NextFunction } from 'express';
-import { createWriteStream, unlink } from 'fs';
+import { fs } from 'api/files';
 import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
@@ -15,10 +15,12 @@ export default (app: Application) => {
   const generateExportFileName = (databaseName: string = '') =>
     `${databaseName}-${new Date().toISOString()}.csv`;
 
-  const removeTempFile = (filePath: string) => () => {
-    unlink(filePath, err => {
-      if (err) errorLog.error(`Error unlinking exported file: ${filePath}`);
-    });
+  const removeTempFile = (filePath: string) => async () => {
+    try {
+      await fs.unlink(filePath);
+    } catch (err) {
+      errorLog.error(`Error unlinking exported file: ${filePath}`);
+    }
   };
 
   app.get(
@@ -63,18 +65,17 @@ export default (app: Application) => {
 
         const exporter = new CSVExporter();
 
-        const fileStream = createWriteStream(temporalFilePath);
+        const fileStream = fs.createWriteStream(temporalFilePath);
         const exporterOptions = { dateFormat, language: req.language };
 
         await exporter.export(results, req.query.types, fileStream, exporterOptions);
 
-        res.download(
-          temporalFilePath,
-          generateExportFileName(site_name),
-          removeTempFile(temporalFilePath)
-        );
+        res.download(temporalFilePath, generateExportFileName(site_name), () => {
+          //eslint-disable-next-line @typescript-eslint/no-floating-promises
+          removeTempFile(temporalFilePath)();
+        });
       } catch (e) {
-        removeTempFile(temporalFilePath)();
+        await removeTempFile(temporalFilePath)();
         next(e);
       }
     }

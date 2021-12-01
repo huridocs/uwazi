@@ -14,7 +14,7 @@
 
     .document-viewer.is-active ~ &,
     .document-viewer.is-active & {
-      left: calc((100% - 400px)/2);
+      left: calc((100% - 400px) / 2);
     }
   }
 
@@ -24,7 +24,7 @@
     width: $header-height;
     height: $header-height;
     line-height: $header-height;
-    font-size: $f-size-lg;
+    font-size: $f-size-xl;
     padding: 0;
     margin: 0 6px;
     opacity: 0.9;
@@ -35,9 +35,17 @@
     animation-name: ContextMenu-center;
     animation-duration: 225ms;
     @keyframes ContextMenu-center {
-        0%   { transform: scale(0.5); opacity: 0; }
-        25%  { transform: scale(1.1); opacity: 0.9; }
-        100% { transform: scale(1); }
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      25% {
+        transform: scale(1.1);
+        opacity: 0.9;
+      }
+      100% {
+        transform: scale(1);
+      }
     }
   }
 
@@ -50,7 +58,7 @@
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
     padding: 5px;
-    background-color: transparentize($c-black, .25);
+    background-color: transparentize($c-black, 0.25);
     color: $c-white;
     border-radius: $border-radius;
     text-align: center;
@@ -60,7 +68,7 @@
       content: '';
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
-      border-top: 5px solid transparentize($c-black, .25);
+      border-top: 5px solid transparentize($c-black, 0.25);
       position: absolute;
       top: 100%;
       left: 50%;

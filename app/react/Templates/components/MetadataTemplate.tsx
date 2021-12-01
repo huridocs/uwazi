@@ -20,7 +20,6 @@ import {
   addProperty,
   inserted,
   saveTemplate,
-  validateMapping,
   countByTemplate,
 } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
@@ -96,10 +95,6 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
       prop.label = _prop.label.trim();
       return prop;
     });
-    const mappingValidation = await validateMapping(template);
-    if (!mappingValidation.valid) {
-      return this.confirmAndSaveTemplate(template, 'templateConflict');
-    }
     if (template._id) {
       const entitiesCountOfTemplate = await countByTemplate(template);
       const lengthyReindexFloorCount = 30000;
@@ -107,7 +102,11 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
         return this.confirmAndSaveTemplate(template, 'largeNumberOfEntities');
       }
     }
-    this.props.saveTemplate(template);
+    try {
+      await this.props.saveTemplate(template);
+    } catch (e) {
+      if (e.status === 409) return this.confirmAndSaveTemplate(template, 'templateConflict');
+    }
   };
 
   onSubmitFailed() {

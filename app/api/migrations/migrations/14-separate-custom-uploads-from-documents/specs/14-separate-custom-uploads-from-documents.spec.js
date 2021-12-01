@@ -1,10 +1,28 @@
+//eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
-import fs from 'api/utils/async-fs';
 import { config } from 'api/config';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
+
+const asyncFs = fs.promises;
+
+export const fileExists = async filePath =>
+  new Promise((resolve, reject) => {
+    fs.stat(filePath, err => {
+      if (err === null) {
+        resolve(true);
+      }
+      if (err && err.code === 'ENOENT') {
+        resolve(false);
+      }
+      if (err) {
+        reject(err);
+      }
+    });
+  });
 
 describe('migration separate-custom-uploads-from-documents', () => {
   let originalDocumentsPath;
@@ -45,7 +63,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
       await Promise.all(
         files.map(async f => {
           try {
-            await fs.unlink(path.join(config.defaultTenant.customUploads, f));
+            await asyncFs.unlink(path.join(config.defaultTenant.customUploads, f));
             // eslint-disable-next-line
           } catch (e) {}
         })
@@ -54,7 +72,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
     const initFiles = async () =>
       Promise.all(
         files.map(f =>
-          fs.writeFile(
+          asyncFs.writeFile(
             path.join(config.defaultTenant.uploadedDocuments, f),
             `contents for file ${f}`
           )
@@ -64,10 +82,10 @@ describe('migration separate-custom-uploads-from-documents', () => {
       await initFiles();
       await migration.up(testingDB.mongodb);
       const filesExistInOldPath = await Promise.all(
-        files.map(f => fs.exists(path.join(config.defaultTenant.uploadedDocuments, f)))
+        files.map(f => fileExists(path.join(config.defaultTenant.uploadedDocuments, f)))
       );
       const filesExistInNewPath = await Promise.all(
-        files.map(f => fs.exists(path.join(config.defaultTenant.customUploads, f)))
+        files.map(f => fileExists(path.join(config.defaultTenant.customUploads, f)))
       );
       expect(filesExistInOldPath).toEqual([false, false, false]);
       expect(filesExistInNewPath).toEqual([true, true, true]);

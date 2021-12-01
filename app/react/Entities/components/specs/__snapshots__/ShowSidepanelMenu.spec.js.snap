@@ -12,7 +12,7 @@ exports[`ShowSidepanelMenu should show button if panel is not open 1`] = `
       onClick={[Function]}
     >
       <Connect(Icon)
-        icon="chart-bar"
+        icon="columns"
       />
     </div>
   </ShowIf>

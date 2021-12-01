@@ -104,6 +104,7 @@ import { infoCircleHollow } from 'UI/Icon/info-circle-hollow';
 import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
 import { faMap } from '@fortawesome/free-solid-svg-icons/faMap';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
+import { faColumns } from '@fortawesome/free-solid-svg-icons';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
 import { importCsv } from './import-csv';
@@ -221,6 +222,7 @@ const icons = {
   twoFactorAuth,
   infoCircleHollow,
   faBullseye,
+  faColumns,
 };
 
 export const loadIcons = () => {

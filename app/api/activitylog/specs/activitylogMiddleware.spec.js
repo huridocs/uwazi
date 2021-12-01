@@ -1,7 +1,7 @@
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
-import asyncFS from 'api/utils/async-fs';
+import { fs } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
@@ -74,7 +74,7 @@ describe('activitylogMiddleware', () => {
 
   it('should save the log entry on filesystem', async () => {
     activitylogMiddleware(req, res, next);
-    const file = await asyncFS.readFile(
+    const file = await fs.readFile(
       `${tenants.current().activityLogs}/${tenants.current().name}_activity.log`
     );
     expect(file.length).toBeGreaterThan(0);
