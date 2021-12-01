@@ -1,6 +1,6 @@
 import React from 'react';
+import { get } from 'lodash';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
 
 export type ComponentPropTypes = {
   featureActivated: boolean;
@@ -21,9 +21,10 @@ FeatureToggle.defaultProps = {
 };
 
 function mapStateToProps({ settings }: any, ownProps: OwnPropTypes) {
-  const features = settings.collection.get('features') || Immutable.fromJS({});
+  const features = settings.collection.get('features');
+
   return {
-    featureActivated: features.get(ownProps.feature),
+    featureActivated: features ? Boolean(get(features.toJS(), ownProps.feature)) : false,
   };
 }
 
