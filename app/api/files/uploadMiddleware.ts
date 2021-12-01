@@ -1,14 +1,9 @@
-import fs from 'fs';
 import path from 'path';
-import { generateFileName, pathFunction } from 'api/files/filesystem';
+import { fs, generateFileName, pathFunction, deleteFile } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import multer, { StorageEngine } from 'multer';
-import { promisify } from 'util';
 
 type multerCallback = (error: Error | null, destination: string) => void;
-
-const copyFile = promisify(fs.copyFile);
-const removeFile = promisify(fs.unlink);
 
 const defaultStorage = multer.diskStorage({
   filename(_req: Request, file: Express.Multer.File, cb: multerCallback) {
@@ -22,8 +17,8 @@ const move = async (req: Request, filePath: pathFunction) => {
   }
   const oldPath = path.join(req.file.destination, req.file.filename);
   const newPath = filePath(req.file.filename);
-  await copyFile(oldPath, newPath);
-  await removeFile(oldPath);
+  await fs.copyFile(oldPath, newPath);
+  await deleteFile(oldPath);
   req.file.destination = filePath();
   req.file.path = filePath(req.file.filename);
 };

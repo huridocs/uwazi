@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { fs } from 'api/files';
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { mockID } from 'shared/uniqueID';
@@ -81,10 +81,10 @@ describe('documents', () => {
   });
 
   describe('delete', () => {
-    beforeEach(() => {
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
+    beforeEach(async () => {
+      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
+      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
+      await fs.writeFile(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
     });
 
     it('should delete the document in the database', async () => {
