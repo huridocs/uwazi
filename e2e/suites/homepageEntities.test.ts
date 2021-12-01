@@ -21,6 +21,7 @@ describe('Homepage entities', () => {
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
     await page.goto(host, { waitUntil: 'domcontentloaded' });
+    await disableTransitions();
     // await expect(page).toClick('a', { text: 'Uwazi' });
     const className = '.row.panels-layout';
     // const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
@@ -35,7 +36,7 @@ describe('Homepage entities', () => {
   });
 
   it('should display entity details with no more than a 7% difference', async () => {
-    await disableTransitions();
+    // await disableTransitions();
     await expect(page).toClick('div.item-document:first-child');
     await page.waitForSelector('.metadata.tab-content-visible');
     await page.waitFor(200);
