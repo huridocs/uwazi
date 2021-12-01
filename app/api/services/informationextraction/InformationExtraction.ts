@@ -22,7 +22,7 @@ import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
 import entities from 'api/entities/entities';
 import { EntitySchema } from 'shared/types/entityType';
 import languages from 'shared/languages';
-import {emitToTenant} from 'api/socketio/setupSockets';
+import { emitToTenant } from 'api/socketio/setupSockets';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { IXModelsModel } from './IXModelsModel';
 
