@@ -8,7 +8,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { actions } from 'app/BasicReducer';
 import { isClient, events } from 'app/utils';
 import { toUrlParams } from 'shared/JSONRequest';
-import Viewer from 'app/Viewer/components/Viewer';
+import { Viewer } from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { leaveEditMode } from 'app/Viewer/actions/documentActions';
 import { bindActionCreators } from 'redux';

@@ -30,10 +30,10 @@ import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument.js';
-
 import determineDirection from '../utils/determineDirection';
+import { OCRButton } from './OCRButton';
 
-export class Viewer extends Component {
+class Viewer extends Component {
   constructor(props) {
     super(props);
     this.state = { firstRender: true };
@@ -117,6 +117,7 @@ export class Viewer extends Component {
                       <Translate>Plain text</Translate>
                     )}
                   </CurrentLocationLink>
+                  <OCRButton />
                 </>
               )}
             </div>
@@ -243,4 +244,5 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchToProps)(Viewer);
+const container = connect(mapStateToProps, mapDispatchToProps)(Viewer);
+export { container as Viewer };

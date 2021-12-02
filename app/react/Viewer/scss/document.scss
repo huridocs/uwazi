@@ -7,16 +7,20 @@
 .content-header-document {
   .content-header-title {
     position: relative;
-  }
-
-  .btn-default {
-    position: absolute;
-    right: 10px;
+    gap: 20px;
   }
 
   .paginator {
-    width: 100%;
+    flex-grow: 1;
     text-align: center;
+  }
+
+  .ocr-service-display {
+    line-height: normal;
+
+    & p {
+      margin: 0;
+    }
   }
 }
 
