@@ -14,9 +14,9 @@ const trainModel = async (requestParams: RequestParams) => {
   return response;
 };
 
-const status = async (requestParams: RequestParams) => {
+const ixStatus = async (requestParams: RequestParams) => {
   const { json: response } = await api.get('suggestions/status', requestParams);
   return response;
 };
 
-export { getSuggestions, trainModel, status };
+export { getSuggestions, trainModel, ixStatus };

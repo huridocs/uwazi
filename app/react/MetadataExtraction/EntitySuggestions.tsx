@@ -19,9 +19,10 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 
-import { getSuggestions, trainModel } from './SuggestionsAPI';
+import { getSuggestions, trainModel, ixStatus } from './SuggestionsAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
+import socket from 'app/socket';
 
 import { SuggestionState } from 'shared/types/suggestionSchema';
 
@@ -51,6 +52,13 @@ export const EntitySuggestions = ({
 }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [status, setStatus] = useState('ready');
+
+  socket.on('ix_model_status', (propertyName: string, status: string) => {
+    if (propertyName === reviewedProperty.name) {
+      setStatus(status);
+    }
+  });
 
   const suggestionCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
@@ -195,10 +203,31 @@ export const EntitySuggestions = ({
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
+    setStatus(response.status);
     store?.dispatch(notify(response.message, type));
   };
 
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
+  useEffect(() => {
+    const params = new RequestParams({
+      property: reviewedProperty.name,
+    });
+    ixStatus(params)
+      .then((response: any) => {
+        console.log(response);
+        setStatus(response.status);
+      })
+      .catch(() => {
+        setStatus('error');
+      });
+  }, []);
+
+  const ixmessages: { [k: string]: string } = {
+    ready: 'Find suggestions',
+    processing_model: 'Training model...',
+    processing_suggestions: 'Finding suggestions...',
+    error: 'Error',
+  };
 
   return (
     <div className="panel entity-suggestions">
@@ -212,8 +241,12 @@ export const EntitySuggestions = ({
             <Translate>{reviewedProperty.label}</Translate>
           </span>
         </div>
-        <button type="button" className="btn service-request-button" onClick={_trainModel}>
-          <Translate>Find suggestions</Translate>
+        <button
+          type="button"
+          className={`btn service-request-button ${status}`}
+          onClick={_trainModel}
+        >
+          <Translate>{ixmessages[status]}</Translate>
         </button>
         <button className="btn btn-outline-primary" onClick={() => onClose()}>
           <Translate>Dashboard</Translate>

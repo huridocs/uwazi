@@ -220,7 +220,7 @@ class InformationExtraction {
     const templates = await this.getTemplatesWithProperty(property);
     const files = await this.getFiles(templates, property, false);
     if (files.length === 0) {
-      emtiToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
+      emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
     }
     await this.sendMaterials(files, property, serviceUrl, 'prediction_data');
@@ -316,7 +316,7 @@ class InformationExtraction {
     });
 
     await this.saveModelProcess(property);
-    return { status: 'processing', message: 'Training model' };
+    return { status: 'processing_model', message: 'Training model' };
   };
 
   status = async (property: string) => {
@@ -331,11 +331,11 @@ class InformationExtraction {
     });
 
     if (currentModel) {
-      return { status: 'processing', message: 'Training model' };
+      return { status: 'processing_model', message: 'Training model' };
     }
 
     if (suggestion) {
-      return { status: 'processing', message: 'Getting suggestions' };
+      return { status: 'processing_suggestions', message: 'Getting suggestions' };
     }
 
     return { status: 'ready', message: 'Ready' };
@@ -391,7 +391,7 @@ class InformationExtraction {
           message.tenant,
           'ix_model_status',
           message.params!.property_name,
-          'proccesing',
+          'proccesing_suggestions',
           'Getting suggestions'
         );
 

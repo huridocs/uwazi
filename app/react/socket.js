@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { isClient } from 'app/utils';
 
-let socket = { on: () => {} };
+let socket = { on: (_eventName, _callback) => {} };
 if (isClient) {
   //only websockets used, this allows for non sticky sessions on load balancer
   socket = io({ transports: ['websocket'], upgrade: false });

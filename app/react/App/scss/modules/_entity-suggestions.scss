@@ -6,7 +6,7 @@
   background-color: white;
   font-weight: 600;
 
-  &.proccessing {
+  &.processing {
     color: #90a4ae;
     font-style: italic;
     cursor: progress;
@@ -16,7 +16,6 @@
     color: #d1d1d1;
     border-color: #505050;
     background-color: #505050;
-    cursor: not-allowed;
   }
 
   &.success {
