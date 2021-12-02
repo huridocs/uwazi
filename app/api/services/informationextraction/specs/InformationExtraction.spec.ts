@@ -49,11 +49,11 @@ describe('InformationExtraction', () => {
       await informationExtraction.trainModel('property1');
 
       xmlA = await fs.readFile(
-        'app/api/services/informationExtraction/specs/uploads/segmentation/documentA.xml'
+        'app/api/services/informationextraction/specs/uploads/segmentation/documentA.xml'
       );
 
       const xmlC = await fs.readFile(
-        'app/api/services/informationExtraction/specs/uploads/segmentation/documentC.xml'
+        'app/api/services/informationextraction/specs/uploads/segmentation/documentC.xml'
       );
 
       expect(IXExternalService.materialsFilePartams).toEqual({
@@ -127,7 +127,7 @@ describe('InformationExtraction', () => {
       await informationExtraction.getSuggestions('property1');
 
       xmlA = await fs.readFile(
-        'app/api/services/informationExtraction/specs/uploads/segmentation/documentA.xml'
+        'app/api/services/informationextraction/specs/uploads/segmentation/documentA.xml'
       );
 
       expect(IXExternalService.materialsFilePartams).toEqual({
