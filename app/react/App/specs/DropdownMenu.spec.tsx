@@ -50,23 +50,12 @@ describe('DropdownMenu', () => {
 
   it('should open drowpown when clicked', () => {
     const mountComp = shallow(<DropdownMenu link={immutableLinks.get(0)} position={1} />);
-    mountComp
-      .find('li > a#navbarDropdownMenuLink')
-      .first()
-      .simulate('click');
+    mountComp.find('li > a#navbarDropdownMenuLink').first().simulate('click');
     expect(setShowing).toBeCalledWith(true);
   });
   it('should have correct link ifthe link is internal', () => {
     const mountComp = shallow(<DropdownMenu link={immutableLinks.get(0)} position={1} />);
-    expect(
-      mountComp
-        .find('ul')
-        .children()
-        .first()
-        .children()
-        .first()
-        .prop('to')
-    ).toBe('/some_url');
+    expect(mountComp.find('ul').children().first().children().first().prop('to')).toBe('/some_url');
   });
   it('should have correct link ifthe link is external', () => {
     const externalLink = fromJS({
@@ -81,14 +70,8 @@ describe('DropdownMenu', () => {
       type: 'group',
     });
     const mountComp = shallow(<DropdownMenu link={externalLink} position={1} />);
-    expect(
-      mountComp
-        .find('ul')
-        .children()
-        .first()
-        .children()
-        .first()
-        .prop('href')
-    ).toBe('http://google.com');
+    expect(mountComp.find('ul').children().first().children().first().prop('href')).toBe(
+      'http://google.com'
+    );
   });
 });

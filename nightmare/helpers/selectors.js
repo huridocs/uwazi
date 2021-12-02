@@ -339,8 +339,7 @@ export default {
       mainSuperpower:
         '#metadataForm > div:nth-child(3) > div.form-group.select > ul > li:nth-child(3) > div > select',
       suporPowers: {
-        fly:
-          '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(3) > label',
+        fly: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(3) > label',
         laserBeam:
           '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(8) > label',
         moreButton:
@@ -356,8 +355,7 @@ export default {
         '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > div > div > h1',
       realName:
         '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(2) > dd',
-      age:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(3) > dd',
+      age: '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(3) > dd',
       knownAccomplices:
         '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div > dl:nth-child(4) > dd > ul > li > a',
       mainSuperpower:

@@ -14,13 +14,8 @@ import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
   render() {
-    const {
-      entityBeingEdited,
-      exclusivelyViewButton,
-      formName,
-      hideDelete,
-      uploadFileprogress,
-    } = this.props;
+    const { entityBeingEdited, exclusivelyViewButton, formName, hideDelete, uploadFileprogress } =
+      this.props;
     const data = this.props.data.toJS();
 
     const ViewButton = (

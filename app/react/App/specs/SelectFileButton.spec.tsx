@@ -48,10 +48,7 @@ describe('SelectFileButton', () => {
         <span />
       </SelectFileButton>
     );
-    mountComp
-      .find('input[type="file"]')
-      .first()
-      .simulate('change', event);
+    mountComp.find('input[type="file"]').first().simulate('change', event);
 
     expect(mockFunc).toHaveBeenCalledWith(event.target.files[0]);
   });

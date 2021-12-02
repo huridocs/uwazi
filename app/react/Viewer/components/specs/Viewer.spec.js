@@ -69,12 +69,7 @@ describe('Viewer', () => {
   it('should not render SourceDocument when targetDocument loaded', () => {
     props.targetDoc = true;
     render({ mount: true });
-    expect(
-      component
-        .find(SourceDocument)
-        .parent(ShowIf)
-        .props().if
-    ).toBe(false);
+    expect(component.find(SourceDocument).parent(ShowIf).props().if).toBe(false);
   });
 
   it('should render Document after component did mount', () => {
@@ -87,31 +82,11 @@ describe('Viewer', () => {
     expect(component.find(SourceDocument).length).toBe(1);
     expect(component.find(TargetDocument).length).toBe(1);
 
-    expect(
-      component
-        .find(ContextMenu)
-        .at(0)
-        .props().overrideShow
-    ).toBe(true);
-    expect(
-      component
-        .find(ContextMenu)
-        .at(1)
-        .props().overrideShow
-    ).toBe(true);
+    expect(component.find(ContextMenu).at(0).props().overrideShow).toBe(true);
+    expect(component.find(ContextMenu).at(1).props().overrideShow).toBe(true);
 
-    expect(
-      component
-        .find(ContextMenu)
-        .at(0)
-        .props().show
-    ).toBe(false);
-    expect(
-      component
-        .find(ContextMenu)
-        .at(1)
-        .props().show
-    ).toBe(false);
+    expect(component.find(ContextMenu).at(0).props().show).toBe(false);
+    expect(component.find(ContextMenu).at(1).props().show).toBe(false);
   });
 
   it('should show the correct panels and menus', () => {
@@ -120,18 +95,8 @@ describe('Viewer', () => {
 
     render();
 
-    expect(
-      component
-        .find(ContextMenu)
-        .at(0)
-        .props().show
-    ).toBe(true);
-    expect(
-      component
-        .find(ContextMenu)
-        .at(1)
-        .props().show
-    ).toBe(true);
+    expect(component.find(ContextMenu).at(0).props().show).toBe(true);
+    expect(component.find(ContextMenu).at(1).props().show).toBe(true);
   });
 
   it('should render plain text always, if raw is false should render SourceDocument on update', () => {

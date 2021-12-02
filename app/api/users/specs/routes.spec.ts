@@ -67,9 +67,7 @@ describe('users routes', () => {
       });
 
       it('should call users save with the body', async () => {
-        await request(app)
-          .post('/api/users')
-          .send(userToUpdate);
+        await request(app).post('/api/users').send(userToUpdate);
 
         expect(users.save).toHaveBeenCalledWith(
           userToUpdate,
@@ -84,9 +82,7 @@ describe('users routes', () => {
           async ({ field, value, dataPath, keyword }) => {
             // @ts-ignore
             const invalidUser = { ...userToUpdate, [field]: value };
-            const response = await request(app)
-              .post('/api/users')
-              .send(invalidUser);
+            const response = await request(app).post('/api/users').send(invalidUser);
             expect(response.status).toBe(400);
             expect(response.body.errors[0].dataPath).toEqual(dataPath);
             expect(response.body.errors[0].keyword).toEqual(keyword);
@@ -98,9 +94,7 @@ describe('users routes', () => {
     describe('/users/new', () => {
       it('should call users newUser with the body', async () => {
         spyOn(users, 'newUser').and.returnValue(Promise.resolve());
-        const response = await request(app)
-          .post('/api/users/new')
-          .send(userToUpdate);
+        const response = await request(app).post('/api/users/new').send(userToUpdate);
 
         expect(response.status).toBe(200);
         expect(users.newUser).toHaveBeenCalledWith(
@@ -115,9 +109,7 @@ describe('users routes', () => {
           async ({ field, value, dataPath, keyword }) => {
             // @ts-ignore
             const invalidUser = { ...userToUpdate, [field]: value };
-            const response = await request(app)
-              .post('/api/users/new')
-              .send(invalidUser);
+            const response = await request(app).post('/api/users/new').send(invalidUser);
             expect(response.status).toBe(400);
             expect(response.body.errors[0].dataPath).toEqual(dataPath);
             expect(response.body.errors[0].keyword).toEqual(keyword);
@@ -142,9 +134,7 @@ describe('users routes', () => {
         { value: undefined, keyword: 'required' },
         { value: 'a', keyword: 'minLength' },
       ])('should invalidate if the schema is not matched', async ({ value, keyword }) => {
-        const response = await request(app)
-          .post('/api/recoverpassword')
-          .send({ email: value });
+        const response = await request(app).post('/api/recoverpassword').send({ email: value });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toEqual(keyword);
       });
@@ -176,9 +166,7 @@ describe('users routes', () => {
         { key: 'key', password: undefined, keyword: 'required' },
         { key: undefined, password: 'pass', keyword: 'required' },
       ])('should invalidate if the schema is not matched', async ({ key, password, keyword }) => {
-        const response = await request(app)
-          .post('/api/resetpassword')
-          .send({ key, password });
+        const response = await request(app).post('/api/resetpassword').send({ key, password });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toEqual(keyword);
       });
@@ -198,9 +186,7 @@ describe('users routes', () => {
         { username: 'name', code: undefined, keyword: 'required' },
         { username: undefined, code: 'code', keyword: 'required' },
       ])('should invalidate if the schema is not matched', async ({ username, code, keyword }) => {
-        const response = await request(app)
-          .post('/api/unlockaccount')
-          .send({ username, code });
+        const response = await request(app).post('/api/unlockaccount').send({ username, code });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toEqual(keyword);
       });
@@ -238,25 +224,19 @@ describe('users routes', () => {
     });
 
     it('should invalidate if the schema is not matched', async () => {
-      const response = await request(app)
-        .delete('/api/users')
-        .query({ _id: undefined });
+      const response = await request(app).delete('/api/users').query({ _id: undefined });
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toEqual('required');
     });
 
     it('should need authorization', async () => {
       currentUser!.role = UserRole.EDITOR;
-      const response = await request(app)
-        .delete('/api/users')
-        .query({ _id: 'user1' });
+      const response = await request(app).delete('/api/users').query({ _id: 'user1' });
       expect(response.status).toBe(401);
     });
 
     it('should use users to delete it', async () => {
-      const response = await request(app)
-        .delete('/api/users')
-        .query({ _id: 'userToDeleteId' });
+      const response = await request(app).delete('/api/users').query({ _id: 'userToDeleteId' });
       expect(response.status).toBe(200);
       expect(users.delete).toHaveBeenCalledWith('userToDeleteId', currentUser);
     });

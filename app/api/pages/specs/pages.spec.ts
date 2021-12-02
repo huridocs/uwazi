@@ -8,9 +8,7 @@ import pages from '../pages';
 
 describe('pages', () => {
   beforeEach(done => {
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(async () => {

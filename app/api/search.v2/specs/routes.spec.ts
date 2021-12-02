@@ -36,9 +36,7 @@ describe('entities get searchString', () => {
     });
 
     it('should return all entities for the default language and required links', async () => {
-      const { body } = await request(app)
-        .get('/api/v2/entities')
-        .expect(200);
+      const { body } = await request(app).get('/api/v2/entities').expect(200);
 
       expect(body.data).toEqual([
         {

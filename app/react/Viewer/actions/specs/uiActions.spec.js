@@ -153,9 +153,7 @@ describe('Viewer uiActions', () => {
           { duration: 1, dividerOffset: 1 }
         );
 
-        expect(
-          scroller.to
-        ).toHaveBeenCalledWith(
+        expect(scroller.to).toHaveBeenCalledWith(
           '.document-viewer [data-id="id"] .highlight-rectangle',
           '.document-viewer',
           { duration: 50, offset: -30, dividerOffset: 1 }

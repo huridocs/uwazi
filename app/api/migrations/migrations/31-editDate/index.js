@@ -17,10 +17,7 @@ export default {
       let time = entity.creationDate; //entity.creationDate;
 
       // eslint-disable-next-line no-await-in-loop
-      const logs = await db
-        .collection('updatelogs')
-        .find({ mongoId: entity._id })
-        .toArray();
+      const logs = await db.collection('updatelogs').find({ mongoId: entity._id }).toArray();
 
       if (logs.length) {
         time = logs[0].timestamp;

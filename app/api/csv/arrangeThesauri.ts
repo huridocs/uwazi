@@ -84,9 +84,9 @@ const syncSaveThesauri = async (
   );
   for (let i = 0; i < thesauriWithNewValues.length; i += 1) {
     const thesaurus = allRelatedThesauri[i];
-    const newValues = Array.from(
-      thesauriIdToNewValues.get(thesaurus._id.toString()) || []
-    ).map(tval => ({ label: tval }));
+    const newValues = Array.from(thesauriIdToNewValues.get(thesaurus._id.toString()) || []).map(
+      tval => ({ label: tval })
+    );
     const thesaurusValues = thesaurus.values || [];
     // eslint-disable-next-line no-await-in-loop
     await thesauri.save({

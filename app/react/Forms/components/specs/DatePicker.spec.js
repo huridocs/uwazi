@@ -150,10 +150,7 @@ describe('DatePicker', () => {
         props.endOfDay = true;
         render();
         input.simulate('change', newDate);
-        const expectedOnChangeValue = moment
-          .utc(newDate)
-          .local()
-          .endOf('day');
+        const expectedOnChangeValue = moment.utc(newDate).local().endOf('day');
         expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
       });
     });

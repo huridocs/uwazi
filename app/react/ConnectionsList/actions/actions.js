@@ -78,7 +78,7 @@ export function loadAllReferences() {
 }
 
 export function loadMoreReferences(limit) {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
     dispatch(
       actions.set('relationships/list/filters', relationshipsList.filters.set('limit', limit))
@@ -88,7 +88,7 @@ export function loadMoreReferences(limit) {
 }
 
 export function setFilter(groupFilterValues) {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
     const currentFilter = relationshipsList.filters.get('filter') || Immutable({});
     const newFilter = currentFilter.merge(groupFilterValues);
@@ -100,7 +100,7 @@ export function setFilter(groupFilterValues) {
 }
 
 export function resetSearch() {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     dispatch(formActions.change('relationships/list/search.searchTerm', ''));
     dispatch(actions.set('relationships/list/filters', Immutable({})));
     return searchReferences()(dispatch, getState);
@@ -108,7 +108,7 @@ export function resetSearch() {
 }
 
 export function switchView(type) {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     dispatch(actions.set('relationships/list/view', type));
     if (type === 'graph') {
       return loadAllReferences()(dispatch, getState);

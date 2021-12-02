@@ -37,9 +37,7 @@ import { search } from '../../search';
 describe('relationships', () => {
   beforeEach(done => {
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

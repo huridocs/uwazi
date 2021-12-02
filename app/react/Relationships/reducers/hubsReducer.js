@@ -45,9 +45,7 @@ const conformRelationships = action => {
       .get('rightRelationships')
       .reduce((memo, relationshipsArray, template) => {
         let newMemo = memo.push(
-          fromJS({})
-            .set('template', template)
-            .set('relationships', relationshipsArray)
+          fromJS({}).set('template', template).set('relationships', relationshipsArray)
         );
         index += 1;
         if (action.editing && index === hub.get('rightRelationships').size) {
@@ -59,7 +57,7 @@ const conformRelationships = action => {
   }, fromJS([]));
 };
 
-export default function(state = initialState, action = {}) {
+export default function (state = initialState, action = {}) {
   let relationships;
   let value;
   let updatedHubs;

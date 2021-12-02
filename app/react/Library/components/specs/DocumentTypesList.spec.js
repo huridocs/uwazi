@@ -75,23 +75,14 @@ describe('DocumentTypesList', () => {
 
     it('should render a sublist for types groups', () => {
       render();
-      const liElements = component
-        .find('li')
-        .at(2)
-        .find('ul')
-        .find('li');
+      const liElements = component.find('li').at(2).find('ul').find('li');
       expect(liElements.length).toBe(2);
     });
 
     it('should render as checked the selected types', () => {
       render();
       const liElements = component.find('li');
-      expect(
-        liElements
-          .at(1)
-          .find('input')
-          .props().checked
-      ).toBe(true);
+      expect(liElements.at(1).find('input').props().checked).toBe(true);
     });
   });
 
@@ -121,10 +112,7 @@ describe('DocumentTypesList', () => {
     it('should check it', () => {
       render();
       const liElements = component.find('li');
-      liElements
-        .at(0)
-        .find('input')
-        .simulate('change');
+      liElements.at(0).find('input').simulate('change');
       expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 1]);
     });
 

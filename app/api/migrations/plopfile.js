@@ -51,8 +51,7 @@ module.exports = plop => {
       },
       {
         type: 'add',
-        path:
-          './migrations/{{nextMigrationDelta}}-{{name}}/specs/{{nextMigrationDelta}}-{{name}}.spec.js',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/{{nextMigrationDelta}}-{{name}}.spec.js',
         templateFile: './templates/migration.spec.txt',
       },
       {

@@ -40,52 +40,25 @@ describe('NavlinksSettings', () => {
   });
 
   it('should save links upon submit', () => {
-    component
-      .find(Form)
-      .props()
-      .onSubmit();
+    component.find(Form).props().onSubmit();
     expect(props.saveLinks).toHaveBeenCalledWith({ _id: 'abc', _rev: 'xyz', links: props.links });
   });
 
   it('should disable saving if savingNavlinks', () => {
     props.savingNavlinks = true;
     component = shallow(<NavlinksSettings {...props} />);
-    expect(
-      component
-        .find('button[type="submit"]')
-        .first()
-        .props().disabled
-    ).toBe(true);
+    expect(component.find('button[type="submit"]').first().props().disabled).toBe(true);
   });
 
   it('should list all existing links', () => {
     expect(component.find(NavlinkForm).length).toBe(2);
-    expect(
-      component
-        .find(NavlinkForm)
-        .first()
-        .props().link
-    ).toBe(props.links[0]);
-    expect(
-      component
-        .find(NavlinkForm)
-        .last()
-        .props().link
-    ).toBe(props.links[1]);
-    expect(
-      component
-        .find(NavlinkForm)
-        .first()
-        .props().sortLink
-    ).toBe(props.sortLink);
+    expect(component.find(NavlinkForm).first().props().link).toBe(props.links[0]);
+    expect(component.find(NavlinkForm).last().props().link).toBe(props.links[1]);
+    expect(component.find(NavlinkForm).first().props().sortLink).toBe(props.sortLink);
   });
 
   it('should have an add button that calls on addLink with links', () => {
-    component
-      .find('.menu-link-group-button')
-      .first()
-      .props()
-      .onClick();
+    component.find('.menu-link-group-button').first().props().onClick();
     expect(props.addLink).toHaveBeenCalledWith(props.links, 'link');
   });
 

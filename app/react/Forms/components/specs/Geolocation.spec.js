@@ -98,18 +98,8 @@ describe('Geolocation', () => {
         { lat: 13, lon: 5, label: 'home' },
         props.value[1],
       ]);
-      expect(
-        component
-          .find('input')
-          .at(0)
-          .props().value
-      ).toEqual(13);
-      expect(
-        component
-          .find('input')
-          .at(1)
-          .props().value
-      ).toEqual(5);
+      expect(component.find('input').at(0).props().value).toEqual(13);
+      expect(component.find('input').at(1).props().value).toEqual(5);
     });
 
     it('should work assign default values if original point was null', () => {
@@ -213,18 +203,8 @@ describe('Geolocation', () => {
     });
 
     it('should remove the inputs values', () => {
-      expect(
-        component
-          .find('input')
-          .at(0)
-          .props().value
-      ).toEqual('');
-      expect(
-        component
-          .find('input')
-          .at(1)
-          .props().value
-      ).toEqual('');
+      expect(component.find('input').at(0).props().value).toEqual('');
+      expect(component.find('input').at(1).props().value).toEqual('');
     });
   });
 });

@@ -18,10 +18,7 @@ describe('migration remove-_id-from-filter-items', () => {
 
   it('should remove _id field from filter items', async () => {
     await migration.up(testingDB.mongodb);
-    const settings = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const settings = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     const [item1, item2, item3] = settings[0].filters[0].items;
     expect(item1).not.toHaveProperty('_id');
@@ -48,10 +45,7 @@ describe('migration remove-_id-from-filter-items', () => {
     ];
     await testingDB.clearAllAndLoad({ settings });
     await migration.up(testingDB.mongodb);
-    const savedSettings = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const savedSettings = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     expect(savedSettings).toEqual(settings);
   });
@@ -66,10 +60,7 @@ describe('migration remove-_id-from-filter-items', () => {
 
     await testingDB.clearAllAndLoad({ settings });
     await migration.up(testingDB.mongodb);
-    const savedSettings = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const savedSettings = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     expect(savedSettings).toEqual(settings);
   });
@@ -89,10 +80,7 @@ describe('migration remove-_id-from-filter-items', () => {
 
     await testingDB.clearAllAndLoad({ settings });
     await migration.up(testingDB.mongodb);
-    const savedSettings = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const savedSettings = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     expect(savedSettings).toEqual(settings);
   });
@@ -115,10 +103,7 @@ describe('migration remove-_id-from-filter-items', () => {
     ];
     await testingDB.clearAllAndLoad({ settings });
     await migration.up(testingDB.mongodb);
-    const savedSettings = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const savedSettings = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     expect(savedSettings).toEqual(settings);
   });

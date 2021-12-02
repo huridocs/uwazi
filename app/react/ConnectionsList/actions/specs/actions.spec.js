@@ -223,9 +223,7 @@ describe('ConnectionsList actions', () => {
       expect(referencesAPI.search).toHaveBeenCalledWith(
         new RequestParams({
           sharedId: 'sid',
-          filter: getState()
-            .relationships.list.filters.get('filter')
-            .toJS(),
+          filter: getState().relationships.list.filters.get('filter').toJS(),
           order: 'order',
           searchTerm: '',
         })

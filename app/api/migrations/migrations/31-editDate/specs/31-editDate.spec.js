@@ -18,10 +18,7 @@ describe('migration editDate', () => {
 
   it('should populate editDate with timestamp from updatelogs', async () => {
     await migration.up(testingDB.mongodb);
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find({})
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find({}).toArray();
 
     const [entity1, entity2, entity3] = entities;
     const updatelog1 = await testingDB.mongodb

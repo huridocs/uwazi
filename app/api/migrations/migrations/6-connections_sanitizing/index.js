@@ -44,10 +44,7 @@ export default {
     while (await secondCursor.hasNext()) {
       const hub = await secondCursor.next();
 
-      const hubConnections = await db
-        .collection('connections')
-        .find({ hub: hub._id })
-        .toArray();
+      const hubConnections = await db.collection('connections').find({ hub: hub._id }).toArray();
 
       const shouldDeleteHub = languages.reduce(
         (shouldDelete, currentLanguage) =>

@@ -51,16 +51,8 @@ export default {
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
       if (entity.file) {
-        const {
-          file,
-          uploaded,
-          toc,
-          fullText,
-          processed,
-          totalPages,
-          pdfInfo,
-          ...newEntity
-        } = entity;
+        const { file, uploaded, toc, fullText, processed, totalPages, pdfInfo, ...newEntity } =
+          entity;
 
         const fileToCreate = {
           type: 'document',

@@ -6,10 +6,7 @@ import fixtures from './fixtures.js';
 describe('migration geolocation_fields', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -23,12 +20,7 @@ describe('migration geolocation_fields', () => {
   it('should set the geolocation values to all documents', done => {
     migration
       .up(testingDB.mongodb)
-      .then(() =>
-        testingDB.mongodb
-          .collection('entities')
-          .find()
-          .toArray()
-      )
+      .then(() => testingDB.mongodb.collection('entities').find().toArray())
       .then(entities => {
         expect(entities[0].metadata.geolocation_geolocation).toEqual({ lat: 5, lon: 8 });
         expect(entities[1].metadata.geolocation_geolocation).toEqual({ lat: 5, lon: 8 });

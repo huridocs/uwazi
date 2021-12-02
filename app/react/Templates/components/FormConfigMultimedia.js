@@ -53,14 +53,8 @@ const style = index => (
 
 class FormConfigMultimedia extends Component {
   render() {
-    const {
-      index,
-      canShowInCard,
-      helpText,
-      canSetStyle,
-      canBeRequired,
-      labelHasError,
-    } = this.props;
+    const { index, canShowInCard, helpText, canSetStyle, canBeRequired, labelHasError } =
+      this.props;
 
     return (
       <div>
