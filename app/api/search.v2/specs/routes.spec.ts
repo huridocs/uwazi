@@ -110,23 +110,6 @@ describe('entities get searchString', () => {
       expect(bodyEn.data).toEqual([expect.objectContaining({ title: 'title to search 2' })]);
     });
 
-    it('should allow limiting the results and return required links', async () => {
-      const {
-        body,
-        // @ts-ignore
-        req: { path },
-      } = await request(app)
-        .get('/api/v2/entities')
-        .query({ filter: { searchString: 'title:(title)' }, page: { limit: 2 } });
-
-      expect(body.data).toEqual([
-        expect.objectContaining({ _id: entity1en.toString() }),
-        expect.objectContaining({ _id: entity2en.toString() }),
-      ]);
-
-      expect(body.links.first).toEqual(path);
-    });
-
     it('should still search with simple query for no valid lucene syntax', async () => {
       const { body } = await request(app)
         .get('/api/v2/entities')

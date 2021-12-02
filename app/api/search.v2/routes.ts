@@ -7,6 +7,7 @@ import { SearchQuery } from 'shared/types/SearchQueryType';
 
 import { mapResults } from 'api/search.v2/searchResponse';
 import { buildQuery } from './buildQuery';
+import qs from 'qs';
 
 interface UwaziResponse {
   data: any;
@@ -38,6 +39,11 @@ const searchRoutes = (app: Application) => {
         links: {
           self: url,
           first: query.page?.limit ? url : undefined,
+          next:
+            query.page?.limit ? '/api/v2/entities?' +
+            qs.stringify({
+              page: { limit: query.page.limit, offset: (query.page.offset || 0) + query.page.limit },
+            }) : undefined,
         },
       });
     }

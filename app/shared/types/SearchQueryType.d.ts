@@ -14,6 +14,7 @@ export interface AdvancedQuery {
 export interface SearchQuery {
   page?: {
     limit?: number;
+    offset?: number;
   };
   filter?: {
     searchString?: string;

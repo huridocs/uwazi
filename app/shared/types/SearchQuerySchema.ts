@@ -22,7 +22,7 @@ export const SearchQuerySchema = {
     page: {
       type: 'object',
       additionalProperties: false,
-      properties: { limit: { type: 'number' } },
+      properties: { limit: { type: 'number' }, offset: { type: 'number' } },
     },
     filter: {
       type: 'object',

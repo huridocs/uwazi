@@ -213,6 +213,8 @@ describe('Metadata filters', () => {
 
 it.todo('Pagination');
 
+it.todo('Snippets of other texts other than fullText');
+
 it.todo('Geolocation');
 
 it.todo('Aggregations');

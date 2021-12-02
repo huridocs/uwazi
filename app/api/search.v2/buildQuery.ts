@@ -116,7 +116,7 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
       },
     },
     sort,
-    from: 0,
+    from: query.page?.offset || 0,
     size: query.page?.limit || 30,
   };
 };

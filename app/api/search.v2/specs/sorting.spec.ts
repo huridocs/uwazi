@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { Application } from 'express';
 import request from 'supertest';
 
@@ -178,30 +177,4 @@ describe('Sorting', () => {
       { metadata: { selectProperty: [{ label: 'D Last select' }] } },
     ]);
   });
-
-  it('should sort by inherited values', async () => {
-    const query: SearchQuery = {
-      sort: 'metadata.inheritedProperty.inheritedValue',
-      fields: ['metadata.inheritedProperty'],
-    };
-
-    await elasticTesting.refresh();
-
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
-
-    expect(body.data).toMatchObject([
-      { metadata: { inheritedProperty: [{ value: 'a First select' }] } },
-      { metadata: { inheritedProperty: [{ value: 'B Second select' }] } },
-      { metadata: { inheritedProperty: [{ value: 'c Third select' }] } },
-      { metadata: { inheritedProperty: [{ value: 'D Last select' }] } },
-    ]);
-  });
-
-  it.todo('we need factory.thesaurusValue that do not adds label');
-  it.todo(
-    'discuss if we want to sort by inherited properties exposing the structure or something more semantic'
-  );
 });
