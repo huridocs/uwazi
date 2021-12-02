@@ -12,7 +12,6 @@ import { Icon, ToggleButton } from 'app/UI';
 import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
-
 import { ToggleChildren } from './ToggleChildren';
 import * as tips from './collectionSettingsTips';
 import { SettingsFormElement } from './SettingsFormElement';
@@ -197,6 +196,17 @@ const CollectionSettings = ({
             <input type="text" name="matomoConfig" ref={register} className="form-control" />
           </ToggleChildren>
         </SettingsFormElement>
+
+        {/* <FeatureToggle feature="ocrservice">*/}
+
+        <h2>
+          <Translate>Services</Translate>
+        </h2>
+
+        <SettingsFormElement label="Document OCR trigger" tip={tips.ocrTrigger}>
+          <ToggleButton checked={false} onClick={() => {}} />
+        </SettingsFormElement>
+        {/* </FeatureToggle> */}
 
         <h2>
           <Translate>Forms and email configuration</Translate>

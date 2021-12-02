@@ -113,3 +113,5 @@ export const publicForm = [
 export const mapTiler = (
   <Translate>We provide a default key, you can set your own MapTiler API key</Translate>
 );
+
+export const ocrTrigger = <Translate>This is a default tip</Translate>;
