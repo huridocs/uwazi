@@ -905,8 +905,7 @@ export default {
         permissions: entity.permissions || [],
       },
       params,
-      true,
-      false
+      { updateRelationships: true, index: false }
     );
   },
 };
