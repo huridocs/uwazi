@@ -1,5 +1,7 @@
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXSuggestionsFilter } from 'shared/types/suggestionType';
+import { EntitySuggestionType, IXSuggestionsFilter } from 'shared/types/suggestionType';
+import entities from 'api/entities/entities';
+import { EntitySchema } from 'shared/types/entityType';
 
 export const Suggestions = {
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
@@ -116,5 +118,24 @@ export const Suggestions = {
 
     const totalPages = Math.ceil(count[0] / limit);
     return { suggestions: data, totalPages };
+  },
+  accept: async (suggestion: EntitySuggestionType, allLanguages: boolean) => {
+    const query = allLanguages
+      ? { sharedId: suggestion.sharedId.toString() }
+      : { _id: suggestion._id };
+    const entitiesToUpdate = await entities.get(query, '+permissions');
+    const pureValues = {};
+    const diffMetadata = {};
+    if (suggestion.propertyName !== 'title') {
+      await Promise.all(
+        entitiesToUpdate.map(async (entity: EntitySchema) =>
+          entities.saveEntityMetadata(entity, pureValues, diffMetadata)
+        )
+      );
+    } else {
+      await Promise.all(
+        entitiesToUpdate.map(async (entity: EntitySchema) => entities.save(entity))
+      );
+    }
   },
 };

@@ -19,4 +19,9 @@ const ixStatus = async (requestParams: RequestParams) => {
   return response;
 };
 
-export { getSuggestions, trainModel, ixStatus };
+const acceptEntitySuggestion = async (requestParams: RequestParams) => {
+  const { json: response } = await api.post('suggestions/accept', requestParams);
+  return response;
+};
+
+export { getSuggestions, trainModel, ixStatus, acceptEntitySuggestion };

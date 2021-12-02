@@ -13,18 +13,16 @@ import {
   FilterProps,
 } from 'react-table';
 import { t, Translate } from 'app/I18N';
+import socket from 'app/socket';
 import { Icon } from 'app/UI';
+import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-
-import { getSuggestions, trainModel, ixStatus } from './SuggestionsAPI';
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { store } from 'app/store';
-import socket from 'app/socket';
-
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { getSuggestions, acceptEntitySuggestion, trainModel, ixStatus } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -81,12 +79,24 @@ export const EntitySuggestions = ({
     );
   };
 
+  const acceptSuggestion = async (suggestion: EntitySuggestionType) => {
+    const params = new RequestParams({
+      allLanguages: false,
+      suggestion,
+    });
+    await acceptEntitySuggestion(params);
+  };
+
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
     return (
       <div>
         {suggestion.state !== SuggestionState.matching && (
-          <button type="button" className="btn btn-outline-primary">
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            onClick={async () => acceptSuggestion(suggestion)}
+          >
             <Icon icon="check" />
             &nbsp;
             <Translate>Accept</Translate>
