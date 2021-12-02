@@ -45,6 +45,7 @@ class InformationExtraction {
   public taskManager: TaskManager;
 
   batchSize = 50;
+  static mock: any;
 
   constructor() {
     this.taskManager = new TaskManager({

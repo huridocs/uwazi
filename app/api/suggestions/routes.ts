@@ -5,8 +5,12 @@ import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
+import { config } from 'api/config';
 
-const IX = new InformationExtraction();
+let IX: InformationExtraction;
+if (config.externalServices) {
+  IX = new InformationExtraction();
+}
 
 export const suggestionsRoutes = (app: Application) => {
   app.get(
@@ -35,7 +39,12 @@ export const suggestionsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
-      console.log('train', req.body);
+      if (!IX) {
+        res.status(500).json({
+          error: 'Information Extraction service is not available',
+        });
+        return;
+      }
       const status = await IX.trainModel(req.body.property);
       res.json(status);
     }
@@ -49,6 +58,12 @@ export const suggestionsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
+      if (!IX) {
+        res.status(500).json({
+          error: 'Information Extraction service is not available',
+        });
+        return;
+      }
       const status = await IX.status(req.query.property);
       res.json(status);
     }

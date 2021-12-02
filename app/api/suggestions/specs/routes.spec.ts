@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
+
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures } from 'api/suggestions/specs/fixtures';
@@ -13,6 +14,15 @@ jest.mock(
     next();
   }
 );
+
+jest.mock('api/services/informationextraction/InformationExtraction', () => {
+  return {
+    InformationExtraction: class IXMock {
+      status = jest.fn().mockResolvedValue({ status: 'ready' });
+      trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
+    },
+  };
+});
 
 describe('suggestions routes', () => {
   let user: { username: string; role: string } | undefined;
@@ -34,7 +44,7 @@ describe('suggestions routes', () => {
 
   afterAll(async () => testingEnvironment.tearDown());
 
-  describe('GET', () => {
+  describe('GET /api/suggestions', () => {
     it('should return the suggestions filtered by the request language and the property name', async () => {
       const response = await request(app)
         .get('/api/suggestions')
@@ -107,6 +117,26 @@ describe('suggestions routes', () => {
           .query({});
         expect(response.unauthorized).toBe(true);
       });
+    });
+  });
+
+  describe('GET /api/suggestions/status', () => {
+    it('should return the status of the IX process', async () => {
+      const response = await request(app)
+        .get('/api/suggestions/status')
+        .query({ property: 'super_powers' });
+
+      expect(response.body).toMatchObject({ status: 'ready' });
+    });
+  });
+
+  describe('POST /api/suggestions/train', () => {
+    it('should return the status of the IX process', async () => {
+      const response = await request(app)
+        .post('/api/suggestions/train')
+        .send({ property: 'super_powers' });
+
+      expect(response.body).toMatchObject({ status: 'processing' });
     });
   });
 });
