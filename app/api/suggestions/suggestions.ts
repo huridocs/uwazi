@@ -2,6 +2,7 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { EntitySuggestionType, IXSuggestionsFilter } from 'shared/types/suggestionType';
 import entities from 'api/entities/entities';
 import { EntitySchema } from 'shared/types/entityType';
+import { search } from 'api/search';
 
 export const Suggestions = {
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
@@ -119,10 +120,11 @@ export const Suggestions = {
     const totalPages = Math.ceil(count[0] / limit);
     return { suggestions: data, totalPages };
   },
+
   accept: async (suggestion: EntitySuggestionType, allLanguages: boolean) => {
     const query = allLanguages
       ? { sharedId: suggestion.sharedId.toString() }
-      : { _id: suggestion._id };
+      : { sharedId: suggestion.sharedId.toString(), _id: suggestion._id };
     const entitiesToUpdate = await entities.get(query, '+permissions');
     const pureValues = {};
     const diffMetadata = {};
@@ -133,9 +135,14 @@ export const Suggestions = {
         )
       );
     } else {
+      const entitiesWithChanges = entitiesToUpdate.map((entity: EntitySchema) => ({
+        ...entity,
+        title: suggestion.suggestedValue,
+      }));
       await Promise.all(
-        entitiesToUpdate.map(async (entity: EntitySchema) => entities.save(entity))
+        entitiesWithChanges.map(async (entity: EntitySchema) => entities.save(entity))
       );
+      await search.indexEntities(query, '+fullText');
     }
   },
 };
