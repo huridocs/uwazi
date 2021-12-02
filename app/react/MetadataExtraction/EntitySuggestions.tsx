@@ -52,9 +52,9 @@ export const EntitySuggestions = ({
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
 
-  socket.on('ix_model_status', (propertyName: string, status: string) => {
+  socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
     if (propertyName === reviewedProperty.name) {
-      setStatus(status);
+      setStatus(modelStatus);
     }
   });
 

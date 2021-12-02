@@ -1,10 +1,6 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import {
-  getSuggestions,
-  trainModel,
-  status as ixStatus,
-} from 'app/MetadataExtraction/SuggestionsAPI';
+import { getSuggestions, trainModel, ixStatus } from 'app/MetadataExtraction/SuggestionsAPI';
 
 describe('SuggestionsAPI', () => {
   describe('getSuggestions', () => {

@@ -27,6 +27,7 @@ describe('EntitySuggestions', () => {
     suggestions: [
       {
         entityId: 'shared1',
+        sharedId: 'shared1',
         propertyName: 'property1',
         entityTitle: 'Entity title1',
         currentValue: 'Entity title1',
@@ -39,6 +40,7 @@ describe('EntitySuggestions', () => {
       },
       {
         entityId: 'shared2',
+        sharedId: 'shared1',
         propertyName: 'property1',
         entityTitle: 'Título entidad',
         currentValue: '',
