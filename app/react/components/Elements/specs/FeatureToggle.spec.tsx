@@ -57,4 +57,17 @@ describe('FeatureToggle', () => {
     const component = renderComponent(store, 'activatedFeature');
     expect(component).toMatchSnapshot();
   });
+
+  it('should work with string paths', () => {
+    store = mockStoreCreator({
+      settings: {
+        collection: Immutable.fromJS({
+          features: { featureGroup: { enabled: true } },
+        }),
+      },
+    });
+
+    const component = renderComponent(store, 'featureGroup.enabled');
+    expect(component.find('span').text()).toEqual('test');
+  });
 });

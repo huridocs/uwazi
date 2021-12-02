@@ -41,6 +41,8 @@ describe('suggestions routes', () => {
         .query({ filter: { propertyName: 'super_powers' } });
       expect(response.body.suggestions).toMatchObject([
         {
+          entityId: '2 en',
+          sharedId: 'shared2',
           entityTitle: 'Batman',
           propertyName: 'super_powers',
           suggestedValue: 'conocimiento científico',
@@ -49,6 +51,8 @@ describe('suggestions routes', () => {
           language: 'es',
         },
         {
+          entityId: '2 en',
+          sharedId: 'shared2',
           entityTitle: 'Batman',
           propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge',
