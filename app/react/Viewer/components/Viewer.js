@@ -33,7 +33,7 @@ import TargetDocument from './TargetDocument.js';
 import determineDirection from '../utils/determineDirection';
 import { OCRButton } from './OCRButton';
 
-class Viewer extends Component {
+export class Viewer extends Component {
   constructor(props) {
     super(props);
     this.state = { firstRender: true };
@@ -244,5 +244,4 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-const container = connect(mapStateToProps, mapDispatchToProps)(Viewer);
-export { container as Viewer };
+export default connect(mapStateToProps, mapDispatchToProps)(Viewer);

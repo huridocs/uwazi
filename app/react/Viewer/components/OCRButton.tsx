@@ -8,7 +8,7 @@ const addToQueue = (
 );
 
 const inQueue = (
-  <div className="">
+  <div className="in-queue">
     <p>
       <Translate>In OCR queue</Translate>
     </p>
@@ -16,7 +16,7 @@ const inQueue = (
 );
 
 const cannotBeProcessed = (
-  <div className="">
+  <div className="cant-process">
     <p>
       <Translate>Cannot be processed</Translate>
     </p>
@@ -24,7 +24,7 @@ const cannotBeProcessed = (
 );
 
 const processing = (
-  <div className="">
+  <div className="in-queue">
     <p>
       <Translate>Processing OCR</Translate>&nbsp;...
     </p>
@@ -32,13 +32,13 @@ const processing = (
 );
 
 const ocrComplete = (
-  <div className="">
+  <div className="complete">
     <p>
       <Translate>OCR Complete</Translate>&nbsp;&#10004;
     </p>
   </div>
 );
 
-const OCRButton = () => <div className="ocr-service-display">{addToQueue}</div>;
+const OCRButton = () => <div className="ocr-service-display">{ocrComplete}</div>;
 
 export { OCRButton };

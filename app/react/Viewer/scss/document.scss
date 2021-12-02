@@ -21,6 +21,24 @@
     & p {
       margin: 0;
     }
+
+    .in-queue {
+      font-style: italic;
+      color: $c-grey-dark;
+    }
+
+    .cant-process {
+      padding: 7px 10px 7px 10px;
+      border: 1px solid $c-black;
+      border-radius: 4px;
+      background-color: $c-black;
+      color: white;
+      font-style: italic;
+    }
+
+    .complete {
+      color: $c-type-9;
+    }
   }
 }
 
