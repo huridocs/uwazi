@@ -33,10 +33,7 @@ describe('migration populate-mimetype-on-attachments', () => {
     };
     await testingDB.clearAllAndLoad(fixtures);
     const headers = {
-      get: jest
-        .fn()
-        .mockReturnValueOnce('application/pdf')
-        .mockReturnValueOnce('mimetype2'),
+      get: jest.fn().mockReturnValueOnce('application/pdf').mockReturnValueOnce('mimetype2'),
     };
     headRequestMock.and.returnValue(
       Promise.resolve({
@@ -48,10 +45,7 @@ describe('migration populate-mimetype-on-attachments', () => {
     expect(request.head).toHaveBeenCalledWith(fixtures.files[1].url);
     expect(headers.get).toHaveBeenCalledWith('content-type');
 
-    const files = await testingDB.mongodb
-      .collection('files')
-      .find({})
-      .toArray();
+    const files = await testingDB.mongodb.collection('files').find({}).toArray();
 
     expect(files[0].mimetype).toEqual('application/pdf');
     expect(files[1].mimetype).toEqual('mimetype2');
@@ -144,10 +138,7 @@ describe('migration populate-mimetype-on-attachments', () => {
     };
     await testingDB.clearAllAndLoad(mixedFixtures);
     const headers = {
-      get: jest
-        .fn()
-        .mockReturnValueOnce('application/pdf')
-        .mockReturnValueOnce('mimetype2'),
+      get: jest.fn().mockReturnValueOnce('application/pdf').mockReturnValueOnce('mimetype2'),
     };
     headRequestMock.and.returnValue(
       Promise.resolve({

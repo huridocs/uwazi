@@ -92,9 +92,7 @@ const conformRelationships = (rows, parentEntitySharedId) => {
       .get('rightRelationships')
       .reduce((memo, relationshipsArray, template) => {
         const newMemo = memo.push(
-          fromJS({})
-            .set('template', template)
-            .set('relationships', relationshipsArray)
+          fromJS({}).set('template', template).set('relationships', relationshipsArray)
         );
         return newMemo;
       }, fromJS([]));

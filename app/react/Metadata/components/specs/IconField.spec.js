@@ -37,10 +37,7 @@ describe('IconField', () => {
           .prop('children')('value')}
       </span>
     );
-    component
-      .find(ToggleDisplay)
-      .props()
-      .onHide();
+    component.find(ToggleDisplay).props().onHide();
     expect(props.removeIcon).toHaveBeenCalledWith('model.value.icon');
   });
 });

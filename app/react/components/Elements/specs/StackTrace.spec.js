@@ -43,10 +43,7 @@ describe('StackTrace', () => {
   describe('expanded', () => {
     it('should display the full message', () => {
       render();
-      component
-        .find(Icon)
-        .parent()
-        .simulate('click');
+      component.find(Icon).parent().simulate('click');
       expect(component).toMatchSnapshot();
     });
   });

@@ -33,8 +33,7 @@ describe('FreeBarChart', () => {
   describe('when data', () => {
     beforeEach(() => {
       props = {
-        data:
-          '[{"label":"col1", "results": 3, "otherProp": 5, "lastProp": 2},{"label":"col2", "results": 4, "otherProp": 2, "lastProp": 3}]',
+        data: '[{"label":"col1", "results": 3, "otherProp": 5, "lastProp": 2},{"label":"col2", "results": 4, "otherProp": 2, "lastProp": 3}]',
       };
     });
 

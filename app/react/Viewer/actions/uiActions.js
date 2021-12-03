@@ -19,7 +19,7 @@ export function openPanel(panel) {
 }
 
 export function resetReferenceCreation() {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch({ type: types.RESET_REFERENCE_CREATION });
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));

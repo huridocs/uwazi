@@ -105,30 +105,21 @@ describe('MultiSelect', () => {
   describe('when checking an option', () => {
     it('should call onChange with the new value', () => {
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(0)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option1']);
     });
 
     it('it should handle multiple options selected', () => {
       props.value = ['option1'];
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(1)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(1).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option1', 'option2']);
     });
 
     it('it should remove options that were selected', () => {
       props.value = ['option1', 'option2'];
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(0)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option2']);
     });
   });

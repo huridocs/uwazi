@@ -12,7 +12,7 @@ describe('SearchButton', () => {
     props.open = true;
   });
 
-  const render = function() {
+  const render = function () {
     component = shallow(<SearchButton {...props} />);
   };
 

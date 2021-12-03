@@ -58,7 +58,10 @@ describe('Connections', () => {
       .sidePanelSearchAndSelect({ searchTerm: 'joker', textOnDom: 'Super Villian' })
       .connections.sidePanelSearchAndSelect('scarecrow')
       .connections.sidePanelSearchAndSelect("Ra's al Ghul")
-      .connections.sidePanelSearchAndSelect({ searchTerm: 'robin', textOnDom: 'robin comic character' })
+      .connections.sidePanelSearchAndSelect({
+        searchTerm: 'robin',
+        textOnDom: 'robin comic character',
+      })
       .connections.sidePanelSearchAndSelect('Talia al Ghul')
       .connections.sidePanelSearchAndSelect('Cluemaster Wikipedia')
       .then(() => {

@@ -26,10 +26,7 @@ describe('AccountSettings', () => {
   describe('change email', () => {
     it('should save the user with the new email and update the user.rev', () => {
       render();
-      const input = component
-        .find('input')
-        .find({ type: 'email' })
-        .at(0);
+      const input = component.find('input').find({ type: 'email' }).at(0);
       input.simulate('change', { target: { value: 'newemail@uwazi.com' } });
       component
         .childAt(0)
@@ -80,20 +77,8 @@ describe('AccountSettings', () => {
           .find('form')
           .at(1)
           .simulate('submit', { preventDefault: () => {} });
-        expect(
-          component
-            .find('form')
-            .at(1)
-            .childAt(0)
-            .hasClass('has-error')
-        ).toBe(true);
-        expect(
-          component
-            .find('form')
-            .at(1)
-            .childAt(1)
-            .hasClass('has-error')
-        ).toBe(true);
+        expect(component.find('form').at(1).childAt(0).hasClass('has-error')).toBe(true);
+        expect(component.find('form').at(1).childAt(1).hasClass('has-error')).toBe(true);
       });
     });
   });

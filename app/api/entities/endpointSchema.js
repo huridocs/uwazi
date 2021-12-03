@@ -22,18 +22,14 @@ const metadataSchema = Joi.object()
           Joi.object().keys({
             lat: Joi.number(),
             lon: Joi.number(),
-            label: Joi.string()
-              .allow(null)
-              .allow(''),
+            label: Joi.string().allow(null).allow(''),
           }),
           Joi.object().keys({
             label: Joi.string(),
             url: Joi.string(),
           })
         ),
-        label: Joi.string()
-          .allow(null)
-          .allow(''),
+        label: Joi.string().allow(null).allow(''),
       })
     )
   );

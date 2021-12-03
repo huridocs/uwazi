@@ -52,18 +52,13 @@ describe('documents', () => {
 
     it('should need authorization', async () => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
-      await request(app)
-        .post('/api/documents')
-        .send(req)
-        .expect(401);
+      await request(app).post('/api/documents').send(req).expect(401);
     });
 
     it('should create a new document with current user', async () => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
       currentUser = adminUser;
-      const response = await request(app)
-        .post('/api/documents')
-        .send(document);
+      const response = await request(app).post('/api/documents').send(document);
       expect(response.body).toBe('document');
       expect(documents.save).toHaveBeenCalledWith(document, {
         user: adminUser,
@@ -77,9 +72,7 @@ describe('documents', () => {
       spyOn(documents, 'getById').and.returnValue(new Promise(resolve => resolve('documents')));
     });
     it('should return a validation error for no valid id', async () => {
-      const response = await request(app)
-        .get('/api/documents')
-        .query({ _id: '/@novalidID//' });
+      const response = await request(app).get('/api/documents').query({ _id: '/@novalidID//' });
 
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toBe('pattern');
@@ -87,9 +80,7 @@ describe('documents', () => {
       expect(response.body.error).toBe('validation failed');
     });
     it('should return documents.get', async () => {
-      const response = await request(app)
-        .get('/api/documents')
-        .query({ _id: 'id' });
+      const response = await request(app).get('/api/documents').query({ _id: 'id' });
       expect(documents.getById).toHaveBeenCalledWith('id', 'es');
       expect(response.body).toEqual({ rows: ['documents'] });
     });
@@ -100,9 +91,7 @@ describe('documents', () => {
       spyOn(templates, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
     });
     it('should return a validation error if templateId is not passed', async () => {
-      const response = await request(app)
-        .get('/api/documents/count_by_template')
-        .query({});
+      const response = await request(app).get('/api/documents/count_by_template').query({});
 
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toBe('required');
@@ -125,9 +114,7 @@ describe('documents', () => {
 
     it('should return a validation error if sharedId is not passed', async () => {
       currentUser = adminUser;
-      const response = await request(app)
-        .delete('/api/documents')
-        .send({});
+      const response = await request(app).delete('/api/documents').send({});
 
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toBe('required');
@@ -137,9 +124,7 @@ describe('documents', () => {
 
     it('should use documents to delete it', async () => {
       currentUser = adminUser;
-      await request(app)
-        .delete('/api/documents')
-        .query({ sharedId: 123 });
+      await request(app).delete('/api/documents').query({ sharedId: 123 });
       expect(documents.delete).toHaveBeenCalledWith('123');
     });
   });

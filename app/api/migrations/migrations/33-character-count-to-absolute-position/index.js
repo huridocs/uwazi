@@ -185,10 +185,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\n`);
     let conversionsNumber = 0;
-    const cursor = db
-      .collection('files')
-      .find()
-      .addCursorFlag('noCursorTimeout', true);
+    const cursor = db.collection('files').find().addCursorFlag('noCursorTimeout', true);
     const wrongConversions = [];
     while (await cursor.hasNext()) {
       const file = await cursor.next();

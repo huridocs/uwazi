@@ -7,10 +7,7 @@ import migration from '../index.js';
 describe('migration entities_override_mongo_language', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -24,12 +21,7 @@ describe('migration entities_override_mongo_language', () => {
   it('should migrate properly', done => {
     migration
       .up(testingDB.mongodb)
-      .then(() =>
-        testingDB.mongodb
-          .collection('entities')
-          .find()
-          .toArray()
-      )
+      .then(() => testingDB.mongodb.collection('entities').find().toArray())
       .then(entities => {
         expect(entities.find(e => e.language === 'en').mongoLanguage).toBe('en');
         expect(entities.find(e => e.language === 'es').mongoLanguage).toBe('es');

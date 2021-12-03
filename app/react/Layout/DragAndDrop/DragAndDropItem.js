@@ -85,13 +85,8 @@ export const itemTarget = {
 
 export class DragAndDropItem extends Component {
   render() {
-    const {
-      iconHandle,
-      isDragging,
-      connectDragPreview,
-      connectDragSource,
-      connectDropTarget,
-    } = this.props;
+    const { iconHandle, isDragging, connectDragPreview, connectDragSource, connectDropTarget } =
+      this.props;
     let propertyClass = 'list-group-item';
     if (isDragging) {
       propertyClass += ' dragging';

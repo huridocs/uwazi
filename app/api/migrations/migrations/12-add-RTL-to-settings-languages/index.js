@@ -10,10 +10,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    const [settings] = await db
-      .collection('settings')
-      .find()
-      .toArray();
+    const [settings] = await db.collection('settings').find().toArray();
 
     let { languages } = settings;
 

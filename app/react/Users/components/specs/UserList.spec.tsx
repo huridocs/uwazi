@@ -46,36 +46,10 @@ describe('UserList', () => {
       expect(rows.length).toBe(3);
       const columns = rows.at(0).find('td');
       expect(columns.at(0).props().children).toEqual('Ana Brown');
-      expect(
-        columns
-          .at(1)
-          .find(Pill)
-          .at(0)
-          .props().children
-      ).toBe('Password + 2FA');
-      expect(
-        columns
-          .at(2)
-          .find(Pill)
-          .at(0)
-          .props().children
-      ).toBe('editor');
-      expect(
-        columns
-          .at(3)
-          .find(Pill)
-          .children()
-          .at(1)
-          .text()
-      ).toBe(' Group1');
-      expect(
-        columns
-          .at(3)
-          .find(Pill)
-          .children()
-          .at(3)
-          .text()
-      ).toBe(' Group2');
+      expect(columns.at(1).find(Pill).at(0).props().children).toBe('Password + 2FA');
+      expect(columns.at(2).find(Pill).at(0).props().children).toBe('editor');
+      expect(columns.at(3).find(Pill).children().at(1).text()).toBe(' Group1');
+      expect(columns.at(3).find(Pill).children().at(3).text()).toBe(' Group2');
     });
 
     it('should call handleSelect when a row is clicked', () => {

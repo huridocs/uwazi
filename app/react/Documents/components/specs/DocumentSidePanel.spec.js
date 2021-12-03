@@ -75,12 +75,7 @@ describe('DocumentSidePanel', () => {
 
   describe('connections', () => {
     it('should render 2 connections sections, for connections and references', () => {
-      expect(
-        component
-          .find(Connections)
-          .at(0)
-          .props().references
-      ).toEqual(props.references);
+      expect(component.find(Connections).at(0).props().references).toEqual(props.references);
       expect(component.find(ConnectionsGroups).length).toBe(1);
     });
   });
@@ -89,12 +84,7 @@ describe('DocumentSidePanel', () => {
     it('should set tab in props as selected', () => {
       props.tab = 'selected-tab';
       render();
-      expect(
-        component
-          .find(Tabs)
-          .at(0)
-          .props().selectedTab
-      ).toBe('selected-tab');
+      expect(component.find(Tabs).at(0).props().selectedTab).toBe('selected-tab');
     });
 
     describe('when doc passed is an entity', () => {
@@ -102,23 +92,13 @@ describe('DocumentSidePanel', () => {
         props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'toc';
         render();
-        expect(
-          component
-            .find(Tabs)
-            .at(0)
-            .props().selectedTab
-        ).toBe('metadata');
+        expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
       });
       it('should set metadata as selected if tab is references', () => {
         props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'references';
         render();
-        expect(
-          component
-            .find(Tabs)
-            .at(0)
-            .props().selectedTab
-        ).toBe('metadata');
+        expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
       });
       it('should pass to entityForm the initial templateId', () => {
         props.doc = Immutable.fromJS({ type: 'entity', template: 'templateId' });

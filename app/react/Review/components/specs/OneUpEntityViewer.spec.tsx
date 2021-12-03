@@ -65,10 +65,7 @@ describe('EntityViewer', () => {
   it('should render the ConnectionsList passing deleteConnection as prop', () => {
     render();
 
-    component
-      .find(ConnectionsList)
-      .props()
-      .deleteConnection({ sourceType: 'not metadata' });
+    component.find(ConnectionsList).props().deleteConnection({ sourceType: 'not metadata' });
     expect(context.confirm).toHaveBeenCalled();
   });
 

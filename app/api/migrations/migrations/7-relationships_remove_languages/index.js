@@ -9,10 +9,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
     let index = 1;
-    const [{ languages }] = await db
-      .collection('settings')
-      .find()
-      .toArray();
+    const [{ languages }] = await db.collection('settings').find().toArray();
     const languagesToRemove = languages.filter(l => !l.default).map(l => l.key);
 
     const cursor = db.collection('connections').find();

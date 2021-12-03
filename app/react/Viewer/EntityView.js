@@ -24,15 +24,12 @@ const formatEntity = (entity, templates, thesauris) => {
 
 export default class Entity extends Component {
   static async requestState(requestParams, state) {
-    const [
-      [entity],
-      relationTypes,
-      [connectionsGroups, searchResults, sort, filters],
-    ] = await Promise.all([
-      entitiesAPI.get(requestParams.set({ sharedId: requestParams.data.sharedId })),
-      relationTypesAPI.get(requestParams.onlyHeaders()),
-      relationships.requestState(requestParams, state),
-    ]);
+    const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
+      await Promise.all([
+        entitiesAPI.get(requestParams.set({ sharedId: requestParams.data.sharedId })),
+        relationTypesAPI.get(requestParams.onlyHeaders()),
+        relationships.requestState(requestParams, state),
+      ]);
 
     const entityTemplate = state.templates.find(t => t.get('_id') === entity.template);
 

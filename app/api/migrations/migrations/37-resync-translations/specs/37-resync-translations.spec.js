@@ -27,10 +27,7 @@ describe('migration resync translations', () => {
   });
 
   it('should update the translation updatelogs to current timestamp and not affect others', async () => {
-    updatelogs = await testingDB.mongodb
-      .collection('updatelogs')
-      .find({})
-      .toArray();
+    updatelogs = await testingDB.mongodb.collection('updatelogs').find({}).toArray();
 
     expect(updatelogs.length).toBe(4);
 

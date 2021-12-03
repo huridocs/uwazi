@@ -56,14 +56,8 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
   }
 
   render() {
-    const {
-      entity,
-      tab,
-      selectedConnection,
-      connectionsGroups,
-      oneUpState,
-      panelOpen,
-    } = this.props;
+    const { entity, tab, selectedConnection, connectionsGroups, oneUpState, panelOpen } =
+      this.props;
     const selectedTab = tab ?? 'info';
 
     const summary = connectionsGroups.reduce(

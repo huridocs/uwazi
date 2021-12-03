@@ -71,10 +71,7 @@ async function switchToEntity(
 ) {
   const sharedId =
     index < oneUpState.totalDocs
-      ? state.library.documents
-          .get('rows')
-          .get(index)
-          .get('sharedId')
+      ? state.library.documents.get('rows').get(index).get('sharedId')
       : '';
 
   [

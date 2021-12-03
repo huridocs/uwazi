@@ -22,11 +22,7 @@ export default (app: Application) => {
   app.post(
     '/api/auth2fa-enable',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest(
-      Joi.object()
-        .keys({ token: Joi.string().required() })
-        .required()
-    ),
+    validation.validateRequest(Joi.object().keys({ token: Joi.string().required() }).required()),
     async (req, res, next) => {
       try {
         await usersUtils.enable2fa(req.user, req.body.token);
@@ -43,10 +39,7 @@ export default (app: Application) => {
     validation.validateRequest(
       Joi.object()
         .keys({
-          _id: Joi.string()
-            .length(24)
-            .alphanum()
-            .required(),
+          _id: Joi.string().length(24).alphanum().required(),
         })
         .required()
     ),

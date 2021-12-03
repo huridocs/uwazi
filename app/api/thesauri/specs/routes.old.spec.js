@@ -12,9 +12,7 @@ describe('thesauri routes', () => {
 
   beforeEach(done => {
     routes = instrumentRoutes(thesauriRoute);
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

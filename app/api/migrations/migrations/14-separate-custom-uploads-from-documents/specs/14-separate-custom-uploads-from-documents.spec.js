@@ -32,10 +32,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
     spyOn(process.stdout, 'write');
     originalDocumentsPath = config.defaultTenant.uploadedDocuments;
     originalUploadsPath = config.defaultTenant.customUploads;
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterEach(done => {

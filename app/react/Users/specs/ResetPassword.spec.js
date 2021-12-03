@@ -69,18 +69,8 @@ describe('ResetPassword', () => {
       it('should display an error', () => {
         component.setState({ password: 'ultraSecret', repeatPassword: 'IDontKnowWhatIAmDoing' });
         component.find('form').simulate('submit', { preventDefault: () => {} });
-        expect(
-          component
-            .find('form')
-            .childAt(0)
-            .hasClass('has-error')
-        ).toBe(true);
-        expect(
-          component
-            .find('form')
-            .childAt(1)
-            .hasClass('has-error')
-        ).toBe(true);
+        expect(component.find('form').childAt(0).hasClass('has-error')).toBe(true);
+        expect(component.find('form').childAt(1).hasClass('has-error')).toBe(true);
       });
     });
   });
