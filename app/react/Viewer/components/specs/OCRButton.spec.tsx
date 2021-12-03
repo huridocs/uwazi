@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import Immutable from 'immutable';
 import { IStore } from 'app/istore';
 import { FileType } from 'shared/types/fileType';
@@ -48,10 +48,20 @@ describe('OCRButton', () => {
       expect(screen.getByText('OCR Complete')).not.toBeNull();
     });
 
-    it('should trigger the OCR service when clicking the add to ocr queue button', () => {
-      render(reduxStore, { ...file, _id: 'fileId' });
-      screen.getByRole('button').click();
-      expect(ocrActions.dummyOCRServiceCall).toHaveBeenCalledWith({ ...file, _id: 'fileId' });
+    describe('adding to ocr queue', () => {
+      it('should trigger the OCR service when clicking the button', () => {
+        render(reduxStore, { ...file, _id: 'fileId' });
+        const ocrButton: Element = screen.getByRole('button');
+        fireEvent.click(ocrButton);
+        expect(ocrActions.dummyOCRServiceCall).toHaveBeenCalledWith({ ...file, _id: 'fileId' });
+      });
+
+      it('should change to show the file is in the queue', () => {
+        render(reduxStore, file);
+        const ocrButton: Element = screen.getByRole('button');
+        fireEvent.click(ocrButton);
+        expect(screen.getByText('In OCR queue')).not.toBeNull();
+      });
     });
   });
 });
