@@ -117,7 +117,7 @@ export class Viewer extends Component {
                       <Translate>Plain text</Translate>
                     )}
                   </CurrentLocationLink>
-                  <OCRButton />
+                  <OCRButton file={file} />
                 </>
               )}
             </div>

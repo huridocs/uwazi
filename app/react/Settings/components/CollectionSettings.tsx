@@ -198,7 +198,7 @@ const CollectionSettings = ({
           </ToggleChildren>
         </SettingsFormElement>
 
-        <FeatureToggle feature="ocr-service">
+        <FeatureToggle feature="ocrservice">
           <h2>
             <Translate>Services</Translate>
           </h2>
