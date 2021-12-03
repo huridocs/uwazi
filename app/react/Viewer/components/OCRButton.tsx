@@ -1,5 +1,6 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 
 const addToQueue = (
   <button type="button" className="btn btn-default">
@@ -39,6 +40,10 @@ const ocrComplete = (
   </div>
 );
 
-const OCRButton = () => <div className="ocr-service-display">{ocrComplete}</div>;
+const OCRButton = () => (
+  <FeatureToggle feature="ocr-trigger">
+    <div className="ocr-service-display">{ocrComplete}</div>
+  </FeatureToggle>
+);
 
 export { OCRButton };
