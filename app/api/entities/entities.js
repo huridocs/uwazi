@@ -562,20 +562,7 @@ export default {
         );
 
         if (entity) {
-          await this.save(
-            {
-              ...entity,
-              ...pureValues,
-              metadata: updateMetadataWithDiff(
-                { ...entity.metadata, ...pureValues.metadata },
-                diffMetadata
-              ),
-              permissions: entity.permissions || [],
-            },
-            params,
-            true,
-            false
-          );
+          await this.saveEntityMetadata(entity, pureValues, diffMetadata, params);
         }
       })
     );
@@ -905,4 +892,20 @@ export default {
   },
 
   count: model.count.bind(model),
+
+  async saveEntityMetadata(entity, pureValues, diffMetadata, params) {
+    return this.save(
+      {
+        ...entity,
+        ...pureValues,
+        metadata: updateMetadataWithDiff(
+          { ...entity.metadata, ...pureValues.metadata },
+          diffMetadata
+        ),
+        permissions: entity.permissions || [],
+      },
+      params,
+      { updateRelationships: true, index: false }
+    );
+  },
 };

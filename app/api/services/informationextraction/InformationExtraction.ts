@@ -8,7 +8,6 @@ import { tenants } from 'api/tenants/tenantContext';
 import { ObjectId } from 'mongodb';
 import request from 'shared/JSONRequest';
 import path from 'path';
-import { handleError } from 'api/utils';
 import { FileType } from 'shared/types/fileType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
