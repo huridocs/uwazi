@@ -34,7 +34,7 @@ describe('suggestions routes', () => {
   let user: { username: string; role: string } | undefined;
   const getUser = () => user;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     user = { username: 'user 1', role: 'admin' };
 
     await testingEnvironment.setUp(fixtures);
@@ -134,6 +134,13 @@ describe('suggestions routes', () => {
 
       expect(response.body).toMatchObject({ status: 'ready' });
     });
+    it('should reject with unauthorized when user has not admin role', async () => {
+      user = { username: 'user 1', role: 'editor' };
+      const response = await request(app)
+        .get('/api/suggestions/status')
+        .query({ property: 'super_powers' });
+      expect(response.unauthorized).toBe(true);
+    });
   });
 
   describe('POST /api/suggestions/train', () => {
@@ -143,6 +150,13 @@ describe('suggestions routes', () => {
         .send({ property: 'super_powers' });
 
       expect(response.body).toMatchObject({ status: 'processing' });
+    });
+    it('should reject with unauthorized when user has not admin role', async () => {
+      user = { username: 'user 1', role: 'editor' };
+      const response = await request(app)
+        .post('/api/suggestions/train')
+        .send({ property: 'super_powers' });
+      expect(response.unauthorized).toBe(true);
     });
   });
 
@@ -198,6 +212,20 @@ describe('suggestions routes', () => {
           metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
         },
       ]);
+    });
+    it('should reject with unauthorized when user has not admin role', async () => {
+      user = { username: 'user 1', role: 'editor' };
+      const response = await request(app)
+        .post('/api/suggestions/accept')
+        .send({
+          allLanguages: true,
+          suggestion: {
+            _id: suggestionSharedId6Enemy,
+            sharedId: 'shared6',
+            entityId: shared6enId,
+          },
+        });
+      expect(response.unauthorized).toBe(true);
     });
   });
 });
