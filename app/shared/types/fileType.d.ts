@@ -27,4 +27,5 @@ export interface FileType {
   };
   toc?: TocSchema[];
   extractedMetadata?: ExtractedMetadataSchema[];
+  ocrstatus?: 'noOCR' | 'inQueue' | 'cannotProcess' | 'withOCR';
 }
