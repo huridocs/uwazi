@@ -4,8 +4,15 @@ import { setUpApp } from 'api/utils/testingRoutes';
 
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures } from 'api/suggestions/specs/fixtures';
+import {
+  fixtures,
+  shared2enId,
+  shared6enId,
+  suggestionSharedId6Enemy,
+  suggestionSharedId6Title,
+} from 'api/suggestions/specs/fixtures';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import entities from 'api/entities';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -15,14 +22,13 @@ jest.mock(
   }
 );
 
-jest.mock('api/services/informationextraction/InformationExtraction', () => {
-  return {
-    InformationExtraction: class IXMock {
-      status = jest.fn().mockResolvedValue({ status: 'ready' });
-      trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
-    },
-  };
-});
+jest.mock('api/services/informationextraction/InformationExtraction', () => ({
+  InformationExtraction: class IXMock {
+    status = jest.fn().mockResolvedValue({ status: 'ready' });
+
+    trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
+  },
+}));
 
 describe('suggestions routes', () => {
   let user: { username: string; role: string } | undefined;
@@ -51,7 +57,7 @@ describe('suggestions routes', () => {
         .query({ filter: { propertyName: 'super_powers' } });
       expect(response.body.suggestions).toMatchObject([
         {
-          entityId: '2 en',
+          entityId: shared2enId.toString(),
           sharedId: 'shared2',
           entityTitle: 'Batman',
           propertyName: 'super_powers',
@@ -61,7 +67,7 @@ describe('suggestions routes', () => {
           language: 'es',
         },
         {
-          entityId: '2 en',
+          entityId: shared2enId.toString(),
           sharedId: 'shared2',
           entityTitle: 'Batman',
           propertyName: 'super_powers',
@@ -137,6 +143,61 @@ describe('suggestions routes', () => {
         .send({ property: 'super_powers' });
 
       expect(response.body).toMatchObject({ status: 'processing' });
+    });
+  });
+
+  describe('POST /api/suggestions/accept', () => {
+    it('should update the suggestion for title in one language', async () => {
+      await request(app)
+        .post('/api/suggestions/accept')
+        .send({
+          suggestion: {
+            _id: suggestionSharedId6Title,
+            sharedId: 'shared6',
+            entityId: shared6enId,
+          },
+          allLanguages: false,
+        })
+        .expect(200);
+
+      const actualEntities = await entities.get({ sharedId: 'shared6' });
+      expect(actualEntities).toMatchObject([
+        {
+          title: 'The Penguin',
+        },
+        {
+          title: 'Penguin',
+        },
+        {
+          title: 'The Penguin',
+        },
+      ]);
+    });
+    it('should update the suggestion for all the languages', async () => {
+      await request(app)
+        .post('/api/suggestions/accept')
+        .send({
+          allLanguages: true,
+          suggestion: {
+            _id: suggestionSharedId6Enemy,
+            sharedId: 'shared6',
+            entityId: shared6enId,
+          },
+        })
+        .expect(200);
+
+      const actualEntities = await entities.get({ sharedId: 'shared6' });
+      expect(actualEntities).toMatchObject([
+        {
+          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
+        },
+        {
+          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
+        },
+        {
+          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
+        },
+      ]);
     });
   });
 });

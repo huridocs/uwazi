@@ -1,6 +1,12 @@
-import { DBFixture } from 'api/utils/testing_db';
+import { testingDB, DBFixture } from 'api/utils/testing_db';
 
-export const fixtures: DBFixture = {
+const shared2enId = testingDB.id();
+const shared6enId = testingDB.id();
+
+const suggestionSharedId6Title = testingDB.id();
+const suggestionSharedId6Enemy = testingDB.id();
+
+const fixtures: DBFixture = {
   ixsuggestions: [
     {
       entityId: 'shared1',
@@ -93,6 +99,7 @@ export const fixtures: DBFixture = {
       page: 3,
     },
     {
+      _id: suggestionSharedId6Title,
       entityId: 'shared6',
       propertyName: 'title',
       suggestedValue: 'Penguin',
@@ -101,56 +108,88 @@ export const fixtures: DBFixture = {
       date: 2,
       page: 12,
     },
+    {
+      _id: suggestionSharedId6Enemy,
+      entityId: 'shared6',
+      propertyName: 'enemy',
+      suggestedValue: 'Batman',
+      segment: 'Enemy: Batman',
+      language: 'en',
+      date: 5,
+      page: 3,
+    },
   ],
   entities: [
     {
-      _id: '1 en',
+      _id: testingDB.id(),
       sharedId: 'shared1',
       title: 'Robin',
       language: 'en',
     },
     {
-      _id: '1 es',
+      _id: testingDB.id(),
       sharedId: 'shared1',
       title: 'Robin es',
       language: 'es',
     },
     {
-      _id: '2 ar',
+      _id: testingDB.id(),
       sharedId: 'shared2',
       title: 'Batman',
       language: 'ar',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
     },
     {
-      _id: '2 en',
+      _id: shared2enId,
       sharedId: 'shared2',
       title: 'Batman',
       language: 'en',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
     },
     {
-      _id: '2 es',
+      _id: testingDB.id(),
       sharedId: 'shared2',
       title: 'Batman es',
       language: 'es',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
     },
     {
-      _id: '3',
+      _id: testingDB.id(),
       sharedId: 'shared3',
       title: 'Alfred',
       language: 'en',
       metadata: { age: [{ value: '' }] },
     },
-    { _id: '4', sharedId: 'shared4', title: 'Joker', language: 'en' },
+    { _id: testingDB.id(), sharedId: 'shared4', title: 'Joker', language: 'en' },
     {
-      _id: '5',
+      _id: testingDB.id(),
       sharedId: 'shared5',
       title: 'Poison Ivy',
       language: 'en',
       metadata: { age: [{ value: 34 }] },
     },
-    { _id: '6', sharedId: 'shared6', title: 'The Penguin', language: 'en' },
+    {
+      _id: testingDB.id(),
+      sharedId: 'shared6',
+      title: 'The Penguin',
+      language: 'es',
+      metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
+    },
+    {
+      _id: shared6enId,
+      sharedId: 'shared6',
+      title: 'The Penguin',
+      language: 'es',
+      metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'shared6',
+      title: 'The Penguin',
+      language: 'en',
+      metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
+    },
   ],
 };
+
+export { fixtures, shared2enId, shared6enId, suggestionSharedId6Title, suggestionSharedId6Enemy };

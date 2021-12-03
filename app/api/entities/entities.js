@@ -894,7 +894,7 @@ export default {
   count: model.count.bind(model),
 
   async saveEntityMetadata(entity, pureValues, diffMetadata, params) {
-    return this.save(
+    await this.save(
       {
         ...entity,
         ...pureValues,

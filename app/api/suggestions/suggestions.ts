@@ -1,8 +1,8 @@
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { EntitySuggestionType, IXSuggestionsFilter } from 'shared/types/suggestionType';
-import entities from 'api/entities/entities';
+import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { EntitySchema } from 'shared/types/entityType';
-import { search } from 'api/search';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import entities from 'api/entities/entities';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export const Suggestions = {
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
@@ -121,28 +121,43 @@ export const Suggestions = {
     return { suggestions: data, totalPages };
   },
 
-  accept: async (suggestion: EntitySuggestionType, allLanguages: boolean, params) => {
+  accept: async (
+    acceptedSuggestion: {
+      _id: ObjectIdSchema;
+      sharedId: string;
+      entityId: string;
+    },
+    allLanguages: boolean,
+    params: { user: {}; language: string }
+  ) => {
+    const suggestion = await IXSuggestionsModel.getById(acceptedSuggestion._id);
+    if (!suggestion) {
+      throw new Error('Suggestion not found');
+    }
+
     const query = allLanguages
-      ? { sharedId: suggestion.sharedId.toString() }
-      : { sharedId: suggestion.sharedId.toString(), _id: suggestion.entityId };
-    const entitiesToUpdate = await entities.get(query, '+permissions');
-    const pureValues = {};
-    const diffMetadata = {};
+      ? { sharedId: acceptedSuggestion.sharedId }
+      : { sharedId: acceptedSuggestion.sharedId, _id: acceptedSuggestion.entityId };
+    const storedEntities = await entities.get(query, '+permissions');
     if (suggestion.propertyName !== 'title') {
-      await Promise.all(
-        entitiesToUpdate.map(async (entity: EntitySchema) =>
-          entities.saveEntityMetadata(entity, pureValues, diffMetadata, params)
-        )
-      );
+      const entitiesToUpdate = storedEntities.map((entity: EntitySchema) => ({
+        ...entity,
+        metadata: {
+          ...entity.metadata,
+          [suggestion.propertyName]: [{ value: suggestion.suggestedValue }],
+        },
+        permissions: entity.permissions || [],
+      }));
+      await entities.saveMultiple(entitiesToUpdate);
     } else {
-      const entitiesWithChanges = entitiesToUpdate.map((entity: EntitySchema) => ({
+      const entitiesToUpdate = storedEntities.map((entity: EntitySchema) => ({
         ...entity,
         title: suggestion.suggestedValue,
       }));
       await Promise.all(
-        entitiesWithChanges.map(async (entity: EntitySchema) => entities.save(entity, params))
+        entitiesToUpdate.map(async (entity: EntitySchema) => entities.save(entity, params))
       );
-      await search.indexEntities(query, '+fullText');
+      //await search.indexEntities(query, '+fullText');
     }
   },
 };

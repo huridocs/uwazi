@@ -4,9 +4,10 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
-import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
+import { EntitySuggestionSchema, IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 import { config } from 'api/config';
-import { propertyValueSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, propertyValueSchema } from 'shared/types/commonSchemas';
+import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 
 let IX: InformationExtraction;
 if (config.externalServices) {
@@ -74,8 +75,22 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/accept',
     validateAndCoerceRequest({
       properties: {
-        suggestion: propertyValueSchema,
-        allLanguages: { type: 'string' },
+        body: {
+          additionalProperties: false,
+          required: ['suggestion', 'allLanguages'],
+          properties: {
+            suggestion: {
+              additionalProperties: false,
+              required: ['_id', 'sharedId', 'entityId'],
+              properties: {
+                _id: objectIdSchema,
+                sharedId: { type: 'string' },
+                entityId: { type: 'string' },
+              },
+            },
+            allLanguages: { type: 'boolean' },
+          },
+        },
       },
     }),
     async (req, res, _next) => {
@@ -84,7 +99,7 @@ export const suggestionsRoutes = (app: Application) => {
         user: req.user,
         language: req.language,
       });
-      res.json(status);
+      res.json(true);
     }
   );
 };

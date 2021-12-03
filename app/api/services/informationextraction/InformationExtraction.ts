@@ -44,6 +44,7 @@ class InformationExtraction {
   public taskManager: TaskManager;
 
   batchSize = 50;
+
   static mock: any;
 
   constructor() {
@@ -391,7 +392,7 @@ class InformationExtraction {
           message.tenant,
           'ix_model_status',
           message.params!.property_name,
-          'proccesing_suggestions',
+          'processing_suggestions',
           'Getting suggestions'
         );
 

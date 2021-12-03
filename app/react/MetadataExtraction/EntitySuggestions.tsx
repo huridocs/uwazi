@@ -79,10 +79,14 @@ export const EntitySuggestions = ({
     );
   };
 
-  const acceptSuggestion = async (suggestion: EntitySuggestionType) => {
+  const acceptSuggestion = async (suggestionToAccept: EntitySuggestionType) => {
     const params = new RequestParams({
       allLanguages: false,
-      suggestion,
+      suggestion: {
+        _id: suggestionToAccept._id,
+        sharedId: suggestionToAccept.sharedId,
+        entityId: suggestionToAccept.entityId,
+      },
     });
     await acceptEntitySuggestion(params);
   };
