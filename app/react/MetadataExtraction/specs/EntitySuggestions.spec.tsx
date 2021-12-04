@@ -61,13 +61,8 @@ describe('EntitySuggestions', () => {
     label: 'Other title',
   };
 
-  const onCloseSpy = jest.fn();
-
   function renderComponent(property = reviewedProperty) {
-    renderConnectedContainer(
-      <EntitySuggestions onClose={onCloseSpy} property={property} />,
-      () => defaultState
-    );
+    renderConnectedContainer(<EntitySuggestions property={property} />, () => defaultState);
   }
 
   beforeEach(async () => {

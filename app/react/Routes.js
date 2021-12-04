@@ -29,7 +29,6 @@ import {
   ThesauriList,
   TranslationsList,
 } from 'app/Settings';
-import MetadataExtractionDashboard from 'app/MetadataExtraction/MetadataExtractionDashboard';
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauri/EditThesauri';
@@ -45,6 +44,8 @@ import React from 'react';
 
 import { IndexRoute, Route } from 'react-router';
 import { UserManagement } from 'app/Users/UserManagement';
+import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
+import { IXSuggestions } from 'app/MetadataExtraction/SuggestionsContainer';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
 
@@ -142,6 +143,7 @@ const routes = (
         <Route path="edit/:templateId" component={EditTemplate} />
       </Route>
       <Route path="metadata_extraction" component={MetadataExtractionDashboard} />
+      <Route path="metadata_extraction/suggestions/:propertyName" component={IXSuggestions} />
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />
         <Route path="new" component={NewRelationType} />

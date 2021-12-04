@@ -26,7 +26,6 @@ import { getSuggestions, acceptEntitySuggestion, trainModel, ixStatus } from './
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
-  onClose: () => void;
 }
 
 const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<EntitySuggestionType>) => (
@@ -44,10 +43,7 @@ const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<EntityS
   </select>
 );
 
-export const EntitySuggestions = ({
-  property: reviewedProperty,
-  onClose,
-}: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({ property: reviewedProperty }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
@@ -242,6 +238,8 @@ export const EntitySuggestions = ({
     processing_suggestions: 'Finding suggestions...',
     error: 'Error',
   };
+
+  function onClose() {}
 
   return (
     <div className="panel entity-suggestions">

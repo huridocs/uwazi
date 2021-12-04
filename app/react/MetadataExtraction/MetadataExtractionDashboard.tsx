@@ -2,31 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import { Translate } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import Icons from 'app/Templates/components/Icons';
-import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
-
-export interface MetadataExtractionDashboardPropTypes {
-  templates: IImmutable<TemplateSchema[]>;
-  extractionSettings: Map<string, string | Array<string>>[];
-}
-
-export interface FormattedSettingsData {
-  [key: string]: {
-    properties: PropertySchema[];
-    templates: TemplateSchema[];
-  };
-}
-
-export interface MetadataExtractionDashboardStateTypes {
-  formattedData: FormattedSettingsData;
-  selectedProperty: PropertySchema | undefined;
-}
 
 function mapStateToProps({ settings, templates }: any) {
   return {
@@ -38,7 +20,7 @@ function mapStateToProps({ settings, templates }: any) {
   };
 }
 
-class MetadataExtractionDashboard extends React.Component<
+class MetadataExtractionComponent extends React.Component<
   MetadataExtractionDashboardPropTypes,
   MetadataExtractionDashboardStateTypes
 > {
@@ -46,7 +28,6 @@ class MetadataExtractionDashboard extends React.Component<
     super(props);
     this.state = {
       formattedData: {},
-      selectedProperty: undefined,
     };
   }
 
@@ -107,68 +88,75 @@ class MetadataExtractionDashboard extends React.Component<
   render() {
     return (
       <>
-        {!this.state.selectedProperty && (
-          <div className="panel panel-default">
-            <div className="panel-heading">
-              <Translate>Metadata extraction dashboard</Translate>
-            </div>
-            <div className="panel-subheading">
-              <Translate>Extract information from your documents</Translate>
-            </div>
-            <div className="metadata-extraction-table">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>
-                      <Translate>Metadata to extract</Translate>
-                    </th>
-                    <th>
-                      <Translate>Template</Translate>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(this.state.formattedData).map(([propIndex, data]) => (
-                    <tr key={propIndex}>
-                      <td>
-                        <Icon icon={Icons[data.properties[0].type]} fixedWidth />
-                        {data.properties[0].label}
-                      </td>
-                      <td className="templateNameViewer">
-                        {data.templates.map((template, index) => (
-                          <div key={template.name}>
-                            {template.name}
-                            {index !== data.templates.length - 1 ? ',' : ''}
-                          </div>
-                        ))}
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-success btn-xs"
-                          onClick={() => this.setState({ selectedProperty: data.properties[0] })}
-                        >
-                          <Icon icon="bars" />
-                          &nbsp;
-                          <Translate>Review</Translate>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <Translate>Metadata extraction dashboard</Translate>
           </div>
-        )}
-        {this.state.selectedProperty && (
-          <EntitySuggestions
-            property={this.state.selectedProperty}
-            onClose={() => this.setState({ selectedProperty: undefined })}
-          />
-        )}
+          <div className="panel-subheading">
+            <Translate>Extract information from your documents</Translate>
+          </div>
+          <div className="metadata-extraction-table">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>
+                    <Translate>Metadata to extract</Translate>
+                  </th>
+                  <th>
+                    <Translate>Template</Translate>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(this.state.formattedData).map(([propIndex, data]) => (
+                  <tr key={propIndex}>
+                    <td>
+                      <Icon icon={Icons[data.properties[0].type]} fixedWidth />
+                      {data.properties[0].label}
+                    </td>
+                    <td className="templateNameViewer">
+                      {data.templates.map((template, index) => (
+                        <div key={template.name}>
+                          {template.name}
+                          {index !== data.templates.length - 1 ? ',' : ''}
+                        </div>
+                      ))}
+                    </td>
+                    <td>
+                      <I18NLink
+                        to={`settings/metadata_extraction/suggestions/${data.properties[0].name}`}
+                        className="btn btn-success btn-xs"
+                      >
+                        <Icon icon="bars" />
+                        &nbsp;
+                        <Translate>Review</Translate>
+                      </I18NLink>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </>
     );
   }
 }
 
-export default connect(mapStateToProps)(MetadataExtractionDashboard);
+export interface MetadataExtractionDashboardPropTypes {
+  templates: IImmutable<TemplateSchema[]>;
+  extractionSettings: Map<string, string | Array<string>>[];
+}
+
+export interface FormattedSettingsData {
+  [key: string]: {
+    properties: PropertySchema[];
+    templates: TemplateSchema[];
+  };
+}
+
+export interface MetadataExtractionDashboardStateTypes {
+  formattedData: FormattedSettingsData;
+}
+
+export const MetadataExtractionDashboard = connect(mapStateToProps)(MetadataExtractionComponent);
