@@ -10,7 +10,7 @@ module.exports = {
       '--disable-infobars',
       '--disable-gpu',
       '--window-size=1500,1000',
-      '--font-render-hinting=none',
+      '--font-render-hinting=medium',
       '--enable-font-antialiasing',
     ],
   },
