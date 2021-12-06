@@ -35,10 +35,7 @@ describe('UserGroupsLookupField', () => {
       <UserGroupsLookupField onChange={onChangeMock} onSelect={onSelectMock} options={options} />
     );
 
-    component
-      .find('input')
-      .first()
-      .simulate('focus');
+    component.find('input').first().simulate('focus');
 
     const items = component.find('li');
     expect(items.find({ value: options[0] }).length).toBe(1);
@@ -51,10 +48,7 @@ describe('UserGroupsLookupField', () => {
       <UserGroupsLookupField onChange={onChangeMock} onSelect={onSelectMock} options={[]} />
     );
 
-    component
-      .find('input')
-      .first()
-      .simulate('focus');
+    component.find('input').first().simulate('focus');
 
     component.find('input').simulate('change', { target: { value: 'new value' } });
     setTimeout(() => {
@@ -78,10 +72,7 @@ describe('UserGroupsLookupField', () => {
       />
     );
 
-    component
-      .find('input')
-      .first()
-      .simulate('focus');
+    component.find('input').first().simulate('focus');
 
     component.find('li').simulate('click');
 
@@ -153,10 +144,7 @@ describe('UserGroupsLookupField', () => {
         />
       );
 
-      component
-        .find('input')
-        .first()
-        .simulate('focus');
+      component.find('input').first().simulate('focus');
     });
 
     it('should not trigger an event if Enter press with no seletion', () => {

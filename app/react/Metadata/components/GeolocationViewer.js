@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import formatcoords from 'formatcoords';
+import { Translate } from 'app/I18N';
 
 import { Map } from 'app/Map';
 
@@ -38,7 +39,19 @@ const GeolocationViewer = ({ points, onlyForCards }) => {
     ? { latitude: markers[0].latitude, longitude: markers[0].longitude }
     : {};
 
-  return <Map {...componentProps} height={370} markers={markers} mapStyleSwitcher />;
+  return (
+    <>
+      <Map {...componentProps} height={370} markers={markers} mapStyleSwitcher />
+      <div className="print-view-alt">
+        <p>
+          <Translate>Latitude</Translate>: {componentProps.latitude}
+        </p>
+        <p>
+          <Translate>Longitude</Translate>: {componentProps.longitude}
+        </p>
+      </div>
+    </>
+  );
 };
 
 GeolocationViewer.defaultProps = {

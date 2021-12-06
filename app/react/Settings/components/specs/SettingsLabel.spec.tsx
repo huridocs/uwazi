@@ -17,13 +17,7 @@ describe('Settings Label', () => {
   it('should wrap children inside a label element', () => {
     render();
     expect(component.find('label').props().className).toBe('inline-form-label ');
-    expect(
-      component
-        .find('label')
-        .children()
-        .at(0)
-        .text()
-    ).toBe('Test');
+    expect(component.find('label').children().at(0).text()).toBe('Test');
   });
 
   it('should add passed className if found', () => {

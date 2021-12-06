@@ -18,10 +18,7 @@ describe('migration fix_udaptelogs', () => {
 
   it('should remove all updatelogs without mongoId', async () => {
     await migration.up(testingDB.mongodb);
-    const updatelogs = await testingDB.mongodb
-      .collection('updatelogs')
-      .find()
-      .toArray();
+    const updatelogs = await testingDB.mongodb.collection('updatelogs').find().toArray();
 
     expect(updatelogs).toEqual([
       expect.objectContaining({

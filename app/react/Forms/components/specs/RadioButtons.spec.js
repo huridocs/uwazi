@@ -35,15 +35,9 @@ describe('RadioButtons', () => {
   describe('when clicking an option', () => {
     it('should call onChange with the new value', () => {
       render();
-      component
-        .find('input[type="radio"]')
-        .first()
-        .simulate('change');
+      component.find('input[type="radio"]').first().simulate('change');
       expect(props.onChange).toHaveBeenCalledWith('option1');
-      component
-        .find('input[type="radio"]')
-        .last()
-        .simulate('change');
+      component.find('input[type="radio"]').last().simulate('change');
       expect(props.onChange).toHaveBeenCalledWith('option2');
     });
   });

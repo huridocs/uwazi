@@ -64,18 +64,8 @@ describe('CreateConnectionPanel', () => {
 
     render();
     let options = component.find('.connections-list li');
-    expect(
-      options
-        .at(0)
-        .find(Icon)
-        .props().icon
-    ).toBe('check');
-    expect(
-      options
-        .at(1)
-        .find(Icon)
-        .props().icon
-    ).not.toBe('check');
+    expect(options.at(0).find(Icon).props().icon).toBe('check');
+    expect(options.at(1).find(Icon).props().icon).not.toBe('check');
 
     props.connection = Immutable({
       template: 'rt2',
@@ -86,18 +76,8 @@ describe('CreateConnectionPanel', () => {
 
     render();
     options = component.find('.connections-list li');
-    expect(
-      options
-        .at(0)
-        .find(Icon)
-        .props().icon
-    ).not.toBe('check');
-    expect(
-      options
-        .at(1)
-        .find(Icon)
-        .props().icon
-    ).toBe('check');
+    expect(options.at(0).find(Icon).props().icon).not.toBe('check');
+    expect(options.at(1).find(Icon).props().icon).toBe('check');
   });
 
   it('should have a search form with the connection type', () => {
@@ -112,13 +92,7 @@ describe('CreateConnectionPanel', () => {
     saveButton.props().onCreate();
     expect(props.onCreate).toHaveBeenCalled();
     expect(saveButton.parent().props().if).toBe(true);
-    expect(
-      component
-        .find(ActionButton)
-        .at(1)
-        .parent()
-        .props().if
-    ).toBe(false);
+    expect(component.find(ActionButton).at(1).parent().props().if).toBe(false);
   });
 
   it('should have connect button with an onRangedConnect callback for targetRanged connections', () => {
@@ -128,13 +102,7 @@ describe('CreateConnectionPanel', () => {
     expect(connectButton.props().action).toBe('connect');
     expect(connectButton.props().onRangedConnect).toBe(props.onRangedConnect);
     expect(connectButton.parent().props().if).toBe(true);
-    expect(
-      component
-        .find(ActionButton)
-        .at(0)
-        .parent()
-        .props().if
-    ).toBe(false);
+    expect(component.find(ActionButton).at(0).parent().props().if).toBe(false);
   });
 
   it('should list the search results and pass props required', () => {

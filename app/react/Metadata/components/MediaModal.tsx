@@ -48,9 +48,10 @@ export const MediaModal = ({
     }
   }, [attachments, type]);
 
-  const attachmentsUrls = useMemo(() => attachments.map(a => a.url || `/api/files/${a.filename}`), [
-    attachments,
-  ]);
+  const attachmentsUrls = useMemo(
+    () => attachments.map(a => a.url || `/api/files/${a.filename}`),
+    [attachments]
+  );
 
   const defaultTab = useMemo(() => {
     if (!selectedUrl) {

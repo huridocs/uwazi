@@ -25,7 +25,9 @@ export default {
       const entity = await cursor.next();
       if (!entity.file || (entity.file && !entity.file.filename)) {
         process.stdout.write(`processed (no filename) -> ${index}\r`);
-      } else if (!fs.existsSync(path.join(config.defaultTenant.uploadedDocuments, entity.file.filename))) {
+      } else if (
+        !fs.existsSync(path.join(config.defaultTenant.uploadedDocuments, entity.file.filename))
+      ) {
         process.stdout.write(`processed (no file) -> ${index}\r`);
       } else {
         try {

@@ -7,10 +7,7 @@ import fixtures from './fixtures.js';
 describe('migration sanitize-string-geolocations', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
 
     spyOn(logger, 'logFieldParseError');
   });
@@ -26,10 +23,7 @@ describe('migration sanitize-string-geolocations', () => {
   it('should leave unchanged correct geolocations and other fields', async () => {
     await migration.up(testingDB.mongodb);
 
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find()
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     expect(entities[0].metadata.geolocation_geolocation[0].value.lat).toBe(1.1);
     expect(entities[0].metadata.geolocation_geolocation[0].value.lon).toBe(-2.2);
@@ -39,10 +33,7 @@ describe('migration sanitize-string-geolocations', () => {
   it('should correctly fix string formated floats', async () => {
     await migration.up(testingDB.mongodb);
 
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find()
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     expect(entities[1].metadata.geolocation_geolocation[0].value.lat).toBe(1.1);
     expect(entities[1].metadata.geolocation_geolocation[0].value.lon).toBe(-2.2);
@@ -51,10 +42,7 @@ describe('migration sanitize-string-geolocations', () => {
   it('should unset non-parsable values', async () => {
     await migration.up(testingDB.mongodb);
 
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find()
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     expect(entities[2].metadata.geolocation_geolocation).toEqual([]);
     expect(logger.logFieldParseError).toHaveBeenCalledWith(
@@ -72,10 +60,7 @@ describe('migration sanitize-string-geolocations', () => {
   it('should leave the field untouched if its value is empty or not defined', async () => {
     await migration.up(testingDB.mongodb);
 
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find()
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     expect(entities[3].metadata.geolocation_geolocation).toEqual([]);
     expect(entities[4].metadata.geolocation_geolocation).toBe(null);

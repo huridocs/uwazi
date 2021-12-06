@@ -22,10 +22,7 @@ describe('migration remove-pdfinfo-property', () => {
       await migration.up(testingDB.mongodb);
     });
     it('should remove pdfInfo property from entities and keep the rest of properties', async () => {
-      const entities = await testingDB.mongodb
-        .collection('entities')
-        .find({})
-        .toArray();
+      const entities = await testingDB.mongodb.collection('entities').find({}).toArray();
 
       expect(entities).toMatchObject([
         { title: 'entity1', metadata: { text: [{ value: 'test' }] } },
@@ -43,10 +40,7 @@ describe('migration remove-pdfinfo-property', () => {
         return fileWithoutPdfInfo;
       });
 
-      const files = await testingDB.mongodb
-        .collection('files')
-        .find({})
-        .toArray();
+      const files = await testingDB.mongodb.collection('files').find({}).toArray();
 
       expect(files).toEqual(filesWithoutPdfInfo);
     });

@@ -25,9 +25,7 @@ describe('appcontext middleware', () => {
   });
 
   it('should execute next middlewares inside an async context', async () => {
-    const response = await request(app)
-      .get('/api/testGET')
-      .set('someHeader', 'test');
+    const response = await request(app).get('/api/testGET').set('someHeader', 'test');
 
     expect(response.text).toBe(JSON.stringify('test'));
   });

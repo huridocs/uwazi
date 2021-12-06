@@ -55,19 +55,13 @@ describe('TilesViewer', () => {
     });
 
     it('should pass onClickSnippet to Doc', () => {
-      const docProps = component
-        .find(Doc)
-        .at(0)
-        .props();
+      const docProps = component.find(Doc).at(0).props();
       expect(docProps.onSnippetClick).toBe(props.onSnippetClick);
     });
 
     describe('Clicking on a document', () => {
       it('should call on props.clickOnDocument if present', () => {
-        component
-          .find(Doc)
-          .at(0)
-          .simulate('click', 'e', 'other args');
+        component.find(Doc).at(0).simulate('click', 'e', 'other args');
         expect(props.clickOnDocument).toHaveBeenCalledWith('e', 'other args');
       });
     });

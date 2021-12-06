@@ -6,10 +6,7 @@ import fixtures from './fixtures.js';
 describe('migration sanitize_empty_geolocations', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -23,12 +20,7 @@ describe('migration sanitize_empty_geolocations', () => {
   it('should migrate properly', done => {
     migration
       .up(testingDB.mongodb)
-      .then(() =>
-        testingDB.mongodb
-          .collection('entities')
-          .find()
-          .toArray()
-      )
+      .then(() => testingDB.mongodb.collection('entities').find().toArray())
       .then(entities => {
         const doc1 = entities.find(e => e.title === 'doc1');
         expect(doc1.metadata.description).toBe('one');

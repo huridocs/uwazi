@@ -18,16 +18,17 @@ const JoiDeprecatedValidation = (schema, propTovalidate, req, next) => {
   }
 };
 
-export default (schema, propTovalidate = 'body') => async (req, _res, next) => {
-  if (schema.isJoi) {
-    JoiDeprecatedValidation(schema, propTovalidate, req, next);
-  } else {
-    try {
-      const validator = wrapValidator(ajv.compile({ ...schema, $async: true }));
-      await validator(req);
-      next();
-    } catch (e) {
-      next(createError(e, 400));
+export default (schema, propTovalidate = 'body') =>
+  async (req, _res, next) => {
+    if (schema.isJoi) {
+      JoiDeprecatedValidation(schema, propTovalidate, req, next);
+    } else {
+      try {
+        const validator = wrapValidator(ajv.compile({ ...schema, $async: true }));
+        await validator(req);
+        next();
+      } catch (e) {
+        next(createError(e, 400));
+      }
     }
-  }
-};
+  };

@@ -43,9 +43,9 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
         const property = (template.properties || []).find(
           prop => prop.label.trim().toLowerCase() === label.trim().toLowerCase()
         );
-        return (property
-          ? { template: template.name, property }
-          : { template: undefined }) as MatchedProperty;
+        return (
+          property ? { template: template.name, property } : { template: undefined }
+        ) as MatchedProperty;
       })
       .filter(prop => prop.template !== undefined);
   }

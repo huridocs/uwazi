@@ -74,26 +74,12 @@ describe('SortButtons', () => {
 
         expect(component.find('.Dropdown:not(.width-placeholder) li').length).toBe(4);
 
-        expect(
-          component
-            .find('li')
-            .last()
-            .children()
-            .at(0)
-            .find('span')
-            .last()
-            .text()
-        ).toBe('sortableProperty (A-Z)');
-        expect(
-          component
-            .find('li')
-            .last()
-            .children()
-            .at(1)
-            .find('span')
-            .last()
-            .text()
-        ).toBe('sortableProperty (Z-A)');
+        expect(component.find('li').last().children().at(0).find('span').last().text()).toBe(
+          'sortableProperty (A-Z)'
+        );
+        expect(component.find('li').last().children().at(1).find('span').last().text()).toBe(
+          'sortableProperty (Z-A)'
+        );
       });
     });
 
@@ -101,16 +87,9 @@ describe('SortButtons', () => {
       it('should display sort by search relevance option', () => {
         props.search.searchTerm = 'keyword';
         render();
-        expect(
-          component
-            .find('li')
-            .at(3)
-            .children()
-            .at(0)
-            .find('span')
-            .last()
-            .text()
-        ).toBe('Search relevance');
+        expect(component.find('li').at(3).children().at(0).find('span').last().text()).toBe(
+          'Search relevance'
+        );
       });
     });
 
@@ -126,12 +105,7 @@ describe('SortButtons', () => {
       it('should set the option active', () => {
         props.search.sort = 'metadata.sortable_name';
         render();
-        expect(
-          component
-            .find('li')
-            .last()
-            .hasClass('is-active')
-        ).toBe(true);
+        expect(component.find('li').last().hasClass('is-active')).toBe(true);
       });
     });
 
@@ -139,12 +113,7 @@ describe('SortButtons', () => {
       it('should sort by that property with default order (asc for text and desc for date)', () => {
         render();
         component.setState({ active: true });
-        component
-          .find('li')
-          .last()
-          .children()
-          .at(0)
-          .simulate('click');
+        component.find('li').last().children().at(0).simulate('click');
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'metadata.sortable_name', order: 'asc', userSelectedSorting: true } },
           'library'
@@ -159,12 +128,7 @@ describe('SortButtons', () => {
         render();
         component.setState({ active: true });
 
-        component
-          .find('li')
-          .last()
-          .children()
-          .at(0)
-          .simulate('click');
+        component.find('li').last().children().at(0).simulate('click');
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'metadata.different_name', order: 'desc', userSelectedSorting: true } },
           'library'

@@ -28,35 +28,27 @@ describe('contact', () => {
 
     it('should send an email', async () => {
       spyOn(contact, 'sendMessage').and.returnValue(Promise.resolve());
-      const response = await request(app)
-        .post('/api/contact')
-        .send(body);
+      const response = await request(app).post('/api/contact').send(body);
       expect(response.text).toContain('ok');
       expect(contact.sendMessage).toHaveBeenCalledWith(body);
     });
 
     it('should next with error if sending email failed', async () => {
       spyOn(contact, 'sendMessage').and.callFake(() => Promise.reject());
-      const response = await request(app)
-        .post('/api/contact')
-        .send(body);
+      const response = await request(app).post('/api/contact').send(body);
       expect(response.status).not.toBe(200);
     });
 
     describe('validation', () => {
       it('should not validate with missing requried properties properties', async () => {
         body = {};
-        const response = await request(app)
-          .post('/api/contact')
-          .send(body);
+        const response = await request(app).post('/api/contact').send(body);
         expect(response.text).toContain('validation failed');
       });
 
       it('should be an e-mail', async () => {
         body.email = 'wrong format';
-        const response = await request(app)
-          .post('/api/contact')
-          .send(body);
+        const response = await request(app).post('/api/contact').send(body);
         expect(response.text).toContain('validation failed');
       });
     });

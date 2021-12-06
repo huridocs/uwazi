@@ -22,10 +22,7 @@ describe('SearchBox', () => {
 
   it('should call the search action on submit', () => {
     spyOn(browserHistory, 'push');
-    component
-      .find(Form)
-      .props()
-      .onSubmit({ searchTerm: 'text with spaces' });
+    component.find(Form).props().onSubmit({ searchTerm: 'text with spaces' });
     expect(browserHistory.push).toHaveBeenCalledWith("/library/?q=(searchTerm:'text with spaces')");
   });
 });

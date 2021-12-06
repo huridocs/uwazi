@@ -39,9 +39,7 @@ describe('manageAttachmentsReducer', () => {
       it('should append the action file to attachments', () => {
         action.type = 'ATTACHMENT_COMPLETE';
         action.file = { file: 'file' };
-        const attachments = manageAttachmentsReducer()(state, action)
-          .get('attachments')
-          .toJS();
+        const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
         expect(attachments.length).toBe(1);
         expect(attachments[0]).toEqual(action.file);
@@ -57,9 +55,7 @@ describe('manageAttachmentsReducer', () => {
           Immutable.fromJS([{ filename: 'file to be deleted' }, { filename: 'file to remain' }])
         );
 
-        const attachments = manageAttachmentsReducer()(state, action)
-          .get('attachments')
-          .toJS();
+        const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
         expect(attachments.length).toBe(1);
         expect(attachments[0]).toEqual({ filename: 'file to remain' });
@@ -72,9 +68,7 @@ describe('manageAttachmentsReducer', () => {
         action.file = { sharedId: 'eId', originalname: 'new name' };
         state = state.set('file', Immutable.fromJS({ originalname: 'original name' }));
 
-        const file = manageAttachmentsReducer()(state, action)
-          .get('file')
-          .toJS();
+        const file = manageAttachmentsReducer()(state, action).get('file').toJS();
 
         expect(file.originalname).toBe('new name');
       });
@@ -90,9 +84,7 @@ describe('manageAttachmentsReducer', () => {
           ])
         );
 
-        const attachments = manageAttachmentsReducer()(state, action)
-          .get('attachments')
-          .toJS();
+        const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
         expect(attachments.length).toBe(2);
         expect(attachments[0].originalname).toBe('file to remain');

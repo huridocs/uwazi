@@ -89,18 +89,11 @@ describe('Item', () => {
     render();
     expect(component.find('.item-name').text()).toContain('additionalIcon');
     expect(component.find('.item-name').text()).toContain('doc title');
-    expect(
-      component
-        .find('.item-name')
-        .find(Icon.default)
-        .props().data
-    ).toEqual({ _id: 'icon', type: 'Icons' });
-    expect(
-      component
-        .find('.item-name')
-        .find(DocumentLanguage)
-        .props().doc
-    ).toBe(props.doc);
+    expect(component.find('.item-name').find(Icon.default).props().data).toEqual({
+      _id: 'icon',
+      type: 'Icons',
+    });
+    expect(component.find('.item-name').find(DocumentLanguage).props().doc).toBe(props.doc);
   });
 
   it('should include feature-toggled FavoriteBanner passed the sharedId', () => {
@@ -123,19 +116,8 @@ describe('Item', () => {
 
   it('should include a template label and custom buttons inside the footer', () => {
     render();
-    expect(
-      component
-        .find(ItemFooter)
-        .find(TemplateLabel)
-        .props().template
-    ).toBe('templateId');
-    expect(
-      component
-        .find(ItemFooter)
-        .find('div')
-        .at(0)
-        .text()
-    ).toContain('Buttons');
+    expect(component.find(ItemFooter).find(TemplateLabel).props().template).toBe('templateId');
+    expect(component.find(ItemFooter).find('div').at(0).text()).toContain('Buttons');
   });
 
   describe('Metadata', () => {

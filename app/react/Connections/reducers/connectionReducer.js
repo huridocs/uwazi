@@ -21,7 +21,7 @@ const resetState = state => {
   return fromJS(newState);
 };
 
-export default function(state = initialState, action = {}) {
+export default function (state = initialState, action = {}) {
   let newState;
 
   switch (action.type) {

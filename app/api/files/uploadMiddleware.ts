@@ -23,27 +23,25 @@ const move = async (req: Request, filePath: pathFunction) => {
   req.file.path = filePath(req.file.filename);
 };
 
-const singleUpload = (filePath?: pathFunction, storage = defaultStorage) => async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    await new Promise((resolve, reject) => {
-      multer({ storage }).single('file')(req, res, err => {
-        if (!err) resolve();
-        reject(err);
+const singleUpload =
+  (filePath?: pathFunction, storage = defaultStorage) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await new Promise((resolve, reject) => {
+        multer({ storage }).single('file')(req, res, err => {
+          if (!err) resolve();
+          reject(err);
+        });
       });
-    });
 
-    if (filePath) {
-      await move(req, filePath);
+      if (filePath) {
+        await move(req, filePath);
+      }
+      next();
+    } catch (e) {
+      next(e);
     }
-    next();
-  } catch (e) {
-    next(e);
-  }
-};
+  };
 
 const multipleUpload = async (req: Request, res: Response, next: NextFunction) => {
   try {

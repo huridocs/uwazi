@@ -6,10 +6,7 @@ import fixtures from './fixtures.js';
 describe('migration add-RTL-to-settings-languages', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -22,10 +19,7 @@ describe('migration add-RTL-to-settings-languages', () => {
 
   it('should add RTL to settings languages', async () => {
     await migration.up(testingDB.mongodb);
-    const [{ languages }] = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const [{ languages }] = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     const rtlLanguages = languages.filter(l => l.rtl);
 
@@ -39,10 +33,7 @@ describe('migration add-RTL-to-settings-languages', () => {
 
   it('should not affect other settings', async () => {
     await migration.up(testingDB.mongodb);
-    const settingsCollection = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const settingsCollection = await testingDB.mongodb.collection('settings').find({}).toArray();
     expect(settingsCollection.length).toBe(1);
 
     const [{ otherProperty }] = settingsCollection;

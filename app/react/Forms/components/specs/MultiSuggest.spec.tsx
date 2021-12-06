@@ -35,9 +35,9 @@ describe('MultiSelect', () => {
   };
 
   it('should extrace selectValue correctly', () => {
-    expect(
-      mapStateToProps({ a: { b: { c: 'a' } } }, { selectModel: 'a.b.c' }).selectValue
-    ).toEqual(['a']);
+    expect(mapStateToProps({ a: { b: { c: 'a' } } }, { selectModel: 'a.b.c' }).selectValue).toEqual(
+      ['a']
+    );
     expect(
       mapStateToProps({ a: { b: { c: ['a', 'b'] } } }, { selectModel: 'a.b.c' }).selectValue
     ).toEqual(['a', 'b']);
@@ -49,17 +49,11 @@ describe('MultiSelect', () => {
 
   it('should render the valid, not-already-accepted suggestions', () => {
     render();
+    expect(component.find('span[className="multiselectItem-name"]').at(0).props().children).toEqual(
+      'Cl'
+    );
     expect(
-      component
-        .find('span[className="multiselectItem-name"]')
-        .at(0)
-        .props().children
-    ).toEqual('Cl');
-    expect(
-      component
-        .find('span[className="confidence-bubble medium"]')
-        .at(0)
-        .props().children
+      component.find('span[className="confidence-bubble medium"]').at(0).props().children
     ).toEqual('medium');
   });
 
@@ -67,10 +61,7 @@ describe('MultiSelect', () => {
     props.value[1].suggestion_confidence = 0.4;
     render();
     expect(
-      component
-        .find('span[className="confidence-bubble low"]')
-        .at(0)
-        .props().children
+      component.find('span[className="confidence-bubble low"]').at(0).props().children
     ).toEqual('low');
   });
 
@@ -78,10 +69,7 @@ describe('MultiSelect', () => {
     props.value[1].suggestion_confidence = 0.9;
     render();
     expect(
-      component
-        .find('span[className="confidence-bubble high"]')
-        .at(0)
-        .props().children
+      component.find('span[className="confidence-bubble high"]').at(0).props().children
     ).toEqual('high');
   });
 

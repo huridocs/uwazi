@@ -11,14 +11,8 @@ import { FormatMetadata } from '../containers/FormatMetadata';
 
 export class ShowMetadata extends Component {
   render() {
-    const {
-      entity,
-      showTitle,
-      showType,
-      relationships,
-      showSubset,
-      groupGeolocations,
-    } = this.props;
+    const { entity, showTitle, showType, relationships, showSubset, groupGeolocations } =
+      this.props;
     let header = '';
     if (showTitle || showType) {
       let title = '';

@@ -1,4 +1,4 @@
-export default function(links) {
+export default function (links) {
   const validator = {
     '': {},
   };

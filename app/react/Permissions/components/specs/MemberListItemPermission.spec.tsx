@@ -10,8 +10,9 @@ describe('MemberListItem', () => {
     const assert = (component: ShallowWrapper, testMember: MemberWithPermission) => {
       expect(component.find('select').length).toBe(1);
 
-      const selectOptionForMixed = component.find('option').filter({ value: MixedAccess.MIXED })
-        .length;
+      const selectOptionForMixed = component
+        .find('option')
+        .filter({ value: MixedAccess.MIXED }).length;
       if (testMember.level === MixedAccess.MIXED) {
         expect(selectOptionForMixed).toBe(1);
       } else {
