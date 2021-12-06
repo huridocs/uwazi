@@ -9,16 +9,16 @@ import disableTransitions from '../helpers/disableTransitions';
 
 expect.extend({ toMatchImageSnapshot });
 
-const navigateToPage = async (pageName: string, selector: string) => {
-    await selectSettingsPage(pageName);
-    await page.waitForSelector(selector);
-    const fetchedPage = ensure<ElementHandle>(await page.$(selector));
-    return fetchedPage.screenshot();
-};
-
 const selectSettingsPage = async (title: string) => {
   await expect(page).toClick('a.settings-section');
   await expect(page).toClick('span', { text: title });
+};
+
+const navigateToPage = async (pageName: string, selector: string) => {
+  await selectSettingsPage(pageName);
+  await page.waitForSelector(selector);
+  const fetchedPage = ensure<ElementHandle>(await page.$(selector));
+  return fetchedPage.screenshot();
 };
 
 describe('Settings', () => {
@@ -177,7 +177,10 @@ describe('Settings', () => {
   });
 
   it('should display Languages with no more than a 7% difference', async () => {
-    const screenshot = await navigateToPage('Languages', '.settings-content > .panel > .list-group:last-child');
+    const screenshot = await navigateToPage(
+      'Languages',
+      '.settings-content > .panel > .list-group:last-child'
+    );
     expect(screenshot).toMatchImageSnapshot({
       failureThreshold: 0.07,
       failureThresholdType: 'percent',
