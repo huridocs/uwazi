@@ -21,7 +21,7 @@ describe('Homepage entities', () => {
       content: `*: {
         font-family: 'Arial', sans-serif;
       }`,
-    })
+    });
   });
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
