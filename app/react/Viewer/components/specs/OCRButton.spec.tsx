@@ -17,10 +17,10 @@ describe('OCRButton', () => {
 
   let file: FileType;
 
-  jest.spyOn(ocrActions, 'dummyOCRServiceCall');
+  jest.spyOn(ocrActions, 'dummyOCRPost');
 
   beforeEach(() => {
-    file = { ocrstatus: 'noOCR' };
+    file = { filename: 'noOCR' };
   });
 
   const render = (store: Partial<IStore>, pdf: FileType) => {
@@ -30,7 +30,6 @@ describe('OCRButton', () => {
 
   describe('rendering', () => {
     it('should render if the OCR feature is enabled', () => {
-      //Using dummy feature settings
       render(reduxStore, {});
       expect(screen.getByText('Add to OCR queue')).not.toBeNull();
     });
@@ -43,7 +42,7 @@ describe('OCRButton', () => {
     });
 
     it('should render according to the pdf OCR status', () => {
-      file = { ocrstatus: 'withOCR' };
+      file = { filename: 'withOCR' };
       render(reduxStore, file);
       expect(screen.getByText('OCR Complete')).not.toBeNull();
     });
@@ -53,7 +52,7 @@ describe('OCRButton', () => {
         render(reduxStore, { ...file, _id: 'fileId' });
         const ocrButton: Element = screen.getByRole('button');
         fireEvent.click(ocrButton);
-        expect(ocrActions.dummyOCRServiceCall).toHaveBeenCalledWith({ ...file, _id: 'fileId' });
+        expect(ocrActions.dummyOCRPost).toHaveBeenCalledWith({ ...file, _id: 'fileId' });
       });
 
       it('should change to show the file is in the queue', () => {
