@@ -41,7 +41,6 @@ const fileSchema = {
       items: tocSchema,
     },
     extractedMetadata: { type: 'array', items: extractedMetadataSchema },
-    ocrstatus: { type: 'string', enum: ['noOCR', 'inQueue', 'cannotProcess', 'withOCR'] },
   },
 };
 

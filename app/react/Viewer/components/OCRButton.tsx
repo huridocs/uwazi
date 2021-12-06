@@ -2,7 +2,7 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { FileType } from 'shared/types/fileType';
-import { dummyOCRServiceCall } from '../actions/ocrActions';
+import { dummyOCRPost, dummyOCRGet } from '../actions/ocrActions';
 
 const processing = (
   <div className="in-queue">
@@ -12,14 +12,14 @@ const processing = (
   </div>
 );
 
-const statusDisplay = (file: FileType) => {
+const statusDisplay = (file: FileType, ocrStatus: string) => {
   const addToQueue = (
-    <button type="button" className="btn btn-default" onClick={() => dummyOCRServiceCall(file)}>
+    <button type="button" className="btn btn-default" onClick={() => dummyOCRPost(file)}>
       <Translate>Add to OCR queue</Translate>
     </button>
   );
 
-  switch (file.ocrstatus) {
+  switch (ocrStatus) {
     case 'noOCR':
       return addToQueue;
 
@@ -59,10 +59,14 @@ type OCRButtonProps = {
   file: FileType;
 };
 
-const OCRButton = ({ file }: OCRButtonProps) => (
-  <FeatureToggle feature="ocrtrigger">
-    <div className="ocr-service-display">{statusDisplay(file)}</div>
-  </FeatureToggle>
-);
+const OCRButton = ({ file }: OCRButtonProps) => {
+  const ocrStatus = dummyOCRGet(file.filename || '');
+
+  return (
+    <FeatureToggle feature="ocrtrigger">
+      <div className="ocr-service-display">{statusDisplay(file, ocrStatus)}</div>
+    </FeatureToggle>
+  );
+};
 
 export { OCRButton };

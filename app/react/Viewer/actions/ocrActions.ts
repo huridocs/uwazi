@@ -1,5 +1,24 @@
 import { FileType } from 'shared/types/fileType';
 
-const dummyOCRServiceCall = (file: FileType) => file;
+const dummyOCRPost = (file: FileType) => file;
 
-export { dummyOCRServiceCall };
+const dummyOCRGet = (filename: string) => {
+  switch (filename) {
+    case 'noOCR':
+      return 'noOCR';
+
+    case 'inQueue':
+      return 'inQueue';
+
+    case 'cannotProcess':
+      return 'cannotProcess';
+
+    case 'withOCR':
+      return 'withOCR';
+
+    default:
+      return 'noOCR';
+  }
+};
+
+export { dummyOCRPost, dummyOCRGet };
