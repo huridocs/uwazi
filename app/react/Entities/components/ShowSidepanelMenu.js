@@ -13,7 +13,7 @@ export class ShowSidepanelMenu extends Component {
       <div className={active ? 'active' : ''}>
         <ShowIf if={!panelIsOpen}>
           <div className="btn btn-primary" onClick={e => openPanel(e)}>
-            <Icon icon="chart-bar" />
+            <Icon icon="columns" />
           </div>
         </ShowIf>
       </div>

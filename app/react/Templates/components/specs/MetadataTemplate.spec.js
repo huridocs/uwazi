@@ -12,7 +12,6 @@ import thunk from 'redux-thunk';
 import { shallow } from 'enzyme';
 import TestBackend from 'react-dnd-test-backend';
 
-import api from 'app/Templates/TemplatesAPI';
 import entitiesApi from 'app/Entities/EntitiesAPI';
 import pagesApi from 'app/Pages/PagesAPI';
 
@@ -23,6 +22,7 @@ import {
 } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
+import * as templateActions from '../../actions/templateActions';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
@@ -222,7 +222,6 @@ describe('MetadataTemplate', () => {
 
   describe('onSubmit', () => {
     it('should trim the properties labels and then call props.saveTemplate', async () => {
-      spyOn(api, 'validateMapping').and.returnValue({ errors: [], valid: true });
       spyOn(entitiesApi, 'countByTemplate').and.returnValue(100);
       const component = shallow(<MetadataTemplate {...props} />);
       const template = { properties: [{ label: ' trim me please ' }] };
@@ -239,14 +238,10 @@ describe('MetadataTemplate', () => {
         properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
       };
 
-      async function submitTemplate(templateToSubmit, validMapping = true, entityCount = 100) {
+      async function submitTemplate(templateToSubmit, entityCount = 100) {
         context = {
           confirm: jasmine.createSpy('confirm'),
         };
-        spyOn(api, 'validateMapping').and.returnValue({
-          error: 'error',
-          valid: validMapping,
-        });
         spyOn(entitiesApi, 'countByTemplate').and.returnValue(entityCount);
         const component = shallow(<MetadataTemplate {...props} />, { context });
         await component.instance().onSubmit(templateToSubmit);
@@ -254,7 +249,10 @@ describe('MetadataTemplate', () => {
 
       describe('when the mapping has conflicts', () => {
         it('should ask for a reindex', async () => {
-          await submitTemplate(templateWithId, false);
+          props.saveTemplate = jest
+            .spyOn(templateActions, 'saveTemplate')
+            .mockRejectedValueOnce({ status: 409 });
+          await submitTemplate(templateWithId);
           context.confirm.calls.mostRecent().args[0].accept();
           expect(props.saveTemplate).toHaveBeenCalledWith({
             ...templateWithId,
@@ -264,13 +262,13 @@ describe('MetadataTemplate', () => {
 
         describe('when there is a quite amount of entities from the template', () => {
           it('should ask for a reindex but do not do it if the user cancels it', async () => {
-            await submitTemplate(templateWithId, true, 50000);
+            await submitTemplate(templateWithId, 50000);
             context.confirm.calls.mostRecent().args[0].cancel();
             expect(props.saveTemplate).not.toHaveBeenCalled();
           });
 
           it('should ask for a reindex and do it if the user accepts it', async () => {
-            await submitTemplate(templateWithId, true, 50000);
+            await submitTemplate(templateWithId, 50000);
             context.confirm.calls.mostRecent().args[0].accept();
             expect(props.saveTemplate).toHaveBeenCalledWith({
               _id: templateWithId._id,
@@ -282,7 +280,7 @@ describe('MetadataTemplate', () => {
 
         describe('when it is a new template', () => {
           it('should not check for the number of entities', async () => {
-            await submitTemplate({ properties: templateWithId.properties }, true, null);
+            await submitTemplate({ properties: templateWithId.properties }, null);
             expect(entitiesApi.countByTemplate).not.toHaveBeenCalled();
           });
         });
