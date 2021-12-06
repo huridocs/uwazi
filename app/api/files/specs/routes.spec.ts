@@ -167,6 +167,24 @@ describe('files routes', () => {
         expect(entity.generatedToc).toBe(false);
       });
     });
+
+    describe('OCR service', () => {
+      it('should return a status on get', async () => {
+        const { body } = await request(app)
+          .get('/api/files/someFileName/ocr')
+          .expect(200);
+        
+        expect(body).toEqual({
+          status: 'noOCR'
+        })
+      });
+
+      it('should return the new status on post', async () => {
+        const { body } = await request(app)
+          .post('/api/files/someFileName/ocr')
+          .expect(200);
+      })
+    });
   });
 
   describe('POST/files/attachment', () => {

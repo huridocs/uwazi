@@ -226,4 +226,36 @@ export default (app: Application) => {
       res.json('ok');
     }
   );
+
+  app.get(
+    '/api/files/:filename/ocr',
+    validation.validateRequest({
+      properties: {
+        params: {
+          properties: {
+            filename: { type: 'string' },
+          },
+        },
+      },
+    }),
+    (_req, res) => {
+      res.json({
+        status: 'noOCR'
+      });
+    })
+
+    app.post(
+      '/api/files/:filename/ocr',
+      validation.validateRequest({
+        properties: {
+          params: {
+            properties: {
+              filename: { type: 'string' },
+            },
+          },
+        },
+      }),
+      (_req, res) => {
+        res.sendStatus(200);
+      })
 };
