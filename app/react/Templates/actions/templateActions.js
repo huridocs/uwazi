@@ -19,9 +19,7 @@ export function setPropertyDefaults(getState, property) {
   const propertyWithDefaults = property;
   propertyWithDefaults.localID = ID();
   if (property.type === 'select' || property.type === 'multiselect') {
-    propertyWithDefaults.content = getState()
-      .thesauris.get(0)
-      .get('_id');
+    propertyWithDefaults.content = getState().thesauris.get(0).get('_id');
   }
 
   if (property.type === 'relationship') {

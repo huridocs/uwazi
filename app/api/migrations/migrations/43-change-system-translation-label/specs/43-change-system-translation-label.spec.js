@@ -19,10 +19,7 @@ describe('migration change-system-translation-label', () => {
   it('should update system labels to User Interface', async () => {
     const expectedLabel = 'User Interface';
     await migration.up(testingDB.mongodb);
-    const translations = await testingDB.mongodb
-      .collection('translations')
-      .find({})
-      .toArray();
+    const translations = await testingDB.mongodb.collection('translations').find({}).toArray();
 
     const localeFilter = locale => trans => trans.locale === locale;
 

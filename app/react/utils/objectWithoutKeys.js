@@ -1,4 +1,4 @@
-export default function(obj, keys = []) {
+export default function (obj, keys = []) {
   const target = { ...obj };
 
   keys.forEach(key => {

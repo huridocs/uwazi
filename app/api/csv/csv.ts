@@ -45,8 +45,9 @@ const csv = (readStream: Readable, stopOnError = false) => ({
 
   async toThesauri(language: string, availableLanguages: string[]) {
     const values = await csvtojson({ delimiter: [',', ';'] }).fromStream(readStream);
-    const languageLabel: string = ensure<LanguageSchema>(allLanguages.find(l => l.key === language))
-      .label;
+    const languageLabel: string = ensure<LanguageSchema>(
+      allLanguages.find(l => l.key === language)
+    ).label;
 
     const languagesToTranslate: { [k: string]: string } = allLanguages
       .filter(l => availableLanguages.includes(l.key) && Object.keys(values[0]).includes(l.label))

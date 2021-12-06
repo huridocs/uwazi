@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import fs from 'fs';
+import { fs } from 'api/files';
 import path from 'path';
 import { detectLanguage } from 'shared/detectLanguage';
 import { spawn } from 'child-process-promise';
@@ -66,15 +66,12 @@ class PDF extends EventEmitter {
     return Promise.resolve(response);
   }
 
-  deleteThumbnail(documentId) {
-    return new Promise(resolve => {
-      fs.unlink(`${this.getThumbnailPath(documentId)}.jpg`, err => {
-        if (err) {
-          errorLog.error(`Thumbnail deletion error for: ${this.getThumbnailPath(documentId)}`);
-        }
-        resolve();
-      });
-    });
+  async deleteThumbnail(documentId) {
+    try {
+      await fs.unlink(`${this.getThumbnailPath(documentId)}.jpg`);
+    } catch (err) {
+      errorLog.error(`Thumbnail deletion error for: ${this.getThumbnailPath(documentId)}`);
+    }
   }
 
   generateFileInfo(conversion) {
@@ -84,7 +81,7 @@ class PDF extends EventEmitter {
     };
   }
 
-  convert() {
+  async convert() {
     return this.extractText().then(conversion => ({
       ...conversion,
       ...this.generateFileInfo(conversion),

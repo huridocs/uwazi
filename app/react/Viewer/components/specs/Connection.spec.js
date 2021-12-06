@@ -52,10 +52,7 @@ describe('Connection', () => {
   describe('when mouseenter on a reference', () => {
     it('should highlightReference', () => {
       render();
-      component
-        .find(Item)
-        .last()
-        .simulate('mouseenter');
+      component.find(Item).last().simulate('mouseenter');
       expect(props.highlightReference).toHaveBeenCalledWith('ref1');
     });
   });
@@ -63,10 +60,7 @@ describe('Connection', () => {
   describe('when mouseleave a reference', () => {
     it('should unhighlightReference', () => {
       render();
-      component
-        .find(Item)
-        .last()
-        .simulate('mouseleave');
+      component.find(Item).last().simulate('mouseleave');
       expect(props.highlightReference).toHaveBeenCalledWith(null);
     });
   });
@@ -93,10 +87,7 @@ describe('Connection', () => {
         it('should not activate it', () => {
           props.readOnly = true;
           render();
-          component
-            .find(Item)
-            .last()
-            .simulate('click');
+          component.find(Item).last().simulate('click');
           expect(props.activateReference).not.toHaveBeenCalled();
           expect(component.find(Item).props().className).not.toContain('relationship-active');
         });
@@ -108,17 +99,11 @@ describe('Connection', () => {
         props.targetDoc = true;
         props.targetRange = {};
         render();
-        component
-          .find(Item)
-          .last()
-          .simulate('click');
+        component.find(Item).last().simulate('click');
         expect(props.selectReference).toHaveBeenCalledWith(props.reference);
-        expect(
-          component
-            .find(Item)
-            .last()
-            .getElements()[0].props.className
-        ).toContain('relationship-selected');
+        expect(component.find(Item).last().getElements()[0].props.className).toContain(
+          'relationship-selected'
+        );
       });
 
       describe('when connection is to the entire document', () => {
@@ -126,10 +111,7 @@ describe('Connection', () => {
           props.targetDoc = true;
           delete props.reference.reference;
           render();
-          component
-            .find(Item)
-            .first()
-            .simulate('click');
+          component.find(Item).first().simulate('click');
           expect(props.selectReference).not.toHaveBeenCalled();
         });
       });

@@ -53,9 +53,7 @@ describe('permissions routes', () => {
             { ...PUBLIC_PERMISSION, level: 'read', label: undefined },
           ],
         };
-        const response = await request(app)
-          .post('/api/entities/permissions')
-          .send(permissionsData);
+        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
 
         expect(response.status).toBe(200);
         expect(entitiesPermissions.set).toHaveBeenCalledWith(permissionsData);
@@ -64,9 +62,7 @@ describe('permissions routes', () => {
       it('should invalidate if body does not fit the expected schema', async () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = { entities: [], permissions: [{}] };
-        const response = await request(app)
-          .post('/api/entities/permissions')
-          .send(permissionsData);
+        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
         expect(response.status).toBe(400);
       });
 
@@ -76,9 +72,7 @@ describe('permissions routes', () => {
           ids: ['shared1'],
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
-        const response = await request(app)
-          .post('/api/entities/permissions')
-          .send(permissionsData);
+        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
         expect(response.unauthorized).toBe(true);
       });
 
@@ -88,9 +82,7 @@ describe('permissions routes', () => {
           ids: ['shared1'],
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
-        const response = await request(app)
-          .post('/api/entities/permissions')
-          .send(permissionsData);
+        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
         expect(response.status).toBe(200);
       });
     });
@@ -114,9 +106,7 @@ describe('permissions routes', () => {
           ids: ['shared1'],
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
-        const response = await request(app)
-          .post('/api/entities/permissions')
-          .send(permissionsData);
+        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('error on save');
       });
@@ -193,9 +183,7 @@ describe('permissions routes', () => {
       });
 
       it('should not validate if no filterTerm is passed', async () => {
-        const response = await request(app)
-          .get('/api/collaborators')
-          .query({});
+        const response = await request(app).get('/api/collaborators').query({});
         expect(response.status).toBe(400);
       });
     });

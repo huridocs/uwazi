@@ -18,9 +18,7 @@ class AppContext {
   async run(cb: () => Promise<void>, data: ContextData = {}): Promise<void> {
     return new Promise((resolve, reject) => {
       this.storage.run(data, () => {
-        cb()
-          .then(resolve)
-          .catch(reject);
+        cb().then(resolve).catch(reject);
       });
     });
   }

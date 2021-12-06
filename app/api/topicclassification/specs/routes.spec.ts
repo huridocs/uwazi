@@ -86,9 +86,7 @@ describe('topic classification routes', () => {
   describe('GET', () => {
     describe('when passing a thesaurus name as a filter', () => {
       it('should get a single, relevant model', async () => {
-        const response = await request(app)
-          .get('/api/models')
-          .query({ thesaurus: 'Top movies' });
+        const response = await request(app).get('/api/models').query({ thesaurus: 'Top movies' });
         expect(response.body).toEqual({ name: 'Top movies', preferred: '123' });
       });
     });

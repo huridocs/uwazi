@@ -18,10 +18,7 @@ describe('migration metadata-structured-object', () => {
 
   it('should add related entities title to the relationship value', async () => {
     await migration.up(testingDB.mongodb);
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find()
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     expect(entities[0].metadata.year[0]).toEqual({
       value: 2019,

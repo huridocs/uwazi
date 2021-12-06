@@ -6,10 +6,7 @@ const defaultDateFormat = 'YYYY-MM-DD';
 const mapFormatToMoment = (format: string) => format.replace('dd', 'DD').replace('yyyy', 'YYYY');
 
 export const formatDate = (timestamp: number, format: string = defaultDateFormat) =>
-  moment
-    .unix(timestamp)
-    .utc()
-    .format(mapFormatToMoment(format));
+  moment.unix(timestamp).utc().format(mapFormatToMoment(format));
 
 export const formatFile = (fileName: string) => `/files/${fileName}`;
 

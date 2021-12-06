@@ -1,5 +1,5 @@
 import path from 'path';
-import fs from 'fs';
+import { fs, deleteFiles } from 'api/files';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import zipFile from '../zipFile';
 
@@ -16,9 +16,11 @@ describe('zipFile', () => {
     );
   });
 
-  afterAll(() => {
-    fs.unlinkSync(path.join(__dirname, '/zipData/zipTest.zip'));
-    fs.unlinkSync(path.join(__dirname, '/invalid_zip.zip'));
+  afterAll(async () => {
+    await deleteFiles([
+      path.join(__dirname, '/zipData/zipTest.zip'),
+      path.join(__dirname, '/invalid_zip.zip'),
+    ]);
   });
 
   describe('findReadStream', () => {
@@ -53,7 +55,7 @@ describe('zipFile', () => {
 
     describe('when zip is invalid', () => {
       it('should throw an error', async () => {
-        fs.closeSync(fs.openSync(path.join(__dirname, '/invalid_zip.zip'), 'w'));
+        (await fs.open(path.join(__dirname, '/invalid_zip.zip'), 'w')).close();
         try {
           await zipFile(path.join(__dirname, '/invalid_zip.zip')).findReadStream(
             entry => entry.fileName === 'test.csv'

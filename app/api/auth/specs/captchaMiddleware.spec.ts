@@ -27,9 +27,7 @@ describe('captchaMiddleware', () => {
       captchas: [{ _id: captchaId, text: 'k0n2170' }],
     };
 
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(async () => db.disconnect());

@@ -8,20 +8,14 @@ export default {
   async up(db) {
     process.stdout.write('Updating sync configurations...\r\n');
 
-    const [settings] = await db
-      .collection('settings')
-      .find()
-      .toArray();
+    const [settings] = await db.collection('settings').find().toArray();
 
     if (settings.sync) {
       const sync = [{ ...settings.sync, name: 'default' }];
       await db.collection('settings').updateOne({ _id: settings._id }, { $set: { sync } });
     }
 
-    const syncs = await db
-      .collection('syncs')
-      .find()
-      .toArray();
+    const syncs = await db.collection('syncs').find().toArray();
 
     if (syncs.length) {
       await db.collection('syncs').updateOne({ _id: syncs[0]._id }, { $set: { name: 'default' } });

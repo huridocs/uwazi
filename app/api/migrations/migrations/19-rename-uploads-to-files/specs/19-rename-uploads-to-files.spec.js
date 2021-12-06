@@ -19,17 +19,11 @@ describe('migration rename-uploads-to-files', () => {
   it('should rename uploads collection to files', async () => {
     await migration.up(testingDB.mongodb);
 
-    const uploads = await testingDB.mongodb
-      .collection('uploads')
-      .find()
-      .toArray();
+    const uploads = await testingDB.mongodb.collection('uploads').find().toArray();
 
     expect(uploads.length).toBe(0);
 
-    const files = await testingDB.mongodb
-      .collection('files')
-      .find()
-      .toArray();
+    const files = await testingDB.mongodb.collection('files').find().toArray();
 
     expect(files).toEqual([
       expect.objectContaining({ filename: 'test.txt' }),

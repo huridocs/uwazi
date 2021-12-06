@@ -27,9 +27,7 @@ import usersModel from '../usersModel';
 
 describe('Users', () => {
   beforeEach(done => {
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

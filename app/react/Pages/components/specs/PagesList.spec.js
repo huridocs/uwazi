@@ -34,24 +34,14 @@ describe('PagesList', () => {
     it('should render a list with all pages names', () => {
       render();
       expect(component.find('ul.pages').find('li').length).toBe(3);
-      const nameLink = component
-        .find('ul.pages')
-        .find('li')
-        .last()
-        .find(I18NLink)
-        .first();
+      const nameLink = component.find('ul.pages').find('li').last().find(I18NLink).first();
       expect(nameLink.props().to).toBe('/settings/pages/edit/a3');
       expect(nameLink.props().children).toBe('Page 3');
     });
 
     it('should have a button to add a page', () => {
       render();
-      expect(
-        component
-          .find(I18NLink)
-          .last()
-          .props().to
-      ).toBe('/settings/pages/new');
+      expect(component.find(I18NLink).last().props().to).toBe('/settings/pages/new');
     });
   });
 

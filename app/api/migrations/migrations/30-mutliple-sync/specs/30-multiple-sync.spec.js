@@ -13,14 +13,8 @@ describe('migration multiple sync', () => {
   });
 
   const getSyncData = async () => {
-    const [{ sync }] = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
-    const syncs = await testingDB.mongodb
-      .collection('syncs')
-      .find({})
-      .toArray();
+    const [{ sync }] = await testingDB.mongodb.collection('settings').find({}).toArray();
+    const syncs = await testingDB.mongodb.collection('syncs').find({}).toArray();
 
     return { sync, syncs };
   };
@@ -52,10 +46,7 @@ describe('migration multiple sync', () => {
   it('should not affect other settings', async () => {
     await testingDB.clearAllAndLoad(fixturesWithSync);
     await migration.up(testingDB.mongodb);
-    const collectionSettings = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const collectionSettings = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     const [{ otherProperty }] = collectionSettings;
     expect(otherProperty).toBe('test');

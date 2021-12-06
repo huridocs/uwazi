@@ -900,10 +900,7 @@ const search = {
   },
 
   async countPerTemplate(language) {
-    const queryBuilder = documentQueryBuilder()
-      .language(language)
-      .includeUnpublished()
-      .limit(0);
+    const queryBuilder = documentQueryBuilder().language(language).includeUnpublished().limit(0);
 
     return (
       await elastic.search({ body: queryBuilder.query() })

@@ -60,10 +60,7 @@ export default (app: Application) => {
     ),
 
     (req, res, next) => {
-      pages
-        .getById(req.query.sharedId, req.language)
-        .then(res.json.bind(res))
-        .catch(next);
+      pages.getById(req.query.sharedId, req.language).then(res.json.bind(res)).catch(next);
     }
   );
 

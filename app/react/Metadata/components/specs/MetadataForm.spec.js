@@ -84,10 +84,7 @@ describe('MetadataForm', () => {
       properties: [],
     });
     render();
-    const title = component
-      .find('FormGroup')
-      .first()
-      .find({ children: 'Name' });
+    const title = component.find('FormGroup').first().find({ children: 'Name' });
     expect(title.length).toBe(1);
   });
 

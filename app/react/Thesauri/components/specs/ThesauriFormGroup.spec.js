@@ -52,10 +52,7 @@ describe('ThesauriFormGroup', () => {
   describe('delete button', () => {
     it('should remove group when clicked', () => {
       render();
-      component
-        .find('button')
-        .first()
-        .simulate('click');
+      component.find('button').first().simulate('click');
       expect(props.removeValue).toHaveBeenCalledWith(props.index);
     });
   });

@@ -141,10 +141,7 @@ describe('UserGroupSidePanel', () => {
       });
 
       it('should remove the user if its is unchecked', () => {
-        const userToUncheck = component
-          .find(MultiSelect)
-          .find('input')
-          .at(0);
+        const userToUncheck = component.find(MultiSelect).find('input').at(0);
         userToUncheck.simulate('change');
         const selectedUsers = component.find(MultiSelect).props().value;
         expect(selectedUsers).toEqual(['user1']);
@@ -175,10 +172,7 @@ describe('UserGroupSidePanel', () => {
       const props = { ...defaultProps };
       // @ts-ignore
       props.users[2].using2fa = false;
-      const userToCheck = component
-        .find(MultiSelect)
-        .find('input')
-        .at(2);
+      const userToCheck = component.find(MultiSelect).find('input').at(2);
       userToCheck.simulate('change');
     });
 

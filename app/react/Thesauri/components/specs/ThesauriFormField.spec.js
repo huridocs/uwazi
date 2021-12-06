@@ -28,19 +28,13 @@ describe('ThesauriFormField', () => {
   describe('delete button', () => {
     it('should remove item when clicked', () => {
       render();
-      component
-        .find('button')
-        .first()
-        .simulate('click');
+      component.find('button').first().simulate('click');
       expect(props.removeValue).toHaveBeenCalledWith(props.index, undefined);
     });
     it('should pass groupIndex to removeValue if provided', () => {
       props.groupIndex = 5;
       render();
-      component
-        .find('button')
-        .first()
-        .simulate('click');
+      component.find('button').first().simulate('click');
       expect(props.removeValue).toHaveBeenCalledWith(props.index, 5);
     });
   });

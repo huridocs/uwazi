@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
+//eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 import { execSync } from 'child_process';
 import path from 'path';
-import fs from 'fs';
 
 export const downloadRedis = () => {
   const pathToBin = path.join(__dirname, '../../../redis-bin/redis-stable/src/redis-server');

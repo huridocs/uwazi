@@ -61,10 +61,7 @@ describe('MetadataFormButtons', () => {
     });
 
     it('should load the entity on the reduxForm', () => {
-      component
-        .find('.edit-metadata')
-        .at(1)
-        .simulate('click');
+      component.find('.edit-metadata').at(1).simulate('click');
       expect(props.loadInReduxForm).toHaveBeenCalledWith(
         props.formStatePath,
         props.data.toJS(),
@@ -73,10 +70,7 @@ describe('MetadataFormButtons', () => {
     });
 
     it('should clear metadata extraction selections', () => {
-      component
-        .find('.edit-metadata')
-        .at(1)
-        .simulate('click');
+      component.find('.edit-metadata').at(1).simulate('click');
       expect(props.clearMetadataSelections).toHaveBeenCalled();
     });
   });
@@ -162,13 +156,7 @@ describe('MetadataFormButtons', () => {
       const link = component.find(I18NLink);
       expect(link.props().to).toBe('entity/shId');
       expect(component.find('.edit-metadata').length).toBe(1);
-      expect(
-        component
-          .find('.edit-metadata')
-          .at(0)
-          .find(Icon)
-          .props().icon
-      ).toBe('file');
+      expect(component.find('.edit-metadata').at(0).find(Icon).props().icon).toBe('file');
       expect(component.find('.btn-success').length).toBe(0);
       expect(component.find('.delete-metadata').length).toBe(0);
     });
