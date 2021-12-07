@@ -94,6 +94,14 @@ export default {
         key: 'per page',
         value: 'per page',
       },
+      {
+        key: 'Confirm suggestion acceptance',
+        value: 'Confirm suggestion acceptance',
+      },
+      {
+        key: 'Apply to all languages',
+        value: 'Apply to all languages',
+      },
     ];
     await insertSystemKeys(db, systemKeys);
   },
