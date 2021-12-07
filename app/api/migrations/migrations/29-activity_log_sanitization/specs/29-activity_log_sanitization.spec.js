@@ -83,10 +83,7 @@ describe('migration activity log sanitization', () => {
         .find({ namespace: 'activitylog' })
         .count();
 
-      const remainingEntries = await testingDB.mongodb
-        .collection('updatelogs')
-        .find({})
-        .count();
+      const remainingEntries = await testingDB.mongodb.collection('updatelogs').find({}).count();
 
       expect(unWantedEntries).toBe(0);
       expect(remainingEntries).toBe(2);

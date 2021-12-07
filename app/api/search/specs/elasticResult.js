@@ -1,4 +1,4 @@
-export default function() {
+export default function () {
   const hit = () => ({
     _index: 'uwazi',
     _type: 'logs',

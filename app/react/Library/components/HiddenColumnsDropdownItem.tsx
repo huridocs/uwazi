@@ -23,10 +23,11 @@ export const ColumnItem = ({ item }: { item: SelectableColumn }) => (
   </>
 );
 
-export const ValueItem = (hiddenColumns: PropertySchema[]) => () => (
-  <span>
-    <Icon icon="bars" rotation={90} />
-    {hiddenColumns.length ? `${hiddenColumns.length} ` : ''}
-    <Translate>{hiddenColumns.length ? 'columns hidden' : 'Hide columns'}</Translate>
-  </span>
-);
+export const ValueItem = (hiddenColumns: PropertySchema[]) => () =>
+  (
+    <span>
+      <Icon icon="bars" rotation={90} />
+      {hiddenColumns.length ? `${hiddenColumns.length} ` : ''}
+      <Translate>{hiddenColumns.length ? 'columns hidden' : 'Hide columns'}</Translate>
+    </span>
+  );

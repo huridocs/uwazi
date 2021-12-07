@@ -57,13 +57,12 @@ export const getTypes = (searchResults: SearchResults, typesWhitelist: string[] 
 const hasValue = (value: string) => value !== 'missing';
 
 export const getTemplatesModels = async (templateIds: string[]): Promise<TemplatesCache> =>
-  Promise.all(
-    templateIds.filter(hasValue).map(async (id: string) => templates.getById(id))
-  ).then(results =>
-    results.reduce<any>(
-      (memo, template) => (template ? { ...memo, [template._id]: template } : memo),
-      {}
-    )
+  Promise.all(templateIds.filter(hasValue).map(async (id: string) => templates.getById(id))).then(
+    results =>
+      results.reduce<any>(
+        (memo, template) => (template ? { ...memo, [template._id]: template } : memo),
+        {}
+      )
   );
 
 const notDuplicated = (collection: any) => (item: any) =>

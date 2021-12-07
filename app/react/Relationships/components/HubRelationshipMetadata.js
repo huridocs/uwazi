@@ -33,8 +33,11 @@ conformDl.propTypes = {
 };
 
 const extendedMetadata = (relationship, text, relationTypes, thesauris) => {
-  const formattedMetadata = formater.prepareMetadata(relationship.toJS(), relationTypes, thesauris)
-    .metadata;
+  const formattedMetadata = formater.prepareMetadata(
+    relationship.toJS(),
+    relationTypes,
+    thesauris
+  ).metadata;
   return (
     <div className="relationship-metadata">
       <div className="item-metadata">

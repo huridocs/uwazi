@@ -10,10 +10,7 @@ describe('migration replace_dictionary_with_thesaurus', () => {
     //spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
     await migration.up(testingDB.mongodb);
-    translations = await testingDB.mongodb
-      .collection('translations')
-      .find({})
-      .toArray();
+    translations = await testingDB.mongodb.collection('translations').find({}).toArray();
     translations.forEach(translation => {
       contexts = contexts.concat(translation.contexts);
     });

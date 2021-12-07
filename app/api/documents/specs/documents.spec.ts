@@ -17,9 +17,7 @@ describe('documents', () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     mockID();
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(async () => db.disconnect());

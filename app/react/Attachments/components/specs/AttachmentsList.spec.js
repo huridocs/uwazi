@@ -64,11 +64,7 @@ describe('AttachmentsList', () => {
 
   it('should check authorization roles to upload files', () => {
     render();
-    const authorizationProps = component
-      .find(UploadSupportingFile)
-      .parents()
-      .at(1)
-      .props();
+    const authorizationProps = component.find(UploadSupportingFile).parents().at(1).props();
     expect(authorizationProps.roles).toEqual(['admin', 'editor']);
     expect(authorizationProps.orWriteAccessTo).toEqual([props.entity]);
   });

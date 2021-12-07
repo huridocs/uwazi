@@ -9,10 +9,11 @@ declare global {
   }
 }
 
-export default (roles = ['admin']) => (req: Request, res: Response, next: NextFunction) => {
-  if (req.user && roles.includes(req.user.role || '')) {
-    return next();
-  }
-  res.status(401);
-  return res.json({ error: 'Unauthorized', message: 'Unauthorized' });
-};
+export default (roles = ['admin']) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    if (req.user && roles.includes(req.user.role || '')) {
+      return next();
+    }
+    res.status(401);
+    return res.json({ error: 'Unauthorized', message: 'Unauthorized' });
+  };

@@ -93,9 +93,7 @@ describe('validateEntity', () => {
 
     it('should fail if title exceeds the lucene term byte-length limit', async () => {
       const entity = createEntity({
-        title: Math.random()
-          .toString(36)
-          .repeat(20000),
+        title: Math.random().toString(36).repeat(20000),
       });
       await expectError(entity, expect.any(String), '.title');
     });
@@ -106,9 +104,7 @@ describe('validateEntity', () => {
     });
 
     describe('metadata', () => {
-      const largeField = Math.random()
-        .toString(36)
-        .repeat(20000);
+      const largeField = Math.random().toString(36).repeat(20000);
 
       it('should not allow metadata keys that are not defined on the template properties', async () => {
         const entity = createEntity({

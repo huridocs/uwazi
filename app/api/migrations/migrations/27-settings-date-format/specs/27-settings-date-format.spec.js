@@ -19,10 +19,7 @@ describe('migration settings-date-format', () => {
   it('should replace the dateFormat string if it exists', async () => {
     await testingDB.clearAllAndLoad(fixturesWithFormat);
     await migration.up(testingDB.mongodb);
-    const [{ dateFormat }] = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const [{ dateFormat }] = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     expect(dateFormat).toBe('yyyy-MM-dd');
   });
@@ -30,10 +27,7 @@ describe('migration settings-date-format', () => {
   it('should not replace the dateFormat string if it does not exists', async () => {
     await testingDB.clearAllAndLoad(fixturesWithoutFormat);
     await migration.up(testingDB.mongodb);
-    const [{ dateFormat }] = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const [{ dateFormat }] = await testingDB.mongodb.collection('settings').find({}).toArray();
 
     expect(dateFormat).toBe(undefined);
   });
@@ -41,10 +35,7 @@ describe('migration settings-date-format', () => {
   it('should not affect other settings', async () => {
     await testingDB.clearAllAndLoad(fixturesWithFormat);
     await migration.up(testingDB.mongodb);
-    const settingsCollection = await testingDB.mongodb
-      .collection('settings')
-      .find({})
-      .toArray();
+    const settingsCollection = await testingDB.mongodb.collection('settings').find({}).toArray();
     expect(settingsCollection.length).toBe(1);
 
     const [{ otherProperty }] = settingsCollection;

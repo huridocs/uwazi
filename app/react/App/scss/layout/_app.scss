@@ -10,23 +10,6 @@ body {
   height: 100vh;
   padding-top: $header-height;
   overflow: hidden;
-
-  @media print {
-    display: block;
-    width: auto;
-    height: auto;
-    overflow: visible;
-  }
-}
-
-
-@media print {
-  a[href]:after {
-    content: none;
-  }
-  * { 
-    overflow: visible !important;
-  }
 }
 
 .container {

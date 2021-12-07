@@ -36,10 +36,7 @@ describe('templates routes', () => {
   });
 
   const postToEnpoint = async (route: string, body: any) =>
-    request(app)
-      .post(route)
-      .send(body)
-      .expect(200);
+    request(app).post(route).send(body).expect(200);
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_index');
@@ -50,9 +47,7 @@ describe('templates routes', () => {
 
   describe('GET', () => {
     it('should return all templates by default', async () => {
-      const { body } = await request(app)
-        .get('/api/templates')
-        .expect(200);
+      const { body } = await request(app).get('/api/templates').expect(200);
 
       expect(JSON.stringify(body.rows)).toBe(JSON.stringify(fixtures.templates));
     });
@@ -61,9 +56,7 @@ describe('templates routes', () => {
   describe('DELETE', () => {
     it('should delete a template', async () => {
       const templateId = fixtureFactory.id('template2');
-      await request(app)
-        .delete(`/api/templates?_id=${templateId}`)
-        .expect(200);
+      await request(app).delete(`/api/templates?_id=${templateId}`).expect(200);
       const remainingTemplates = await templates.get();
       expect(remainingTemplates).toContainEqual(expect.objectContaining({ name: 'template1' }));
       expect(remainingTemplates).toContainEqual(expect.objectContaining({ name: 'template3' }));
@@ -71,9 +64,7 @@ describe('templates routes', () => {
     });
 
     it('should validate that request has _id', async () => {
-      const { body } = await request(app)
-        .delete('/api/templates')
-        .expect(400);
+      const { body } = await request(app).delete('/api/templates').expect(400);
       expect(body.error).toBe('validation failed');
     });
   });
@@ -128,10 +119,7 @@ describe('templates routes', () => {
   describe('/api/templates/setasdefault', () => {
     it('should call templates to set the new default', async () => {
       const template2Id = fixtureFactory.id('template2');
-      await request(app)
-        .post('/api/templates/setasdefault')
-        .send({ _id: template2Id })
-        .expect(200);
+      await request(app).post('/api/templates/setasdefault').send({ _id: template2Id }).expect(200);
 
       const savedTemplates = await templates.get();
 

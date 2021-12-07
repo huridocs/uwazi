@@ -9,10 +9,7 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    const templates = await db
-      .collection('templates')
-      .find()
-      .toArray();
+    const templates = await db.collection('templates').find().toArray();
     if (!templates.length) {
       templates.push({ name: 'Entity', default: true, properties: [] });
     }

@@ -6,10 +6,7 @@ import fixtures from './fixtures.js';
 describe('migration missing_full_text', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

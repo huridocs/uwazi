@@ -6,19 +6,19 @@ Nightmare.action('navlinks', {
   add(label, url, done) {
     return this.clickLink('Add link')
 
-    .clearInput('.col-sm-4 input')
-    .write('.col-sm-4 input', label)
+      .clearInput('.col-sm-4 input')
+      .write('.col-sm-4 input', label)
 
-    .clearInput('.col-sm-8 input')
-    .write('.col-sm-8 input', url)
+      .clearInput('.col-sm-8 input')
+      .write('.col-sm-8 input', url)
 
-    .then(() => done());
+      .then(() => done());
   },
 
   save(done) {
     return this.clickLink('Save')
-    .wait('.menuItems a')
-    .then(() => done());
+      .wait('.menuItems a')
+      .then(() => done());
   },
 
   getMenusJSON(done) {
@@ -36,12 +36,12 @@ Nightmare.action('navlinks', {
       const result = [];
       const menus = helpers.querySelectorAll('.propery-form');
 
-      menus.forEach((menu) => {
+      menus.forEach(menu => {
         const inputs = menu.querySelectorAll('input');
         result.push({ label: inputs[0].value, url: inputs[1].value });
       });
 
       return result;
     }, done);
-  }
+  },
 });

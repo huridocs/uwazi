@@ -124,10 +124,7 @@ describe('ShareEntityModal', () => {
     ];
 
     component.find(UserGroupsLookupField).simulate('select', testMember);
-    await component
-      .find('.btn-success')
-      .get(0)
-      .props.onClick();
+    await component.find('.btn-success').get(0).props.onClick();
     expect(saveEntitiesPermissions).toHaveBeenCalledWith(
       {
         ids: ['entityId1', 'entityId2'],
@@ -164,10 +161,7 @@ describe('ShareEntityModal', () => {
     };
 
     component.find(UserGroupsLookupField).simulate('select', testMember);
-    await component
-      .find('.cancel-button')
-      .get(0)
-      .props.onClick();
+    await component.find('.cancel-button').get(0).props.onClick();
     expect(saveEntitiesPermissions).not.toHaveBeenCalled();
     expect(defaultProps.onClose).toHaveBeenCalled();
   });

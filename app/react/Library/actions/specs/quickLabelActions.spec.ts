@@ -15,12 +15,7 @@ describe('quickLabelActions', () => {
   describe('store setup sanity check', () => {
     it('should set documents', () => {
       libraryDispatch(libraryActions.setDocuments({ rows: documents }));
-      expect(
-        store!
-          .getState()
-          .library.documents.get('rows')
-          .toJS()
-      ).toEqual(documents);
+      expect(store!.getState().library.documents.get('rows').toJS()).toEqual(documents);
     });
   });
   describe('quick label actions', () => {

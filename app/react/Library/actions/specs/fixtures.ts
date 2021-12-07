@@ -36,8 +36,7 @@ export const documents: EntitySchema[] = [
 ];
 
 export const contentForFiles = {
-  text:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam metus lorem, imperdiet vel lacus a, dictum laoreet est.',
+  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam metus lorem, imperdiet vel lacus a, dictum laoreet est.',
   image:
     '/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBYWFRgWFhYYGBgaGh4cHBwaGRwaHh4dHB4azcGhoaHBwcIS4lHR8sExMT8xND8/a+A9LY+A+t/QhAIQhAIQahB//Z',
 };

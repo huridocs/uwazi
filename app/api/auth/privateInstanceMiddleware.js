@@ -14,7 +14,7 @@ const allowedApiMatch = new RegExp(allowedApiCalls.join('|'));
 const forbiddenRoutes = ['/api/', '/uploaded_documents/'];
 const forbiddenRoutesMatch = new RegExp(forbiddenRoutes.join('|'));
 
-export default function(req, res, next) {
+export default function (req, res, next) {
   if (req.user || req.url.match(allowedRoutesMatch)) {
     return next();
   }

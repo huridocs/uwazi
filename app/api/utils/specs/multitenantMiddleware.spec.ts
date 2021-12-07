@@ -20,9 +20,7 @@ describe('multitenant middleware', () => {
     app.use(multitenantMiddleware);
     testingRoutes(app);
 
-    const response = await request(app)
-      .get('/api/testGET')
-      .set('tenant', 'test');
+    const response = await request(app).get('/api/testGET').set('tenant', 'test');
 
     expect(JSON.parse(response.text)).toMatchObject({ name: 'test' });
   });

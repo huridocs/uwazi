@@ -38,10 +38,7 @@ describe('MemberList', () => {
     const reducedSet = data.slice(0, 2);
     const onChangeMock = jest.fn();
     const component = shallow(<MembersList members={reducedSet} onChange={onChangeMock} />);
-    const permissionsComp = component
-      .find(MemberListItemPermission)
-      .last()
-      .dive();
+    const permissionsComp = component.find(MemberListItemPermission).last().dive();
 
     permissionsComp.find('select').simulate('change', { target: { value: 'delete' } });
 
@@ -52,10 +49,7 @@ describe('MemberList', () => {
     const reducedSet = data.slice(0, 2);
     const onChangeMock = jest.fn();
     const component = shallow(<MembersList members={reducedSet} onChange={onChangeMock} />);
-    const permissionsComp = component
-      .find(MemberListItemPermission)
-      .last()
-      .dive();
+    const permissionsComp = component.find(MemberListItemPermission).last().dive();
 
     permissionsComp.find('select').simulate('change', { target: { value: AccessLevels.WRITE } });
 

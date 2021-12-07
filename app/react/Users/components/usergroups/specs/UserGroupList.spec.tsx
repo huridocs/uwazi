@@ -34,11 +34,7 @@ describe('UserGroupList', () => {
       expect(rows.length).toBe(2);
       const columns = rows.at(0).find('td');
       expect(columns.at(0).props().children).toEqual('Group 1');
-      const membersColumn = columns
-        .find(Pill)
-        .at(0)
-        .children()
-        .at(1);
+      const membersColumn = columns.find(Pill).at(0).children().at(1);
       expect(membersColumn.text()).toEqual(' 2');
       const table = component.find('table');
       expect(table.get(0).props.className).toEqual('edition-mode');

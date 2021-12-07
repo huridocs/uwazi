@@ -9,9 +9,7 @@ import fixtures from './fixtures.js';
 describe('settings', () => {
   beforeEach(done => {
     spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(async () => {

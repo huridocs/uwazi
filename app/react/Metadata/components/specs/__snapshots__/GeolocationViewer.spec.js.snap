@@ -1,46 +1,84 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`GeolocationViewer should not fail if points is just an empty array 1`] = `
-<ForwardRef
-  height={370}
-  mapStyleSwitcher={true}
-  markers={Array []}
-/>
+<Fragment>
+  <ForwardRef
+    height={370}
+    mapStyleSwitcher={true}
+    markers={Array []}
+  />
+  <div
+    className="print-view-alt"
+  >
+    <p>
+      <Connect(Translate)>
+        Latitude
+      </Connect(Translate)>
+      : 
+    </p>
+    <p>
+      <Connect(Translate)>
+        Longitude
+      </Connect(Translate)>
+      : 
+    </p>
+  </div>
+</Fragment>
 `;
 
 exports[`GeolocationViewer should render a map with markers when onlyForCards is false, not failing on nulls 1`] = `
-<ForwardRef
-  height={370}
-  latitude={13}
-  longitude={7}
-  mapStyleSwitcher={true}
-  markers={
-    Array [
-      Object {
-        "latitude": 13,
-        "longitude": 7,
-        "properties": Object {
-          "info": "home",
+<Fragment>
+  <ForwardRef
+    height={370}
+    latitude={13}
+    longitude={7}
+    mapStyleSwitcher={true}
+    markers={
+      Array [
+        Object {
+          "latitude": 13,
+          "longitude": 7,
+          "properties": Object {
+            "info": "home",
+          },
         },
-      },
-      Object {
-        "latitude": 5,
-        "longitude": 10,
-        "properties": Object {
-          "color": "red",
-          "info": "work",
+        Object {
+          "latitude": 5,
+          "longitude": 10,
+          "properties": Object {
+            "color": "red",
+            "info": "work",
+          },
         },
-      },
-      Object {
-        "latitude": 23,
-        "longitude": 8,
-        "properties": Object {
-          "info": "",
+        Object {
+          "latitude": 23,
+          "longitude": 8,
+          "properties": Object {
+            "info": "",
+          },
         },
-      },
-    ]
-  }
-/>
+      ]
+    }
+  />
+  <div
+    className="print-view-alt"
+  >
+    <p>
+      <Connect(Translate)>
+        Latitude
+      </Connect(Translate)>
+      : 
+      13
+    </p>
+    <p>
+      <Connect(Translate)>
+        Longitude
+      </Connect(Translate)>
+      : 
+      7
+    </p>
+  </div>
+</Fragment>
 `;
 
 exports[`GeolocationViewer should render the coordinate values 1`] = `

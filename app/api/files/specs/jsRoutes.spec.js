@@ -67,9 +67,7 @@ describe('upload routes', () => {
         files: [file],
       };
 
-      db.clearAllAndLoad(fixtures)
-        .then(done)
-        .catch(catchErrors(done));
+      db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
       spyOn(errorLog, 'error'); //just to avoid annoying console output
     });
   });

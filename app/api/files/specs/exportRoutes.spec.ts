@@ -52,16 +52,13 @@ describe('export routes', () => {
 
     afterAll(async () => testingEnvironment.tearDown());
 
-    const fakeRequestAugmenterMiddleware = (user: User, language: string) => (
-      req: Request,
-      _res: Response,
-      next: NextFunction
-    ) => {
-      (req as any).user = user;
-      (req as any).language = language;
+    const fakeRequestAugmenterMiddleware =
+      (user: User, language: string) => (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user;
+        (req as any).language = language;
 
-      next();
-    };
+        next();
+      };
 
     it('should fetch, process and download the search results', async () => {
       mockedAuthMiddleware.mockImplementation(
@@ -77,18 +74,15 @@ describe('export routes', () => {
         fakeRequestAugmenterMiddleware({ username: 'someuser' }, 'somelanguage')
       );
 
-      const res = await request(app)
-        .get('/api/export')
-        .set('cookie', 'locale=es')
-        .query({
-          filters: '',
-          types: '["types"]',
-          fields: '',
-          aggregations: '',
-          select: '',
-          unpublished: '',
-          includeUnpublished: '',
-        });
+      const res = await request(app).get('/api/export').set('cookie', 'locale=es').query({
+        filters: '',
+        types: '["types"]',
+        fields: '',
+        aggregations: '',
+        select: '',
+        unpublished: '',
+        includeUnpublished: '',
+      });
       assertDownloaded(res);
       expect(search.search).toHaveBeenCalledWith(
         {
@@ -112,18 +106,15 @@ describe('export routes', () => {
     it('should not allow logged out users to export csv without a captcha', async () => {
       const app = setUpApp(routes);
 
-      const res = await request(app)
-        .get('/api/export')
-        .set('cookie', 'locale=es')
-        .query({
-          filters: '',
-          types: '["types"]',
-          fields: '',
-          aggregations: '',
-          select: '',
-          unpublished: '',
-          includeUnpublished: '',
-        });
+      const res = await request(app).get('/api/export').set('cookie', 'locale=es').query({
+        filters: '',
+        types: '["types"]',
+        fields: '',
+        aggregations: '',
+        select: '',
+        unpublished: '',
+        includeUnpublished: '',
+      });
 
       expect(res.header['content-type'].match(/text\/csv/)).toBe(null);
       expect(res.status).toBe(403);

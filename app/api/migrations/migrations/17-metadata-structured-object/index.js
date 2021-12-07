@@ -4,11 +4,7 @@ async function collectionForEach(collection, batchSize, fn) {
   const totalNumber = await collection.countDocuments({});
   let offset = 0;
   while (offset < totalNumber) {
-    const batch = await collection
-      .find({})
-      .skip(offset)
-      .limit(batchSize)
-      .toArray();
+    const batch = await collection.find({}).skip(offset).limit(batchSize).toArray();
     if (!batch || !batch.length) {
       break;
     }
@@ -33,10 +29,7 @@ async function denormalizeMetadata(db, entity, template, dictionariesByKey) {
   }
 
   const translation = (
-    await db
-      .collection('translations')
-      .find({ locale: entity.language })
-      .toArray()
+    await db.collection('translations').find({ locale: entity.language }).toArray()
   )[0];
 
   const resolveProp = async (key, value) => {
@@ -132,17 +125,11 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    const templates = await db
-      .collection('templates')
-      .find()
-      .toArray();
+    const templates = await db.collection('templates').find().toArray();
 
     const templatesByKey = templates.reduce((memo, t) => ({ ...memo, [t._id.toString()]: t }), {});
 
-    const dictionaries = await db
-      .collection('dictionaries')
-      .find()
-      .toArray();
+    const dictionaries = await db.collection('dictionaries').find().toArray();
 
     const dictionariesByKey = dictionaries.reduce(
       (memo, d) => ({ ...memo, [d._id.toString()]: d }),
