@@ -179,7 +179,7 @@ const fixtures: DBFixture = {
       _id: shared6enId,
       sharedId: 'shared6',
       title: 'The Penguin',
-      language: 'es',
+      language: 'pr',
       metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
     },
     {

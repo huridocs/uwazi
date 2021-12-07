@@ -157,7 +157,6 @@ export const Suggestions = {
       await Promise.all(
         entitiesToUpdate.map(async (entity: EntitySchema) => entities.save(entity, params))
       );
-      //await search.indexEntities(query, '+fullText');
     }
   },
 };

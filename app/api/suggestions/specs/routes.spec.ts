@@ -13,6 +13,9 @@ import {
 } from 'api/suggestions/specs/fixtures';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import entities from 'api/entities';
+import { search } from 'api/search';
+import { EntitySchema } from 'shared/types/entityType';
+import { WithId } from 'api/odm';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -34,10 +37,12 @@ describe('suggestions routes', () => {
   let user: { username: string; role: string } | undefined;
   const getUser = () => user;
 
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures);
+  });
   beforeEach(async () => {
     user = { username: 'user 1', role: 'admin' };
-
-    await testingEnvironment.setUp(fixtures);
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
   const app: Application = setUpApp(
@@ -182,6 +187,7 @@ describe('suggestions routes', () => {
           title: 'The Penguin',
         },
       ]);
+      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
     });
     it('should update the suggestion for all the languages', async () => {
       await request(app)
@@ -208,6 +214,8 @@ describe('suggestions routes', () => {
           metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
         },
       ]);
+      const entityIds = actualEntities.map((e: WithId<EntitySchema>) => e._id);
+      expect(search.indexEntities).toHaveBeenCalledWith({ _id: { $in: entityIds } }, '+fullText');
     });
     it('should reject with unauthorized when user has not admin role', async () => {
       user = { username: 'user 1', role: 'editor' };
