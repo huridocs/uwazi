@@ -108,9 +108,7 @@ describe('suggestions routes', () => {
     describe('validation', () => {
       it('should return a validation error if params are not valid', async () => {
         const invalidQuery = { additionParam: true };
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query(invalidQuery);
+        const response = await request(app).get('/api/suggestions/').query(invalidQuery);
         expect(response.status).toBe(400);
       });
     });
@@ -118,9 +116,7 @@ describe('suggestions routes', () => {
     describe('authentication', () => {
       it('should reject with unauthorized when user has not admin role', async () => {
         user = { username: 'user 1', role: 'editor' };
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query({});
+        const response = await request(app).get('/api/suggestions/').query({});
         expect(response.unauthorized).toBe(true);
       });
     });

@@ -4,10 +4,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-
-import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
+import { I18NLink } from 'app/I18N';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import MetadataExtractionDashboard from '../MetadataExtractionDashboard';
+import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
 
 const factory = getFixturesFactory();
 const templates = Immutable.fromJS([
@@ -125,21 +124,22 @@ describe('MetadataExtractionDashboard', () => {
   });
 
   describe('review suggestions', () => {
-    it('should not show entity suggestions by default', () => {
+    it('should show a link to the suggestions review panel for each property', () => {
       render();
-      const reviewPanel = component.find(EntitySuggestions).at(0);
-      expect(reviewPanel.length).toBe(0);
-    });
-
-    it('should show entity suggestions of a property', () => {
-      render();
-      component
-        .find('tr')
-        .find('button')
-        .at(0)
-        .simulate('click');
-      const reviewPanel = component.find(EntitySuggestions).at(0);
-      expect(reviewPanel.length).toBe(1);
+      const links = component
+        .find('td')
+        .find(I18NLink)
+        .map(l => l.props().to);
+      expect(links.length).toBe(7);
+      expect(links).toEqual([
+        'settings/metadata_extraction/suggestions/aonlytext',
+        'settings/metadata_extraction/suggestions/abshareddate',
+        'settings/metadata_extraction/suggestions/acsharedmarkdown',
+        'settings/metadata_extraction/suggestions/abc_shared_number',
+        'settings/metadata_extraction/suggestions/bonlytext',
+        'settings/metadata_extraction/suggestions/bcsharedmarkdown',
+        'settings/metadata_extraction/suggestions/conlytext',
+      ]);
     });
   });
 });

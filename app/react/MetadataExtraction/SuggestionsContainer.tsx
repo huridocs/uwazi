@@ -8,7 +8,11 @@ import { IImmutable } from 'shared/types/Immutable';
 import { ensure } from 'shared/tsUtils';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 
-const SuggestionComponent = ({ routeParams: { propertyName }, templates }: ComponentProps) => {
+const SuggestionComponent = ({
+  routeParams: { propertyName },
+  templates,
+  acceptSuggestion: acceptIXSuggestion,
+}: ComponentProps) => {
   const propertiesKey = propertyName === 'title' ? 'commonProperties' : 'properties';
 
   const property = templates
@@ -19,7 +23,12 @@ const SuggestionComponent = ({ routeParams: { propertyName }, templates }: Compo
     )
     .filter(v => !_.isUndefined(v));
   if (property && property.size > 0) {
-    return <EntitySuggestions property={property.get(0)!.toJS()} />;
+    return (
+      <EntitySuggestions
+        property={property.get(0)!.toJS()}
+        acceptIXSuggestion={acceptIXSuggestion}
+      />
+    );
   }
   return <GeneralError />;
 };

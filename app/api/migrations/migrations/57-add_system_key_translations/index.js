@@ -7,10 +7,7 @@ After copy pasting:
 */
 
 async function insertSystemKeys(db, newKeys) {
-  const translations = await db
-    .collection('translations')
-    .find()
-    .toArray();
+  const translations = await db.collection('translations').find().toArray();
   const locales = translations.map(tr => tr.locale);
 
   const locToSystemContext = {};

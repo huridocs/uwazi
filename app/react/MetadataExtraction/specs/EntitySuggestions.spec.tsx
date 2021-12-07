@@ -61,8 +61,13 @@ describe('EntitySuggestions', () => {
     label: 'Other title',
   };
 
+  const acceptIXSuggestion = jest.fn();
+
   function renderComponent(property = reviewedProperty) {
-    renderConnectedContainer(<EntitySuggestions property={property} />, () => defaultState);
+    renderConnectedContainer(
+      <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
+      () => defaultState
+    );
   }
 
   beforeEach(async () => {

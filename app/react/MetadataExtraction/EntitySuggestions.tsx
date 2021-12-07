@@ -22,10 +22,11 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { getSuggestions, acceptEntitySuggestion, trainModel, ixStatus } from './SuggestionsAPI';
+import { getSuggestions, trainModel, ixStatus } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
+  acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
 }
 
 const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<EntitySuggestionType>) => (
@@ -43,7 +44,10 @@ const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<EntityS
   </select>
 );
 
-export const EntitySuggestions = ({ property: reviewedProperty }: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({
+  property: reviewedProperty,
+  acceptIXSuggestion,
+}: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
@@ -74,19 +78,6 @@ export const EntitySuggestions = ({ property: reviewedProperty }: EntitySuggesti
       </>
     );
   };
-
-  const acceptSuggestion = async (suggestionToAccept: EntitySuggestionType) => {
-    const params = new RequestParams({
-      allLanguages: false,
-      suggestion: {
-        _id: suggestionToAccept._id,
-        sharedId: suggestionToAccept.sharedId,
-        entityId: suggestionToAccept.entityId,
-      },
-    });
-    await acceptEntitySuggestion(params);
-  };
-
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
     return (
@@ -95,7 +86,7 @@ export const EntitySuggestions = ({ property: reviewedProperty }: EntitySuggesti
           <button
             type="button"
             className="btn btn-outline-primary"
-            onClick={async () => acceptSuggestion(suggestion)}
+            onClick={async () => acceptIXSuggestion(suggestion, false)}
           >
             <Icon icon="check" />
             &nbsp;
