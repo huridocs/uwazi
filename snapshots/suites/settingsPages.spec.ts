@@ -1,12 +1,11 @@
 /*global page*/
 import { ElementHandle } from 'puppeteer';
-import expectPuppeteer from 'expect-puppeteer';
-import { host } from './config';
-import { ensure } from '../app/shared/tsUtils';
-import { adminLogin, logout } from '../e2e/helpers/login';
-import proxyMock from '../e2e/helpers/proxyMock';
-import insertFixtures from '../e2e/helpers/insertFixtures';
-import disableTransitions from '../e2e/helpers/disableTransitions';
+import { host } from '../config';
+import { ensure } from '../../app/shared/tsUtils';
+import { adminLogin, logout } from '../../e2e/helpers/login';
+import proxyMock from '../../e2e/helpers/proxyMock';
+import insertFixtures from '../../e2e/helpers/insertFixtures';
+import disableTransitions from '../../e2e/helpers/disableTransitions';
 
 const selectSettingsPage = async (title: string) => {
   await expect(page).toClick('a.settings-section');
@@ -26,7 +25,6 @@ describe('Settings', () => {
     await proxyMock();
     await adminLogin(host);
     await disableTransitions();
-    await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 2 });
   });
 
   it('should display Account with no more than a 7% difference', async () => {
@@ -41,7 +39,6 @@ describe('Settings', () => {
   it('should display Collection with no more than a 7% difference', async () => {
     await selectSettingsPage('Collection');
     await page.waitForSelector('.mapboxgl-map');
-    // const collectionScreenshot = await getContainerScreenshot(page, 'div.collection-settings');
     const className = 'div.collection-settings';
     await page.waitForSelector(className);
     const collectionsPage = ensure<ElementHandle>(await page.$(className));

@@ -1,12 +1,11 @@
 /*global page*/
 import { ElementHandle } from 'puppeteer';
-import expectPuppeteer from 'expect-puppeteer';
-import { ensure } from '../app/shared/tsUtils';
-import { host } from './config';
-import { adminLogin, logout } from '../e2e/helpers/login';
-import proxyMock from '../e2e/helpers/proxyMock';
-import insertFixtures from '../e2e/helpers/insertFixtures';
-import disableTransitions from '../e2e/helpers/disableTransitions';
+import { ensure } from '../../app/shared/tsUtils';
+import { host } from '../config';
+import { adminLogin, logout } from '../../e2e/helpers/login';
+import proxyMock from '../../e2e/helpers/proxyMock';
+import insertFixtures from '../../e2e/helpers/insertFixtures';
+import disableTransitions from '../../e2e/helpers/disableTransitions';
 
 describe('Homepage entities', () => {
   beforeAll(async () => {
@@ -14,15 +13,12 @@ describe('Homepage entities', () => {
     await proxyMock();
     await adminLogin(host);
     await disableTransitions();
-    await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 1 });
   });
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
     await page.goto(host, { waitUntil: 'domcontentloaded' });
     await disableTransitions();
-    // await expect(page).toClick('a', { text: 'Uwazi' });
     const className = '.row.panels-layout';
-    // const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
     await page.waitForSelector(className);
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
 
@@ -30,15 +26,12 @@ describe('Homepage entities', () => {
   });
 
   it('should display entity details with no more than a 7% difference', async () => {
-    // await disableTransitions();
     await expect(page).toClick('div.item-document:first-child');
     await page.waitForSelector('.metadata.tab-content-visible');
     await page.waitFor(200);
     const className = '.metadata-sidepanel';
-    // const homepageScreenshot = await getContainerScreenshot(page, '.row.panels-layout');
     await page.waitForSelector(className);
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
-    // const entityDetailsScreenshot = await getContainerScreenshot(page, '.metadata-sidepanel');
     expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
   });
   it('should display entity view page with no more than a 7% difference', async () => {

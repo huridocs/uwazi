@@ -6,6 +6,7 @@ const customConfig = { ...baseConfig };
 customConfig.connect.defaultViewport = {
   width: 1500,
   height: 1000,
+  setDeviceScaleFactor: 1,
 };
 
 customConfig.chromiumFlags = [
