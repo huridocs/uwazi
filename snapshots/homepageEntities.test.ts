@@ -1,27 +1,20 @@
 /*global page*/
-import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { ElementHandle } from 'puppeteer';
-import { ensure } from 'shared/tsUtils';
-import { host } from '../config';
-import { adminLogin, logout } from '../helpers/login';
-import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
-
-expect.extend({ toMatchImageSnapshot });
+import expectPuppeteer from 'expect-puppeteer';
+import { ensure } from '../app/shared/tsUtils';
+import { host } from './config';
+import { adminLogin, logout } from '../e2e/helpers/login';
+import proxyMock from '../e2e/helpers/proxyMock';
+import insertFixtures from '../e2e/helpers/insertFixtures';
+import disableTransitions from '../e2e/helpers/disableTransitions';
 
 describe('Homepage entities', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
-    await adminLogin();
+    await adminLogin(host);
     await disableTransitions();
     await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 1 });
-    await page.addStyleTag({
-      content: `*: {
-        font-family: 'Arial', sans-serif;
-      }`,
-    });
   });
 
   it('should display entities in homepage with no more than a 7% difference', async () => {
@@ -33,11 +26,7 @@ describe('Homepage entities', () => {
     await page.waitForSelector(className);
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
 
-    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
   });
 
   it('should display entity details with no more than a 7% difference', async () => {
@@ -50,33 +39,21 @@ describe('Homepage entities', () => {
     await page.waitForSelector(className);
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
     // const entityDetailsScreenshot = await getContainerScreenshot(page, '.metadata-sidepanel');
-    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
   });
   it('should display entity view page with no more than a 7% difference', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`, { waitUntil: 'domcontentloaded' });
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
     const viewPage = ensure<ElementHandle>(await page.$(className));
-    expect(await viewPage.screenshot()).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(await viewPage.screenshot()).toMatchImageSnapshot();
   });
   it('should display entity edit page with no more than a 7% difference', async () => {
     await expect(page).toClick('span', { text: 'Edit' });
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
     const editPage = ensure<ElementHandle>(await page.$(className));
-    expect(await editPage.screenshot()).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(await editPage.screenshot()).toMatchImageSnapshot();
   });
 
   it('should display entity connections page with no more than a 7% difference', async () => {
@@ -85,14 +62,10 @@ describe('Homepage entities', () => {
     const className = 'div.relationships-graph';
     await page.waitForSelector(className);
     const connections = ensure<ElementHandle>(await page.$(className));
-    expect(await connections.screenshot()).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(await connections.screenshot()).toMatchImageSnapshot();
   });
 
   afterAll(async () => {
-    await logout();
+    await logout(host);
   });
 });

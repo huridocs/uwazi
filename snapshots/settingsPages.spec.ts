@@ -1,13 +1,12 @@
 /*global page*/
-import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { ElementHandle } from 'puppeteer';
-import { ensure } from 'shared/tsUtils';
-import { adminLogin, logout } from '../helpers/login';
-import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
-
-expect.extend({ toMatchImageSnapshot });
+import expectPuppeteer from 'expect-puppeteer';
+import { host } from './config';
+import { ensure } from '../app/shared/tsUtils';
+import { adminLogin, logout } from '../e2e/helpers/login';
+import proxyMock from '../e2e/helpers/proxyMock';
+import insertFixtures from '../e2e/helpers/insertFixtures';
+import disableTransitions from '../e2e/helpers/disableTransitions';
 
 const selectSettingsPage = async (title: string) => {
   await expect(page).toClick('a.settings-section');
@@ -25,26 +24,18 @@ describe('Settings', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
-    await adminLogin();
+    await adminLogin(host);
     await disableTransitions();
     await page.setViewport({ width: 1500, height: 1000, deviceScaleFactor: 2 });
   });
 
   it('should display Account with no more than a 7% difference', async () => {
     const screenshot = await navigateToPage('Account', 'div.account-settings');
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
   it('should display Users with no more than a 7% difference', async () => {
     const screenshot = await navigateToPage('Users', 'div.settings-content');
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
 
   it('should display Collection with no more than a 7% difference', async () => {
@@ -54,11 +45,7 @@ describe('Settings', () => {
     const className = 'div.collection-settings';
     await page.waitForSelector(className);
     const collectionsPage = ensure<ElementHandle>(await page.$(className));
-    expect(await collectionsPage.screenshot()).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(await collectionsPage.screenshot()).toMatchImageSnapshot();
   });
 
   describe('Pages', () => {
@@ -68,21 +55,13 @@ describe('Settings', () => {
       const className = 'div.settings-content';
       await page.waitForSelector(className);
       const createPagesPage = ensure<ElementHandle>(await page.$(className));
-      expect(await createPagesPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await createPagesPage.screenshot()).toMatchImageSnapshot();
     });
   });
   describe('Filters', () => {
     it('should display filters page with filters with no more than a 7% difference', async () => {
       const screenshot = await navigateToPage('Filters', 'div.settings-content');
-      expect(screenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(screenshot).toMatchImageSnapshot();
     });
     it('should display filter groups with no more than a 7% difference', async () => {
       await selectSettingsPage('Filters');
@@ -90,11 +69,7 @@ describe('Settings', () => {
       const className = 'div.settings-content';
       await page.waitForSelector(className);
       const filtersGroupPage = ensure<ElementHandle>(await page.$(className));
-      expect(await filtersGroupPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await filtersGroupPage.screenshot()).toMatchImageSnapshot();
     });
   });
 
@@ -103,11 +78,7 @@ describe('Settings', () => {
       `.metadataTemplate-constructor > ul.list-group > li.list-group-item:nth-child(${position}) > button`;
     it('should display Templates page with no more than a 7% difference', async () => {
       const screenshot = await navigateToPage('Templates', 'div.settings-content');
-      expect(screenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(screenshot).toMatchImageSnapshot();
     });
     it('should display new templates page with no more than a 7% difference', async () => {
       await selectSettingsPage('Templates');
@@ -115,11 +86,7 @@ describe('Settings', () => {
       const className = 'div.settings-content';
       await page.waitForSelector(className);
       const newTemplatesPage = ensure<ElementHandle>(await page.$(className));
-      expect(await newTemplatesPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await newTemplatesPage.screenshot()).toMatchImageSnapshot();
     });
 
     it('should display new templates page with more metadata options with no more than a 7% difference', async () => {
@@ -130,11 +97,7 @@ describe('Settings', () => {
       const className = 'div.settings-content';
       await page.waitForSelector(className);
       const templatesMetadataPage = ensure<ElementHandle>(await page.$(className));
-      expect(await templatesMetadataPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await templatesMetadataPage.screenshot()).toMatchImageSnapshot();
     });
 
     describe('Thesauri', () => {
@@ -152,11 +115,7 @@ describe('Settings', () => {
         const className = 'div.settings-content';
         await page.waitForSelector(className);
         const newThesaurisPage = ensure<ElementHandle>(await page.$(className));
-        expect(await newThesaurisPage.screenshot()).toMatchImageSnapshot({
-          failureThreshold: 0.07,
-          failureThresholdType: 'percent',
-          allowSizeMismatch: true,
-        });
+        expect(await newThesaurisPage.screenshot()).toMatchImageSnapshot();
       });
       it('should display new Thesaurus with groups page with no more than a 7% difference', async () => {
         await selectSettingsPage('Thesauri');
@@ -167,11 +126,7 @@ describe('Settings', () => {
         const className = 'div.settings-content';
         await page.waitForSelector(className);
         const newThesauriGroupsPage = ensure<ElementHandle>(await page.$(className));
-        expect(await newThesauriGroupsPage.screenshot()).toMatchImageSnapshot({
-          failureThreshold: 0.07,
-          failureThresholdType: 'percent',
-          allowSizeMismatch: true,
-        });
+        expect(await newThesauriGroupsPage.screenshot()).toMatchImageSnapshot();
       });
     });
   });
@@ -181,23 +136,15 @@ describe('Settings', () => {
       'Languages',
       '.settings-content > .panel > .list-group:last-child'
     );
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
 
   it('should display Translations with no more than a 7% difference', async () => {
     const screenshot = await navigateToPage('Translations', 'div.settings-content');
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
 
   afterAll(async () => {
-    await logout();
+    await logout(host);
   });
 });

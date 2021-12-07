@@ -4269,6 +4269,11 @@ colors@^1.2.1:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.3.0.tgz#5f20c9fef6945cb1134260aab33bfbdc8295e04e"
 
+colors@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
+  integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
+
 colorspace@1.1.x:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/colorspace/-/colorspace-1.1.4.tgz#8d442d1186152f60453bf8070cd66eb364e59243"
@@ -5297,6 +5302,15 @@ dnd-core@^2.5.1, dnd-core@^2.6.0:
     invariant "^2.0.0"
     lodash "^4.2.0"
     redux "^3.7.1"
+
+docker-chromium@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/docker-chromium/-/docker-chromium-1.4.2.tgz#952ff10eddce498314cab3983106f86650797702"
+  integrity sha512-gMnMj4C1+02OJCbeKSlS/SuIVY19mOFZXcDl5S46aUaFGYy9kiTDmBHzpJYsOIsdHi/qOcxuJgPE1eKEOx/Vwg==
+  dependencies:
+    colors "^1.4.0"
+    request "^2.88.2"
+    request-promise-native "^1.0.8"
 
 doctrine@1.5.0:
   version "1.5.0"
@@ -6650,6 +6664,14 @@ find-file-up@^0.1.2:
     fs-exists-sync "^0.1.0"
     resolve-dir "^0.1.0"
 
+find-node-modules@^2.0.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/find-node-modules/-/find-node-modules-2.1.2.tgz#57565a3455baf671b835bc6b2134a9b938b9c53c"
+  integrity sha512-x+3P4mbtRPlSiVE1Qco0Z4YLU8WFiFcuWTf3m75OV9Uzcfs2Bg+O9N+r/K0AnmINBW06KpfqKwYJbFlFq4qNug==
+  dependencies:
+    findup-sync "^4.0.0"
+    merge "^2.1.0"
+
 find-pkg@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/find-pkg/-/find-pkg-0.1.2.tgz#1bdc22c06e36365532e2a248046854b9788da557"
@@ -6720,6 +6742,16 @@ findup-sync@^3.0.0:
     detect-file "^1.0.0"
     is-glob "^4.0.0"
     micromatch "^3.0.4"
+    resolve-dir "^1.0.1"
+
+findup-sync@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/findup-sync/-/findup-sync-4.0.0.tgz#956c9cdde804052b881b428512905c4a5f2cdef0"
+  integrity sha512-6jvvn/12IC4quLBL1KNokxC7wWTvYncaVUYSoxWw7YykPLuRrnv4qdHcSOywOI5RpkOVGeQRtWM8/q+G6W6qfQ==
+  dependencies:
+    detect-file "^1.0.0"
+    is-glob "^4.0.0"
+    micromatch "^4.0.2"
     resolve-dir "^1.0.1"
 
 fined@^1.0.1:
@@ -8754,7 +8786,16 @@ jest-pnp-resolver@^1.2.1:
   resolved "https://registry.yarnpkg.com/jest-pnp-resolver/-/jest-pnp-resolver-1.2.1.tgz#ecdae604c077a7fbc70defb6d517c3c1c898923a"
   integrity sha512-pgFw2tm54fzgYvc/OHrnysABEObZCUNFnhjoRjaVOCN8NYc032/gVjPaHD4Aq6ApkSieWtfKAFQtmDKAmhupnQ==
 
-jest-puppeteer@4.4.0:
+jest-puppeteer-docker@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/jest-puppeteer-docker/-/jest-puppeteer-docker-1.4.2.tgz#b0a62e0bb8314d6b11a1e0c0c247693641763baf"
+  integrity sha512-7mCl2XGqfOn5tK+i/j0gXCbQxeIWeAwY5jcLFlWu8FWF23Ncb86xoU8DzNNV9ZpXavBIh+NQzHoPRN7lerMEgQ==
+  dependencies:
+    docker-chromium "^1.4.2"
+    find-node-modules "^2.0.0"
+    jest-puppeteer "^4.4.0"
+
+jest-puppeteer@4.4.0, jest-puppeteer@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/jest-puppeteer/-/jest-puppeteer-4.4.0.tgz#4b906e638a5e3782ed865e7b673c82047b85952e"
   integrity sha512-ZaiCTlPZ07B9HW0erAWNX6cyzBqbXMM7d2ugai4epBDKpKvRDpItlRQC6XjERoJELKZsPziFGS0OhhUvTvQAXA==
@@ -9840,6 +9881,11 @@ merge2@^1.2.3, merge2@^1.3.0:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
+
+merge@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/merge/-/merge-2.1.1.tgz#59ef4bf7e0b3e879186436e8481c06a6c162ca98"
+  integrity sha512-jz+Cfrg9GWOZbQAnDQ4hlVnQky+341Yk5ru8bZSe6sIDTCIg8n9i/u7hSQGSVOF3C7lH6mGtqjkiT9G4wFLL0w==
 
 methods@^1.1.1, methods@^1.1.2, methods@~1.1.2:
   version "1.1.2"
@@ -13117,6 +13163,13 @@ request-promise-core@1.1.1:
   dependencies:
     lodash "^4.13.1"
 
+request-promise-core@1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/request-promise-core/-/request-promise-core-1.1.4.tgz#3eedd4223208d419867b78ce815167d10593a22f"
+  integrity sha512-TTbAfBBRdWD7aNNOoVOBH4pN/KigV6LyapYNNlAPA8JwbovRti1E88m3sYAwsLi5ryhPKsE9APwnjFTgdUjTpw==
+  dependencies:
+    lodash "^4.17.19"
+
 request-promise-native@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/request-promise-native/-/request-promise-native-1.0.5.tgz#5281770f68e0c9719e5163fd3fab482215f4fda5"
@@ -13125,7 +13178,16 @@ request-promise-native@^1.0.5:
     stealthy-require "^1.1.0"
     tough-cookie ">=2.3.3"
 
-request@^2.45.0, request@^2.87.0, request@^2.88.0:
+request-promise-native@^1.0.8:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/request-promise-native/-/request-promise-native-1.0.9.tgz#e407120526a5efdc9a39b28a5679bf47b9d9dc28"
+  integrity sha512-wcW+sIUiWnKgNY0dqCpOZkUbF/I+YPi+f09JZIDa39Ec+q82CpSYniDp+ISgTTbKmnpJWASeJBPZmoxH84wt3g==
+  dependencies:
+    request-promise-core "1.1.4"
+    stealthy-require "^1.1.1"
+    tough-cookie "^2.3.3"
+
+request@^2.45.0, request@^2.87.0, request@^2.88.0, request@^2.88.2:
   version "2.88.2"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.2.tgz#d73c918731cb5a87da047e207234146f664d12b3"
   integrity sha512-MsvtOrfG9ZcrOwAW+Qi+F6HbD0CWXEh9ou77uOb7FM2WPhwT7smM833PzanhJLsgXjN89Ir6V2PczXNnMpwKhw==
@@ -14205,7 +14267,7 @@ stdout-stream@^1.4.0:
   dependencies:
     readable-stream "^2.0.1"
 
-stealthy-require@^1.1.0:
+stealthy-require@^1.1.0, stealthy-require@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
 
