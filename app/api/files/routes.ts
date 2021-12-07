@@ -9,6 +9,8 @@ import { CSVLoader } from 'api/csv';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
+import { OcrModel, OcrStatus } from 'api/services/ocr/ocrModel';
+import { getInstance as getOcrManager } from 'api/services/ocr/OcrManager';
 
 export default (app: Application) => {
   app.post(
@@ -238,10 +240,18 @@ export default (app: Application) => {
         },
       },
     }),
-    (_req, res) => {
-      res.json({
-        status: 'noOCR'
-      });
+    async (req, res, next) => {
+      try {
+        const [file] = await files.get({
+          filename: req.params.filename,
+        });
+
+        const status = await getOcrManager().getStatus(file);
+
+        res.json({ status });
+      } catch(e) {
+        next(e);
+      }
     })
 
     app.post(
@@ -255,7 +265,17 @@ export default (app: Application) => {
           },
         },
       }),
-      (_req, res) => {
-        res.sendStatus(200);
+      async (req, res, next) => {
+        try {
+          const [file] = await files.get({
+            filename: req.params.filename,
+          });
+
+          await getOcrManager().addToQueue(file);
+          
+          res.sendStatus(200);
+        } catch(e) {
+          next(e);
+        }
       })
 };

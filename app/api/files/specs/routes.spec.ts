@@ -13,9 +13,10 @@ import entities from 'api/entities';
 import JSONRequest from 'shared/JSONRequest';
 import { UserRole } from 'shared/types/userSchema';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures, uploadId, uploadId2 } from './fixtures';
+import { fileName1, fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+import { OcrStatus } from '../../services/ocr/ocrModel';
 
 describe('files routes', () => {
   const app: Application = setUpApp(
@@ -169,20 +170,26 @@ describe('files routes', () => {
     });
 
     describe('OCR service', () => {
-      it('should return a status on get', async () => {
+      it('should return the status on get', async () => {
         const { body } = await request(app)
-          .get('/api/files/someFileName/ocr')
+          .get(`/api/files/${fileName1}/ocr`)
           .expect(200);
         
         expect(body).toEqual({
-          status: 'noOCR'
+          status: OcrStatus.NONE
         })
       });
 
-      it('should return the new status on post', async () => {
-        const { body } = await request(app)
-          .post('/api/files/someFileName/ocr')
+      it('should create a task on post', async () => {
+        await request(app)
+          .post(`/api/files/${fileName1}/ocr`)
           .expect(200);
+
+        const { body } = await request(app)
+          .get(`/api/files/${fileName1}/ocr`)
+          .expect(200);
+
+        expect(body).toEqual({ status: OcrStatus.PROCESSING });
       })
     });
   });
