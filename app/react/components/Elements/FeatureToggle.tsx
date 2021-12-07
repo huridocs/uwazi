@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
+import { get } from 'lodash';
 
-export type ComponentPropTypes = {
+type ComponentPropTypes = {
   featureActivated: boolean;
   children: React.ReactNode;
 };
 
-export type OwnPropTypes = {
+type OwnPropTypes = {
   feature: string;
 };
 
@@ -21,11 +21,13 @@ FeatureToggle.defaultProps = {
 };
 
 function mapStateToProps({ settings }: any, ownProps: OwnPropTypes) {
-  const features = settings.collection.get('features') || Immutable.fromJS({});
+  const features = settings.collection.get('features');
+
   return {
-    featureActivated: features.get(ownProps.feature),
+    featureActivated: features ? Boolean(get(features.toJS(), ownProps.feature)) : false,
   };
 }
 
 const container = connect(mapStateToProps)(FeatureToggle);
+export type { ComponentPropTypes, OwnPropTypes };
 export { container as FeatureToggle };
