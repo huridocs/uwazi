@@ -11,6 +11,7 @@ import {
   usePagination,
   useFilters,
   FilterProps,
+  useRowSelect,
 } from 'react-table';
 import { t, Translate } from 'app/I18N';
 import socket from 'app/socket';
@@ -18,10 +19,11 @@ import { Icon } from 'app/UI';
 import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
+import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
+import { notify } from 'app/Notifications/actions/notificationsActions';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import { notify } from 'app/Notifications/actions/notificationsActions';
 import { getSuggestions, trainModel, ixStatus } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
@@ -51,12 +53,18 @@ export const EntitySuggestions = ({
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
+  const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
     if (propertyName === reviewedProperty.name) {
       setStatus(modelStatus);
     }
   });
+
+  const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
+    row.toggleRowSelected();
+    setAcceptingSuggestion(true);
+  };
 
   const suggestionCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
@@ -67,7 +75,7 @@ export const EntitySuggestions = ({
           <span className="suggestion-label">
             <Translate>{reviewedProperty.label}</Translate>
           </span>
-          <p>{currentValue}</p>
+          <p className="current-value">{currentValue}</p>
         </div>
         <div>
           <span className="suggestion-label">
@@ -86,7 +94,7 @@ export const EntitySuggestions = ({
           <button
             type="button"
             className="btn btn-outline-primary"
-            onClick={async () => acceptIXSuggestion(suggestion, false)}
+            onClick={async () => showConfirmationModal(row)}
           >
             <Icon icon="check" />
             &nbsp;
@@ -159,6 +167,7 @@ export const EntitySuggestions = ({
     prepareRow,
     gotoPage,
     setPageSize,
+    selectedFlatRows,
     state: { pageIndex, pageSize, filters },
   } = useTable(
     {
@@ -171,13 +180,15 @@ export const EntitySuggestions = ({
         pageIndex: 0,
         pageSize: 5,
       },
+
       pageCount: totalPages,
       autoResetPage: false,
       autoResetFilters: false,
     },
 
     useFilters,
-    usePagination
+    usePagination,
+    useRowSelect
   );
 
   const retrieveSuggestions = () => {
@@ -195,6 +206,16 @@ export const EntitySuggestions = ({
         setTotalPages(response.totalPages);
       })
       .catch(() => {});
+  };
+
+  const acceptSuggestion = (allLanguages: boolean) => {
+    if (selectedFlatRows.length > 0) {
+      const acceptedSuggestion = selectedFlatRows[0].original;
+      acceptIXSuggestion(acceptedSuggestion, allLanguages);
+      selectedFlatRows[0].toggleRowSelected();
+      setAcceptingSuggestion(false);
+      retrieveSuggestions();
+    }
   };
 
   const _trainModel = async () => {
@@ -290,6 +311,11 @@ export const EntitySuggestions = ({
         </tbody>
       </table>
       <Pagination onPageChange={gotoPage} onPageSizeChange={setPageSize} totalPages={totalPages} />
+      <SuggestionAcceptanceModal
+        isOpen={acceptingSuggestion}
+        onClose={() => setAcceptingSuggestion(false)}
+        onAccept={allLanguages => acceptSuggestion(allLanguages)}
+      />
     </div>
   );
 };
