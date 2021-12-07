@@ -148,6 +148,14 @@ export const settingsSchema = {
         },
         topicClassification: { type: 'boolean' },
         favorites: { type: 'boolean' },
+        ocr: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['url'],
+          properties: {
+            url: { type: 'string' },
+          },
+        },
         segmentation: {
           type: 'object',
           additionalProperties: false,

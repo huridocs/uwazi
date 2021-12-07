@@ -94,6 +94,9 @@ export interface Settings {
     };
     topicClassification?: boolean;
     favorites?: boolean;
+    ocr?: {
+      url: string;
+    };
     segmentation?: {
       url: string;
     };

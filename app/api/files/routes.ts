@@ -9,8 +9,7 @@ import { CSVLoader } from 'api/csv';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
-import { OcrModel, OcrStatus } from 'api/services/ocr/ocrModel';
-import { getInstance as getOcrManager } from 'api/services/ocr/OcrManager';
+import OcrManager from 'api/services/ocr/OcrManager';
 
 export default (app: Application) => {
   app.post(
@@ -246,7 +245,7 @@ export default (app: Application) => {
           filename: req.params.filename,
         });
 
-        const status = await getOcrManager().getStatus(file);
+        const status = await OcrManager.getStatus(file);
 
         res.json({ status });
       } catch(e) {
@@ -271,7 +270,7 @@ export default (app: Application) => {
             filename: req.params.filename,
           });
 
-          await getOcrManager().addToQueue(file);
+          await OcrManager.addToQueue(file);
           
           res.sendStatus(200);
         } catch(e) {
