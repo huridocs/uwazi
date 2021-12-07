@@ -1,27 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
-import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { FileType } from 'shared/types/fileType';
+import { NeedAuthorization } from 'app/Auth';
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { dummyOCRPost, dummyOCRGet } from '../actions/ocrActions';
 
-const processing = (
-  <div className="in-queue">
-    <p>
-      <Translate>Processing OCR</Translate>&nbsp;...
-    </p>
-  </div>
-);
-
 const statusDisplay = (file: FileType, ocrStatus: string) => {
-  const addToQueue = (
-    <button type="button" className="btn btn-default" onClick={() => dummyOCRPost(file)}>
-      <Translate>Add to OCR queue</Translate>
-    </button>
+  const cannotProcess = (
+    <div className="cant-process">
+      <p>
+        <Translate>Cannot be processed</Translate>
+      </p>
+    </div>
   );
 
   switch (ocrStatus) {
+    case 'loading':
+      return (
+        <div className="in-queue">
+          <p>
+            <Translate>Loading</Translate>&nbsp;...
+          </p>
+        </div>
+      );
+
     case 'noOCR':
-      return addToQueue;
+      return (
+        <button type="button" className="btn btn-default" onClick={() => dummyOCRPost(file)}>
+          <Translate>Add to OCR queue</Translate>
+        </button>
+      );
 
     case 'inQueue':
       return (
@@ -33,13 +41,7 @@ const statusDisplay = (file: FileType, ocrStatus: string) => {
       );
 
     case 'cannotProcess':
-      return (
-        <div className="cant-process">
-          <p>
-            <Translate>Cannot be processed</Translate>
-          </p>
-        </div>
-      );
+      return cannotProcess;
 
     case 'withOCR':
       return (
@@ -51,7 +53,7 @@ const statusDisplay = (file: FileType, ocrStatus: string) => {
       );
 
     default:
-      return addToQueue;
+      return cannotProcess;
   }
 };
 
@@ -60,12 +62,22 @@ type OCRButtonProps = {
 };
 
 const OCRButton = ({ file }: OCRButtonProps) => {
-  const ocrStatus = dummyOCRGet(file.filename || '');
+  const [ocrStatus, setOcrStatus] = useState('loading');
+
+  useEffect(() => {
+    dummyOCRGet(file.filename || '')
+      .then(result => setOcrStatus(result))
+      .catch(() => {
+        setOcrStatus('cannotProcess');
+      });
+  }, []);
 
   return (
-    <FeatureToggle feature="ocrtrigger">
-      <div className="ocr-service-display">{statusDisplay(file, ocrStatus)}</div>
-    </FeatureToggle>
+    <NeedAuthorization roles={['admin', 'editor']}>
+      <FeatureToggle feature="ocr.url">
+        <div className="ocr-service-display">{statusDisplay(file, ocrStatus)}</div>
+      </FeatureToggle>
+    </NeedAuthorization>
   );
 };
 

@@ -2,23 +2,32 @@ import { FileType } from 'shared/types/fileType';
 
 const dummyOCRPost = (file: FileType) => file;
 
-const dummyOCRGet = (filename: string) => {
+const dummyOCRGet = async (filename: string) => {
+  let response = '';
+
   switch (filename) {
     case 'noOCR':
-      return 'noOCR';
+      response = 'noOCR';
+      break;
 
     case 'inQueue':
-      return 'inQueue';
+      response = 'inQueue';
+      break;
 
     case 'cannotProcess':
-      return 'cannotProcess';
+      response = 'cannotProcess';
+      break;
 
     case 'withOCR':
-      return 'withOCR';
+      response = 'withOCR';
+      break;
 
     default:
-      return 'noOCR';
+      response = 'cannotProcess';
+      break;
   }
+
+  return response;
 };
 
 export { dummyOCRPost, dummyOCRGet };

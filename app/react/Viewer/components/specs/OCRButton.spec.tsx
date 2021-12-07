@@ -1,21 +1,27 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment jest-environment-jsdom-sixteen
  */
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import Immutable from 'immutable';
-import { IStore } from 'app/istore';
 import { FileType } from 'shared/types/fileType';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { IStore } from 'app/istore';
+import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
 import { OCRButton } from '../OCRButton';
 import * as ocrActions from '../../actions/ocrActions';
 
 describe('OCRButton', () => {
-  let reduxStore: Partial<IStore> = {
-    settings: { collection: Immutable.fromJS({ features: { ocrtrigger: true } }) },
-  };
-
   let file: FileType;
+
+  let reduxStore: Partial<IStore> = {
+    settings: {
+      collection: Immutable.fromJS({ features: { ocr: { url: 'https://service.com' } } }),
+    },
+    user: Immutable.fromJS({
+      _id: 'userId',
+      role: 'admin',
+    }),
+  };
 
   jest.spyOn(ocrActions, 'dummyOCRPost');
 
@@ -29,28 +35,30 @@ describe('OCRButton', () => {
   };
 
   describe('rendering', () => {
-    it('should render if the OCR feature is enabled', () => {
-      render(reduxStore, {});
-      expect(screen.getByText('Add to OCR queue')).not.toBeNull();
+    it('should first render with a loading OCR message', () => {
+      render(reduxStore, file);
+      expect(screen.findByText('Loading')).not.toBeNull();
     });
   });
 
   describe('status', () => {
-    it('should render a button if the file has no OCR', () => {
+    it('should render according to the pdf OCR status', async () => {
+      file = { filename: 'withOCR' };
+
       render(reduxStore, file);
-      expect(screen.getByRole('button').textContent).toBe('Add to OCR queue');
+
+      expect(await screen.findByText('OCR Complete')).not.toBeNull();
     });
 
-    it('should render according to the pdf OCR status', () => {
-      file = { filename: 'withOCR' };
+    it('should render a button if the file has no OCR', async () => {
       render(reduxStore, file);
-      expect(screen.getByText('OCR Complete')).not.toBeNull();
+      expect((await screen.findByRole('button')).textContent).toBe('Add to OCR queue');
     });
 
     describe('adding to ocr queue', () => {
-      it('should trigger the OCR service when clicking the button', () => {
+      it('should trigger the OCR service when clicking the button', async () => {
         render(reduxStore, { ...file, _id: 'fileId' });
-        const ocrButton: Element = screen.getByRole('button');
+        const ocrButton: Element = await screen.findByRole('button');
         fireEvent.click(ocrButton);
         expect(ocrActions.dummyOCRPost).toHaveBeenCalledWith({ ...file, _id: 'fileId' });
       });
