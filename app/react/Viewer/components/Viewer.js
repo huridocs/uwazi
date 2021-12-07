@@ -35,7 +35,7 @@ import TargetDocument from './TargetDocument.js';
 import determineDirection from '../utils/determineDirection';
 import { OCRButton } from './OCRButton';
 
-export class Viewer extends Component {
+class Viewer extends Component {
   constructor(props) {
     super(props);
     this.state = { firstRender: true };
@@ -193,7 +193,6 @@ Viewer.defaultProps = {
   doc: Map(),
   file: {},
 };
-
 Viewer.propTypes = {
   searchTerm: PropTypes.string,
   raw: PropTypes.bool,
@@ -205,8 +204,7 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
-  // TEST!!!!!!!?
-  sidepanelTab: PropTypes.string,
+  /* TEST!!!!!!! */ sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
   showTextSelectMenu: PropTypes.bool,
@@ -217,7 +215,6 @@ Viewer.propTypes = {
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
 };
-
 Viewer.contextTypes = {
   store: PropTypes.object,
 };
@@ -231,15 +228,13 @@ const mapStateToProps = state => {
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     locale: state.locale,
-    // TEST!!!!!
-    sidepanelTab: documentViewer.sidepanel.tab,
+    /* TEST!!!!! */ sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
       !documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange
     ),
   };
 };
-
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
@@ -250,4 +245,5 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchToProps)(Viewer);
+const connected = connect(mapStateToProps, mapDispatchToProps)(Viewer);
+export { connected, Viewer };
