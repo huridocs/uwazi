@@ -111,4 +111,5 @@ export interface Settings {
     lat: number;
     lon: number;
   }[];
+  toggleOCRButton?: boolean;
 }

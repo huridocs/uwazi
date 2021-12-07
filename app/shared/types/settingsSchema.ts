@@ -2,11 +2,11 @@ import Ajv from 'ajv';
 import { wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, languagesListSchema, geolocationSchema } from 'shared/types/commonSchemas';
 
-export const emitSchemaTypes = true;
+const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
 
-export const itemSchema = {
+const itemSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
@@ -15,7 +15,7 @@ export const itemSchema = {
   },
 };
 
-export const settingsFilterSchema = {
+const settingsFilterSchema = {
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
@@ -27,7 +27,7 @@ export const settingsFilterSchema = {
   },
 };
 
-export const settingsSyncTemplateSchema = {
+const settingsSyncTemplateSchema = {
   type: 'object',
   required: ['properties'],
   properties: {
@@ -37,11 +37,11 @@ export const settingsSyncTemplateSchema = {
   additionalProperties: false,
 };
 
-export const settingsSyncRelationtypesSchema = {
+const settingsSyncRelationtypesSchema = {
   items: { type: 'string' },
 };
 
-export const settingsSyncSchema = {
+const settingsSyncSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
@@ -65,7 +65,7 @@ export const settingsSyncSchema = {
   },
 };
 
-export const settingsLinkSchema = {
+const settingsLinkSchema = {
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
@@ -81,7 +81,7 @@ export const settingsLinkSchema = {
   },
 };
 
-export const settingsSchema = {
+const settingsSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
@@ -179,8 +179,19 @@ export const settingsSchema = {
       },
     },
     mapStartingPoint: geolocationSchema,
+    toggleOCRButton: { type: 'boolean' },
   },
 };
 
 const validateSettings = wrapValidator(ajv.compile(settingsSchema));
-export { validateSettings };
+export {
+  validateSettings,
+  emitSchemaTypes,
+  itemSchema,
+  settingsFilterSchema,
+  settingsSyncTemplateSchema,
+  settingsSyncRelationtypesSchema,
+  settingsSyncSchema,
+  settingsLinkSchema,
+  settingsSchema,
+};
