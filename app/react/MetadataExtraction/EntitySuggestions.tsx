@@ -13,7 +13,7 @@ import {
   FilterProps,
   useRowSelect,
 } from 'react-table';
-import { t, Translate } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import socket from 'app/socket';
 import { Icon } from 'app/UI';
 import { store } from 'app/store';
@@ -236,7 +236,6 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        console.log(response);
         setStatus(response.status);
       })
       .catch(() => {
@@ -250,8 +249,6 @@ export const EntitySuggestions = ({
     processing_suggestions: 'Finding suggestions...',
     error: 'Error',
   };
-
-  function onClose() {}
 
   return (
     <div className="panel entity-suggestions">
@@ -272,9 +269,9 @@ export const EntitySuggestions = ({
         >
           <Translate>{ixmessages[status]}</Translate>
         </button>
-        <button className="btn btn-outline-primary" onClick={() => onClose()}>
+        <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
           <Translate>Dashboard</Translate>
-        </button>
+        </I18NLink>
       </div>
       <table {...getTableProps()}>
         <thead>
