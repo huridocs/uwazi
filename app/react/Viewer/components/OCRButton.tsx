@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
-import { NeedAuthorization } from 'app/Auth';
-import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { dummyOCRPost, dummyOCRGet } from '../actions/ocrActions';
 
 const statusDisplay = (file: FileType, ocrStatus: string) => {
@@ -61,24 +60,35 @@ type OCRButtonProps = {
   file: FileType;
 };
 
-const OCRButton = ({ file }: OCRButtonProps) => {
+const mapStateToProps = ({ settings }: any) => {
+  const toggleOCRButton = settings.collection.get('toggleOCRButton');
+
+  return {
+    ocrIsToggled: toggleOCRButton || false,
+  };
+};
+
+const connector = connect(mapStateToProps);
+type mappedProps = ConnectedProps<typeof connector>;
+type ComponentProps = OCRButtonProps & mappedProps;
+
+const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
   const [ocrStatus, setOcrStatus] = useState('loading');
 
   useEffect(() => {
-    dummyOCRGet(file.filename || '')
-      .then(result => setOcrStatus(result))
-      .catch(() => {
-        setOcrStatus('cannotProcess');
-      });
+    if (ocrIsToggled) {
+      dummyOCRGet(file.filename || '')
+        .then(result => setOcrStatus(result))
+        .catch(() => {
+          setOcrStatus('cannotProcess');
+        });
+    }
   }, []);
 
   return (
-    <NeedAuthorization roles={['admin', 'editor']}>
-      <FeatureToggle feature="ocr.url">
-        <div className="ocr-service-display">{statusDisplay(file, ocrStatus)}</div>
-      </FeatureToggle>
-    </NeedAuthorization>
+    ocrIsToggled && <div className="ocr-service-display">{statusDisplay(file, ocrStatus)}</div>
   );
 };
 
-export { OCRButton };
+const container = connector(OCRButton);
+export { container as OCRButton };

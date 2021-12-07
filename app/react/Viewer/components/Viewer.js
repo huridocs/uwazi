@@ -16,6 +16,8 @@ import Footer from 'app/App/Footer';
 import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
+import { NeedAuthorization } from 'app/Auth';
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { PaginatorWithPage } from './Paginator';
 import { addReference as addReferenceAction } from '../actions/referencesActions';
 import {
@@ -117,7 +119,11 @@ export class Viewer extends Component {
                       <Translate>Plain text</Translate>
                     )}
                   </CurrentLocationLink>
-                  <OCRButton file={file} />
+                  <NeedAuthorization roles={['admin', 'editor']}>
+                    <FeatureToggle feature="ocr.url">
+                      <OCRButton file={file} />
+                    </FeatureToggle>
+                  </NeedAuthorization>
                 </>
               )}
             </div>
