@@ -245,5 +245,5 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-const connected = connect(mapStateToProps, mapDispatchToProps)(Viewer);
-export { connected, Viewer };
+const ConnectedViewer = connect(mapStateToProps, mapDispatchToProps)(Viewer);
+export { ConnectedViewer, Viewer };
