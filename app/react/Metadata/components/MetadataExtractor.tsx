@@ -19,9 +19,9 @@ type selection = {
 };
 
 const mapStateToProps = (state: IStore) => ({
-  selection: (state.documentViewer.uiState
+  selection: state.documentViewer.uiState
     .get('reference')
-    .get('sourceRange') as unknown) as selection,
+    .get('sourceRange') as unknown as selection,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {

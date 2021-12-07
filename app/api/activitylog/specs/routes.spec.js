@@ -65,9 +65,7 @@ describe('Activitylog routes', () => {
 
     it('should not attempt to parse undefined method and time', async () => {
       currentUser = adminUser;
-      await request(app)
-        .get('/api/activitylog')
-        .query({});
+      await request(app).get('/api/activitylog').query({});
       expect(activitylog.get).toHaveBeenCalledWith({ method: undefined, time: undefined });
     });
 

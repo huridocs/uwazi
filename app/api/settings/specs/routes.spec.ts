@@ -32,9 +32,7 @@ describe('Settings routes', () => {
 
   describe('GET', () => {
     it('should respond with settings', async () => {
-      const response = await request(app)
-        .get('/api/settings')
-        .expect(200);
+      const response = await request(app).get('/api/settings').expect(200);
       expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
     });
   });
@@ -60,10 +58,7 @@ describe('Settings routes', () => {
       });
 
       it('should migrate all entity names when newNameGeneration is saved as true', async () => {
-        await request(app)
-          .post('/api/settings')
-          .send({ newNameGeneration: true })
-          .expect(200);
+        await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
 
         expect(await templates.get()).toEqual([
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'براي' })] }),
@@ -82,15 +77,9 @@ describe('Settings routes', () => {
         spyOn(templates, 'save').and.returnValue(Promise.resolve());
         await settingsModel.save({ ...(await settings.get()), newNameGeneration: true });
 
-        await request(app)
-          .post('/api/settings')
-          .send({})
-          .expect(200);
+        await request(app).post('/api/settings').send({}).expect(200);
 
-        await request(app)
-          .post('/api/settings')
-          .send({ newNameGeneration: true })
-          .expect(200);
+        await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
 
         expect(templates.save).not.toHaveBeenCalled();
       });

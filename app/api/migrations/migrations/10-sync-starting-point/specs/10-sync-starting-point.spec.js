@@ -34,10 +34,7 @@ describe('migration sync-starting-point', () => {
 
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -51,10 +48,7 @@ describe('migration sync-starting-point', () => {
   it('should generate update logs of all the required collections, clearing previous logs', async () => {
     await migration.up(testingDB.mongodb);
 
-    updatelogs = await testingDB.mongodb
-      .collection('updatelogs')
-      .find()
-      .toArray();
+    updatelogs = await testingDB.mongodb.collection('updatelogs').find().toArray();
 
     expect(updatelogs.length).toBe(10);
     expectLog(template1).toBelongTo('templates');

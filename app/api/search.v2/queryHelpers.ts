@@ -10,9 +10,7 @@ const searchStringMethod = async (searchString: string | number) => {
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 };
 
-async function extractSearchParams(
-  query: SearchQuery
-): Promise<{
+async function extractSearchParams(query: SearchQuery): Promise<{
   searchString?: string | number | undefined;
   fullTextSearchString?: string;
   searchMethod: string;

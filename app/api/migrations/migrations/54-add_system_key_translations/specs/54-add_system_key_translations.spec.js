@@ -49,10 +49,7 @@ describe('migration add_system_key_translations', () => {
   it('should append new keys, leave existing keys intact.', async () => {
     await migration.up(testingDB.mongodb);
 
-    const allTranslations = await testingDB.mongodb
-      .collection('translations')
-      .find()
-      .toArray();
+    const allTranslations = await testingDB.mongodb.collection('translations').find().toArray();
     function testKeyValue(key, value, locale, contextId) {
       expect(
         allTranslations

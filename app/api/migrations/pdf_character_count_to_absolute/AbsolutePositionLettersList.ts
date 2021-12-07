@@ -144,25 +144,24 @@ export class AbsolutePositionLettersList {
     );
   }
 
-  static removeXmlOneLevel = () => (
-    accumulator: any[],
-    currentValue: { elements: { attributes: any }[]; attributes: any }
-  ) => {
-    if (currentValue.elements && currentValue.elements.length > 0) {
-      Array.prototype.push.apply(
-        accumulator,
-        currentValue.elements.map((x: { attributes: any }) => {
-          const flatOneLevel = x;
-          flatOneLevel.attributes = currentValue.attributes;
-          return flatOneLevel;
-        })
-      );
+  static removeXmlOneLevel =
+    () =>
+    (accumulator: any[], currentValue: { elements: { attributes: any }[]; attributes: any }) => {
+      if (currentValue.elements && currentValue.elements.length > 0) {
+        Array.prototype.push.apply(
+          accumulator,
+          currentValue.elements.map((x: { attributes: any }) => {
+            const flatOneLevel = x;
+            flatOneLevel.attributes = currentValue.attributes;
+            return flatOneLevel;
+          })
+        );
 
+        return accumulator;
+      }
+      accumulator.push(currentValue);
       return accumulator;
-    }
-    accumulator.push(currentValue);
-    return accumulator;
-  };
+    };
 
   static isTagInList(tags: AbsolutePositionTag[], tag: AbsolutePositionTag) {
     if (tags.length === 0) {

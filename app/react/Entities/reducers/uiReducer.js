@@ -5,10 +5,7 @@ export const initialState = { userSelectedTab: false };
 
 const reducer = (state = initialState, action = {}) => {
   if (action.type === types.SHOW_TAB) {
-    return state
-      .set('tab', action.tab)
-      .set('userSelectedTab', true)
-      .set('showFilters', false);
+    return state.set('tab', action.tab).set('userSelectedTab', true).set('showFilters', false);
   }
 
   if (action.type === types.RESET_USER_SELECTED_TAB) {

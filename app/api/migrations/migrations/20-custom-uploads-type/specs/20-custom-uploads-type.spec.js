@@ -6,10 +6,7 @@ import fixtures from './fixtures.js';
 describe('migration custom-uploads-type', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -23,10 +20,7 @@ describe('migration custom-uploads-type', () => {
   it('should add type="custom" to all files', async () => {
     await migration.up(testingDB.mongodb);
 
-    const files = await testingDB.mongodb
-      .collection('files')
-      .find()
-      .toArray();
+    const files = await testingDB.mongodb.collection('files').find().toArray();
 
     expect(files).toEqual([
       expect.objectContaining({ filename: 'test.txt', type: 'custom' }),

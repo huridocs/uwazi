@@ -1,4 +1,4 @@
-export default function(message, code = 500) {
+export default function (message, code = 500) {
   if (message.ajv) {
     return { ...message, code };
   }

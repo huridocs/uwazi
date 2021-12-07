@@ -199,9 +199,8 @@ const denormalizeRelated = async (
             [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
             ...(inheritProperty
               ? {
-                  [`${update.valuePath}.$[valueIndex].inheritedValue`]: newEntity.metadata?.[
-                    inheritProperty.name
-                  ],
+                  [`${update.valuePath}.$[valueIndex].inheritedValue`]:
+                    newEntity.metadata?.[inheritProperty.name],
                 }
               : {}),
           },

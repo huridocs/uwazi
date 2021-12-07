@@ -6,10 +6,7 @@ import fixtures from './fixtures.js';
 describe('migration default-template', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -22,10 +19,7 @@ describe('migration default-template', () => {
 
   it('should set a default template', async () => {
     await migration.up(testingDB.mongodb);
-    const templates = await testingDB.mongodb
-      .collection('templates')
-      .find()
-      .toArray();
+    const templates = await testingDB.mongodb.collection('templates').find().toArray();
     expect(templates[0].isEntity).not.toBeDefined();
     expect(templates[1].isEntity).not.toBeDefined();
     expect(templates[0].default).toBe(true);

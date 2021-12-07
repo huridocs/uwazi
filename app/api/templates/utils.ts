@@ -124,9 +124,9 @@ export function getUpdatedNames(
   return propertiesWithNewName;
 }
 
-const notIncludedIn = (propertyCollection: PropertyOrThesaurusSchema[]) => (
-  property: PropertyOrThesaurusSchema
-) => !propertyCollection.find(p => p.id === property.id);
+const notIncludedIn =
+  (propertyCollection: PropertyOrThesaurusSchema[]) => (property: PropertyOrThesaurusSchema) =>
+    !propertyCollection.find(p => p.id === property.id);
 
 export function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
@@ -178,11 +178,9 @@ export const updateExtractedMetadataProperties = async (
     _id: property._id?.toString(),
   }));
 
-  const differentProperties = differenceBy(
-    newProperties,
-    currentProperties,
-    'name'
-  ).filter(property => ['text', 'markdown', 'numeric', 'date'].includes(property.type));
+  const differentProperties = differenceBy(newProperties, currentProperties, 'name').filter(
+    property => ['text', 'markdown', 'numeric', 'date'].includes(property.type)
+  );
 
   const renamedProperties = intersectionBy(differentProperties, currentProperties, '_id');
 

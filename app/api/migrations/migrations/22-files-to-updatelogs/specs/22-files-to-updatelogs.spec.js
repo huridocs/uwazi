@@ -3,10 +3,7 @@ import migration from '../index.js';
 import fixtures, { file1, file2, file3 } from './fixtures.js';
 
 const query = (collectionName, queryObject = {}, select = {}) =>
-  testingDB.mongodb
-    .collection(collectionName)
-    .find(queryObject, select)
-    .toArray();
+  testingDB.mongodb.collection(collectionName).find(queryObject, select).toArray();
 
 describe('migration files-to-updatelogs', () => {
   beforeEach(async () => {

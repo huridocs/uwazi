@@ -23,22 +23,14 @@ describe('EntityViewer', () => {
 
   it('should render pristine', () => {
     render();
-    expect(
-      component
-        .find('div.content-footer > button')
-        .at(0)
-        .hasClass('btn-disabled')
-    ).toBe(true);
+    expect(component.find('div.content-footer > button').at(0).hasClass('btn-disabled')).toBe(true);
   });
 
   it('should render non-pristine', () => {
     props.isPristine = false;
     render();
-    expect(
-      component
-        .find('div.content-footer > button')
-        .at(0)
-        .hasClass('btn-disabled')
-    ).toBe(false);
+    expect(component.find('div.content-footer > button').at(0).hasClass('btn-disabled')).toBe(
+      false
+    );
   });
 });

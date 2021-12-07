@@ -8,11 +8,7 @@ import { host } from '../config';
 expect.extend({ toMatchImageSnapshot });
 
 export async function displayGraph() {
-  const pageID =
-    page
-      .url()
-      .split('/')
-      .pop() || '';
+  const pageID = page.url().split('/').pop() || '';
 
   const pageTitle = await page.$eval('.template-name > div > input', input =>
     input.getAttribute('value')

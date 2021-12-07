@@ -27,12 +27,7 @@ describe('uiReducer', () => {
         type: types.SELECT_DOCUMENT,
         doc: { _id: 'document' },
       });
-      expect(
-        newState
-          .get('selectedDocuments')
-          .first()
-          .get('_id')
-      ).toBe('document');
+      expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
     });
 
     it('should not select an already selected document', () => {
@@ -58,12 +53,7 @@ describe('uiReducer', () => {
         type: types.SELECT_SINGLE_DOCUMENT,
         doc: { _id: 'other_document' },
       });
-      expect(
-        newState
-          .get('selectedDocuments')
-          .first()
-          .get('_id')
-      ).toBe('other_document');
+      expect(newState.get('selectedDocuments').first().get('_id')).toBe('other_document');
       expect(newState.get('selectedDocuments').size).toBe(1);
     });
   });
@@ -74,19 +64,9 @@ describe('uiReducer', () => {
         type: types.SELECT_DOCUMENTS,
         docs: [{ _id: 'document' }, { _id: 'document2' }],
       });
-      expect(
-        newState
-          .get('selectedDocuments')
-          .first()
-          .get('_id')
-      ).toBe('document');
+      expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
       expect(newState.get('selectedDocuments').size).toBe(2);
-      expect(
-        newState
-          .get('selectedDocuments')
-          .last()
-          .get('_id')
-      ).toBe('document2');
+      expect(newState.get('selectedDocuments').last().get('_id')).toBe('document2');
     });
 
     it('should not select an already selected document', () => {
@@ -98,19 +78,9 @@ describe('uiReducer', () => {
         type: types.SELECT_DOCUMENTS,
         docs: [{ _id: 'document' }, { _id: 'document2' }, { _id: 'document3' }],
       });
-      expect(
-        newState
-          .get('selectedDocuments')
-          .first()
-          .get('_id')
-      ).toBe('document');
+      expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
       expect(newState.get('selectedDocuments').size).toBe(3);
-      expect(
-        newState
-          .get('selectedDocuments')
-          .last()
-          .get('_id')
-      ).toBe('document3');
+      expect(newState.get('selectedDocuments').last().get('_id')).toBe('document3');
     });
   });
 

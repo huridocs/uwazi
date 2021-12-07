@@ -17,10 +17,7 @@ async function readCsvToSystemKeys(db, filename) {
   const rows = await csv(fstream).read();
   fstream.close();
 
-  const translations = await db
-    .collection('translations')
-    .find()
-    .toArray();
+  const translations = await db.collection('translations').find().toArray();
   const locales = translations.map(tr => tr.locale);
 
   const locToSystemContext = {};

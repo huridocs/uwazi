@@ -28,10 +28,8 @@ function clearState(dispatch: Dispatch<any>) {
 
 export function exportEnd() {
   return (dispatch: Dispatch<any>, getState: () => ExportStore) => {
-    const {
-      exportSearchResultsContent,
-      exportSearchResultsFileName,
-    } = getState().exportSearchResults;
+    const { exportSearchResultsContent, exportSearchResultsFileName } =
+      getState().exportSearchResults;
 
     triggerLocalDownload(exportSearchResultsContent, exportSearchResultsFileName);
 

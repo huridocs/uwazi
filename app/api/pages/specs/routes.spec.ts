@@ -38,9 +38,7 @@ describe('Pages Routes', () => {
     it('should not validate with wrong structure', async () => {
       const badData = { withoutTitle: true };
 
-      const response = await request(app)
-        .post('/api/pages')
-        .send(badData);
+      const response = await request(app).post('/api/pages').send(badData);
 
       expect(response.status).toBe(400);
       expect(response.text).toContain('validation failed');

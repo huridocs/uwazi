@@ -4,10 +4,7 @@ import testingDB from '../../utils/testing_db';
 
 describe('entitiesModel', () => {
   beforeEach(done => {
-    testingDB
-      .clearAllAndLoad({})
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad({}).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

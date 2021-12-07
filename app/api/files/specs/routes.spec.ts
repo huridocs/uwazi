@@ -107,17 +107,13 @@ describe('files routes', () => {
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: file._id?.toString() });
+      await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
       expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
     });
 
     it('should reindex all entities that are related to the files deleted', async () => {
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: uploadId2.toString() });
+      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
 
       expect(search.indexEntities).toHaveBeenCalledWith(
         { sharedId: { $in: ['sharedId1'] } },
@@ -126,9 +122,7 @@ describe('files routes', () => {
     });
 
     it('should delete all connections related to the file', async () => {
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: uploadId2.toString() });
+      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
 
       const allConnections = await connections.get();
       expect(allConnections.length).toBe(1);

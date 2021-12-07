@@ -51,7 +51,12 @@ class MarkdownViewer extends Component {
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {
-      result = <MarkdownMedia key={index} config={config} compact={compact} />;
+      result = (
+        <div key={index}>
+          <MarkdownMedia key={index} config={config} compact={compact} />
+          <p className="print-view-alt">{config}</p>
+        </div>
+      );
     }
 
     if (type === 'customhook') {

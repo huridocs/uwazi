@@ -12,9 +12,7 @@ import translations from '../translations.js';
 
 describe('translations', () => {
   beforeEach(done => {
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

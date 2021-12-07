@@ -8,24 +8,21 @@ const checkFilePath = async (fileName: string, filePath: string) => {
   }
 };
 
-const staticFilesMiddleware = (pathFunctions: pathFunction[]) => async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const pathToUse = await pathFunctions.reduce<Promise<pathFunction>>(async (current, path) => {
-    if (await fileExists(path(req.params.fileName))) {
-      return path;
+const staticFilesMiddleware =
+  (pathFunctions: pathFunction[]) => async (req: Request, res: Response, next: NextFunction) => {
+    const pathToUse = await pathFunctions.reduce<Promise<pathFunction>>(async (current, path) => {
+      if (await fileExists(path(req.params.fileName))) {
+        return path;
+      }
+      return current;
+    }, Promise.resolve(pathFunctions[0]));
+    const path = pathToUse(req.params.fileName);
+    try {
+      await checkFilePath(req.params.fileName, path);
+      res.sendFile(path);
+    } catch (e) {
+      next(e);
     }
-    return current;
-  }, Promise.resolve(pathFunctions[0]));
-  const path = pathToUse(req.params.fileName);
-  try {
-    await checkFilePath(req.params.fileName, path);
-    res.sendFile(path);
-  } catch (e) {
-    next(e);
-  }
-};
+  };
 
 export { staticFilesMiddleware };

@@ -90,8 +90,7 @@ describe('Share entities', () => {
     it('should share the entity', async () => {
       await goToRestrictedEntities();
       await expect(page).toClick('.item-document', {
-        text:
-          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+        text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
       });
       await page.waitForSelector('.share-btn');
       await expect(page).toClick('button', { text: 'Share' });
@@ -104,8 +103,7 @@ describe('Share entities', () => {
       await page.reload();
       await page.waitFor('.item-document');
       await expect(page).not.toMatchElement('.item-document', {
-        text:
-          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+        text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
       });
     });
   });
@@ -117,8 +115,7 @@ describe('Share entities', () => {
       await disableTransitions();
       await page.waitFor('.item-document');
       await expect(page).toClick('.item-document', {
-        text:
-          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+        text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
       });
       await page.waitForSelector('.share-btn');
       await expect(page).toClick('button', { text: 'Share' });

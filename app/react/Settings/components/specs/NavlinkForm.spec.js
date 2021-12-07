@@ -87,34 +87,18 @@ describe('NavlinkForm', () => {
   });
 
   it('should have a remove button to remove a link', () => {
-    component
-      .find('.menu-delete-button')
-      .last()
-      .props()
-      .onClick();
+    component.find('.menu-delete-button').last().props().onClick();
     expect(props.removeLink).toHaveBeenCalledWith(1);
   });
 
   it('should have a title and URL fields', () => {
-    expect(
-      component
-        .find(Field)
-        .first()
-        .props().model
-    ).toBe('settings.navlinksData.links[1].title');
-    expect(
-      component
-        .find(Field)
-        .first()
-        .parent()
-        .props().className
-    ).toBe('input-group input-group-width');
-    expect(
-      component
-        .find(Field)
-        .last()
-        .props().model
-    ).toBe('settings.navlinksData.links[1].url');
+    expect(component.find(Field).first().props().model).toBe(
+      'settings.navlinksData.links[1].title'
+    );
+    expect(component.find(Field).first().parent().props().className).toBe(
+      'input-group input-group-width'
+    );
+    expect(component.find(Field).last().props().model).toBe('settings.navlinksData.links[1].url');
   });
 
   describe('validation error states', () => {
@@ -123,13 +107,9 @@ describe('NavlinkForm', () => {
       component = shallow(<NavlinkForm {...props} />);
 
       expect(component.find('li').props().className).toBe('list-group-item error');
-      expect(
-        component
-          .find(Field)
-          .first()
-          .parent()
-          .props().className
-      ).toBe('input-group has-error input-group-width');
+      expect(component.find(Field).first().parent().props().className).toBe(
+        'input-group has-error input-group-width'
+      );
     });
   });
 

@@ -9,10 +9,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
     let index = 1;
-    const [{ languages }] = await db
-      .collection('settings')
-      .find()
-      .toArray();
+    const [{ languages }] = await db.collection('settings').find().toArray();
     const defaultLanguage = languages.find(l => l.default).key;
 
     const cursor = db

@@ -46,10 +46,7 @@ describe('SnippetList', () => {
     props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
     props.selectSnippet = jest.fn();
     render();
-    component
-      .find(I18NLink)
-      .at(1)
-      .simulate('click');
+    component.find(I18NLink).at(1).simulate('click');
     expect(props.selectSnippet).toHaveBeenCalledWith(
       2,
       Immutable.fromJS({ text: 'second <b>snippet 3</b> found', page: 2 })
