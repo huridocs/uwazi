@@ -68,35 +68,19 @@ describe('Map', () => {
     it('should render a Markers component', () => {
       expect(markers.length).toBe(2);
       expect(firstMarker().props().latitude).toBe(2);
-      expect(
-        firstMarker()
-          .find(Icon)
-          .props().icon
-      ).toBe('map-marker');
-      expect(
-        firstMarker()
-          .find(Icon)
-          .props().style.color
-      ).toBe('red');
+      expect(firstMarker().find(Icon).props().icon).toBe('map-marker');
+      expect(firstMarker().find(Icon).props().style.color).toBe('red');
       expect(firstMarker().props().longitude).toBe(32);
 
       expect(secondMarker().props().latitude).toBe(23);
       expect(secondMarker().props().longitude).toBe(21);
-      expect(
-        secondMarker()
-          .find(Icon)
-          .props().style.color
-      ).toBe('#d9534e');
+      expect(secondMarker().find(Icon).props().style.color).toBe('#d9534e');
     });
 
     it('should use custom renderMarker method', () => {
       props.renderMarker = (_marker, onClick) => <div className="custom-class" onClick={onClick} />;
       render();
-      expect(
-        firstMarker()
-          .find('div')
-          .hasClass('custom-class')
-      ).toBe(true);
+      expect(firstMarker().find('div').hasClass('custom-class')).toBe(true);
     });
 
     describe('when clustering', () => {
@@ -307,10 +291,7 @@ describe('Map', () => {
   describe('clicking on a marker', () => {
     beforeEach(() => {
       render();
-      firstMarker()
-        .find(Icon)
-        .first()
-        .simulate('click');
+      firstMarker().find(Icon).first().simulate('click');
       component.update();
     });
 
@@ -323,10 +304,7 @@ describe('Map', () => {
     let popup;
     beforeEach(() => {
       render();
-      firstMarker()
-        .find(Icon)
-        .first()
-        .simulate('mouseOver');
+      firstMarker().find(Icon).first().simulate('mouseOver');
       component.update();
       popup = component.find(Popup);
     });
@@ -336,10 +314,7 @@ describe('Map', () => {
     });
 
     it('should not render a popup when has no info', () => {
-      secondMarker()
-        .find(Icon)
-        .first()
-        .simulate('mouseOver');
+      secondMarker().find(Icon).first().simulate('mouseOver');
       component.update();
       popup = component.find(Popup);
       expect(popup.length).toBe(0);

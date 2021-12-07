@@ -40,25 +40,13 @@ describe('Document', () => {
 
   it('should add id as a className', () => {
     render();
-    expect(
-      component
-        .find('div')
-        .children()
-        .first()
-        .hasClass('_documentId')
-    ).toBe(true);
+    expect(component.find('div').children().first().hasClass('_documentId')).toBe(true);
   });
 
   it('should add the className passed', () => {
     props.className = 'aClass';
     render();
-    expect(
-      component
-        .find('div')
-        .children()
-        .first()
-        .hasClass('aClass')
-    ).toBe(true);
+    expect(component.find('div').children().first().hasClass('aClass')).toBe(true);
   });
 
   it('should add the correct LTR or RTL direction according to file franc language', () => {

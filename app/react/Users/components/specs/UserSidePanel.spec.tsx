@@ -109,10 +109,7 @@ describe('UserSidePanel', () => {
     );
 
     it('should save the changes over the user', done => {
-      const emailInput = component
-        .find({ id: 'email_field' })
-        .find('input')
-        .at(0);
+      const emailInput = component.find({ id: 'email_field' }).find('input').at(0);
       // @ts-ignore
       emailInput.instance().value = 'newemail@test.test';
       emailInput.simulate('change');
@@ -170,10 +167,7 @@ describe('UserSidePanel', () => {
 
     describe('adding a group', () => {
       beforeEach(() => {
-        const groupsToCheck = component
-          .find(MultiSelect)
-          .find('input')
-          .at(1);
+        const groupsToCheck = component.find(MultiSelect).find('input').at(1);
         groupsToCheck.simulate('change');
       });
 

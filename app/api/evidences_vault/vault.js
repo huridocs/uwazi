@@ -30,7 +30,9 @@ const vault = {
   async downloadPackage(evidence) {
     const fileName = await fileFromReadStream(
       `${evidence.request}.zip`,
-      (await fetch(`${vaultUrl}/download/${evidence.filename}`)).body
+      (
+        await fetch(`${vaultUrl}/download/${evidence.filename}`)
+      ).body
     );
 
     return evidencePackage(fileName, evidence);

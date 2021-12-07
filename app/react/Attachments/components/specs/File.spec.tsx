@@ -41,10 +41,7 @@ describe('file', () => {
     const title = component.find('.file-originalname').text();
     expect(title).toBe('Human_name_1.pdf');
 
-    const language = component
-      .find('.badge')
-      .find(Translate)
-      .props().children;
+    const language = component.find('.badge').find(Translate).props().children;
     expect(language).toBe('english');
   });
 

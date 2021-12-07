@@ -50,10 +50,7 @@ describe('SearchBar (Entities)', () => {
   it('should render an "X" to reset the search', () => {
     render();
 
-    component
-      .find(Icon)
-      .at(1)
-      .simulate('click');
+    component.find(Icon).at(1).simulate('click');
     expect(formActions.change).toHaveBeenCalledWith('relationships/list/search.searchTerm', '');
     expect(props.searchReferences).toHaveBeenCalled();
   });

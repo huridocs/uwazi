@@ -77,10 +77,7 @@ describe('SemanticSearchResults', () => {
   it('should select document when item is clicked', () => {
     jest.spyOn(actions, 'selectSemanticSearchDocument').mockImplementation(() => {});
     const component = render();
-    component
-      .find(Doc)
-      .first()
-      .simulate('click');
+    component.find(Doc).first().simulate('click');
     expect(actions.selectSemanticSearchDocument).toHaveBeenCalled();
   });
 
@@ -88,10 +85,7 @@ describe('SemanticSearchResults', () => {
     it('should fetch the next 30 results using the same filters', () => {
       jest.spyOn(actions, 'getMoreSearchResults').mockImplementation(() => {});
       const component = render();
-      component
-        .find('.btn-load-more')
-        .first()
-        .simulate('click');
+      component.find('.btn-load-more').first().simulate('click');
       expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', {
         limit: 30,
         minRelevantSentences: 1,
@@ -99,10 +93,7 @@ describe('SemanticSearchResults', () => {
         skip: 30,
       });
       component.update();
-      component
-        .find('.btn-load-more')
-        .first()
-        .simulate('click');
+      component.find('.btn-load-more').first().simulate('click');
       expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', {
         limit: 30,
         minRelevantSentences: 1,
@@ -116,10 +107,7 @@ describe('SemanticSearchResults', () => {
     it('should edit all documents that match the search filters', () => {
       jest.spyOn(actions, 'editSearchEntities').mockImplementation(() => {});
       const component = render();
-      component
-        .find('.edit-semantic-search')
-        .first()
-        .simulate('click');
+      component.find('.edit-semantic-search').first().simulate('click');
       expect(actions.editSearchEntities).toHaveBeenCalledWith('id', {
         minRelevantSentences: 1,
         threshold: 0.3,

@@ -31,9 +31,7 @@ describe('static file middleware', () => {
     it('should try to send file from any of them', async () => {
       await fs.writeFile(attachmentsPath('attachment.extension'), 'test text');
 
-      const response = await request(app)
-        .get('/static-files/attachment.extension')
-        .expect(200);
+      const response = await request(app).get('/static-files/attachment.extension').expect(200);
 
       expect(response.body instanceof Buffer).toBe(true);
       expect(response.body.toString()).toBe('test text');
@@ -42,9 +40,7 @@ describe('static file middleware', () => {
 
   describe('when the file does not exist', () => {
     it('should return an error', async () => {
-      await request(app)
-        .get('/static-files/does-not-exists.extension')
-        .expect(404);
+      await request(app).get('/static-files/does-not-exists.extension').expect(404);
     });
   });
 });

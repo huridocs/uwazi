@@ -8,10 +8,7 @@ import fixtures from './fixtures.js';
 
 const unique = (v, i, a) => a.indexOf(v) === i;
 const query = (collectionName, queryObject = {}, select = {}) =>
-  testingDB.mongodb
-    .collection(collectionName)
-    .find(queryObject, select)
-    .toArray();
+  testingDB.mongodb.collection(collectionName).find(queryObject, select).toArray();
 
 const setupTestUploadedPaths = () => {
   config.defaultTenant.uploadedDocuments = `${__dirname}/uploads/`;

@@ -10,10 +10,7 @@ describe('migration add-file-field-to-connections', () => {
     spyOn(process.stdout, 'write');
     spyOn(errorLog, 'error');
     config.defaultTenant.uploadedDocuments = __dirname;
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(async () => {

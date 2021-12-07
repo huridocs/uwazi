@@ -44,15 +44,11 @@ describe('usergroups routes', () => {
   }
 
   async function postUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
-    return request(app)
-      .post('/api/usergroups')
-      .send(userGroupData);
+    return request(app).post('/api/usergroups').send(userGroupData);
   }
 
   async function deleteUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
-    return request(app)
-      .delete('/api/usergroups')
-      .query({ _id: userGroupData._id });
+    return request(app).delete('/api/usergroups').query({ _id: userGroupData._id });
   }
 
   describe('GET', () => {

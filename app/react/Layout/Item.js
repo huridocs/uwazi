@@ -27,15 +27,8 @@ export class Item extends Component {
   }
 
   render() {
-    const {
-      onClick,
-      onMouseEnter,
-      onMouseLeave,
-      active,
-      additionalIcon,
-      additionalText,
-      buttons,
-    } = this.props;
+    const { onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText, buttons } =
+      this.props;
 
     const doc = helpers.performantDocToJSWithoutRelations(this.props.doc);
     const Snippet = additionalText ? (

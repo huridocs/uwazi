@@ -169,9 +169,7 @@ export default app => {
     validation.validateRequest(
       Joi.object()
         .keys({
-          sharedIds: Joi.array()
-            .items(Joi.string())
-            .required(),
+          sharedIds: Joi.array().items(Joi.string()).required(),
         })
         .required(),
       'body'

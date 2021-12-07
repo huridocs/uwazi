@@ -58,12 +58,7 @@ describe('Attachment', () => {
       render();
 
       expect(component.find(AttachmentForm).length).toBe(1);
-      expect(
-        component
-          .find('.attachment-name')
-          .at(0)
-          .text()
-      ).not.toContain('Human name 1');
+      expect(component.find('.attachment-name').at(0).text()).not.toContain('Human name 1');
 
       const submit = component.find(AttachmentForm).props().onSubmit;
       const newFile = { originalname: 'something new' };
@@ -80,10 +75,7 @@ describe('Attachment', () => {
     it('should have a cancel edit button', () => {
       render();
 
-      const cancelButton = component
-        .find('.item-shortcut-group')
-        .find('button')
-        .at(0);
+      const cancelButton = component.find('.item-shortcut-group').find('button').at(0);
 
       expect(props.resetForm).not.toHaveBeenCalled();
 
@@ -129,12 +121,7 @@ describe('Attachment', () => {
   it('should hold a thumbnail for PDFs and valid images', () => {
     props.file.filename = 'document.pdf';
     render();
-    expect(
-      component
-        .find('.attachment-thumbnail')
-        .find(Icon)
-        .props().icon
-    ).toContain('file-pdf');
+    expect(component.find('.attachment-thumbnail').find(Icon).props().icon).toContain('file-pdf');
     expect(component.find('.attachment-thumbnail > span').text()).toContain(' pdf');
 
     props.file.filename = 'image.jpg';
@@ -168,11 +155,7 @@ describe('Attachment', () => {
 
   it('should check authorization roles to listed attachment', () => {
     render();
-    const authorizationProps = component
-      .find('.attachment')
-      .children()
-      .at(1)
-      .props();
+    const authorizationProps = component.find('.attachment').children().at(1).props();
     expect(authorizationProps.roles).toEqual(['admin', 'editor']);
     expect(authorizationProps.orWriteAccessTo).toEqual([props.entity]);
   });

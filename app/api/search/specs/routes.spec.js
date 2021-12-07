@@ -104,9 +104,7 @@ describe('search routes', () => {
           },
         ],
       });
-      const response = await request(app)
-        .get('/api/search_snippets?searchTerm=test')
-        .send({});
+      const response = await request(app).get('/api/search_snippets?searchTerm=test').send({});
       expect(response.text).toMatch(/should have required property 'id'/);
     });
 

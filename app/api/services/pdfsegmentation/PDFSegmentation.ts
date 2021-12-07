@@ -141,7 +141,7 @@ class PDFSegmentation {
         }`
       );
     }
-    return { data: JSON.parse(response.json), fileStream: (fileStream as unknown) as Readable };
+    return { data: JSON.parse(response.json), fileStream: fileStream as unknown as Readable };
   };
 
   static getXMLNAme = (filename: string) =>

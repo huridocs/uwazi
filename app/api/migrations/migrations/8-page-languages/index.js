@@ -9,19 +9,13 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
     let index = 1;
-    const [{ languages }] = await db
-      .collection('settings')
-      .find()
-      .toArray();
+    const [{ languages }] = await db.collection('settings').find().toArray();
     const defaultLanguage = languages.find(l => l.default).key;
 
     const cursor = db.collection('pages').find({ language: defaultLanguage });
     while (await cursor.hasNext()) {
       const page = await cursor.next();
-      const pages = await db
-        .collection('pages')
-        .find({ sharedId: page.sharedId })
-        .toArray();
+      const pages = await db.collection('pages').find({ sharedId: page.sharedId }).toArray();
       const defaultLanguagePage = pages.find(p => p.language === defaultLanguage);
       await Promise.all(
         languages.map(async language => {

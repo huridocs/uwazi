@@ -53,7 +53,7 @@ function getLabelDuplicatedValidator(propertiesArrayKey, propIndex) {
   };
 }
 
-export default function(properties, commonProperties, templates, id) {
+export default function (properties, commonProperties, templates, id) {
   const validator = {
     '': {},
     name: validateName(templates, id),

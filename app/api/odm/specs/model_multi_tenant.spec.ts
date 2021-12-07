@@ -58,10 +58,7 @@ describe('ODM Model multi-tenant', () => {
         });
       });
 
-      const results = await defaultDB
-        .collection('docs')
-        .find()
-        .toArray();
+      const results = await defaultDB.collection('docs').find().toArray();
 
       expect(results).toEqual([expect.objectContaining({ name: 'document on default db' })]);
     });
@@ -105,15 +102,9 @@ describe('ODM Model multi-tenant', () => {
         });
       }, 'tenant2');
 
-      const results1 = await db1
-        .collection('docs')
-        .find()
-        .toArray();
+      const results1 = await db1.collection('docs').find().toArray();
 
-      const results2 = await db2
-        .collection('docs')
-        .find()
-        .toArray();
+      const results2 = await db2.collection('docs').find().toArray();
 
       expect(results1).toEqual([expect.objectContaining({ name: 'document 1' })]);
       expect(results2).toEqual([expect.objectContaining({ name: 'document 2' })]);
@@ -178,10 +169,7 @@ describe('ODM Model multi-tenant', () => {
         await testingModel.delete({ name: 'db1-doc1' });
       }, 'tenant1');
 
-      const results1 = await db1
-        .collection('docs')
-        .find()
-        .toArray();
+      const results1 = await db1.collection('docs').find().toArray();
 
       expect(results1).toEqual([expect.objectContaining({ name: 'db1-doc2' })]);
 
@@ -189,10 +177,7 @@ describe('ODM Model multi-tenant', () => {
         await testingModel.delete({});
       }, 'tenant2');
 
-      const results2 = await db2
-        .collection('docs')
-        .find()
-        .toArray();
+      const results2 = await db2.collection('docs').find().toArray();
 
       expect(results2).toEqual([]);
     });
@@ -233,15 +218,9 @@ describe('ODM Model multi-tenant', () => {
     });
 
     it('should create a log entry when saving on diferent tenants', async () => {
-      const [logEntry1] = await db1
-        .collection('updatelogs')
-        .find()
-        .toArray();
+      const [logEntry1] = await db1.collection('updatelogs').find().toArray();
 
-      const [logEntry2] = await db2
-        .collection('updatelogs')
-        .find()
-        .toArray();
+      const [logEntry2] = await db2.collection('updatelogs').find().toArray();
 
       expect(logEntry1.timestamp).toBe(1);
       expect(logEntry1.namespace).toBe('docs');
