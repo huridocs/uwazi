@@ -1,13 +1,21 @@
 import * as files_api from 'api/files/filesystem';
+import settings from 'api/settings/settings';
+import { tenants } from 'api/tenants/tenantContext';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import request from 'shared/JSONRequest';
 import { OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
-import settings from 'api/settings/settings';
-import request from 'shared/JSONRequest';
 import { Service, TaskManager, ResultsMessage } from '../../tasksmanager/TaskManager';
 
+
 jest.mock('api/services/tasksmanager/TaskManager.ts');
+const defaultTenantName = 'defaultDB'
 
 describe('OcrManager', () => {
+  beforeAll(async ()=> {
+    await testingEnvironment.setTenant()
+  })
+
   describe('when creating a new task', () => {
     let mocks: { [k: string]: jest.SpyInstance };
     let taskManagerMock: Partial<TaskManager>;
@@ -27,7 +35,7 @@ describe('OcrManager', () => {
             },
           },
         }),
-        'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve()),
+        'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve())
       };
 
       (TaskManager as jest.Mock<TaskManager>).mockImplementation(function(service: Service) {
@@ -51,8 +59,7 @@ describe('OcrManager', () => {
           filename: 'someFileName',
           language: 'en',
           _id: 'someId',
-        },
-        'someTenantId'
+        }
       );
     });
 
@@ -62,7 +69,7 @@ describe('OcrManager', () => {
 
     it('should upload the material', () => {
       expect(request.uploadFile).toHaveBeenCalledWith(
-        'serviceUrl/upload/someTenantId',
+        'serviceUrl/upload/defaultDB',
         'someFileName',
         Buffer.from('file_content')
       );
@@ -73,8 +80,9 @@ describe('OcrManager', () => {
         taskManagerMock.startTask
       ).toHaveBeenCalledWith(
         expect.objectContaining({
-          tenant: 'someTenantId',
+          tenant: defaultTenantName,
           params: { filename: 'someFileName' },
+          task: 'ocr_tasks'
         })
       );
     });
@@ -88,14 +96,28 @@ describe('OcrManager', () => {
     });
 
     describe('when there are results', () => {
-      it('should update the job status and switch the files on success', () => {
-        // TODO: this is failing on purpose. Needs work.
-        taskManagerTrigger();
-        expect(OcrModel.save).toHaveBeenCalledWith({
-          language: 'en',
-          file: 'someId',
-          status: OcrStatus.READY,
-        });
+      beforeAll(()=>{
+        taskManagerTrigger({
+          tenant: defaultTenantName,
+          task: 'ocr_results',
+          file_url: 'link/to/result/file',
+          success: true
+        })
+      })
+
+      fit('should download the file', () => {
+        fail()
+      });
+
+      it.todo('arrange the files')
+
+      it('should update the job status', () => {
+        fail('TODO: this is failing on purpose. Needs work.')
+        // expect(OcrModel.save).toHaveBeenCalledWith({
+        //   language: 'en',
+        //   file: 'someId',
+        //   status: OcrStatus.READY,
+        // });
       });
 
       it.todo('should update the job status on error');

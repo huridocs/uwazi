@@ -75,11 +75,13 @@ const fixtures: DBFixture = {
       _id: db.id(),
       username: 'collab',
       role: UserRole.COLLABORATOR,
+      email: 'collab@tenant.xy'
     },
     {
       _id: db.id(),
       username: 'admin',
       role: UserRole.ADMIN,
+      email: 'admin@tenant.xy'
     },
   ],
 };

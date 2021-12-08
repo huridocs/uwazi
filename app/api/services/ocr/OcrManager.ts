@@ -4,13 +4,13 @@ import { uploadsPath, readFile } from 'api/files';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants/tenantContext';
-import { handleError } from 'api/utils';
+import { createError, handleError } from 'api/utils';
 import request from 'shared/JSONRequest';
 import { FileType } from "shared/types/fileType";
 import { OcrModel, OcrStatus } from "./ocrModel";
 
 export class OcrManager {
-  public readonly SERVICE_NAME = 'ocr_tasks';
+  public readonly SERVICE_NAME = 'ocr';
 
   private ocrTaskManager: TaskManager;
 
@@ -21,42 +21,31 @@ export class OcrManager {
     });
   }
 
-  async addToQueue(file: FileType, tenant: string) {
-    try {
-      const fileContent = await readFile(uploadsPath(file.filename));
+  async addToQueue(file: FileType) {
+    const fileContent = await readFile(uploadsPath(file.filename));
 
-      const settingsValues = await settings.get();
-      const ocrServiceConfig = settingsValues?.features?.ocr;
-      
-      // if (!ocrServiceConfig) {
-      //   // return OcrStatus.ERROR; -- how to handle missing config?
-      //   return;
-      // }
-
-      await request.uploadFile(urljoin(ocrServiceConfig!.url, 'upload', tenant), file.filename, fileContent); // where to get the tenant from
-
-      await this.ocrTaskManager.startTask({
-        task: this.SERVICE_NAME,
-        tenant,
-        params: {
-          filename: file.filename,
-        },
-      });
-
-      await OcrModel.save({
-        file: file._id,
-        language: file.language,
-        status: OcrStatus.PROCESSING
-      });
-      
-    } catch (err) {
-      // if (err.code === 'ENOENT') {
-      //   await this.storeProcess(file._id, file.filename, false);
-      //   handleError(err);
-      //   return;
-      // }
-      throw err;
+    const settingsValues = await settings.get();
+    const ocrServiceConfig = settingsValues?.features?.ocr;
+    
+    if (!ocrServiceConfig) {
+      throw Error('Ocr settings are missing from the database (settings.features.ocr).')
     }
+    const tenant = tenants.current()
+    await request.uploadFile(urljoin(ocrServiceConfig!.url, 'upload', tenant.name), file.filename, fileContent);
+
+    await this.ocrTaskManager.startTask({
+      task: this.SERVICE_NAME,
+      tenant: tenant.name,
+      params: {
+        filename: file.filename,
+      },
+    });
+
+    await OcrModel.save({
+      file: file._id,
+      language: file.language,
+      status: OcrStatus.PROCESSING
+    });    
   }
 
   async getStatus(file: FileType) {
@@ -65,23 +54,36 @@ export class OcrManager {
   }
 
   private async processResults(message: ResultsMessage): Promise<void> {
-    await OcrModel.save({
-      status: OcrStatus.READY
-    });
-    // await tenants.run(async () => {
-    //   try {
-    //     if (!message.success) {
-    //       // await this.saveSegmentationError(message.params!.filename);
-    //       // return;
-    //     }
 
-    //     // const { data, fileStream } = await this.requestResults(message);
-    //     // await this.storeXML(message.params!.filename, fileStream);
-    //     // await this.saveSegmentation(message.params!.filename, data);
-    //   } catch (error) {
-    //     handleError(error);
-    //   }
-    // }, message.tenant);
+    await tenants.run(async () => {
+      try {
+        if (!message.success) {
+          //update record with error   
+          return;
+        }        
+        const fileStream = (await fetch(message.file_url!)).body;
+        if (!fileStream) {
+          throw new Error(
+            `Error requesting for segmentation file: ${message.params!.filename}, tenant: ${
+              message.tenant
+            }`
+          );
+        }
+        
+        //store file
+        
+        //perform file step (change or not?)
+        
+        //perform usual steps on new file
+        
+        //update record with success, (make it permanent?)
+
+        return;
+        
+      } catch (error) {
+        handleError(error);
+      }
+    }, message.tenant);
   };
 }
 
