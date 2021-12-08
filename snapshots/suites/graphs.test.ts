@@ -1,12 +1,12 @@
 /*global page*/
-import sharp from 'sharp';
+import { host } from '../config';
 import { ElementHandle } from 'puppeteer';
-import { ensure } from 'shared/tsUtils';
-import { adminLogin, logout } from '../helpers/login';
-import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import { displayGraph } from '../helpers/graphs';
-import disableTransitions from '../helpers/disableTransitions';
+import { ensure } from '../../app/shared/tsUtils';
+import { adminLogin, logout } from '../../e2e/helpers/login';
+import proxyMock from '../../e2e/helpers/proxyMock';
+import insertFixtures from '../../e2e/helpers/insertFixtures';
+import { displayGraph } from './helpers/graphs';
+import disableTransitions from '../../e2e/helpers/disableTransitions';
 
 const localSelectors = {
   pageContentsInput: '.tab-content > textarea',
@@ -22,9 +22,6 @@ const graphs = {
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
 };
 
-const DEFAULT_WIDTH = 1000;
-
-const resizeImage = async (image: any) => sharp(image).resize(DEFAULT_WIDTH).toBuffer();
 
 const insertChart = async (chart: string, chartName: string) => {
   await expect(page).toFill('input[name="page.data.title"]', chartName);
@@ -39,16 +36,11 @@ const savePage = async () => {
   await expect(page).toMatch('(view page)');
 };
 
-const getChartContainerScreenshot = async (page: any, className: string) => {
-  const chartContainer = ensure<ElementHandle>(await page.$(className));
-  return resizeImage(await chartContainer.screenshot());
-};
-
 describe('Graphs in Page ', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
-    await adminLogin();
+    await adminLogin(host);
     await disableTransitions();
   });
 
@@ -73,18 +65,11 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Bar chart graph in page with no more than a 7% difference', async () => {
+    it('should display Bar chart graph', async () => {
       const graphsPage = await displayGraph();
-      const chartScreenshot = await getChartContainerScreenshot(
-        graphsPage,
-        '.recharts-responsive-container'
-      );
-
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartScreenshot = await chartContainer.screenshot();
+      expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
 
@@ -94,18 +79,12 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Pie chart graph in page with no more than a 7% difference', async () => {
+    it('should display Pie chart graph', async () => {
       const graphsPage = await displayGraph();
-      const chartScreenshot = await getChartContainerScreenshot(
-        graphsPage,
-        '.recharts-responsive-container'
-      );
+      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartScreenshot = await chartContainer.screenshot();
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
 
@@ -115,15 +94,11 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display List chart graph in page with no more than a 7% difference', async () => {
+    it('should display List chart graph', async () => {
       const graphsPage = await displayGraph();
-      const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
-
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart'));
+      const chartScreenshot = await chartContainer.screenshot();
+      expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
   });
@@ -145,17 +120,11 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Bar chart graph in page with no more than a 7% difference', async () => {
-      const chartScreenshot = await getChartContainerScreenshot(
-        graphsPage,
-        '.recharts-responsive-container'
-      );
+    it('should display Bar chart graph', async () => {
+      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartScreenshot = await chartContainer.screenshot();
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
 
@@ -168,17 +137,11 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Pie chart graph in page with no more than a 7% difference', async () => {
-      const chartScreenshot = await getChartContainerScreenshot(
-        graphsPage,
-        '.recharts-responsive-container'
-      );
+    it('should display Pie chart graph', async () => {
+      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartScreenshot = await chartContainer.screenshot();
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
 
@@ -188,18 +151,15 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display List chart graph in page with no more than a 8% difference', async () => {
-      const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.08,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+    it('should display List chart graph', async () => {
+      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart'));
+      const chartScreenshot = await chartContainer.screenshot();
+      expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
   });
 
   afterAll(async () => {
-    await logout();
+    await logout(host);
   });
 });

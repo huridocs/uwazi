@@ -27,16 +27,16 @@ describe('Settings', () => {
     await disableTransitions();
   });
 
-  it('should display Account with no more than a 7% difference', async () => {
+  it('should display Account', async () => {
     const screenshot = await navigateToPage('Account', 'div.account-settings');
     expect(screenshot).toMatchImageSnapshot();
   });
-  it('should display Users with no more than a 7% difference', async () => {
+  it('should display Users', async () => {
     const screenshot = await navigateToPage('Users', 'div.settings-content');
     expect(screenshot).toMatchImageSnapshot();
   });
 
-  it('should display Collection with no more than a 7% difference', async () => {
+  it('should display Collection', async () => {
     await selectSettingsPage('Collection');
     await page.waitForSelector('.mapboxgl-map');
     const className = 'div.collection-settings';
@@ -46,7 +46,7 @@ describe('Settings', () => {
   });
 
   describe('Pages', () => {
-    it('should display create Pages page with no more than a 7% difference', async () => {
+    it('should display create Pages page', async () => {
       await selectSettingsPage('Pages');
       await expect(page).toClick('.settings-footer > a');
       const className = 'div.settings-content';
@@ -56,11 +56,11 @@ describe('Settings', () => {
     });
   });
   describe('Filters', () => {
-    it('should display filters page with filters with no more than a 7% difference', async () => {
+    it('should display filters page with filters', async () => {
       const screenshot = await navigateToPage('Filters', 'div.settings-content');
       expect(screenshot).toMatchImageSnapshot();
     });
-    it('should display filter groups with no more than a 7% difference', async () => {
+    it('should display filter groups', async () => {
       await selectSettingsPage('Filters');
       await expect(page).toClick('div.settings-footer > button');
       const className = 'div.settings-content';
@@ -73,11 +73,11 @@ describe('Settings', () => {
   describe('Templates', () => {
     const getMetadataOptionSelector = (position: number) =>
       `.metadataTemplate-constructor > ul.list-group > li.list-group-item:nth-child(${position}) > button`;
-    it('should display Templates page with no more than a 7% difference', async () => {
+    it('should display Templates page', async () => {
       const screenshot = await navigateToPage('Templates', 'div.settings-content');
       expect(screenshot).toMatchImageSnapshot();
     });
-    it('should display new templates page with no more than a 7% difference', async () => {
+    it('should display new templates page', async () => {
       await selectSettingsPage('Templates');
       await expect(page).toClick('div.settings-footer > a');
       const className = 'div.settings-content';
@@ -86,7 +86,7 @@ describe('Settings', () => {
       expect(await newTemplatesPage.screenshot()).toMatchImageSnapshot();
     });
 
-    it('should display new templates page with more metadata options with no more than a 7% difference', async () => {
+    it('should display new templates page with more metadata options', async () => {
       await selectSettingsPage('Templates');
       await expect(page).toClick('div.settings-footer > a');
       await expect(page).toClick(getMetadataOptionSelector(2));
@@ -98,7 +98,7 @@ describe('Settings', () => {
     });
 
     describe('Thesauri', () => {
-      it('should display Thesaurus page with no more than a 7% difference', async () => {
+      it('should display Thesaurus page', async () => {
         const screenshot = await navigateToPage('Thesauri', 'div.settings-content');
         expect(screenshot).toMatchImageSnapshot({
           failureThreshold: 0.07,
@@ -106,7 +106,7 @@ describe('Settings', () => {
           allowSizeMismatch: true,
         });
       });
-      it('should display new Thesaurus page with no more than a 7% difference', async () => {
+      it('should display new Thesaurus page', async () => {
         await selectSettingsPage('Thesauri');
         await expect(page).toClick('div.settings-footer > a');
         const className = 'div.settings-content';
@@ -114,7 +114,7 @@ describe('Settings', () => {
         const newThesaurisPage = ensure<ElementHandle>(await page.$(className));
         expect(await newThesaurisPage.screenshot()).toMatchImageSnapshot();
       });
-      it('should display new Thesaurus with groups page with no more than a 7% difference', async () => {
+      it('should display new Thesaurus with groups page', async () => {
         await selectSettingsPage('Thesauri');
         await expect(page).toClick('div.settings-footer > a');
         await expect(page).toClick('div.settings-footer > button');
@@ -128,7 +128,7 @@ describe('Settings', () => {
     });
   });
 
-  it('should display Languages with no more than a 7% difference', async () => {
+  it('should display Languages', async () => {
     const screenshot = await navigateToPage(
       'Languages',
       '.settings-content > .panel > .list-group:last-child'
@@ -136,7 +136,7 @@ describe('Settings', () => {
     expect(screenshot).toMatchImageSnapshot();
   });
 
-  it('should display Translations with no more than a 7% difference', async () => {
+  it('should display Translations', async () => {
     const screenshot = await navigateToPage('Translations', 'div.settings-content');
     expect(screenshot).toMatchImageSnapshot();
   });

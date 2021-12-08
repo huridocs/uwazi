@@ -3,7 +3,7 @@
 
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import _ from 'lodash';
-import { host } from '../config';
+import { host } from '../../config';
 
 expect.extend({ toMatchImageSnapshot });
 

@@ -15,7 +15,7 @@ describe('Homepage entities', () => {
     await disableTransitions();
   });
 
-  it('should display entities in homepage with no more than a 7% difference', async () => {
+  it('should display entities in homepage', async () => {
     await page.goto(host, { waitUntil: 'domcontentloaded' });
     await disableTransitions();
     const className = '.row.panels-layout';
@@ -25,7 +25,7 @@ describe('Homepage entities', () => {
     expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
   });
 
-  it('should display entity details with no more than a 7% difference', async () => {
+  it('should display entity details', async () => {
     await expect(page).toClick('div.item-document:first-child');
     await page.waitForSelector('.metadata.tab-content-visible');
     await page.waitFor(200);
@@ -34,14 +34,14 @@ describe('Homepage entities', () => {
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
     expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
   });
-  it('should display entity view page with no more than a 7% difference', async () => {
+  it('should display entity view page', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`, { waitUntil: 'domcontentloaded' });
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
     const viewPage = ensure<ElementHandle>(await page.$(className));
     expect(await viewPage.screenshot()).toMatchImageSnapshot();
   });
-  it('should display entity edit page with no more than a 7% difference', async () => {
+  it('should display entity edit page', async () => {
     await expect(page).toClick('span', { text: 'Edit' });
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
@@ -49,7 +49,7 @@ describe('Homepage entities', () => {
     expect(await editPage.screenshot()).toMatchImageSnapshot();
   });
 
-  it('should display entity connections page with no more than a 7% difference', async () => {
+  it('should display entity connections page', async () => {
     await page.goto(`${host}/entity/7amlebw43dw8kt9`);
     await expect(page).toClick('div[aria-label="Connections"]');
     const className = 'div.relationships-graph';
