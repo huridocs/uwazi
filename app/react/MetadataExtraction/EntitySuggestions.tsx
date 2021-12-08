@@ -13,6 +13,7 @@ import {
   FilterProps,
   useRowSelect,
 } from 'react-table';
+import _ from 'lodash';
 import { I18NLink, t, Translate } from 'app/I18N';
 import socket from 'app/socket';
 import { Icon } from 'app/UI';
@@ -20,13 +21,12 @@ import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
+import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { PropertySchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
-import _ from 'lodash';
-import { getSuggestions, trainModel, ixStatus } from './SuggestionsAPI';
+import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -238,6 +238,9 @@ export const EntitySuggestions = ({
     const type = response.status === 'error' ? 'danger' : 'success';
     setStatus(response.status);
     store?.dispatch(notify(response.message, type));
+    if (status === 'ready') {
+      await retrieveSuggestions();
+    }
   };
 
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);

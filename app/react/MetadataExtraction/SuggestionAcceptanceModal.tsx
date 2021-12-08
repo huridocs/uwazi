@@ -41,7 +41,7 @@ export const SuggestionAcceptanceModal = ({
           className="btn confirm-button btn-success"
           onClick={() => onAccept(allLanguages)}
         >
-          <Translate>Accept</Translate>
+          <Translate>Confirm</Translate>
         </button>
       </Modal.Footer>
     </Modal>

@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-lines */
 import 'mutationobserver-shim';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -33,9 +34,7 @@ describe('EntitySuggestions', () => {
 
     describe('Metadata property', () => {
       beforeEach(async () => {
-        await act(async () => {
-          renderComponent();
-        });
+        await act(async () => renderComponent());
       });
       it('should render the suggestions headers', async () => {
         const suggestionHeaders = screen
@@ -45,9 +44,7 @@ describe('EntitySuggestions', () => {
       });
 
       it('should render the suggestions cells', async () => {
-        await act(async () => {
-          renderComponent();
-        });
+        await act(async () => renderComponent());
         const rows = screen.getAllByRole('row');
         const firstRow = within(rows[1])
           .getAllByRole('cell')
@@ -98,9 +95,7 @@ describe('EntitySuggestions', () => {
   describe('Pagination', () => {
     beforeEach(async () => {
       spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
-      await act(async () => {
-        renderComponent();
-      });
+      await act(async () => renderComponent());
     });
 
     it('should retrieve suggestions data when pageIndex changed', async () => {
@@ -135,7 +130,7 @@ describe('EntitySuggestions', () => {
     });
     it('should retrieve suggestions data when state filter changed', async () => {
       await act(async () => {
-        renderComponent();
+        await renderComponent();
         const header = screen.getAllByRole('columnheader', { name: 'State All' })[0];
         fireEvent.change(within(header).getByRole('combobox'), {
           target: { value: 'Empty' },
@@ -183,6 +178,75 @@ describe('EntitySuggestions', () => {
       // @ts-ignore
       invalidSuggestion.suggestedValue = 'no date';
       await renderAndCheckSuggestion(invalidSuggestion, 'FechaApr 2, 2020Suggestionno date');
+    });
+  });
+
+  describe('Finding suggestions', () => {
+    it('should train the model', async () => {
+      await renderComponent();
+      const trainingButton = screen.getByText('Find suggestions').parentElement!;
+      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      spyOn(SuggestionsAPI, 'trainModel').and.returnValue(
+        Promise.resolve({ message: '', status: 'ready' })
+      );
+      await act(async () => {
+        fireEvent.click(trainingButton);
+      });
+      expect(SuggestionsAPI.trainModel).toHaveBeenLastCalledWith({
+        data: {
+          property: 'other_title',
+        },
+        headers: {},
+      });
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
+        data: {
+          filter: { propertyName: 'other_title' },
+          page: { size: 5, number: 1 },
+        },
+        headers: {},
+      });
+    });
+  });
+
+  describe('Accepting suggestion', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      await act(async () => renderComponent());
+
+      const rows = screen.getAllByRole('row');
+      const acceptButton = within(rows[2]).getByText('Accept').parentElement!;
+      await act(async () => {
+        fireEvent.click(acceptButton);
+      });
+    });
+    it('should accept a suggestion for all languages of an entity', async () => {
+      const languageCheck = screen.getByRole('checkbox') as HTMLInputElement;
+      expect(languageCheck.checked).toBe(true);
+      const confirmButton = screen.getByText('Confirm').parentElement!;
+      await act(async () => {
+        fireEvent.click(confirmButton);
+      });
+      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], true);
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
+    });
+    it('should accept a suggestion for only the current language of an entity', async () => {
+      const languageCheck = screen.getByRole('checkbox');
+      await act(async () => {
+        fireEvent.click(languageCheck);
+      });
+      const confirmButton = screen.getByText('Confirm').parentElement!;
+      await act(async () => {
+        fireEvent.click(confirmButton);
+      });
+      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], false);
+    });
+    it('should not accept a suggestion in confirmation is cancelled', async () => {
+      const cancelButton = screen.getByText('Cancel').parentElement!;
+      await act(async () => {
+        fireEvent.click(cancelButton);
+      });
+      expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
     });
   });
 });

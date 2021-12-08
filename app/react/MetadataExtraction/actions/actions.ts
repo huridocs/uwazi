@@ -5,8 +5,9 @@ import { acceptEntitySuggestion } from 'app/MetadataExtraction/SuggestionsAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 
-export function acceptSuggestion(suggestion: EntitySuggestionType, allLanguages: boolean) {
-  return async (dispatch: Dispatch<IStore>) => {
+const acceptSuggestion =
+  (suggestion: EntitySuggestionType, allLanguages: boolean) =>
+  async (dispatch: Dispatch<IStore>) => {
     const params = new RequestParams({
       allLanguages,
       suggestion: {
@@ -20,4 +21,5 @@ export function acceptSuggestion(suggestion: EntitySuggestionType, allLanguages:
       dispatch(notificationActions.notify('Saved successfully.', 'success'));
     }
   };
-}
+
+export { acceptSuggestion };
