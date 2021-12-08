@@ -1,6 +1,4 @@
-import { FileType } from 'shared/types/fileType';
-
-const dummyOCRPost = (file: FileType) => file;
+const dummyOCRPost = (filename: string) => filename;
 
 const dummyOCRGet = async (filename: string) => {
   let response = '';

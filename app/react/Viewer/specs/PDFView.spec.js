@@ -7,7 +7,7 @@ import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
 import { browserHistory } from 'react-router';
 import PDFView from 'app/Viewer/PDFView';
-import Viewer from 'app/Viewer/components/Viewer';
+import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';

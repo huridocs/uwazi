@@ -15,18 +15,14 @@ describe('OCRButton', () => {
 
   let reduxStore: Partial<IStore> = {
     settings: {
-      collection: Immutable.fromJS({ features: { ocr: { url: 'https://service.com' } } }),
+      collection: Immutable.fromJS({ toggleOCRButton: true }),
     },
-    user: Immutable.fromJS({
-      _id: 'userId',
-      role: 'admin',
-    }),
   };
 
   jest.spyOn(ocrActions, 'dummyOCRPost');
 
   beforeEach(() => {
-    file = { filename: 'noOCR' };
+    file = { _id: 'file_id', filename: 'noOCR' };
   });
 
   const render = (store: Partial<IStore>, pdf: FileType) => {
@@ -35,9 +31,9 @@ describe('OCRButton', () => {
   };
 
   describe('rendering', () => {
-    it('should first render with a loading OCR message', () => {
+    it('should first render with a loading OCR message', async () => {
       render(reduxStore, file);
-      expect(screen.findByText('Loading')).not.toBeNull();
+      expect(await screen.findByText('Loading')).not.toBeNull();
     });
   });
 
@@ -57,17 +53,17 @@ describe('OCRButton', () => {
 
     describe('adding to ocr queue', () => {
       it('should trigger the OCR service when clicking the button', async () => {
-        render(reduxStore, { ...file, _id: 'fileId' });
+        render(reduxStore, { ...file });
         const ocrButton: Element = await screen.findByRole('button');
         fireEvent.click(ocrButton);
-        expect(ocrActions.dummyOCRPost).toHaveBeenCalledWith({ ...file, _id: 'fileId' });
+        expect(ocrActions.dummyOCRPost).toHaveBeenCalledWith(file.filename);
       });
 
-      it('should change to show the file is in the queue', () => {
+      it('should change to show the file is in the queue inmediatly', async () => {
         render(reduxStore, file);
-        const ocrButton: Element = screen.getByRole('button');
+        const ocrButton: Element = await screen.findByRole('button');
         fireEvent.click(ocrButton);
-        expect(screen.getByText('In OCR queue')).not.toBeNull();
+        expect(await screen.findByText('In OCR queue')).not.toBeNull();
       });
     });
   });

@@ -53,6 +53,7 @@ const CollectionSettings = ({
   register('mapStartingPoint');
   register('cookiepolicy');
   register('newNameGeneration');
+  register('toggleOCRButton');
 
   const save = async (newCollectionSettings: Settings) => {
     const saveParameters = new RequestParams({
@@ -204,7 +205,12 @@ const CollectionSettings = ({
           </h2>
 
           <SettingsFormElement label="Document OCR trigger" tip={tips.ocrTrigger}>
-            <ToggleButton checked={false} onClick={() => {}} />
+            <ToggleButton
+              checked={Boolean(watch('toggleOCRButton'))}
+              onClick={() => {
+                setValue('toggleOCRButton', !getValues('toggleOCRButton'));
+              }}
+            />
           </SettingsFormElement>
         </FeatureToggle>
 
