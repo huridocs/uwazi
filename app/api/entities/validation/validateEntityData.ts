@@ -12,9 +12,7 @@ const ajv = Ajv({ allErrors: true });
 
 const validateField =
 (entity: EntitySchema, template: TemplateSchema) =>
-async (
-  err: Promise<Ajv.ErrorObject[]>,
-  property: PropertySchema
+async (err: Promise<Ajv.ErrorObject[]>, property: PropertySchema
 ) => {
   try {
     await validateMetadataField(property, entity, template);
