@@ -1,4 +1,5 @@
 import db, { DBFixture } from 'api/utils/testing_db';
+import { UserRole } from 'shared/types/userSchema';
 
 const entityId = db.id();
 const entityEnId = db.id();
@@ -64,6 +65,21 @@ const fixtures: DBFixture = {
       languages: [{ key: 'es', default: true }],
       publicFormDestination: 'http://localhost:54321',
       allowedPublicTemplates: [templateId.toString()],
+      features: {
+        ocr: { url: 'serviceUrl' }
+      }
+    },
+  ],
+  users: [
+    {
+      _id: db.id(),
+      username: 'collab',
+      role: UserRole.COLLABORATOR,
+    },
+    {
+      _id: db.id(),
+      username: 'admin',
+      role: UserRole.ADMIN,
     },
   ],
 };

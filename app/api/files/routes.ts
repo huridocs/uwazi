@@ -230,6 +230,7 @@ export default (app: Application) => {
 
   app.get(
     '/api/files/:filename/ocr',
+    needsAuthorization(['admin', 'editor']),
     validation.validateRequest({
       properties: {
         params: {
@@ -245,6 +246,10 @@ export default (app: Application) => {
           filename: req.params.filename,
         });
 
+        if (!file || !(await fileExists(uploadsPath(file.filename)))) {
+          throw createError('file not found', 404);
+        }
+
         const status = await OcrManager.getStatus(file);
 
         res.json({ status });
@@ -255,6 +260,7 @@ export default (app: Application) => {
 
     app.post(
       '/api/files/:filename/ocr',
+      needsAuthorization(['admin', 'editor']),
       validation.validateRequest({
         properties: {
           params: {
@@ -269,6 +275,10 @@ export default (app: Application) => {
           const [file] = await files.get({
             filename: req.params.filename,
           });
+
+          if (!file || !(await fileExists(uploadsPath(file.filename)))) {
+            throw createError('file not found', 404);
+          }
 
           await OcrManager.addToQueue(file);
           

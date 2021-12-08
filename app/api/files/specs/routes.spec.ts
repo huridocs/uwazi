@@ -11,7 +11,6 @@ import connections from 'api/relationships';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import JSONRequest from 'shared/JSONRequest';
-import { UserRole } from 'shared/types/userSchema';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fileName1, fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
@@ -21,13 +20,14 @@ import { OcrStatus } from '../../services/ocr/ocrModel';
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 describe('files routes', () => {
+  const collabUser = fixtures.users!.find(u => u.username === 'collab');
+  const adminUser = fixtures.users!.find(u => u.username === 'admin');
+  let requestMockedUser = collabUser;
+
   const app: Application = setUpApp(
     uploadRoutes,
     (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = {
-        role: UserRole.COLLABORATOR,
-        username: 'User 1',
-      };
+      (req as any).user = (() => requestMockedUser)();
       next();
     }
   );
@@ -35,6 +35,8 @@ describe('files routes', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     await testingEnvironment.setUp(fixtures);
+    requestMockedUser = collabUser;
+    testingEnvironment.setPermissions(collabUser);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -141,6 +143,14 @@ describe('files routes', () => {
     });
 
     describe('api/files/tocReviewed', () => {
+      beforeEach(() => {
+        // WARNING!!! this sets an editor user in the permissions context.
+        // It's inconsistent with the request logged-in user!!
+        // This is here to avoid changing the test implementation without research.
+        // Fix the inconsistency and remove this.
+        testingEnvironment.setPermissions();
+      });
+
       it('should set tocGenerated to false on the file', async () => {
         const response: SuperTestResponse = await request(app)
           .post('/api/files/tocReviewed')
@@ -205,6 +215,11 @@ describe('files routes', () => {
   });
 
   describe('OCR service', () => {
+    beforeEach(() => {
+      testingEnvironment.setPermissions(adminUser);
+      requestMockedUser = adminUser;
+    });
+
     it('should return the status on get', async () => {
       const { body } = await request(app)
         .get(`/api/files/${fileName1}/ocr`)
@@ -212,7 +227,7 @@ describe('files routes', () => {
       
       expect(body).toEqual({
         status: OcrStatus.NONE
-      })
+      });
     });
 
     it('should create a task on post', async () => {
@@ -225,6 +240,35 @@ describe('files routes', () => {
         .expect(200);
 
       expect(body).toEqual({ status: OcrStatus.PROCESSING });
-    })
+    });
+
+    it('should fail if the file does not exist', async () => {
+      await request(app)
+        .get('/api/files/invalidFile/ocr')
+        .expect(404);
+
+      await request(app)
+        .post('/api/files/invalidFile/ocr')
+        .expect(404);
+    });
+
+    describe('when the user is not an admin or editor', () => {
+      beforeEach(() => {
+        testingEnvironment.setPermissions(collabUser);
+        requestMockedUser = collabUser;
+      });
+
+      it('should not allow request status', async () => {
+        const { body } = await request(app)
+          .get(`/api/files/${fileName1}/ocr`)
+          .expect(401);
+      });
+
+      it('should not allow to create a task', async () => {
+        await request(app)
+          .post(`/api/files/${fileName1}/ocr`)
+          .expect(401);
+      });
+    });
   });
 });
