@@ -98,6 +98,10 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
   return result;
 };
 
+const propertyValueFormatter = {
+  date: timestamp => moment.utc(timestamp, 'X').format('ll'),
+};
+
 export default {
   formatDateRange(daterange = {}) {
     let from = '';
@@ -143,7 +147,7 @@ export default {
 
   date(property, date = [{}]) {
     const timestamp = date[0].value;
-    const value = moment.utc(timestamp, 'X').format('ll');
+    const value = propertyValueFormatter.date(timestamp);
     return {
       label: property.get('label'),
       name: property.get('name'),
@@ -425,3 +429,5 @@ export default {
     };
   },
 };
+
+export { propertyValueFormatter };

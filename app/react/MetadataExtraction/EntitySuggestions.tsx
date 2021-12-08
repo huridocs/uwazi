@@ -21,9 +21,11 @@ import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
+import _ from 'lodash';
 import { getSuggestions, trainModel, ixStatus } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
@@ -66,9 +68,18 @@ export const EntitySuggestions = ({
     setAcceptingSuggestion(true);
   };
 
+  const formatValue = (value: PropertyValueSchema | undefined) => {
+    if (!value) return '-';
+    if (reviewedProperty.type === 'date' && _.isNumber(value)) {
+      return propertyValueFormatter.date(value);
+    }
+    return value;
+  };
+
   const suggestionCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
-    const currentValue = suggestion.currentValue || '-';
+    const currentValue = formatValue(suggestion.currentValue);
+    const suggestedValue = formatValue(suggestion.suggestedValue);
     return (
       <>
         <div>
@@ -81,7 +92,7 @@ export const EntitySuggestions = ({
           <span className="suggestion-label">
             <Translate>Suggestion</Translate>
           </span>
-          <p className="suggested-value">{suggestion.suggestedValue}</p>
+          <p className="suggested-value">{suggestedValue}</p>
         </div>
       </>
     );

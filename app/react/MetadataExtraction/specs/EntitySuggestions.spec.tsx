@@ -6,63 +6,19 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { SuggestionState } from 'shared/types/suggestionSchema';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { PropertySchema } from 'shared/types/commonTypes';
+import {
+  dateSuggestion,
+  defaultHeaders,
+  reviewedProperty,
+  suggestionsData,
+} from 'app/MetadataExtraction/specs/fixtures';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
 
 describe('EntitySuggestions', () => {
-  const defaultHeaders = [
-    'Other title / Suggestion',
-    'Action',
-    'Title',
-    'Segment',
-    'Language',
-    'StateAllMatchingEmptyPending',
-    'Page',
-  ];
-
-  const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {
-    suggestions: [
-      {
-        entityId: 'shared1',
-        sharedId: 'shared1',
-        propertyName: 'property1',
-        entityTitle: 'Entity title1',
-        currentValue: 'Entity title1',
-        suggestedValue: 'Olowo Kamali',
-        segment: 'Olowo Kamali Case',
-        language: 'English',
-        state: SuggestionState.matching,
-        date: 1,
-        page: 5,
-      },
-      {
-        entityId: 'shared2',
-        sharedId: 'shared1',
-        propertyName: 'property1',
-        entityTitle: 'Título entidad',
-        currentValue: '',
-        suggestedValue: 'Violación caso 1',
-        segment: 'Detalle Violación caso 1',
-        language: 'Spanish',
-        state: SuggestionState.empty,
-        date: 2,
-        page: 2,
-      },
-    ],
-    totalPages: 4,
-  };
-
-  const reviewedProperty: PropertySchema = {
-    name: 'other_title',
-    type: 'text',
-    label: 'Other title',
-  };
-
   const acceptIXSuggestion = jest.fn();
-
   function renderComponent(property = reviewedProperty) {
     renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
@@ -70,71 +26,87 @@ describe('EntitySuggestions', () => {
     );
   }
 
-  beforeEach(async () => {
-    spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
-    await act(async () => {
-      renderComponent();
-    });
-  });
-
   describe('Render table', () => {
-    it('should render the suggestions headers', async () => {
-      const suggestionHeaders = screen
-        .getAllByRole('columnheader')
-        .map(header => header.textContent);
-      expect(suggestionHeaders).toEqual(defaultHeaders);
+    beforeEach(async () => {
+      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
     });
 
-    it('should render the suggestions cells', async () => {
-      await act(async () => {
-        renderComponent();
+    describe('Metadata property', () => {
+      beforeEach(async () => {
+        await act(async () => {
+          renderComponent();
+        });
       });
-      const rows = screen.getAllByRole('row');
-      const firstRow = within(rows[1])
-        .getAllByRole('cell')
-        .map(cell => cell.textContent);
-      expect(firstRow).toEqual([
-        'Other titleEntity title1SuggestionOlowo Kamali',
-        '',
-        'Entity title1',
-        'Olowo Kamali Case',
-        'English',
-        'Matching',
-        '5',
-      ]);
-      const secondRow = within(rows[2])
-        .getAllByRole('cell')
-        .map(cell => cell.textContent);
-      expect(secondRow).toEqual([
-        'Other title-SuggestionViolación caso 1',
-        ' Accept',
-        'Título entidad',
-        'Detalle Violación caso 1',
-        'Spanish',
-        'Empty',
-        '2',
-      ]);
+      it('should render the suggestions headers', async () => {
+        const suggestionHeaders = screen
+          .getAllByRole('columnheader')
+          .map(header => header.textContent);
+        expect(suggestionHeaders).toEqual(defaultHeaders);
+      });
+
+      it('should render the suggestions cells', async () => {
+        await act(async () => {
+          renderComponent();
+        });
+        const rows = screen.getAllByRole('row');
+        const firstRow = within(rows[1])
+          .getAllByRole('cell')
+          .map(cell => cell.textContent);
+        expect(firstRow).toEqual([
+          'Other titleEntity title1SuggestionOlowo Kamali',
+          '',
+          'Entity title1',
+          'Olowo Kamali Case',
+          'English',
+          'Matching',
+          '5',
+        ]);
+        const secondRow = within(rows[2])
+          .getAllByRole('cell')
+          .map(cell => cell.textContent);
+        expect(secondRow).toEqual([
+          'Other title-SuggestionViolación caso 1',
+          ' Accept',
+          'Título entidad',
+          'Detalle Violación caso 1',
+          'Spanish',
+          'Empty',
+          '2',
+        ]);
+      });
     });
 
-    it('should not render title column when propertyName is title', async () => {
-      const titleProperty: PropertySchema = {
-        name: 'title',
-        type: 'text',
-        label: 'Title',
-      };
-      await act(async () => {
-        renderComponent(titleProperty);
+    describe('title property', () => {
+      it('should not render title column', async () => {
+        const titleProperty: PropertySchema = {
+          name: 'title',
+          type: 'text',
+          label: 'Title',
+        };
+        await act(async () => {
+          renderComponent(titleProperty);
+          const suggestionHeaders = screen
+            .getAllByRole('columnheader')
+            .map(header => header.textContent);
+          expect(suggestionHeaders).toContain('Title / Suggestion');
+          expect(suggestionHeaders).not.toContain('Title');
+        });
       });
-      await expect(screen.findByRole('columnheader', { name: 'Title' })).resolves.toReject;
     });
   });
 
   describe('Pagination', () => {
-    it('should retrieve suggestions data when pageIndex changed', async () => {
+    beforeEach(async () => {
+      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
       await act(async () => {
         renderComponent();
       });
-      fireEvent.click(screen.getByText('4'));
+    });
+
+    it('should retrieve suggestions data when pageIndex changed', async () => {
+      await act(async () => {
+        fireEvent.click(screen.getByText('4'));
+      });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { propertyName: 'other_title' },
@@ -146,10 +118,9 @@ describe('EntitySuggestions', () => {
 
     it('should retrieve suggestions data when pageSize changed', async () => {
       await act(async () => {
-        renderComponent();
-      });
-      fireEvent.change(screen.getAllByText('5 per page')[0].parentElement!, {
-        target: { value: 10 },
+        fireEvent.change(screen.getAllByText('5 per page')[0].parentElement!, {
+          target: { value: 10 },
+        });
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: { filter: { propertyName: 'other_title' }, page: { size: 10, number: 1 } },
@@ -159,6 +130,9 @@ describe('EntitySuggestions', () => {
   });
 
   describe('State filter', () => {
+    beforeEach(async () => {
+      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+    });
     it('should retrieve suggestions data when state filter changed', async () => {
       await act(async () => {
         renderComponent();
@@ -174,6 +148,41 @@ describe('EntitySuggestions', () => {
         },
         headers: {},
       });
+    });
+  });
+
+  describe('date property', () => {
+    const dateProperty: PropertySchema = {
+      name: 'fecha',
+      type: 'date',
+      label: 'Fecha',
+    };
+
+    const renderAndCheckSuggestion = async (
+      suggestion: EntitySuggestionType,
+      expectedSuggestionCell: string
+    ) => {
+      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(
+        Promise.resolve({ suggestions: [suggestion], totalPages: 1 })
+      );
+      await act(async () => {
+        await renderComponent(dateProperty);
+      });
+      const rows = screen.getAllByRole('row');
+      const firstRow = within(rows[1])
+        .getAllByRole('cell')
+        .map(cell => cell.textContent);
+      expect(firstRow).toContain(expectedSuggestionCell);
+    };
+    it('should format the current value and suggestion value from a date property', async () => {
+      await renderAndCheckSuggestion(dateSuggestion, 'FechaApr 2, 2020SuggestionApr 2, 2020');
+    });
+
+    it('should should not format is suggestion is a not valid date', async () => {
+      const invalidSuggestion = { ...dateSuggestion };
+      // @ts-ignore
+      invalidSuggestion.suggestedValue = 'no date';
+      await renderAndCheckSuggestion(invalidSuggestion, 'FechaApr 2, 2020Suggestionno date');
     });
   });
 });
