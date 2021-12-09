@@ -275,6 +275,7 @@ export default (app: Application) => {
       async (req, res, next) => {
         try {
           //TODO: validate feature enabled
+          //TODO: validate file is document
           
           const [file] = await files.get({
             filename: req.params.filename,
