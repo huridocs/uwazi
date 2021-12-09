@@ -72,6 +72,7 @@ describe('suggestions routes', () => {
           segment: 'el confía en su propio conocimiento científico',
           state: 'Pending',
           language: 'es',
+          page: 5,
         },
         {
           entityId: shared2enId.toString(),
@@ -82,6 +83,7 @@ describe('suggestions routes', () => {
           segment: 'he relies on his own scientific knowledge',
           state: 'Matching',
           language: 'en',
+          page: 5,
         },
       ]);
       expect(response.body.totalPages).toBe(1);
