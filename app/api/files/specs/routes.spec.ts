@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+import fetchMock from 'fetch-mock';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
@@ -17,9 +19,7 @@ import { files } from '../files';
 import uploadRoutes from '../routes';
 import { OcrStatus } from '../../services/ocr/ocrModel';
 import { TaskManager } from '../../services/tasksmanager/TaskManager';
-import fetchMock from 'fetch-mock';
 import { fs } from '..';
-import { Readable } from 'stream';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -27,7 +27,6 @@ describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
   const adminUser = fixtures.users!.find(u => u.username === 'admin');
   let requestMockedUser = collabUser;
-
 
   //const { trigger: taskManagerTrigger } = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
   const app: Application = setUpApp(
@@ -227,28 +226,24 @@ describe('files routes', () => {
     });
 
     it('should return the status on get', async () => {
-      const { body } = await request(app)
-        .get(`/api/files/${fileName1}/ocr`)
-        .expect(200);
-      
+      const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
+
       expect(body).toEqual({
-        status: OcrStatus.NONE
+        status: OcrStatus.NONE,
       });
     });
 
     it('should create a task on post', async () => {
       jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
       // TODO: use a 'result' file here
-      const resultTestFile = fs.createReadStream(path.join(__dirname, 'uploads/f2082bf51b6ef839690485d7153e847a.pdf'));
-      fetchMock.mock('protocol://link/to/result/file', resultTestFile, { sendAsJson: false })
+      const resultTestFile = fs.createReadStream(
+        path.join(__dirname, 'uploads/f2082bf51b6ef839690485d7153e847a.pdf')
+      );
+      fetchMock.mock('protocol://link/to/result/file', resultTestFile, { sendAsJson: false });
 
-      await request(app)
-        .post(`/api/files/${fileName1}/ocr`)
-        .expect(200);
-      
-      const { body } = await request(app)
-        .get(`/api/files/${fileName1}/ocr`)
-        .expect(200);
+      await request(app).post(`/api/files/${fileName1}/ocr`).expect(200);
+
+      const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
 
       expect(body).toEqual({ status: OcrStatus.PROCESSING });
 
@@ -258,7 +253,7 @@ describe('files routes', () => {
         task: 'ocr_results',
         file_url: 'protocol://link/to/result/file',
         params: { filename: 'someFileName2.pdf' },
-        success: true
+        success: true,
       });
 
       // TODO: - Check that the new status is READY
@@ -269,13 +264,9 @@ describe('files routes', () => {
     });
 
     it('should fail if the file does not exist', async () => {
-      await request(app)
-        .get('/api/files/invalidFile/ocr')
-        .expect(404);
+      await request(app).get('/api/files/invalidFile/ocr').expect(404);
 
-      await request(app)
-        .post('/api/files/invalidFile/ocr')
-        .expect(404);
+      await request(app).post('/api/files/invalidFile/ocr').expect(404);
     });
 
     describe('when the user is not an admin or editor', () => {
@@ -285,15 +276,11 @@ describe('files routes', () => {
       });
 
       it('should not allow request status', async () => {
-        const { body } = await request(app)
-          .get(`/api/files/${fileName1}/ocr`)
-          .expect(401);
+        await request(app).get(`/api/files/${fileName1}/ocr`).expect(401);
       });
 
       it('should not allow to create a task', async () => {
-        await request(app)
-          .post(`/api/files/${fileName1}/ocr`)
-          .expect(401);
+        await request(app).post(`/api/files/${fileName1}/ocr`).expect(401);
       });
     });
   });

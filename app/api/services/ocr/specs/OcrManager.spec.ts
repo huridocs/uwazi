@@ -1,23 +1,21 @@
-import * as files_api from 'api/files/filesystem';
+import fetchMock from 'fetch-mock';
+
+import * as filesApi from 'api/files/filesystem';
 import settings from 'api/settings/settings';
-import { tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import request from 'shared/JSONRequest';
 import { OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
-import { Service, TaskManager, ResultsMessage } from '../../tasksmanager/TaskManager';
-import fetchMock from 'fetch-mock';
+import { TaskManager } from '../../tasksmanager/TaskManager';
 import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
 
-
 jest.mock('api/services/tasksmanager/TaskManager.ts');
-const defaultTenantName = 'defaultDB'
-const serviceUrl = 'serviceUrl';
+const defaultTenantName = 'defaultDB';
 
 describe('OcrManager', () => {
-  beforeAll(async ()=> {
-    await testingEnvironment.setTenant()
-  })
+  beforeAll(async () => {
+    await testingEnvironment.setTenant();
+  });
 
   describe('when creating a new task', () => {
     let mocks: { [k: string]: jest.SpyInstance };
@@ -26,9 +24,9 @@ describe('OcrManager', () => {
 
     beforeAll(async () => {
       mocks = {
-        'files_api.uploadsPath': jest.spyOn(files_api, 'uploadsPath').mockReturnValue('file_path'),
+        'files_api.uploadsPath': jest.spyOn(filesApi, 'uploadsPath').mockReturnValue('file_path'),
         'files_api.readFile': jest
-          .spyOn(files_api, 'readFile')
+          .spyOn(filesApi, 'readFile')
           .mockResolvedValue(Buffer.from('file_content')),
         'OcrModel.save': jest.spyOn(OcrModel, 'save').mockReturnValue(Promise.resolve() as any),
         'settings.get': jest.spyOn(settings, 'get').mockResolvedValue({
@@ -38,22 +36,22 @@ describe('OcrManager', () => {
             },
           },
         }),
-        'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve())
+        'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve()),
       };
 
-      ({ mock: taskManagerMock, trigger: taskManagerTrigger } = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>));
+      ({ mock: taskManagerMock, trigger: taskManagerTrigger } = mockTaskManagerImpl(
+        TaskManager as jest.Mock<TaskManager>
+      ));
 
       fetchMock.mock('*', 200);
 
       const ocrManager = new OcrManager();
 
-      await ocrManager.addToQueue(
-        {
-          filename: 'someFileName',
-          language: 'en',
-          _id: 'someId',
-        }
-      );
+      await ocrManager.addToQueue({
+        filename: 'someFileName',
+        language: 'en',
+        _id: 'someId',
+      });
     });
 
     afterAll(async () => {
@@ -69,13 +67,11 @@ describe('OcrManager', () => {
     });
 
     it('should dispatch a job to the TaskManager', () => {
-      expect(
-        taskManagerMock.startTask
-      ).toHaveBeenCalledWith(
+      expect(taskManagerMock.startTask).toHaveBeenCalledWith(
         expect.objectContaining({
           tenant: defaultTenantName,
           params: { filename: 'someFileName' },
-          task: 'ocr'
+          task: 'ocr',
         })
       );
     });
@@ -89,24 +85,24 @@ describe('OcrManager', () => {
     });
 
     describe('when there are results', () => {
-      beforeAll(()=>{
+      beforeAll(() => {
         taskManagerTrigger({
           tenant: defaultTenantName,
           task: 'ocr_results',
           file_url: 'protocol://link/to/result/file',
           params: { filename: 'someFileName' },
-          success: true
-        })
-      })
+          success: true,
+        });
+      });
 
       it('should download the file', () => {
         expect(fetchMock.lastUrl()).toBe('protocol://link/to/result/file');
       });
 
-      it.todo('arrange the files')
+      it.todo('arrange the files');
 
       it('should update the job status', () => {
-        fail('TODO: this is failing on purpose. Needs work.')
+        fail('TODO: this is failing on purpose. Needs work.');
         // expect(OcrModel.save).toHaveBeenCalledWith({
         //   language: 'en',
         //   file: 'someId',

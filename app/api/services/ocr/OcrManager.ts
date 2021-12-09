@@ -1,18 +1,17 @@
+import { Readable } from 'stream';
 import urljoin from 'url-join';
 
-import { uploadsPath, readFile, fs } from 'api/files';
+import { uploadsPath, readFile } from 'api/files';
+import { fileFromReadStream } from 'api/files/filesystem';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants/tenantContext';
 import { handleError } from 'api/utils';
 import request from 'shared/JSONRequest';
-import { FileType } from "shared/types/fileType";
-import { OcrModel, OcrStatus } from "./ocrModel";
-import { ReadStream, WriteStream } from 'fs';
-import { fileFromReadStream } from 'api/files/filesystem';
-import { Readable } from 'stream';
+import { FileType } from 'shared/types/fileType';
+import { OcrModel, OcrStatus } from './ocrModel';
 
-export class OcrManager {
+class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
 
   private ocrTaskManager: TaskManager;
@@ -29,12 +28,16 @@ export class OcrManager {
 
     const settingsValues = await settings.get();
     const ocrServiceConfig = settingsValues?.features?.ocr;
-    
+
     if (!ocrServiceConfig) {
-      throw Error('Ocr settings are missing from the database (settings.features.ocr).')
+      throw Error('Ocr settings are missing from the database (settings.features.ocr).');
     }
-    const tenant = tenants.current()
-    await request.uploadFile(urljoin(ocrServiceConfig!.url, 'upload', tenant.name), file.filename, fileContent);
+    const tenant = tenants.current();
+    await request.uploadFile(
+      urljoin(ocrServiceConfig!.url, 'upload', tenant.name),
+      file.filename,
+      fileContent
+    );
 
     await this.ocrTaskManager.startTask({
       task: this.SERVICE_NAME,
@@ -47,8 +50,8 @@ export class OcrManager {
     await OcrModel.save({
       file: file._id,
       language: file.language,
-      status: OcrStatus.PROCESSING
-    });    
+      status: OcrStatus.PROCESSING,
+    });
   }
 
   async getStatus(file: FileType) {
@@ -57,42 +60,38 @@ export class OcrManager {
   }
 
   private async processResults(message: ResultsMessage): Promise<void> {
-
     await tenants.run(async () => {
       try {
         if (!message.success) {
-          //update record with error   
+          // update record with error
           return;
-        }        
+        }
         const fileStream = (await fetch(message.file_url!)).body as unknown as Readable;
         console.log(fileStream);
         if (!fileStream) {
           throw new Error(
-            `Error requesting for segmentation file: ${message.params!.filename}, tenant: ${
-              message.tenant
-            }`
+            `Error requesting for ocr file: ${message.params!.filename}, tenant: ${message.tenant}`
           );
         }
 
         await fileFromReadStream(message.params!.filename, fileStream);
-        
-        //store file
-        
+
         //perform file step (change or not?)
-        
+
         //perform usual steps on new file
-        
+
         //update record with success, (make it permanent?)
 
         return;
-        
       } catch (error) {
         handleError(error);
       }
     }, message.tenant);
-  };
+  }
 }
 
 const OcrManagerInstance = new OcrManager();
 
 export default OcrManagerInstance;
+
+export { OcrManager };
