@@ -219,10 +219,10 @@ export const EntitySuggestions = ({
       .catch(() => {});
   };
 
-  const acceptSuggestion = (allLanguages: boolean) => {
+  const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
-      acceptIXSuggestion(acceptedSuggestion, allLanguages);
+      await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
       setAcceptingSuggestion(false);
       retrieveSuggestions();

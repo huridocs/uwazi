@@ -83,8 +83,8 @@ export const IXSuggestionsQuerySchema = {
       type: 'object',
       additionalProperties: false,
       properties: {
-        number: { type: 'number' },
-        size: { type: 'number' },
+        number: { type: 'number', minimum: 1 },
+        size: { type: 'number', minimum: 1, maximum: 100 },
       },
     },
   },
