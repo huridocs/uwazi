@@ -1,31 +1,15 @@
-const dummyOCRPost = (filename: string) => filename;
+import api from 'app/utils/api';
 
-const dummyOCRGet = async (filename: string) => {
-  let response = '';
-
-  switch (filename) {
-    case 'noOCR':
-      response = 'noOCR';
-      break;
-
-    case 'inQueue':
-      response = 'inQueue';
-      break;
-
-    case 'cannotProcess':
-      response = 'cannotProcess';
-      break;
-
-    case 'withOCR':
-      response = 'withOCR';
-      break;
-
-    default:
-      response = 'cannotProcess';
-      break;
-  }
-
-  return response;
+const postToOcr = async (filename: string) => {
+  await api.post(`files/${filename}/ocr`);
 };
 
-export { dummyOCRPost, dummyOCRGet };
+const getOcrStatus = async (filename: string) => {
+  const {
+    json: { status },
+  } = await api.get(`files/${filename}/ocr`);
+
+  return status;
+};
+
+export { postToOcr, getOcrStatus };

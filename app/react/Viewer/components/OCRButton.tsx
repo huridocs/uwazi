@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
-import { dummyOCRPost, dummyOCRGet } from '../actions/ocrActions';
+import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 
 type OCRButtonProps = {
   file: FileType;
@@ -26,7 +26,7 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
 
   useEffect(() => {
     if (ocrIsToggled) {
-      dummyOCRGet(filename)
+      getOcrStatus(filename)
         .then(result => setOcrStatus(result))
         .catch(() => {
           setOcrStatus('cannotProcess');
@@ -36,7 +36,9 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
 
   const handleClick = () => {
     setOcrStatus('inQueue');
-    dummyOCRPost(filename);
+    postToOcr(filename)
+      .then(() => {})
+      .catch(() => {});
   };
 
   const cannotProcess = (
