@@ -16,6 +16,10 @@ import { fileName1, fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 import { OcrStatus } from '../../services/ocr/ocrModel';
+import { TaskManager } from '../../services/tasksmanager/TaskManager';
+import fetchMock from 'fetch-mock';
+import { fs } from '..';
+import { Readable } from 'stream';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -24,6 +28,8 @@ describe('files routes', () => {
   const adminUser = fixtures.users!.find(u => u.username === 'admin');
   let requestMockedUser = collabUser;
 
+
+  //const { trigger: taskManagerTrigger } = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
   const app: Application = setUpApp(
     uploadRoutes,
     (req: Request, _res: Response, next: NextFunction) => {
@@ -231,15 +237,35 @@ describe('files routes', () => {
     });
 
     it('should create a task on post', async () => {
+      jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
+      // TODO: use a 'result' file here
+      const resultTestFile = fs.createReadStream(path.join(__dirname, 'uploads/f2082bf51b6ef839690485d7153e847a.pdf'));
+      fetchMock.mock('protocol://link/to/result/file', resultTestFile, { sendAsJson: false })
+
       await request(app)
         .post(`/api/files/${fileName1}/ocr`)
         .expect(200);
-
+      
       const { body } = await request(app)
         .get(`/api/files/${fileName1}/ocr`)
         .expect(200);
 
       expect(body).toEqual({ status: OcrStatus.PROCESSING });
+
+      // @ts-ignore
+      TaskManager.mock.calls[0][0].processResults({
+        tenant: 'defaultDB',
+        task: 'ocr_results',
+        file_url: 'protocol://link/to/result/file',
+        params: { filename: 'someFileName2.pdf' },
+        success: true
+      });
+
+      // TODO: - Check that the new status is READY
+      // TODO: - Check that the entity has the correct (how?) file.
+      // TODO: - Check that there is a new attachment
+
+      fail('In progress');
     });
 
     it('should fail if the file does not exist', async () => {

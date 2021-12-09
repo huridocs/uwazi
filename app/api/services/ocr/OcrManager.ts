@@ -1,13 +1,16 @@
 import urljoin from 'url-join';
 
-import { uploadsPath, readFile } from 'api/files';
+import { uploadsPath, readFile, fs } from 'api/files';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants/tenantContext';
-import { createError, handleError } from 'api/utils';
+import { handleError } from 'api/utils';
 import request from 'shared/JSONRequest';
 import { FileType } from "shared/types/fileType";
 import { OcrModel, OcrStatus } from "./ocrModel";
+import { ReadStream, WriteStream } from 'fs';
+import { fileFromReadStream } from 'api/files/filesystem';
+import { Readable } from 'stream';
 
 export class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
@@ -61,7 +64,8 @@ export class OcrManager {
           //update record with error   
           return;
         }        
-        const fileStream = (await fetch(message.file_url!)).body;
+        const fileStream = (await fetch(message.file_url!)).body as unknown as Readable;
+        console.log(fileStream);
         if (!fileStream) {
           throw new Error(
             `Error requesting for segmentation file: ${message.params!.filename}, tenant: ${
@@ -69,6 +73,8 @@ export class OcrManager {
             }`
           );
         }
+
+        await fileFromReadStream(message.params!.filename, fileStream);
         
         //store file
         

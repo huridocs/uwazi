@@ -6,10 +6,13 @@ import request from 'shared/JSONRequest';
 import { OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { Service, TaskManager, ResultsMessage } from '../../tasksmanager/TaskManager';
+import fetchMock from 'fetch-mock';
+import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
 
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 const defaultTenantName = 'defaultDB'
+const serviceUrl = 'serviceUrl';
 
 describe('OcrManager', () => {
   beforeAll(async ()=> {
@@ -38,19 +41,9 @@ describe('OcrManager', () => {
         'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve())
       };
 
-      (TaskManager as jest.Mock<TaskManager>).mockImplementation(function(service: Service) {
-        taskManagerTrigger = (result: ResultsMessage) => {
-            // @ts-ignore
-            service.processResults(result);
-        }
+      ({ mock: taskManagerMock, trigger: taskManagerTrigger } = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>));
 
-        const mock = {
-          startTask: jest.fn(),
-        };
-
-        taskManagerMock = mock;
-        return mock as unknown as TaskManager;
-      });
+      fetchMock.mock('*', 200);
 
       const ocrManager = new OcrManager();
 
@@ -82,7 +75,7 @@ describe('OcrManager', () => {
         expect.objectContaining({
           tenant: defaultTenantName,
           params: { filename: 'someFileName' },
-          task: 'ocr_tasks'
+          task: 'ocr'
         })
       );
     });
@@ -100,13 +93,14 @@ describe('OcrManager', () => {
         taskManagerTrigger({
           tenant: defaultTenantName,
           task: 'ocr_results',
-          file_url: 'link/to/result/file',
+          file_url: 'protocol://link/to/result/file',
+          params: { filename: 'someFileName' },
           success: true
         })
       })
 
-      fit('should download the file', () => {
-        fail()
+      it('should download the file', () => {
+        expect(fetchMock.lastUrl()).toBe('protocol://link/to/result/file');
       });
 
       it.todo('arrange the files')
