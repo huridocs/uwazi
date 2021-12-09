@@ -85,20 +85,25 @@ class OcrManager {
   }
 
   async getStatus(file: FileType) {
-    const settings = await this.getSettings();
-    if (!(await this.validateLanguage(file.language || '', settings))) {
-      return OcrStatus.UNSUPPORTED_LANGUAGE;
-    }
-
     const [record] = await OcrModel.get({
       $or: [{ sourceFile: file._id }, { resultFile: file._id }],
     });
-    return record ? record.status : OcrStatus.NONE;
+
+    const status = record ? record.status : OcrStatus.NONE;
+
+    if (status !== OcrStatus.READY) {
+      const settings = await this.getSettings();
+      if (!(await this.validateLanguage(file.language || '', settings))) {
+        return OcrStatus.UNSUPPORTED_LANGUAGE;
+      }
+    }
+    
+    return status;
   }
 
   private async processResults(message: ResultsMessage): Promise<void> {
     await tenants.run(async () => {
-      try {
+      //try {
         const [originalFile] = await files.get({ filename: message.params!.filename });
         const [record] = await OcrModel.get({ sourceFile: originalFile._id });
 
@@ -131,7 +136,7 @@ class OcrManager {
           type: 'document',
           // @ts-ignore
           destination: uploadsPath(),
-        });
+        }, false);
 
         await files.save({ ...originalFile, type: 'attachment' });
         await OcrModel.save({
@@ -140,9 +145,9 @@ class OcrManager {
           resultFile: savedFile._id,
           autoexpire: null,
         });
-      } catch (error) {
-        handleError(error);
-      }
+      // } catch (error) {
+      //   handleError(error);
+      // }
     }, message.tenant);
   }
 }
