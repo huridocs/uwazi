@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { helper as mapHelper } from 'app/Map';
 import { showFilters } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
@@ -31,7 +30,6 @@ export class LibraryModeToggleButtons extends Component {
 
   render() {
     const {
-      numberOfMarkers,
       zoomLevel,
       zoomOut,
       zoomIn,
@@ -41,7 +39,6 @@ export class LibraryModeToggleButtons extends Component {
       tableViewMode,
       mapViewMode,
     } = this.props;
-    const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
     return (
       <div className="list-view-mode">
         {mapViewMode && showGeolocation && (
@@ -123,14 +120,12 @@ export class LibraryModeToggleButtons extends Component {
           </I18NLink>
           {showGeolocation && (
             <I18NLink
-              disabled={!numberOfMarkers}
               to={`library/map${searchUrl}`}
               className="btn btn-default"
               activeClassName="is-active"
               aria-label={t('System', 'library map view', null, false)}
             >
               <Icon icon="map-marker" />
-              <span className="number-of-markers">{numberOfMarkersText}</span>
               <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
             </I18NLink>
           )}
@@ -157,7 +152,6 @@ LibraryModeToggleButtons.propTypes = {
   zoomIn: PropTypes.func,
   zoomOut: PropTypes.func,
   zoomLevel: PropTypes.number.isRequired,
-  numberOfMarkers: PropTypes.number.isRequired,
   storeKey: PropTypes.string.isRequired,
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
@@ -183,26 +177,15 @@ export const encodedSearch = createSelector(
   }
 );
 
-const numberOfMarkersSelector = createSelector(
-  ({ state, storeKey }) => state[storeKey].markers.get('rows'),
-  ({ state }) => state.templates,
-  (entities, templates) => mapHelper.getMarkers(entities, templates).length
-);
-
 export function mapStateToProps(state, props) {
   const { templates } = state;
   const showGeolocation = Boolean(
     templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation'))
   );
 
-  const numberOfMarkers = showGeolocation
-    ? numberOfMarkersSelector({ state, storeKey: props.storeKey })
-    : 0;
-
   return {
     searchUrl: encodedSearch(state[props.storeKey]),
     showGeolocation,
-    numberOfMarkers,
     zoomLevel:
       Object.keys(props).indexOf('zoomLevel') !== -1
         ? props.zoomLevel

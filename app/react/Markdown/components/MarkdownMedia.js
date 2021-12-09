@@ -66,6 +66,7 @@ class MarkdownMedia extends Component {
           />
         </div>
         <div>{this.timeLinks(config.options.timelinks)}</div>
+        <p className="print-view-alt">{config.url}</p>
       </div>
     );
   }
