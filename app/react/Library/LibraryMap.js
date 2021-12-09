@@ -1,5 +1,5 @@
 import React from 'react';
-import requestState from 'app/Library/helpers/requestState';
+import { requestState } from 'app/Library/helpers/requestState';
 import MapView from 'app/Library/components/MapView';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import Library from 'app/Library/Library';

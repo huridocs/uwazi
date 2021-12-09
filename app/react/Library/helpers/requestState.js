@@ -11,16 +11,16 @@ import { UserRole } from 'shared/types/userSchema';
 import { getTableColumns } from './tableColumns';
 import setReduxState from './setReduxState.js';
 
-export function decodeQuery(params) {
+const decodeQuery = params => {
   try {
     return rison.decode(params.q || '()');
   } catch (error) {
     error.status = 404;
     throw error;
   }
-}
+};
 
-export function processQuery(params, globalResources, key) {
+const processQuery = (params, globalResources, key) => {
   const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
 
   let query = decodeQuery(params);
@@ -48,13 +48,13 @@ export function processQuery(params, globalResources, key) {
     ...(loggedIn && !isAdmin ? { aggregatePermissionsByLevel: true } : {}),
     ...(isAdmin ? { aggregatePermissionsByUsers: true } : {}),
   };
-}
+};
 
-export default function requestState(
+const requestState = (
   request,
   globalResources,
   options = { calculateTableColumns: false, geolocation: false }
-) {
+) => {
   const docsQuery = processQuery(request.data, globalResources, 'library');
 
   const documentsRequest = request.set(
@@ -114,4 +114,6 @@ export default function requestState(
       return dispatchedActions;
     }
   );
-}
+};
+
+export { decodeQuery, processQuery, requestState };
