@@ -61,9 +61,6 @@ describe('metadata validator', () => {
       expect(labelAndUrl({ label: 'cat', url: '' })).toBe(false);
       expect(labelAndUrl({ label: 'cat' })).toBe(false);
     });
-    it('should be true when url is present and label is not', () => {
-      expect(labelAndUrl({ label: '', url: 'cat.pic.com' })).toBe(true);
-    });
   });
 
   describe('generate', () => {
