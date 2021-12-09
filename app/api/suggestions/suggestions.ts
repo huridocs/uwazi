@@ -5,6 +5,7 @@ import entities from 'api/entities/entities';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export const Suggestions = {
+  getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
