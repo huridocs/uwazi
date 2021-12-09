@@ -3,7 +3,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
 import rison from 'rison-node';
-import requestState, { processQuery } from '../requestState';
+import { requestState, processQuery } from '../requestState';
 
 describe('static requestState()', () => {
   let globalResources;
@@ -81,7 +81,7 @@ describe('static requestState()', () => {
       };
 
       const request = new RequestParams(query);
-      const actions = await requestState(request, globalResources);
+      const actions = await requestState(request, globalResources, { geolocation: true });
 
       expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
 
