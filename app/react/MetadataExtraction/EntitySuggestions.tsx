@@ -325,7 +325,7 @@ export const EntitySuggestions = ({
       <SuggestionAcceptanceModal
         isOpen={acceptingSuggestion}
         onClose={() => setAcceptingSuggestion(false)}
-        onAccept={allLanguages => acceptSuggestion(allLanguages)}
+        onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
       />
     </div>
   );
