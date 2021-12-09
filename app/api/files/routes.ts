@@ -242,6 +242,8 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
+        //TODO: validate feature enabled
+
         const [file] = await files.get({
           filename: req.params.filename,
         });
@@ -272,6 +274,8 @@ export default (app: Application) => {
       }),
       async (req, res, next) => {
         try {
+          //TODO: validate feature enabled
+          
           const [file] = await files.get({
             filename: req.params.filename,
           });

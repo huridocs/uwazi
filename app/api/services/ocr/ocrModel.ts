@@ -7,6 +7,7 @@ enum OcrStatus {
   PROCESSING = 'inQueue',
   ERROR = 'cannotProcess',
   READY = 'withOCR',
+  UNSUPPORTED_LANGUAGE = 'unsupported_language',
 }
 
 const props = {
@@ -19,7 +20,7 @@ const props = {
 
 interface OcrRecord {
   _id: ObjectIdSchema;
-  autoexpire: number;
+  autoexpire: number | null;
   sourceFile: ObjectIdSchema;
   resultFile?: ObjectIdSchema;
   language: string;
