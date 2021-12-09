@@ -39,7 +39,7 @@ class OcrManager {
 
     const settingsValues = await this.getSettings();
 
-    if (!(await this.validateLanguage(file.language || '', settings))) {
+    if (!(await this.validateLanguage(file.language || '', settingsValues))) {
       throw Error('Unsupported language');
     }
 
