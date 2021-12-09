@@ -519,17 +519,21 @@ describe('validateEntity', () => {
           await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
         });
 
-        it('should fail if label or url are not provided', async () => {
+        it('should fail if url is not provided', async () => {
           let entity = createEntity({
             metadata: { link: [{ value: { label: 'label', url: '' } }] },
           });
-          await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
-          entity = createEntity({ metadata: { link: [{ value: { label: '', url: 'url' } }] } });
           await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
         });
 
         it('should be ok if both are empty', async () => {
           const entity = createEntity({ metadata: { link: [{ value: { label: '', url: '' } }] } });
+          await testValid(entity);
+        });
+        it('should be ok if label is empty', async () => {
+          const entity = createEntity({
+            metadata: { link: [{ value: { label: '', url: 'https://youtube.com' } }] },
+          });
           await testValid(entity);
         });
       });

@@ -19,7 +19,7 @@ export const showByType = (prop, compact) => {
     case 'link':
       result = (
         <a href={prop.value.url} target="_blank" rel="noopener noreferrer">
-          {prop.value.label}
+          {prop.value.label ? prop.value.label : prop.value.url}
         </a>
       );
       break;
