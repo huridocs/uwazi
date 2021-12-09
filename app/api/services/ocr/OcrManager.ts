@@ -14,6 +14,14 @@ import request from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 import { OcrModel, OcrStatus } from './ocrModel';
 
+const availableLanguages: { [key: string]: string } = {
+  arb: 'ar',
+  deu: 'de',
+  eng: 'en',
+  fra: 'fr',
+  spa: 'es',
+};
+
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
 
@@ -31,7 +39,7 @@ class OcrManager {
 
     const settingsValues = await this.getSettings();
 
-    if (!await this.validateLanguage(file.language || '', settings)) {
+    if (!(await this.validateLanguage(file.language || '', settings))) {
       throw Error('Unsupported language');
     }
 
@@ -72,17 +80,19 @@ class OcrManager {
 
   private async validateLanguage(language: string, settings: any) {
     const response = await fetch(urljoin(settings.url, 'info'));
-    const body = await response.json()
-    return body.supported_languages.includes(language);
+    const body = await response.json();
+    return body.supported_languages.includes(availableLanguages[language]);
   }
 
   async getStatus(file: FileType) {
     const settings = await this.getSettings();
-    if (!await this.validateLanguage(file.language || '', settings)) {
+    if (!(await this.validateLanguage(file.language || '', settings))) {
       return OcrStatus.UNSUPPORTED_LANGUAGE;
     }
-  
-    const [record] = await OcrModel.get({ $or: [{ sourceFile: file._id }, { resultFile: file._id }]});
+
+    const [record] = await OcrModel.get({
+      $or: [{ sourceFile: file._id }, { resultFile: file._id }],
+    });
     return record ? record.status : OcrStatus.NONE;
   }
 
@@ -97,7 +107,7 @@ class OcrManager {
         }
 
         if (!message.success) {
-          OcrModel.save({ ...record, status: OcrStatus.ERROR })
+          OcrModel.save({ ...record, status: OcrStatus.ERROR });
           return;
         }
 
@@ -124,7 +134,12 @@ class OcrManager {
         });
 
         await files.save({ ...originalFile, type: 'attachment' });
-        await OcrModel.save({ ...record, status: OcrStatus.READY, resultFile: savedFile._id, autoexpire: null });
+        await OcrModel.save({
+          ...record,
+          status: OcrStatus.READY,
+          resultFile: savedFile._id,
+          autoexpire: null,
+        });
       } catch (error) {
         handleError(error);
       }
