@@ -9,7 +9,7 @@ on:
   pull_request:
 
 jobs:
-  e2e_test_puppeteer:
+  e2e_test_snapshots:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
