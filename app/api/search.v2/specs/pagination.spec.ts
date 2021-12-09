@@ -52,12 +52,9 @@ describe('Pagination', () => {
       .get('/api/v2/entities')
       .query({ page: { limit: 2 } });
 
-    expect(body.data).toMatchObject([
-      { title: 'First' },
-      { title: 'Second' },
-    ]);
+    expect(body.data).toMatchObject([{ title: 'First' }, { title: 'Second' }]);
 
-    expect(body.links.first).toEqual('/api/v2/entities?' + qs.stringify({ page: { limit: 2 } }));
+    expect(body.links.first).toEqual(`/api/v2/entities?${qs.stringify({ page: { limit: 2 } })}`);
   });
 
   it('should paginate results', async () => {
@@ -65,21 +62,21 @@ describe('Pagination', () => {
       .get('/api/v2/entities')
       .query({ page: { limit: 2 } });
 
-    ({ body } = await request(app).get(body.links.next).expect(200))
-    expect(body.data).toMatchObject([
-      { title: 'Third' },
-      { title: 'Fourth' },
-    ]);
+    ({ body } = await request(app)
+      .get(body.links.next)
+      .expect(200));
+    expect(body.data).toMatchObject([{ title: 'Third' }, { title: 'Fourth' }]);
 
-    ({ body } = await request(app).get(body.links.next).expect(200))
-    expect(body.data).toMatchObject([
-      { title: 'Fifth' },
-      { title: 'Sixth' },
-    ]);
+    ({ body } = await request(app)
+      .get(body.links.next)
+      .expect(200));
+    expect(body.data).toMatchObject([{ title: 'Fifth' }, { title: 'Sixth' }]);
 
-    ({ body } = await request(app).get(body.links.next).expect(200))
-    expect(body.data).toMatchObject([ ]);
+    ({ body } = await request(app)
+      .get(body.links.next)
+      .expect(200));
+    expect(body.data).toMatchObject([]);
   });
 
-  it.todo('define pagination limits')
+  it.todo('define pagination limits');
 });
