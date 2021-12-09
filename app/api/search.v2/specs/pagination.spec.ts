@@ -60,7 +60,8 @@ describe('Pagination', () => {
   it('should paginate results', async () => {
     let { body } = await request(app)
       .get('/api/v2/entities')
-      .query({ page: { limit: 2 } });
+      .query({ page: { limit: 2 } })
+      .expect(200);
 
     ({ body } = await request(app)
       .get(body.links.next)
@@ -73,10 +74,26 @@ describe('Pagination', () => {
     expect(body.data).toMatchObject([{ title: 'Fifth' }, { title: 'Sixth' }]);
 
     ({ body } = await request(app)
-      .get(body.links.next)
+      .get(body.links.prev)
       .expect(200));
-    expect(body.data).toMatchObject([]);
+    expect(body.data).toMatchObject([{ title: 'Third' }, { title: 'Fourth' }]);
   });
 
-  it.todo('define pagination limits');
+  it('should omit prev and next values on search limits', async () => {
+    let { body } = await request(app)
+      .get('/api/v2/entities')
+      .query({ page: { limit: 2 } })
+      .expect(200);
+
+    expect(body.links.prev).toBeUndefined();
+
+    ({ body } = await request(app)
+      .get(body.links.last)
+      .expect(200));
+
+    expect(body.data).toMatchObject([{ title: 'Fifth' }, { title: 'Sixth' }]);
+    expect(body.links.next).toBeUndefined();
+  });
+
+  it.todo('should be able to handle pagination with 10,000+ with relation "eq"');
 });
