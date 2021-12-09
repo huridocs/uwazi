@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { instanceModel } from 'api/odm';
 import { ObjectIdSchema } from '../../../shared/types/commonTypes';
 
-export enum OcrStatus {
+enum OcrStatus {
   NONE = 'noOCR',
   PROCESSING = 'inQueue',
   ERROR = 'cannotProcess',
@@ -11,24 +11,27 @@ export enum OcrStatus {
 
 const props = {
   autoexpire: { type: Date, expires: 86400, default: Date.now }, // 24 hours
-  file: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
+  sourceFile: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
+  resultFile: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
   language: { type: String },
-  status: { type: String, enum: OcrStatus , default: 'processing' },
+  status: { type: String, enum: OcrStatus, default: 'processing' },
 };
 
-export interface OcrRecord {
-  _id: ObjectIdSchema,
-  autoexpire: number,
-  language: string,
-  status: OcrStatus,
-  file: ObjectIdSchema
-};
+interface OcrRecord {
+  _id: ObjectIdSchema;
+  autoexpire: number;
+  sourceFile: ObjectIdSchema;
+  resultFile?: ObjectIdSchema;
+  language: string;
+  status: OcrStatus;
+}
 
 const mongoSchema = new mongoose.Schema(props, {
   emitIndexErrors: true,
   strict: false,
 });
 
-const OcrModel = instanceModel<OcrRecord>('ocr', mongoSchema);
+const OcrModel = instanceModel<OcrRecord>('ocr_record', mongoSchema);
 
-export { OcrModel };
+export type { OcrRecord };
+export { OcrModel, OcrStatus };

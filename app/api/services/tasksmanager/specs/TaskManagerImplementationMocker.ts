@@ -1,11 +1,8 @@
 import { ResultsMessage, Service, TaskManager } from '../TaskManager';
 
 function mockTaskManagerImpl(taskManager: jest.Mock<TaskManager>) {
-  console.log('mocking');
   const mock = {
-    startTask: jest.fn().mockImplementation(() => {
-      console.log('using mock');
-    }),
+    startTask: jest.fn().mockImplementation(() => {}),
   };
   let _service: Service;
   const trigger = async (result: ResultsMessage) => {

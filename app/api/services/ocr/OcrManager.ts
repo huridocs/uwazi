@@ -1,8 +1,11 @@
+/* eslint-disable class-methods-use-this */
 import { Readable } from 'stream';
 import urljoin from 'url-join';
 
-import { uploadsPath, readFile } from 'api/files';
-import { fileFromReadStream } from 'api/files/filesystem';
+import entities from 'api/entities';
+import { files, uploadsPath, readFile } from 'api/files';
+import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
+import { processDocument } from 'api/files/processDocument';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants/tenantContext';
@@ -48,35 +51,47 @@ class OcrManager {
     });
 
     await OcrModel.save({
-      file: file._id,
+      sourceFile: file._id,
       language: file.language,
       status: OcrStatus.PROCESSING,
     });
   }
 
   async getStatus(file: FileType) {
-    const [record] = await OcrModel.get({ file: file._id });
+    const [record] = await OcrModel.get({ sourceFile: file._id });
     return record ? record.status : OcrStatus.NONE;
   }
 
   private async processResults(message: ResultsMessage): Promise<void> {
+    // eslint-disable-next-line max-statements
     await tenants.run(async () => {
       try {
         if (!message.success) {
           // update record with error
           return;
         }
-        const fileStream = (await fetch(message.file_url!)).body as unknown as Readable;
-        console.log(fileStream);
+        const fileResponse = await fetch(message.file_url!);
+        const fileStream = fileResponse.body as unknown as Readable;
         if (!fileStream) {
           throw new Error(
             `Error requesting for ocr file: ${message.params!.filename}, tenant: ${message.tenant}`
           );
         }
 
-        await fileFromReadStream(message.params!.filename, fileStream);
-
-        //perform file step (change or not?)
+        const originalFileName = message.params!.filename;
+        const originalFile = (await files.get({ filename: originalFileName }))[0];
+        const newFileName = generateFileName(originalFile);
+        const filePath = await fileFromReadStream(newFileName, fileStream);
+        // const parentEntities = await entities.get({ sharedId: originalFile.entity });
+        // const savedFile = await processDocument(originalFile.entity, {
+        //   originalname: `ocr_${originalFile.originalname}`,
+        //   filename: newFileName,
+        //   mimetype: fileResponse.headers.get('Content-Type'),
+        //   size: fileResponse.headers.get('Content-Length'),
+        //   language: originalFile.language,
+        //   type: 'document',
+        //   // uploaded?: boolean;
+        // });
 
         //perform usual steps on new file
 
