@@ -37,7 +37,13 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
       properties: {
-        property: { type: 'string' },
+        body: {
+          additionalProperties: false,
+          required: ['property'],
+          properties: {
+            property: { type: 'string' },
+          },
+        },
       },
     }),
     async (req, res, _next) => {
@@ -57,7 +63,13 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
       properties: {
-        query: { property: { type: 'string' } },
+        query: {
+          additionalProperties: false,
+          properties: {
+            property: { type: 'string' },
+          },
+          required: ['property'],
+        },
       },
     }),
     async (req, res, _next) => {
