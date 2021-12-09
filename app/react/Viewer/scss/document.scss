@@ -7,7 +7,7 @@
 .content-header-document {
   .content-header-title {
     position: relative;
-    gap: 20px;
+    gap: 10px;
   }
 
   .paginator {
@@ -17,7 +17,12 @@
 
   .ocr-service-display {
     line-height: normal;
+    min-width: 165px;
+    text-align: center;
 
+    button {
+      width: 90%;
+    }
     & p {
       margin: 0;
     }
