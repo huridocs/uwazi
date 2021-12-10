@@ -119,6 +119,7 @@ const settingsSchema = {
     customCSS: { type: 'string' },
     mapTilerKey: { type: 'string' },
     newNameGeneration: { type: 'boolean', enum: [true] },
+    toggleOCRButton: { type: 'boolean' },
 
     sync: settingsSyncSchema,
 

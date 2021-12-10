@@ -125,7 +125,6 @@ class OcrManager {
 
     const newFileName = generateFileName(originalFile);
     await fileFromReadStream(newFileName, fileStream);
-
     return processDocument(
       originalFile.entity!,
       {

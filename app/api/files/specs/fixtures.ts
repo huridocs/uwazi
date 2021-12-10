@@ -18,6 +18,7 @@ const fixtures: DBFixture = {
       originalname: 'upload1',
       filename: fileName1,
       type: 'custom',
+      language: 'eng',
     },
     {
       _id: uploadId2,
@@ -66,8 +67,8 @@ const fixtures: DBFixture = {
       publicFormDestination: 'http://localhost:54321',
       allowedPublicTemplates: [templateId.toString()],
       features: {
-        ocr: { url: 'serviceUrl' }
-      }
+        ocr: { url: 'protocol://serviceUrl' },
+      },
     },
   ],
   users: [

@@ -83,6 +83,7 @@ export interface Settings {
   customCSS?: string;
   mapTilerKey?: string;
   newNameGeneration?: true;
+  toggleOCRButton?: boolean;
   sync?: SettingsSyncSchema;
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];
@@ -111,5 +112,4 @@ export interface Settings {
     lat: number;
     lon: number;
   }[];
-  toggleOCRButton?: boolean;
 }

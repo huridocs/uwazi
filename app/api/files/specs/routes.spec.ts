@@ -17,9 +17,10 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fileName1, fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
-import { OcrStatus } from '../../services/ocr/ocrModel';
+import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
 import { TaskManager } from '../../services/tasksmanager/TaskManager';
 import { fs } from '..';
+import settings from 'api/settings/settings';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -28,7 +29,6 @@ describe('files routes', () => {
   const adminUser = fixtures.users!.find(u => u.username === 'admin');
   let requestMockedUser = collabUser;
 
-  //const { trigger: taskManagerTrigger } = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
   const app: Application = setUpApp(
     uploadRoutes,
     (req: Request, _res: Response, next: NextFunction) => {
@@ -220,12 +220,23 @@ describe('files routes', () => {
   });
 
   describe('OCR service', () => {
+    function setSupportedLang(langs: string[]) {
+      fetchMock.mock(
+        'protocol://serviceUrl/info',
+        {
+          supported_languages: langs,
+        },
+        { overwriteRoutes: true }
+      );
+    }
+
     beforeEach(() => {
       testingEnvironment.setPermissions(adminUser);
       requestMockedUser = adminUser;
     });
 
     it('should return the status on get', async () => {
+      setSupportedLang(['en']);
       const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
 
       expect(body).toEqual({
@@ -233,34 +244,64 @@ describe('files routes', () => {
       });
     });
 
-    it('should create a task on post', async () => {
-      jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
-      // TODO: use a 'result' file here
-      const resultTestFile = fs.createReadStream(
-        path.join(__dirname, 'uploads/f2082bf51b6ef839690485d7153e847a.pdf')
-      );
-      fetchMock.mock('protocol://link/to/result/file', resultTestFile, { sendAsJson: false });
-
-      await request(app).post(`/api/files/${fileName1}/ocr`).expect(200);
-
+    it('should return unsupported_language on status get', async () => {
+      setSupportedLang(['es']);
       const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
 
-      expect(body).toEqual({ status: OcrStatus.PROCESSING });
+      expect(body).toEqual({
+        status: OcrStatus.UNSUPPORTED_LANGUAGE,
+      });
+    });
 
-      // @ts-ignore
-      TaskManager.mock.calls[0][0].processResults({
-        tenant: 'defaultDB',
-        task: 'ocr_results',
-        file_url: 'protocol://link/to/result/file',
-        params: { filename: 'someFileName2.pdf' },
-        success: true,
+    describe('when posting a task', () => {
+      beforeEach(async () => {
+        setSupportedLang(['en']);
+        jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
+        const resultTestFile = fs.createReadStream(
+          path.join(__dirname, 'uploads/f2082bf51b6ef839690485d7153e847a.pdf')
+        );
+        fetchMock.mock(
+          'protocol://link/to/result/file',
+          {
+            body: resultTestFile,
+            headers: { 'Content-Type': 'application/pdf', 'Content-Length': 1000 },
+          },
+          { sendAsJson: false, overwriteRoutes: true }
+        );
+
+        await request(app).post(`/api/files/${fileName1}/ocr`).expect(200);
       });
 
-      // TODO: - Check that the new status is READY
-      // TODO: - Check that the entity has the correct (how?) file.
-      // TODO: - Check that there is a new attachment
+      it('should set the status to processing', async () => {
+        const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
+        expect(body).toEqual({ status: OcrStatus.PROCESSING });
+      });
 
-      fail('In progress');
+      it('should process a successful OCR', async () => {
+        // @ts-ignore
+        await TaskManager.mock.calls[0][0].processResults({
+          tenant: 'defaultDB',
+          task: 'ocr_results',
+          file_url: 'protocol://link/to/result/file',
+          params: { filename: fileName1, language: 'en' },
+          success: true,
+        });
+
+        const [originalFile] = await files.get({ filename: fileName1 });
+        const [record] = await OcrModel.get({ sourceFile: originalFile._id });
+        const [resultFile] = await files.get({ _id: record.resultFile });
+
+        expect(record.status).toBe(OcrStatus.READY);
+        expect(originalFile.type).toBe('attachment');
+        expect(await fileExists(uploadsPath(originalFile.filename))).toBe(true);
+        expect(resultFile.type).toBe('document');
+        expect(await fileExists(uploadsPath(resultFile.filename))).toBe(true);
+        expect(resultFile.language).toBe(originalFile.language);
+      });
+
+      it('should move the text references to the new file', () => {
+        fail('TODO');
+      });
     });
 
     it('should fail if the file does not exist', async () => {
@@ -281,6 +322,34 @@ describe('files routes', () => {
 
       it('should not allow to create a task', async () => {
         await request(app).post(`/api/files/${fileName1}/ocr`).expect(401);
+      });
+    });
+
+    describe('when the feature is not enabled', () => {
+      beforeEach(async () => {
+        await settings.save({ toggleOCRButton: false });
+      });
+
+      it('should not allow request status', async () => {
+        await request(app).get(`/api/files/${fileName1}/ocr`).expect(404);
+      });
+
+      it('should not allow to create a task', async () => {
+        await request(app).post(`/api/files/${fileName1}/ocr`).expect(404);
+      });
+    });
+
+    describe('when the file is not a document', () => {
+      beforeEach(async () => {
+        await settings.save({ toggleOCRButton: false });
+      });
+
+      it('should not allow request status', async () => {
+        fail('TODO');
+      });
+
+      it('should not allow to create a task', async () => {
+        fail('TODO')
       });
     });
   });
