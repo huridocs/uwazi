@@ -41,6 +41,7 @@ export const fileSchema = {
       items: tocSchema,
     },
     extractedMetadata: { type: 'array', items: extractedMetadataSchema },
+    __v: { type: 'number' },
   },
 };
 
