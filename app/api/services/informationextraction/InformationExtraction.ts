@@ -9,7 +9,7 @@ import { ObjectId } from 'mongodb';
 import request from 'shared/JSONRequest';
 import path from 'path';
 import { FileType } from 'shared/types/fileType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 
 import filesModel from 'api/files/filesModel';
 import { SegmentationType } from 'shared/types/segmentationType';
@@ -21,6 +21,8 @@ import entities from 'api/entities/entities';
 import { EntitySchema } from 'shared/types/entityType';
 import languages from 'shared/languages';
 import { emitToTenant } from 'api/socketio/setupSockets';
+import templatesModel from 'api/templates/templates';
+import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { IXModelsModel } from './IXModelsModel';
 
@@ -130,10 +132,12 @@ class InformationExtraction {
     const [segmentation] = await SegmentationModel.get({
       xmlname: rawSuggestion.xml_file_name,
     });
+
     if (!segmentation) {
       return;
     }
     const [file] = await filesModel.get({ _id: segmentation.fileID });
+
     if (!file) {
       return;
     }
@@ -145,13 +149,40 @@ class InformationExtraction {
     return entity;
   };
 
+  coerceSuggestionValue = (suggestion: RawSuggestion, templates: TemplateSchema[]) => {
+    const allProps: PropertySchema[] = [];
+
+    templates.forEach(template => {
+      if (template.properties) {
+        allProps.push(...template.properties);
+      }
+    });
+
+    const property = allProps.find(p => p.name === suggestion.property_name);
+
+    let suggestedValue: any = suggestion.text.trim();
+
+    if (property?.type === 'date') {
+      suggestedValue = new Date(suggestion.text).getTime();
+    }
+    // eslint-disable-next-line use-isnan
+    if (suggestedValue === NaN) {
+      return null;
+    }
+
+    return suggestedValue;
+  };
+
   saveSuggestions = async (message: ResultsMessage) => {
+    const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
+
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
         const entity = await this._getEntityFromSuggestion(rawSuggestion);
+
         if (!entity) {
-          return;
+          return Promise.resolve();
         }
 
         const [currentSuggestion] = await IXSuggestionsModel.get({
@@ -159,16 +190,22 @@ class InformationExtraction {
           propertyName: rawSuggestion.property_name,
         });
 
+        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, templates);
+        if (!suggestedValue) {
+          return Promise.resolve();
+        }
+
         const suggestion: IXSuggestionType = {
           ...currentSuggestion,
           entityId: entity.sharedId!,
           language: entity.language!,
           propertyName: rawSuggestion.property_name,
-          suggestedValue: rawSuggestion.text,
+          suggestedValue,
           segment: rawSuggestion.segment_text,
           status: 'ready',
           date: new Date().getTime(),
         };
+
         return IXSuggestionsModel.save(suggestion);
       })
     );
@@ -220,6 +257,7 @@ class InformationExtraction {
     const serviceUrl = await this.serviceUrl();
     const templates = await this.getTemplatesWithProperty(property);
     const files = await this.getFiles(templates, property, false);
+
     if (files.length === 0) {
       emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
@@ -290,7 +328,10 @@ class InformationExtraction {
                   $size: 0,
                 },
               },
-              { 'suggestions.date': { $lte: currentModel.creationDate } },
+              {
+                'suggestions.date': { $lte: currentModel.creationDate },
+                'suggestions.propertyName': property,
+              },
             ],
           },
         },

@@ -166,7 +166,18 @@ const fixtures: DBFixture = {
       date: 100,
     },
   ],
-  ixmodels: [{ propertyName: 'property1', creationDate: 200, status: 'ready' }],
+  ixmodels: [
+    { propertyName: 'property1', creationDate: 200, status: 'ready' },
+    { propertyName: 'property2', creationDate: 200, status: 'ready' },
+  ],
+  templates: [
+    factory.template('templateToSegmentA', [
+      factory.property('property1', 'text'),
+      factory.property('property2', 'date'),
+      factory.property('property3', 'numeric'),
+    ]),
+    factory.template('templateToSegmentB', [factory.property('property1', 'text')]),
+  ],
 };
 
 export { fixtures, factory };

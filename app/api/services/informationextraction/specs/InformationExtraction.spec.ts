@@ -136,10 +136,10 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
       });
 
-      expect(IXExternalService.files.length).toBe(5);
       expect(IXExternalService.filesNames.sort()).toEqual(
         ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml', 'documentF.xml'].sort()
       );
+      expect(IXExternalService.files.length).toBe(5);
       expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA]));
 
       expect(IXExternalService.materials.length).toBe(5);
@@ -212,7 +212,11 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const suggestions = await IXSuggestionsModel.get({ status: 'ready' });
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'ready',
+        propertyName: 'property1',
+      });
+
       expect(suggestions.length).toBe(2);
       expect(suggestions.find(s => s.suggestedValue === 'suggestion_text_1')).toEqual(
         expect.objectContaining({
@@ -224,6 +228,39 @@ describe('InformationExtraction', () => {
           status: 'ready',
         })
       );
+    });
+
+    it('should not store empty suggestions or suggestions invalid for the field', async () => {
+      IXExternalService.setResults([
+        {
+          tenant: 'tenant1',
+          property_name: 'property2',
+          xml_file_name: 'documentA.xml',
+          text: '',
+          segment_text: 'segment_text_1',
+        },
+        {
+          tenant: 'tenant1',
+          property_name: 'property2',
+          xml_file_name: 'documentC.xml',
+          text: 'Not a valid date',
+          segment_text: 'segment_text_2',
+        },
+      ]);
+
+      await informationExtraction.processResults({
+        params: { property_name: 'property2' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'ready',
+        propertyName: 'property2',
+      });
+      expect(suggestions.length).toBe(0);
     });
   });
 });
