@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
@@ -59,7 +60,8 @@ describe('suggestions routes', () => {
     it('should return the suggestions filtered by the request language and the property name', async () => {
       const response = await request(app)
         .get('/api/suggestions')
-        .query({ filter: { propertyName: 'super_powers' } });
+        .query({ filter: { propertyName: 'super_powers' } })
+        .expect(200);
       expect(response.body.suggestions).toMatchObject([
         {
           entityId: shared2enId.toString(),
@@ -70,6 +72,7 @@ describe('suggestions routes', () => {
           segment: 'el confía en su propio conocimiento científico',
           state: 'Pending',
           language: 'es',
+          page: 5,
         },
         {
           entityId: shared2enId.toString(),
@@ -80,6 +83,7 @@ describe('suggestions routes', () => {
           segment: 'he relies on his own scientific knowledge',
           state: 'Matching',
           language: 'en',
+          page: 5,
         },
       ]);
       expect(response.body.totalPages).toBe(1);
@@ -89,12 +93,24 @@ describe('suggestions routes', () => {
       it('should return the requested page sorted by date by default', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'title' }, page: { number: 2, size: 2 } });
+          .query({ filter: { propertyName: 'title' }, page: { number: 2, size: 2 } })
+          .expect(200);
         expect(response.body.suggestions).toMatchObject([
           { entityTitle: 'Alfred' },
           { entityTitle: 'Robin' },
         ]);
         expect(response.body.totalPages).toBe(3);
+      });
+
+      it.each([
+        { number: -2, size: 2 },
+        { number: 2, size: -2 },
+        { number: 2, size: 1000 },
+      ])('should handle invalid pagination params', async page => {
+        await request(app)
+          .get('/api/suggestions/')
+          .query({ filter: { propertyName: 'title' }, page })
+          .expect(400);
       });
     });
 
@@ -102,7 +118,8 @@ describe('suggestions routes', () => {
       it('should filter by state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'age', state: SuggestionState.empty } });
+          .query({ filter: { propertyName: 'age', state: SuggestionState.empty } })
+          .expect(200);
         expect(response.body.suggestions).toMatchObject([
           { entityTitle: 'Alfred' },
           { entityTitle: 'Joker' },
@@ -121,7 +138,7 @@ describe('suggestions routes', () => {
     describe('authentication', () => {
       it('should reject with unauthorized when user has not admin role', async () => {
         user = { username: 'user 1', role: 'editor' };
-        const response = await request(app).get('/api/suggestions/').query({});
+        const response = await request(app).get('/api/suggestions/').query({}).expect(401);
         expect(response.unauthorized).toBe(true);
       });
     });
@@ -131,7 +148,8 @@ describe('suggestions routes', () => {
     it('should return the status of the IX process', async () => {
       const response = await request(app)
         .get('/api/suggestions/status')
-        .query({ property: 'super_powers' });
+        .query({ property: 'super_powers' })
+        .expect(200);
 
       expect(response.body).toMatchObject({ status: 'ready' });
     });
@@ -139,7 +157,8 @@ describe('suggestions routes', () => {
       user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .get('/api/suggestions/status')
-        .query({ property: 'super_powers' });
+        .query({ property: 'super_powers' })
+        .expect(401);
       expect(response.unauthorized).toBe(true);
     });
   });
@@ -148,7 +167,8 @@ describe('suggestions routes', () => {
     it('should return the status of the IX process', async () => {
       const response = await request(app)
         .post('/api/suggestions/train')
-        .send({ property: 'super_powers' });
+        .send({ property: 'super_powers' })
+        .expect(200);
 
       expect(response.body).toMatchObject({ status: 'processing' });
     });
@@ -156,7 +176,8 @@ describe('suggestions routes', () => {
       user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .post('/api/suggestions/train')
-        .send({ property: 'super_powers' });
+        .send({ property: 'super_powers' })
+        .expect(401);
       expect(response.unauthorized).toBe(true);
     });
   });
@@ -228,7 +249,8 @@ describe('suggestions routes', () => {
             sharedId: 'shared6',
             entityId: shared6enId,
           },
-        });
+        })
+        .expect(401);
       expect(response.unauthorized).toBe(true);
     });
   });

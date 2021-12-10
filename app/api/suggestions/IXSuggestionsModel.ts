@@ -11,6 +11,8 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
+mongoSchema.index({ propertyName: 'text' });
+
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 
 export { IXSuggestionsModel };
