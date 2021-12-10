@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
 
 import { files } from 'api/files';
@@ -10,7 +11,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import request from 'shared/JSONRequest';
 import { OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
-import { TaskManager } from '../../tasksmanager/TaskManager';
+import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
 import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -58,6 +59,64 @@ const FIXTURES = {
   ],
 };
 
+class Mocks {
+  jestMocks: { [k: string]: jest.SpyInstance };
+
+  taskManagerMock: {
+    mock: Partial<TaskManager>;
+    trigger: (m: ResultsMessage) => void;
+  };
+
+  constructor() {
+    this.jestMocks = {
+      'filesApi.uploadsPath': jest.spyOn(filesApi, 'uploadsPath').mockReturnValue('file_path'),
+      'filesApi.readFile': jest
+        .spyOn(filesApi, 'readFile')
+        .mockResolvedValue(Buffer.from('file_content')),
+      'filesApi.fileFromReadStream': jest
+        .spyOn(filesApi, 'fileFromReadStream')
+        .mockResolvedValue(''),
+      'filesApi.generateFileName': jest
+        .spyOn(filesApi, 'generateFileName')
+        .mockReturnValue('generatedUwaziFilename'),
+      'settings.get': jest.spyOn(settings, 'get').mockResolvedValue({
+        features: {
+          ocr: {
+            url: 'serviceUrl',
+          },
+        },
+      }),
+      'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve()),
+      'processDocumentApi.processDocument': jest
+        .spyOn(processDocumentApi, 'processDocument')
+        .mockResolvedValue({
+          _id: fixturesFactory.id('resultFile'),
+          originalname: 'ocr_sourceFileName.pdf',
+          entity: 'parentEntity',
+          filename: 'generatedfilename.pdf',
+          mimetype: 'pdf',
+          size: 42,
+          language: 'en',
+          type: 'document',
+        }),
+    };
+
+    this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
+
+    fetchMock.mock('end:/info', '{ "supported_languages": ["en", "es"] }');
+    fetchMock.mock('protocol://link/to/result/file', {
+      body: 'resultFileContent',
+      status: 200,
+      headers: { 'Content-Type': 'some/mimetype' },
+    });
+  }
+
+  release() {
+    Object.values(this.jestMocks).forEach(m => m.mockRestore());
+    fetchMock.restore();
+  }
+}
+
 describe('OcrManager', () => {
   let tenantName: string;
 
@@ -70,55 +129,11 @@ describe('OcrManager', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('when creating a new task', () => {
-    let mocks: { [k: string]: jest.SpyInstance };
-    let taskManagerMock: Partial<TaskManager>;
-    let taskManagerTrigger: Function;
+  describe('on success', () => {
+    let mocks: Mocks;
 
     beforeAll(async () => {
-      mocks = {
-        'filesApi.uploadsPath': jest.spyOn(filesApi, 'uploadsPath').mockReturnValue('file_path'),
-        'filesApi.readFile': jest
-          .spyOn(filesApi, 'readFile')
-          .mockResolvedValue(Buffer.from('file_content')),
-        'filesApi.fileFromReadStream': jest
-          .spyOn(filesApi, 'fileFromReadStream')
-          .mockResolvedValue(''),
-        'filesApi.generateFileName': jest
-          .spyOn(filesApi, 'generateFileName')
-          .mockReturnValue('generatedUwaziFilename'),
-        'settings.get': jest.spyOn(settings, 'get').mockResolvedValue({
-          features: {
-            ocr: {
-              url: 'serviceUrl',
-            },
-          },
-        }),
-        'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve()),
-        'processDocumentApi.processDocument': jest
-          .spyOn(processDocumentApi, 'processDocument')
-          .mockResolvedValue({
-            _id: fixturesFactory.id('resultFile'),
-            originalname: 'ocr_sourceFileName.pdf',
-            entity: 'parentEntity',
-            filename: 'generatedfilename.pdf',
-            mimetype: 'pdf',
-            size: 42,
-            language: 'en',
-            type: 'document',
-          }),
-      };
-
-      ({ mock: taskManagerMock, trigger: taskManagerTrigger } = mockTaskManagerImpl(
-        TaskManager as jest.Mock<TaskManager>
-      ));
-
-      fetchMock.mock('end:/info', '{ "supported_languages": ["en", "es"] }');
-      fetchMock.mock('protocol://link/to/result/file', {
-        body: 'resultFileContent',
-        status: 200,
-        headers: { 'Content-Type': 'some/mimetype' },
-      });
+      mocks = new Mocks();
 
       const ocrManager = new OcrManager();
 
@@ -127,44 +142,45 @@ describe('OcrManager', () => {
     });
 
     afterAll(async () => {
-      Object.values(mocks).forEach(m => m.mockRestore());
-      fetchMock.restore();
+      mocks.release();
     });
 
-    it('should upload the material', () => {
-      expect(request.uploadFile).toHaveBeenCalledWith(
-        `serviceUrl/upload/${tenantName}`,
-        'sourceFileName.pdf',
-        Buffer.from('file_content')
-      );
-    });
-
-    it('should dispatch a job to the TaskManager', () => {
-      expect(taskManagerMock.startTask).toHaveBeenCalledWith(
-        expect.objectContaining({
-          tenant: tenantName,
-          params: { filename: 'sourceFileName.pdf', language: 'en' },
-          task: 'ocr',
-        })
-      );
-    });
-
-    it('should add a record to the DB', async () => {
-      const records = await OcrModel.get({});
-      expect(records).toHaveLength(2);
-      const lastRecord = records[1];
-      expect(lastRecord).toMatchObject({
-        status: OcrStatus.PROCESSING,
-        sourceFile: fixturesFactory.id('sourceFile'),
-        language: 'eng',
+    describe('when creating a new task', () => {
+      it('should upload the material', () => {
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          `serviceUrl/upload/${tenantName}`,
+          'sourceFileName.pdf',
+          Buffer.from('file_content')
+        );
       });
-      expect(lastRecord.autoexpire).not.toBe(null);
-      expect(lastRecord).not.toHaveProperty('resultFile');
+
+      it('should dispatch a job to the TaskManager', () => {
+        expect(mocks.taskManagerMock.mock.startTask).toHaveBeenCalledWith(
+          expect.objectContaining({
+            tenant: tenantName,
+            params: { filename: 'sourceFileName.pdf', language: 'en' },
+            task: 'ocr',
+          })
+        );
+      });
+
+      it('should add a record to the DB', async () => {
+        const records = await OcrModel.get({});
+        expect(records).toHaveLength(2);
+        const lastRecord = records[1];
+        expect(lastRecord).toMatchObject({
+          status: OcrStatus.PROCESSING,
+          sourceFile: fixturesFactory.id('sourceFile'),
+          language: 'eng',
+        });
+        expect(lastRecord.autoexpire).not.toBe(null);
+        expect(lastRecord).not.toHaveProperty('resultFile');
+      });
     });
 
     describe('when there are results', () => {
       beforeAll(async () => {
-        await taskManagerTrigger({
+        await mocks.taskManagerMock.trigger({
           tenant: tenantName,
           task: 'ocr_results',
           file_url: 'protocol://link/to/result/file',
@@ -221,17 +237,23 @@ describe('OcrManager', () => {
         });
       });
     });
+
+    describe('when requesting the status of a file', () => {
+      it('should find the record in the database', async () => {
+        const [existingSourceFile] = await files.get({
+          _id: fixturesFactory.id('sourceForExistingRecord'),
+        });
+
+        const ocrManager = new OcrManager();
+        const status = await ocrManager.getStatus(existingSourceFile);
+        expect(status).toBe(OcrStatus.READY);
+      });
+    });
   });
 
-  describe('when requesting the status of a file', () => {
-    it('should find the record in the database', async () => {
-      const existingSourceFile = (
-        await files.get({ _id: fixturesFactory.id('sourceForExistingRecord') })
-      )[0];
-
-      const ocrManager = new OcrManager();
-      const status = await ocrManager.getStatus(existingSourceFile);
-      expect(status).toBe(OcrStatus.READY);
+  describe('should find error when', () => {
+    it('an ocr model is already in queue', () => {
+      fail('TODO')
     });
   });
 });
