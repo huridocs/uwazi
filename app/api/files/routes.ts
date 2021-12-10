@@ -255,41 +255,43 @@ export default (app: Application) => {
         const status = await OcrManager.getStatus(file);
 
         res.json({ status });
-      } catch(e) {
+      } catch (e) {
         next(e);
       }
-    })
+    }
+  );
 
-    app.post(
-      '/api/files/:filename/ocr',
-      needsAuthorization(['admin', 'editor']),
-      validation.validateRequest({
-        properties: {
-          params: {
-            properties: {
-              filename: { type: 'string' },
-            },
+  app.post(
+    '/api/files/:filename/ocr',
+    needsAuthorization(['admin', 'editor']),
+    validation.validateRequest({
+      properties: {
+        params: {
+          properties: {
+            filename: { type: 'string' },
           },
         },
-      }),
-      async (req, res, next) => {
-        try {
-          //TODO: validate feature enabled
-          //TODO: validate file is document
-          
-          const [file] = await files.get({
-            filename: req.params.filename,
-          });
+      },
+    }),
+    async (req, res, next) => {
+      try {
+        //TODO: validate feature enabled
+        //TODO: validate file is document
 
-          if (!file || !(await fileExists(uploadsPath(file.filename)))) {
-            throw createError('file not found', 404);
-          }
+        const [file] = await files.get({
+          filename: req.params.filename,
+        });
 
-          await OcrManager.addToQueue(file);
-          
-          res.sendStatus(200);
-        } catch(e) {
-          next(e);
+        if (!file || !(await fileExists(uploadsPath(file.filename)))) {
+          throw createError('file not found', 404);
         }
-      })
+
+        await OcrManager.addToQueue(file);
+
+        res.sendStatus(200);
+      } catch (e) {
+        next(e);
+      }
+    }
+  );
 };

@@ -41,7 +41,7 @@ class OcrManager {
   }
 
   async addToQueue(file: FileType) {
-    await this.validateNotInQueue(file);
+    await this.validateNotInQueue(file); // TODO: test this
 
     const settingsValues = await this.getSettings();
 
@@ -155,23 +155,21 @@ class OcrManager {
 
   private async processResults(message: ResultsMessage): Promise<void> {
     await tenants.run(async () => {
-      try {
-        const [originalFile] = await files.get({ filename: message.params!.filename });
-        const [record] = await OcrModel.get({ sourceFile: originalFile._id });
+      const [originalFile] = await files.get({ filename: message.params!.filename });
+      const [record] = await OcrModel.get({ sourceFile: originalFile._id });
 
-        if (!record) {
-          return;
-        }
-
-        if (!message.success) {
-          await OcrModel.save({ ...record, status: OcrStatus.ERROR });
-          return;
-        }
-
-        await this.processFiles(record, message, originalFile);
-      } catch (error) {
-        console.log(error);
+      if (!record) {
+        // TODO: test this
+        return;
       }
+
+      if (!message.success) {
+        // TODO: test this
+        await OcrModel.save({ ...record, status: OcrStatus.ERROR });
+        return;
+      }
+
+      await this.processFiles(record, message, originalFile);
     }, message.tenant);
   }
 }
