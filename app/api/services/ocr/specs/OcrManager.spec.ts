@@ -34,6 +34,15 @@ const FIXTURES = {
       ),
       originalname: 'sourceFileOriginalName.pdf',
     },
+    {
+      ...fixturesFactory.file(
+        'erroringSourceFile',
+        'parentEntity',
+        'document',
+        'errorSourceFileName.pdf',
+        'notALanguage'
+      ),
+    },
     fixturesFactory.file(
       'resultForExistingRecord',
       'parentForExistingRecord',
@@ -55,6 +64,15 @@ const FIXTURES = {
       resultFile: fixturesFactory.id('resultForExistingRecord'),
       language: 'en',
       status: OcrStatus.READY,
+    },
+  ],
+  settings: [
+    {
+      features: {
+        ocr: {
+          url: 'serviceUrl',
+        },
+      },
     },
   ],
 };
@@ -79,13 +97,6 @@ class Mocks {
       'filesApi.generateFileName': jest
         .spyOn(filesApi, 'generateFileName')
         .mockReturnValue('generatedUwaziFilename'),
-      'settings.get': jest.spyOn(settings, 'get').mockResolvedValue({
-        features: {
-          ocr: {
-            url: 'serviceUrl',
-          },
-        },
-      }),
       'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve()),
       'processDocumentApi.processDocument': jest
         .spyOn(processDocumentApi, 'processDocument')
@@ -115,34 +126,40 @@ class Mocks {
     Object.values(this.jestMocks).forEach(m => m.mockRestore());
     fetchMock.restore();
   }
+
+  clearJestMocks() {
+    Object.values(this.jestMocks).forEach(m => m.mockClear());
+  }
 }
 
 describe('OcrManager', () => {
   let tenantName: string;
+  let mocks: Mocks;
+  let mockedMessageFromRedis: ResultsMessage;
 
   beforeAll(async () => {
     await testingEnvironment.setUp(FIXTURES);
     tenantName = tenants.current().name;
+    mocks = new Mocks();
+    mockedMessageFromRedis = {
+      tenant: tenantName,
+      task: 'ocr_results',
+      file_url: 'protocol://link/to/result/file',
+      params: { filename: 'sourceFileName.pdf', language: 'en' },
+      success: true,
+    };
   });
 
   afterAll(async () => {
+    mocks.release();
     await testingEnvironment.tearDown();
   });
 
   describe('on success', () => {
-    let mocks: Mocks;
-
     beforeAll(async () => {
-      mocks = new Mocks();
-
       const ocrManager = new OcrManager();
-
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
       await ocrManager.addToQueue(sourceFile);
-    });
-
-    afterAll(async () => {
-      mocks.release();
     });
 
     describe('when creating a new task', () => {
@@ -180,13 +197,7 @@ describe('OcrManager', () => {
 
     describe('when there are results', () => {
       beforeAll(async () => {
-        await mocks.taskManagerMock.trigger({
-          tenant: tenantName,
-          task: 'ocr_results',
-          file_url: 'protocol://link/to/result/file',
-          params: { filename: 'sourceFileName.pdf', language: 'en' },
-          success: true,
-        });
+        await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       });
 
       it('should download the results', () => {
@@ -252,8 +263,70 @@ describe('OcrManager', () => {
   });
 
   describe('should find error when', () => {
-    it('an ocr model is already in queue', () => {
-      fail('TODO')
+    it('an ocr model is already in queue', async () => {
+      const ocrManager = new OcrManager();
+
+      const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+
+      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
+    });
+
+    it('settings are missing from the database', async () => {
+      const oldSettings = await settings.get();
+      await settings.save({ features: {} });
+
+      const ocrManager = new OcrManager();
+
+      const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
+
+      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow(
+        'Ocr settings are missing from the database'
+      );
+
+      await settings.save(oldSettings);
+    });
+
+    it('language is not supported', async () => {
+      const ocrManager = new OcrManager();
+      const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
+      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('Language not supported');
+    });
+
+    it('record is missing, and do nothing', async () => {
+      await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+      mocks.clearJestMocks();
+
+      await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
+
+      const records = await OcrModel.get({});
+      expect(records).toHaveLength(1);
+      expect(filesApi.fileFromReadStream).not.toHaveBeenCalled();
+      expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
+    });
+
+    it('message is not a success, and record error in db', async () => {
+      await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+
+      const ocrManager = new OcrManager();
+      const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+      await ocrManager.addToQueue(sourceFile);
+      await mocks.taskManagerMock.trigger({
+        ...mockedMessageFromRedis,
+        success: false,
+        error: 'some error message',
+      });
+
+      const matchingRecords = await OcrModel.get({
+        sourceFile: fixturesFactory.id('sourceFile'),
+      });
+      expect(matchingRecords).toHaveLength(1);
+      const [record] = matchingRecords;
+      expect(record).toMatchObject({
+        status: 'cannotProcess',
+        sourceFile: fixturesFactory.id('sourceFile'),
+        language: 'eng',
+      });
+      expect(record.autoexpire).not.toBeNull();
     });
   });
 });

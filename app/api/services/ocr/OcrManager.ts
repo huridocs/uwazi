@@ -41,7 +41,7 @@ class OcrManager {
   }
 
   async addToQueue(file: FileType) {
-    await this.validateNotInQueue(file); // TODO: test this
+    await this.validateNotInQueue(file);
 
     const settingsValues = await this.getSettings();
 
@@ -159,12 +159,10 @@ class OcrManager {
       const [record] = await OcrModel.get({ sourceFile: originalFile._id });
 
       if (!record) {
-        // TODO: test this
         return;
       }
 
       if (!message.success) {
-        // TODO: test this
         await OcrModel.save({ ...record, status: OcrStatus.ERROR });
         return;
       }
