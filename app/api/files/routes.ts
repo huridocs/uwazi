@@ -7,7 +7,7 @@ import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
-import { OcrManagerInstance, isOCREnabled } from 'api/services/ocr/OcrManager';
+import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
@@ -243,7 +243,7 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        if (!(await isOCREnabled())) {
+        if (!(await OcrManagerInstance.isEnabled())) {
           return res.sendStatus(404);
         }
         const [file] = await files.get({
@@ -277,7 +277,7 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        if (!(await isOCREnabled())) {
+        if (!(await OcrManagerInstance.isEnabled())) {
           return res.sendStatus(404);
         }
 

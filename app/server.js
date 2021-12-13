@@ -37,6 +37,7 @@ import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { tocService } from './api/toc_generation/tocService';
 import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
+import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 
 mongoose.Promise = Promise;
 
@@ -162,6 +163,8 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           );
 
           segmentationRepeater.start();
+
+          OcrManagerInstance.start();
         }
       }
     });

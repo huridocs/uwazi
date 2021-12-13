@@ -239,10 +239,16 @@ describe('files routes', () => {
       );
     }
 
-    beforeEach(() => {
+    beforeEach(async () => {
       testingEnvironment.setPermissions(adminUser);
       requestMockedUser = adminUser;
       jest.spyOn(Date, 'now').mockReturnValue(1000);
+      // TODO: remove after migrating tests to own file
+      await files.save({ ...fixtures!.files[0], type: 'document' });
+    });
+
+    beforeAll(() => {
+      OcrManagerInstance.start();
     });
 
     it('should return the status on get', async () => {

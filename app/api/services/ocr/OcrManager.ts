@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable class-methods-use-this */
 import { Readable } from 'stream';
 import urljoin from 'url-join';
@@ -17,11 +18,6 @@ import relationships from 'api/relationships';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
 
-async function isOCREnabled(): Promise<boolean> {
-  const settingsObject = await settings.get();
-  return Boolean(settingsObject?.features?.ocr?.url) && Boolean(settingsObject?.toggleOCRButton);
-}
-
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
 
@@ -33,13 +29,22 @@ class OcrManager {
     spa: 'es',
   };
 
-  private ocrTaskManager: TaskManager;
+  private ocrTaskManager: TaskManager | null = null;
 
-  constructor() {
+  start() {
     this.ocrTaskManager = new TaskManager({
       serviceName: this.SERVICE_NAME,
       processResults: this.processResults.bind(this),
     });
+  }
+
+  isReady() {
+    return Boolean(this.ocrTaskManager);
+  }
+
+  async isEnabled() {
+    const settingsObject = await settings.get();
+    return Boolean(settingsObject.features?.ocr?.url) && Boolean(settingsObject.toggleOCRButton);
   }
 
   private async validateNotInQueue(file: FileType) {
@@ -50,14 +55,21 @@ class OcrManager {
     }
   }
 
-  private validateIsDocumentWithEntity(file: FileType) {
+  private validateFileIsDocument(file: FileType) {
     if (file.type !== 'document') {
       throw createError('The file is not a document.', 400);
     }
   }
 
+  private validateIsReady() {
+    if (!this.isReady()) {
+      throw createError('The OCR manager is not ready.', 500);
+    }
+  }
+
   async addToQueue(file: FileType) {
-    this.validateIsDocumentWithEntity(file);
+    this.validateIsReady();
+    this.validateFileIsDocument(file);
     await this.validateNotInQueue(file);
 
     const settingsValues = await this.getSettings();
@@ -73,7 +85,7 @@ class OcrManager {
       fileContent
     );
 
-    await this.ocrTaskManager.startTask({
+    await this.ocrTaskManager!.startTask({
       task: this.SERVICE_NAME,
       tenant: tenant.name,
       params: {
@@ -114,6 +126,7 @@ class OcrManager {
     }
   }
 
+  // eslint-disable-next-line max-statements
   async getStatus(file: FileType) {
     const [record] = await OcrModel.get({
       $or: [{ sourceFile: file._id }, { resultFile: file._id }],
@@ -122,7 +135,7 @@ class OcrManager {
     const status = record ? record.status : OcrStatus.NONE;
 
     if (status === OcrStatus.NONE) {
-      this.validateIsDocumentWithEntity(file);
+      this.validateFileIsDocument(file);
     }
 
     if (status !== OcrStatus.READY) {
@@ -243,4 +256,4 @@ class OcrManager {
 }
 
 const OcrManagerInstance = new OcrManager();
-export { OcrManagerInstance, OcrManager, isOCREnabled };
+export { OcrManagerInstance, OcrManager };
