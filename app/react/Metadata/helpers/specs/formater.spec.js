@@ -509,16 +509,8 @@ describe('metadata formater', () => {
 
       describe('when sort property is creationDate', () => {
         it('should add it as a value to show', () => {
-          [
-            text,
-            markdown,
-            image,
-            preview,
-            media,
-            geolocation,
-            link,
-            creationDate,
-          ] = prepareMetadata('creationDate');
+          [text, markdown, image, preview, media, geolocation, link, creationDate] =
+            prepareMetadata('creationDate');
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
           expect(creationDate.sortedBy).toBe(true);
@@ -527,9 +519,8 @@ describe('metadata formater', () => {
 
       describe('when sort property is editDate', () => {
         it('should add it as a value to show', () => {
-          [text, markdown, image, preview, media, geolocation, link, editDate] = prepareMetadata(
-            'editDate'
-          );
+          [text, markdown, image, preview, media, geolocation, link, editDate] =
+            prepareMetadata('editDate');
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
           expect(editDate.sortedBy).toBe(true);

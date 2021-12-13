@@ -64,8 +64,7 @@ describe('Entity zone', () => {
           mainSuperpower:
             '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > div > select',
           suporPowers: {
-            fly:
-              '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(3) > label',
+            fly: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(3) > label',
             laserBeam:
               '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > div > ul > li:nth-child(8) > label',
             moreButton:
@@ -79,8 +78,7 @@ describe('Entity zone', () => {
         viewer: {
           realName:
             '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
-          age:
-            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl.metadata-type-numeric > dd',
+          age: '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl.metadata-type-numeric > dd',
           knownAccomplices:
             '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl > dd > ul > li > a',
           mainSuperpower:

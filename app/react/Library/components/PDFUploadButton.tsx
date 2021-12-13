@@ -35,27 +35,25 @@ interface PDFUploadButtonOwnProps {
 
 type PDFUploadButtonProps = PDFUploadActions & PDFUploadButtonOwnProps;
 
-const onChangePDFs = ({
-  createDocument,
-  uploadDocument,
-  unselectAllDocuments,
-}: PDFUploadActions) => (e: ChangeEvent<HTMLInputElement>) => {
-  const { files } = e.target as HTMLInputElement;
-  const count = files?.length || 0;
+const onChangePDFs =
+  ({ createDocument, uploadDocument, unselectAllDocuments }: PDFUploadActions) =>
+  (e: ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target as HTMLInputElement;
+    const count = files?.length || 0;
 
-  // eslint-disable-next-line no-plusplus
-  for (let index = 0; index < count; index++) {
-    const file = files![index];
-    const doc = { title: extractTitle(file) };
-    createDocument(doc)
-      .then((newDoc: EntitySchema) => {
-        uploadDocument(newDoc.sharedId!, file);
-      })
-      .catch(() => {});
-  }
+    // eslint-disable-next-line no-plusplus
+    for (let index = 0; index < count; index++) {
+      const file = files![index];
+      const doc = { title: extractTitle(file) };
+      createDocument(doc)
+        .then((newDoc: EntitySchema) => {
+          uploadDocument(newDoc.sharedId!, file);
+        })
+        .catch(() => {});
+    }
 
-  unselectAllDocuments();
-};
+    unselectAllDocuments();
+  };
 
 const PDFUploadButtonComponent = ({
   createDocument,

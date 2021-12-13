@@ -91,11 +91,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    const getDocumentsFrom = async collection =>
-      db
-        .collection(collection)
-        .find()
-        .toArray();
+    const getDocumentsFrom = async collection => db.collection(collection).find().toArray();
 
     process.stdout.write(' -> Processing thesauri values...\r\n');
 

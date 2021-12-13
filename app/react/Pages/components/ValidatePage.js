@@ -4,7 +4,7 @@ function validateTitle() {
   };
 }
 
-export default function() {
+export default function () {
   const validator = {
     '': {},
     title: validateTitle(),

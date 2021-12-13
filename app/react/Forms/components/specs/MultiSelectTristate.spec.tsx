@@ -78,10 +78,7 @@ describe('MultiSelectTristate', () => {
     it('should call onChange with the new value', () => {
       props.value = { added: [], removed: [], originalFull: [], originalPartial: [] };
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(0)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
         added: ['option1'],
         removed: [],
@@ -93,10 +90,7 @@ describe('MultiSelectTristate', () => {
     it('it should handle multiple options selected', () => {
       props.value = { added: ['option1'], removed: [], originalFull: [], originalPartial: [] };
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(1)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(1).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
         added: ['option1', 'option2'],
         removed: [],
@@ -113,10 +107,7 @@ describe('MultiSelectTristate', () => {
         originalPartial: [],
       };
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(0)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
         added: ['option2'],
         removed: [],
@@ -135,10 +126,7 @@ describe('MultiSelectTristate', () => {
         originalPartial: ['option2'],
       };
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(0)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
         added: [],
         removed: ['option1'],
@@ -155,10 +143,7 @@ describe('MultiSelectTristate', () => {
         originalPartial: ['group-option1'],
       };
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(1)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(1).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
         added: ['option1'],
         removed: ['option2'],
@@ -175,10 +160,7 @@ describe('MultiSelectTristate', () => {
         originalPartial: ['option1'],
       };
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(0)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
         added: [],
         removed: [],
@@ -194,10 +176,7 @@ describe('MultiSelectTristate', () => {
         originalPartial: ['option1'],
       };
       render();
-      component
-        .find('input[type="checkbox"]')
-        .at(0)
-        .simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
         added: ['option1'],
         removed: [],
@@ -240,12 +219,7 @@ describe('MultiSelectTristate', () => {
         originalPartial: [],
       };
       render();
-      expect(
-        component
-          .find('.group-checkbox')
-          .first()
-          .hasClass('partial')
-      ).toBe(true);
+      expect(component.find('.group-checkbox').first().hasClass('partial')).toBe(true);
       component
         .find('.group-checkbox')
         .first()

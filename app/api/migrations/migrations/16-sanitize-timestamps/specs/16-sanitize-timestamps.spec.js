@@ -8,10 +8,7 @@ import fixtures from './fixtures.js';
 describe('migration sanitize-timestamops', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -24,10 +21,7 @@ describe('migration sanitize-timestamops', () => {
 
   it('should change all string timestamps to int', async () => {
     await migration.up(testingDB.mongodb);
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find()
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     expect(Number.isInteger(entities[0].metadata.date)).toBe(true);
     expect(Number.isInteger(entities[0].metadata.multi_date[0])).toBe(true);

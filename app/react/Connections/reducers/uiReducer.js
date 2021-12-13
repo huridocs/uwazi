@@ -3,7 +3,7 @@ import * as types from '../actions/actionTypes';
 
 const initialState = { open: false, connecting: false };
 
-export default function(state = initialState, action = {}) {
+export default function (state = initialState, action = {}) {
   switch (action.type) {
     case types.OPEN_CONNECTION_PANEL:
       return state.set('open', true);
@@ -27,10 +27,7 @@ export default function(state = initialState, action = {}) {
       return state.set('connecting', false);
 
     case types.CONNECTION_CREATED:
-      return state
-        .set('creating', false)
-        .set('connecting', false)
-        .set('open', false);
+      return state.set('creating', false).set('connecting', false).set('open', false);
 
     default:
       return Immutable(state);

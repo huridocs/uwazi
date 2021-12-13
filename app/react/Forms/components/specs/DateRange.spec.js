@@ -35,16 +35,10 @@ describe('DateRange', () => {
 
   describe('when a date is selected', () => {
     it('should triger onChange events', () => {
-      component
-        .find(DatePicker)
-        .first()
-        .simulate('change', 1469656800);
+      component.find(DatePicker).first().simulate('change', 1469656800);
       expect(props.onChange).toHaveBeenCalledWith({ from: 1469656800, to: 1 });
       // We're mocking out onChange, so the change is not persisted.
-      component
-        .find(DatePicker)
-        .last()
-        .simulate('change', 1469656800);
+      component.find(DatePicker).last().simulate('change', 1469656800);
       expect(props.onChange).toHaveBeenCalledWith({ from: 0, to: 1469656800 });
     });
   });

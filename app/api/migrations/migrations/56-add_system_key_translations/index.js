@@ -6,12 +6,8 @@ After copy pasting:
   - change the tests, if necessary
 */
 
-// eslint-disable-next-line max-statements
 async function insertSystemKeys(db, newKeys) {
-  const translations = await db
-    .collection('translations')
-    .find()
-    .toArray();
+  const translations = await db.collection('translations').find().toArray();
   const locales = translations.map(tr => tr.locale);
 
   const locToSystemContext = {};
@@ -35,7 +31,9 @@ async function insertSystemKeys(db, newKeys) {
     });
   });
 
-  await translations.forEach(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr));
+  await Promise.all(
+    translations.map(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr))
+  );
 }
 
 export default {

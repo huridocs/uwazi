@@ -11,10 +11,6 @@
     margin-bottom: 15px;
     //width: calc(33.33% - 15px);
   }
-
-  @media print {
-    display: block !important;
-  }
 }
 
 .item {
@@ -365,6 +361,11 @@ $item-padding: 15px;
 
 .item-metadata {
   font-size: $f-size-sm;
+
+  .print-view-alt {
+    display: none;
+  }
+
   dl {
     margin: 0 $item-padding;
     padding: 3px 0;

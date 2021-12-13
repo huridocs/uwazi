@@ -26,10 +26,7 @@ describe('TargetDocumentHeader', () => {
   describe('back button', () => {
     it('should cancelTargetDocument', () => {
       render();
-      component
-        .find('button')
-        .first()
-        .simulate('click');
+      component.find('button').first().simulate('click');
       expect(props.cancelTargetDocument).toHaveBeenCalled();
     });
   });
@@ -37,10 +34,7 @@ describe('TargetDocumentHeader', () => {
   describe('save button', () => {
     it('should save the reference', () => {
       render();
-      component
-        .find('button')
-        .last()
-        .simulate('click');
+      component.find('button').last().simulate('click');
       expect(props.saveTargetRangedReference).toHaveBeenCalledWith(
         { _id: 'connection' },
         { text: 'text' },

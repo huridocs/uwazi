@@ -18,7 +18,6 @@ describe('LibraryModeToggleButtons', () => {
     zoomIn: jasmine.createSpy('zoomIn'),
     zoomOut: jasmine.createSpy('zoomOut'),
     zoomLevel: 3,
-    numberOfMarkers: 23,
     storeKey: 'library',
   };
 
@@ -34,24 +33,9 @@ describe('LibraryModeToggleButtons', () => {
 
     it('should render three links to the library: list, table and map view', () => {
       expect(component.find(I18NLink).length).toBe(3);
-      expect(
-        component
-          .find(I18NLink)
-          .at(0)
-          .props().to
-      ).toBe('library?q="asd"');
-      expect(
-        component
-          .find(I18NLink)
-          .at(1)
-          .props().to
-      ).toBe('library/table?q="asd"');
-      expect(
-        component
-          .find(I18NLink)
-          .at(2)
-          .props().to
-      ).toBe('library/map?q="asd"');
+      expect(component.find(I18NLink).at(0).props().to).toBe('library?q="asd"');
+      expect(component.find(I18NLink).at(1).props().to).toBe('library/table?q="asd"');
+      expect(component.find(I18NLink).at(2).props().to).toBe('library/map?q="asd"');
     });
 
     it('should show map type buttons', () => {
@@ -136,7 +120,6 @@ describe('LibraryModeToggleButtons', () => {
           search: {},
           filters: Immutable.fromJS({ properties: [] }),
           ui: Immutable.fromJS({ zoomLevel: 1, tableViewColumns: [] }),
-          markers: Immutable.fromJS({ rows: [] }),
           storeKey: 'library',
         },
         templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }]),

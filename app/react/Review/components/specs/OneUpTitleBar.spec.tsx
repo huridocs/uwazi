@@ -32,10 +32,7 @@ describe('EntityViewer', () => {
   it('should render 1', () => {
     render();
     expect(component).toMatchSnapshot();
-    component
-      .find('div.content-header-title > span > .btn-default')
-      .at(0)
-      .simulate('click');
+    component.find('div.content-header-title > span > .btn-default').at(0).simulate('click');
     expect(context.confirm).toHaveBeenCalledTimes(0);
   });
 
@@ -51,10 +48,7 @@ describe('EntityViewer', () => {
     };
     render();
     expect(component).toMatchSnapshot();
-    component
-      .find('.btn-default')
-      .at(1)
-      .simulate('click');
+    component.find('.btn-default').at(1).simulate('click');
     expect(context.confirm).toHaveBeenCalled();
   });
 });

@@ -206,12 +206,7 @@ describe('MetadataProperty', () => {
 
     describe('FormConfigInput', () => {
       it('should pass the type to the component', () => {
-        expect(
-          component
-            .find(FormConfigInput)
-            .first()
-            .props().type
-        ).toBe('propertyType');
+        expect(component.find(FormConfigInput).first().props().type).toBe('propertyType');
       });
     });
 

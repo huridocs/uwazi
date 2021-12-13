@@ -172,18 +172,8 @@ describe('MetadataTemplate', () => {
         ];
         const component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
-        expect(
-          component
-            .find(MetadataProperty)
-            .at(0)
-            .props().index
-        ).toBe(-2);
-        expect(
-          component
-            .find(MetadataProperty)
-            .at(1)
-            .props().index
-        ).toBe(-1);
+        expect(component.find(MetadataProperty).at(0).props().index).toBe(-2);
+        expect(component.find(MetadataProperty).at(1).props().index).toBe(-1);
       });
     });
 

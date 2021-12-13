@@ -1,5 +1,5 @@
-/** @format */
-
+//eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 import { fromJS as Immutable } from 'immutable';
 import { Provider } from 'react-redux';
 import { match, RouterContext } from 'react-router';
@@ -12,7 +12,6 @@ import JSONUtils from 'shared/JSONUtils';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import settingsModel from 'api/settings';
-import fs from 'fs';
 
 import { RequestParams } from 'app/utils/RequestParams';
 import { getPropsFromRoute } from './utils';

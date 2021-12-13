@@ -15,9 +15,7 @@ describe('entities', () => {
   beforeEach(done => {
     routes = instrumentRoutes(documentRoutes);
     spyOn(search, 'countPerTemplate').and.returnValue(Promise.resolve({ templateCount: 0 }));
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

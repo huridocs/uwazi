@@ -1,6 +1,4 @@
-/** @format */
-/* eslint-disable max-statements,no-eval */
-
+/* eslint-disable max-statements,no-eval,node/no-restricted-import,no-console */
 import { config } from 'api/config';
 import fs from 'fs';
 import path from 'path';

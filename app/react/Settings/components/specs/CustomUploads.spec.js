@@ -46,10 +46,7 @@ describe('CustomUploads', () => {
       props.customUploads = Immutable.fromJS([{ _id: 'upload', filename: 'name' }]);
       render();
 
-      component
-        .find(ConfirmButton)
-        .props()
-        .action();
+      component.find(ConfirmButton).props().action();
 
       expect(props.deleteCustomUpload).toHaveBeenCalledWith('upload');
     });

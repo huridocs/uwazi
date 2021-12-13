@@ -2,10 +2,7 @@ import moment from 'moment';
 
 export default {
   currentUTC() {
-    return moment
-      .utc()
-      .toDate()
-      .getTime();
+    return moment.utc().toDate().getTime();
   },
 
   stringDateToUTCTimestamp(date) {
@@ -14,19 +11,11 @@ export default {
 
   descriptionToTimestamp(date) {
     if (date === 'last-day-last-month') {
-      return moment
-        .utc()
-        .subtract(1, 'months')
-        .endOf('month')
-        .unix();
+      return moment.utc().subtract(1, 'months').endOf('month').unix();
     }
 
     if (date === 'first-day-last-month') {
-      return moment
-        .utc()
-        .subtract(1, 'months')
-        .startOf('month')
-        .unix();
+      return moment.utc().subtract(1, 'months').startOf('month').unix();
     }
 
     return date;

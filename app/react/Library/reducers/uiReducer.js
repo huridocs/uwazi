@@ -46,10 +46,7 @@ export default function ui(state = initialState, action = {}) {
       .findIndex(doc => doc.get('sharedId') === action.doc);
 
     if (docIndex >= 0) {
-      const doc = state
-        .get('selectedDocuments')
-        .get(docIndex)
-        .toJS();
+      const doc = state.get('selectedDocuments').get(docIndex).toJS();
       doc.documents.push(action.file);
 
       return state.setIn(['selectedDocuments', docIndex], Immutable.fromJS(doc));

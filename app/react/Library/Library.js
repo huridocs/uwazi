@@ -3,7 +3,7 @@ import { actions } from 'app/BasicReducer';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
-import requestState from 'app/Library/helpers/requestState';
+import { requestState } from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import React from 'react';

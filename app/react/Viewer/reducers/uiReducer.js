@@ -5,7 +5,7 @@ const initialState = { reference: {}, snippet: {} };
 
 const unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
-export default function(state = initialState, action = {}) {
+export default function (state = initialState, action = {}) {
   if (action.type === types.HIGHLIGHT_REFERENCE) {
     return state.set('highlightedReference', action.reference);
   }

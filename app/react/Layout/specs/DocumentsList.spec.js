@@ -67,12 +67,9 @@ describe('DocumentsList', () => {
 
     it('should render GraphView prop', () => {
       expect(component.find(props.GraphView).length).toBe(1);
-      expect(
-        component
-          .find(props.GraphView)
-          .getElements()[0]
-          .type().props.children
-      ).toBe('GraphView');
+      expect(component.find(props.GraphView).getElements()[0].type().props.children).toBe(
+        'GraphView'
+      );
     });
   });
 
@@ -86,11 +83,7 @@ describe('DocumentsList', () => {
     render();
     expect(component.find('.search-list-actions').length).toBe(1);
     expect(
-      component
-        .find('.search-list-actions')
-        .childAt(0)
-        .getElements()[0]
-        .type().props.children
+      component.find('.search-list-actions').childAt(0).getElements()[0].type().props.children
     ).toBe('action buttons');
   });
 
@@ -104,12 +97,7 @@ describe('DocumentsList', () => {
 
   it('should render a Select All button only if authorized', () => {
     render();
-    expect(
-      component
-        .find('.select-all-documents')
-        .parent()
-        .is(NeedAuthorization)
-    ).toBe(true);
+    expect(component.find('.select-all-documents').parent().is(NeedAuthorization)).toBe(true);
   });
 
   it('should bind to the clickOnDocument', () => {

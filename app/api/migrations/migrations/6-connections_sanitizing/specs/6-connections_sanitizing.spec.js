@@ -6,10 +6,7 @@ import fixtures, { hub1, hub3, shared1, shared2, shared3, shared4, shared5 } fro
 describe('migration connections_sanitizing', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {
@@ -25,10 +22,7 @@ describe('migration connections_sanitizing', () => {
 
     beforeEach(async () => {
       await migration.up(testingDB.mongodb);
-      migratedConnections = await testingDB.mongodb
-        .collection('connections')
-        .find()
-        .toArray();
+      migratedConnections = await testingDB.mongodb.collection('connections').find().toArray();
     });
 
     it('should keep all connections present in all languages', async () => {

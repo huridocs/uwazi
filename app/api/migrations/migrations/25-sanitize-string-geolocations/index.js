@@ -70,10 +70,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    const templates = await db
-      .collection('templates')
-      .find()
-      .toArray();
+    const templates = await db.collection('templates').find().toArray();
     const templatesByKey = templates.reduce((memo, t) => ({ ...memo, [t._id.toString()]: t }), {});
 
     const cursor = db.collection('entities').find();

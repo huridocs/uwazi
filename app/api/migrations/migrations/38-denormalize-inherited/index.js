@@ -8,10 +8,7 @@ export default {
 
   async up(db) {
     const cursor = db.collection('entities').find({});
-    const templates = await db
-      .collection('templates')
-      .find({})
-      .toArray();
+    const templates = await db.collection('templates').find({}).toArray();
 
     let index = 1;
 

@@ -22,9 +22,7 @@ describe('entities GET permissions + published filter', () => {
     describe('when user is not logged in', () => {
       it('should only see published entities', async () => {
         userFactory.mock(undefined);
-        const { body } = await request(app)
-          .get('/api/v2/entities')
-          .expect(200);
+        const { body } = await request(app).get('/api/v2/entities').expect(200);
 
         expect(body.data).toEqual([
           expect.objectContaining({ title: 'entPublic1' }),
@@ -79,9 +77,7 @@ describe('entities GET permissions + published filter', () => {
         userFactory.mock(user);
         const query = { filter: { published: true } };
 
-        const { body } = await request(app)
-          .get('/api/v2/entities')
-          .query(query);
+        const { body } = await request(app).get('/api/v2/entities').query(query);
 
         expect(body.data).toEqual([
           expect.objectContaining({ title: 'entPublic1' }),

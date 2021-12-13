@@ -152,7 +152,9 @@ export default {
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
-      await (await templates.get()).reduce<Promise<TemplateSchema>>(async (lastSave, template) => {
+      await (
+        await templates.get()
+      ).reduce<Promise<TemplateSchema>>(async (lastSave, template) => {
         await lastSave;
         return templates.save(
           template,
