@@ -13,9 +13,10 @@ import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
-import OcrManager from 'api/services/ocr/OcrManager';
+import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 import JSONRequest from 'shared/JSONRequest';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import relationships from 'api/relationships';
 import { fileName1, fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -136,12 +137,13 @@ describe('files routes', () => {
       await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
 
       const allConnections = await connections.get();
-      expect(allConnections.length).toBe(1);
+      expect(allConnections.length).toBe(2);
       expect(allConnections[0]).toEqual(expect.objectContaining({ entity: 'entity3' }));
+      expect(allConnections[1]).toEqual(expect.objectContaining({ entity: 'sharedId1' }));
     });
 
     it('should cleanup the ocr records related to the file', async () => {
-      const ocrCleanupSpy = jest.spyOn(OcrManager, 'cleanupRecordsOfFiles');
+      const ocrCleanupSpy = jest.spyOn(OcrManagerInstance, 'cleanupRecordsOfFiles');
       await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
       expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
     });
@@ -240,6 +242,7 @@ describe('files routes', () => {
     beforeEach(() => {
       testingEnvironment.setPermissions(adminUser);
       requestMockedUser = adminUser;
+      jest.spyOn(Date, 'now').mockReturnValue(1000);
     });
 
     it('should return the status on get', async () => {
@@ -281,9 +284,10 @@ describe('files routes', () => {
 
       it('should set the status to processing', async () => {
         const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
-        expect(body).toEqual({ status: OcrStatus.PROCESSING });
+        expect(body).toEqual({ status: OcrStatus.PROCESSING, lastUpdated: 1000 });
       });
 
+      // eslint-disable-next-line max-statements
       it('should process a successful OCR', async () => {
         // @ts-ignore
         await TaskManager.mock.calls[0][0].processResults({
@@ -304,26 +308,16 @@ describe('files routes', () => {
         expect(resultFile.type).toBe('document');
         expect(await fileExists(uploadsPath(resultFile.filename))).toBe(true);
         expect(resultFile.language).toBe(originalFile.language);
-      });
 
-      it('should move the text references to the new file', async () => {
-        // @ts-ignore
-        // await TaskManager.mock.calls[0][0].processResults({
-        //   tenant: 'defaultDB',
-        //   task: 'ocr_results',
-        //   file_url: 'protocol://link/to/result/file',
-        //   params: { filename: fileName1, language: 'en' },
-        //   success: true,
-        // });
+        const connectionsForOrigFile = await relationships.get({
+          file: originalFile._id.toHexString(),
+        });
+        const connectionsForResultFile = await relationships.get({
+          file: resultFile._id.toHexString(),
+        });
 
-        // const [originalFile] = await files.get({ filename: fileName1 });
-        // const [record] = await OcrModel.get({ sourceFile: originalFile._id });
-        // const [resultFile] = await files.get({ _id: record.resultFile });
-
-        // console.log(originalFile);
-        // console.log(record);
-        // console.log(resultFile);
-        fail('TODO');
+        expect(connectionsForOrigFile.length).toBe(0);
+        expect(connectionsForResultFile.length).toBe(1);
       });
     });
 

@@ -2,7 +2,7 @@ import { deleteUploadedFiles } from 'api/files/filesystem';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import entities from 'api/entities';
-import OcrManager from 'api/services/ocr/OcrManager';
+import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 import request from 'shared/JSONRequest';
 import model from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
@@ -38,7 +38,7 @@ export const files = {
       );
     }
 
-    await OcrManager.cleanupRecordsOfFiles(toDeleteFiles.map(f => f._id));
+    await OcrManagerInstance.cleanupRecordsOfFiles(toDeleteFiles.map(f => f._id));
 
     return toDeleteFiles;
   },

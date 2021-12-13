@@ -7,7 +7,7 @@ import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
-import OcrManager, { ocrValidateFeatureEnabled } from 'api/services/ocr/OcrManager';
+import { OcrManagerInstance, isOCREnabled } from 'api/services/ocr/OcrManager';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
@@ -243,7 +243,7 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        if (!(await ocrValidateFeatureEnabled())) {
+        if (!(await isOCREnabled())) {
           return res.sendStatus(404);
         }
         const [file] = await files.get({
@@ -254,9 +254,9 @@ export default (app: Application) => {
           throw createError('file not found', 404);
         }
 
-        const status = await OcrManager.getStatus(file);
+        const status = await OcrManagerInstance.getStatus(file);
 
-        res.json({ status });
+        res.json(status);
       } catch (e) {
         next(e);
       }
@@ -277,7 +277,7 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        if (!(await ocrValidateFeatureEnabled())) {
+        if (!(await isOCREnabled())) {
           return res.sendStatus(404);
         }
 
@@ -289,7 +289,7 @@ export default (app: Application) => {
           throw createError('file not found', 404);
         }
 
-        await OcrManager.addToQueue(file);
+        await OcrManagerInstance.addToQueue(file);
 
         res.sendStatus(200);
       } catch (e) {

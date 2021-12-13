@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-
 import { files, uploadsPath, readFile } from 'api/files';
 import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
@@ -18,7 +17,7 @@ import relationships from 'api/relationships';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
 
-async function ocrValidateFeatureEnabled(): Promise<boolean> {
+async function isOCREnabled(): Promise<boolean> {
   const settingsObject = await settings.get();
   return Boolean(settingsObject?.features?.ocr?.url) && Boolean(settingsObject?.toggleOCRButton);
 }
@@ -52,10 +51,7 @@ class OcrManager {
   }
 
   private validateIsDocumentWithEntity(file: FileType) {
-    if (!file.entity) {
-      throw createError('The file is not attached to an entity', 400);
-    }
-    if (file.type !== 'document' && file.type !== 'custom') {
+    if (file.type !== 'document') {
       throw createError('The file is not a document.', 400);
     }
   }
@@ -133,7 +129,7 @@ class OcrManager {
       const ocrSettings = await this.getSettings();
       const supportedLanguages = await this.fetchSupportedLanguages(ocrSettings);
       if (!supportedLanguages.includes(this.LANGUAGES_MAP[file.language || 'other'])) {
-        return OcrStatus.UNSUPPORTED_LANGUAGE;
+        return { status: OcrStatus.UNSUPPORTED_LANGUAGE };
       }
     }
 
@@ -247,7 +243,4 @@ class OcrManager {
 }
 
 const OcrManagerInstance = new OcrManager();
-
-export default OcrManagerInstance;
-
-export { OcrManager, ocrValidateFeatureEnabled };
+export { OcrManagerInstance, OcrManager, isOCREnabled };

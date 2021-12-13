@@ -38,6 +38,7 @@ const fixtures: DBFixture = {
     { entity: 'entity1', file: uploadId2.toString(), hub: '1' },
     { entity: 'entity2', file: uploadId2.toString(), hub: '2' },
     { entity: 'entity3', hub: '3' },
+    { entity: 'sharedId1', file: uploadId.toString() },
   ],
   entities: [
     {
