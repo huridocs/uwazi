@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Application } from 'express';
 import { debugLog, errorLog } from 'api/log';
 import { processDocument } from 'api/files/processDocument';
@@ -6,10 +7,10 @@ import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
+import OcrManager, { ocrValidateFeatureEnabled } from 'api/services/ocr/OcrManager';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
-import OcrManager from 'api/services/ocr/OcrManager';
 
 export default (app: Application) => {
   app.post(
@@ -242,8 +243,9 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        //TODO: validate feature enabled
-
+        if (!(await ocrValidateFeatureEnabled())) {
+          return res.sendStatus(404);
+        }
         const [file] = await files.get({
           filename: req.params.filename,
         });
@@ -275,8 +277,9 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        //TODO: validate feature enabled
-        //TODO: validate file is document
+        if (!(await ocrValidateFeatureEnabled())) {
+          return res.sendStatus(404);
+        }
 
         const [file] = await files.get({
           filename: req.params.filename,

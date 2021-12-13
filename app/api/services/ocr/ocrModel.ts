@@ -21,7 +21,7 @@ const props = {
 interface OcrRecord {
   _id: ObjectIdSchema;
   autoexpire: number | null;
-  sourceFile: ObjectIdSchema;
+  sourceFile: ObjectIdSchema | null;
   resultFile?: ObjectIdSchema;
   language: string;
   status: OcrStatus;

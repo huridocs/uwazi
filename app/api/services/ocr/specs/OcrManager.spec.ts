@@ -24,6 +24,13 @@ const FIXTURES = {
     fixturesFactory.entity('parentForExistingRecord'),
   ],
   files: [
+    fixturesFactory.file(
+      'unrelatedAttachment',
+      'parentEntity',
+      'attachment',
+      'unrelatedAttachment.pdf',
+      'eng'
+    ),
     {
       ...fixturesFactory.file(
         'sourceFile',
@@ -57,11 +64,51 @@ const FIXTURES = {
       'existingFileName.pdf',
       'eng'
     ),
+    fixturesFactory.file(
+      'resultToDelete',
+      'parentForExistingRecord',
+      'document',
+      'ocr_toDeleteFileName.pdf',
+      'eng'
+    ),
+    fixturesFactory.file(
+      'sourceToDelete',
+      'parentForExistingRecord',
+      'attachment',
+      'toDeleteFileName.pdf',
+      'eng'
+    ),
+    fixturesFactory.file(
+      'resultToDelete2',
+      'parentForExistingRecord',
+      'document',
+      'ocr_toDeleteFileName2.pdf',
+      'eng'
+    ),
+    fixturesFactory.file(
+      'sourceToDelete2',
+      'parentForExistingRecord',
+      'attachment',
+      'toDeleteFileName.pdf2',
+      'eng'
+    ),
   ],
   ocr_records: [
     {
       sourceFile: fixturesFactory.id('sourceForExistingRecord'),
       resultFile: fixturesFactory.id('resultForExistingRecord'),
+      language: 'en',
+      status: OcrStatus.READY,
+    },
+    {
+      sourceFile: fixturesFactory.id('sourceToDelete'),
+      resultFile: fixturesFactory.id('resultToDelete'),
+      language: 'en',
+      status: OcrStatus.READY,
+    },
+    {
+      sourceFile: fixturesFactory.id('sourceToDelete2'),
+      resultFile: fixturesFactory.id('resultToDelete2'),
       language: 'en',
       status: OcrStatus.READY,
     },
@@ -183,8 +230,8 @@ describe('OcrManager', () => {
 
       it('should add a record to the DB', async () => {
         const records = await OcrModel.get({});
-        expect(records).toHaveLength(2);
-        const lastRecord = records[1];
+        expect(records).toHaveLength(4);
+        const lastRecord = records[records.length - 1];
         expect(lastRecord).toMatchObject({
           status: OcrStatus.PROCESSING,
           sourceFile: fixturesFactory.id('sourceFile'),
@@ -263,11 +310,46 @@ describe('OcrManager', () => {
   });
 
   describe('should find error when', () => {
+    it('file is not a document when queueing', async () => {
+      const ocrManager = new OcrManager();
+
+      const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
+
+      try {
+        await ocrManager.addToQueue(attachmentFile);
+        fail('Should throw.');
+      } catch (err) {
+        expect(err).toMatchObject({
+          message: 'The file is not a document.',
+          code: 400,
+        });
+      }
+    });
+
+    it('file is not a document and does not have ocr record when getting status', async () => {
+      const ocrManager = new OcrManager();
+
+      const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
+
+      try {
+        await ocrManager.getStatus(attachmentFile);
+        fail('Should throw.');
+      } catch (err) {
+        expect(err).toMatchObject({
+          message: 'The file is not a document.',
+          code: 400,
+        });
+      }
+    });
+
     it('an ocr model is already in queue', async () => {
       const ocrManager = new OcrManager();
+      await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+      await files.save({ _id: fixturesFactory.id('sourceFile'), type: 'document' });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
 
+      await ocrManager.addToQueue(sourceFile);
       await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
     });
 
@@ -299,7 +381,7 @@ describe('OcrManager', () => {
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
 
       const records = await OcrModel.get({});
-      expect(records).toHaveLength(1);
+      expect(records).toHaveLength(3);
       expect(filesApi.fileFromReadStream).not.toHaveBeenCalled();
       expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
     });
@@ -327,6 +409,37 @@ describe('OcrManager', () => {
         language: 'eng',
       });
       expect(record.autoexpire).not.toBeNull();
+    });
+  });
+
+  describe('on cleanup', () => {
+    it('when source is deleted, should modify record source to null', async () => {
+      const ocrManager = new OcrManager();
+      const filesToCleanup = await files.get({
+        $or: [
+          { _id: fixturesFactory.id('sourceToDelete') },
+          { _id: fixturesFactory.id('sourceToDelete2') },
+        ],
+      });
+      let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
+      await ocrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
+      records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
+      expect(records[0].sourceFile).toBeNull();
+      expect(records[1].sourceFile).toBeNull();
+    });
+
+    it('when result is deleted, should delete record', async () => {
+      const ocrManager = new OcrManager();
+      const filesToCleanup = await files.get({
+        $or: [
+          { _id: fixturesFactory.id('resultToDelete') },
+          { _id: fixturesFactory.id('resultToDelete2') },
+        ],
+      });
+      let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
+      await ocrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
+      records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
+      expect(records).toHaveLength(0);
     });
   });
 });
