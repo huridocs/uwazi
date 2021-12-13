@@ -17,17 +17,13 @@
 
   .ocr-service-display {
     line-height: normal;
-    min-width: 165px;
     text-align: center;
 
-    button {
-      width: 90%;
-    }
     & p {
       margin: 0;
     }
 
-    .in-queue {
+    .status {
       font-style: italic;
       color: $c-grey-dark;
     }
@@ -43,6 +39,14 @@
 
     .complete {
       color: $c-type-9;
+    }
+
+    &:hover .ocr-tooltip {
+      display: block;
+      top: unset;
+      left: unset;
+      white-space: normal;
+      transform: translateY(5px);
     }
   }
 }
