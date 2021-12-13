@@ -5,6 +5,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
+import settings from 'api/settings/settings';
 import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
 import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
@@ -12,6 +13,7 @@ import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
+import OcrManager from 'api/services/ocr/OcrManager';
 import JSONRequest from 'shared/JSONRequest';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fileName1, fixtures, uploadId, uploadId2 } from './fixtures';
@@ -20,7 +22,6 @@ import uploadRoutes from '../routes';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
 import { TaskManager } from '../../services/tasksmanager/TaskManager';
 import { fs } from '..';
-import settings from 'api/settings/settings';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -137,6 +138,12 @@ describe('files routes', () => {
       const allConnections = await connections.get();
       expect(allConnections.length).toBe(1);
       expect(allConnections[0]).toEqual(expect.objectContaining({ entity: 'entity3' }));
+    });
+
+    it('should cleanup the ocr records related to the file', async () => {
+      const ocrCleanupSpy = jest.spyOn(OcrManager, 'cleanupRecordsOfFiles');
+      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+      expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
     });
 
     it('should validate _id as string', async () => {
@@ -299,7 +306,23 @@ describe('files routes', () => {
         expect(resultFile.language).toBe(originalFile.language);
       });
 
-      it('should move the text references to the new file', () => {
+      it('should move the text references to the new file', async () => {
+        // @ts-ignore
+        // await TaskManager.mock.calls[0][0].processResults({
+        //   tenant: 'defaultDB',
+        //   task: 'ocr_results',
+        //   file_url: 'protocol://link/to/result/file',
+        //   params: { filename: fileName1, language: 'en' },
+        //   success: true,
+        // });
+
+        // const [originalFile] = await files.get({ filename: fileName1 });
+        // const [record] = await OcrModel.get({ sourceFile: originalFile._id });
+        // const [resultFile] = await files.get({ _id: record.resultFile });
+
+        // console.log(originalFile);
+        // console.log(record);
+        // console.log(resultFile);
         fail('TODO');
       });
     });
@@ -330,6 +353,10 @@ describe('files routes', () => {
         await settings.save({ toggleOCRButton: false });
       });
 
+      afterAll(async () => {
+        await settings.save({ toggleOCRButton: true });
+      });
+
       it('should not allow request status', async () => {
         await request(app).get(`/api/files/${fileName1}/ocr`).expect(404);
       });
@@ -340,16 +367,14 @@ describe('files routes', () => {
     });
 
     describe('when the file is not a document', () => {
-      beforeEach(async () => {
-        await settings.save({ toggleOCRButton: false });
-      });
-
-      it('should not allow request status', async () => {
-        fail('TODO');
+      it('should not allow request status if the file is unprocessed', async () => {
+        await files.save({ _id: uploadId, type: 'attachment' });
+        await request(app).get(`/api/files/${fileName1}/ocr`).expect(400);
       });
 
       it('should not allow to create a task', async () => {
-        fail('TODO')
+        await files.save({ _id: uploadId, type: 'attachment' });
+        await request(app).post(`/api/files/${fileName1}/ocr`).expect(400);
       });
     });
   });

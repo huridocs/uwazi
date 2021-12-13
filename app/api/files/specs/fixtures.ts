@@ -69,6 +69,7 @@ const fixtures: DBFixture = {
       features: {
         ocr: { url: 'protocol://serviceUrl' },
       },
+      toggleOCRButton: true,
     },
   ],
   users: [
@@ -76,13 +77,13 @@ const fixtures: DBFixture = {
       _id: db.id(),
       username: 'collab',
       role: UserRole.COLLABORATOR,
-      email: 'collab@tenant.xy'
+      email: 'collab@tenant.xy',
     },
     {
       _id: db.id(),
       username: 'admin',
       role: UserRole.ADMIN,
-      email: 'admin@tenant.xy'
+      email: 'admin@tenant.xy',
     },
   ],
 };

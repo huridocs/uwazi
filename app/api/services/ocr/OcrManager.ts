@@ -5,14 +5,23 @@ import urljoin from 'url-join';
 import { files, uploadsPath, readFile } from 'api/files';
 import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
+import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants/tenantContext';
+import createError from 'api/utils/Error';
 import request from 'shared/JSONRequest';
+import { ensure } from 'shared/tsUtils';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import relationships from 'api/relationships';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
+
+async function ocrValidateFeatureEnabled(): Promise<boolean> {
+  const settingsObject = await settings.get();
+  return Boolean(settingsObject?.features?.ocr?.url) && Boolean(settingsObject?.toggleOCRButton);
+}
 
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
@@ -42,7 +51,17 @@ class OcrManager {
     }
   }
 
+  private validateIsDocumentWithEntity(file: FileType) {
+    if (!file.entity) {
+      throw createError('The file is not attached to an entity', 400);
+    }
+    if (file.type !== 'document' && file.type !== 'custom') {
+      throw createError('The file is not a document.', 400);
+    }
+  }
+
   async addToQueue(file: FileType) {
+    this.validateIsDocumentWithEntity(file);
     await this.validateNotInQueue(file);
 
     const settingsValues = await this.getSettings();
@@ -105,6 +124,10 @@ class OcrManager {
     });
 
     const status = record ? record.status : OcrStatus.NONE;
+
+    if (status === OcrStatus.NONE) {
+      this.validateIsDocumentWithEntity(file);
+    }
 
     if (status !== OcrStatus.READY) {
       const ocrSettings = await this.getSettings();
@@ -186,10 +209,45 @@ class OcrManager {
       await this.processFiles(record, message, originalFile);
     }, message.tenant);
   }
+
+  async cleanupRecordsOfFiles(fileIds: (ObjectIdSchema | undefined)[]) {
+    const idStrings = fileIds
+      .filter(fid => fid !== undefined)
+      .map(fid => ensure<WithId<ObjectIdSchema>>(fid).toString());
+    const records = await OcrModel.get({
+      $or: [{ sourceFile: { $in: idStrings } }, { resultFile: { $in: idStrings } }],
+    });
+    const idRecordMap = new Map();
+    const recordsToNullSource: OcrRecord[] = [];
+    const recordIdsToDelete: string[] = [];
+
+    records.forEach(record => {
+      if (record.sourceFile) {
+        idRecordMap.set(record.sourceFile.toString(), record);
+      }
+      if (record.resultFile) {
+        idRecordMap.set(record.resultFile.toString(), record);
+      }
+    });
+
+    idStrings.forEach(fileId => {
+      if (idRecordMap.has(fileId)) {
+        const record = idRecordMap.get(fileId);
+        if (record.sourceFile?.toString() === fileId) {
+          recordsToNullSource.push({ ...record, sourceFile: null });
+        } else if (record.resultFile?.toString() === fileId) {
+          recordIdsToDelete.push(record._id.toString());
+        }
+      }
+    });
+
+    await OcrModel.saveMultiple(recordsToNullSource);
+    await OcrModel.delete({ _id: { $in: recordIdsToDelete } });
+  }
 }
 
 const OcrManagerInstance = new OcrManager();
 
 export default OcrManagerInstance;
 
-export { OcrManager };
+export { OcrManager, ocrValidateFeatureEnabled };
