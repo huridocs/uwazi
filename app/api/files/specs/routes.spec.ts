@@ -244,7 +244,7 @@ describe('files routes', () => {
       requestMockedUser = adminUser;
       jest.spyOn(Date, 'now').mockReturnValue(1000);
       // TODO: remove after migrating tests to own file
-      await files.save({ ...fixtures!.files[0], type: 'document' });
+      await files.save({ ...fixtures.files![0], type: 'document' });
     });
 
     beforeAll(() => {
