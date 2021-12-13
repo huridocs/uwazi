@@ -73,7 +73,8 @@ describe('Uploads', () => {
 
     it('should change the language of the document', async () => {
       await page.click(firstEntitySelector);
-      await page.click('.file-edit');
+      await page.waitForSelector('.filelist-header');
+      await expect(page).toClick('.file-edit', { text: 'Edit' });
       await expect(page).toSelect('#language', 'english');
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toClick('div.alert', { text: 'File updated' });
