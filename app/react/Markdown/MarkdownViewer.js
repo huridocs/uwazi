@@ -54,7 +54,6 @@ class MarkdownViewer extends Component {
       result = (
         <div key={index}>
           <MarkdownMedia key={index} config={config} compact={compact} />
-          <p className="print-view-alt">{config}</p>
         </div>
       );
     }
