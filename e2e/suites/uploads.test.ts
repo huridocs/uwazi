@@ -70,6 +70,15 @@ describe('Uploads', () => {
       const templateName = await getText(entityTemplateTagSelector(firstEntitySelector));
       expect(templateName).toBe('Mecanismo');
     });
+
+    it('should change the language of the document', async () => {
+      await page.click(firstEntitySelector);
+      await page.click('.file-edit');
+      await expect(page).toSelect('#language', 'english');
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('div.alert', { text: 'File updated' });
+      await page.click('.is-active .closeSidepanel');
+    });
   });
 
   describe('when processing fails', () => {

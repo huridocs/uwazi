@@ -2,6 +2,7 @@ import { deleteUploadedFiles } from 'api/files/filesystem';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import entities from 'api/entities';
+import { WithId } from 'api/odm';
 import request from 'shared/JSONRequest';
 import model from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
@@ -20,7 +21,8 @@ export const files = {
     if (index) {
       await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
     }
-    return savedFile;
+    const { __v, ...document }: WithId<FileType> & { __v?: number } = savedFile;
+    return document;
   },
 
   get: model.get.bind(model),

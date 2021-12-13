@@ -27,5 +27,4 @@ export interface FileType {
   };
   toc?: TocSchema[];
   extractedMetadata?: ExtractedMetadataSchema[];
-  __v?: number;
 }

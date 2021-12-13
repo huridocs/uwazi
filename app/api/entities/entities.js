@@ -347,7 +347,7 @@ const withDocuments = async (entities, documentsFullText) => {
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await files.get(
     { entity: { $in: sharedIds } },
-    documentsFullText ? '+fullText ' : ' '
+    documentsFullText ? '+fullText -__v' : ' -__v'
   );
   const idFileMap = new Map();
   allFiles.forEach(file => {

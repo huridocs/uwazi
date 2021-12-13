@@ -59,6 +59,7 @@ export default function() {
         'published',
         'relationships',
       ],
+      excludes: ['documents.__v'],
     },
     from: 0,
     size: 30,
