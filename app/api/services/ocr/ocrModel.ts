@@ -16,6 +16,7 @@ const props = {
   resultFile: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
   language: { type: String },
   status: { type: String, enum: OcrStatus, default: 'processing' },
+  lastUpdated: { type: Number },
 };
 
 interface OcrRecord {
@@ -25,6 +26,7 @@ interface OcrRecord {
   resultFile?: ObjectIdSchema;
   language: string;
   status: OcrStatus;
+  lastUpdated: number;
 }
 
 const mongoSchema = new mongoose.Schema(props, {

@@ -64,6 +64,7 @@ const FIXTURES = {
       resultFile: fixturesFactory.id('resultForExistingRecord'),
       language: 'en',
       status: OcrStatus.READY,
+      lastUpdated: 1000,
     },
   ],
   settings: [
@@ -110,6 +111,7 @@ class Mocks {
           language: 'en',
           type: 'document',
         }),
+      'date.now': jest.spyOn(Date, 'now').mockReturnValue(1000),
     };
 
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
@@ -189,6 +191,7 @@ describe('OcrManager', () => {
           status: OcrStatus.PROCESSING,
           sourceFile: fixturesFactory.id('sourceFile'),
           language: 'eng',
+          lastUpdated: 1000,
         });
         expect(lastRecord.autoexpire).not.toBe(null);
         expect(lastRecord).not.toHaveProperty('resultFile');
@@ -197,6 +200,7 @@ describe('OcrManager', () => {
 
     describe('when there are results', () => {
       beforeAll(async () => {
+        mocks.jestMocks['date.now'].mockReturnValue(1001);
         await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       });
 
@@ -245,6 +249,7 @@ describe('OcrManager', () => {
           language: 'eng',
           autoexpire: null,
           resultFile: fixturesFactory.id('resultFile'),
+          lastUpdated: 1001,
         });
       });
     });
@@ -257,7 +262,7 @@ describe('OcrManager', () => {
 
         const ocrManager = new OcrManager();
         const status = await ocrManager.getStatus(existingSourceFile);
-        expect(status).toBe(OcrStatus.READY);
+        expect(status).toEqual({ status: OcrStatus.READY, lastUpdated: 1000 });
       });
     });
   });
@@ -305,6 +310,7 @@ describe('OcrManager', () => {
     });
 
     it('message is not a success, and record error in db', async () => {
+      mocks.jestMocks['date.now'].mockReturnValue(1002);
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
 
       const ocrManager = new OcrManager();
@@ -325,8 +331,9 @@ describe('OcrManager', () => {
         status: 'cannotProcess',
         sourceFile: fixturesFactory.id('sourceFile'),
         language: 'eng',
+        autoexpire: null,
+        lastUpdated: 1002,
       });
-      expect(record.autoexpire).not.toBeNull();
     });
   });
 });

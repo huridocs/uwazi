@@ -10,7 +10,9 @@ import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManag
 import { tenants } from 'api/tenants/tenantContext';
 import request from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
+import relationships from 'api/relationships';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
+import { EnforcedWithId } from '../../odm/model';
 
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
@@ -69,6 +71,7 @@ class OcrManager {
       sourceFile: file._id,
       language: file.language,
       status: OcrStatus.PROCESSING,
+      lastUpdated: Date.now(),
     });
   }
 
@@ -111,7 +114,7 @@ class OcrManager {
       }
     }
 
-    return status;
+    return { status, ...(record ? { lastUpdated: record.lastUpdated } : {}) };
   }
 
   private async saveResultFile(message: ResultsMessage, originalFile: FileType) {
@@ -141,7 +144,11 @@ class OcrManager {
     );
   }
 
-  private async processFiles(record: OcrRecord, message: ResultsMessage, originalFile: FileType) {
+  private async processFiles(
+    record: OcrRecord,
+    message: ResultsMessage,
+    originalFile: EnforcedWithId<FileType>
+  ) {
     const resultFile = await this.saveResultFile(message, originalFile);
     await files.save({ ...originalFile, type: 'attachment' });
     await OcrModel.save({
@@ -149,7 +156,12 @@ class OcrManager {
       status: OcrStatus.READY,
       resultFile: resultFile._id,
       autoexpire: null,
+      lastUpdated: Date.now(),
     });
+    await relationships.swapTextReferencesFile(
+      originalFile._id.toHexString(),
+      resultFile._id.toHexString()
+    );
   }
 
   private async processResults(message: ResultsMessage): Promise<void> {
@@ -162,7 +174,12 @@ class OcrManager {
       }
 
       if (!message.success) {
-        await OcrModel.save({ ...record, status: OcrStatus.ERROR });
+        await OcrModel.save({
+          ...record,
+          status: OcrStatus.ERROR,
+          autoexpire: null,
+          lastUpdated: Date.now(),
+        });
         return;
       }
 
