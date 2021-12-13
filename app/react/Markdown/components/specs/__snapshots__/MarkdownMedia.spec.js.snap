@@ -138,6 +138,11 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
       </span>
     </div>
   </div>
+  <p
+    className="print-view-alt"
+  >
+    https://www.vimeo.com/253530307
+  </p>
 </div>
 `;
 
@@ -279,5 +284,10 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
       </span>
     </div>
   </div>
+  <p
+    className="print-view-alt"
+  >
+    https://www.vimeo.com/253530307
+  </p>
 </div>
 `;

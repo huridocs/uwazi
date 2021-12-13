@@ -1,5 +1,11 @@
 @import '../../scss/elements/pill';
 
+.sidepanel-body {
+  .print-view-alt {
+    display: none;
+  }
+}
+
 .sidepanel-body,
 .entity-viewer {
   .view {
