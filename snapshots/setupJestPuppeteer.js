@@ -1,3 +1,4 @@
+/*eslint no-restricted-imports: ["error", "fs"]*/
 //eslint-disable-next-line
 const { setDefaultOptions } = require('expect-puppeteer');
 
