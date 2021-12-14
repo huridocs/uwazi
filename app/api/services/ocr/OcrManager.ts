@@ -17,6 +17,7 @@ import { FileType } from 'shared/types/fileType';
 import relationships from 'api/relationships';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
+import { emitToTenant } from 'api/socketio/setupSockets';
 
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
@@ -212,10 +213,12 @@ class OcrManager {
           autoexpire: null,
           lastUpdated: Date.now(),
         });
+        emitToTenant(message.tenant, 'ocr:error', originalFile._id.toHexString());
         return;
       }
 
       await this.processFiles(record, message, originalFile);
+      emitToTenant(message.tenant, 'ocr:ready', originalFile._id.toHexString());
     }, message.tenant);
   }
 

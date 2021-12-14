@@ -5,8 +5,7 @@ import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 import { files } from './files';
 import { validation, createError } from '../utils';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const validateOcrIsEnabled = async (req: Request, res: Response, next: NextFunction) => {
+const validateOcrIsEnabled = async (_req: Request, res: Response, next: NextFunction) => {
   if (!(await OcrManagerInstance.isEnabled())) {
     return res.sendStatus(404);
   }

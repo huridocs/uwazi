@@ -9,6 +9,7 @@ import settings from 'api/settings/settings';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import request from 'shared/JSONRequest';
+import * as sockets from 'api/socketio/setupSockets';
 import { OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
@@ -159,6 +160,7 @@ class Mocks {
           type: 'document',
         }),
       'date.now': jest.spyOn(Date, 'now').mockReturnValue(1000),
+      'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => {}),
     };
 
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
@@ -300,6 +302,15 @@ describe('OcrManager', () => {
           lastUpdated: 1001,
         });
       });
+
+      it('should emit through the sockets', async () => {
+        const [file] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+        expect(sockets.emitToTenant).toHaveBeenCalledWith(
+          tenantName,
+          'ocr:ready',
+          file._id.toHexString()
+        );
+      });
     });
 
     describe('when requesting the status of a file', () => {
@@ -416,6 +427,7 @@ describe('OcrManager', () => {
       expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
     });
 
+    // eslint-disable-next-line max-statements
     it('message is not a success, and record error in db', async () => {
       mocks.jestMocks['date.now'].mockReturnValue(1002);
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
@@ -442,6 +454,11 @@ describe('OcrManager', () => {
         autoexpire: null,
         lastUpdated: 1002,
       });
+      expect(sockets.emitToTenant).toHaveBeenCalledWith(
+        tenantName,
+        'ocr:error',
+        sourceFile._id.toHexString()
+      );
     });
   });
 
