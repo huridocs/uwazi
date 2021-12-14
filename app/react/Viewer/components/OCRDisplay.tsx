@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { FileType } from 'shared/types/fileType';
@@ -10,11 +9,17 @@ type OCRDisplayProps = {
   file: FileType;
 };
 
-const mapStateToProps = ({ settings }: any) => {
-  const toggleOCRButton = settings.collection.get('toggleOCRButton');
+const formatDate = (time: number, locale: string) => {
+  const date = new Date(time);
 
+  return date.toLocaleString(locale);
+};
+
+const mapStateToProps = ({ settings, locale }: any) => {
+  const toggleOCRButton = settings.collection.get('toggleOCRButton');
   return {
     ocrIsToggled: toggleOCRButton || false,
+    locale,
   };
 };
 
@@ -22,13 +27,12 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = OCRDisplayProps & mappedProps;
 
-const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
+const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
   const [ocrStatus, setOcrStatus] = useState({ status: 'loading', lastUpdated: Date.now() });
-  const { filename = '' } = file;
 
   useEffect(() => {
     if (ocrIsToggled) {
-      getOcrStatus(filename)
+      getOcrStatus(file.filename || '')
         .then(({ status, lastUpdated }) => setOcrStatus({ status, lastUpdated }))
         .catch(() => {
           setOcrStatus({ status: 'cannotProcess', lastUpdated: 0 });
@@ -37,8 +41,8 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
   }, []);
 
   const handleClick = () => {
-    setOcrStatus({ status: 'inQueue', lastUpdated: 0 });
-    postToOcr(filename)
+    setOcrStatus({ status: 'inQueue', lastUpdated: Date.now() });
+    postToOcr(file.filename || '')
       .then(() => {})
       .catch(() => {});
   };
@@ -51,13 +55,12 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
     </div>
   );
 
-  const { status } = ocrStatus;
-  const lastUpdated = new Date(ocrStatus.lastUpdated);
+  const lastUpdated = formatDate(ocrStatus.lastUpdated, locale);
 
   let statusDisplay = <div />;
-  let tip = '';
+  let tip;
 
-  switch (status) {
+  switch (ocrStatus.status) {
     case 'loading':
       statusDisplay = (
         <div className="status">
@@ -85,7 +88,7 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
           </p>
         </div>
       );
-      tip = `Last updated ${lastUpdated}`;
+      tip = ocrDisplayTips.lastUpdated(lastUpdated);
       break;
 
     case 'unsupported_language':
@@ -112,7 +115,7 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
           </p>
         </div>
       );
-      tip = `Last updated ${lastUpdated}`;
+      tip = ocrDisplayTips.lastUpdated(lastUpdated);
       break;
 
     default:
@@ -125,11 +128,7 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
     ocrIsToggled && (
       <div className="ocr-service-display">
         {statusDisplay}
-        {tip && (
-          <span className="ocr-tooltip">
-            <Translate>{tip}</Translate>
-          </span>
-        )}
+        {tip && <span className="ocr-tooltip">{tip}</span>}
       </div>
     )
   );

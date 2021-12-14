@@ -5,12 +5,14 @@ import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
+import { IStore } from 'app/istore';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
 import { OCRDisplay } from '../OCRDisplay';
 import * as ocrActions from '../../actions/ocrActions';
 
 describe('OCRDisplay', () => {
   let file: FileType;
+  let store: any;
 
   jest.spyOn(ocrActions, 'postToOcr');
   jest.spyOn(ocrActions, 'getOcrStatus').mockImplementation(async filename =>
@@ -23,11 +25,12 @@ describe('OCRDisplay', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     file = { _id: 'file_id', filename: 'noOCR' };
+    store = { ...defaultState };
   });
 
   const render = (toggleOCRButton: boolean, pdf: FileType) => {
     const reduxStore = {
-      ...defaultState,
+      ...store,
       settings: {
         collection: Immutable.fromJS({ toggleOCRButton }),
       },
@@ -49,10 +52,21 @@ describe('OCRDisplay', () => {
       expect(await screen.findByText('OCR')).not.toBeNull();
     });
 
-    it('should render a timestamp with the last update', async () => {
+    it('should render the date with the last update', async () => {
       file = { filename: 'inQueue' };
       render(true, file);
-      expect(await screen.findByText(`Last updated ${new Date(1000)}`)).not.toBeNull();
+      expect(
+        await screen.findByText(`Last updated: ${new Date(1000).toLocaleString('en')}`)
+      ).not.toBeNull();
+    });
+
+    it('should take localization for the last update date format', async () => {
+      file = { filename: 'inQueue' };
+      store.locale = 'es';
+      render(true, file);
+      expect(
+        await screen.findByText(`Last updated: ${new Date(1000).toLocaleString('es')}`)
+      ).not.toBeNull();
     });
 
     it('should render a button if the file has no OCR', async () => {
