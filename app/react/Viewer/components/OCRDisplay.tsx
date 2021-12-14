@@ -4,6 +4,7 @@ import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 import { ocrDisplayTips } from '../utils/ocrDisplayTips';
+import socket from 'app/socket';
 
 type OCRDisplayProps = {
   file: FileType;
@@ -42,7 +43,12 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
   const handleClick = () => {
     setOcrStatus({ status: 'inQueue', lastUpdated: Date.now() });
     postToOcr(file.filename || '')
-      .then(() => {})
+      .then(() => {
+        // @ts-ignore
+        socket.on('ocr:ready', _id => {
+          setOcrStatus({ status: 'withOCR', lastUpdated: 0 });
+        });
+      })
       .catch(() => {});
   };
 
