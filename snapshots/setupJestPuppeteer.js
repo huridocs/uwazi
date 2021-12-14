@@ -1,4 +1,4 @@
-//eslint-no-restricted-imports
+//node/no-restricted-import
 //eslint-disable-next-line
 const { setDefaultOptions } = require('expect-puppeteer');
 

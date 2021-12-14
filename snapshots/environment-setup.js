@@ -1,4 +1,4 @@
-//eslint-no-restricted-imports
+//node/no-restricted-import
 const { configureToMatchImageSnapshot } = require('jest-image-snapshot');
 
 const toMatchImageSnapshot = configureToMatchImageSnapshot({
