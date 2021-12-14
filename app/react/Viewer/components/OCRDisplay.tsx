@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
+import { ocrDisplayTips } from '../utils/ocrDisplayTips';
 
 type OCRDisplayProps = {
   file: FileType;
@@ -73,7 +74,7 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
           <Translate>Add to OCR queue</Translate>
         </button>
       );
-      tip = 'The original file will be added as a supporting file.';
+      tip = ocrDisplayTips.noOcr;
       break;
 
     case 'inQueue':
@@ -95,12 +96,12 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
           </p>
         </div>
       );
+      tip = ocrDisplayTips.unsupportedLang;
       break;
 
     case 'cannotProcess':
       statusDisplay = cannotProcess;
-      tip = `The OCR engine couldn’t read the document. Try uploading the document in a different format. 
-      Last updated ${lastUpdated}`;
+      tip = ocrDisplayTips.cantProcess(lastUpdated);
       break;
 
     case 'withOCR':
@@ -116,8 +117,7 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
 
     default:
       statusDisplay = cannotProcess;
-      tip = `The OCR engine couldn’t read the document. Try uploading the document in a different format. 
-      Last updated ${lastUpdated}`;
+      tip = ocrDisplayTips.cantProcess(lastUpdated);
       break;
   }
 

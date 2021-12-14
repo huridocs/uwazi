@@ -16,7 +16,7 @@ describe('OCRDisplay', () => {
   jest.spyOn(ocrActions, 'getOcrStatus').mockImplementation(async filename =>
     Promise.resolve({
       status: filename,
-      lastUpdated: Date.parse('Tue Dec 14 2021 10:58:11 GMT-0300 (Argentina Standard Time)'),
+      lastUpdated: 1000,
     })
   );
 
@@ -52,11 +52,7 @@ describe('OCRDisplay', () => {
     it('should render a timestamp with the last update', async () => {
       file = { filename: 'inQueue' };
       render(true, file);
-      expect(
-        await screen.findByText(
-          'Last updated Tue Dec 14 2021 10:58:11 GMT-0300 (Argentina Standard Time)'
-        )
-      ).not.toBeNull();
+      expect(await screen.findByText(`Last updated ${new Date(1000)}`)).not.toBeNull();
     });
 
     it('should render a button if the file has no OCR', async () => {
