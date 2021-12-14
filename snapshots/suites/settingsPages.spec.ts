@@ -19,6 +19,11 @@ const navigateToPage = async (pageName: string, selector: string) => {
   return fetchedPage.screenshot();
 };
 
+const navigateAndClick = async (pageName: string, selector: string) => {
+  await selectSettingsPage(pageName);
+  await expect(page).toClick(selector);
+};
+
 describe('Settings', () => {
   beforeAll(async () => {
     await insertFixtures();
@@ -47,8 +52,7 @@ describe('Settings', () => {
 
   describe('Pages', () => {
     it('should display create Pages page', async () => {
-      await selectSettingsPage('Pages');
-      await expect(page).toClick('.settings-footer > a');
+      await navigateAndClick('Pages', '.settings-footer > a');
       const className = 'div.settings-content';
       await page.waitForSelector(className);
       const createPagesPage = ensure<ElementHandle>(await page.$(className));
@@ -61,11 +65,9 @@ describe('Settings', () => {
       expect(screenshot).toMatchImageSnapshot();
     });
     it('should display filter groups', async () => {
-      await selectSettingsPage('Filters');
-      await expect(page).toClick('div.settings-footer > button');
-      const className = 'div.settings-content';
-      await page.waitForSelector(className);
-      const filtersGroupPage = ensure<ElementHandle>(await page.$(className));
+      await navigateAndClick('Filters', 'div.settings-footer > button');
+      await page.waitForSelector('div.settings-content');
+      const filtersGroupPage = ensure<ElementHandle>(await page.$('div.settings-content'));
       expect(await filtersGroupPage.screenshot()).toMatchImageSnapshot();
     });
   });
@@ -78,22 +80,18 @@ describe('Settings', () => {
       expect(screenshot).toMatchImageSnapshot();
     });
     it('should display new templates page', async () => {
-      await selectSettingsPage('Templates');
-      await expect(page).toClick('div.settings-footer > a');
-      const className = 'div.settings-content';
-      await page.waitForSelector(className);
-      const newTemplatesPage = ensure<ElementHandle>(await page.$(className));
+      await navigateAndClick('Templates', 'div.settings-footer > a');
+      await page.waitForSelector('div.settings-content');
+      const newTemplatesPage = ensure<ElementHandle>(await page.$('div.settings-content'));
       expect(await newTemplatesPage.screenshot()).toMatchImageSnapshot();
     });
 
     it('should display new templates page with more metadata options', async () => {
-      await selectSettingsPage('Templates');
-      await expect(page).toClick('div.settings-footer > a');
+      await navigateAndClick('Templates', 'div.settings-footer > a');
       await expect(page).toClick(getMetadataOptionSelector(2));
       await expect(page).toClick(getMetadataOptionSelector(4));
-      const className = 'div.settings-content';
-      await page.waitForSelector(className);
-      const templatesMetadataPage = ensure<ElementHandle>(await page.$(className));
+      await page.waitForSelector('div.settings-content');
+      const templatesMetadataPage = ensure<ElementHandle>(await page.$('div.settings-content'));
       expect(await templatesMetadataPage.screenshot()).toMatchImageSnapshot();
     });
 
@@ -107,22 +105,18 @@ describe('Settings', () => {
         });
       });
       it('should display new Thesaurus page', async () => {
-        await selectSettingsPage('Thesauri');
-        await expect(page).toClick('div.settings-footer > a');
-        const className = 'div.settings-content';
-        await page.waitForSelector(className);
-        const newThesaurisPage = ensure<ElementHandle>(await page.$(className));
+        await navigateAndClick('Thesauri', 'div.settings-footer > a');
+        await page.waitForSelector('div.settings-content');
+        const newThesaurisPage = ensure<ElementHandle>(await page.$('div.settings-content'));
         expect(await newThesaurisPage.screenshot()).toMatchImageSnapshot();
       });
       it('should display new Thesaurus with groups page', async () => {
-        await selectSettingsPage('Thesauri');
-        await expect(page).toClick('div.settings-footer > a');
+        await navigateAndClick('Thesauri', 'div.settings-footer > a');
         await expect(page).toClick('div.settings-footer > button');
         await expect(page).toClick('div.settings-footer > button');
         await expect(page).toClick('div.settings-footer > button');
-        const className = 'div.settings-content';
-        await page.waitForSelector(className);
-        const newThesauriGroupsPage = ensure<ElementHandle>(await page.$(className));
+        await page.waitForSelector('div.settings-content');
+        const newThesauriGroupsPage = ensure<ElementHandle>(await page.$('div.settings-content'));
         expect(await newThesauriGroupsPage.screenshot()).toMatchImageSnapshot();
       });
     });
