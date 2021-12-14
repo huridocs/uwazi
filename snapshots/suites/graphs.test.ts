@@ -22,7 +22,6 @@ const graphs = {
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
 };
 
-
 const insertChart = async (chart: string, chartName: string) => {
   await expect(page).toFill('input[name="page.data.title"]', chartName);
   await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
@@ -55,6 +54,9 @@ describe('Graphs in Page ', () => {
 
   describe('Graphs for regular thesauri', () => {
     it('should insert Bar chart graph in created page', async () => {
+      await page.waitForFunction(
+        `document.querySelector('${localSelectors.pageContentsInput}').textContent`
+      );
       const pageContentsInput = await page.$eval(
         localSelectors.pageContentsInput,
         el => el.textContent
@@ -67,7 +69,9 @@ describe('Graphs in Page ', () => {
 
     it('should display Bar chart graph', async () => {
       const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartContainer = ensure<ElementHandle>(
+        await graphsPage.$('.recharts-responsive-container')
+      );
       const chartScreenshot = await chartContainer.screenshot();
       expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
@@ -81,7 +85,9 @@ describe('Graphs in Page ', () => {
 
     it('should display Pie chart graph', async () => {
       const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartContainer = ensure<ElementHandle>(
+        await graphsPage.$('.recharts-responsive-container')
+      );
       const chartScreenshot = await chartContainer.screenshot();
 
       expect(chartScreenshot).toMatchImageSnapshot();
@@ -121,7 +127,9 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Bar chart graph', async () => {
-      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartContainer = ensure<ElementHandle>(
+        await graphsPage.$('.recharts-responsive-container')
+      );
       const chartScreenshot = await chartContainer.screenshot();
 
       expect(chartScreenshot).toMatchImageSnapshot();
@@ -138,7 +146,9 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Pie chart graph', async () => {
-      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.recharts-responsive-container'));
+      const chartContainer = ensure<ElementHandle>(
+        await graphsPage.$('.recharts-responsive-container')
+      );
       const chartScreenshot = await chartContainer.screenshot();
 
       expect(chartScreenshot).toMatchImageSnapshot();

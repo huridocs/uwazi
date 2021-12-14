@@ -9,8 +9,6 @@ customConfig.connect.defaultViewport = {
   setDeviceScaleFactor: 1,
 };
 
-customConfig.chromiumFlags = [
-  '--ignore-certificate-errors',
-];
+customConfig.chromiumFlags = ['--ignore-certificate-errors'];
 
 module.exports = customConfig;
