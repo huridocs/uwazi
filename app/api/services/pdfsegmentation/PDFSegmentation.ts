@@ -142,7 +142,7 @@ class PDFSegmentation {
         }`
       );
     }
-    return { data: JSON.parse(response.json), fileStream: (fileStream as unknown) as Readable };
+    return { data: JSON.parse(response.json), fileStream: fileStream as unknown as Readable };
   };
 
   storeXML = async (filename: string, fileStream: Readable) => {

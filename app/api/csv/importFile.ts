@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { fs } from 'api/files';
 import path from 'path';
 
 import { generateFileName, fileFromReadStream, uploadsPath } from 'api/files/filesystem';

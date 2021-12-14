@@ -53,33 +53,13 @@ describe('TranslateForm', () => {
     });
 
     it('should redner a FormGroup for each language', () => {
-      expect(
-        component
-          .find(FormGroup)
-          .at(0)
-          .props().model
-      ).toBe('.en');
-      expect(
-        component
-          .find(FormGroup)
-          .at(1)
-          .props().model
-      ).toBe('.es');
+      expect(component.find(FormGroup).at(0).props().model).toBe('.en');
+      expect(component.find(FormGroup).at(1).props().model).toBe('.es');
     });
 
     it('should redner a Field for each language', () => {
-      expect(
-        component
-          .find(Field)
-          .at(0)
-          .props().model
-      ).toBe('.en');
-      expect(
-        component
-          .find(Field)
-          .at(1)
-          .props().model
-      ).toBe('.es');
+      expect(component.find(Field).at(0).props().model).toBe('.en');
+      expect(component.find(Field).at(1).props().model).toBe('.es');
     });
   });
 

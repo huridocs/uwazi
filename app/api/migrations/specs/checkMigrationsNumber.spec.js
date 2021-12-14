@@ -1,11 +1,11 @@
 /* eslint-disable import/no-dynamic-require, global-require */
-import fs from 'fs';
+import { fs } from 'api/files';
 import path from 'path';
 import { migrator } from '../migrator';
 
 describe('Unique migrations', () => {
   it('should not repeat migration deltas', async () => {
-    const files = fs.readdirSync(migrator.migrationsDir);
+    const files = await fs.readdir(migrator.migrationsDir);
     const migrations = files.map(
       migration => require(path.join(migrator.migrationsDir, migration)).default
     );

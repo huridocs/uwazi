@@ -1033,8 +1033,7 @@ describe('Activitylog Parser', () => {
             {
               method: 'POST',
               url: '/api/usergroups',
-              body:
-                '{"_id": "group1", "name":"mygroup","members":[{"username":"User 1"}, {"username":"User 2"}]}',
+              body: '{"_id": "group1", "name":"mygroup","members":[{"username":"User 1"}, {"username":"User 2"}]}',
               idField: '_id',
               nameField: 'username',
             },

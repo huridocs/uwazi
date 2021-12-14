@@ -4,7 +4,7 @@ import { streamToString } from '../files/filesystem';
 
 export type matchCB = (entry: string) => boolean;
 
-export default function(zipFile: string) {
+export default function (zipFile: string) {
   return {
     async getFileContent(matchFile: matchCB) {
       const stream = await this.findReadStream(matchFile);

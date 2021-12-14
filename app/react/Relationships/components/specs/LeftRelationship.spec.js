@@ -70,10 +70,7 @@ describe('RelationshipsGraphEdit', () => {
   describe('clicking in a relationship', () => {
     it('should select that connection', () => {
       render();
-      component
-        .find(Doc)
-        .at(0)
-        .simulate('click');
+      component.find(Doc).at(0).simulate('click');
       expect(props.selectConnection).toHaveBeenCalled();
     });
   });
@@ -86,10 +83,7 @@ describe('RelationshipsGraphEdit', () => {
 
     describe('changing the template of a group', () => {
       it('should call updateLeftRelationshipType', () => {
-        component
-          .find(DropdownList)
-          .at(0)
-          .simulate('change', { _id: 3 });
+        component.find(DropdownList).at(0).simulate('change', { _id: 3 });
         expect(props.updateLeftRelationshipType).toHaveBeenCalledWith(0, { _id: 3 });
       });
     });

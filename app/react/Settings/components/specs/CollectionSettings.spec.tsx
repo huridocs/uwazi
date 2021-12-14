@@ -64,10 +64,8 @@ describe('Collection settings', () => {
 
   describe('custom landing page', () => {
     const getHomePageToggleStatus = () =>
-      component
-        .find('SettingsFormElement[label="Use custom landing page"]')
-        .children()
-        .props().toggled;
+      component.find('SettingsFormElement[label="Use custom landing page"]').children().props()
+        .toggled;
 
     it('should display the input when custom page is set', () => {
       render({ home_page: 'a-home' });
@@ -82,10 +80,7 @@ describe('Collection settings', () => {
 
   describe('allow public sharing', () => {
     const getPublicSharingStatus = () =>
-      component
-        .find('SettingsFormElement[label="Private instance"]')
-        .children()
-        .props().checked;
+      component.find('SettingsFormElement[label="Private instance"]').children().props().checked;
 
     it('should be toggled if instance is private', () => {
       render({ private: true });
@@ -100,10 +95,7 @@ describe('Collection settings', () => {
 
   describe('Public Endpoints', () => {
     const getPublicEndpointsStatus = () =>
-      component
-        .find('SettingsFormElement[label="Public Endpoints"]')
-        .children()
-        .props().toggled;
+      component.find('SettingsFormElement[label="Public Endpoints"]').children().props().toggled;
 
     it('should be toggled if templates or public form destination are set', () => {
       render({});

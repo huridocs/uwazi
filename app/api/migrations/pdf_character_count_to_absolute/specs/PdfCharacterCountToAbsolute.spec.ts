@@ -5,30 +5,8 @@ import {
 import { AbsolutePositionTag } from 'api/migrations/pdf_character_count_to_absolute/AbsolutePositionLettersList';
 
 const pdfInfo = [
-  390,
-  4185,
-  8442,
-  13610,
-  18103,
-  21746,
-  25061,
-  28330,
-  31252,
-  34412,
-  38036,
-  41557,
-  44914,
-  48421,
-  51783,
-  54839,
-  57931,
-  61249,
-  64451,
-  67747,
-  71099,
-  74349,
-  76609,
-  78441,
+  390, 4185, 8442, 13610, 18103, 21746, 25061, 28330, 31252, 34412, 38036, 41557, 44914, 48421,
+  51783, 54839, 57931, 61249, 64451, 67747, 71099, 74349, 76609, 78441,
 ];
 
 const checkAbsoluteTag = (tag: AbsolutePositionTag, tagExpected: AbsolutePositionTag) => {
@@ -123,11 +101,8 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      specialCharactersString,
-      16,
-      25
-    );
+    const absolutePosition: AbsolutePositionReference =
+      characterCountToAbsoluteConversion.convertToAbsolutePosition(specialCharactersString, 16, 25);
 
     expect(absolutePosition.text).toBe(specialCharactersString);
     expect(absolutePosition.selectionRectangles.length).toBe(1);
@@ -149,11 +124,8 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      longLabel,
-      6445,
-      6576
-    );
+    const absolutePosition: AbsolutePositionReference =
+      characterCountToAbsoluteConversion.convertToAbsolutePosition(longLabel, 6445, 6576);
 
     expect(absolutePosition.text).toBe(longLabel);
     expect(absolutePosition.selectionRectangles.length).toBe(11);
@@ -182,11 +154,8 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      notFoundedLabel,
-      76656,
-      76844
-    );
+    const absolutePosition: AbsolutePositionReference =
+      characterCountToAbsoluteConversion.convertToAbsolutePosition(notFoundedLabel, 76656, 76844);
 
     expect(absolutePosition.text).toBe(notFoundedLabel);
     expect(absolutePosition.selectionRectangles.length).toBe(4);
@@ -224,11 +193,12 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      severalAppearancesString,
-      52284,
-      52292
-    );
+    const absolutePosition: AbsolutePositionReference =
+      characterCountToAbsoluteConversion.convertToAbsolutePosition(
+        severalAppearancesString,
+        52284,
+        52292
+      );
 
     expect(absolutePosition.text).toBe(severalAppearancesString);
     expect(absolutePosition.selectionRectangles.length).toBe(1);
@@ -251,11 +221,12 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      stringSpreadTwoPages,
-      48358,
-      48440
-    );
+    const absolutePosition: AbsolutePositionReference =
+      characterCountToAbsoluteConversion.convertToAbsolutePosition(
+        stringSpreadTwoPages,
+        48358,
+        48440
+      );
 
     expect(absolutePosition.selectionRectangles.length).toBe(4);
 
@@ -300,11 +271,8 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      nonExistentString,
-      48358,
-      48440
-    );
+    const absolutePosition: AbsolutePositionReference =
+      characterCountToAbsoluteConversion.convertToAbsolutePosition(nonExistentString, 48358, 48440);
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,

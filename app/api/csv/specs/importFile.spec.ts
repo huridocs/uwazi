@@ -1,6 +1,5 @@
 import path from 'path';
-import fs from 'fs';
-import { streamToString } from 'api/files/filesystem';
+import { streamToString, deleteFiles } from 'api/files/filesystem';
 
 import importFile from '../importFile';
 import { createTestingZip } from './helpers';
@@ -15,9 +14,11 @@ describe('importFile', () => {
     await createTestingZip([path.join(__dirname, '/zipData/file1.txt')], 'badFile.zip');
   });
 
-  afterAll(() => {
-    fs.unlinkSync(path.join(__dirname, '/zipData/ImportFile.zip'));
-    fs.unlinkSync(path.join(__dirname, '/zipData/badFile.zip'));
+  afterAll(async () => {
+    await deleteFiles([
+      path.join(__dirname, '/zipData/ImportFile.zip'),
+      path.join(__dirname, '/zipData/badFile.zip'),
+    ]);
   });
 
   describe('readStream', () => {

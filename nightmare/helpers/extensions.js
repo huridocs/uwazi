@@ -230,10 +230,7 @@ Nightmare.action('waitForCardToBeCreated', function waitForCardToBeCreated(cardT
 
     cards.forEach(card => {
       if (
-        card
-          .querySelector('.item-name span')
-          .innerText.toLowerCase()
-          .match(title.toLowerCase())
+        card.querySelector('.item-name span').innerText.toLowerCase().match(title.toLowerCase())
       ) {
         found = true;
       }
@@ -279,32 +276,12 @@ Nightmare.action('waitForCardTemplate', function waitForCardTemplate(selector, t
   });
 });
 
-Nightmare.action('manageItemFromList', function manageItemFromList(
-  liElement,
-  targetText,
-  action,
-  done
-) {
-  this.wait(
-    (listSelector, textToMatch) => {
-      let itemFound = false;
-      const list = document.querySelectorAll(listSelector);
-      list.forEach(item => {
-        let text = item.innerText;
-        text += Array.from(item.querySelectorAll('input'))
-          .map(input => input.value)
-          .join('');
-        if (text.match(textToMatch)) {
-          itemFound = true;
-        }
-      });
-      return itemFound;
-    },
-    liElement,
-    targetText
-  )
-    .evaluate(
-      (listSelector, textToMatch, actionToTake) => {
+Nightmare.action(
+  'manageItemFromList',
+  function manageItemFromList(liElement, targetText, action, done) {
+    this.wait(
+      (listSelector, textToMatch) => {
+        let itemFound = false;
         const list = document.querySelectorAll(listSelector);
         list.forEach(item => {
           let text = item.innerText;
@@ -312,18 +289,36 @@ Nightmare.action('manageItemFromList', function manageItemFromList(
             .map(input => input.value)
             .join('');
           if (text.match(textToMatch)) {
-            item.querySelector(actionToTake).click();
+            itemFound = true;
           }
         });
+        return itemFound;
       },
       liElement,
-      targetText,
-      action
+      targetText
     )
-    .then(() => {
-      done();
-    });
-});
+      .evaluate(
+        (listSelector, textToMatch, actionToTake) => {
+          const list = document.querySelectorAll(listSelector);
+          list.forEach(item => {
+            let text = item.innerText;
+            text += Array.from(item.querySelectorAll('input'))
+              .map(input => input.value)
+              .join('');
+            if (text.match(textToMatch)) {
+              item.querySelector(actionToTake).click();
+            }
+          });
+        },
+        liElement,
+        targetText,
+        action
+      )
+      .then(() => {
+        done();
+      });
+  }
+);
 
 Nightmare.action('deleteItemFromList', function deleteItemFromList(liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.btn-danger').then(() => {
@@ -362,15 +357,14 @@ Nightmare.action('selectByLabel', function selectByLabel(elementSelector, target
     .then(value => this.select(elementSelector, value).then(done));
 });
 
-Nightmare.action('clickMultiselectOption', function clickMultiselectOption(
-  liElement,
-  targetText,
-  done
-) {
-  this.manageItemFromList(liElement, targetText, '.multiselectItem-label').then(() => {
-    done();
-  });
-});
+Nightmare.action(
+  'clickMultiselectOption',
+  function clickMultiselectOption(liElement, targetText, done) {
+    this.manageItemFromList(liElement, targetText, '.multiselectItem-label').then(() => {
+      done();
+    });
+  }
+);
 
 Nightmare.action('scrollElement', function scrollElement(selector, height, done) {
   this.wait(selector)

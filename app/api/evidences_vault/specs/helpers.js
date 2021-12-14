@@ -1,7 +1,7 @@
 import backend from 'fetch-mock'; // eslint-disable-line
 import path from 'path';
 import yazl from 'yazl';
-import fs from 'fs';
+import { fs } from 'api/files';
 
 const createPackage = (data, fileName) =>
   fileName

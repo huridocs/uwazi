@@ -19,10 +19,7 @@ describe('migration fix_blank_values', () => {
   it('should set [] to all values on metadata that are blank string', async () => {
     await migration.up(testingDB.mongodb);
 
-    const entities = await testingDB.mongodb
-      .collection('entities')
-      .find()
-      .toArray();
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     expect(entities[0].metadata.select).toEqual([]);
     expect(entities[0].metadata.another_value).toEqual([{ value: 'value' }]);

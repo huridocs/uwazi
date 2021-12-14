@@ -35,19 +35,13 @@ describe('Menu', () => {
     it('Renders external and internal links', () => {
       render();
 
-      const internalLink = component
-        .find('.menuNav-list')
-        .first()
-        .find(I18NLink);
+      const internalLink = component.find('.menuNav-list').first().find(I18NLink);
       expect(internalLink.length).toBe(3);
       expect(internalLink.at(0).props().to).toBe('internal_url');
       expect(internalLink.at(1).props().to).toBe('/');
       expect(internalLink.at(2).props().to).toBe('/');
 
-      const externalLink = component
-        .find('.menuNav-list')
-        .first()
-        .find('a');
+      const externalLink = component.find('.menuNav-list').first().find('a');
       expect(externalLink.length).toBe(1);
       expect(externalLink.props().href).toBe('http://external_url');
       expect(externalLink.props().target).toBe('_blank');

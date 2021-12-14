@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.45.0",
+  "version": "1.46.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -63,7 +63,6 @@
     "lodash-es": "^4.17.21",
     "bl": "^4.0.3",
     "trim": "0.0.3",
-    "url-parse": "1.5.0",
     "normalize-url": "6.0.1"
   },
   "dependencies": {
@@ -116,7 +115,7 @@
     "html-to-react": "^1.4.3",
     "htmlparser2": "^3.9.2",
     "immutable": "^3.7.6",
-    "is-reachable": "5.1.0",
+    "is-reachable": "^5.1.1",
     "isomorphic-fetch": "2.2.1",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
@@ -127,8 +126,8 @@
     "markdown-it": "11.0.0",
     "markdown-it-container": "3.0.0",
     "mime-types": "^2.1.29",
-    "moment": "2.27.0",
-    "moment-timezone": "0.5.31",
+    "moment": "2.29.1",
+    "moment-timezone": "0.5.34",
     "mongodb": "3.7.1",
     "mongoose": "5.13.9",
     "multer": "^1.4.2",
@@ -190,7 +189,7 @@
     "world-countries": "4.0.0",
     "wrap-range-text": "^1.0.1",
     "xml-js": "^1.6.11",
-    "yargs": "^16.0.3",
+    "yargs": "^17.3.0",
     "yauzl": "^2.10.0",
     "yazl": "^2.5.1"
   },
@@ -272,6 +271,7 @@
     "eslint-plugin-jasmine": "2.9.2",
     "eslint-plugin-jest": "v24.0.1",
     "eslint-plugin-jsx-a11y": "6.3.1",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "v7.20.0",
     "fetch-mock": "^9.10.7",
@@ -290,7 +290,7 @@
     "nodemon": "^2.0.7",
     "optimize-css-assets-webpack-plugin": "^6.0.1",
     "plop": "^2.7.6",
-    "prettier": "1.19.1",
+    "prettier": "2.5.0",
     "puppeteer": "^5.3.1",
     "react-dnd-test-backend": "2.5.1",
     "redux-mock-store": "^1.0.2",
@@ -306,8 +306,7 @@
     "webpack-cli": "3.3.12",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "^2.25.1",
-    "winston-transport": "^4.4.0",
-    "yargs": "^16.0.3"
+    "winston-transport": "^4.4.0"
   },
   "config": {
     "mongodbMemoryServer": {

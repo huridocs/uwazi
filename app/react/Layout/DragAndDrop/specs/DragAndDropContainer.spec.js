@@ -29,19 +29,10 @@ describe('DragAndDropContainer', () => {
     it('should render a DragAndDropItem for each item', () => {
       render();
       expect(component.find(DragAndDropItem).length).toBe(2);
-      expect(
-        component
-          .find(DragAndDropItem)
-          .first()
-          .props().originalItem
-      ).toEqual(items[0]);
-      expect(
-        component
-          .find(DragAndDropItem)
-          .first()
-          .props()
-          .children(items[0])
-      ).toBe('A rude awakening');
+      expect(component.find(DragAndDropItem).first().props().originalItem).toEqual(items[0]);
+      expect(component.find(DragAndDropItem).first().props().children(items[0])).toBe(
+        'A rude awakening'
+      );
     });
 
     it('should enable iconHandle on children if iconHandle is enabled in container', () => {

@@ -99,10 +99,10 @@ describe('ODM Model', () => {
 
     it('should update the log when updating (not creating a new entry)', async () => {
       Date.now = () => 2;
-      const savedDocument = await extendedModel.save(({
+      const savedDocument = await extendedModel.save({
         ...newDocument1,
         name: 'edited name',
-      } as unknown) as TestDoc);
+      } as unknown as TestDoc);
       const logEntries = await updatelogsModel.find({});
 
       expect(logEntries.length).toBe(2);

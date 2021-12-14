@@ -45,10 +45,7 @@ export default function documents(state = initialState, action = {}) {
   if (action.type === uploadTypes.UPLOAD_COMPLETE) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.doc);
 
-    const doc = state
-      .get('rows')
-      .get(docIndex)
-      .toJS();
+    const doc = state.get('rows').get(docIndex).toJS();
     doc.documents.push(action.file);
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
@@ -61,10 +58,7 @@ export default function documents(state = initialState, action = {}) {
     ].includes(action.type)
   ) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.entity);
-    const doc = state
-      .get('rows')
-      .get(docIndex)
-      .toJS();
+    const doc = state.get('rows').get(docIndex).toJS();
 
     if (action.type === attachmentTypes.ATTACHMENT_COMPLETE) {
       doc.attachments.push(action.file);
@@ -80,10 +74,7 @@ export default function documents(state = initialState, action = {}) {
   if (action.type === uploadTypes.DOCUMENT_PROCESS_ERROR) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.sharedId);
 
-    const doc = state
-      .get('rows')
-      .get(docIndex)
-      .toJS();
+    const doc = state.get('rows').get(docIndex).toJS();
     doc.documents[0].status = 'failed';
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }

@@ -23,7 +23,7 @@ const nested = (filters, path) => ({
   },
 });
 
-export default function() {
+export default function () {
   const defaultFilter = [
     {
       bool: {
@@ -246,9 +246,8 @@ export default function() {
 
     publishingStatusAggregations() {
       if (permissionsContext.getUserInContext()) {
-        baseQuery.aggregations.all.aggregations._published = publishingStatusAgreggations(
-          baseQuery
-        );
+        baseQuery.aggregations.all.aggregations._published =
+          publishingStatusAgreggations(baseQuery);
       }
       return this;
     },
@@ -328,9 +327,8 @@ export default function() {
     },
 
     permissionsLevelAgreggations() {
-      baseQuery.aggregations.all.aggregations['_permissions.self'] = permissionsLevelAgreggations(
-        baseQuery
-      );
+      baseQuery.aggregations.all.aggregations['_permissions.self'] =
+        permissionsLevelAgreggations(baseQuery);
     },
 
     permissionsUsersAgreggations() {

@@ -1,6 +1,6 @@
-import { spawn } from 'child-process-promise';
-
+//eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
+import { spawn } from 'child-process-promise';
 import convert from 'xml-js';
 import path from 'path';
 import { promisify } from 'util';

@@ -93,9 +93,7 @@ describe('validateEntity', () => {
 
     it('should fail if title exceeds the lucene term byte-length limit', async () => {
       const entity = createEntity({
-        title: Math.random()
-          .toString(36)
-          .repeat(20000),
+        title: Math.random().toString(36).repeat(20000),
       });
       await expectError(entity, expect.any(String), '.title');
     });
@@ -106,9 +104,7 @@ describe('validateEntity', () => {
     });
 
     describe('metadata', () => {
-      const largeField = Math.random()
-        .toString(36)
-        .repeat(20000);
+      const largeField = Math.random().toString(36).repeat(20000);
 
       it('should not allow metadata keys that are not defined on the template properties', async () => {
         const entity = createEntity({
@@ -523,17 +519,21 @@ describe('validateEntity', () => {
           await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
         });
 
-        it('should fail if label or url are not provided', async () => {
+        it('should fail if url is not provided', async () => {
           let entity = createEntity({
             metadata: { link: [{ value: { label: 'label', url: '' } }] },
           });
-          await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
-          entity = createEntity({ metadata: { link: [{ value: { label: '', url: 'url' } }] } });
           await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");
         });
 
         it('should be ok if both are empty', async () => {
           const entity = createEntity({ metadata: { link: [{ value: { label: '', url: '' } }] } });
+          await testValid(entity);
+        });
+        it('should be ok if label is empty', async () => {
+          const entity = createEntity({
+            metadata: { link: [{ value: { label: '', url: 'https://youtube.com' } }] },
+          });
           await testValid(entity);
         });
       });

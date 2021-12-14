@@ -8,9 +8,7 @@ import contact from '../contact';
 describe('contact', () => {
   beforeEach(done => {
     spyOn(mailer, 'send').and.returnValue(Promise.resolve());
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

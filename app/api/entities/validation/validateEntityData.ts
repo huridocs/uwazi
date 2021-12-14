@@ -10,21 +10,20 @@ import { customErrorMessages, validators } from './metadataValidators';
 
 const ajv = Ajv({ allErrors: true });
 
-const validateField = (entity: EntitySchema, template: TemplateSchema) => async (
-  err: Promise<Ajv.ErrorObject[]>,
-  property: PropertySchema
-) => {
-  try {
-    await validateMetadataField(property, entity, template);
-    return err;
-  } catch (e) {
-    const currentErrors = await err;
-    if (e instanceof Ajv.ValidationError) {
-      return currentErrors.concat(e.errors);
+const validateField =
+  (entity: EntitySchema, template: TemplateSchema) =>
+  async (err: Promise<Ajv.ErrorObject[]>, property: PropertySchema) => {
+    try {
+      await validateMetadataField(property, entity, template);
+      return err;
+    } catch (e) {
+      const currentErrors = await err;
+      if (e instanceof Ajv.ValidationError) {
+        return currentErrors.concat(e.errors);
+      }
+      throw e;
     }
-    throw e;
-  }
-};
+  };
 
 const validateFields = async (template: TemplateSchema, entity: EntitySchema) => {
   const errors: Ajv.ErrorObject[] = await (template.properties || []).reduce<

@@ -64,29 +64,20 @@ describe('RelationshipsGraphEdit', () => {
     it('should render the relationship groups', () => {
       expect(component.find('.rightRelationshipsTypeGroup').length).toBe(2);
       expect(component.find(Doc).length).toBe(4);
-      expect(
-        component
-          .find(Doc)
-          .at(0)
-          .props().doc
-      ).toEqual(fromJS(hub.rightRelationships[0].relationships[0].entityData));
+      expect(component.find(Doc).at(0).props().doc).toEqual(
+        fromJS(hub.rightRelationships[0].relationships[0].entityData)
+      );
       expect(component.find(HubRelationshipMetadata).length).toBe(4);
-      expect(
-        component
-          .find(HubRelationshipMetadata)
-          .at(0)
-          .props().relationship
-      ).toEqual(fromJS(hub.rightRelationships[0].relationships[0]));
+      expect(component.find(HubRelationshipMetadata).at(0).props().relationship).toEqual(
+        fromJS(hub.rightRelationships[0].relationships[0])
+      );
     });
   });
 
   describe('clicking in a relationship', () => {
     it('should select that connection', () => {
       render();
-      component
-        .find(Doc)
-        .at(0)
-        .simulate('click');
+      component.find(Doc).at(0).simulate('click');
       expect(props.selectConnection).toHaveBeenCalled();
     });
   });
@@ -115,30 +106,21 @@ describe('RelationshipsGraphEdit', () => {
 
     describe('clicking on the delete button next to a relationship', () => {
       it('should mark that relationship to be deleted', () => {
-        component
-          .find('.removeEntity button')
-          .at(0)
-          .simulate('click');
+        component.find('.removeEntity button').at(0).simulate('click');
         expect(props.toggleRemoveEntity).toHaveBeenCalledWith(0, 0, 0);
       });
     });
 
     describe('clicking on the delete button next to a right group', () => {
       it('should mark that entire gtoup to be deleted', () => {
-        component
-          .find('.removeRightRelationshipGroup button')
-          .at(0)
-          .simulate('click');
+        component.find('.removeRightRelationshipGroup button').at(0).simulate('click');
         expect(props.toggleRemoveRightRelationshipGroup).toHaveBeenCalledWith(0, 0);
       });
     });
 
     describe('clicking on the add new relationship', () => {
       it('should call setAddToData and openAddEntitiesPanel', () => {
-        component
-          .find('.relationships-new')
-          .at(0)
-          .simulate('click');
+        component.find('.relationships-new').at(0).simulate('click');
         expect(props.setAddToData).toHaveBeenCalledWith(0, 0);
         expect(props.openAddEntitiesPanel).toHaveBeenCalled();
       });
@@ -146,10 +128,7 @@ describe('RelationshipsGraphEdit', () => {
 
     describe('changing the template of a group', () => {
       it('should call updateRightRelationshipType', () => {
-        component
-          .find(DropdownList)
-          .at(0)
-          .simulate('change', { _id: 3 });
+        component.find(DropdownList).at(0).simulate('change', { _id: 3 });
         expect(props.updateRightRelationshipType).toHaveBeenCalledWith(0, 0, 3);
       });
     });

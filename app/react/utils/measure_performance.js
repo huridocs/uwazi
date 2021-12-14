@@ -17,7 +17,7 @@ window.Measures = {
   },
 };
 
-Function.prototype.MeasurePerformance = function(context) {
+Function.prototype.MeasurePerformance = function (context) {
   let parameters = Array.prototype.slice.call(arguments);
   parameters.splice(0, 1);
   let start = performance.now();

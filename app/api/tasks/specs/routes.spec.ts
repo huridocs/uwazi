@@ -34,9 +34,7 @@ describe('task routes', () => {
 
   describe('GET', () => {
     it('should return empty for undefined task', async () => {
-      const response = await request(app)
-        .get('/api/tasks')
-        .query({ name: 'a' });
+      const response = await request(app).get('/api/tasks').query({ name: 'a' });
       expect(response.body).toEqual({ state: 'undefined' });
     });
 
@@ -49,14 +47,10 @@ describe('task routes', () => {
         })
         .send({ a: 1 });
       expect(response.body.startTime).not.toBe(undefined);
-      response = await request(app)
-        .get('/api/tasks')
-        .query({ name: 'a' });
+      response = await request(app).get('/api/tasks').query({ name: 'a' });
       while (response.body.status === 'running') {
         /* eslint-disable no-await-in-loop */
-        response = await request(app)
-          .get('/api/tasks')
-          .query({ name: 'a' });
+        response = await request(app).get('/api/tasks').query({ name: 'a' });
       }
       expect(response.body.message).toBe('1');
       expect(response.body.result).toEqual({ a: 1 });

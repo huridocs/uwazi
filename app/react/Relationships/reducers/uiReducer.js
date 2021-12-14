@@ -3,7 +3,7 @@ import * as types from '../actions/actionTypes';
 
 const initialState = { open: false, connecting: false };
 
-export default function(state = initialState, action = {}) {
+export default function (state = initialState, action = {}) {
   switch (action.type) {
     case types.OPEN_RELATIONSHIPS_PANEL:
       return state.set('open', true);

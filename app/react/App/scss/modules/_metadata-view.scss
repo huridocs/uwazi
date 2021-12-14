@@ -1,5 +1,11 @@
 @import '../../scss/elements/pill';
 
+.sidepanel-body {
+  .print-view-alt {
+    display: none;
+  }
+}
+
 .sidepanel-body,
 .entity-viewer {
   .view {
@@ -141,6 +147,9 @@
     .metadata-type-multimedia,
     .metadata-timeline-viewer {
       width: 100%;
+    }
+    .print-view-alt {
+      display: none;
     }
   }
 }

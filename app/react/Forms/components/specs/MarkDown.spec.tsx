@@ -37,10 +37,7 @@ describe('MarkDown', () => {
 
   it('should put the value in the textarea and default to 6 rows', () => {
     render();
-    const textarea = component
-      .find(TabContent)
-      .first()
-      .find('textarea');
+    const textarea = component.find(TabContent).first().find('textarea');
     expect(textarea.props().value).toBe('<b>This is a title</b>');
     expect(textarea.props().rows).toBe(6);
   });
@@ -48,10 +45,7 @@ describe('MarkDown', () => {
   it('should allow to customize de number of rows', () => {
     props.rows = 12;
     render();
-    const textarea = component
-      .find(TabContent)
-      .first()
-      .find('textarea');
+    const textarea = component.find(TabContent).first().find('textarea');
     expect(textarea.props().rows).toBe(12);
   });
 

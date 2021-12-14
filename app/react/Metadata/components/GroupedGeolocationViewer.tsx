@@ -55,31 +55,32 @@ const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo)
   </dl>
 );
 
-const getMultiMemberInfo = (templatesInfo: TemplatesInfo) => (member: GroupMember) => (
-  <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
-    <dt>
-      <span>
-        <Translate context={member.translateContext}>{member.label}</Translate>
-        {' ('}
-        <Translate>linked</Translate>{' '}
-        <Translate context={member.translateContext}>
-          {templatesInfo[member.translateContext].name}
-        </Translate>
-        {') '}
-      </span>
-    </dt>
-    <dd>
-      {member.value.map(value => (
-        <Pill
-          key={`${value.lat}_${value.lon}`}
-          color={templatesInfo[member.translateContext].color}
-        >
-          <Translate context={member.translateContext}>{value.label || ''}</Translate>
-        </Pill>
-      ))}
-    </dd>
-  </dl>
-);
+const getMultiMemberInfo = (templatesInfo: TemplatesInfo) => (member: GroupMember) =>
+  (
+    <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
+      <dt>
+        <span>
+          <Translate context={member.translateContext}>{member.label}</Translate>
+          {' ('}
+          <Translate>linked</Translate>{' '}
+          <Translate context={member.translateContext}>
+            {templatesInfo[member.translateContext].name}
+          </Translate>
+          {') '}
+        </span>
+      </dt>
+      <dd>
+        {member.value.map(value => (
+          <Pill
+            key={`${value.lat}_${value.lon}`}
+            color={templatesInfo[member.translateContext].color}
+          >
+            <Translate context={member.translateContext}>{value.label || ''}</Translate>
+          </Pill>
+        ))}
+      </dd>
+    </dl>
+  );
 
 const computeRenderMemberGroups = (members: GroupMember[], templatesInfo: TemplatesInfo) => {
   const firstGroup: GroupMember[] = [];

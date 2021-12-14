@@ -1,3 +1,4 @@
+//eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import { promisify } from 'util';
 
@@ -15,10 +16,7 @@ describe('migration pdf_thumbnails', () => {
     spyOn(process.stdout, 'write');
     spyOn(errorLog, 'error');
     config.defaultTenant.uploadedDocuments = __dirname;
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(done => {

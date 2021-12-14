@@ -16,10 +16,7 @@ describe('migration fix-malformed-metadata', () => {
   });
 
   const getDocumentsFrom = async collection =>
-    testingDB.mongodb
-      .collection(collection)
-      .find()
-      .toArray();
+    testingDB.mongodb.collection(collection).find().toArray();
 
   it('should have a delta number', () => {
     expect(migration.delta).toBe(18);

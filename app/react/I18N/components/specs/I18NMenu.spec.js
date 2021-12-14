@@ -72,35 +72,20 @@ describe('I18NMenu', () => {
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
       expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
-      expect(
-        component
-          .find('li')
-          .last()
-          .props().className
-      ).toBe('menuNav-item is-active');
+      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
     });
 
     it('should render as active the passed language when params.lang is not defined', () => {
       props.params = {};
       props.language = 'es';
       render();
-      expect(
-        component
-          .find('li')
-          .last()
-          .props().className
-      ).toBe('menuNav-item is-active');
+      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
     });
 
     it('should render as active the selected language', () => {
       props.location.pathname = '/es/templates/2452345';
       render();
-      expect(
-        component
-          .find('li')
-          .last()
-          .props().className
-      ).toBe('menuNav-item is-active');
+      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
     });
 
     it('should render links for each language', () => {

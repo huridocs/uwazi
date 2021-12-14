@@ -77,10 +77,7 @@ describe('EntityViewer', () => {
   it('should render the ConnectionsList passing deleteConnection as prop', () => {
     render();
 
-    component
-      .find(ConnectionsList)
-      .props()
-      .deleteConnection({ sourceType: 'not metadata' });
+    component.find(ConnectionsList).props().deleteConnection({ sourceType: 'not metadata' });
     expect(context.confirm).toHaveBeenCalled();
   });
 
@@ -93,12 +90,9 @@ describe('EntityViewer', () => {
   it('should render the inherited properties of an entity', () => {
     render();
     expect(component.find(ShowMetadata).props().relationships.size).toBe(1);
-    expect(
-      component
-        .find(ShowMetadata)
-        .props()
-        .relationships.toJS()
-    ).toEqual(props.entity.toJS().relations);
+    expect(component.find(ShowMetadata).props().relationships.toJS()).toEqual(
+      props.entity.toJS().relations
+    );
   });
 
   describe('deleteConnection', () => {

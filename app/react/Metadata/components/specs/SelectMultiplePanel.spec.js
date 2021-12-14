@@ -52,18 +52,8 @@ describe('SelectMultiplePanel', () => {
   it('should render a list of documents with a TemplateLabel', () => {
     render();
     expect(component.find(TemplateLabel).length).toBe(2);
-    expect(
-      component
-        .find('.entities-list li span')
-        .first()
-        .text()
-    ).toContain('A rude awakening');
-    expect(
-      component
-        .find('.entities-list li span')
-        .last()
-        .text()
-    ).toContain('A falling star');
+    expect(component.find('.entities-list li span').first().text()).toContain('A rude awakening');
+    expect(component.find('.entities-list li span').last().text()).toContain('A falling star');
   });
 
   describe('when props.open', () => {
