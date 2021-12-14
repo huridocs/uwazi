@@ -17,8 +17,6 @@ import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
-jest.mock('api/services/tasksmanager/TaskManager.ts');
-
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
   let requestMockedUser = collabUser;

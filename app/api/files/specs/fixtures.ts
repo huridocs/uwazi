@@ -67,10 +67,6 @@ const fixtures: DBFixture = {
       languages: [{ key: 'es', default: true }],
       publicFormDestination: 'http://localhost:54321',
       allowedPublicTemplates: [templateId.toString()],
-      features: {
-        ocr: { url: 'protocol://serviceUrl' },
-      },
-      toggleOCRButton: true,
     },
   ],
   users: [
