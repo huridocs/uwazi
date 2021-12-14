@@ -49,24 +49,14 @@ describe('OCRDisplay', () => {
       expect(await screen.findByText('OCR')).not.toBeNull();
     });
 
-    describe('timestamp', () => {
-      const expectedTimeStamp = async () => {
-        expect(
-          await screen.findByText(
-            'Last updated Tue Dec 14 2021 10:58:11 GMT-0300 (Argentina Standard Time)'
-          )
-        ).not.toBeNull();
-      };
-      it('should render a timestamp with the last update when complete', async () => {
-        file = { filename: 'withOCR' };
-        render(true, file);
-        await expectedTimeStamp();
-      });
-      it('should render a timestamp with the last update when in queue', async () => {
-        file = { filename: 'inQueue' };
-        render(true, file);
-        await expectedTimeStamp();
-      });
+    it('should render a timestamp with the last update', async () => {
+      file = { filename: 'inQueue' };
+      render(true, file);
+      expect(
+        await screen.findByText(
+          'Last updated Tue Dec 14 2021 10:58:11 GMT-0300 (Argentina Standard Time)'
+        )
+      ).not.toBeNull();
     });
 
     it('should render a button if the file has no OCR', async () => {

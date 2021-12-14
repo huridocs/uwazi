@@ -99,8 +99,8 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
 
     case 'cannotProcess':
       statusDisplay = cannotProcess;
-      tip =
-        'The OCR engine couldn’t read the document. Try uploading the document in a different format.';
+      tip = `The OCR engine couldn’t read the document. Try uploading the document in a different format. 
+      Last updated ${lastUpdated}`;
       break;
 
     case 'withOCR':
@@ -116,8 +116,8 @@ const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
 
     default:
       statusDisplay = cannotProcess;
-      tip =
-        'The OCR engine couldn’t read the document. Try uploading the document in a different format.';
+      tip = `The OCR engine couldn’t read the document. Try uploading the document in a different format. 
+      Last updated ${lastUpdated}`;
       break;
   }
 
