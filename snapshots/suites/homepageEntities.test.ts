@@ -36,6 +36,7 @@ describe('Homepage entities', () => {
   });
   it('should display entity view page', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`, { waitUntil: 'domcontentloaded' });
+    await disableTransitions();
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
     const viewPage = ensure<ElementHandle>(await page.$(className));
@@ -51,6 +52,7 @@ describe('Homepage entities', () => {
 
   it('should display entity connections page', async () => {
     await page.goto(`${host}/entity/7amlebw43dw8kt9`);
+    await disableTransitions();
     await expect(page).toClick('div[aria-label="Connections"]');
     const className = 'div.relationships-graph';
     await page.waitForSelector(className);
