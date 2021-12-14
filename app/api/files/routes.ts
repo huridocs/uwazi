@@ -7,7 +7,6 @@ import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
-import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
@@ -226,75 +225,6 @@ export default (app: Application) => {
         });
 
       res.json('ok');
-    }
-  );
-
-  app.get(
-    '/api/files/:filename/ocr',
-    needsAuthorization(['admin', 'editor']),
-    validation.validateRequest({
-      properties: {
-        params: {
-          properties: {
-            filename: { type: 'string' },
-          },
-        },
-      },
-    }),
-    async (req, res, next) => {
-      try {
-        if (!(await OcrManagerInstance.isEnabled())) {
-          return res.sendStatus(404);
-        }
-        const [file] = await files.get({
-          filename: req.params.filename,
-        });
-
-        if (!file || !(await fileExists(uploadsPath(file.filename)))) {
-          throw createError('file not found', 404);
-        }
-
-        const status = await OcrManagerInstance.getStatus(file);
-
-        res.json(status);
-      } catch (e) {
-        next(e);
-      }
-    }
-  );
-
-  app.post(
-    '/api/files/:filename/ocr',
-    needsAuthorization(['admin', 'editor']),
-    validation.validateRequest({
-      properties: {
-        params: {
-          properties: {
-            filename: { type: 'string' },
-          },
-        },
-      },
-    }),
-    async (req, res, next) => {
-      try {
-        if (!(await OcrManagerInstance.isEnabled())) {
-          return res.sendStatus(404);
-        }
-
-        const [file] = await files.get({
-          filename: req.params.filename,
-        });
-
-        if (!file || !(await fileExists(uploadsPath(file.filename)))) {
-          throw createError('file not found', 404);
-        }
-
-        await OcrManagerInstance.addToQueue(file);
-
-        res.sendStatus(200);
-      } catch (e) {
-        next(e);
-      }
     }
   );
 };

@@ -30,6 +30,7 @@ export default (app, server) => {
   require('./files/jsRoutes.js').default(app);
   require('./files/routes').default(app);
   require('./files/exportRoutes').default(app);
+  require('./files/ocrRoutes').default(app);
   require('./settings/routes').default(app);
   require('./i18n/routes').default(app);
   require('./attachments/routes').default(app);
