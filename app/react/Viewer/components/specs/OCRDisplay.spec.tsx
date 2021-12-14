@@ -6,16 +6,19 @@ import { fireEvent, screen } from '@testing-library/react';
 import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
-import { OCRButton } from '../OCRButton';
+import { OCRDisplay } from '../OCRDisplay';
 import * as ocrActions from '../../actions/ocrActions';
 
-describe('OCRButton', () => {
+describe('OCRDisplay', () => {
   let file: FileType;
 
   jest.spyOn(ocrActions, 'postToOcr');
-  jest
-    .spyOn(ocrActions, 'getOcrStatus')
-    .mockImplementation(async filename => Promise.resolve(filename));
+  jest.spyOn(ocrActions, 'getOcrStatus').mockImplementation(async filename =>
+    Promise.resolve({
+      status: filename,
+      lastUpdated: Date.parse('Tue Dec 14 2021 10:58:11 GMT-0300 (Argentina Standard Time)'),
+    })
+  );
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -29,7 +32,7 @@ describe('OCRButton', () => {
         collection: Immutable.fromJS({ toggleOCRButton }),
       },
     };
-    renderConnectedContainer(<OCRButton file={pdf} />, () => reduxStore);
+    renderConnectedContainer(<OCRDisplay file={pdf} />, () => reduxStore);
   };
 
   describe('rendering', () => {
@@ -42,10 +45,28 @@ describe('OCRButton', () => {
   describe('status', () => {
     it('should render according to the pdf OCR status', async () => {
       file = { filename: 'withOCR' };
-
       render(true, file);
+      expect(await screen.findByText('OCR')).not.toBeNull();
+    });
 
-      expect(await screen.findByText('OCR Complete')).not.toBeNull();
+    describe('timestamp', () => {
+      const expectedTimeStamp = async () => {
+        expect(
+          await screen.findByText(
+            'Last updated Tue Dec 14 2021 10:58:11 GMT-0300 (Argentina Standard Time)'
+          )
+        ).not.toBeNull();
+      };
+      it('should render a timestamp with the last update when complete', async () => {
+        file = { filename: 'withOCR' };
+        render(true, file);
+        await expectedTimeStamp();
+      });
+      it('should render a timestamp with the last update when in queue', async () => {
+        file = { filename: 'inQueue' };
+        render(true, file);
+        await expectedTimeStamp();
+      });
     });
 
     it('should render a button if the file has no OCR', async () => {

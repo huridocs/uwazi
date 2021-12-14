@@ -1,10 +1,11 @@
+/* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 
-type OCRButtonProps = {
+type OCRDisplayProps = {
   file: FileType;
 };
 
@@ -18,24 +19,24 @@ const mapStateToProps = ({ settings }: any) => {
 
 const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
-type ComponentProps = OCRButtonProps & mappedProps;
+type ComponentProps = OCRDisplayProps & mappedProps;
 
-const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
-  const [ocrStatus, setOcrStatus] = useState('loading');
+const OCRDisplay = ({ file, ocrIsToggled }: ComponentProps) => {
+  const [ocrStatus, setOcrStatus] = useState({ status: 'loading', lastUpdated: Date.now() });
   const { filename = '' } = file;
 
   useEffect(() => {
     if (ocrIsToggled) {
       getOcrStatus(filename)
-        .then(result => setOcrStatus(result))
+        .then(({ status, lastUpdated }) => setOcrStatus({ status, lastUpdated }))
         .catch(() => {
-          setOcrStatus('cannotProcess');
+          setOcrStatus({ status: 'cannotProcess', lastUpdated: 0 });
         });
     }
   }, []);
 
   const handleClick = () => {
-    setOcrStatus('inQueue');
+    setOcrStatus({ status: 'inQueue', lastUpdated: 0 });
     postToOcr(filename)
       .then(() => {})
       .catch(() => {});
@@ -49,12 +50,15 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
     </div>
   );
 
-  let component = <div />;
+  const { status } = ocrStatus;
+  const lastUpdated = new Date(ocrStatus.lastUpdated);
+
+  let statusDisplay = <div />;
   let tip = '';
 
-  switch (ocrStatus) {
+  switch (status) {
     case 'loading':
-      component = (
+      statusDisplay = (
         <div className="status">
           <p>
             <Translate>Loading</Translate>&nbsp;...
@@ -64,7 +68,7 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
       break;
 
     case 'noOCR':
-      component = (
+      statusDisplay = (
         <button type="button" className="btn btn-default" onClick={() => handleClick()}>
           <Translate>Add to OCR queue</Translate>
         </button>
@@ -73,17 +77,18 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
       break;
 
     case 'inQueue':
-      component = (
+      statusDisplay = (
         <div className="status">
           <p>
             <Translate>In OCR queue</Translate>
           </p>
         </div>
       );
+      tip = `Last updated ${lastUpdated}`;
       break;
 
     case 'unsupported_language':
-      component = (
+      statusDisplay = (
         <div className="status">
           <p>
             <Translate>Unsupported language</Translate>
@@ -93,23 +98,24 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
       break;
 
     case 'cannotProcess':
-      component = cannotProcess;
+      statusDisplay = cannotProcess;
       tip =
         'The OCR engine couldn’t read the document. Try uploading the document in a different format.';
       break;
 
     case 'withOCR':
-      component = (
+      statusDisplay = (
         <div className="status">
           <p>
-            <Translate>OCR Complete</Translate>&nbsp;&#10004;
+            <Translate>OCR</Translate>&nbsp;&#10004;
           </p>
         </div>
       );
+      tip = `Last updated ${lastUpdated}`;
       break;
 
     default:
-      component = cannotProcess;
+      statusDisplay = cannotProcess;
       tip =
         'The OCR engine couldn’t read the document. Try uploading the document in a different format.';
       break;
@@ -118,7 +124,7 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
   return (
     ocrIsToggled && (
       <div className="ocr-service-display">
-        {component}
+        {statusDisplay}
         {tip && (
           <span className="ocr-tooltip">
             <Translate>{tip}</Translate>
@@ -129,5 +135,5 @@ const OCRButton = ({ file, ocrIsToggled }: ComponentProps) => {
   );
 };
 
-const container = connector(OCRButton);
-export { container as OCRButton };
+const container = connector(OCRDisplay);
+export { container as OCRDisplay };
