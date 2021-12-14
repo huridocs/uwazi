@@ -3,6 +3,8 @@ import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
 import { PropertySchema, MetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
+import { UserRole } from 'shared/types/userSchema';
+import { UserSchema } from 'shared/types/userType';
 
 export function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -49,13 +51,15 @@ export function getFixturesFactory() {
       entity: string,
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
       filename: string,
-      language: string = 'en'
+      language: string = 'en',
+      originalname?: string
     ): FileType => ({
       _id: idMapper(`${id}`),
       entity,
       language,
       type,
       filename,
+      originalname: originalname || filename,
     }),
 
     inherit(name: string, content: string, property: string, props = {}): PropertySchema {
@@ -96,6 +100,19 @@ export function getFixturesFactory() {
           ? { _id: idMapper(value), id: value, label: value }
           : { _id: idMapper(value[0]), id: value[0], label: value[1] }
       ),
+    }),
+
+    user: (
+      username: string,
+      role: UserRole = UserRole.COLLABORATOR,
+      email?: string,
+      password?: string
+    ): UserSchema => ({
+      username,
+      _id: idMapper(username),
+      role,
+      email: email || `${username}@provider.tld`,
+      password,
     }),
   });
 }

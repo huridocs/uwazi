@@ -8,23 +8,56 @@ import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 import settings from 'api/settings/settings';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import JSONRequest from 'shared/JSONRequest';
+import { UserRole } from 'shared/types/userSchema';
+import { UserSchema } from 'shared/types/userType';
 
-import { fileName1, fixtures, uploadId } from './fixtures';
 import { fs } from '..';
 import { files } from '../files';
 import ocrRoutes from '../ocrRoutes';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
 import { TaskManager } from '../../services/tasksmanager/TaskManager';
-import { UserSchema } from 'shared/types/userType';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
+const fixturesFactory = getFixturesFactory();
+
+const fileNameToProcess = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const attachmentFile = 'spn.pdf';
+const FIXTURES: DBFixture = {
+  entities: [fixturesFactory.entity('parentEntity')],
+  files: [
+    fixturesFactory.file(
+      'fileToProcess',
+      'parentEntity',
+      'document',
+      fileNameToProcess,
+      'eng',
+      'fileNameToProcess.pdf'
+    ),
+    fixturesFactory.file('unrelatedAttachment', 'parentEntity', 'attachment', attachmentFile),
+  ],
+  users: [fixturesFactory.user('collab'), fixturesFactory.user('admin', UserRole.ADMIN)],
+  connections: [{ entity: 'parentEntity', file: fixturesFactory.id('fileToProcess').toString() }],
+  settings: [
+    {
+      _id: db.id(),
+      languages: [{ key: 'en', default: true }],
+      features: {
+        ocr: { url: 'protocol://serviceUrl' },
+      },
+      toggleOCRButton: true,
+    },
+  ],
+};
+
 describe('OCR service', () => {
-  const collabUser = fixtures.users!.find(u => u.username === 'collab');
-  const adminUser = fixtures.users!.find(u => u.username === 'admin');
+  const collabUser = FIXTURES.users!.find(u => u.username === 'collab');
+  const adminUser = FIXTURES.users!.find(u => u.username === 'admin');
   let requestMockedUser: UserSchema | undefined;
 
   const app: Application = setUpApp(
@@ -47,12 +80,10 @@ describe('OCR service', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(FIXTURES);
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    // TODO: remove after migrating tests to own file
-    await files.save({ ...fixtures.files![0], type: 'document' });
   });
 
   beforeAll(() => {
@@ -63,7 +94,7 @@ describe('OCR service', () => {
 
   it('should return the status on get', async () => {
     setSupportedLang(['en']);
-    const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
+    const { body } = await request(app).get(`/api/files/${fileNameToProcess}/ocr`).expect(200);
 
     expect(body).toEqual({
       status: OcrStatus.NONE,
@@ -72,7 +103,7 @@ describe('OCR service', () => {
 
   it('should return unsupported_language on status get', async () => {
     setSupportedLang(['es']);
-    const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
+    const { body } = await request(app).get(`/api/files/${fileNameToProcess}/ocr`).expect(200);
 
     expect(body).toEqual({
       status: OcrStatus.UNSUPPORTED_LANGUAGE,
@@ -84,7 +115,7 @@ describe('OCR service', () => {
       setSupportedLang(['en']);
       jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
       const resultTestFile = fs.createReadStream(
-        path.join(__dirname, 'uploads/f2082bf51b6ef839690485d7153e847a.pdf')
+        path.join(__dirname, `uploads/${fileNameToProcess}`)
       );
       fetchMock.mock(
         'protocol://link/to/result/file',
@@ -95,11 +126,11 @@ describe('OCR service', () => {
         { sendAsJson: false, overwriteRoutes: true }
       );
 
-      await request(app).post(`/api/files/${fileName1}/ocr`).expect(200);
+      await request(app).post(`/api/files/${fileNameToProcess}/ocr`).expect(200);
     });
 
     it('should set the status to processing', async () => {
-      const { body } = await request(app).get(`/api/files/${fileName1}/ocr`).expect(200);
+      const { body } = await request(app).get(`/api/files/${fileNameToProcess}/ocr`).expect(200);
       expect(body).toEqual({ status: OcrStatus.PROCESSING, lastUpdated: 1000 });
     });
 
@@ -110,11 +141,11 @@ describe('OCR service', () => {
         tenant: 'defaultDB',
         task: 'ocr_results',
         file_url: 'protocol://link/to/result/file',
-        params: { filename: fileName1, language: 'en' },
+        params: { filename: fileNameToProcess, language: 'en' },
         success: true,
       });
 
-      const [originalFile] = await files.get({ filename: fileName1 });
+      const [originalFile] = await files.get({ filename: fileNameToProcess });
       const [record] = await OcrModel.get({ sourceFile: originalFile._id });
       const [resultFile] = await files.get({ _id: record.resultFile });
 
@@ -150,11 +181,11 @@ describe('OCR service', () => {
     });
 
     it('should not allow request status', async () => {
-      await request(app).get(`/api/files/${fileName1}/ocr`).expect(401);
+      await request(app).get(`/api/files/${fileNameToProcess}/ocr`).expect(401);
     });
 
     it('should not allow to create a task', async () => {
-      await request(app).post(`/api/files/${fileName1}/ocr`).expect(401);
+      await request(app).post(`/api/files/${fileNameToProcess}/ocr`).expect(401);
     });
   });
 
@@ -168,23 +199,21 @@ describe('OCR service', () => {
     });
 
     it('should not allow request status', async () => {
-      await request(app).get(`/api/files/${fileName1}/ocr`).expect(404);
+      await request(app).get(`/api/files/${fileNameToProcess}/ocr`).expect(404);
     });
 
     it('should not allow to create a task', async () => {
-      await request(app).post(`/api/files/${fileName1}/ocr`).expect(404);
+      await request(app).post(`/api/files/${fileNameToProcess}/ocr`).expect(404);
     });
   });
 
   describe('when the file is not a document', () => {
     it('should not allow request status if the file is unprocessed', async () => {
-      await files.save({ _id: uploadId, type: 'attachment' });
-      await request(app).get(`/api/files/${fileName1}/ocr`).expect(400);
+      await request(app).get(`/api/files/${attachmentFile}/ocr`).expect(400);
     });
 
     it('should not allow to create a task', async () => {
-      await files.save({ _id: uploadId, type: 'attachment' });
-      await request(app).post(`/api/files/${fileName1}/ocr`).expect(400);
+      await request(app).post(`/api/files/${attachmentFile}/ocr`).expect(400);
     });
   });
 });
