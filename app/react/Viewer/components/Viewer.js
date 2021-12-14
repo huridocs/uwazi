@@ -33,7 +33,7 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument.js';
 import determineDirection from '../utils/determineDirection';
-import { OCRButton } from './OCRButton';
+import { OCRDisplay } from './OCRDisplay';
 
 class Viewer extends Component {
   constructor(props) {
@@ -121,7 +121,7 @@ class Viewer extends Component {
                   </CurrentLocationLink>
                   <NeedAuthorization roles={['admin', 'editor']}>
                     <FeatureToggle feature="ocr.url">
-                      <OCRButton file={file} />
+                      <OCRDisplay file={file} />
                     </FeatureToggle>
                   </NeedAuthorization>
                 </>

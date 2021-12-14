@@ -13,6 +13,10 @@
   .paginator {
     flex-grow: 1;
     text-align: center;
+
+    a {
+      display: inline;
+    }
   }
 
   .ocr-service-display {
