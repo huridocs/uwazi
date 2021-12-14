@@ -149,7 +149,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
     ocrIsToggled && (
       <div className="ocr-service-display">
         {statusDisplay}
-        {tip && <span className="ocr-tooltip">{tip}</span>}
+        {tip && <div className="ocr-tooltip">{tip}</div>}
       </div>
     )
   );

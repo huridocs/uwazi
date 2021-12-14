@@ -123,7 +123,7 @@ $nav-height: $header-height;
 
 .ocr-tooltip {
   display: none;
-  @include tooltip('bottom');
+  @include tooltip('left');
 }
 
 .connectionsNumber {
