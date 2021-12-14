@@ -6,10 +6,10 @@ const postToOcr = async (filename: string) => {
 
 const getOcrStatus = async (filename: string) => {
   const {
-    json: { status },
+    json: { status, lastUpdated },
   } = await api.get(`files/${filename}/ocr`);
 
-  return status;
+  return { status, lastUpdated };
 };
 
 export { postToOcr, getOcrStatus };
