@@ -7,6 +7,7 @@ import { needsAuthorization } from 'api/auth';
 import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 import { config } from 'api/config';
 import { objectIdSchema } from 'shared/types/commonSchemas';
+import { serviceMiddleware } from './serviceMiddleware';
 
 let IX: InformationExtraction;
 if (config.externalServices) {
@@ -16,6 +17,7 @@ if (config.externalServices) {
 export const suggestionsRoutes = (app: Application) => {
   app.get(
     '/api/suggestions/',
+    serviceMiddleware,
     needsAuthorization(['admin']),
     parseQuery,
     validateAndCoerceRequest({
@@ -34,6 +36,7 @@ export const suggestionsRoutes = (app: Application) => {
 
   app.post(
     '/api/suggestions/train',
+    serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
       properties: {
@@ -60,6 +63,7 @@ export const suggestionsRoutes = (app: Application) => {
 
   app.get(
     '/api/suggestions/status',
+    serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
       properties: {
@@ -86,6 +90,7 @@ export const suggestionsRoutes = (app: Application) => {
 
   app.post(
     '/api/suggestions/accept',
+    serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
       properties: {

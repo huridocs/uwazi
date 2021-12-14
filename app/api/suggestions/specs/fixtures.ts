@@ -7,6 +7,15 @@ const suggestionSharedId6Title = testingDB.id();
 const suggestionSharedId6Enemy = testingDB.id();
 
 const fixtures: DBFixture = {
+  settings: [
+    {
+      features: {
+        metadataExtraction: {
+          url: 'https://metadataextraction.com',
+        },
+      },
+    },
+  ],
   ixsuggestions: [
     {
       entityId: 'shared1',
