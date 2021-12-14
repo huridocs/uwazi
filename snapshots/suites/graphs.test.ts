@@ -35,6 +35,13 @@ const savePage = async () => {
   await expect(page).toMatch('(view page)');
 };
 
+const takeScreenshot = async (element: string) => {
+  const graphsPage = await displayGraph();
+  const chartContainer = ensure<ElementHandle>(await graphsPage.$(element));
+  const chartScreenshot = await chartContainer.screenshot();
+  return { graphsPage, chartScreenshot };
+};
+
 describe('Graphs in Page ', () => {
   beforeAll(async () => {
     await insertFixtures();
@@ -68,11 +75,9 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Bar chart graph', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(
-        await graphsPage.$('.recharts-responsive-container')
+      const { graphsPage, chartScreenshot } = await takeScreenshot(
+        '.recharts-responsive-container'
       );
-      const chartScreenshot = await chartContainer.screenshot();
       expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
@@ -84,11 +89,9 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display Pie chart graph', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(
-        await graphsPage.$('.recharts-responsive-container')
+      const { graphsPage, chartScreenshot } = await takeScreenshot(
+        '.recharts-responsive-container'
       );
-      const chartScreenshot = await chartContainer.screenshot();
 
       expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
@@ -101,9 +104,7 @@ describe('Graphs in Page ', () => {
     });
 
     it('should display List chart graph', async () => {
-      const graphsPage = await displayGraph();
-      const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart'));
-      const chartScreenshot = await chartContainer.screenshot();
+      const { graphsPage, chartScreenshot } = await takeScreenshot('.ListChart');
       expect(chartScreenshot).toMatchImageSnapshot();
       await graphsPage.close();
     });
