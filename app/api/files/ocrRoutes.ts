@@ -1,14 +1,23 @@
-import { Application } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 import { files } from './files';
 import { validation, createError } from '../utils';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const validateOcrIsEnabled = async (req: Request, res: Response, next: NextFunction) => {
+  if (!(await OcrManagerInstance.isEnabled())) {
+    return res.sendStatus(404);
+  }
+  return next();
+};
+
 // eslint-disable-next-line import/no-default-export
 export default (app: Application) => {
   app.get(
     '/api/files/:filename/ocr',
+    validateOcrIsEnabled,
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest({
       properties: {
@@ -21,9 +30,6 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        if (!(await OcrManagerInstance.isEnabled())) {
-          return res.sendStatus(404);
-        }
         const [file] = await files.get({
           filename: req.params.filename,
         });
@@ -43,6 +49,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/:filename/ocr',
+    validateOcrIsEnabled,
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest({
       properties: {
@@ -55,10 +62,6 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        if (!(await OcrManagerInstance.isEnabled())) {
-          return res.sendStatus(404);
-        }
-
         const [file] = await files.get({
           filename: req.params.filename,
         });
