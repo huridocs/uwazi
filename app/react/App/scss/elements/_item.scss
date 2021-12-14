@@ -361,6 +361,11 @@ $item-padding: 15px;
 
 .item-metadata {
   font-size: $f-size-sm;
+
+  .print-view-alt {
+    display: none;
+  }
+
   dl {
     margin: 0 $item-padding;
     padding: 3px 0;
