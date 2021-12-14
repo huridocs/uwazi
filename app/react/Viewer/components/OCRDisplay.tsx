@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
+import socket from 'app/socket';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 import { ocrDisplayTips } from '../utils/ocrDisplayTips';
-import socket from 'app/socket';
 
 type OCRDisplayProps = {
   file: FileType;
@@ -30,10 +30,24 @@ type ComponentProps = OCRDisplayProps & mappedProps;
 const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
   const [ocrStatus, setOcrStatus] = useState({ status: 'loading', lastUpdated: Date.now() });
 
+  const socketListen = () => {
+    // @ts-ignore
+    socket.on('ocr:ready', () => {
+      setOcrStatus({ status: 'ocrComplete', lastUpdated: 0 });
+    });
+    // @ts-ignore
+    socket.on('ocr:error', () => {
+      setOcrStatus({ status: 'cannotProcess', lastUpdated: Date.now() });
+    });
+  };
+
   useEffect(() => {
     if (ocrIsToggled) {
       getOcrStatus(file.filename || '')
-        .then(({ status, lastUpdated }) => setOcrStatus({ status, lastUpdated }))
+        .then(({ status, lastUpdated }) => {
+          setOcrStatus({ status, lastUpdated });
+          socketListen();
+        })
         .catch(() => {
           setOcrStatus({ status: 'cannotProcess', lastUpdated: Date.now() });
         });
@@ -44,10 +58,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
     setOcrStatus({ status: 'inQueue', lastUpdated: Date.now() });
     postToOcr(file.filename || '')
       .then(() => {
-        // @ts-ignore
-        socket.on('ocr:ready', _id => {
-          setOcrStatus({ status: 'withOCR', lastUpdated: 0 });
-        });
+        socketListen();
       })
       .catch(() => {});
   };
@@ -119,6 +130,15 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
         </div>
       );
       tip = ocrDisplayTips.lastUpdated(lastUpdated);
+      break;
+
+    case 'ocrComplete':
+      statusDisplay = (
+        <button type="button" className="btn btn-success" onClick={() => window.location.reload()}>
+          <Translate>OCR Complete</Translate>&nbsp;&#10004;
+        </button>
+      );
+      tip = ocrDisplayTips.ocrComplete;
       break;
 
     default:
