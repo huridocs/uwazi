@@ -5,7 +5,6 @@ import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
-import { IStore } from 'app/istore';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
 import { OCRDisplay } from '../OCRDisplay';
 import * as ocrActions from '../../actions/ocrActions';

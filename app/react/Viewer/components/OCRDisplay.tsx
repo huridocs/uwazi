@@ -11,7 +11,6 @@ type OCRDisplayProps = {
 
 const formatDate = (time: number, locale: string) => {
   const date = new Date(time);
-
   return date.toLocaleString(locale);
 };
 
@@ -35,7 +34,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
       getOcrStatus(file.filename || '')
         .then(({ status, lastUpdated }) => setOcrStatus({ status, lastUpdated }))
         .catch(() => {
-          setOcrStatus({ status: 'cannotProcess', lastUpdated: 0 });
+          setOcrStatus({ status: 'cannotProcess', lastUpdated: Date.now() });
         });
     }
   }, []);
@@ -46,14 +45,6 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
       .then(() => {})
       .catch(() => {});
   };
-
-  const cannotProcess = (
-    <div className="status">
-      <p>
-        <Translate>Cannot be processed</Translate>
-      </p>
-    </div>
-  );
 
   const lastUpdated = formatDate(ocrStatus.lastUpdated, locale);
 
@@ -103,7 +94,13 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
       break;
 
     case 'cannotProcess':
-      statusDisplay = cannotProcess;
+      statusDisplay = (
+        <div className="status">
+          <p>
+            <Translate>Cannot be processed</Translate>
+          </p>
+        </div>
+      );
       tip = ocrDisplayTips.cantProcess(lastUpdated);
       break;
 
@@ -119,8 +116,6 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
       break;
 
     default:
-      statusDisplay = cannotProcess;
-      tip = ocrDisplayTips.cantProcess(lastUpdated);
       break;
   }
 
