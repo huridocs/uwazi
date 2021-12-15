@@ -10135,10 +10135,10 @@ node-version@^1.0.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/node-version/-/node-version-1.2.0.tgz"
 
-nodemailer@^6.4.16:
-  version "6.4.16"
-  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.4.16.tgz"
-  integrity sha512-68K0LgZ6hmZ7PVmwL78gzNdjpj5viqBdFqKrTtr9bZbJYj6BRj5W6WGkxXrEnUl3Co3CBXi3CZBUlpV/foGnOQ==
+nodemailer@^6.6.1:
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.6.1.tgz#2a05fbf205b897d71bf43884167b5d4d3bd01b99"
+  integrity sha512-1xzFN3gqv+/qJ6YRyxBxfTYstLNt0FCtZaFRvf4Sg9wxNGWbwFmGXVpfSi6ThGK6aRxAo+KjHtYSW8NvCsNSAg==
 
 nodemon@^2.0.7:
   version "2.0.7"
