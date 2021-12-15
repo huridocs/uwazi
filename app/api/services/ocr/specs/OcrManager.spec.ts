@@ -247,7 +247,6 @@ describe('OcrManager', () => {
           language: 'eng',
           lastUpdated: 1000,
         });
-        expect(lastRecord.autoexpire).not.toBe(null);
         expect(lastRecord).not.toHaveProperty('resultFile');
       });
     });
@@ -301,7 +300,6 @@ describe('OcrManager', () => {
           status: 'withOCR',
           sourceFile: fixturesFactory.id('sourceFile'),
           language: 'eng',
-          autoexpire: null,
           resultFile: fixturesFactory.id('resultFile'),
           lastUpdated: 1001,
         });
@@ -455,7 +453,6 @@ describe('OcrManager', () => {
         status: 'cannotProcess',
         sourceFile: fixturesFactory.id('sourceFile'),
         language: 'eng',
-        autoexpire: null,
         lastUpdated: 1002,
       });
       expect(sockets.emitToTenant).toHaveBeenCalledWith(

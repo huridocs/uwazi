@@ -11,7 +11,6 @@ enum OcrStatus {
 }
 
 const props = {
-  autoexpire: { type: Date, expires: 86400, default: Date.now }, // 24 hours
   sourceFile: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
   resultFile: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
   language: { type: String },
@@ -21,7 +20,6 @@ const props = {
 
 interface OcrRecord {
   _id: ObjectIdSchema;
-  autoexpire: number | null;
   sourceFile: ObjectIdSchema | null;
   resultFile?: ObjectIdSchema;
   language: string;

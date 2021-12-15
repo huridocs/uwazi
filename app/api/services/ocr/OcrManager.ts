@@ -16,9 +16,9 @@ import { ensure } from 'shared/tsUtils';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import relationships from 'api/relationships';
+import { handleError } from 'api/utils/handleError';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
-import { handleError } from 'api/utils/handleError';
 
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
@@ -186,7 +186,6 @@ class OcrManager {
       ...record,
       status: OcrStatus.READY,
       resultFile: resultFile._id,
-      autoexpire: null,
       lastUpdated: Date.now(),
     });
     await relationships.swapTextReferencesFile(
@@ -209,7 +208,6 @@ class OcrManager {
           await OcrModel.save({
             ...record,
             status: OcrStatus.ERROR,
-            autoexpire: null,
             lastUpdated: Date.now(),
           });
           emitToTenant(message.tenant, 'ocr:error', originalFile._id.toHexString());
