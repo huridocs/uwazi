@@ -108,6 +108,11 @@ class Viewer extends Component {
               {sidepanelTab !== 'connections' && (
                 <>
                   <PaginatorWithPage totalPages={file.totalPages} onPageChange={changePage} />
+                  <NeedAuthorization roles={['admin', 'editor']}>
+                    <FeatureToggle feature="ocr.url">
+                      <OCRDisplay file={file} />
+                    </FeatureToggle>
+                  </NeedAuthorization>
                   <CurrentLocationLink
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"
@@ -119,11 +124,6 @@ class Viewer extends Component {
                       <Translate>Plain text</Translate>
                     )}
                   </CurrentLocationLink>
-                  <NeedAuthorization roles={['admin', 'editor']}>
-                    <FeatureToggle feature="ocr.url">
-                      <OCRDisplay file={file} />
-                    </FeatureToggle>
-                  </NeedAuthorization>
                 </>
               )}
             </div>
