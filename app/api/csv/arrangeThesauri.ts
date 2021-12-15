@@ -21,7 +21,9 @@ const filterJSObject = (input: { [k: string]: any }, keys: string[]): { [k: stri
 
 class ArrangeThesauriError extends Error {
   source: Error;
+
   row: CSVRow;
+
   index: number;
 
   constructor(source: Error, row: CSVRow, index: number) {
@@ -42,8 +44,10 @@ const createNameToIdMap = (
     if (p.content && p.type) {
       const thesarusID = p.content.toString();
       nameToThesauriId[p.name] = thesarusID;
+      nameToThesauriId[p.label] = thesarusID;
       languages?.forEach(suffix => {
         nameToThesauriId[`${p.name}__${suffix}`] = thesarusID;
+        nameToThesauriId[`${p.label}__${suffix}`] = thesarusID;
       });
     }
   });
