@@ -37,6 +37,7 @@ const savePage = async () => {
 
 const takeScreenshot = async (element: string) => {
   const graphsPage = await displayGraph();
+  await graphsPage.waitForSelector(element);
   const chartContainer = ensure<ElementHandle>(await graphsPage.$(element));
   const chartScreenshot = await chartContainer.screenshot();
   return { graphsPage, chartScreenshot };

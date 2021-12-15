@@ -35,7 +35,7 @@ describe('Homepage entities', () => {
     expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
   });
   it('should display entity view page', async () => {
-    await page.goto(`${host}/entity/oiejku12qn0zfr`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${host}/entity/oiejku12qn0zfr`);
     await disableTransitions();
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
