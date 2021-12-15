@@ -150,6 +150,20 @@ On a different console tab, run
 $ yarn e2e-puppeteer
 ```
 
+Running snapshot tests
+
+_Note: These tests require that you have `docker` and `docker-compose` isntalled_
+
+```
+$ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
+```
+
+On a different console tab, run
+
+```
+$ yarn e2e-snapshots
+```
+
 Note that if you already have an instance running, this will likely throw an error of ports already been used. Only one instance of Uwazi may be run in a the same port at the same time.
 
 E2E Tests depend on electron. If something appears to not be working, please run `node_modules/electron/dist/electron --help` to check for problems.
