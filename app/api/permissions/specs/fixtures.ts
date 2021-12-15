@@ -1,5 +1,6 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { UserRole } from 'shared/types/userSchema';
 
 const idUserA = db.id();
 const idUserB = db.id();
@@ -10,14 +11,14 @@ const nonExistingGroup = db.id();
 const userA = {
   _id: idUserA,
   username: 'UserA',
-  role: 'admin',
+  role: UserRole.ADMIN,
   email: 'usera@domain.org',
 };
 
 const userB = {
   _id: idUserB,
   username: 'UserB',
-  role: 'editor',
+  role: UserRole.EDITOR,
   email: 'userb@domain.org',
 };
 
