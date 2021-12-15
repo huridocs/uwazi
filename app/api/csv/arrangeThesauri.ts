@@ -87,7 +87,7 @@ const syncSaveThesauri = async (
     t => (thesauriIdToNewValues.get(t._id.toString()) || new Set()).size > 0
   );
   for (let i = 0; i < thesauriWithNewValues.length; i += 1) {
-    const thesaurus = allRelatedThesauri[i];
+    const thesaurus = thesauriWithNewValues[i];
     const newValues = Array.from(thesauriIdToNewValues.get(thesaurus._id.toString()) || []).map(
       tval => ({ label: tval })
     );
