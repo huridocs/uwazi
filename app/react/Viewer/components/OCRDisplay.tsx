@@ -134,7 +134,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
 
     case 'ocrError':
       statusDisplay = (
-        <div className="cant-process">
+        <div className="ocr-error">
           <p>
             <Translate>Cannot be processed</Translate>
           </p>
