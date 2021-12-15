@@ -2,7 +2,7 @@
  * @jest-environment jest-environment-jsdom-sixteen
  */
 import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
@@ -15,10 +15,16 @@ import * as documentActions from '../../actions/documentActions';
 describe('OCRDisplay', () => {
   let file: FileType;
   let store: any;
+  let renderResult: RenderResult;
 
-  let mockSocketOn: any = {};
+  const mockSocketOn: any = {};
 
+  //@ts-ignore
   jest.spyOn(socket, 'on').mockImplementation((event: string, callback: any) => {
+    mockSocketOn[event] = callback;
+  });
+  //@ts-ignore
+  jest.spyOn(socket, 'off').mockImplementation((event: string, callback: any) => {
     mockSocketOn[event] = callback;
   });
 
@@ -34,7 +40,7 @@ describe('OCRDisplay', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    file = { _id: 'file_id', filename: 'noOCR' };
+    file = { _id: 'file_id', filename: 'noOCR', entity: 'entitySharedId' };
     store = { ...defaultState };
   });
 
@@ -45,7 +51,7 @@ describe('OCRDisplay', () => {
         collection: Immutable.fromJS({ toggleOCRButton }),
       },
     };
-    renderConnectedContainer(<OCRDisplay file={pdf} />, () => reduxStore);
+    ({ renderResult } = renderConnectedContainer(<OCRDisplay file={pdf} />, () => reduxStore));
   };
 
   it('should not try to get the status if the feature is not toggled on', async () => {
@@ -124,15 +130,16 @@ describe('OCRDisplay', () => {
       expect(socket.on).toHaveBeenCalled();
     });
 
-    it('should change to display that the ocr is done when the service reports', async () => {
+    it('should change to display that the ocr is done when the service reports ready, and call to replace the file', async () => {
       await renderAndSubmit();
       act(() => {
         mockSocketOn['ocr:ready']('file_id');
       });
       expect(await screen.findByText('OCR completed')).not.toBeNull();
+      expect(documentActions.reloadDocument).toHaveBeenCalledWith('entitySharedId');
     });
 
-    it('should change to display that the ocr has failed when the service reports', async () => {
+    it('should change to display that the ocr has failed when the service reports error', async () => {
       await renderAndSubmit();
       act(() => {
         mockSocketOn['ocr:error']('file_id');
@@ -140,10 +147,25 @@ describe('OCRDisplay', () => {
       expect(await screen.findByText('Could not be processed')).not.toBeNull();
     });
 
-    it('should liste to the ocr service if the document is in queue', async () => {
+    it('should liste to the ocr service if the document is in the ocr queue when the component loads', async () => {
       render(true, { ...file, filename: 'inQueue' });
       expect(await screen.findByText('In OCR queue')).not.toBeNull();
       expect(socket.on).toHaveBeenCalled();
+    });
+
+    it('should ignore service reports for other files', async () => {
+      await renderAndSubmit();
+      act(() => {
+        mockSocketOn['ocr:ready']('another_file_id');
+      });
+      expect(await screen.findByText('In OCR queue')).not.toBeNull();
+      expect(documentActions.reloadDocument).not.toHaveBeenCalledWith('entitySharedId');
+    });
+
+    it('should unsubscribe from socket event when unmounting the component', async () => {
+      render(true, file);
+      renderResult.unmount();
+      expect(socket.off).toHaveBeenCalled();
     });
   });
 });
