@@ -6,6 +6,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import csv, { CSVRow } from './csv';
+import { toSafeName } from './entityRow';
 import { splitMultiselectLabels } from './typeParsers/multiselect';
 import { normalizeThesaurusLabel } from './typeParsers/select';
 
@@ -44,10 +45,8 @@ const createNameToIdMap = (
     if (p.content && p.type) {
       const thesarusID = p.content.toString();
       nameToThesauriId[p.name] = thesarusID;
-      nameToThesauriId[p.label] = thesarusID;
       languages?.forEach(suffix => {
         nameToThesauriId[`${p.name}__${suffix}`] = thesarusID;
-        nameToThesauriId[`${p.label}__${suffix}`] = thesarusID;
       });
     }
   });
@@ -103,6 +102,7 @@ const syncSaveThesauri = async (
 const arrangeThesauri = async (
   file: ImportFile,
   template: TemplateSchema,
+  newNameGeneration: boolean,
   languages?: string[],
   stopOnError: boolean = true
 ) => {
@@ -122,18 +122,21 @@ const arrangeThesauri = async (
 
   await csv(await file.readStream(), stopOnError)
     .onRow(async (row: CSVRow) => {
-      Object.entries(filterJSObject(nameToThesauriId, Object.keys(row))).forEach(([name, id]) => {
-        const labels = splitMultiselectLabels(row[name]);
-        Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
-          if (
-            !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
-            !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
-          ) {
-            thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
-            thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
-          }
-        });
-      });
+      const safeNamedRow = toSafeName(row, newNameGeneration);
+      Object.entries(filterJSObject(nameToThesauriId, Object.keys(safeNamedRow))).forEach(
+        ([name, id]) => {
+          const labels = splitMultiselectLabels(safeNamedRow[name]);
+          Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+            if (
+              !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
+              !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
+            ) {
+              thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
+              thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
+            }
+          });
+        }
+      );
     })
     .onError(async (e: Error, row: CSVRow, index: number) => {
       throw new ArrangeThesauriError(e, row, index);
