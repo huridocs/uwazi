@@ -37,6 +37,11 @@ describe('OCRDisplay', () => {
     renderConnectedContainer(<OCRDisplay file={pdf} />, () => reduxStore);
   };
 
+  it('should not try to get the status if the feature is not toggled on', async () => {
+    render(false, file);
+    expect(ocrActions.getOcrStatus).not.toHaveBeenCalled();
+  });
+
   describe('rendering', () => {
     it('should first render with a loading OCR message', async () => {
       render(true, file);
@@ -59,7 +64,7 @@ describe('OCRDisplay', () => {
       ).not.toBeNull();
     });
 
-    it('should take localization for the last update date format', async () => {
+    it('should have localization for the last update date format', async () => {
       file = { filename: 'inQueue' };
       store.locale = 'es';
       render(true, file);
@@ -88,10 +93,5 @@ describe('OCRDisplay', () => {
         expect(await screen.findByText('In OCR queue')).not.toBeNull();
       });
     });
-  });
-
-  it('should not try to get the status if the feature is not toggled on', async () => {
-    render(false, file);
-    expect(ocrActions.getOcrStatus).not.toHaveBeenCalled();
   });
 });

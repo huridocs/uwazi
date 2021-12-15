@@ -30,15 +30,12 @@ type ComponentProps = OCRDisplayProps & mappedProps;
 const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
   const [ocrStatus, setOcrStatus] = useState({ status: 'loading', lastUpdated: Date.now() });
 
-  const socketListen = () => {
-    // @ts-ignore
-    socket.on('ocr:ready', () => {
-      setOcrStatus({ status: 'ocrComplete', lastUpdated: 0 });
-    });
-    // @ts-ignore
-    socket.on('ocr:error', () => {
-      setOcrStatus({ status: 'ocrError', lastUpdated: Date.now() });
-    });
+  const listenOnSuccess = (_id: string) => {
+    if (file._id === _id) setOcrStatus({ status: 'ocrComplete', lastUpdated: Date.now() });
+  };
+
+  const listenOnError = (_id: string) => {
+    if (file._id === _id) setOcrStatus({ status: 'ocrError', lastUpdated: Date.now() });
   };
 
   useEffect(() => {
@@ -46,19 +43,33 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
       getOcrStatus(file.filename || '')
         .then(({ status, lastUpdated }) => {
           setOcrStatus({ status, lastUpdated });
-          socketListen();
+          if (status === 'inQueue') {
+            // @ts-ignore
+            socket.on('ocr:ready', listenOnSuccess);
+            // @ts-ignore
+            socket.on('ocr:error', listenOnError);
+          }
         })
         .catch(() => {
           setOcrStatus({ status: 'ocrError', lastUpdated: Date.now() });
         });
     }
+    return () => {
+      // @ts-ignore
+      socket.off('ocr:ready', listenOnSuccess);
+      // @ts-ignore
+      socket.off('ocr:error', listenOnError);
+    };
   }, []);
 
   const handleClick = () => {
     setOcrStatus({ status: 'inQueue', lastUpdated: Date.now() });
     postToOcr(file.filename || '')
       .then(() => {
-        socketListen();
+        // @ts-ignore
+        socket.on('ocr:ready', listenOnSuccess);
+        // @ts-ignore
+        socket.on('ocr:error', listenOnError);
       })
       .catch(() => {});
   };
