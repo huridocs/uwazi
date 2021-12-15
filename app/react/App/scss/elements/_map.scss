@@ -548,8 +548,25 @@ a.mapboxgl-ctrl-logo {
   @include tooltip('right');
 }
 
+@media print {
+  .mapbox-improve-map {
+    display: none;
+  }
+}
+
 .library-map {
   overflow: hidden;
+
+  .documents-counter {
+    & > span {
+      padding: 5px;
+      background-color: #fff;
+      border-color: #ccc;
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 10px;
+    }
+  }
 }
 
 .mapbox-navigation {

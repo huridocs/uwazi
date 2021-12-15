@@ -11,16 +11,16 @@ import { UserRole } from 'shared/types/userSchema';
 import { getTableColumns } from './tableColumns';
 import setReduxState from './setReduxState.js';
 
-export function decodeQuery(params) {
+const decodeQuery = params => {
   try {
     return rison.decode(params.q || '()');
   } catch (error) {
     error.status = 404;
     throw error;
   }
-}
+};
 
-export function processQuery(params, globalResources, key) {
+const processQuery = (params, globalResources, key) => {
   const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
 
   let query = decodeQuery(params);
@@ -48,19 +48,20 @@ export function processQuery(params, globalResources, key) {
     ...(loggedIn && !isAdmin ? { aggregatePermissionsByLevel: true } : {}),
     ...(isAdmin ? { aggregatePermissionsByUsers: true } : {}),
   };
-}
+};
 
-export default function requestState(request, globalResources, calculateTableColumns = false) {
+const requestState = (
+  request,
+  globalResources,
+  options = { calculateTableColumns: false, geolocation: false }
+) => {
   const docsQuery = processQuery(request.data, globalResources, 'library');
+
   const documentsRequest = request.set(
     tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
   );
 
-  const templatesWithGeolocation = globalResources.templates.find(template =>
-    template.get('properties').find(property => property.get('type') === 'geolocation')
-  );
-
-  const markersRequest = templatesWithGeolocation
+  const markersRequest = options.geolocation
     ? api.search(
         request.set({
           ...docsQuery,
@@ -104,7 +105,7 @@ export default function requestState(request, globalResources, calculateTableCol
           autoSave: false,
         }),
       ];
-      if (calculateTableColumns) {
+      if (options.calculateTableColumns) {
         const tableViewColumns = getTableColumns(documents, templates, documentsRequest.data.types);
         dispatchedActions.push(dispatch =>
           wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
@@ -113,4 +114,6 @@ export default function requestState(request, globalResources, calculateTableCol
       return dispatchedActions;
     }
   );
-}
+};
+
+export { decodeQuery, processQuery, requestState };
