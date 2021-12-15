@@ -37,7 +37,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
     });
     // @ts-ignore
     socket.on('ocr:error', () => {
-      setOcrStatus({ status: 'cannotProcess', lastUpdated: Date.now() });
+      setOcrStatus({ status: 'ocrError', lastUpdated: Date.now() });
     });
   };
 
@@ -49,7 +49,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
           socketListen();
         })
         .catch(() => {
-          setOcrStatus({ status: 'cannotProcess', lastUpdated: Date.now() });
+          setOcrStatus({ status: 'ocrError', lastUpdated: Date.now() });
         });
     }
   }, []);
@@ -121,6 +121,17 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
       tip = ocrDisplayTips.cantProcess(lastUpdated);
       break;
 
+    case 'ocrError':
+      statusDisplay = (
+        <div className="cant-process">
+          <p>
+            <Translate>Cannot be processed</Translate>
+          </p>
+        </div>
+      );
+      tip = ocrDisplayTips.cantProcess(lastUpdated);
+      break;
+
     case 'withOCR':
       statusDisplay = (
         <div className="status">
@@ -135,7 +146,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
     case 'ocrComplete':
       statusDisplay = (
         <button type="button" className="btn btn-success" onClick={() => window.location.reload()}>
-          <Translate>OCR Complete</Translate>&nbsp;&#10004;
+          <Translate>Click to refresh</Translate>&nbsp;&#8635;
         </button>
       );
       tip = ocrDisplayTips.ocrComplete;

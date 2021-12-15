@@ -3,7 +3,7 @@ import { t } from 'app/I18N';
 const ocrDisplayTips = {
   noOcr: 'The original file will be added as a supporting file.',
   unsupportedLang: "The document's language is not supported.",
-  ocrComplete: 'OCR process complete, click the button to reload the page.',
+  ocrComplete: 'OCR complete. Click the button to refresh the page and see the changes.',
   cantProcess: (time: string) =>
     `${t(
       'System',
