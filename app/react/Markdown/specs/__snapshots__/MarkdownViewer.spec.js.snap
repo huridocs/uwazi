@@ -12,11 +12,6 @@ exports[`MarkdownViewer render should be able to render properly custom componen
       config="(youtubeUrl)"
       key="0"
     />
-    <p
-      className="print-view-alt"
-    >
-      (youtubeUrl)
-    </p>
   </div>
   
 
@@ -28,11 +23,6 @@ exports[`MarkdownViewer render should be able to render properly custom componen
       config="(mediaUrl)"
       key="2"
     />
-    <p
-      className="print-view-alt"
-    >
-      (mediaUrl)
-    </p>
   </div>
   
 
@@ -377,11 +367,6 @@ exports[`MarkdownViewer render should render media components 1`] = `
       config="(1234, options)"
       key="0"
     />
-    <p
-      className="print-view-alt"
-    >
-      (1234, options)
-    </p>
   </div>
   
 
@@ -393,11 +378,6 @@ exports[`MarkdownViewer render should render media components 1`] = `
       config="(1234)"
       key="2"
     />
-    <p
-      className="print-view-alt"
-    >
-      (1234)
-    </p>
   </div>
   
 
@@ -409,11 +389,6 @@ exports[`MarkdownViewer render should render media components 1`] = `
       config="(config options)"
       key="4"
     />
-    <p
-      className="print-view-alt"
-    >
-      (config options)
-    </p>
   </div>
   
 
@@ -535,11 +510,6 @@ exports[`MarkdownViewer render when passing html true prop should render customC
           config="(url)"
           key="0"
         />
-        <p
-          className="print-view-alt"
-        >
-          (url)
-        </p>
       </div>
     </div>
   </div>

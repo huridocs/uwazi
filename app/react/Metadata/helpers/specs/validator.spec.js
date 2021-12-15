@@ -51,17 +51,15 @@ describe('metadata validator', () => {
   });
 
   describe('labelAndUrl', () => {
-    it('should be true when both or none of the values are present', () => {
-      expect(labelAndUrl({ label: 'cat', url: 'cat.pic.com' })).toBe(true);
+    it('should be true when url or none of the values are present', () => {
+      expect(labelAndUrl({ label: '', url: 'cat.pic.com' })).toBe(true);
       expect(labelAndUrl({ label: '', url: '' })).toBe(true);
       expect(labelAndUrl({})).toBe(true);
     });
 
-    it('should be false when one value is present and the other is not', () => {
+    it('should be false when label is present and url is not', () => {
       expect(labelAndUrl({ label: 'cat', url: '' })).toBe(false);
-      expect(labelAndUrl({ label: '', url: 'cat.pic.com' })).toBe(false);
       expect(labelAndUrl({ label: 'cat' })).toBe(false);
-      expect(labelAndUrl({ url: 'cat.pic.com' })).toBe(false);
     });
   });
 

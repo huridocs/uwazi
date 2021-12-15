@@ -17,8 +17,9 @@ export function notEmpty(val) {
 export function labelAndUrl(val) {
   return (
     !notEmpty(val) ||
+    !notEmpty(val.label) ||
     (notEmpty(val.label) && notEmpty(val.url)) ||
-    (!notEmpty(val.label) && !notEmpty(val.url))
+    notEmpty(val.url)
   );
 }
 
