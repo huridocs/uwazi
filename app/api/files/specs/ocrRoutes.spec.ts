@@ -16,6 +16,7 @@ import JSONRequest from 'shared/JSONRequest';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
 
+import * as setupSockets from 'api/socketio/setupSockets';
 import { fs } from '..';
 import { files } from '../files';
 import ocrRoutes from '../ocrRoutes';
@@ -84,6 +85,7 @@ describe('OCR service', () => {
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;
     jest.spyOn(Date, 'now').mockReturnValue(1000);
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
 
   beforeAll(() => {
@@ -165,6 +167,12 @@ describe('OCR service', () => {
 
       expect(connectionsForOrigFile.length).toBe(0);
       expect(connectionsForResultFile.length).toBe(1);
+
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        'defaultDB',
+        'ocr:ready',
+        originalFile._id.toHexString()
+      );
     });
   });
 
