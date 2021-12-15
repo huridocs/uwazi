@@ -75,7 +75,7 @@ describe('OCRDisplay', () => {
 
     it('should render a button if the file has no OCR', async () => {
       render(true, file);
-      expect((await screen.findByRole('button')).textContent).toBe('Add to OCR queue');
+      expect((await screen.findByRole('button')).textContent).toBe('OCR PDF');
     });
 
     describe('adding to ocr queue', () => {
