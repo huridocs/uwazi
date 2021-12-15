@@ -6,7 +6,7 @@ import socket from 'app/socket';
 import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 import { ocrDisplayTips } from '../utils/ocrDisplayTips';
-import { realoadDocument } from '../actions/documentActions';
+import { reloadDocument } from '../actions/documentActions';
 
 type OCRDisplayProps = {
   file: FileType;
@@ -26,7 +26,7 @@ const mapStateToProps = ({ settings, locale }: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) =>
-  bindActionCreators({ loadDocument: realoadDocument }, dispatch);
+  bindActionCreators({ loadDocument: reloadDocument }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;

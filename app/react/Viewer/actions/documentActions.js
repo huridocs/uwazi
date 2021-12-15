@@ -120,7 +120,7 @@ export function loadTargetDocument(sharedId) {
     });
 }
 
-export function realoadDocument(sharedId) {
+export function reloadDocument(sharedId) {
   return (dispatch, getState) =>
     Promise.all([
       getDocument(new RequestParams({ sharedId }), getState().locale),

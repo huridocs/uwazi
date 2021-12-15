@@ -3,17 +3,28 @@
  */
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
+import socket from 'app/socket';
 import { OCRDisplay } from '../OCRDisplay';
 import * as ocrActions from '../../actions/ocrActions';
+import * as documentActions from '../../actions/documentActions';
 
 describe('OCRDisplay', () => {
   let file: FileType;
   let store: any;
 
-  jest.spyOn(ocrActions, 'postToOcr');
+  let mockSocketOn: any = {};
+
+  jest.spyOn(socket, 'on').mockImplementation((event: string, callback: any) => {
+    mockSocketOn[event] = callback;
+  });
+
+  jest.spyOn(documentActions, 'reloadDocument').mockReturnValue(async () => Promise.resolve());
+
+  jest.spyOn(ocrActions, 'postToOcr').mockResolvedValue();
   jest.spyOn(ocrActions, 'getOcrStatus').mockImplementation(async filename =>
     Promise.resolve({
       status: filename,
@@ -92,6 +103,47 @@ describe('OCRDisplay', () => {
         fireEvent.click(ocrButton);
         expect(await screen.findByText('In OCR queue')).not.toBeNull();
       });
+    });
+  });
+
+  describe('sockets', () => {
+    const renderAndSubmit = async () => {
+      render(true, file);
+      const ocrButton: Element = await screen.findByRole('button');
+      fireEvent.click(ocrButton);
+
+      await new Promise<void>(resolve => {
+        setImmediate(() => {
+          resolve();
+        });
+      });
+    };
+
+    it('should listen for the ocr service on submit', async () => {
+      await renderAndSubmit();
+      expect(socket.on).toHaveBeenCalled();
+    });
+
+    it('should change to display that the ocr is done when the service reports', async () => {
+      await renderAndSubmit();
+      act(() => {
+        mockSocketOn['ocr:ready']('file_id');
+      });
+      expect(await screen.findByText('OCR completed')).not.toBeNull();
+    });
+
+    it('should change to display that the ocr has failed when the service reports', async () => {
+      await renderAndSubmit();
+      act(() => {
+        mockSocketOn['ocr:error']('file_id');
+      });
+      expect(await screen.findByText('Could not be processed')).not.toBeNull();
+    });
+
+    it('should liste to the ocr service if the document is in queue', async () => {
+      render(true, { ...file, filename: 'inQueue' });
+      expect(await screen.findByText('In OCR queue')).not.toBeNull();
+      expect(socket.on).toHaveBeenCalled();
     });
   });
 });
