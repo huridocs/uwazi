@@ -180,7 +180,6 @@ const settingsSchema = {
       },
     },
     mapStartingPoint: geolocationSchema,
-    toggleOCRButton: { type: 'boolean' },
   },
 };
 

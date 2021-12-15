@@ -8,6 +8,7 @@ import { processDocument } from 'api/files/processDocument';
 import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
+import { emitToTenant } from 'api/socketio/setupSockets';
 import { tenants } from 'api/tenants/tenantContext';
 import createError from 'api/utils/Error';
 import request from 'shared/JSONRequest';
@@ -17,7 +18,6 @@ import { FileType } from 'shared/types/fileType';
 import relationships from 'api/relationships';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
-import { emitToTenant } from 'api/socketio/setupSockets';
 
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
@@ -75,7 +75,9 @@ class OcrManager {
 
     const settingsValues = await this.getSettings();
 
-    await this.validateLanguage(file.language || 'other', settingsValues);
+    if (!(await this.validateLanguage(file.language || 'other', settingsValues))) {
+      throw Error('Language not supported');
+    }
 
     const fileContent = await readFile(uploadsPath(file.filename));
     const tenant = tenants.current();
@@ -114,17 +116,16 @@ class OcrManager {
     return ocrServiceConfig;
   }
 
-  private async fetchSupportedLanguages(ocrSettings: any) {
+  private async fetchSupportedLanguages(ocrSettings: { url: string }) {
     const response = await fetch(urljoin(ocrSettings.url, 'info'));
     const body = await response.json();
     return body.supported_languages as string[];
   }
 
-  private async validateLanguage(language: string, ocrSettings: any) {
-    const supportedLanguages = await this.fetchSupportedLanguages(ocrSettings);
-    if (!supportedLanguages.includes(this.LANGUAGES_MAP[language])) {
-      throw Error('Language not supported');
-    }
+  private async validateLanguage(language: string, ocrSettings?: { url: string }) {
+    const _ocrSettings = ocrSettings || (await this.getSettings());
+    const supportedLanguages = await this.fetchSupportedLanguages(_ocrSettings);
+    return supportedLanguages.includes(this.LANGUAGES_MAP[language]);
   }
 
   // eslint-disable-next-line max-statements
@@ -139,12 +140,8 @@ class OcrManager {
       this.validateFileIsDocument(file);
     }
 
-    if (status !== OcrStatus.READY) {
-      const ocrSettings = await this.getSettings();
-      const supportedLanguages = await this.fetchSupportedLanguages(ocrSettings);
-      if (!supportedLanguages.includes(this.LANGUAGES_MAP[file.language || 'other'])) {
-        return { status: OcrStatus.UNSUPPORTED_LANGUAGE };
-      }
+    if (status !== OcrStatus.READY && !(await this.validateLanguage(file.language || 'other'))) {
+      return { status: OcrStatus.UNSUPPORTED_LANGUAGE };
     }
 
     return { status, ...(record ? { lastUpdated: record.lastUpdated } : {}) };

@@ -2,9 +2,12 @@ import { FileType } from 'shared/types/fileType';
 
 import { files } from './files';
 import { PDF } from './PDF.js';
-import language from 'shared/languagesList';
 
-export const processDocument = async (entitySharedId: string, file: FileType, detectLanguage = true) => {
+export const processDocument = async (
+  entitySharedId: string,
+  file: FileType,
+  detectLanguage = true
+) => {
   const pdf = new PDF(file);
   const upload = await files.save({
     ...file,
