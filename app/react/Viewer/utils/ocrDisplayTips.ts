@@ -1,9 +1,18 @@
 import { t } from 'app/I18N';
 
 const ocrDisplayTips = {
-  noOcr: 'The original file will be added as a supporting file.',
-  unsupportedLang: "The document's language is not supported.",
-  ocrComplete: 'OCR complete. Click the button to refresh the page and see the changes.',
+  noOcr: () =>
+    t(
+      'System',
+      "This will process the document to recognize it's text. The original file will be added as a supporting file.",
+      null,
+      false
+    ),
+  unsupportedLang: (language: string) => {
+    let tip = "The document's language is not supported.";
+    if (language === 'other') tip = 'Please select a language for this document';
+    return t('System', tip, null, false);
+  },
   cantProcess: (time: string) =>
     `${t(
       'System',

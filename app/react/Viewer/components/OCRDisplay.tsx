@@ -24,6 +24,7 @@ const mapStateToProps = ({ settings, locale }: any) => {
     locale,
   };
 };
+
 const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators({ loadDocument: realoadDocument }, dispatch);
 
@@ -100,10 +101,10 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
     case 'noOCR':
       statusDisplay = (
         <button type="button" className="btn btn-default" onClick={() => handleClick()}>
-          <Translate>Add to OCR queue</Translate>
+          <Translate>OCR PDF</Translate>
         </button>
       );
-      tip = ocrDisplayTips.noOcr;
+      tip = ocrDisplayTips.noOcr();
       break;
 
     case 'inQueue':
@@ -121,18 +122,18 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
       statusDisplay = (
         <div className="status">
           <p>
-            <Translate>Unsupported language</Translate>
+            <Translate>Unsupported OCR language</Translate>
           </p>
         </div>
       );
-      tip = ocrDisplayTips.unsupportedLang;
+      tip = ocrDisplayTips.unsupportedLang(file.language || 'other');
       break;
 
     case 'cannotProcess':
       statusDisplay = (
         <div className="status">
           <p>
-            <Translate>Cannot be processed</Translate>
+            <Translate>OCR error</Translate>
           </p>
         </div>
       );
@@ -143,7 +144,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
       statusDisplay = (
         <div className="ocr-error">
           <p>
-            <Translate>Cannot be processed</Translate>
+            <Translate>Could not be processed</Translate>
           </p>
         </div>
       );
@@ -163,11 +164,12 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
 
     case 'ocrComplete':
       statusDisplay = (
-        <button type="button" className="btn btn-success" onClick={() => window.location.reload()}>
-          <Translate>Click to refresh</Translate>&nbsp;&#8635;
-        </button>
+        <div className="complete">
+          <p>
+            <Translate>OCR completed</Translate>&nbsp;&#10004;
+          </p>
+        </div>
       );
-      tip = ocrDisplayTips.ocrComplete;
       break;
 
     default:
