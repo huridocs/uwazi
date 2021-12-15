@@ -18,6 +18,7 @@ import { FileType } from 'shared/types/fileType';
 import relationships from 'api/relationships';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
+import { handleError } from 'api/utils/handleError';
 
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
@@ -196,26 +197,30 @@ class OcrManager {
 
   private async processResults(message: ResultsMessage): Promise<void> {
     await tenants.run(async () => {
-      const [originalFile] = await files.get({ filename: message.params!.filename });
-      const [record] = await OcrModel.get({ sourceFile: originalFile._id });
+      try {
+        const [originalFile] = await files.get({ filename: message.params!.filename });
+        const [record] = await OcrModel.get({ sourceFile: originalFile._id });
 
-      if (!record) {
-        return;
+        if (!record) {
+          return;
+        }
+
+        if (!message.success) {
+          await OcrModel.save({
+            ...record,
+            status: OcrStatus.ERROR,
+            autoexpire: null,
+            lastUpdated: Date.now(),
+          });
+          emitToTenant(message.tenant, 'ocr:error', originalFile._id.toHexString());
+          return;
+        }
+
+        await this.processFiles(record, message, originalFile);
+        emitToTenant(message.tenant, 'ocr:ready', originalFile._id.toHexString());
+      } catch (e) {
+        handleError(e);
       }
-
-      if (!message.success) {
-        await OcrModel.save({
-          ...record,
-          status: OcrStatus.ERROR,
-          autoexpire: null,
-          lastUpdated: Date.now(),
-        });
-        emitToTenant(message.tenant, 'ocr:error', originalFile._id.toHexString());
-        return;
-      }
-
-      await this.processFiles(record, message, originalFile);
-      emitToTenant(message.tenant, 'ocr:ready', originalFile._id.toHexString());
     }, message.tenant);
   }
 

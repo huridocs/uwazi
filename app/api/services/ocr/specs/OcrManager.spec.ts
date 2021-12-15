@@ -10,6 +10,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import request from 'shared/JSONRequest';
 import * as sockets from 'api/socketio/setupSockets';
+import * as handleError from 'api/utils/handleError';
 import { OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
@@ -131,7 +132,7 @@ class Mocks {
 
   taskManagerMock: {
     mock: Partial<TaskManager>;
-    trigger: (m: ResultsMessage) => void;
+    trigger: (m: ResultsMessage) => Promise<void>;
   };
 
   constructor() {
@@ -161,6 +162,9 @@ class Mocks {
         }),
       'date.now': jest.spyOn(Date, 'now').mockReturnValue(1000),
       'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => {}),
+      'handleError.handleError': jest
+        .spyOn(handleError, 'handleError')
+        .mockImplementation(() => {}),
     };
 
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
@@ -459,6 +463,13 @@ describe('OcrManager', () => {
         'ocr:error',
         sourceFile._id.toHexString()
       );
+    });
+
+    it('there is an unexpected error and log', async () => {
+      const error = new Error('some error');
+      jest.spyOn(files, 'get').mockReturnValueOnce(Promise.reject(error));
+      await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
+      expect(handleError.handleError).toHaveBeenCalledWith(error);
     });
   });
 
