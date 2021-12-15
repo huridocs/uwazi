@@ -3,8 +3,10 @@ import { connect, ConnectedProps } from 'react-redux';
 import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
 import socket from 'app/socket';
+import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 import { ocrDisplayTips } from '../utils/ocrDisplayTips';
+import { realoadDocument } from '../actions/documentActions';
 
 type OCRDisplayProps = {
   file: FileType;
@@ -22,16 +24,21 @@ const mapStateToProps = ({ settings, locale }: any) => {
     locale,
   };
 };
+const mapDispatchToProps = (dispatch: any) =>
+  bindActionCreators({ loadDocument: realoadDocument }, dispatch);
 
-const connector = connect(mapStateToProps);
+const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = OCRDisplayProps & mappedProps;
 
-const OCRDisplay = ({ file, ocrIsToggled, locale }: ComponentProps) => {
+const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps) => {
   const [ocrStatus, setOcrStatus] = useState({ status: 'loading', lastUpdated: Date.now() });
 
   const listenOnSuccess = (_id: string) => {
-    if (file._id === _id) setOcrStatus({ status: 'ocrComplete', lastUpdated: Date.now() });
+    if (file._id === _id) {
+      setOcrStatus({ status: 'ocrComplete', lastUpdated: Date.now() });
+      loadDocument(file.entity);
+    }
   };
 
   const listenOnError = (_id: string) => {

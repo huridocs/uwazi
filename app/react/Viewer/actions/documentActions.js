@@ -120,6 +120,17 @@ export function loadTargetDocument(sharedId) {
     });
 }
 
+export function realoadDocument(sharedId) {
+  return (dispatch, getState) =>
+    Promise.all([
+      getDocument(new RequestParams({ sharedId }), getState().locale),
+      referencesAPI.get(new RequestParams({ sharedId })),
+    ]).then(([targetDoc, references]) => {
+      dispatch(actions.set('viewer/doc', targetDoc));
+      dispatch(actions.set('viewer/references', references));
+    });
+}
+
 export function cancelTargetDocument() {
   return dispatch => {
     dispatch({ type: connectionsTypes.CANCEL_RANGED_CONNECTION });
