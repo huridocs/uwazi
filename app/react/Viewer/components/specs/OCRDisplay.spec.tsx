@@ -159,11 +159,12 @@ describe('OCRDisplay', () => {
         mockSocketOn['ocr:ready']('another_file_id');
       });
       expect(await screen.findByText('In OCR queue')).not.toBeNull();
-      expect(documentActions.reloadDocument).not.toHaveBeenCalledWith('entitySharedId');
+      expect(documentActions.reloadDocument).not.toHaveBeenCalled();
     });
 
     it('should unsubscribe from socket event when unmounting the component', async () => {
       render(true, file);
+      expect((await screen.findByRole('button')).textContent).toBe('OCR PDF');
       renderResult.unmount();
       expect(socket.off).toHaveBeenCalled();
     });
