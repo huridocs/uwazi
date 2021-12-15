@@ -1,5 +1,4 @@
-//node/no-restricted-import
-const { configureToMatchImageSnapshot } = require('jest-image-snapshot');
+import { configureToMatchImageSnapshot } from 'jest-image-snapshot';
 
 const toMatchImageSnapshot = configureToMatchImageSnapshot({
   failureThreshold: 0.07,
