@@ -32,7 +32,10 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = OCRStatusProps & mappedProps;
 
+// eslint-disable-next-line max-statements
 const OCRStatus = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps) => {
+  if (!ocrIsToggled) return null;
+
   const [ocrStatus, setOcrStatus] = useState({ status: 'loading', lastUpdated: Date.now() });
 
   const listenOnSuccess = (_id: string) => {
@@ -47,19 +50,18 @@ const OCRStatus = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps)
   };
 
   useEffect(() => {
-    if (ocrIsToggled) {
-      getOcrStatus(file.filename || '')
-        .then(({ status, lastUpdated }) => {
-          setOcrStatus({ status, lastUpdated });
-          if (status === 'inQueue') {
-            socket.on('ocr:ready', listenOnSuccess);
-            socket.on('ocr:error', listenOnError);
-          }
-        })
-        .catch(() => {
-          setOcrStatus({ status: 'ocrError', lastUpdated: Date.now() });
-        });
-    }
+    getOcrStatus(file.filename || '')
+      .then(({ status, lastUpdated }) => {
+        setOcrStatus({ status, lastUpdated });
+        if (status === 'inQueue') {
+          socket.on('ocr:ready', listenOnSuccess);
+          socket.on('ocr:error', listenOnError);
+        }
+      })
+      .catch(() => {
+        setOcrStatus({ status: 'ocrError', lastUpdated: Date.now() });
+      });
+
     return () => {
       socket.off('ocr:ready', listenOnSuccess);
       socket.off('ocr:error', listenOnError);
@@ -171,12 +173,10 @@ const OCRStatus = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps)
   }
 
   return (
-    ocrIsToggled && (
-      <div className="ocr-service-display">
-        {statusDisplay}
-        {tip && <div className="ocr-tooltip">{tip}</div>}
-      </div>
-    )
+    <div className="ocr-service-display">
+      {statusDisplay}
+      {tip && <div className="ocr-tooltip">{tip}</div>}
+    </div>
   );
 };
 
