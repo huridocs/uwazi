@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
-import socket from 'app/socket';
+import { socket } from 'app/socket';
 import { OCRStatus } from '../OCRStatus';
 import * as ocrActions from '../../actions/ocrActions';
 import * as documentActions from '../../actions/documentActions';
