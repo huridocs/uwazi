@@ -8,7 +8,7 @@ import { shallow } from 'enzyme';
 import { CreateConnectionPanel } from 'app/Connections';
 import ContextMenu from 'app/ContextMenu';
 import ShowIf from 'app/App/ShowIf';
-import { Viewer } from '../Viewer';
+import { ConnectedViewer } from '../Viewer';
 import SourceDocument from '../SourceDocument';
 import TargetDocument from '../TargetDocument';
 import * as routeActions from '../../actions/routeActions';
@@ -39,7 +39,10 @@ describe('Viewer', () => {
     context = {
       store: { getState: () => ({ settings: {} }), dispatch: jasmine.createSpy('dispatch') },
     };
-    component = shallow(<Viewer {...props} />, { context, disableLifecycleMethods: true });
+    component = shallow(<ConnectedViewer.WrappedComponent {...props} />, {
+      context,
+      disableLifecycleMethods: true,
+    });
 
     if (mount) {
       component.instance().componentDidMount();

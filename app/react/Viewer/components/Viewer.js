@@ -246,4 +246,4 @@ const mapDispatchToProps = dispatch =>
   );
 
 const ConnectedViewer = connect(mapStateToProps, mapDispatchToProps)(Viewer);
-export { ConnectedViewer, Viewer };
+export { ConnectedViewer };
