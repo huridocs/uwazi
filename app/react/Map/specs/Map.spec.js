@@ -322,17 +322,26 @@ describe('Map', () => {
   });
 
   describe('onClick', () => {
-    beforeEach(render);
+    let onClickParams;
+
+    beforeEach(() => {
+      onClickParams = {
+        lngLat: [1, 2],
+        features: [],
+        target: { className: 'overlays' },
+      };
+      render();
+    });
 
     it('should call props.onClick with the event', () => {
-      instance.onClick({ lngLat: [1, 2], features: [] });
-      expect(props.onClick).toHaveBeenCalledWith({ lngLat: [1, 2], features: [] });
+      instance.onClick({ lngLat: [1, 2], features: [], target: { className: 'overlays' } });
+      expect(props.onClick).toHaveBeenCalledWith(onClickParams);
     });
 
     describe('when clicking a marker', () => {
       it('should call props.clickOnMarker with the marker', () => {
         const featureClicked = { layer: { id: 'unclustered-point' }, properties: { index: 2 } };
-        instance.onClick({ lngLat: [1, 2], features: [featureClicked] });
+        instance.onClick({ ...onClickParams, features: [featureClicked] });
         expect(props.clickOnMarker).toHaveBeenCalledWith(props.markers[2]);
       });
     });
@@ -343,7 +352,7 @@ describe('Map', () => {
           { layer: { id: 'unclustered-point' }, properties: { index: 0 } },
           { layer: { id: 'unclustered-point' }, properties: { index: 1 } },
         ];
-        instance.onClick({ lngLat: [1, 2], features });
+        instance.onClick({ ...onClickParams, features });
         expect(props.clickOnCluster).toHaveBeenCalledWith([props.markers[0], props.markers[1]]);
       });
     });
@@ -356,7 +365,7 @@ describe('Map', () => {
       describe('hovering over a marker', () => {
         it('should call hoverOnMarker with the marker', () => {
           const features = [{ layer: { id: 'unclustered-point' }, properties: { index: 0 } }];
-          instance.onHover({ lngLat: [1, 2], features });
+          instance.onHover({ ...onClickParams, features });
           expect(props.hoverOnMarker).toHaveBeenCalledWith(props.markers[0]);
           expect(instance.state.selectedMarker).toEqual(props.markers[0]);
         });
@@ -378,7 +387,7 @@ describe('Map', () => {
         map.getZoom.and.returnValue(0);
         const features = [{ layer: { id: 'clusters' }, properties: { cluster_id: 1 } }];
         spyOn(instance.supercluster, 'getLeaves').and.returnValue(props.markers);
-        instance.onClick({ lngLat: [1, 2], features });
+        instance.onClick({ ...onClickParams, features });
         expect(props.clickOnCluster).toHaveBeenCalledWith(props.markers);
       });
     });
