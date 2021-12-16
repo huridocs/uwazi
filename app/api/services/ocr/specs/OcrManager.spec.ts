@@ -176,7 +176,7 @@ describe('OcrManager', () => {
         );
       });
 
-      it('move the original file to the attachments', async () => {
+      it('should move the original file to the attachments', async () => {
         const [file] = await files.get({ _id: fixturesFactory.id('sourceFile') });
         expect(file.type).toBe('attachment');
       });
@@ -206,19 +206,17 @@ describe('OcrManager', () => {
       });
     });
 
-    describe('when requesting the status of a file', () => {
-      it('should find the record in the database', async () => {
-        const [existingSourceFile] = await files.get({
-          _id: fixturesFactory.id('sourceForExistingRecord'),
-        });
-        const status = await getOcrStatus(existingSourceFile);
-        expect(status).toEqual({ status: OcrStatus.READY, lastUpdated: 1000 });
+    it('should find the record in the database when requesting the status of a file', async () => {
+      const [existingSourceFile] = await files.get({
+        _id: fixturesFactory.id('sourceForExistingRecord'),
       });
+      const status = await getOcrStatus(existingSourceFile);
+      expect(status).toEqual({ status: OcrStatus.READY, lastUpdated: 1000 });
     });
   });
 
-  describe('should throw error when', () => {
-    it('the manager is not ready', async () => {
+  describe('on validation', () => {
+    it('should throw an error if the manager is not ready', async () => {
       const [existingSourceFile] = await files.get({
         _id: fixturesFactory.id('sourceForExistingRecord'),
       });
@@ -236,7 +234,7 @@ describe('OcrManager', () => {
       OcrManager.start();
     });
 
-    it('file is not a document when queueing', async () => {
+    it('should throw an error when enqueueing if the file is not a document', async () => {
       const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
 
       try {
@@ -250,7 +248,7 @@ describe('OcrManager', () => {
       }
     });
 
-    it('file is not a document and does not have ocr record when getting status', async () => {
+    it('should throw an error when file is not a document and does not have ocr record when getting status', async () => {
       const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
 
       try {
@@ -264,7 +262,7 @@ describe('OcrManager', () => {
       }
     });
 
-    it('an ocr model is already in queue', async () => {
+    it('should throw an error when an ocr model is already in queue', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       await files.save({ _id: fixturesFactory.id('sourceFile'), type: 'document' });
 
@@ -274,7 +272,7 @@ describe('OcrManager', () => {
       await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
     });
 
-    it('settings are missing from the database', async () => {
+    it('should throw an error when settings are missing from the database', async () => {
       const oldSettings = await settings.get();
       await settings.save({ features: {} });
 
@@ -287,12 +285,12 @@ describe('OcrManager', () => {
       await settings.save(oldSettings);
     });
 
-    it('language is not supported', async () => {
+    it('should throw an error when language is not supported', async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
       await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow('Language not supported');
     });
 
-    it('record is missing, and do nothing', async () => {
+    it('should do nothing when record is missing', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       mocks.clearJestMocks();
 
@@ -303,8 +301,10 @@ describe('OcrManager', () => {
       expect(filesApi.fileFromReadStream).not.toHaveBeenCalled();
       expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
     });
+  });
 
-    it('message is not a success, and record error in db', async () => {
+  describe('on error', () => {
+    it('should record error in db if service response is not a success', async () => {
       mocks.jestMocks['date.now'].mockReturnValue(1002);
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
 
@@ -334,7 +334,7 @@ describe('OcrManager', () => {
       );
     });
 
-    it('there is an unexpected error and log', async () => {
+    it('should catch an unexpected error while processing the response and log it', async () => {
       const error = new Error('some error');
       jest.spyOn(files, 'get').mockReturnValueOnce(Promise.reject(error));
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
@@ -343,7 +343,7 @@ describe('OcrManager', () => {
   });
 
   describe('on cleanup', () => {
-    it('when source is deleted, should modify record source to null', async () => {
+    it('should modify record source to null when source is deleted', async () => {
       const filesToCleanup = await files.get({
         $or: [
           { _id: fixturesFactory.id('sourceToDelete') },
@@ -357,7 +357,7 @@ describe('OcrManager', () => {
       expect(records[1].sourceFile).toBeNull();
     });
 
-    it('when result is deleted, should delete record', async () => {
+    it(' should delete record when result is deleted', async () => {
       const filesToCleanup = await files.get({
         $or: [
           { _id: fixturesFactory.id('resultToDelete') },
