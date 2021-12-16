@@ -58,7 +58,7 @@ export default {
         },
         {
           type: propertyTypes.select,
-          label: 'select label',
+          label: 'Select Label',
           name: templateUtils.safeName('select label'),
           content: thesauri1Id.toString(),
         },
@@ -90,7 +90,7 @@ export default {
         },
         {
           type: propertyTypes.multiselect,
-          label: 'multi_select_label',
+          label: 'Multi Select Label',
           name: templateUtils.safeName('multi_select_label'),
           content: multiSelectThesaurusId.toString(),
         },

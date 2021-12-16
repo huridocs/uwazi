@@ -4,7 +4,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
-export function normalizeThesaurusLabel(label: string): string | null {
+function normalizeThesaurusLabel(label: string): string | null {
   const trimmed = label.trim().toLowerCase();
   return trimmed.length > 0 ? trimmed : null;
 }
@@ -34,3 +34,4 @@ const select = async (
 };
 
 export default select;
+export { normalizeThesaurusLabel };
