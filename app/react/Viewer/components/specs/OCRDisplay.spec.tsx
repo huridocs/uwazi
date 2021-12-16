@@ -19,11 +19,9 @@ describe('OCRDisplay', () => {
 
   const mockSocketOn: any = {};
 
-  //@ts-ignore
   jest.spyOn(socket, 'on').mockImplementation((event: string, callback: any) => {
     mockSocketOn[event] = callback;
   });
-  //@ts-ignore
   jest.spyOn(socket, 'off').mockImplementation((event: string, callback: any) => {
     mockSocketOn[event] = callback;
   });

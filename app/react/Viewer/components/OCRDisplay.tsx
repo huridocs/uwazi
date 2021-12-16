@@ -52,9 +52,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
         .then(({ status, lastUpdated }) => {
           setOcrStatus({ status, lastUpdated });
           if (status === 'inQueue') {
-            // @ts-ignore
             socket.on('ocr:ready', listenOnSuccess);
-            // @ts-ignore
             socket.on('ocr:error', listenOnError);
           }
         })
@@ -63,9 +61,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
         });
     }
     return () => {
-      // @ts-ignore
       socket.off('ocr:ready', listenOnSuccess);
-      // @ts-ignore
       socket.off('ocr:error', listenOnError);
     };
   }, []);
@@ -74,9 +70,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
     setOcrStatus({ status: 'inQueue', lastUpdated: Date.now() });
     postToOcr(file.filename || '')
       .then(() => {
-        // @ts-ignore
         socket.on('ocr:ready', listenOnSuccess);
-        // @ts-ignore
         socket.on('ocr:error', listenOnError);
       })
       .catch(() => {});
