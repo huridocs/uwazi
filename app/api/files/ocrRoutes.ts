@@ -22,7 +22,7 @@ const ocrRequestDecriptor = {
   },
 };
 
-async function fileFromRequest(request: Request) {
+const fileFromRequest = async (request: Request) => {
   const [file] = await files.get({
     filename: request.params.filename,
   });
@@ -32,25 +32,20 @@ async function fileFromRequest(request: Request) {
   }
 
   return file;
-}
+};
 
-// eslint-disable-next-line import/no-default-export
-export default (app: Application) => {
+const ocrRoutes = (app: Application) => {
   app.get(
     '/api/files/:filename/ocr',
     validateOcrIsEnabled,
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest(ocrRequestDecriptor),
-    async (req, res, next) => {
-      try {
-        const file = await fileFromRequest(req);
+    async (req, res) => {
+      const file = await fileFromRequest(req);
 
-        const status = await OcrManager.getStatus(file);
+      const status = await OcrManager.getStatus(file);
 
-        res.json(status);
-      } catch (e) {
-        next(e);
-      }
+      res.json(status);
     }
   );
 
@@ -59,16 +54,14 @@ export default (app: Application) => {
     validateOcrIsEnabled,
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest(ocrRequestDecriptor),
-    async (req, res, next) => {
-      try {
-        const file = await fileFromRequest(req);
+    async (req, res) => {
+      const file = await fileFromRequest(req);
 
-        await OcrManager.addToQueue(file);
+      await OcrManager.addToQueue(file);
 
-        res.sendStatus(200);
-      } catch (e) {
-        next(e);
-      }
+      res.sendStatus(200);
     }
   );
 };
+
+export { ocrRoutes };

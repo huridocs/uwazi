@@ -19,7 +19,7 @@ import { UserSchema } from 'shared/types/userType';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { fs } from '..';
 import { files } from '../files';
-import ocrRoutes from '../ocrRoutes';
+import { ocrRoutes } from '../ocrRoutes';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
 import { TaskManager } from '../../services/tasksmanager/TaskManager';
 
@@ -92,7 +92,10 @@ describe('OCR service', () => {
     OcrManager.start();
   });
 
-  afterAll(async () => testingEnvironment.tearDown());
+  afterAll(async () => {
+    jest.restoreAllMocks();
+    await testingEnvironment.tearDown();
+  });
 
   it('should return the status on get', async () => {
     setSupportedLang(['en']);

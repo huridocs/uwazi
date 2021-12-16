@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Application } from 'express';
 import { debugLog, errorLog } from 'api/log';
 import { processDocument } from 'api/files/processDocument';
