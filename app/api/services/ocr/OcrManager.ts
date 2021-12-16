@@ -40,6 +40,11 @@ class OcrManager {
     });
   }
 
+  async stop() {
+    await this.ocrTaskManager?.stop();
+    this.ocrTaskManager = null;
+  }
+
   isReady() {
     return Boolean(this.ocrTaskManager);
   }
@@ -259,4 +264,4 @@ class OcrManager {
 }
 
 const OcrManagerInstance = new OcrManager();
-export { OcrManagerInstance, OcrManager };
+export { OcrManagerInstance as OcrManager };

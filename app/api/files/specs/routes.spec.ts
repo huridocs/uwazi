@@ -10,7 +10,7 @@ import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
-import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
+import { OcrManager } from 'api/services/ocr/OcrManager';
 import JSONRequest from 'shared/JSONRequest';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, uploadId, uploadId2 } from './fixtures';
@@ -133,7 +133,7 @@ describe('files routes', () => {
     });
 
     it('should cleanup the ocr records related to the file', async () => {
-      const ocrCleanupSpy = jest.spyOn(OcrManagerInstance, 'cleanupRecordsOfFiles');
+      const ocrCleanupSpy = jest.spyOn(OcrManager, 'cleanupRecordsOfFiles');
       await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
       expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
     });

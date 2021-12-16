@@ -1,16 +1,38 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
-import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
+import { OcrManager } from 'api/services/ocr/OcrManager';
 import { files } from './files';
 import { validation, createError } from '../utils';
 
 const validateOcrIsEnabled = async (_req: Request, res: Response, next: NextFunction) => {
-  if (!(await OcrManagerInstance.isEnabled())) {
+  if (!(await OcrManager.isEnabled())) {
     return res.sendStatus(404);
   }
   return next();
 };
+
+const ocrRequestDecriptor = {
+  properties: {
+    params: {
+      properties: {
+        filename: { type: 'string' },
+      },
+    },
+  },
+};
+
+async function fileFromRequest(request: Request) {
+  const [file] = await files.get({
+    filename: request.params.filename,
+  });
+
+  if (!file || !(await fileExists(uploadsPath(file.filename)))) {
+    throw createError('file not found', 404);
+  }
+
+  return file;
+}
 
 // eslint-disable-next-line import/no-default-export
 export default (app: Application) => {
@@ -18,26 +40,12 @@ export default (app: Application) => {
     '/api/files/:filename/ocr',
     validateOcrIsEnabled,
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest({
-      properties: {
-        params: {
-          properties: {
-            filename: { type: 'string' },
-          },
-        },
-      },
-    }),
+    validation.validateRequest(ocrRequestDecriptor),
     async (req, res, next) => {
       try {
-        const [file] = await files.get({
-          filename: req.params.filename,
-        });
+        const file = await fileFromRequest(req);
 
-        if (!file || !(await fileExists(uploadsPath(file.filename)))) {
-          throw createError('file not found', 404);
-        }
-
-        const status = await OcrManagerInstance.getStatus(file);
+        const status = await OcrManager.getStatus(file);
 
         res.json(status);
       } catch (e) {
@@ -50,26 +58,12 @@ export default (app: Application) => {
     '/api/files/:filename/ocr',
     validateOcrIsEnabled,
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest({
-      properties: {
-        params: {
-          properties: {
-            filename: { type: 'string' },
-          },
-        },
-      },
-    }),
+    validation.validateRequest(ocrRequestDecriptor),
     async (req, res, next) => {
       try {
-        const [file] = await files.get({
-          filename: req.params.filename,
-        });
+        const file = await fileFromRequest(req);
 
-        if (!file || !(await fileExists(uploadsPath(file.filename)))) {
-          throw createError('file not found', 404);
-        }
-
-        await OcrManagerInstance.addToQueue(file);
+        await OcrManager.addToQueue(file);
 
         res.sendStatus(200);
       } catch (e) {

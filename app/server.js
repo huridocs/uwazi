@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 import { TaskProvider } from 'shared/tasks/tasks';
+import { OcrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
 import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
 
@@ -37,7 +38,6 @@ import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { tocService } from './api/toc_generation/tocService';
 import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
-import { OcrManagerInstance } from 'api/services/ocr/OcrManager';
 
 mongoose.Promise = Promise;
 
@@ -164,7 +164,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
           segmentationRepeater.start();
 
-          OcrManagerInstance.start();
+          OcrManager.start();
         }
       }
     });

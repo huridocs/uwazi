@@ -203,6 +203,7 @@ describe('OcrManager', () => {
       params: { filename: 'sourceFileName.pdf', language: 'en' },
       success: true,
     };
+    OcrManager.start();
   });
 
   afterAll(async () => {
@@ -212,10 +213,8 @@ describe('OcrManager', () => {
 
   describe('on success', () => {
     beforeAll(async () => {
-      const ocrManager = new OcrManager();
-      ocrManager.start();
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-      await ocrManager.addToQueue(sourceFile);
+      await OcrManager.addToQueue(sourceFile);
     });
 
     describe('when creating a new task', () => {
@@ -320,10 +319,7 @@ describe('OcrManager', () => {
         const [existingSourceFile] = await files.get({
           _id: fixturesFactory.id('sourceForExistingRecord'),
         });
-
-        const ocrManager = new OcrManager();
-        ocrManager.start();
-        const status = await ocrManager.getStatus(existingSourceFile);
+        const status = await OcrManager.getStatus(existingSourceFile);
         expect(status).toEqual({ status: OcrStatus.READY, lastUpdated: 1000 });
       });
     });
@@ -331,14 +327,13 @@ describe('OcrManager', () => {
 
   describe('should throw error when', () => {
     it('the manager is not ready', async () => {
-      const ocrManager = new OcrManager();
-
       const [existingSourceFile] = await files.get({
         _id: fixturesFactory.id('sourceForExistingRecord'),
       });
 
+      await OcrManager.stop();
       try {
-        await ocrManager.addToQueue(existingSourceFile);
+        await OcrManager.addToQueue(existingSourceFile);
         fail('Should throw.');
       } catch (err) {
         expect(err).toMatchObject({
@@ -346,16 +341,14 @@ describe('OcrManager', () => {
           code: 500,
         });
       }
+      OcrManager.start();
     });
 
     it('file is not a document when queueing', async () => {
-      const ocrManager = new OcrManager();
-      ocrManager.start();
-
       const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
 
       try {
-        await ocrManager.addToQueue(attachmentFile);
+        await OcrManager.addToQueue(attachmentFile);
         fail('Should throw.');
       } catch (err) {
         expect(err).toMatchObject({
@@ -366,13 +359,10 @@ describe('OcrManager', () => {
     });
 
     it('file is not a document and does not have ocr record when getting status', async () => {
-      const ocrManager = new OcrManager();
-      ocrManager.start();
-
       const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
 
       try {
-        await ocrManager.getStatus(attachmentFile);
+        await OcrManager.getStatus(attachmentFile);
         fail('Should throw.');
       } catch (err) {
         expect(err).toMatchObject({
@@ -383,27 +373,22 @@ describe('OcrManager', () => {
     });
 
     it('an ocr model is already in queue', async () => {
-      const ocrManager = new OcrManager();
-      ocrManager.start();
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       await files.save({ _id: fixturesFactory.id('sourceFile'), type: 'document' });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
 
-      await ocrManager.addToQueue(sourceFile);
-      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
+      await OcrManager.addToQueue(sourceFile);
+      await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
     });
 
     it('settings are missing from the database', async () => {
       const oldSettings = await settings.get();
       await settings.save({ features: {} });
 
-      const ocrManager = new OcrManager();
-      ocrManager.start();
-
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
-      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow(
+      await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow(
         'Ocr settings are missing from the database'
       );
 
@@ -411,10 +396,8 @@ describe('OcrManager', () => {
     });
 
     it('language is not supported', async () => {
-      const ocrManager = new OcrManager();
-      ocrManager.start();
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
-      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('Language not supported');
+      await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow('Language not supported');
     });
 
     it('record is missing, and do nothing', async () => {
@@ -429,15 +412,12 @@ describe('OcrManager', () => {
       expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
     });
 
-    // eslint-disable-next-line max-statements
     it('message is not a success, and record error in db', async () => {
       mocks.jestMocks['date.now'].mockReturnValue(1002);
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
 
-      const ocrManager = new OcrManager();
-      ocrManager.start();
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-      await ocrManager.addToQueue(sourceFile);
+      await OcrManager.addToQueue(sourceFile);
       await mocks.taskManagerMock.trigger({
         ...mockedMessageFromRedis,
         success: false,
@@ -472,8 +452,6 @@ describe('OcrManager', () => {
 
   describe('on cleanup', () => {
     it('when source is deleted, should modify record source to null', async () => {
-      const ocrManager = new OcrManager();
-      ocrManager.start();
       const filesToCleanup = await files.get({
         $or: [
           { _id: fixturesFactory.id('sourceToDelete') },
@@ -481,15 +459,13 @@ describe('OcrManager', () => {
         ],
       });
       let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
-      await ocrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
+      await OcrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
       records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
       expect(records[0].sourceFile).toBeNull();
       expect(records[1].sourceFile).toBeNull();
     });
 
     it('when result is deleted, should delete record', async () => {
-      const ocrManager = new OcrManager();
-      ocrManager.start();
       const filesToCleanup = await files.get({
         $or: [
           { _id: fixturesFactory.id('resultToDelete') },
@@ -497,7 +473,7 @@ describe('OcrManager', () => {
         ],
       });
       let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
-      await ocrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
+      await OcrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
       records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
       expect(records).toHaveLength(0);
     });
