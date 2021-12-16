@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
 
 type ComponentPropTypes = {
   featureActivated: boolean;
@@ -24,7 +23,7 @@ function mapStateToProps({ settings }: any, ownProps: OwnPropTypes) {
   const features = settings.collection.get('features');
 
   return {
-    featureActivated: features ? Boolean(get(features.toJS(), ownProps.feature)) : false,
+    featureActivated: features ? Boolean(features.getIn(ownProps.feature.split('.'))) : false,
   };
 }
 
