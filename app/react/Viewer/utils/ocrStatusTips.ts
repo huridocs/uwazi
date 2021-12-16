@@ -16,7 +16,7 @@ const ocrStatusTips = {
   cantProcess: (time: string) =>
     `${t(
       'System',
-      'The OCR engine couldn’t read the document. Try uploading the document in a different format. Last updated',
+      "The OCR engine couldn't read the document due to a malformed format. Last updated",
       null,
       false
     )}: ${time}`,
