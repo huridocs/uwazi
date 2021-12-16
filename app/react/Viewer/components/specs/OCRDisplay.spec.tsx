@@ -44,11 +44,11 @@ describe('OCRDisplay', () => {
     store = { ...defaultState };
   });
 
-  const render = (toggleOCRButton: boolean, pdf: FileType) => {
+  const render = (ocrServiceEnabled: boolean, pdf: FileType) => {
     const reduxStore = {
       ...store,
       settings: {
-        collection: Immutable.fromJS({ toggleOCRButton }),
+        collection: Immutable.fromJS({ ocrServiceEnabled }),
       },
     };
     ({ renderResult } = renderConnectedContainer(<OCRDisplay file={pdf} />, () => reduxStore));

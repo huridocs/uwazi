@@ -83,7 +83,7 @@ export interface Settings {
   customCSS?: string;
   mapTilerKey?: string;
   newNameGeneration?: true;
-  toggleOCRButton?: boolean;
+  ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema;
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];

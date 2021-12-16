@@ -36,7 +36,7 @@ const LANGUAGES_MAP: { [key: string]: string } = {
 
 const isEnabled = async () => {
   const settingsObject = await settings.get();
-  return Boolean(settingsObject.features?.ocr?.url) && Boolean(settingsObject.toggleOCRButton);
+  return Boolean(settingsObject.features?.ocr?.url) && Boolean(settingsObject.ocrServiceEnabled);
 };
 
 const validateNotInQueue = async (file: EnforcedWithId<FileType>) => {

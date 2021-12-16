@@ -51,7 +51,7 @@ const FIXTURES: DBFixture = {
       features: {
         ocr: { url: 'protocol://serviceUrl' },
       },
-      toggleOCRButton: true,
+      ocrServiceEnabled: true,
     },
   ],
 };
@@ -202,11 +202,11 @@ describe('OCR service', () => {
 
   describe('when the feature is not enabled', () => {
     beforeEach(async () => {
-      await settings.save({ toggleOCRButton: false });
+      await settings.save({ ocrServiceEnabled: false });
     });
 
     afterAll(async () => {
-      await settings.save({ toggleOCRButton: true });
+      await settings.save({ ocrServiceEnabled: true });
     });
 
     it('should not allow request status', async () => {

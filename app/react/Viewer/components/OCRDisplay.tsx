@@ -18,7 +18,7 @@ const formatDate = (time: number, locale: string) => {
 };
 
 const mapStateToProps = ({ settings, locale }: any) => {
-  const toggleOCRButton = settings.collection.get('toggleOCRButton');
+  const toggleOCRButton = settings.collection.get('ocrServiceEnabled');
   return {
     ocrIsToggled: toggleOCRButton || false,
     locale,
