@@ -1,12 +1,12 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
-import { OcrManager } from 'api/services/ocr/OcrManager';
+import { isOcrEnabled, OcrManager, getOcrStatus } from 'api/services/ocr/OcrManager';
 import { files } from './files';
 import { validation, createError } from '../utils';
 
 const validateOcrIsEnabled = async (_req: Request, res: Response, next: NextFunction) => {
-  if (!(await OcrManager.isEnabled())) {
+  if (!(await isOcrEnabled())) {
     return res.sendStatus(404);
   }
   return next();
@@ -43,7 +43,7 @@ const ocrRoutes = (app: Application) => {
     async (req, res) => {
       const file = await fileFromRequest(req);
 
-      const status = await OcrManager.getStatus(file);
+      const status = await getOcrStatus(file);
 
       res.json(status);
     }

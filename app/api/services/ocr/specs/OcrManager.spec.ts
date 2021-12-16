@@ -6,20 +6,19 @@ import * as filesApi from 'api/files/filesystem';
 import * as processDocumentApi from 'api/files/processDocument';
 import { tenants } from 'api/tenants/tenantContext';
 import settings from 'api/settings/settings';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import request from 'shared/JSONRequest';
 import * as sockets from 'api/socketio/setupSockets';
 import * as handleError from 'api/utils/handleError';
-import { OcrManager } from '../OcrManager';
+import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
 import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
-import { FIXTURES } from './fixtures/fixtures';
+import { fixtures, fixturesFactory } from './fixtures/fixtures';
+import { cleanupRecordsOfFiles } from '../ocrRecords';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
-const fixturesFactory = getFixturesFactory();
 class Mocks {
   jestMocks: { [k: string]: jest.SpyInstance };
 
@@ -86,7 +85,7 @@ describe('OcrManager', () => {
   let mockedMessageFromRedis: ResultsMessage;
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(FIXTURES);
+    await testingEnvironment.setUp(fixtures);
     tenantName = tenants.current().name;
     mocks = new Mocks();
     mockedMessageFromRedis = {
@@ -212,7 +211,7 @@ describe('OcrManager', () => {
         const [existingSourceFile] = await files.get({
           _id: fixturesFactory.id('sourceForExistingRecord'),
         });
-        const status = await OcrManager.getStatus(existingSourceFile);
+        const status = await getOcrStatus(existingSourceFile);
         expect(status).toEqual({ status: OcrStatus.READY, lastUpdated: 1000 });
       });
     });
@@ -255,7 +254,7 @@ describe('OcrManager', () => {
       const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
 
       try {
-        await OcrManager.getStatus(attachmentFile);
+        await getOcrStatus(attachmentFile);
         fail('Should throw.');
       } catch (err) {
         expect(err).toMatchObject({
@@ -352,7 +351,7 @@ describe('OcrManager', () => {
         ],
       });
       let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
-      await OcrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
+      await cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
       records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
       expect(records[0].sourceFile).toBeNull();
       expect(records[1].sourceFile).toBeNull();
@@ -366,7 +365,7 @@ describe('OcrManager', () => {
         ],
       });
       let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
-      await OcrManager.cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
+      await cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
       records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
       expect(records).toHaveLength(0);
     });

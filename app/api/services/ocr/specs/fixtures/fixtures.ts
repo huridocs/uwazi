@@ -3,7 +3,7 @@ import { OcrStatus } from '../../ocrModel';
 
 const fixturesFactory = getFixturesFactory();
 
-const FIXTURES = {
+const fixtures = {
   entities: [
     fixturesFactory.entity('parentEntity'),
     fixturesFactory.entity('parentForExistingRecord'),
@@ -110,4 +110,4 @@ const FIXTURES = {
   ],
 };
 
-export { FIXTURES };
+export { fixtures, fixturesFactory };

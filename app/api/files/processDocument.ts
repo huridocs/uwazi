@@ -5,7 +5,7 @@ import { PDF } from './PDF.js';
 
 export const processDocument = async (
   entitySharedId: string,
-  file: FileType,
+  file: FileType & { destination?: string },
   detectLanguage = true
 ) => {
   const pdf = new PDF(file);
