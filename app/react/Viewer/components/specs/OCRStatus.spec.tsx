@@ -8,11 +8,11 @@ import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
 import socket from 'app/socket';
-import { OCRDisplay } from '../OCRDisplay';
+import { OCRStatus } from '../OCRStatus';
 import * as ocrActions from '../../actions/ocrActions';
 import * as documentActions from '../../actions/documentActions';
 
-describe('OCRDisplay', () => {
+describe('OCRStatus', () => {
   let file: FileType;
   let store: any;
   let renderResult: RenderResult;
@@ -49,7 +49,7 @@ describe('OCRDisplay', () => {
         collection: Immutable.fromJS({ ocrServiceEnabled }),
       },
     };
-    ({ renderResult } = renderConnectedContainer(<OCRDisplay file={pdf} />, () => reduxStore));
+    ({ renderResult } = renderConnectedContainer(<OCRStatus file={pdf} />, () => reduxStore));
   };
 
   it('should not try to get the status if the feature is not toggled on', async () => {

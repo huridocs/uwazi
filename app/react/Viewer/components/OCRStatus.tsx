@@ -5,10 +5,10 @@ import { Translate } from 'app/I18N';
 import socket from 'app/socket';
 import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
-import { ocrDisplayTips } from '../utils/ocrDisplayTips';
+import { ocrStatusTips } from '../utils/ocrStatusTips';
 import { reloadDocument } from '../actions/documentActions';
 
-type OCRDisplayProps = {
+type OCRStatusProps = {
   file: FileType;
 };
 
@@ -30,9 +30,9 @@ const mapDispatchToProps = (dispatch: any) =>
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
-type ComponentProps = OCRDisplayProps & mappedProps;
+type ComponentProps = OCRStatusProps & mappedProps;
 
-const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps) => {
+const OCRStatus = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps) => {
   const [ocrStatus, setOcrStatus] = useState({ status: 'loading', lastUpdated: Date.now() });
 
   const listenOnSuccess = (_id: string) => {
@@ -98,7 +98,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
           <Translate>OCR PDF</Translate>
         </button>
       );
-      tip = ocrDisplayTips.noOcr();
+      tip = ocrStatusTips.noOcr();
       break;
 
     case 'inQueue':
@@ -109,7 +109,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
           </p>
         </div>
       );
-      tip = ocrDisplayTips.lastUpdated(lastUpdated);
+      tip = ocrStatusTips.lastUpdated(lastUpdated);
       break;
 
     case 'unsupported_language':
@@ -120,7 +120,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
           </p>
         </div>
       );
-      tip = ocrDisplayTips.unsupportedLang(file.language || 'other');
+      tip = ocrStatusTips.unsupportedLang(file.language || 'other');
       break;
 
     case 'cannotProcess':
@@ -131,7 +131,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
           </p>
         </div>
       );
-      tip = ocrDisplayTips.cantProcess(lastUpdated);
+      tip = ocrStatusTips.cantProcess(lastUpdated);
       break;
 
     case 'ocrError':
@@ -142,7 +142,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
           </p>
         </div>
       );
-      tip = ocrDisplayTips.cantProcess(lastUpdated);
+      tip = ocrStatusTips.cantProcess(lastUpdated);
       break;
 
     case 'withOCR':
@@ -153,7 +153,7 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
           </p>
         </div>
       );
-      tip = ocrDisplayTips.lastUpdated(lastUpdated);
+      tip = ocrStatusTips.lastUpdated(lastUpdated);
       break;
 
     case 'ocrComplete':
@@ -180,5 +180,5 @@ const OCRDisplay = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps
   );
 };
 
-const container = connector(OCRDisplay);
-export { container as OCRDisplay };
+const container = connector(OCRStatus);
+export { container as OCRStatus };

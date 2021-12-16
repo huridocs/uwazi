@@ -1,6 +1,6 @@
 import { t } from 'app/I18N';
 
-const ocrDisplayTips = {
+const ocrStatusTips = {
   noOcr: () =>
     t(
       'System',
@@ -23,4 +23,4 @@ const ocrDisplayTips = {
   lastUpdated: (time: string) => `${t('System', 'Last updated', null, false)}: ${time}`,
 };
 
-export { ocrDisplayTips };
+export { ocrStatusTips };

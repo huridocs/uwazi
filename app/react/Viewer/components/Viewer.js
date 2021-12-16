@@ -33,7 +33,7 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument.js';
 import determineDirection from '../utils/determineDirection';
-import { OCRDisplay } from './OCRDisplay';
+import { OCRStatus } from './OCRStatus';
 
 class Viewer extends Component {
   constructor(props) {
@@ -110,7 +110,7 @@ class Viewer extends Component {
                   <PaginatorWithPage totalPages={file.totalPages} onPageChange={changePage} />
                   <NeedAuthorization roles={['admin', 'editor']}>
                     <FeatureToggle feature="ocr.url">
-                      <OCRDisplay file={file} />
+                      <OCRStatus file={file} />
                     </FeatureToggle>
                   </NeedAuthorization>
                   <CurrentLocationLink
