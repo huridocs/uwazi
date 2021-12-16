@@ -9,7 +9,7 @@ import { CSVLoader } from '../csvLoader';
 
 const fixtureFactory = getFixturesFactory();
 
-const commonTranslationContexts = (id1, id2) => [
+const commonTranslationContexts = (id1, id2, id3) => [
   {
     id: 'System',
     label: 'System',
@@ -21,15 +21,24 @@ const commonTranslationContexts = (id1, id2) => [
   },
   {
     id: id1.toString(),
-    label: 'select_thesaurus',
+    label: 'no_new_value_thesaurus',
     values: [
-      { key: 'select_thesaurus', value: 'select_thesaurus' },
+      { key: 'no_new_value_thesaurus', value: 'no_new_value_thesaurus' },
       { key: 'A', value: 'A' },
     ],
     type: 'Dictionary',
   },
   {
     id: id2.toString(),
+    label: 'Select Thesaurus',
+    values: [
+      { key: 'Select Thesaurus', value: 'Select Thesaurus' },
+      { key: 'A', value: 'A' },
+    ],
+    type: 'Dictionary',
+  },
+  {
+    id: id3.toString(),
     label: 'multiselect_thesaurus',
     values: [
       { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
@@ -42,17 +51,24 @@ const commonTranslationContexts = (id1, id2) => [
 
 const fixtures = {
   dictionaries: [
-    fixtureFactory.thesauri('select_thesaurus', ['A']),
+    fixtureFactory.thesauri('no_new_value_thesaurus', ['1', '2', '3']),
+    fixtureFactory.thesauri('Select Thesaurus', ['A']),
     fixtureFactory.thesauri('multiselect_thesaurus', ['A', 'B']),
   ],
   templates: [
     fixtureFactory.template('template', [
       fixtureFactory.property('unrelated_property', 'text'),
+      fixtureFactory.property('no_new_value_select', 'select', {
+        content: fixtureFactory.id('no_new_value_thesaurus'),
+        label: 'no_new_value_select',
+      }),
       fixtureFactory.property('select_property', 'select', {
-        content: fixtureFactory.id('select_thesaurus'),
+        content: fixtureFactory.id('Select Thesaurus'),
+        label: 'Select Property',
       }),
       fixtureFactory.property('multiselect_property', 'multiselect', {
         content: fixtureFactory.id('multiselect_thesaurus'),
+        label: 'Multiselect Property',
       }),
     ]),
     fixtureFactory.template('no_selects_template', [
@@ -62,6 +78,7 @@ const fixtures = {
   entities: [
     fixtureFactory.entity('existing_entity_id', 'template', {
       unrelated_property: fixtureFactory.metadataValue('unrelated_value'),
+      no_new_value_select: fixtureFactory.metadataValue('1'),
       select_property: fixtureFactory.metadataValue('A'),
       multiselect_property: [fixtureFactory.metadataValue('A'), fixtureFactory.metadataValue('B')],
     }),
@@ -81,7 +98,8 @@ const fixtures = {
       _id: db.id(),
       locale: 'en',
       contexts: commonTranslationContexts(
-        fixtureFactory.id('select_thesaurus'),
+        fixtureFactory.id('no_new_value_thesaurus'),
+        fixtureFactory.id('Select Thesaurus'),
         fixtureFactory.id('multiselect_thesaurus')
       ),
     },
@@ -89,7 +107,8 @@ const fixtures = {
       _id: db.id(),
       locale: 'es',
       contexts: commonTranslationContexts(
-        fixtureFactory.id('select_thesaurus'),
+        fixtureFactory.id('no_new_value_thesaurus'),
+        fixtureFactory.id('Select Thesaurus'),
         fixtureFactory.id('multiselect_thesaurus')
       ),
     },
@@ -98,6 +117,7 @@ const fixtures = {
 
 const loader = new CSVLoader();
 
+// eslint-disable-next-line max-statements
 describe('loader', () => {
   let fileSpy;
   let selectThesaurus;
@@ -113,7 +133,7 @@ describe('loader', () => {
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')
     );
-    selectThesaurus = await thesauri.getById(fixtureFactory.id('select_thesaurus'));
+    selectThesaurus = await thesauri.getById(fixtureFactory.id('Select Thesaurus'));
     selectLabels = selectThesaurus.values.map(tv => tv.label);
     selectLabelsSet = new Set(selectLabels);
     multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
@@ -143,6 +163,13 @@ describe('loader', () => {
     ]);
   });
 
+  it('should not add new values where there is none', async () => {
+    const unchangedLabels = (
+      await thesauri.getById(fixtureFactory.id('no_new_value_thesaurus'))
+    ).values.map(tv => tv.label);
+    expect(unchangedLabels).toEqual(['1', '2', '3']);
+  });
+
   it('should not repeat case sensitive values', async () => {
     ['a', 'aes', 'b', 'bes', 'c', 'ces', 'D', 'Des'].forEach(letter =>
       expect(selectLabelsSet.has(letter)).toBe(false)
@@ -169,7 +196,7 @@ describe('loader', () => {
   it('should check that the thesauri saving saves all contexts properly', async () => {
     const trs = await translations.get();
     trs.forEach(tr => {
-      expect(tr.contexts.find(c => c.label === 'select_thesaurus').values).toMatchObject({
+      expect(tr.contexts.find(c => c.label === 'Select Thesaurus').values).toMatchObject({
         A: 'A',
         Aes: 'Aes',
         B: 'B',
@@ -178,7 +205,7 @@ describe('loader', () => {
         Ces: 'Ces',
         d: 'd',
         des: 'des',
-        select_thesaurus: 'select_thesaurus',
+        'Select Thesaurus': 'Select Thesaurus',
       });
       expect(tr.contexts.find(c => c.label === 'multiselect_thesaurus').values).toMatchObject({
         A: 'A',
