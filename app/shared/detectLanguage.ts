@@ -1,6 +1,6 @@
 import franc from 'franc';
-import { language as get } from 'shared/languagesList';
+import { language } from 'shared/languagesList';
 
 const detectLanguage = (text: string, purpose: 'elastic' | 'franc' | 'ISO639_1' = 'elastic') =>
-  get(franc(text), purpose);
+  language(franc(text), purpose);
 export { detectLanguage };
