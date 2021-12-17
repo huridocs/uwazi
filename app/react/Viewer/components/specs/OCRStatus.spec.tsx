@@ -51,7 +51,10 @@ describe('OCRStatus', () => {
         collection: Immutable.fromJS({ ocrServiceEnabled }),
       },
     };
-    ({ renderResult, store: configuredStore } = renderConnectedContainer(<OCRStatus file={pdf} />, () => reduxStore));
+    ({ renderResult, store: configuredStore } = renderConnectedContainer(
+      <OCRStatus file={pdf} />,
+      () => reduxStore
+    ));
   };
 
   it('should not try to get the status if the feature is not toggled on', async () => {
