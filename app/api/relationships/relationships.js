@@ -533,4 +533,8 @@ export default {
   },
 
   count: model.count.bind(model),
+
+  async swapTextReferencesFile(originalFileId, targetFileId) {
+    return model.updateMany({ file: originalFileId }, { $set: { file: targetFileId } });
+  },
 };

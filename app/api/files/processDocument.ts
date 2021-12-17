@@ -3,7 +3,11 @@ import { FileType } from 'shared/types/fileType';
 import { files } from './files';
 import { PDF } from './PDF.js';
 
-export const processDocument = async (entitySharedId: string, file: FileType) => {
+export const processDocument = async (
+  entitySharedId: string,
+  file: FileType & { destination?: string },
+  detectLanguage = true
+) => {
   const pdf = new PDF(file);
   const upload = await files.save({
     ...file,
@@ -15,6 +19,9 @@ export const processDocument = async (entitySharedId: string, file: FileType) =>
   let conversion;
   try {
     conversion = await pdf.convert();
+    if (!detectLanguage) {
+      conversion.language = file.language;
+    }
   } catch (e) {
     await files.save({
       ...upload,
