@@ -334,8 +334,13 @@ describe('Map', () => {
     });
 
     it('should call props.onClick with the event', () => {
-      instance.onClick({ lngLat: [1, 2], features: [], target: { className: 'overlays' } });
+      instance.onClick(onClickParams);
       expect(props.onClick).toHaveBeenCalledWith(onClickParams);
+    });
+
+    it('should not execite props.onClick if the target is not overlays', () => {
+      instance.onClick({ ...onClickParams, target: { className: 'translations' } });
+      expect(props.onClick).not.toHaveBeenCalledWith(onClickParams);
     });
 
     describe('when clicking a marker', () => {
