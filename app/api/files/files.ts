@@ -2,7 +2,7 @@ import { deleteUploadedFiles } from 'api/files/filesystem';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import entities from 'api/entities';
-import request from 'shared/JSONRequest';
+import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import model from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
 import { FileType } from '../../shared/types/fileType';
@@ -11,8 +11,7 @@ export const files = {
   async save(_file: FileType, index = true) {
     const file = { ..._file };
     if (file.url && !file._id) {
-      const response = await request.head(file.url);
-      const mimetype = response.headers.get('content-type') || undefined;
+      const mimetype = mimeTypeFromUrl(file.url);
       file.mimetype = mimetype;
     }
 
