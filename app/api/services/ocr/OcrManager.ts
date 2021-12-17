@@ -12,6 +12,7 @@ import request from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 import relationships from 'api/relationships';
 import { handleError } from 'api/utils/handleError';
+import { language as getLanguage } from 'shared/languagesList';
 import { OcrRecord, OcrStatus } from './ocrModel';
 import { EnforcedWithId } from '../../odm/model';
 import {
@@ -25,14 +26,6 @@ import {
 interface OcrSettings {
   url: string;
 }
-
-const LANGUAGES_MAP: { [key: string]: string } = {
-  arb: 'ar',
-  deu: 'de',
-  eng: 'en',
-  fra: 'fr',
-  spa: 'es',
-};
 
 const isEnabled = async () => {
   const settingsObject = await settings.get();
@@ -143,7 +136,7 @@ const processResults = async (message: ResultsMessage): Promise<void> => {
 const validateLanguage = async (language: string, ocrSettings?: { url: string }) => {
   const _ocrSettings = ocrSettings || (await getSettings());
   const supportedLanguages = await fetchSupportedLanguages(_ocrSettings);
-  return supportedLanguages.includes(LANGUAGES_MAP[language]);
+  return supportedLanguages.includes(getLanguage(language, 'ISO639_1')!);
 };
 
 const getStatus = async (file: EnforcedWithId<FileType>) => {
@@ -221,7 +214,7 @@ class OcrManager {
       tenant: tenant.name,
       params: {
         filename: file.filename,
-        language: LANGUAGES_MAP[file.language || 'other'],
+        language: getLanguage(file.language!, 'ISO639_1'),
       },
     });
 

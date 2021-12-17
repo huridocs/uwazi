@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import getLanguage from 'shared/languagesList';
+import { language as getLanguage } from 'shared/languagesList';
 import t from '../I18N/t';
 
 export class DocumentLanguage extends Component {
