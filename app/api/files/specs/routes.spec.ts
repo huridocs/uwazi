@@ -56,7 +56,7 @@ describe('files routes', () => {
     });
 
     describe('when external url file', () => {
-      fit('should guess the mimetype', async () => {
+      it('should guess the mimetype', async () => {
         await request(app)
           .post('/api/files')
           .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
@@ -66,9 +66,6 @@ describe('files routes', () => {
       });
 
       it('should return a validation error for a no secured url', async () => {
-        const headers = new Headers();
-        headers.set('content-type', 'image/png');
-
         const rest = await request(app)
           .post('/api/files')
           .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
