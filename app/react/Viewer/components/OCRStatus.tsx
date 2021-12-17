@@ -66,7 +66,7 @@ const OCRStatus = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps)
       socket.off('ocr:ready', listenOnSuccess);
       socket.off('ocr:error', listenOnError);
     };
-  }, []);
+  }, [file]);
 
   const handleClick = () => {
     setOcrStatus({ status: 'inQueue', lastUpdated: Date.now() });

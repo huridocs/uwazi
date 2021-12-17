@@ -8,6 +8,7 @@ import Immutable from 'immutable';
 import { FileType } from 'shared/types/fileType';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
 import { socket } from 'app/socket';
+import { Provider } from 'react-redux';
 import { OCRStatus } from '../OCRStatus';
 import * as ocrActions from '../../actions/ocrActions';
 import * as documentActions from '../../actions/documentActions';
@@ -16,6 +17,7 @@ describe('OCRStatus', () => {
   let file: FileType;
   let store: any;
   let renderResult: RenderResult;
+  let configuredStore: any;
 
   const mockSocketOn: any = {};
 
@@ -49,7 +51,7 @@ describe('OCRStatus', () => {
         collection: Immutable.fromJS({ ocrServiceEnabled }),
       },
     };
-    ({ renderResult } = renderConnectedContainer(<OCRStatus file={pdf} />, () => reduxStore));
+    ({ renderResult, store: configuredStore } = renderConnectedContainer(<OCRStatus file={pdf} />, () => reduxStore));
   };
 
   it('should not try to get the status if the feature is not toggled on', async () => {
@@ -106,6 +108,39 @@ describe('OCRStatus', () => {
         const ocrButton: Element = await screen.findByRole('button');
         fireEvent.click(ocrButton);
         expect(await screen.findByText('In OCR queue')).not.toBeNull();
+      });
+    });
+
+    describe('when language is not supported', () => {
+      beforeEach(() => {
+        jest.spyOn(ocrActions, 'getOcrStatus').mockImplementationOnce(async _filename =>
+          Promise.resolve({
+            status: 'unsupported_language',
+            lastUpdated: undefined,
+          })
+        );
+      });
+
+      it('should show a language not supported message', async () => {
+        render(true, { ...file, language: 'other' });
+        expect(await screen.findByText('Unsupported OCR language')).not.toBeNull();
+      });
+
+      it('should re-request the status if the file changes', async () => {
+        render(true, { ...file, language: 'other' });
+        expect(await screen.findByText('Unsupported OCR language')).not.toBeNull();
+        jest.spyOn(ocrActions, 'getOcrStatus').mockImplementationOnce(async _filename =>
+          Promise.resolve({
+            status: 'noOCR',
+            lastUpdated: undefined,
+          })
+        );
+        renderResult.rerender(
+          <Provider store={configuredStore}>
+            <OCRStatus file={{ ...file, language: 'eng' }} />
+          </Provider>
+        );
+        expect(await screen.findByText('OCR PDF')).not.toBeNull();
       });
     });
   });
