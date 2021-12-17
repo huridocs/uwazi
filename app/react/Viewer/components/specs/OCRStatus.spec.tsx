@@ -145,7 +145,7 @@ describe('OCRStatus', () => {
       expect(await screen.findByText('Could not be processed')).not.toBeNull();
     });
 
-    it('should liste to the ocr service if the document is in the ocr queue when the component loads', async () => {
+    it('should listen to the ocr service if the document is in the ocr queue when the component loads', async () => {
       render(true, { ...file, filename: 'inQueue' });
       expect(await screen.findByText('In OCR queue')).not.toBeNull();
       expect(socket.on).toHaveBeenCalled();
