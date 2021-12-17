@@ -338,7 +338,7 @@ describe('Map', () => {
       expect(props.onClick).toHaveBeenCalledWith(onClickParams);
     });
 
-    it('should not execite props.onClick if the target is not overlays', () => {
+    it('should not execute props.onClick if the target is not overlays', () => {
       instance.onClick({ ...onClickParams, target: { className: 'translations' } });
       expect(props.onClick).not.toHaveBeenCalledWith(onClickParams);
     });
