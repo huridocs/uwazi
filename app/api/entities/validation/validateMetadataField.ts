@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import _ from 'lodash';
 import { isUndefined, isNull } from 'util';
 import { ensure } from 'shared/tsUtils';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -6,9 +7,8 @@ import entities from 'api/entities';
 import thesauris from 'api/thesauri';
 import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
+import { TemplateSchema } from 'shared/types/templateType';
 import { validators, customErrorMessages } from './metadataValidators';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
@@ -52,14 +52,6 @@ const validateType = (
   return [];
 };
 
-const flattenDictionaryValues = (dictionary: ThesaurusSchema) =>
-  (dictionary.values || []).reduce<ThesaurusValueSchema[]>((flattened, v) => {
-    if (v.values?.length) {
-      return flattened.concat(v.values);
-    }
-    return flattened.concat([v]);
-  }, []);
-
 const validateDictionariesForeignIds = async (
   property: PropertySchema,
   entity: EntitySchema,
@@ -69,13 +61,12 @@ const validateDictionariesForeignIds = async (
     property.type === propertyTypes.select || property.type === propertyTypes.multiselect;
 
   if (value && usesDictionary) {
-    const dictionaryValues = flattenDictionaryValues(
-      ensure<ThesaurusSchema>(await thesauris.getById(property.content))
+    const thesaurus = await thesauris.getById(property.content);
+    const thesaurusValues = _.flatMapDeep(thesaurus?.values, tv =>
+      tv.values ? [tv, ...tv.values] : tv
     ).map(v => v.id);
 
-    const diff = value
-      .filter(v => v.value)
-      .filter(v => !dictionaryValues.includes(String(v.value)));
+    const diff = value.filter(v => v.value).filter(v => !thesaurusValues.includes(String(v.value)));
 
     if (diff.length) {
       return [

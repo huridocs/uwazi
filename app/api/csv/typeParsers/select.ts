@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -21,13 +22,16 @@ const select = async (
   if (!normalizedPropValue) {
     return null;
   }
+  const thesaurusValues = _.flatMapDeep(thesauriValues, tv =>
+    tv.values ? [tv, ...tv.values] : tv
+  );
 
-  const thesarusValue = thesauriValues.find(
+  const thesaurusValue = thesaurusValues.find(
     tv => normalizeThesaurusLabel(tv.label) === normalizedPropValue
   );
 
-  if (thesarusValue?.id) {
-    return [{ value: thesarusValue.id, label: thesarusValue.label }];
+  if (thesaurusValue?.id) {
+    return [{ value: thesaurusValue.id, label: thesaurusValue.label }];
   }
 
   return null;

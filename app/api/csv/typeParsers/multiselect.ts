@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -38,13 +39,14 @@ const multiselect = async (
   const thesauriValues = currentThesauri.values || [];
 
   const values = splitMultiselectLabels(entityToImport[ensure<string>(property.name)]);
+  const thesaurusValues = _.flatMapDeep(thesauriValues, tv =>
+    tv.values ? [tv, ...tv.values] : tv
+  );
 
-  const result = Object.keys(values)
-    .map(key => thesauriValues.find(tv => normalizeThesaurusLabel(tv.label) === key))
+  return Object.keys(values)
+    .map(key => thesaurusValues.find(tv => normalizeThesaurusLabel(tv.label) === key))
     .map(tv => tv)
     .map(tv => ({ value: ensure<string>(tv?.id), label: ensure<string>(tv?.label) }));
-
-  return result;
 };
 
 export default multiselect;
