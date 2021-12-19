@@ -1,5 +1,5 @@
 import { detectLanguage } from 'shared/detectLanguage';
-import languages from 'shared/languagesList';
+import { language as languages } from 'shared/languagesList';
 import entities from 'api/entities';
 import { errorLog } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';

@@ -1,4 +1,5 @@
 import db, { DBFixture } from 'api/utils/testing_db';
+import { UserRole } from 'shared/types/userSchema';
 
 const entityId = db.id();
 const entityEnId = db.id();
@@ -17,6 +18,7 @@ const fixtures: DBFixture = {
       originalname: 'upload1',
       filename: fileName1,
       type: 'custom',
+      language: 'eng',
     },
     {
       _id: uploadId2,
@@ -36,6 +38,7 @@ const fixtures: DBFixture = {
     { entity: 'entity1', file: uploadId2.toString(), hub: '1' },
     { entity: 'entity2', file: uploadId2.toString(), hub: '2' },
     { entity: 'entity3', hub: '3' },
+    { entity: 'sharedId1', file: uploadId.toString() },
   ],
   entities: [
     {
@@ -64,6 +67,20 @@ const fixtures: DBFixture = {
       languages: [{ key: 'es', default: true }],
       publicFormDestination: 'http://localhost:54321',
       allowedPublicTemplates: [templateId.toString()],
+    },
+  ],
+  users: [
+    {
+      _id: db.id(),
+      username: 'collab',
+      role: UserRole.COLLABORATOR,
+      email: 'collab@tenant.xy',
+    },
+    {
+      _id: db.id(),
+      username: 'admin',
+      role: UserRole.ADMIN,
+      email: 'admin@tenant.xy',
     },
   ],
 };

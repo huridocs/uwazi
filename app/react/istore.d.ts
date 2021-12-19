@@ -13,6 +13,22 @@ import { Settings } from 'shared/types/settingsType';
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
 
+interface EntityDisplayState {
+  documents: IImmutable<{ rows: EntitySchema[] }>;
+  ui: IImmutable<{
+    selectedDocuments: EntitySchema[];
+    tableViewColumns: TableViewColumn[];
+    zoomLevel: number;
+  }>;
+  sidepanel: {
+    metadata: ClientEntitySchema;
+    quickLabelState: IImmutable<QuickLabelState>;
+    quickLabelMetadata: QuickLabelMetadata;
+    quickLabelMetadataForm: any;
+  };
+  search: any;
+  filters: IImmutable<{ documentTypes: [] }>;
+}
 export interface TasksState {
   SyncState?: TaskStatus;
   TrainState?: TaskStatus;
@@ -63,24 +79,6 @@ export interface TableViewColumn extends PropertySchema {
   hidden: boolean;
   translationContext?: string;
 }
-
-interface EntityDisplayState {
-  documents: IImmutable<{ rows: EntitySchema[] }>;
-  ui: IImmutable<{
-    selectedDocuments: EntitySchema[];
-    tableViewColumns: TableViewColumn[];
-    zoomLevel: number;
-  }>;
-  sidepanel: {
-    metadata: ClientEntitySchema;
-    quickLabelState: IImmutable<QuickLabelState>;
-    quickLabelMetadata: QuickLabelMetadata;
-    quickLabelMetadataForm: any;
-  };
-  search: any;
-  filters: IImmutable<{ documentTypes: [] }>;
-}
-
 export interface ClientTemplateSchema extends TemplateSchema {
   _id: string;
 }
@@ -139,6 +137,7 @@ export interface IStore {
   settings: {
     collection: IImmutable<Settings>;
   };
+  user: IImmutable<UserSchema[]>;
   users: IImmutable<UserSchema[]>;
   userGroups: IImmutable<UserGroupSchema[]>;
   page: {

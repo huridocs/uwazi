@@ -11,19 +11,20 @@ import connections from 'api/relationships';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import { UserRole } from 'shared/types/userSchema';
+import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
 describe('files routes', () => {
+  const collabUser = fixtures.users!.find(u => u.username === 'collab');
+  let requestMockedUser = collabUser;
+
   const app: Application = setUpApp(
     uploadRoutes,
     (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = {
-        role: UserRole.COLLABORATOR,
-        username: 'User 1',
-      };
+      (req as any).user = (() => requestMockedUser)();
       next();
     }
   );
@@ -31,6 +32,8 @@ describe('files routes', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     await testingEnvironment.setUp(fixtures);
+    requestMockedUser = collabUser;
+    testingEnvironment.setPermissions(collabUser);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -114,8 +117,15 @@ describe('files routes', () => {
       await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
 
       const allConnections = await connections.get();
-      expect(allConnections.length).toBe(1);
+      expect(allConnections.length).toBe(2);
       expect(allConnections[0]).toEqual(expect.objectContaining({ entity: 'entity3' }));
+      expect(allConnections[1]).toEqual(expect.objectContaining({ entity: 'sharedId1' }));
+    });
+
+    it('should cleanup the ocr records related to the file', async () => {
+      const ocrCleanupSpy = jest.spyOn(ocrRecords, 'cleanupRecordsOfFiles');
+      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+      expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
     });
 
     it('should validate _id as string', async () => {
@@ -127,6 +137,14 @@ describe('files routes', () => {
     });
 
     describe('api/files/tocReviewed', () => {
+      beforeEach(() => {
+        // WARNING!!! this sets an editor user in the permissions context.
+        // It's inconsistent with the request logged-in user!!
+        // This is here to avoid changing the test implementation without research.
+        // Fix the inconsistency and remove this.
+        testingEnvironment.setPermissions();
+      });
+
       it('should set tocGenerated to false on the file', async () => {
         const response: SuperTestResponse = await request(app)
           .post('/api/files/tocReviewed')

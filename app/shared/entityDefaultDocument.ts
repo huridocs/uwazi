@@ -1,5 +1,5 @@
 import { FileType } from 'shared/types/fileType';
-import language from 'shared/languagesList';
+import { language } from 'shared/languagesList';
 
 export const entityDefaultDocument = (
   documents: Array<FileType> = [],
