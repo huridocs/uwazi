@@ -10,7 +10,6 @@ import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
-import { UserRole } from 'shared/types/userSchema';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, uploadId, uploadId2 } from './fixtures';

@@ -4,7 +4,6 @@ import { search } from 'api/search';
 import entities from 'api/entities';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
-import request from 'shared/JSONRequest';
 import model from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
 import { FileType } from '../../shared/types/fileType';
