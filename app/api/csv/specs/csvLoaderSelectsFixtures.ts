@@ -18,7 +18,7 @@ const commonTranslationContexts = () => [
     label: 'no_new_value_thesaurus',
     values: [
       { key: 'no_new_value_thesaurus', value: 'no_new_value_thesaurus' },
-      { key: 'A', value: 'A' },
+      { key: '1', value: '1' },
     ],
     type: 'Dictionary',
   },
@@ -38,6 +38,15 @@ const commonTranslationContexts = () => [
       { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
       { key: 'A', value: 'A' },
       { key: 'B', value: 'B' },
+    ],
+    type: 'Dictionary',
+  },
+  {
+    id: fixtureFactory.id('nested_thesaurus').toString(),
+    label: 'nested_thesaurus',
+    values: [
+      { key: 'nested_thesaurus', value: 'nested_thesaurus' },
+      { key: 'A', value: 'A' },
     ],
     type: 'Dictionary',
   },
