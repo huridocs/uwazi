@@ -10,26 +10,27 @@ function normalizeThesaurusLabel(label: string): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+const findThesaurusValue = (currentThesauri: ThesaurusSchema, normalizedPropValue: string) => {
+  const thesaurusValues = _.flatMapDeep(currentThesauri.values || [], tv =>
+    tv.values ? [tv, ...tv.values] : tv
+  );
+
+  return thesaurusValues.find(tv => normalizeThesaurusLabel(tv.label) === normalizedPropValue);
+};
+
 const select = async (
   entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<MetadataObjectSchema[] | null> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
-  const thesauriValues = currentThesauri.values || [];
-
   const propValue = entityToImport[ensure<string>(property.name)];
   const normalizedPropValue = normalizeThesaurusLabel(propValue);
+
   if (!normalizedPropValue) {
     return null;
   }
-  const thesaurusValues = _.flatMapDeep(thesauriValues, tv =>
-    tv.values ? [tv, ...tv.values] : tv
-  );
 
-  const thesaurusValue = thesaurusValues.find(
-    tv => normalizeThesaurusLabel(tv.label) === normalizedPropValue
-  );
-
+  const thesaurusValue = findThesaurusValue(currentThesauri, normalizedPropValue);
   if (thesaurusValue?.id) {
     return [{ value: thesaurusValue.id, label: thesaurusValue.label }];
   }

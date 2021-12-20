@@ -52,6 +52,15 @@ const validateType = (
   return [];
 };
 
+const compareThesaurusValue = async (property: PropertySchema, value: MetadataObjectSchema[]) => {
+  const thesaurus = await thesauris.getById(property.content);
+  const thesaurusValues = _.flatMapDeep(thesaurus?.values, tv =>
+    tv.values ? [tv, ...tv.values] : tv
+  ).map(v => v.id);
+
+  return value.filter(v => v.value && !thesaurusValues.includes(String(v.value)));
+};
+
 const validateDictionariesForeignIds = async (
   property: PropertySchema,
   entity: EntitySchema,
@@ -61,13 +70,7 @@ const validateDictionariesForeignIds = async (
     property.type === propertyTypes.select || property.type === propertyTypes.multiselect;
 
   if (value && usesDictionary) {
-    const thesaurus = await thesauris.getById(property.content);
-    const thesaurusValues = _.flatMapDeep(thesaurus?.values, tv =>
-      tv.values ? [tv, ...tv.values] : tv
-    ).map(v => v.id);
-
-    const diff = value.filter(v => v.value).filter(v => !thesaurusValues.includes(String(v.value)));
-
+    const diff = await compareThesaurusValue(property, value);
     if (diff.length) {
       return [
         validationError(
