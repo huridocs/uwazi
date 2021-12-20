@@ -11,7 +11,6 @@ import { CSVLoader } from '../csvLoader';
 
 const loader = new CSVLoader();
 
-// eslint-disable-next-line max-statements
 describe('loader', () => {
   let fileSpy;
   let selectThesaurus;
