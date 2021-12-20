@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
-import socket from 'app/socket';
+import { socket } from 'app/socket';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 

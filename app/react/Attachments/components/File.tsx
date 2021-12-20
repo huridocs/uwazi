@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Translate, t } from 'app/I18N';
-import transformLanguage, { languages } from 'shared/languagesList';
+import { language as transformLanguage, languages } from 'shared/languagesList';
 import { Icon } from 'UI';
 import { FileType } from 'shared/types/fileType';
 import { APIURL } from 'app/config.js';

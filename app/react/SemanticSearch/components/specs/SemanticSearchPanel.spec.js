@@ -4,7 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import socket from 'app/socket';
+import { socket } from 'app/socket';
 
 import {
   SemanticSearchSidePanel,

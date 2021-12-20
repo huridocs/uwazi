@@ -7,16 +7,54 @@
 .content-header-document {
   .content-header-title {
     position: relative;
-  }
-
-  .btn-default {
-    position: absolute;
-    right: 10px;
+    gap: 10px;
   }
 
   .paginator {
-    width: 100%;
+    flex-grow: 1;
     text-align: center;
+
+    a {
+      display: inline;
+    }
+  }
+
+  .ocr-service-display {
+    line-height: normal;
+    text-align: center;
+
+    & p {
+      margin: 0;
+    }
+
+    .status {
+      font-style: italic;
+      color: $c-grey-dark;
+    }
+
+    .ocr-error {
+      padding: 7px 10px 7px 10px;
+      border: 1px solid $c-black;
+      border-radius: 4px;
+      background-color: $c-black;
+      color: white;
+      font-style: italic;
+    }
+
+    .complete {
+      color: $c-type-9;
+    }
+
+    &:hover .ocr-tooltip {
+      display: block;
+      top: unset;
+      left: unset;
+      right: 10px;
+      bottom: unset;
+      white-space: normal;
+      transform: translateY(5px);
+      max-width: 300px;
+    }
   }
 }
 

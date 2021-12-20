@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
-import socket from 'app/socket';
+import { socket } from 'app/socket';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import Immutable from 'immutable';

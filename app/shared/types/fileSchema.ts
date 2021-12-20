@@ -3,11 +3,11 @@ import { objectIdSchema, tocSchema, extractedMetadataSchema } from 'shared/types
 import { wrapValidator } from 'shared/tsUtils';
 import { FileType } from './fileType';
 
-export const emitSchemaTypes = true;
+const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true, removeAdditional: true });
 
-export const fileSchema = {
+const fileSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
@@ -46,4 +46,6 @@ export const fileSchema = {
 
 const validate = wrapValidator(ajv.compile(fileSchema));
 
-export const validateFile = async (file: FileType): Promise<FileType> => validate({ ...file });
+const validateFile = async (file: FileType): Promise<FileType> => validate({ ...file });
+
+export { validateFile, fileSchema, emitSchemaTypes };
