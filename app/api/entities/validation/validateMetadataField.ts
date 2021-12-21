@@ -9,6 +9,7 @@ import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 
 import { TemplateSchema } from 'shared/types/templateType';
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { validators, customErrorMessages } from './metadataValidators';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
@@ -54,9 +55,7 @@ const validateType = (
 
 const compareThesaurusValue = async (property: PropertySchema, value: MetadataObjectSchema[]) => {
   const thesaurus = await thesauris.getById(property.content);
-  const thesaurusValues = _.flatMapDeep(thesaurus?.values, tv =>
-    tv.values ? [tv, ...tv.values] : tv
-  ).map(v => v.id);
+  const thesaurusValues = flatThesaurusValues(thesaurus).map(v => v.id);
 
   return value.filter(v => v.value && !thesaurusValues.includes(String(v.value)));
 };

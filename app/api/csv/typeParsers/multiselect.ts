@@ -5,6 +5,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { normalizeThesaurusLabel } from './select';
 
 function labelNotNull(label: string | null): label is string {
@@ -36,12 +37,9 @@ const multiselect = async (
   property: PropertySchema
 ): Promise<MetadataObjectSchema[]> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
-  const thesauriValues = currentThesauri.values || [];
 
   const values = splitMultiselectLabels(entityToImport[ensure<string>(property.name)]);
-  const thesaurusValues = _.flatMapDeep(thesauriValues, tv =>
-    tv.values ? [tv, ...tv.values] : tv
-  );
+  const thesaurusValues = flatThesaurusValues(currentThesauri);
 
   return Object.keys(values)
     .map(key => thesaurusValues.find(tv => normalizeThesaurusLabel(tv.label) === key))

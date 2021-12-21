@@ -139,7 +139,7 @@ describe('loader', () => {
       });
     });
 
-    it('should only add as new values those which are not nested values', async () => {
+    it('should only add as new root values those which are not nested values', async () => {
       const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
       const rootLabels = nestedThesaurus.values.map(value => value.label);
       expect(rootLabels).toEqual(['A', 'C', 'B', 'P', 'D', 'O', 'E', '0']);

@@ -4,6 +4,7 @@ import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 
 function normalizeThesaurusLabel(label: string): string | null {
   const trimmed = label.trim().toLowerCase();
@@ -11,10 +12,7 @@ function normalizeThesaurusLabel(label: string): string | null {
 }
 
 const findThesaurusValue = (currentThesauri: ThesaurusSchema, normalizedPropValue: string) => {
-  const thesaurusValues = _.flatMapDeep(currentThesauri.values || [], tv =>
-    tv.values ? [tv, ...tv.values] : tv
-  );
-
+  const thesaurusValues = flatThesaurusValues(currentThesauri);
   return thesaurusValues.find(tv => normalizeThesaurusLabel(tv.label) === normalizedPropValue);
 };
 
