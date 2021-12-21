@@ -61,7 +61,7 @@ describe('entitySavingManager', () => {
             type: 'attachment',
           },
           {
-            mimetype: 'text/html; charset=ISO-8859-1',
+            mimetype: 'text/html',
             originalname: 'Google link',
             url: 'https://google.com',
             type: 'attachment',
