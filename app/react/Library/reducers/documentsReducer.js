@@ -6,7 +6,7 @@ import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
 
 const initialState = { rows: [], totalRows: 0 };
 
-export default function documents(state = initialState, action = {}) {
+export const documentsReducer = (state = initialState, action = {}) => {
   if (action.type === types.SET_DOCUMENTS) {
     return Immutable.fromJS(action.documents);
   }
@@ -122,4 +122,4 @@ export default function documents(state = initialState, action = {}) {
   }
 
   return Immutable.fromJS(state);
-}
+};

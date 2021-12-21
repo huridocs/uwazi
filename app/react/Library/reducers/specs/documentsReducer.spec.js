@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
-import documentsReducer from 'app/Library/reducers/documentsReducer';
+import { documentsReducer } from 'app/Library/reducers/documentsReducer';
 import * as actions from 'app/Library/actions/libraryActions';
 import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
 
