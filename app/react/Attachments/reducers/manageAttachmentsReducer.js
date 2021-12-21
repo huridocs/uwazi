@@ -47,7 +47,7 @@ export const manageAttachmentsReducer =
       const attachments = getAttachments(state, setInArray);
       return state.setIn(
         setInArray.concat(['attachments']),
-        attachments.filterNot(a => a.get('filename') === action.file.filename)
+        attachments.filterNot(a => a.get('_id') === action.file._id)
       );
     }
 

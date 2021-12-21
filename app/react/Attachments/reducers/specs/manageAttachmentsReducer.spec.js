@@ -49,16 +49,19 @@ describe('manageAttachmentsReducer', () => {
     describe('When ATTACHMENT_DELETED', () => {
       it('should remove the action file from attachments', () => {
         action.type = 'ATTACHMENT_DELETED';
-        action.file = { filename: 'file to be deleted' };
+        action.file = { filename: 'file to be deleted', _id: 'id1' };
         state = state.set(
           'attachments',
-          Immutable.fromJS([{ filename: 'file to be deleted' }, { filename: 'file to remain' }])
+          Immutable.fromJS([
+            { filename: 'file to be deleted', _id: 'id1' },
+            { filename: 'file to remain', _id: 'id2' },
+          ])
         );
 
         const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
         expect(attachments.length).toBe(1);
-        expect(attachments[0]).toEqual({ filename: 'file to remain' });
+        expect(attachments[0]).toEqual({ filename: 'file to remain', _id: 'id2' });
       });
     });
 
@@ -120,10 +123,13 @@ describe('manageAttachmentsReducer', () => {
     describe('When ATTACHMENT_DELETED', () => {
       it('should remove the action file from attachments', () => {
         action.type = 'ATTACHMENT_DELETED';
-        action.file = { filename: 'file to be deleted' };
+        action.file = { filename: 'file to be deleted', _id: 'id1' };
         state = state.setIn(
           ['selectedDocuments', 0, 'attachments'],
-          Immutable.fromJS([{ filename: 'file to be deleted' }, { filename: 'file to remain' }])
+          Immutable.fromJS([
+            { filename: 'file to be deleted', _id: 'id1' },
+            { filename: 'file to remain', _id: 'id2' },
+          ])
         );
 
         const attachments = manageAttachmentsReducer(unchagedState => unchagedState, {
@@ -133,7 +139,7 @@ describe('manageAttachmentsReducer', () => {
           .toJS();
 
         expect(attachments.length).toBe(1);
-        expect(attachments[0]).toEqual({ filename: 'file to remain' });
+        expect(attachments[0]).toEqual({ filename: 'file to remain', _id: 'id2' });
       });
     });
 
