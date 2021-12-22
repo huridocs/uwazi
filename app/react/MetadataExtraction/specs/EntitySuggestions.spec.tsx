@@ -7,7 +7,6 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { socket } from 'app/socket';
 import {
   dateSuggestion,
   defaultHeaders,
