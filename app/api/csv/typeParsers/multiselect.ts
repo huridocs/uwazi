@@ -10,7 +10,7 @@ function labelNotNull(label: string | null): label is string {
   return label !== null;
 }
 
-export function splitMultiselectLabels(labelString: string): { [k: string]: string } {
+function splitMultiselectLabels(labelString: string): { [k: string]: string } {
   const labels = labelString
     .split('|')
     .map(l => l.trim())
@@ -25,7 +25,7 @@ export function splitMultiselectLabels(labelString: string): { [k: string]: stri
   return result;
 }
 
-export function normalizeMultiselectLabels(labelArray: string[]): string[] {
+function normalizeMultiselectLabels(labelArray: string[]): string[] {
   const normalizedLabels = labelArray.map(l => normalizeThesaurusLabel(l)).filter(labelNotNull);
   return Array.from(new Set(normalizedLabels));
 }
@@ -48,3 +48,4 @@ const multiselect = async (
 };
 
 export default multiselect;
+export { splitMultiselectLabels, normalizeMultiselectLabels };

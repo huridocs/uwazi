@@ -15,7 +15,7 @@ import {
 } from 'react-table';
 import _ from 'lodash';
 import { I18NLink, t, Translate } from 'app/I18N';
-import socket from 'app/socket';
+import { socket } from 'app/socket';
 import { Icon } from 'app/UI';
 import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';

@@ -8,6 +8,8 @@ import {
   ExtractedMetadataSchema,
 } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
+import { UserRole } from 'shared/types/userSchema';
+import { UserSchema } from 'shared/types/userType';
 
 export function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -49,12 +51,20 @@ export function getFixturesFactory() {
       };
     },
 
+    inherit(name: string, content: string, property: string, props = {}): PropertySchema {
+      return this.relationshipProp(name, content, {
+        inherit: { property: idMapper(property).toString() },
+        ...props,
+      });
+    },
+
     file: (
       id: string,
       entity: string,
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
       filename: string,
       language: string = 'en',
+      originalname?: string,
       extractedMetadata: ExtractedMetadataSchema[] = []
     ): FileType => ({
       _id: idMapper(`${id}`),
@@ -62,15 +72,9 @@ export function getFixturesFactory() {
       language,
       type,
       filename,
+      originalname: originalname || filename,
       extractedMetadata,
     }),
-
-    inherit(name: string, content: string, property: string, props = {}): PropertySchema {
-      return this.relationshipProp(name, content, {
-        inherit: { property: idMapper(property).toString() },
-        ...props,
-      });
-    },
 
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
       return this.property(name, 'relationship', {
@@ -103,6 +107,19 @@ export function getFixturesFactory() {
           ? { _id: idMapper(value), id: value, label: value }
           : { _id: idMapper(value[0]), id: value[0], label: value[1] }
       ),
+    }),
+
+    user: (
+      username: string,
+      role: UserRole = UserRole.COLLABORATOR,
+      email?: string,
+      password?: string
+    ): UserSchema => ({
+      username,
+      _id: idMapper(username),
+      role,
+      email: email || `${username}@provider.tld`,
+      password,
     }),
   });
 }
