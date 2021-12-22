@@ -1,5 +1,4 @@
 import Ajv from 'ajv';
-import _ from 'lodash';
 import { isUndefined, isNull } from 'util';
 import { ensure } from 'shared/tsUtils';
 import { propertyTypes } from 'shared/propertyTypes';

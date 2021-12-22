@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';

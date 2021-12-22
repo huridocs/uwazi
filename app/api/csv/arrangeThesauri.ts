@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { ImportFile } from 'api/csv/importFile';
 import { WithId } from 'api/odm';
 import thesauri from 'api/thesauri';
@@ -69,7 +68,8 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
 
   allRelatedThesauri.forEach(t => {
     const id = t._id.toString();
-    const thesaurusValues = flatThesaurusValues(t).map(v => normalizeThesaurusLabel(v.label));
+    const a = flatThesaurusValues(t, true);
+    const thesaurusValues = a.map(v => normalizeThesaurusLabel(v.label));
     thesauriIdToExistingValues.set(id, new Set(thesaurusValues));
     thesauriIdToNewValues.set(id, new Set());
     thesauriIdToNormalizedNewValues.set(id, new Set());

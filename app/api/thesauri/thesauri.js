@@ -211,8 +211,14 @@ const thesauri = {
   },
 };
 
-const flatThesaurusValues = thesaurus =>
-  _.flatMapDeep(thesaurus?.values, tv => (tv.values ? [tv, ...tv.values] : tv));
+const flatThesaurusValues = (thesaurus, includeRoots = false) =>
+  includeRoots
+    ? _.flatMapDeep(thesaurus?.values, tv => {
+        const { values = [], ...root } = tv;
+        values.push(root);
+        return values;
+      })
+    : _.flatMapDeep(thesaurus?.values, tv => tv.values || tv);
 
 export default thesauri;
 export { thesauri, flatThesaurusValues };
