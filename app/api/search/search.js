@@ -68,9 +68,7 @@ function processFilters(filters, properties) {
 function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
   return propertiesToBeAggregated
     .filter(property => {
-      const type = property.inherit
-        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).type
-        : property.type;
+      const type = property.inherit ? property.inherit.type : property.type;
 
       return (
         type === 'select' || type === 'multiselect' || type === 'relationship' || type === 'nested'
