@@ -12,7 +12,7 @@ import { Icon, ToggleButton } from 'app/UI';
 import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
-
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { ToggleChildren } from './ToggleChildren';
 import * as tips from './collectionSettingsTips';
 import { SettingsFormElement } from './SettingsFormElement';
@@ -53,6 +53,7 @@ const CollectionSettings = ({
   register('mapStartingPoint');
   register('cookiepolicy');
   register('newNameGeneration');
+  register('ocrServiceEnabled');
 
   const save = async (newCollectionSettings: Settings) => {
     const saveParameters = new RequestParams({
@@ -197,6 +198,21 @@ const CollectionSettings = ({
             <input type="text" name="matomoConfig" ref={register} className="form-control" />
           </ToggleChildren>
         </SettingsFormElement>
+
+        <FeatureToggle feature="ocr.url">
+          <h2>
+            <Translate>Services</Translate>
+          </h2>
+
+          <SettingsFormElement label="Document OCR trigger" tip={tips.ocrTrigger}>
+            <ToggleButton
+              checked={Boolean(watch('ocrServiceEnabled'))}
+              onClick={() => {
+                setValue('ocrServiceEnabled', !getValues('ocrServiceEnabled'));
+              }}
+            />
+          </SettingsFormElement>
+        </FeatureToggle>
 
         <h2>
           <Translate>Forms and email configuration</Translate>
