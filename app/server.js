@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 import { TaskProvider } from 'shared/tasks/tasks';
+import { OcrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
 import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
 
@@ -163,6 +164,10 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
           segmentationRepeater.start();
         }
+      }
+
+      if (config.externalServices) {
+        OcrManager.start();
       }
     });
 

@@ -15,6 +15,7 @@ const propsWithDBSpecifics = {
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   emitIndexErrors: true,
   strict: false,
+  versionKey: false,
 });
 
 const Model = instanceModel<FileType>('files', mongoSchema);

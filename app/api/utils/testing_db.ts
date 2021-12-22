@@ -15,6 +15,7 @@ import { testingTenants } from './testingTenants';
 import uniqueID from 'shared/uniqueID';
 import { createMongoInstance } from './createMongoInstance';
 import { ensure } from 'shared/tsUtils';
+import { UserSchema } from '../../shared/types/userType';
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
@@ -28,6 +29,7 @@ export type DBFixture = {
   dictionaries?: ThesaurusSchema[];
   usergroups?: UserGroupSchema[];
   pages?: PageType[];
+  users?: UserSchema[];
   [k: string]: any;
 };
 
