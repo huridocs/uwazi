@@ -406,6 +406,23 @@ describe('validateEntity', () => {
           });
           await testValid(entity);
         });
+
+        it('should not allow as foreign id a root value of a nested thesaurus', async () => {
+          const entity = createEntity({
+            metadata: {
+              required_multiselect: [{ value: '1' }],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.dictionary_wrong_foreing_id,
+            ".metadata['required_multiselect']",
+            {
+              data: [{ value: '1' }],
+            }
+          );
+        });
       });
 
       describe('multiselect property', () => {
@@ -520,7 +537,7 @@ describe('validateEntity', () => {
         });
 
         it('should fail if url is not provided', async () => {
-          let entity = createEntity({
+          const entity = createEntity({
             metadata: { link: [{ value: { label: 'label', url: '' } }] },
           });
           await expectError(entity, customErrorMessages[propertyTypes.link], ".metadata['link']");

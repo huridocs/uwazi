@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
 import entities from 'api/entities/entities';
 import { preloadOptionsLimit } from 'shared/config';
@@ -210,5 +211,14 @@ const thesauri = {
   },
 };
 
+const flatThesaurusValues = (thesaurus, includeRoots = false) =>
+  includeRoots
+    ? _.flatMapDeep(thesaurus?.values, tv => {
+        const { values = [], ...root } = tv;
+        values.push(root);
+        return values;
+      })
+    : _.flatMapDeep(thesaurus?.values, tv => tv.values || tv);
+
 export default thesauri;
-export { thesauri };
+export { thesauri, flatThesaurusValues };
