@@ -99,15 +99,35 @@ describe('FiltersForm', () => {
   });
 
   describe('save', () => {
-    it('should sanitize and call teh api', () => {
+    it('should sanitize and call the api', () => {
+      render();
+      instance.activesChange([
+        { id: 1, name: 'Country', container: '', index: 0 },
+        {
+          id: 'asd',
+          name: 'Institutions',
+          container: '',
+          index: 2,
+          items: [
+            { id: 4, name: 'Court' },
+            { id: 2, _id: 'someDbId', name: 'Case', container: '', index: 1 },
+          ],
+        },
+      ]);
       spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
       instance.save();
       const expectedFilters = {
         data: {
           filters: [
             { id: 1, name: 'Country' },
-            { id: 2, name: 'Case' },
-            { id: 'asd', items: [{ id: 4, name: 'Court' }], name: 'Institutions' },
+            {
+              id: 'asd',
+              items: [
+                { id: 4, name: 'Court' },
+                { id: 2, name: 'Case' },
+              ],
+              name: 'Institutions',
+            },
           ],
         },
         headers: {},
