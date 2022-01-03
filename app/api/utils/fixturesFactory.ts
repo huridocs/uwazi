@@ -5,8 +5,9 @@ import { PropertySchema, MetadataSchema, PropertyValueSchema } from 'shared/type
 import { FileType } from 'shared/types/fileType';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
+import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
-export function getIdMapper() {
+function getIdMapper() {
   const map = new Map<string, ObjectId>();
 
   return function setAndGet(key: string) {
@@ -16,7 +17,20 @@ export function getIdMapper() {
   };
 }
 
-export function getFixturesFactory() {
+const thesaurusNestedValues = (
+  rootValue: string,
+  children: Array<string>,
+  idMapper: (key: string) => ObjectId
+) => {
+  const nestedValues = children.map(nestedValue => ({
+    _id: idMapper(nestedValue),
+    id: nestedValue,
+    label: nestedValue,
+  }));
+  return { _id: idMapper(rootValue), id: rootValue, label: rootValue, values: nestedValues };
+};
+
+function getFixturesFactory() {
   const idMapper = getIdMapper();
 
   return Object.freeze({
@@ -102,6 +116,26 @@ export function getFixturesFactory() {
       ),
     }),
 
+    nestedThesauri: (name: string, values: Array<{ [k: string]: Array<string> } | string>) => {
+      const thesaurusValues = values.reduce(
+        (accumulator: ThesaurusValueSchema[], item: { [k: string]: Array<string> } | string) => {
+          const nestedItems =
+            typeof item === 'string'
+              ? [{ _id: idMapper(item), id: item, label: item }]
+              : Object.entries(item).map(([rootValue, children]) =>
+                  thesaurusNestedValues(rootValue, children, idMapper)
+                );
+          return [...accumulator, ...nestedItems];
+        },
+        []
+      );
+      return {
+        name,
+        _id: idMapper(name),
+        values: thesaurusValues,
+      };
+    },
+
     user: (
       username: string,
       role: UserRole = UserRole.COLLABORATOR,
@@ -116,3 +150,5 @@ export function getFixturesFactory() {
     }),
   });
 }
+
+export { getIdMapper, getFixturesFactory };
