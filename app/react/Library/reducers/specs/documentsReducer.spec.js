@@ -312,10 +312,6 @@ describe('documentsReducer', () => {
     });
   });
 
-  describe('DOCUMENT_PROCESS_ERROR', () => {
-    it.todo('this');
-  });
-
   describe('Attachments', () => {
     const initialDocumentsState = {
       rows: [

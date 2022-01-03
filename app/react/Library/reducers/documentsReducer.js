@@ -87,12 +87,6 @@ export const documentsReducer = (state = initialState, action = {}) => {
       doc.documents.push(action.file);
       return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
 
-    case uploadTypes.DOCUMENT_PROCESS_ERROR:
-      docIndex = state.get('rows').findIndex(_doc => _doc.get('sharedId') === action.sharedId);
-      doc = state.get('rows').get(docIndex).toJS();
-      doc.documents[0].status = 'failed';
-      return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
-
     case attachmentTypes.ATTACHMENT_COMPLETE:
       ({ docIndex, doc } = getBySharedId(state, action));
       doc.attachments.push(action.file);
