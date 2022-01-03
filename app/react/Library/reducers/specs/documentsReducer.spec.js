@@ -134,7 +134,26 @@ describe('documentsReducer', () => {
   });
 
   describe('ELEMENT_CREATED', () => {
-    it.todo('this');
+    it('should add the new document to the state', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1' },
+          { title: '2', _id: 2, sharedId: 'shared2' },
+        ],
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.ELEMENT_CREATED,
+        doc: { title: '3', _id: 3, sharedId: 'shared3' },
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '3', _id: 3, sharedId: 'shared3' },
+          { title: '1', _id: 1, sharedId: 'shared1' },
+          { title: '2', _id: 2, sharedId: 'shared2' },
+        ],
+      });
+    });
   });
 
   describe('REMOVE_DOCUMENT', () => {
