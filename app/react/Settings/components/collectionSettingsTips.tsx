@@ -113,3 +113,18 @@ export const publicForm = [
 export const mapTiler = (
   <Translate>We provide a default key, you can set your own MapTiler API key</Translate>
 );
+
+export const ocrTrigger = (
+  <>
+    <Translate>
+      This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This
+      service will recognize text inside images, such as scanned documents and photos, and convert
+      it into machine-readable text data.
+    </Translate>
+    <br />
+    <Translate>
+      When activated, this will enable administrator and editor users to send PDF documents to the
+      OCR service.
+    </Translate>
+  </>
+);
