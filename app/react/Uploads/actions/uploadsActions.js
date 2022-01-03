@@ -194,10 +194,6 @@ export function documentProcessed(sharedId, __reducerKey) {
   };
 }
 
-export function documentProcessError(sharedId) {
-  return { type: types.DOCUMENT_PROCESS_ERROR, sharedId };
-}
-
 export function conversionComplete(docId) {
   return {
     type: types.CONVERSION_COMPLETE,

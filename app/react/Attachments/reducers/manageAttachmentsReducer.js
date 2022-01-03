@@ -11,11 +11,9 @@ const getAttachments = (state, setInArray) =>
 const getDocuments = (state, setInArray) =>
   state.getIn(setInArray.concat(['documents'])) || Immutable([]);
 
-export default function manageAttachmentsReducer(
-  originalReducer,
-  { useDefaults = true, setInArray = [] } = {}
-) {
-  return (orignialState, originalAction) => {
+export const manageAttachmentsReducer =
+  (originalReducer, { useDefaults = true, setInArray = [] } = {}) =>
+  (orignialState, originalAction) => {
     let state = orignialState;
     const action = originalAction || {};
 
@@ -49,7 +47,7 @@ export default function manageAttachmentsReducer(
       const attachments = getAttachments(state, setInArray);
       return state.setIn(
         setInArray.concat(['attachments']),
-        attachments.filterNot(a => a.get('filename') === action.file.filename)
+        attachments.filterNot(a => a.get('_id') === action.file._id)
       );
     }
 
@@ -76,4 +74,3 @@ export default function manageAttachmentsReducer(
 
     return originalReducer(state, action);
   };
-}
