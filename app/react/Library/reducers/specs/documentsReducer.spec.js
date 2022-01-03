@@ -4,6 +4,7 @@ import * as types from 'app/Library/actions/actionTypes';
 
 import { documentsReducer } from 'app/Library/reducers/documentsReducer';
 import * as actions from 'app/Library/actions/libraryActions';
+import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
 
 describe('documentsReducer', () => {
@@ -280,7 +281,35 @@ describe('documentsReducer', () => {
   });
 
   describe('UPLOAD_COMPLETE', () => {
-    it.todo('this');
+    it('should update the state with the uploaded document', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          {
+            title: '1',
+            _id: 1,
+            sharedId: 'shared1',
+            documents: [],
+          },
+        ],
+      });
+
+      const newState = documentsReducer(currentState, {
+        type: uploadTypes.UPLOAD_COMPLETE,
+        doc: 'shared1',
+        file: { filename: 'My PDF.pdf', entity: 'shared1' },
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          {
+            title: '1',
+            _id: 1,
+            sharedId: 'shared1',
+            documents: [{ filename: 'My PDF.pdf', entity: 'shared1' }],
+          },
+        ],
+      });
+    });
   });
 
   describe('DOCUMENT_PROCESS_ERROR', () => {
