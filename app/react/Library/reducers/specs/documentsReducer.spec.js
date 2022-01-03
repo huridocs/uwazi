@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
@@ -27,6 +28,13 @@ describe('documentsReducer', () => {
     });
   });
 
+  describe('UNSET_DOCUMENTS', () => {
+    it('should set the initial state', () => {
+      const newState = documentsReducer(Immutable.fromJS({ rows: [{}] }), actions.unsetDocuments());
+      expect(newState).toEqual(initialState);
+    });
+  });
+
   describe('ADD_DOCUMENTS', () => {
     it('should add the documents in the state', () => {
       const documentOne = { title: 'Song of Ice and Fire: The Winds of Winter' };
@@ -42,13 +50,6 @@ describe('documentsReducer', () => {
       });
 
       expect(newState.toJS()).toEqual({ rows: [documentOne, documentTwo], totalRows: 7 });
-    });
-  });
-
-  describe('UNSET_DOCUMENTS', () => {
-    it('should set the initial state', () => {
-      const newState = documentsReducer(Immutable.fromJS({ rows: [{}] }), actions.unsetDocuments());
-      expect(newState).toEqual(initialState);
     });
   });
 
@@ -103,6 +104,37 @@ describe('documentsReducer', () => {
         ],
       });
     });
+  });
+
+  describe('UPDATE_DOCUMENTS_PUBLISHED', () => {
+    it('update the entities with the provided publishing status', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: false },
+          { title: '3', _id: 3, sharedId: 'shared3', published: false },
+        ],
+        totalRows: 3,
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.UPDATE_DOCUMENTS_PUBLISHED,
+        sharedIds: ['shared2', 'shared3'],
+        published: true,
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: true },
+          { title: '3', _id: 3, sharedId: 'shared3', published: true },
+        ],
+        totalRows: 3,
+      });
+    });
+  });
+
+  describe('ELEMENT_CREATED', () => {
+    it.todo('this');
   });
 
   describe('REMOVE_DOCUMENT', () => {
@@ -228,31 +260,12 @@ describe('documentsReducer', () => {
     });
   });
 
-  describe('UPDATE_DOCUMENTS_PUBLISHED', () => {
-    it('update the entities with the provided publishing status', () => {
-      const currentState = Immutable.fromJS({
-        rows: [
-          { title: '1', _id: 1, sharedId: 'shared1', published: false },
-          { title: '2', _id: 2, sharedId: 'shared2', published: false },
-          { title: '3', _id: 3, sharedId: 'shared3', published: false },
-        ],
-        totalRows: 3,
-      });
-      const newState = documentsReducer(currentState, {
-        type: types.UPDATE_DOCUMENTS_PUBLISHED,
-        sharedIds: ['shared2', 'shared3'],
-        published: true,
-      });
+  describe('UPLOAD_COMPLETE', () => {
+    it.todo('this');
+  });
 
-      expect(newState.toJS()).toEqual({
-        rows: [
-          { title: '1', _id: 1, sharedId: 'shared1', published: false },
-          { title: '2', _id: 2, sharedId: 'shared2', published: true },
-          { title: '3', _id: 3, sharedId: 'shared3', published: true },
-        ],
-        totalRows: 3,
-      });
-    });
+  describe('DOCUMENT_PROCESS_ERROR', () => {
+    it.todo('this');
   });
 
   describe('Attachments', () => {

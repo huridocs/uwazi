@@ -41,6 +41,9 @@ export const documentsReducer = (state = initialState, action = {}) => {
     case types.SET_DOCUMENTS:
       return Immutable.fromJS(action.documents);
 
+    case types.UNSET_DOCUMENTS:
+      return Immutable.fromJS(initialState);
+
     case types.ADD_DOCUMENTS:
       return state
         .setIn(['rows'], state.get('rows').concat(Immutable.fromJS(action.documents.rows)))
@@ -71,9 +74,6 @@ export const documentsReducer = (state = initialState, action = {}) => {
         return state.deleteIn(['rows', docIndex]);
       }
       return state;
-
-    case types.UNSET_DOCUMENTS:
-      return Immutable.fromJS(initialState);
 
     case types.REMOVE_DOCUMENTS:
       return removeDocuments(action.docs, state, getFilterByObjectWithId);
