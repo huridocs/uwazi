@@ -1,4 +1,4 @@
-import testingDB from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import migration from '../index.js';
 import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from './fixtures.js';
 
