@@ -178,6 +178,20 @@ original error: {
   });
 });
 
+describe('handleError without context', () => {
+  it('should append a tenant error message to the original error', () => {
+    spyOn(errorLog, 'error');
+    const error = handleError(new Error('original error message'));
+    expect(error.prettyMessage).toEqual('original error message');
+    expect(errorLog.error).toHaveBeenCalledWith(
+      expect.stringMatching(
+        /\nError: original error message[\w\W]*Accessing nonexistent async context/
+      ),
+      {}
+    );
+  });
+});
+
 describe('prettifyError', () => {
   describe('when the error does not fall into any other category, and the resulting message would be empty', () => {
     it('should return JSON representation of the original error object as a message.', () => {
