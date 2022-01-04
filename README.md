@@ -162,4 +162,8 @@ Note the subtle nudge ;)
 
 # Docker
 
-https://github.com/fititnt/uwazi-docker is a project with a Docker containerized version of Uwazi.
+Infrastructure dependencies (ElasticSearch, ICU Analysis Plugin and MongoDB) can be installed via Docker Compose.  ElasticSearch container will claim 2Gb of memory so be sure your Docker Engine is alloted at least 3Gb of memory (for Mac and Windows users).
+
+```shell
+$ docker-compose up -d
+```
