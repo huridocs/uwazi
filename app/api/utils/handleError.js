@@ -91,29 +91,28 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
-const getOriginalError = (data, error) => {
-  const original = data.original || error;
+const getErrorMessage = (data, error) => {
+  const originalError = data.original || error;
+  const prettyMessage = data.requestId
+    ? `requestId: ${data.requestId} ${data.prettyMessage}`
+    : data.prettyMessage;
 
-  if (original instanceof Error) {
-    return original;
+  if (originalError instanceof Error) {
+    const extendedError = appendOriginalError(prettyMessage, originalError);
+    return data.tenantError
+      ? `${extendedError}\n[Tenant error] ${data.tenantError.message}`
+      : extendedError;
   }
 
-  return null;
+  return prettyMessage;
 };
 
 const sendLog = (data, error, errorOptions) => {
-  const originalError = getOriginalError(data, error);
-  const prettyMessage = `requestId: ${data.requestId} ${data.prettyMessage}`;
+  const messageToLog = getErrorMessage(data, error);
   if (data.code === 500) {
-    errorLog.error(
-      originalError ? appendOriginalError(prettyMessage, originalError) : prettyMessage,
-      errorOptions
-    );
+    errorLog.error(messageToLog, errorOptions);
   } else if (data.code === 400) {
-    debugLog.debug(
-      originalError ? appendOriginalError(prettyMessage, originalError) : prettyMessage,
-      errorOptions
-    );
+    debugLog.debug(messageToLog, errorOptions);
   }
 };
 
@@ -132,6 +131,14 @@ function simplifyError(result, error) {
   return simplifiedError;
 }
 
+function setRequestId(result) {
+  try {
+    return { ...result, requestId: appContext.get('requestId') };
+  } catch (err) {
+    return { ...result, tenantError: err };
+  }
+}
+
 const handleError = (_error, { req = undefined, uncaught = false, useContext = true } = {}) => {
   const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
 
@@ -139,10 +146,10 @@ const handleError = (_error, { req = undefined, uncaught = false, useContext = t
   if (error.json) {
     return false;
   }
+  let result = prettifyError(error, { req, uncaught });
 
-  const result = prettifyError(error, { req, uncaught });
   if (useContext) {
-    result.requestId = appContext.get('requestId');
+    result = setRequestId(result);
   }
 
   sendLog(result, error, {});
