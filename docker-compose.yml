@@ -5,7 +5,11 @@ services:
       context: .
       dockerfile: elastic-icu-7.10.1.Dockerfile
     ports:
-    - "9200:9200"
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
       - ./data_elastic:/usr/share/elasticsearch/data
     environment:
@@ -16,7 +20,7 @@ services:
   mongo:
     image: "mongo:4.2"
     volumes:
-    - ./data_mongo:/data/db
+      - ./data_mongo:/data/db
     ports:
       - "27017:27017"
   redis:
