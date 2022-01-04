@@ -1,25 +1,13 @@
 import { t } from 'app/I18N';
 
 const ocrStatusTips = {
-  noOcr: () =>
-    t(
-      'System',
-      "This will process the document to recognize it's text. The original file will be added as a supporting file.",
-      null,
-      false
-    ),
+  noOcr: () => t('System', 'OCR button tip', null, false),
   unsupportedLang: (language: string) => {
     let tip = "The document's language is not supported.";
     if (language === 'other') tip = 'Please select a language for this document';
     return t('System', tip, null, false);
   },
-  cantProcess: (time: string) =>
-    `${t(
-      'System',
-      "The OCR engine couldn't read the document due to a malformed format. Last updated",
-      null,
-      false
-    )}: ${time}`,
+  cantProcess: (time: string) => `${t('System', 'OCR error tip', null, false)}: ${time}`,
   lastUpdated: (time: string) => `${t('System', 'Last updated', null, false)}: ${time}`,
 };
 
