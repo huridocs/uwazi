@@ -1,8 +1,10 @@
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
-import documentsReducer from 'app/Library/reducers/documentsReducer';
+import { documentsReducer } from 'app/Library/reducers/documentsReducer';
 import * as actions from 'app/Library/actions/libraryActions';
+import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
 
 describe('documentsReducer', () => {
@@ -27,6 +29,13 @@ describe('documentsReducer', () => {
     });
   });
 
+  describe('UNSET_DOCUMENTS', () => {
+    it('should set the initial state', () => {
+      const newState = documentsReducer(Immutable.fromJS({ rows: [{}] }), actions.unsetDocuments());
+      expect(newState).toEqual(initialState);
+    });
+  });
+
   describe('ADD_DOCUMENTS', () => {
     it('should add the documents in the state', () => {
       const documentOne = { title: 'Song of Ice and Fire: The Winds of Winter' };
@@ -42,13 +51,6 @@ describe('documentsReducer', () => {
       });
 
       expect(newState.toJS()).toEqual({ rows: [documentOne, documentTwo], totalRows: 7 });
-    });
-  });
-
-  describe('UNSET_DOCUMENTS', () => {
-    it('should set the initial state', () => {
-      const newState = documentsReducer(Immutable.fromJS({ rows: [{}] }), actions.unsetDocuments());
-      expect(newState).toEqual(initialState);
     });
   });
 
@@ -100,6 +102,56 @@ describe('documentsReducer', () => {
         rows: [
           { title: '1!', _id: 1 },
           { title: 'new title', _id: 2 },
+        ],
+      });
+    });
+  });
+
+  describe('UPDATE_DOCUMENTS_PUBLISHED', () => {
+    it('update the entities with the provided publishing status', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: false },
+          { title: '3', _id: 3, sharedId: 'shared3', published: false },
+        ],
+        totalRows: 3,
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.UPDATE_DOCUMENTS_PUBLISHED,
+        sharedIds: ['shared2', 'shared3'],
+        published: true,
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: true },
+          { title: '3', _id: 3, sharedId: 'shared3', published: true },
+        ],
+        totalRows: 3,
+      });
+    });
+  });
+
+  describe('ELEMENT_CREATED', () => {
+    it('should add the new document to the state', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1' },
+          { title: '2', _id: 2, sharedId: 'shared2' },
+        ],
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.ELEMENT_CREATED,
+        doc: { title: '3', _id: 3, sharedId: 'shared3' },
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '3', _id: 3, sharedId: 'shared3' },
+          { title: '1', _id: 1, sharedId: 'shared1' },
+          { title: '2', _id: 2, sharedId: 'shared2' },
         ],
       });
     });
@@ -228,29 +280,34 @@ describe('documentsReducer', () => {
     });
   });
 
-  describe('UPDATE_DOCUMENTS_PUBLISHED', () => {
-    it('update the entities with the provided publishing status', () => {
+  describe('UPLOAD_COMPLETE', () => {
+    it('should update the state with the uploaded document', () => {
       const currentState = Immutable.fromJS({
         rows: [
-          { title: '1', _id: 1, sharedId: 'shared1', published: false },
-          { title: '2', _id: 2, sharedId: 'shared2', published: false },
-          { title: '3', _id: 3, sharedId: 'shared3', published: false },
+          {
+            title: '1',
+            _id: 1,
+            sharedId: 'shared1',
+            documents: [],
+          },
         ],
-        totalRows: 3,
       });
+
       const newState = documentsReducer(currentState, {
-        type: types.UPDATE_DOCUMENTS_PUBLISHED,
-        sharedIds: ['shared2', 'shared3'],
-        published: true,
+        type: uploadTypes.UPLOAD_COMPLETE,
+        doc: 'shared1',
+        file: { filename: 'My PDF.pdf', entity: 'shared1' },
       });
 
       expect(newState.toJS()).toEqual({
         rows: [
-          { title: '1', _id: 1, sharedId: 'shared1', published: false },
-          { title: '2', _id: 2, sharedId: 'shared2', published: true },
-          { title: '3', _id: 3, sharedId: 'shared3', published: true },
+          {
+            title: '1',
+            _id: 1,
+            sharedId: 'shared1',
+            documents: [{ filename: 'My PDF.pdf', entity: 'shared1' }],
+          },
         ],
-        totalRows: 3,
       });
     });
   });
