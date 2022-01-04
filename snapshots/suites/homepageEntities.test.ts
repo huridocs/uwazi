@@ -44,6 +44,7 @@ describe('Homepage entities', () => {
   });
   it('should display entity edit page', async () => {
     await expect(page).toClick('span', { text: 'Edit' });
+    await disableTransitions();
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
     const editPage = ensure<ElementHandle>(await page.$(className));

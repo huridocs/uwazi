@@ -79,7 +79,11 @@ describe('Graphs in Page ', () => {
       const { graphsPage, chartScreenshot } = await takeScreenshot(
         '.recharts-responsive-container'
       );
-      expect(chartScreenshot).toMatchImageSnapshot();
+      expect(chartScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.07,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
       await graphsPage.close();
     });
 
