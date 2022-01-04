@@ -89,6 +89,7 @@ export default class Map extends Component {
   }
 
   onClick(e) {
+    if (e.target.className !== 'overlays') return;
     const { markers, onClick } = this.props;
     const unclusteredPoints = e.features.filter(f => f.layer.id === 'unclustered-point');
     const cluster = e.features.find(f => f.layer.id === 'clusters');
