@@ -30,8 +30,6 @@ jobs:
       - run: chmod +x ./cc-test-reporter
       - run: ./cc-test-reporter before-build
       - name: Run tests
-        env:
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
         run: yarn test app/react --coverage --maxWorkers=2
       - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
     env:
