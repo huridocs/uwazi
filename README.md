@@ -162,4 +162,8 @@ Note the subtle nudge ;)
 
 # Docker
 
-https://github.com/fititnt/uwazi-docker is a project with a Docker containerized version of Uwazi.
+Infrastructure dependencies (Elasticsearch, ICU Analysis Plugin and MongoDB) can be installed via Docker Compose:
+
+```shell
+$ docker-compose up -d
+```
