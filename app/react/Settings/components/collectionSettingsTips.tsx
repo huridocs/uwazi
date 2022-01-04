@@ -116,13 +116,13 @@ export const mapTiler = (
 
 export const ocrTrigger = (
   <>
-    <Translate>
+    <Translate translationKey="OCR description tip 1">
       This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This
       service will recognize text inside images, such as scanned documents and photos, and convert
       it into machine-readable text data.
     </Translate>
     <br />
-    <Translate>
+    <Translate translationKey="OCR description tip 2">
       When activated, this will enable administrator and editor users to send PDF documents to the
       OCR service.
     </Translate>
