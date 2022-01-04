@@ -80,7 +80,7 @@ describe('Graphs in Page ', () => {
         '.recharts-responsive-container'
       );
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
+        failureThreshold: 0.03,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
