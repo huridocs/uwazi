@@ -8,10 +8,7 @@ After copy pasting:
 
 // eslint-disable-next-line max-statements
 async function insertSystemKeys(db, newKeys) {
-  const translations = await db
-    .collection('translations')
-    .find()
-    .toArray();
+  const translations = await db.collection('translations').find().toArray();
   const locales = translations.map(tr => tr.locale);
 
   const locToSystemContext = {};
@@ -39,7 +36,7 @@ async function insertSystemKeys(db, newKeys) {
 }
 
 export default {
-  delta: 57,
+  delta: 58,
 
   name: 'add_system_key_translations',
 
