@@ -1,28 +1,48 @@
-import { testingDB } from 'api/utils/testing_db';
+import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
-import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from './fixtures.js';
+import fixtures, { templateId, defaultTemplateName, defaultTemplateTitle } from './fixtures.js';
 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Services',
-    value: 'Services',
+    key: 'Suggestion',
+    value: 'Suggestion',
   },
   {
-    key: 'Loading',
-    value: 'Loading',
+    key: 'All',
+    value: 'All',
   },
   {
-    key: 'OCR PDF',
-    value: 'OCR PDF',
+    key: 'Filled',
+    value: 'Filled',
   },
   {
-    key: 'OCR error',
-    value: 'OCR error',
+    key: 'Empty',
+    value: 'Empty',
   },
   {
-    key: 'OCR completed',
-    value: 'OCR completed',
+    key: 'Segment',
+    value: 'Segment',
+  },
+  {
+    key: 'State',
+    value: 'State',
+  },
+  {
+    key: 'Reviewing',
+    value: 'Reviewing',
+  },
+  {
+    key: 'Dashboard',
+    value: 'Dashboard',
+  },
+  {
+    key: 'Find suggestions',
+    value: 'Find suggestions',
+  },
+  {
+    key: 'per page',
+    value: 'per page',
   },
 ];
 const alreadyInAllContexts = {
@@ -43,7 +63,7 @@ describe('migration add_system_key_translations', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(57);
+    expect(migration.delta).toBe(58);
   });
 
   it('should append new keys, leave existing keys intact.', async () => {

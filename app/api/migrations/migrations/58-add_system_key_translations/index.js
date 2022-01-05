@@ -1,8 +1,3 @@
-//eslint-disable-next-line node/no-restricted-import
-import * as fs from 'fs';
-
-import csv from 'api/csv/csv';
-
 /*
 This migration is meant to be repeatable.
 After copy pasting:
@@ -12,10 +7,7 @@ After copy pasting:
 */
 
 // eslint-disable-next-line max-statements
-async function readCsvToSystemKeys(db, filename) {
-  const fstream = fs.createReadStream(filename);
-  const rows = await csv(fstream).read();
-  fstream.close();
+async function insertSystemKeys(db, newKeys) {
   const translations = await db.collection('translations').find().toArray();
   const locales = translations.map(tr => tr.locale);
 
@@ -28,7 +20,7 @@ async function readCsvToSystemKeys(db, filename) {
     locToKeys[loc] = new Set(context.values.map(v => v.key));
   });
 
-  rows.forEach(row => {
+  newKeys.forEach(row => {
     const { key, optionalValue } = row;
 
     locales.forEach(loc => {
@@ -40,24 +32,60 @@ async function readCsvToSystemKeys(db, filename) {
     });
   });
 
-  await Promise.all(
-    translations.map(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr))
-  );
+  await translations.forEach(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr));
 }
 
 export default {
-  delta: 57,
+  delta: 58,
 
   name: 'add_system_key_translations',
 
-  description: 'Adding missing translations for system keys, through importing from a csv file.',
+  description: 'Inserts system keys of added translations.',
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-
-    await readCsvToSystemKeys(
-      db,
-      'app/api/migrations/migrations/57-add_system_key_translations/system_keys.csv'
-    );
+    const systemKeys = [
+      {
+        key: 'Suggestion',
+        value: 'Suggestion',
+      },
+      {
+        key: 'All',
+        value: 'All',
+      },
+      {
+        key: 'Filled',
+        value: 'Filled',
+      },
+      {
+        key: 'Empty',
+        value: 'Empty',
+      },
+      {
+        key: 'Segment',
+        value: 'Segment',
+      },
+      {
+        key: 'State',
+        value: 'State',
+      },
+      {
+        key: 'Reviewing',
+        value: 'Reviewing',
+      },
+      {
+        key: 'Dashboard',
+        value: 'Dashboard',
+      },
+      {
+        key: 'Find suggestions',
+        value: 'Find suggestions',
+      },
+      {
+        key: 'per page',
+        value: 'per page',
+      },
+    ];
+    await insertSystemKeys(db, systemKeys);
   },
 };
