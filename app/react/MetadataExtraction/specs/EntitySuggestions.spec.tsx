@@ -57,7 +57,6 @@ describe('EntitySuggestions', () => {
           'Olowo Kamali Case',
           'English',
           'Matching',
-          '5',
         ]);
         const secondRow = within(rows[2])
           .getAllByRole('cell')
@@ -69,7 +68,6 @@ describe('EntitySuggestions', () => {
           'Detalle Violación caso 1',
           'Spanish',
           'Empty',
-          '2',
         ]);
       });
     });
