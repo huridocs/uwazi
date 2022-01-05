@@ -113,10 +113,6 @@ const suggestionsTable = (
         Filter: stateFilter,
         className: 'state',
       },
-      {
-        accessor: 'page' as const,
-        Header: () => <Translate>Page</Translate>,
-      },
     ],
     []
   );
