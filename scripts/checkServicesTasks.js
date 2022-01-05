@@ -1,7 +1,5 @@
-const { date } = require('joi');
-
-RedisSMQ = require('rsmq');
-Redis = require('redis');
+const RedisSMQ = require('rsmq');
+const Redis = require('redis');
 
 const { tenant, redisUrl, read, deleteAll, service, deleteOne } = require('yargs')
   .option('tenant', {
@@ -45,7 +43,7 @@ const run = async () => {
   const redisClient = await Redis.createClient(redisUrl);
   const redisSMQ = await new RedisSMQ({ client: redisClient });
 
-  readFirstTaskMessage = async () => {
+  const readFirstTaskMessage = async () => {
     const message = await redisSMQ.receiveMessageAsync({
       qname: `${service}_tasks`,
       vt: 1,
@@ -68,6 +66,7 @@ const run = async () => {
   const readAllTaskMessages = async () => {
     const messages = [];
     while (true) {
+      // eslint-disable-next-line no-await-in-loop
       const message = await readFirstTaskMessage();
       if (!message) {
         break;
