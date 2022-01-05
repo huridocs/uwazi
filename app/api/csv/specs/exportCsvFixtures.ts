@@ -23,6 +23,15 @@ export const templates: any = {
         label: 'Nemesis',
       },
       {
+        _id: '61d5894c03be491b8b2c2937',
+        relationType: '61d588f4263df5aa829ddb97',
+        id: 'd0ab3a88-2e47-4991-9ac1-1b2273f9b765',
+        name: 'country',
+        content: '61d5891421eaff4de462c8ee',
+        type: 'relationship',
+        label: 'Country',
+      },
+      {
         _id: '5e3d19ccdeeb2652690a1258',
         label: 'Costume',
         type: 'select',
@@ -120,6 +129,16 @@ export const searchResults: SearchResults = {
       template: '58ad7d240d44252fee4e61fd',
       metadata: {
         nemesis: [{ icon: null, label: 'Thanos', type: 'entity', value: 'tf4laogfdcf8ncdi' }],
+        country: [
+          {
+            icon: null,
+            label: 'Spain',
+            type: 'entity',
+            value: 'tf4laogfdcf8ncdi111111,',
+            inheritedValue: [{ value: 'ES' }],
+            inheritedType: 'text',
+          },
+        ],
         company: [{ value: 'Marvel' }],
         allies: [],
         costume: [],
