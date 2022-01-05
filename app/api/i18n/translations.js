@@ -38,7 +38,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
       _context => _context.id.toString() === context.id.toString()
     );
 
-    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Dictionary') {
+    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
       const thesaurus = await thesauri.getById(context.id);
 
       const valuesChanged = isPresentInTheComingData.values.reduce((changes, value) => {
