@@ -71,7 +71,7 @@ export interface MetadataObjectSchema {
   provenance?: '' | 'BULK_ACCEPT';
   inheritedValue?: {
     [k: string]: unknown | undefined;
-  };
+  }[];
   inheritedType?: string;
   [k: string]: unknown | undefined;
 }
