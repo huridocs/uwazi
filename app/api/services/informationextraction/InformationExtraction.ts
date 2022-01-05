@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable camelcase */
 import urljoin from 'url-join';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { uploadsPath, readFile, fileExists } from 'api/files';
@@ -34,10 +32,12 @@ interface FileWithAggregation extends FileType {
 }
 type RawSuggestion = {
   tenant: string;
+  /* eslint-disable camelcase */
   property_name: string;
   xml_file_name: string;
   text: string;
   segment_text: string;
+  /* eslint-enable camelcase */
 };
 
 class InformationExtraction {
@@ -99,7 +99,6 @@ class InformationExtraction {
 
         await InformationExtraction.sendXmlToService(serviceUrl, xmlName, property, type);
 
-        //eslint-disable-next-line camelcase
         let data: any = {
           xml_file_name: xmlName,
           property_name: property,
