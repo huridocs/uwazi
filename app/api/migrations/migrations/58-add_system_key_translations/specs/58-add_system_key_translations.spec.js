@@ -44,6 +44,26 @@ const newKeyValues = [
     key: 'per page',
     value: 'per page',
   },
+  {
+    key: 'review',
+    value: 'review',
+  },
+  {
+    key: 'Confirm suggestion acceptance',
+    value: 'Confirm suggestion acceptance',
+  },
+  {
+    key: 'Apply to all languages',
+    value: 'Apply to all languages',
+  },
+  {
+    key: 'Matching',
+    value: 'Matching',
+  },
+  {
+    key: 'Pending',
+    value: 'Pending',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
