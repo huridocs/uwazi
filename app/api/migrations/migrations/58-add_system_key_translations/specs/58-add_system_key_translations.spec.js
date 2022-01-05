@@ -45,8 +45,8 @@ const newKeyValues = [
     value: 'per page',
   },
   {
-    key: 'review',
-    value: 'review',
+    key: 'Review',
+    value: 'Review',
   },
   {
     key: 'Confirm suggestion acceptance',
