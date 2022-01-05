@@ -3,6 +3,7 @@ import RedisSMQ, { QueueMessage } from 'rsmq';
 import Redis, { RedisClient } from 'redis';
 import { Repeater } from 'api/utils/Repeater';
 import { config } from 'api/config';
+import { handleError } from 'api/utils';
 
 export interface TaskMessage {
   tenant: string;
@@ -113,20 +114,24 @@ export class TaskManager {
       return;
     }
 
-    const message = (await this.redisSMQ.receiveMessageAsync({
-      qname: this.resultsQueue,
-      vt: this.service.processRessultsMessageHiddenTime,
-    })) as QueueMessage;
-
-    if (message.id && this.service.processResults) {
-      const processedMessage = JSON.parse(message.message);
-
-      await this.service.processResults(processedMessage);
-
-      await this.redisSMQ.deleteMessageAsync({
+    try {
+      const message = (await this.redisSMQ.receiveMessageAsync({
         qname: this.resultsQueue,
-        id: message.id,
-      });
+        vt: this.service.processRessultsMessageHiddenTime,
+      })) as QueueMessage;
+
+      if (message.id && this.service.processResults) {
+        const processedMessage = JSON.parse(message.message);
+
+        await this.service.processResults(processedMessage);
+
+        await this.redisSMQ.deleteMessageAsync({
+          qname: this.resultsQueue,
+          id: message.id,
+        });
+      }
+    } catch (e) {
+      handleError(e, { useContext: false });
     }
   }
 
