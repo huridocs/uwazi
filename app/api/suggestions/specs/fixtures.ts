@@ -25,6 +25,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 5,
       page: 2,
+      status: 'ready',
     },
     {
       entityId: 'shared1',
@@ -34,6 +35,17 @@ const fixtures: DBFixture = {
       language: 'es',
       date: 5,
       page: 2,
+      status: 'ready',
+    },
+    {
+      entityId: 'shared2',
+      propertyName: 'super_powers',
+      suggestedValue: 'NOT_READY',
+      segment: 'Red Robin, a variation on the traditional Robin persona.',
+      language: 'en',
+      date: 2,
+      page: 3,
+      status: 'processing',
     },
     {
       entityId: 'shared2',
@@ -43,6 +55,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 1,
       page: 5,
+      status: 'ready',
     },
     {
       entityId: 'shared2',
@@ -52,6 +65,7 @@ const fixtures: DBFixture = {
       language: 'es',
       date: 1,
       page: 5,
+      status: 'ready',
     },
     {
       entityId: 'shared3',
@@ -61,6 +75,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 4,
       page: 3,
+      status: 'ready',
     },
     {
       entityId: 'shared3',
@@ -70,6 +85,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 4,
       page: 3,
+      status: 'ready',
     },
     {
       entityId: 'shared4',
@@ -79,6 +95,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 3,
       page: 1,
+      status: 'ready',
     },
     {
       entityId: 'shared4',
@@ -88,6 +105,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 4,
       page: 3,
+      status: 'ready',
     },
     {
       entityId: 'shared5',
@@ -97,6 +115,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 6,
       page: 2,
+      status: 'ready',
     },
     {
       entityId: 'shared5',
@@ -106,6 +125,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 4,
       page: 3,
+      status: 'ready',
     },
     {
       _id: suggestionSharedId6Title,
@@ -116,6 +136,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 2,
       page: 12,
+      status: 'ready',
     },
     {
       _id: suggestionSharedId6Enemy,
@@ -126,6 +147,7 @@ const fixtures: DBFixture = {
       language: 'en',
       date: 5,
       page: 3,
+      status: 'ready',
     },
   ],
   entities: [
