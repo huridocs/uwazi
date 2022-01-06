@@ -1,27 +1,25 @@
-import urljoin from 'url-join';
-import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { uploadsPath, readFile, fileExists } from 'api/files';
-import settings from 'api/settings/settings';
-import { tenants } from 'api/tenants/tenantContext';
-import { ObjectId } from 'mongodb';
-import request from 'shared/JSONRequest';
 import path from 'path';
-import { FileType } from 'shared/types/fileType';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-
-import filesModel from 'api/files/filesModel';
-import { SegmentationType } from 'shared/types/segmentationType';
+import urljoin from 'url-join';
+import { ObjectId } from 'mongodb';
+import { uploadsPath, readFile, fileExists } from 'api/files';
+import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
-import entities from 'api/entities/entities';
-import { EntitySchema } from 'shared/types/entityType';
-import languages from 'shared/languages';
+import { tenants } from 'api/tenants/tenantContext';
 import { emitToTenant } from 'api/socketio/setupSockets';
+import filesModel from 'api/files/filesModel';
+import entities from 'api/entities/entities';
+import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
+import request from 'shared/JSONRequest';
+import languages from 'shared/languages';
+import { EntitySchema } from 'shared/types/entityType';
+import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
+import { SegmentationType } from 'shared/types/segmentationType';
+import { FileType } from 'shared/types/fileType';
 import { IXModelsModel } from './IXModelsModel';
 
 interface FileWithAggregation extends FileType {

@@ -30,7 +30,7 @@ export interface ResultsMessage {
 export interface Service {
   serviceName: string;
   processResults?: (results: ResultsMessage) => Promise<void>;
-  processRessultsMessageHiddenTime?: number;
+  processResultsMessageHiddenTime?: number;
 }
 
 export class TaskManager {
@@ -117,7 +117,7 @@ export class TaskManager {
     try {
       const message = (await this.redisSMQ.receiveMessageAsync({
         qname: this.resultsQueue,
-        vt: this.service.processRessultsMessageHiddenTime,
+        vt: this.service.processResultsMessageHiddenTime,
       })) as QueueMessage;
 
       if (message.id && this.service.processResults) {

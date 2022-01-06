@@ -1,8 +1,10 @@
 /* eslint-disable max-lines */
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
+import entities from 'api/entities';
 
+import { search } from 'api/search';
+import { WithId } from 'api/odm';
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import {
@@ -12,11 +14,9 @@ import {
   suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
+import { setUpApp } from 'api/utils/testingRoutes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import entities from 'api/entities';
-import { search } from 'api/search';
 import { EntitySchema } from 'shared/types/entityType';
-import { WithId } from 'api/odm';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',

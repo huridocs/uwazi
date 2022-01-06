@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
 
+import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
 import { I18NLink, Translate } from 'app/I18N';
 import { socket } from 'app/socket';
@@ -9,11 +10,10 @@ import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
 import { notify } from 'app/Notifications/actions/notificationsActions';
+import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import { Icon } from 'UI';
-import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
 import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {

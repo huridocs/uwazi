@@ -1,7 +1,7 @@
+import entities from 'api/entities/entities';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { EntitySchema } from 'shared/types/entityType';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import entities from 'api/entities/entities';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export const Suggestions = {

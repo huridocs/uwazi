@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /* eslint-disable max-lines */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';

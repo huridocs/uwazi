@@ -1,11 +1,11 @@
 import { Application } from 'express';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
-import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
-import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 import { config } from 'api/config';
+import { parseQuery } from 'api/utils/parseQueryMiddleware';
+import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { serviceMiddleware } from './serviceMiddleware';
 

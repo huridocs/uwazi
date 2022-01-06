@@ -3,8 +3,8 @@ import waitForExpect from 'wait-for-expect';
 import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager';
 import { config } from 'api/config';
 import * as handleError from 'api/utils/handleError.js';
-import { RedisServer } from '../RedisServer';
 import { ExternalDummyService } from './ExternalDummyService';
+import { RedisServer } from '../RedisServer';
 
 describe('taskManager', () => {
   let taskManager: TaskManager | undefined;
@@ -21,7 +21,7 @@ describe('taskManager', () => {
     service = {
       serviceName: 'KonzNGaboHellKitchen',
       processResults: jest.fn(),
-      processRessultsMessageHiddenTime: 1,
+      processResultsMessageHiddenTime: 1,
     };
     redisServer = new RedisServer(port);
     await redisServer.start();
