@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import db, { DBFixture } from 'api/utils/testing_db';
 import entities from 'api/entities';
@@ -227,24 +226,24 @@ describe('Denormalize relationships', () => {
   });
 
   describe('when the relationship property has no content', () => {
-    it('should denormalize and index the title on related entities', async () => {
-      const fixtures: DBFixture = {
-        templates: [
-          factory.template('templateA', [
-            factory.relationshipProp('relationship', '', { content: '' }),
-          ]),
-          factory.template('templateB'),
-          factory.template('templateC'),
-        ],
-        entities: [
-          factory.entity('A1', 'templateA', {
-            relationship: [factory.metadataValue('B1'), factory.metadataValue('C1')],
-          }),
-          factory.entity('B1', 'templateB'),
-          factory.entity('C1', 'templateC'),
-        ],
-      };
+    const fixtures: DBFixture = {
+      templates: [
+        factory.template('templateA', [
+          factory.relationshipProp('relationship', '', { content: '' }),
+        ]),
+        factory.template('templateB'),
+        factory.template('templateC'),
+      ],
+      entities: [
+        factory.entity('A1', 'templateA', {
+          relationship: [factory.metadataValue('B1'), factory.metadataValue('C1')],
+        }),
+        factory.entity('B1', 'templateB'),
+        factory.entity('C1', 'templateC'),
+      ],
+    };
 
+    it('should denormalize and index the title on related entities', async () => {
       await load(fixtures, 'index_denormalization');
 
       await modifyEntity('A1', {
@@ -588,6 +587,28 @@ describe('Denormalize relationships', () => {
 
   describe('thesauri translations', () => {
     beforeEach(async () => {
+      const translationContext = [
+        {
+          id: factory.id('Numbers'),
+          label: 'Numbers',
+          values: [
+            {
+              key: 'One',
+              value: 'One',
+            },
+            {
+              key: 'Two',
+              value: 'Two',
+            },
+            {
+              key: 'Numbers',
+              value: 'Numbers',
+            },
+          ],
+          type: 'Thesaurus',
+        },
+      ];
+
       await load(
         {
           dictionaries: [factory.thesauri('Numbers', ['One', 'Two'])],
@@ -598,62 +619,12 @@ describe('Denormalize relationships', () => {
               }),
             ]),
           ],
-          translations: [
-            {
-              locale: 'en',
-              contexts: [
-                {
-                  id: factory.id('Numbers'),
-                  label: 'Numbers',
-                  values: [
-                    {
-                      key: 'One',
-                      value: 'One',
-                    },
-                    {
-                      key: 'Two',
-                      value: 'Two',
-                    },
-                    {
-                      key: 'Numbers',
-                      value: 'Numbers',
-                    },
-                  ],
-                  type: 'Thesaurus',
-                },
-              ],
-            },
-            {
-              locale: 'es',
-              contexts: [
-                {
-                  id: factory.id('Numbers'),
-                  label: 'Numbers',
-                  values: [
-                    {
-                      key: 'One',
-                      value: 'One',
-                    },
-                    {
-                      key: 'Two',
-                      value: 'Two',
-                    },
-                    {
-                      key: 'Números',
-                      value: 'Números',
-                    },
-                  ],
-                  type: 'Thesaurus',
-                },
-              ],
-            },
-          ],
           entities: [
             factory.entity(
               'A1',
               'templateA',
               {
-                select: [factory.metadataValue('One')],
+                select: [{ value: 'One', label: 'One' }],
               },
               { language: 'en' }
             ),
@@ -661,10 +632,20 @@ describe('Denormalize relationships', () => {
               'A1',
               'templateA',
               {
-                select: [factory.metadataValue('One')],
+                select: [{ value: 'One', label: 'One' }],
               },
               { language: 'es' }
             ),
+          ],
+          translations: [
+            {
+              locale: 'en',
+              contexts: translationContext,
+            },
+            {
+              locale: 'es',
+              contexts: translationContext,
+            },
           ],
         },
         'index_denormalization'
@@ -674,8 +655,7 @@ describe('Denormalize relationships', () => {
     it('should update entities when translating thesauri values', async () => {
       const [spanishTranslation] = await translations.get({ locale: 'es' });
       await translations.save({
-        _id: spanishTranslation._id,
-        locale: 'es',
+        ...spanishTranslation,
         contexts: [
           {
             id: factory.id('Numbers'),
@@ -702,7 +682,7 @@ describe('Denormalize relationships', () => {
       const results = await elasticTesting.getIndexedEntities();
       const englishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'en');
       const spanishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'es');
-      expect(englishEntity?.metadata?.select).toMatchObject([{ value: 'One' }]);
+      expect(englishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'One' }]);
       expect(spanishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'Uno' }]);
     });
   });
