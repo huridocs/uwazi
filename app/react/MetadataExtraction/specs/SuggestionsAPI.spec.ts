@@ -1,6 +1,11 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { getSuggestions, trainModel, ixStatus } from 'app/MetadataExtraction/SuggestionsAPI';
+import {
+  getSuggestions,
+  trainModel,
+  ixStatus,
+  acceptEntitySuggestion,
+} from 'app/MetadataExtraction/SuggestionsAPI';
 
 describe('SuggestionsAPI', () => {
   describe('getSuggestions', () => {
@@ -28,6 +33,15 @@ describe('SuggestionsAPI', () => {
       spyOn(api, 'get').and.returnValue(Promise.resolve({ json: 'data' }));
       const result = await ixStatus(request);
       expect(result).toEqual('data');
+    });
+  });
+
+  describe('acceptEntitySuggestion', () => {
+    it('should return the result of accepting the suggestion', async () => {
+      const request = new RequestParams();
+      spyOn(api, 'post').and.returnValue(Promise.resolve({ json: 'success' }));
+      const result = await acceptEntitySuggestion(request);
+      expect(result).toEqual('success');
     });
   });
 });
