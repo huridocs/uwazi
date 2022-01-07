@@ -49,7 +49,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
         return changes;
       }, {});
 
-      const changesMathingDictionaryId = Object.keys(valuesChanged)
+      const changesMatchingDictionaryId = Object.keys(valuesChanged)
         .map(valueChanged => {
           const valueFound = thesaurus.values.find(v => v.label === valueChanged);
           if (valueFound) {
@@ -60,7 +60,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
         .filter(a => a);
 
       return Promise.all(
-        changesMathingDictionaryId.map(change =>
+        changesMatchingDictionaryId.map(change =>
           thesauri.renameThesaurusInMetadata(
             change.id,
             change.value,
