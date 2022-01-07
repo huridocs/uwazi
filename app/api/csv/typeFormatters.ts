@@ -13,8 +13,8 @@ export const formatFile = (fileName: string) => `/files/${fileName}`;
 export const formatAttachment = (fileName: string, entityId: string) =>
   `/api/attachments/download?_id=${entityId}&file=${fileName}`;
 
-const formatRelationship = (field: MetadataObjectSchema[]) => {
-  return field
+const formatRelationship = (field: MetadataObjectSchema[]) =>
+  field
     .map(relationship => {
       if (relationship.inheritedValue) {
         return relationship.inheritedValue[0].value;
@@ -22,7 +22,6 @@ const formatRelationship = (field: MetadataObjectSchema[]) => {
       return relationship.label;
     })
     .join('|');
-};
 
 export type FormatterOptions = {
   dateFormat?: string;
