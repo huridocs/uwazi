@@ -40,8 +40,8 @@ const { tenant, redisUrl, read, deleteAll, service, deleteOne } = require('yargs
   .demandOption(['service'], '\n\n').argv;
 
 const run = async () => {
-  const redisClient = await Redis.createClient(redisUrl);
-  const redisSMQ = await new RedisSMQ({ client: redisClient });
+  const redisClient = Redis.createClient(redisUrl);
+  const redisSMQ = new RedisSMQ({ client: redisClient });
 
   const readFirstTaskMessage = async () => {
     const message = await redisSMQ.receiveMessageAsync({
