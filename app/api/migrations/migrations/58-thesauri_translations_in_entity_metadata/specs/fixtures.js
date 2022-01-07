@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 
 const entity1SharedId = db.id();
@@ -5,6 +6,7 @@ const entity2SharedId = db.id();
 const entity3SharedId = db.id();
 const entity4SharedId = db.id();
 const thesaurus1Id = db.id();
+const thesaurus2Id = db.id();
 
 const fixtures = {
   entities: [
@@ -152,6 +154,7 @@ const fixtures = {
   dicctionary: [
     {
       _id: thesaurus1Id,
+      name: 'Thesaurus1',
       values: [
         {
           label: 'English value one',
@@ -166,7 +169,16 @@ const fixtures = {
           id: 'qhezokoxwgl',
         },
       ],
-      name: 'Thesaurus1',
+    },
+    {
+      _id: thesaurus2Id,
+      name: 'Thesaurus2',
+      values: [
+        {
+          label: 'Unused',
+          id: '3h3uq6cn91g',
+        },
+      ],
     },
   ],
   translations: [
@@ -178,6 +190,7 @@ const fixtures = {
           _id: db.id(),
           id: thesaurus1Id,
           label: 'Thesaurus1',
+          type: 'Thesaurus',
           values: [
             {
               _id: db.id(),
@@ -200,7 +213,37 @@ const fixtures = {
               value: 'Thesaurus1',
             },
           ],
+        },
+        {
+          _id: db.id(),
+          id: thesaurus2Id,
+          label: 'Thesaurus2',
           type: 'Thesaurus',
+          values: [
+            {
+              _id: db.id(),
+              key: 'Unused',
+              value: 'Unused',
+            },
+            {
+              _id: db.id(),
+              key: 'Thesaurus2',
+              value: 'Thesaurus2',
+            },
+          ],
+        },
+        {
+          _id: db.id(),
+          id: 'System',
+          label: 'User Interface',
+          type: 'Uwazi UI',
+          values: [
+            {
+              _id: db.id(),
+              key: 'Search',
+              value: 'Search',
+            },
+          ],
         },
       ],
     },
@@ -212,6 +255,7 @@ const fixtures = {
           _id: db.id(),
           id: thesaurus1Id,
           label: 'Thesaurus1',
+          type: 'Thesaurus',
           values: [
             {
               _id: db.id(),
@@ -234,7 +278,43 @@ const fixtures = {
               value: 'Diccionario1',
             },
           ],
+        },
+        {
+          _id: db.id(),
+          id: thesaurus2Id,
+          label: 'Thesaurus2',
           type: 'Thesaurus',
+          values: [
+            {
+              _id: db.id(),
+              key: 'Unused',
+              value: 'Unused',
+            },
+            {
+              _id: db.id(),
+              key: 'Thesaurus2',
+              value: 'Thesaurus2',
+            },
+          ],
+        },
+        {
+          _id: db.id(),
+          locale: 'es',
+          contexts: [
+            {
+              _id: db.id(),
+              id: 'System',
+              label: 'User Interface',
+              type: 'Uwazi UI',
+              values: [
+                {
+                  _id: db.id(),
+                  key: 'Search',
+                  value: 'Buscar',
+                },
+              ],
+            },
+          ],
         },
       ],
     },

@@ -18,7 +18,5 @@ describe('thesauri_translations_in_entity_metadata', () => {
 
   it('should update entities metadata with translated thesauri values', async () => {
     await migration.up(testingDB.mongodb);
-
-    const entities = await testingDB.mongodb.collection('entities').find({}).toArray();
   });
 });

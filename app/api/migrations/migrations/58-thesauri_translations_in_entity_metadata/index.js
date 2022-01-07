@@ -11,5 +11,16 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
+
+    const cursor = await db.collection('translations').find({});
+
+    while (await cursor.hasNext()) {
+      const translations = await cursor.next();
+      const thesaurusTranslation = translations.contexts.filter(
+        context => context.type === 'Thesaurus'
+      );
+
+      console.log('thesaurusTranslation: ', JSON.stringify(thesaurusTranslation, null, 2));
+    }
   },
 };
