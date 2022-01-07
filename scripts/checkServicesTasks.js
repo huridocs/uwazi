@@ -65,14 +65,12 @@ const run = async () => {
 
   const readAllTaskMessages = async () => {
     const messages = [];
-    while (true) {
-      // eslint-disable-next-line no-await-in-loop
-      const message = await readFirstTaskMessage();
-      if (!message) {
-        break;
-      }
+    let message = await readFirstTaskMessage();
 
+    while (message) {
       messages.push(message);
+      // eslint-disable-next-line no-await-in-loop
+      message = await readFirstTaskMessage();
     }
 
     return messages;
@@ -90,16 +88,18 @@ const run = async () => {
   };
 
   if (deleteOne) {
-    console.log(`💣 \u001b[31m DELETING message \u001b[32m${deleteOne}\u001b[37m`);
+    process.stdout.write(`💣 \u001b[31m DELETING message \u001b[32m${deleteOne}\u001b[37m\n`);
     try {
       await deleteMessage(deleteOne);
     } catch (e) {
-      console.log(e);
+      process.stderr.write.log(e);
     }
   }
 
   const queue = await redisSMQ.getQueueAttributesAsync({ qname: `${service}_tasks` });
-  console.log(`⚠️ \u001b[33m ${queue.hiddenmsgs} hidden\u001b[37m tasks (been read by others)`);
+  process.stdout.write(
+    `⚠️ \u001b[33m ${queue.hiddenmsgs} hidden\u001b[37m tasks (been read by others)\n`
+  );
   let messages = await readAllTaskMessages();
   messages = messages.map(formatMessage);
 
@@ -108,12 +108,13 @@ const run = async () => {
   }
 
   if (deleteAll) {
-    console.log(`💣 \u001b[31m DELETING ${messages.length} messages\u001b[37m`);
+    process.stdout.write.log(`💣 \u001b[31m DELETING ${messages.length} messages\u001b[37m\n`);
     await Promise.all(messages.map(message => deleteMessage(message.id)));
     messages = [];
   }
 
   if (read) {
+    // eslint-disable-next-line no-console
     console.table(messages);
   }
 

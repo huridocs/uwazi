@@ -1,5 +1,6 @@
-process.env.EXTERNAL_SERVICES = true;
 import mongoose from 'mongoose';
+
+process.env.EXTERNAL_SERVICES = true;
 
 mongoose.Promise = Promise;
 
