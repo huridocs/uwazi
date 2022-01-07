@@ -58,9 +58,30 @@ export interface ConnectionSchema {
             suggestion_confidence?: number;
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
-            inheritedValue?: {
-              [k: string]: unknown | undefined;
-            }[];
+            inheritedValue?: (
+              | null
+              | string
+              | number
+              | boolean
+              | {
+                  label?: string | null;
+                  url?: string | null;
+                }
+              | {
+                  from?: number | null;
+                  to?: number | null;
+                }
+              | {
+                  label?: string;
+                  lat: number;
+                  lon: number;
+                }
+              | {
+                  label?: string;
+                  lat: number;
+                  lon: number;
+                }[]
+            )[];
             inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]
@@ -96,9 +117,30 @@ export interface ConnectionSchema {
             suggestion_confidence?: number;
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
-            inheritedValue?: {
-              [k: string]: unknown | undefined;
-            }[];
+            inheritedValue?: (
+              | null
+              | string
+              | number
+              | boolean
+              | {
+                  label?: string | null;
+                  url?: string | null;
+                }
+              | {
+                  from?: number | null;
+                  to?: number | null;
+                }
+              | {
+                  label?: string;
+                  lat: number;
+                  lon: number;
+                }
+              | {
+                  label?: string;
+                  lat: number;
+                  lon: number;
+                }[]
+            )[];
             inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]

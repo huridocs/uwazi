@@ -69,9 +69,7 @@ export interface MetadataObjectSchema {
   suggestion_confidence?: number;
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
-  inheritedValue?: {
-    [k: string]: unknown | undefined;
-  }[];
+  inheritedValue?: PropertyValueSchema[];
   inheritedType?: string;
   [k: string]: unknown | undefined;
 }

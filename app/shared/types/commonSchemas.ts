@@ -102,7 +102,7 @@ export const metadataObjectSchema = {
     suggestion_confidence: { type: 'number' },
     suggestion_model: { type: 'string' },
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
-    inheritedValue: { type: 'array', items: { type: propertyValueSchema } },
+    inheritedValue: { type: 'array', items: propertyValueSchema },
     inheritedType: { type: 'string' },
   },
 };
