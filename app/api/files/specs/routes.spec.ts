@@ -11,7 +11,6 @@ import connections from 'api/relationships';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
-import JSONRequest from 'shared/JSONRequest';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
@@ -59,14 +58,7 @@ describe('files routes', () => {
     });
 
     describe('when external url file', () => {
-      it('should request and store the mimetype', async () => {
-        const headers = new Headers();
-        headers.set('content-type', 'image/png');
-
-        jest
-          .spyOn(JSONRequest, 'head')
-          .mockResolvedValue({ json: () => {}, headers, status: 200, cookie: null });
-
+      it('should guess the mimetype', async () => {
         await request(app)
           .post('/api/files')
           .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
@@ -76,9 +68,6 @@ describe('files routes', () => {
       });
 
       it('should return a validation error for a no secured url', async () => {
-        const headers = new Headers();
-        headers.set('content-type', 'image/png');
-
         const rest = await request(app)
           .post('/api/files')
           .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
