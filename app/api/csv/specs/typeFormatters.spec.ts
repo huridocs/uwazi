@@ -176,19 +176,53 @@ describe('csvExporter typeFormatters', () => {
     });
   });
 
-  it('should return the correct RELATIONSHIP value', () => {
-    const singleField = [{ label: 'Entity 1', value: null }];
-    const multipleField = [
-      { label: 'Entity 1', value: null },
-      { label: 'Entity 2', value: null },
-    ];
+  describe('RELATIONSHIP', () => {
+    it('should return the entity label when has no inherited value', () => {
+      const singleField = [{ label: 'Entity 1', value: null }];
+      const multipleField = [
+        { label: 'Entity 1', value: null },
+        { label: 'Entity 2', value: null },
+      ];
 
-    const singleValue = typeFormatters.relationship(singleField, {});
-    const multipleValue = typeFormatters.relationship(multipleField, {});
+      const singleValue = typeFormatters.relationship(singleField, {});
+      const multipleValue = typeFormatters.relationship(multipleField, {});
 
-    expect(singleValue).toBe('Entity 1');
-    expect(multipleValue).toBe('Entity 1|Entity 2');
-    testEmptyField(typeFormatters.relationship);
+      expect(singleValue).toBe('Entity 1');
+      expect(multipleValue).toBe('Entity 1|Entity 2');
+      testEmptyField(typeFormatters.relationship);
+    });
+
+    it('should return the inherited entity value when has inherited value', () => {
+      const singleField = [
+        {
+          label: 'Entity 1',
+          value: null,
+          inheritedValue: [{ value: 'E1' }],
+          inheritedType: 'text',
+        },
+      ];
+      const multipleField = [
+        {
+          label: 'Entity 1',
+          value: null,
+          inheritedValue: [{ value: 'E1' }],
+          inheritedType: 'text',
+        },
+        {
+          label: 'Entity 2',
+          value: null,
+          inheritedValue: [{ value: 'E2' }],
+          inheritedType: 'text',
+        },
+      ];
+
+      const singleValue = typeFormatters.relationship(singleField, {});
+      const multipleValue = typeFormatters.relationship(multipleField, {});
+
+      expect(singleValue).toBe('E1');
+      expect(multipleValue).toBe('E1|E2');
+      testEmptyField(typeFormatters.relationship);
+    });
   });
 
   describe('FILES', () => {
