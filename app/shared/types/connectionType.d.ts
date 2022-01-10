@@ -59,8 +59,8 @@ export interface ConnectionSchema {
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
             inheritedValue?: {
-              [k: string]: unknown | undefined;
-            };
+              value: string;
+            }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]
@@ -97,8 +97,8 @@ export interface ConnectionSchema {
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
             inheritedValue?: {
-              [k: string]: unknown | undefined;
-            };
+              value: string;
+            }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;
           }[]
