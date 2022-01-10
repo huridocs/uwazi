@@ -1,4 +1,5 @@
-import { Application } from 'express';
+import { Application, Request, Response } from 'express';
+
 import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
@@ -12,6 +13,36 @@ import { serviceMiddleware } from './serviceMiddleware';
 let IX: InformationExtraction;
 if (config.externalServices) {
   IX = new InformationExtraction();
+}
+
+async function processTrainFunction(
+  callback: (property: string) => Promise<{ message: string; status: string }>,
+  req: Request,
+  res: Response
+) {
+  if (!IX) {
+    res.status(500).json({
+      error: 'Information Extraction service is not available',
+    });
+    return;
+  }
+
+  const status = await callback(req.body.property);
+  res.json(status);
+}
+
+function propertyRequestValidation(root = 'body') {
+  return validateAndCoerceRequest({
+    properties: {
+      [root]: {
+        additionalProperties: false,
+        required: ['property'],
+        properties: {
+          property: { type: 'string' },
+        },
+      },
+    },
+  });
 }
 
 export const suggestionsRoutes = (app: Application) => {
@@ -38,26 +69,9 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/train',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    validateAndCoerceRequest({
-      properties: {
-        body: {
-          additionalProperties: false,
-          required: ['property'],
-          properties: {
-            property: { type: 'string' },
-          },
-        },
-      },
-    }),
+    propertyRequestValidation('body'),
     async (req, res, _next) => {
-      if (!IX) {
-        res.status(500).json({
-          error: 'Information Extraction service is not available',
-        });
-        return;
-      }
-      const status = await IX.trainModel(req.body.property);
-      res.json(status);
+      await processTrainFunction(IX.trainModel, req, res);
     }
   );
 
@@ -65,26 +79,9 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    validateAndCoerceRequest({
-      properties: {
-        query: {
-          additionalProperties: false,
-          properties: {
-            property: { type: 'string' },
-          },
-          required: ['property'],
-        },
-      },
-    }),
+    propertyRequestValidation('query'),
     async (req, res, _next) => {
-      if (!IX) {
-        res.status(500).json({
-          error: 'Information Extraction service is not available',
-        });
-        return;
-      }
-      const status = await IX.status(req.query.property);
-      res.json(status);
+      await processTrainFunction(IX.status, req, res);
     }
   );
 
