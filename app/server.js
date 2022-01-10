@@ -163,9 +163,11 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           );
 
           segmentationRepeater.start();
-
-          OcrManager.start();
         }
+      }
+
+      if (config.externalServices) {
+        OcrManager.start();
       }
     });
 
