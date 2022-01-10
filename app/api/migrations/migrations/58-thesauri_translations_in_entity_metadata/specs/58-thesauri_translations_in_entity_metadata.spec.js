@@ -56,7 +56,6 @@ describe('thesauri_translations_in_entity_metadata', () => {
         language: 'en',
         metadata: {
           select: [{ value: 's9emfh4f2sn', label: 'Value that is not translated' }],
-          text: [{ value: 'entity text value' }],
         },
       },
       {
@@ -64,7 +63,6 @@ describe('thesauri_translations_in_entity_metadata', () => {
         language: 'es',
         metadata: {
           select: [{ value: 's9emfh4f2sn', label: 'Value that is not translated' }],
-          text: [{ value: 'entity text value' }],
         },
       },
       {
@@ -86,12 +84,44 @@ describe('thesauri_translations_in_entity_metadata', () => {
       {
         title: 'Entity 4',
         language: 'en',
-        metadata: { text: [{ value: 'this entity only has text values' }] },
+        metadata: { text: [{ value: 'this entity only has text values' }], multi_select: [] },
       },
       {
         title: 'Entity 4',
         language: 'es',
-        metadata: { text: [{ value: 'esta entidad solo tiene un texto' }] },
+        metadata: { text: [{ value: 'esta entidad solo tiene un texto' }], multi_select: [] },
+      },
+      {
+        title: 'Entity 5',
+        language: 'en',
+        metadata: {
+          select: [
+            {
+              value: 'oxd117w0bf',
+              label: 'Nested item 1',
+              parent: {
+                value: 'x5q2yo64gmk',
+                label: 'Nested',
+              },
+            },
+          ],
+        },
+      },
+      {
+        title: 'Entity 5',
+        language: 'es',
+        metadata: {
+          select: [
+            {
+              value: 'oxd117w0bf',
+              label: 'Item agrupado 1',
+              parent: {
+                value: 'x5q2yo64gmk',
+                label: 'Agrupados',
+              },
+            },
+          ],
+        },
       },
     ]);
   });

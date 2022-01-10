@@ -6,6 +6,21 @@ const applyTranslation = (property, translation) =>
       value => value.key === prop.label && value.value !== prop.label
     );
 
+    if (prop.parent) {
+      const [translatedParent] = translation.values.filter(
+        value => value.key === prop.parent.label && value.value !== prop.parent.label
+      );
+
+      return {
+        value: prop.value,
+        label: translatedProperty ? translatedProperty.value : prop.label,
+        parent: {
+          value: prop.parent.value,
+          label: translatedParent ? translatedParent.value : prop.parent.label,
+        },
+      };
+    }
+
     return {
       value: prop.value,
       label: translatedProperty ? translatedProperty.value : prop.label,

@@ -1,27 +1,22 @@
 /* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 
-const templateId = db.id();
+const template1Id = db.id();
+const template2Id = db.id();
 const entity1SharedId = db.id();
 const entity2SharedId = db.id();
 const entity3SharedId = db.id();
 const entity4SharedId = db.id();
+const entity5SharedId = db.id();
 const thesaurus1Id = db.id();
 const thesaurus2Id = db.id();
 
 const fixtures = {
   templates: [
     {
-      _id: templateId,
-      name: 'Template',
+      _id: template1Id,
+      name: 'Template 1',
       properties: [
-        {
-          _id: db.id(),
-          label: 'Select',
-          type: 'select',
-          name: 'select',
-          content: thesaurus1Id.toString(),
-        },
         {
           _id: db.id(),
           label: 'Multi Select',
@@ -37,6 +32,19 @@ const fixtures = {
         },
       ],
     },
+    {
+      _id: template2Id,
+      name: 'Template 2',
+      properties: [
+        {
+          _id: db.id(),
+          label: 'Select',
+          type: 'select',
+          name: 'select',
+          content: thesaurus1Id.toString(),
+        },
+      ],
+    },
   ],
   entities: [
     {
@@ -44,7 +52,7 @@ const fixtures = {
       title: 'Entity 1',
       language: 'en',
       sharedId: entity1SharedId,
-      template: templateId,
+      template: template1Id,
       metadata: {
         multi_select: [
           {
@@ -68,7 +76,7 @@ const fixtures = {
       title: 'Entity 1',
       language: 'es',
       sharedId: entity1SharedId,
-      template: templateId,
+      template: template1Id,
       metadata: {
         multi_select: [
           {
@@ -92,17 +100,12 @@ const fixtures = {
       title: 'Entity 2',
       language: 'en',
       sharedId: entity2SharedId,
-      template: templateId,
+      template: template2Id,
       metadata: {
         select: [
           {
             value: 's9emfh4f2sn',
             label: 'Value that is not translated',
-          },
-        ],
-        text: [
-          {
-            value: 'entity text value',
           },
         ],
       },
@@ -112,17 +115,12 @@ const fixtures = {
       title: 'Entity 2',
       language: 'es',
       sharedId: entity2SharedId,
-      template: templateId,
+      template: template2Id,
       metadata: {
         select: [
           {
             value: 's9emfh4f2sn',
             label: 'Value that is not translated',
-          },
-        ],
-        text: [
-          {
-            value: 'entity text value',
           },
         ],
       },
@@ -132,7 +130,7 @@ const fixtures = {
       title: 'Entity 3',
       language: 'en',
       sharedId: entity3SharedId,
-      template: templateId,
+      template: template1Id,
       metadata: {
         multi_select: [
           {
@@ -152,7 +150,7 @@ const fixtures = {
       title: 'Entity 3',
       language: 'es',
       sharedId: entity3SharedId,
-      template: templateId,
+      template: template1Id,
       metadata: {
         multi_select: [
           {
@@ -172,13 +170,14 @@ const fixtures = {
       title: 'Entity 4',
       language: 'en',
       sharedId: entity4SharedId,
-      template: templateId,
+      template: template1Id,
       metadata: {
         text: [
           {
             value: 'this entity only has text values',
           },
         ],
+        multi_select: [],
       },
     },
     {
@@ -186,11 +185,50 @@ const fixtures = {
       title: 'Entity 4',
       language: 'es',
       sharedId: entity4SharedId,
-      template: templateId,
+      template: template1Id,
       metadata: {
         text: [
           {
             value: 'esta entidad solo tiene un texto',
+          },
+        ],
+        multi_select: [],
+      },
+    },
+    {
+      _id: db.id(),
+      title: 'Entity 5',
+      language: 'en',
+      sharedId: entity5SharedId,
+      template: template2Id,
+      metadata: {
+        select: [
+          {
+            value: 'oxd117w0bf',
+            label: 'Nested item 1',
+            parent: {
+              value: 'x5q2yo64gmk',
+              label: 'Nested',
+            },
+          },
+        ],
+      },
+    },
+    {
+      _id: db.id(),
+      title: 'Entity 5',
+      language: 'es',
+      sharedId: entity5SharedId,
+      template: template2Id,
+      metadata: {
+        select: [
+          {
+            value: 'oxd117w0bf',
+            label: 'Nested item 1',
+            parent: {
+              value: 'x5q2yo64gmk',
+              label: 'Nested',
+            },
           },
         ],
       },
@@ -212,6 +250,20 @@ const fixtures = {
         {
           label: 'English value two',
           id: 'qhezokoxwgl',
+        },
+        {
+          label: 'Nested',
+          id: 'x5q2yo64gmk',
+          values: [
+            {
+              label: 'Nested item 1',
+              id: 'oxd117w0bf',
+            },
+            {
+              label: 'Nested item 2',
+              id: 'd0bx3u2ddc9',
+            },
+          ],
         },
       ],
     },
@@ -256,6 +308,21 @@ const fixtures = {
               _id: db.id(),
               key: 'Thesaurus1',
               value: 'Thesaurus1',
+            },
+            {
+              _id: db.id(),
+              key: 'Nested',
+              value: 'Nested',
+            },
+            {
+              _id: db.id(),
+              key: 'Nested item 1',
+              value: 'Nested item 1',
+            },
+            {
+              _id: db.id(),
+              key: 'Nested item 2',
+              value: 'Nested item 2',
             },
           ],
         },
@@ -321,6 +388,21 @@ const fixtures = {
               _id: db.id(),
               key: 'Thesaurus1',
               value: 'Diccionario1',
+            },
+            {
+              _id: db.id(),
+              key: 'Nested',
+              value: 'Agrupados',
+            },
+            {
+              _id: db.id(),
+              key: 'Nested item 1',
+              value: 'Item agrupado 1',
+            },
+            {
+              _id: db.id(),
+              key: 'Nested item 2',
+              value: 'Nested item 2',
             },
           ],
         },
