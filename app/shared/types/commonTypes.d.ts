@@ -63,6 +63,10 @@ export type PropertyValueSchema =
   | LatLonSchema
   | LatLonSchema[];
 
+export interface InheritedValueSchema {
+  value: string;
+}
+
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
   label?: string;
@@ -70,8 +74,8 @@ export interface MetadataObjectSchema {
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
   inheritedValue?: {
-    [k: string]: unknown | undefined;
-  };
+    value: string;
+  }[];
   inheritedType?: string;
   [k: string]: unknown | undefined;
 }

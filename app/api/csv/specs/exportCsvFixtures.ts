@@ -23,6 +23,15 @@ export const templates: any = {
         label: 'Nemesis',
       },
       {
+        _id: '61d5894c03be491b8b2c2937',
+        relationType: '61d588f4263df5aa829ddb97',
+        id: 'd0ab3a88-2e47-4991-9ac1-1b2273f9b765',
+        name: 'country',
+        content: '61d5891421eaff4de462c8ee',
+        type: 'relationship',
+        label: 'Country',
+      },
+      {
         _id: '5e3d19ccdeeb2652690a1258',
         label: 'Costume',
         type: 'select',
@@ -120,6 +129,16 @@ export const searchResults: SearchResults = {
       template: '58ad7d240d44252fee4e61fd',
       metadata: {
         nemesis: [{ icon: null, label: 'Thanos', type: 'entity', value: 'tf4laogfdcf8ncdi' }],
+        country: [
+          {
+            icon: null,
+            label: 'Spain',
+            type: 'entity',
+            value: 'tf4laogfdcf8ncdi111111,',
+            inheritedValue: [{ value: 'ES' }],
+            inheritedType: 'text',
+          },
+        ],
         company: [{ value: 'Marvel' }],
         allies: [],
         costume: [],
@@ -191,6 +210,6 @@ export const searchResults: SearchResults = {
   },
 };
 
-export const csvExample = `Title,Date added,Template,company,Nemesis,Costume,Super powers,Allies,AutoId,Sidekick,Planets conquered,DOB,Geolocation,Documents,Attachments,Published
-Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,,"tricky weapons|fly",,FTF8988-8015,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,,Published
-Scarecrow,2017-01-05,Super Villian,,,Black,"create chaos|tricky weapons",,,Man-bat,39,1941-09-23,,,/api/attachments/download?_id=58ad7d250d44252fee4e62f0&file=filename.pdf,Published`;
+export const csvExample = `Title,Date added,Template,company,Nemesis,Country,Costume,Super powers,Allies,AutoId,Sidekick,Planets conquered,DOB,Geolocation,Documents,Attachments,Published
+Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,ES,,"tricky weapons|fly",,FTF8988-8015,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,,Published
+Scarecrow,2017-01-05,Super Villian,,,,Black,"create chaos|tricky weapons",,,Man-bat,39,1941-09-23,,,/api/attachments/download?_id=58ad7d250d44252fee4e62f0&file=filename.pdf,Published`;
