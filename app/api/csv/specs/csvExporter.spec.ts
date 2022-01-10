@@ -82,13 +82,14 @@ describe('csvExporter', () => {
   });
 
   describe('headers', () => {
-    it('processHeaders hould return the de-duplicated union of the templates properties', () => {
+    it('processHeaders should return the de-duplicated union of the templates properties', () => {
       const headers: ExportHeader[] = processHeaders(testTemplates);
       const headersLabels = headers.map((header: ExportHeader) => header.label);
 
       [
         'company',
         'Nemesis',
+        'Country',
         'Costume',
         'Super powers',
         'Allies',
@@ -100,7 +101,7 @@ describe('csvExporter', () => {
         expect(headersLabels).toContain(label);
       });
 
-      expect(headers.length).toBe(9);
+      expect(headers.length).toBe(10);
     });
 
     it('prependCommonHeaders should add entries tagged with common at the beginning', () => {
