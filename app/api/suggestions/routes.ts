@@ -111,10 +111,7 @@ export const suggestionsRoutes = (app: Application) => {
     }),
     async (req, res, _next) => {
       const { suggestion, allLanguages } = req.body;
-      await Suggestions.accept(suggestion, allLanguages, {
-        user: req.user,
-        language: req.language,
-      });
+      await Suggestions.accept(suggestion, allLanguages);
       res.json({ success: true });
     }
   );

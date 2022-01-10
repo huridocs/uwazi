@@ -208,7 +208,10 @@ describe('suggestions routes', () => {
           title: 'The Penguin',
         },
       ]);
-      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
+      expect(search.indexEntities).toHaveBeenCalledWith(
+        { _id: { $in: [shared6enId] } },
+        '+fullText'
+      );
     });
     it('should update the suggestion for all the languages', async () => {
       await request(app)
