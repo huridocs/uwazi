@@ -51,6 +51,10 @@ const fixtures = {
             value: 'km5ew66zj2',
             label: 'English value one',
           },
+          {
+            value: 'qhezokoxwgl',
+            label: 'English value two',
+          },
         ],
         text: [
           {
@@ -70,6 +74,10 @@ const fixtures = {
           {
             value: 'km5ew66zj2',
             label: 'English value one',
+          },
+          {
+            value: 'qhezokoxwgl',
+            label: 'English value two',
           },
         ],
         text: [

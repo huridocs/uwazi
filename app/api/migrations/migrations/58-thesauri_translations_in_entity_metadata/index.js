@@ -1,17 +1,16 @@
 /* eslint-disable no-await-in-loop */
 
-const applyTranslation = (property, translation) => {
-  const [translatedProperty] = translation.values.filter(
-    value => value.key === property[0].label && value.value !== property[0].label
-  );
+const applyTranslation = (property, translation) =>
+  property.map(prop => {
+    const [translatedProperty] = translation.values.filter(
+      value => value.key === prop.label && value.value !== prop.label
+    );
 
-  return [
-    {
-      value: property[0].value,
-      label: translatedProperty ? translatedProperty.value : property[0].label,
-    },
-  ];
-};
+    return {
+      value: prop.value,
+      label: translatedProperty ? translatedProperty.value : prop.label,
+    };
+  });
 
 const prepareTranslation = (entity, templates, translations) => (entityMetadata, propertyName) => {
   const property = templates[entity.template.toString()].properties.find(

@@ -29,6 +29,10 @@ describe('thesauri_translations_in_entity_metadata', () => {
               value: 'km5ew66zj2',
               label: 'This value was translated in english to change the way it displays',
             },
+            {
+              value: 'qhezokoxwgl',
+              label: 'English value two',
+            },
           ],
           text: [{ value: 'some text value' }],
         },
@@ -37,7 +41,13 @@ describe('thesauri_translations_in_entity_metadata', () => {
         title: 'Entity 1',
         language: 'es',
         metadata: {
-          multi_select: [{ value: 'km5ew66zj2', label: 'Valor uno en español' }],
+          multi_select: [
+            { value: 'km5ew66zj2', label: 'Valor uno en español' },
+            {
+              value: 'qhezokoxwgl',
+              label: 'Valor dos en español',
+            },
+          ],
           text: [{ value: 'un valor de texto' }],
         },
       },
