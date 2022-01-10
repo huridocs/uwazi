@@ -5,6 +5,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
 import { splitMultiselectLabels } from './typeParsers/multiselect';
@@ -67,10 +68,9 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
 
   allRelatedThesauri.forEach(t => {
     const id = t._id.toString();
-    thesauriIdToExistingValues.set(
-      id,
-      new Set(t.values?.map(v => normalizeThesaurusLabel(v.label)))
-    );
+    const a = flatThesaurusValues(t, true);
+    const thesaurusValues = a.map(v => normalizeThesaurusLabel(v.label));
+    thesauriIdToExistingValues.set(id, new Set(thesaurusValues));
     thesauriIdToNewValues.set(id, new Set());
     thesauriIdToNormalizedNewValues.set(id, new Set());
   });

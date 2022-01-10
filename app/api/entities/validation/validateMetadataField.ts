@@ -6,9 +6,9 @@ import entities from 'api/entities';
 import thesauris from 'api/thesauri';
 import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
+import { TemplateSchema } from 'shared/types/templateType';
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { validators, customErrorMessages } from './metadataValidators';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
@@ -52,13 +52,12 @@ const validateType = (
   return [];
 };
 
-const flattenDictionaryValues = (dictionary: ThesaurusSchema) =>
-  (dictionary.values || []).reduce<ThesaurusValueSchema[]>((flattened, v) => {
-    if (v.values?.length) {
-      return flattened.concat(v.values);
-    }
-    return flattened.concat([v]);
-  }, []);
+const compareThesaurusValue = async (property: PropertySchema, value: MetadataObjectSchema[]) => {
+  const thesaurus = await thesauris.getById(property.content);
+  const thesaurusValues = flatThesaurusValues(thesaurus).map(v => v.id);
+
+  return value.filter(v => v.value && !thesaurusValues.includes(String(v.value)));
+};
 
 const validateDictionariesForeignIds = async (
   property: PropertySchema,
@@ -69,14 +68,7 @@ const validateDictionariesForeignIds = async (
     property.type === propertyTypes.select || property.type === propertyTypes.multiselect;
 
   if (value && usesDictionary) {
-    const dictionaryValues = flattenDictionaryValues(
-      ensure<ThesaurusSchema>(await thesauris.getById(property.content))
-    ).map(v => v.id);
-
-    const diff = value
-      .filter(v => v.value)
-      .filter(v => !dictionaryValues.includes(String(v.value)));
-
+    const diff = await compareThesaurusValue(property, value);
     if (diff.length) {
       return [
         validationError(
