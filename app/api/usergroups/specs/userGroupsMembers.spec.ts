@@ -20,7 +20,7 @@ describe('userGroupsMembers', () => {
   describe('updateUserMemberships', () => {
     it('should update the groups adding or removing the userId according the new groups passed', async () => {
       const userToUpdate = {
-        _id: fixtures.users[0]._id,
+        _id: fixtures.users![0]._id!,
         role: UserRole.COLLABORATOR,
       };
       await updateUserMemberships(userToUpdate, [{ _id: group1Id.toString() }]);

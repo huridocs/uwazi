@@ -1,7 +1,7 @@
-import get, { languages } from 'shared/languagesList';
+import { language, languages } from 'shared/languagesList';
 
 export default {
-  get,
+  get: language,
   data: Object.keys(languages).map(k => languages[k]),
   getAll: (purpose = 'elastic') => {
     const unique = (v, i, a) => a.indexOf(v) === i;
