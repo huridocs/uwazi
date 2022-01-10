@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 
+const templateId = db.id();
 const entity1SharedId = db.id();
 const entity2SharedId = db.id();
 const entity3SharedId = db.id();
@@ -9,12 +10,41 @@ const thesaurus1Id = db.id();
 const thesaurus2Id = db.id();
 
 const fixtures = {
+  templates: [
+    {
+      _id: templateId,
+      name: 'Template',
+      properties: [
+        {
+          _id: db.id(),
+          label: 'Select',
+          type: 'select',
+          name: 'select',
+          content: thesaurus1Id.toString(),
+        },
+        {
+          _id: db.id(),
+          label: 'Multi Select',
+          type: 'multiselect',
+          name: 'multi_select',
+          content: thesaurus1Id.toString(),
+        },
+        {
+          _id: db.id(),
+          label: 'Text',
+          type: 'text',
+          name: 'text',
+        },
+      ],
+    },
+  ],
   entities: [
     {
       _id: db.id(),
       title: 'Entity 1',
       language: 'en',
       sharedId: entity1SharedId,
+      template: templateId,
       metadata: {
         multi_select: [
           {
@@ -34,6 +64,7 @@ const fixtures = {
       title: 'Entity 1',
       language: 'es',
       sharedId: entity1SharedId,
+      template: templateId,
       metadata: {
         multi_select: [
           {
@@ -53,8 +84,9 @@ const fixtures = {
       title: 'Entity 2',
       language: 'en',
       sharedId: entity2SharedId,
+      template: templateId,
       metadata: {
-        multi_select: [
+        select: [
           {
             value: 's9emfh4f2sn',
             label: 'Value that is not translated',
@@ -72,8 +104,9 @@ const fixtures = {
       title: 'Entity 2',
       language: 'es',
       sharedId: entity2SharedId,
+      template: templateId,
       metadata: {
-        multi_select: [
+        select: [
           {
             value: 's9emfh4f2sn',
             label: 'Value that is not translated',
@@ -91,6 +124,7 @@ const fixtures = {
       title: 'Entity 3',
       language: 'en',
       sharedId: entity3SharedId,
+      template: templateId,
       metadata: {
         multi_select: [
           {
@@ -110,6 +144,7 @@ const fixtures = {
       title: 'Entity 3',
       language: 'es',
       sharedId: entity3SharedId,
+      template: templateId,
       metadata: {
         multi_select: [
           {
@@ -129,6 +164,7 @@ const fixtures = {
       title: 'Entity 4',
       language: 'en',
       sharedId: entity4SharedId,
+      template: templateId,
       metadata: {
         text: [
           {
@@ -142,6 +178,7 @@ const fixtures = {
       title: 'Entity 4',
       language: 'es',
       sharedId: entity4SharedId,
+      template: templateId,
       metadata: {
         text: [
           {
@@ -151,7 +188,7 @@ const fixtures = {
       },
     },
   ],
-  dicctionary: [
+  dictionaries: [
     {
       _id: thesaurus1Id,
       name: 'Thesaurus1',
@@ -188,7 +225,7 @@ const fixtures = {
       contexts: [
         {
           _id: db.id(),
-          id: thesaurus1Id,
+          id: thesaurus1Id.toString(),
           label: 'Thesaurus1',
           type: 'Thesaurus',
           values: [
@@ -216,7 +253,7 @@ const fixtures = {
         },
         {
           _id: db.id(),
-          id: thesaurus2Id,
+          id: thesaurus2Id.toString(),
           label: 'Thesaurus2',
           type: 'Thesaurus',
           values: [
@@ -253,7 +290,7 @@ const fixtures = {
       contexts: [
         {
           _id: db.id(),
-          id: thesaurus1Id,
+          id: thesaurus1Id.toString(),
           label: 'Thesaurus1',
           type: 'Thesaurus',
           values: [
@@ -281,7 +318,7 @@ const fixtures = {
         },
         {
           _id: db.id(),
-          id: thesaurus2Id,
+          id: thesaurus2Id.toString(),
           label: 'Thesaurus2',
           type: 'Thesaurus',
           values: [
@@ -299,20 +336,14 @@ const fixtures = {
         },
         {
           _id: db.id(),
-          locale: 'es',
-          contexts: [
+          id: 'System',
+          label: 'User Interface',
+          type: 'Uwazi UI',
+          values: [
             {
               _id: db.id(),
-              id: 'System',
-              label: 'User Interface',
-              type: 'Uwazi UI',
-              values: [
-                {
-                  _id: db.id(),
-                  key: 'Search',
-                  value: 'Buscar',
-                },
-              ],
+              key: 'Search',
+              value: 'Buscar',
             },
           ],
         },

@@ -18,5 +18,71 @@ describe('thesauri_translations_in_entity_metadata', () => {
 
   it('should update entities metadata with translated thesauri values', async () => {
     await migration.up(testingDB.mongodb);
+    const entities = await testingDB.mongodb.collection('entities').find({}).toArray();
+    expect(entities).toMatchObject([
+      {
+        title: 'Entity 1',
+        language: 'en',
+        metadata: {
+          multi_select: [
+            {
+              value: 'km5ew66zj2',
+              label: 'This value was translated in english to change the way it displays',
+            },
+          ],
+          text: [{ value: 'some text value' }],
+        },
+      },
+      {
+        title: 'Entity 1',
+        language: 'es',
+        metadata: {
+          multi_select: [{ value: 'km5ew66zj2', label: 'Valor uno en español' }],
+          text: [{ value: 'un valor de texto' }],
+        },
+      },
+      {
+        title: 'Entity 2',
+        language: 'en',
+        metadata: {
+          select: [{ value: 's9emfh4f2sn', label: 'Value that is not translated' }],
+          text: [{ value: 'entity text value' }],
+        },
+      },
+      {
+        title: 'Entity 2',
+        language: 'es',
+        metadata: {
+          select: [{ value: 's9emfh4f2sn', label: 'Value that is not translated' }],
+          text: [{ value: 'entity text value' }],
+        },
+      },
+      {
+        title: 'Entity 3',
+        language: 'en',
+        metadata: {
+          multi_select: [{ value: 'qhezokoxwgl', label: 'English value two' }],
+          text: [{ value: 'another text value' }],
+        },
+      },
+      {
+        title: 'Entity 3',
+        language: 'es',
+        metadata: {
+          multi_select: [{ value: 'qhezokoxwgl', label: 'Valor dos en español' }],
+          text: [{ value: 'más texto' }],
+        },
+      },
+      {
+        title: 'Entity 4',
+        language: 'en',
+        metadata: { text: [{ value: 'this entity only has text values' }] },
+      },
+      {
+        title: 'Entity 4',
+        language: 'es',
+        metadata: { text: [{ value: 'esta entidad solo tiene un texto' }] },
+      },
+    ]);
   });
 });
