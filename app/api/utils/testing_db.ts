@@ -1,6 +1,6 @@
 import mongoose, { Connection } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Db, SessionOptions } from 'mongodb';
+import { Db } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { PageType } from 'shared/types/pageType';

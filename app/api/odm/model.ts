@@ -1,10 +1,11 @@
-import { WithId as _WithId } from 'mongodb';
+import { SessionOptions, WithId as _WithId } from 'mongodb';
 import mongoose, {
   Schema,
   UpdateQuery,
   ModelUpdateOptions,
   FilterQuery,
   QueryOptions,
+  ClientSession,
 } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
@@ -44,13 +45,14 @@ export class OdmModel<T> {
     this.logHelper = logHelper;
   }
 
-  async save(data: Partial<DataType<T>>, query?: any) {
+  async save(data: Partial<DataType<T>>, query?: any, session?: ClientSession) {
     if (await this.documentExists(data)) {
       const saved = await this.db.findOneAndUpdate(
         query || { _id: data._id },
         data as UwaziUpdateQuery<DataType<T>>,
         {
           new: true,
+          session,
         }
       );
       if (saved === null) {
@@ -59,13 +61,13 @@ export class OdmModel<T> {
       await this.logHelper.upsertLogOne(saved);
       return saved.toObject<WithId<T>>();
     }
-    const saved = await this.db.create(data);
+    const [saved] = await this.db.create(data, session);
     await this.logHelper.upsertLogOne(saved);
     return saved.toObject<WithId<T>>();
   }
 
-  async saveMultiple(data: Partial<DataType<T>>[]) {
-    return Promise.all(data.map(async d => this.save(d)));
+  async saveMultiple(data: Partial<DataType<T>>[], session?: ClientSession) {
+    return Promise.all(data.map(async d => this.save(d, null, session)));
   }
 
   async updateMany(

@@ -3,6 +3,7 @@ import settings from 'api/settings';
 import i18nRoutes from 'api/i18n/routes.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import translations from 'api/i18n/translations';
+import { Languages } from 'api/i18n/languages';
 
 const mockSocketIo = () => ({
   emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
@@ -76,6 +77,14 @@ describe('i18n translations routes', () => {
           done();
         })
         .catch(catchErrors(done));
+    });
+  });
+
+  describe('POST /api/translations/languages', () => {
+    it('should call add method from languages', async () => {
+      jest.spyOn(Languages, 'add').mockReturnValue(Promise.resolve({ newSettings: {} }));
+      await routes.post('/api/translations/languages', { body: { key: 'dt', label: 'Deutsch' } });
+      expect(Languages.add).toHaveBeenCalledWith({ key: 'dt', label: 'Deutsch' });
     });
   });
 });

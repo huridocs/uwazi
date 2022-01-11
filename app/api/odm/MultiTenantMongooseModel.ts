@@ -1,4 +1,5 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { ClientSession, SaveOptions, Schema } from 'mongoose';
+import { SessionOptions } from 'mongodb';
 import {
   DataType,
   UwaziFilterQuery,
@@ -51,8 +52,9 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().findOneAndUpdate(query, update, options);
   }
 
-  async create(data: Partial<DataType<T>>) {
-    return this.dbForCurrentTenant().create(data);
+  async create(data: Partial<DataType<T>>, session?: ClientSession) {
+    const options: SaveOptions = { session };
+    return this.dbForCurrentTenant().create([data], options);
   }
 
   async _updateMany(
