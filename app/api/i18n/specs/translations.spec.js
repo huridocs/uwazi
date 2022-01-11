@@ -179,7 +179,7 @@ describe('translations', () => {
           contexts: [
             {
               id: dictionaryId,
-              type: 'Dictionary',
+              type: 'Thesaurus',
               values: {
                 'dictionary 2': 'new name',
                 Password: 'Password',
