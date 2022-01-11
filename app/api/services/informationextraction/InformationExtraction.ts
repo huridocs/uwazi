@@ -1,8 +1,9 @@
 import path from 'path';
 import urljoin from 'url-join';
+import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import { uploadsPath, readFile, fileExists } from 'api/files';
-import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
+import { fileExists, readFile, uploadsPath } from 'api/files';
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
@@ -147,13 +148,7 @@ class InformationExtraction {
   };
 
   coerceSuggestionValue = (suggestion: RawSuggestion, templates: TemplateSchema[]) => {
-    const allProps: PropertySchema[] = [];
-
-    templates.forEach(template => {
-      if (template.properties) {
-        allProps.push(...template.properties);
-      }
-    });
+    const allProps: PropertySchema[] = _.flatMap(templates, template => template.properties || []);
 
     const property = allProps.find(p => p.name === suggestion.property_name);
 
@@ -364,14 +359,14 @@ class InformationExtraction {
       status: 'processing',
     });
 
+    if (currentModel) {
+      return { status: 'processing_model', message: 'Training model' };
+    }
+
     const [suggestion] = await IXSuggestionsModel.get({
       propertyName: property,
       status: 'processing',
     });
-
-    if (currentModel) {
-      return { status: 'processing_model', message: 'Training model' };
-    }
 
     if (suggestion) {
       return { status: 'processing_suggestions', message: 'Getting suggestions' };
@@ -404,13 +399,10 @@ class InformationExtraction {
 
   getTemplatesWithProperty = async (property: string) => {
     const settingsValues = await settings.get();
-    const templates: ObjectIdSchema[] = [];
-    settingsValues.features?.metadataExtraction?.templates?.forEach(t => {
-      if (t.properties.includes(property)) {
-        templates.push(new ObjectId(t.template));
-      }
-    });
-    return templates;
+    const metadataExtractionSettings = settingsValues.features?.metadataExtraction?.templates || [];
+    return metadataExtractionSettings
+      .filter(t => t.properties.includes(property) && t.template)
+      .map(t => new ObjectId(t.template));
   };
 
   processResults = async (message: ResultsMessage): Promise<void> => {
