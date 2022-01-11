@@ -38,7 +38,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
       _context => _context.id.toString() === context.id.toString()
     );
 
-    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Dictionary') {
+    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
       const thesaurus = await thesauri.getById(context.id);
 
       const valuesChanged = isPresentInTheComingData.values.reduce((changes, value) => {
@@ -49,7 +49,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
         return changes;
       }, {});
 
-      const changesMathingDictionaryId = Object.keys(valuesChanged)
+      const changesMatchingDictionaryId = Object.keys(valuesChanged)
         .map(valueChanged => {
           const valueFound = thesaurus.values.find(v => v.label === valueChanged);
           if (valueFound) {
@@ -60,7 +60,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
         .filter(a => a);
 
       return Promise.all(
-        changesMathingDictionaryId.map(change =>
+        changesMatchingDictionaryId.map(change =>
           thesauri.renameThesaurusInMetadata(
             change.id,
             change.value,
