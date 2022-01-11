@@ -7,6 +7,7 @@ import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commo
 
 import { TemplateSchema } from 'shared/types/templateType';
 import { validateSettings } from 'shared/types/settingsSchema';
+import { ClientSession } from 'mongoose';
 import { settingsModel } from './settingsModel';
 
 const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
@@ -179,11 +180,11 @@ export default {
     });
   },
 
-  async addLanguage(language: LanguageSchema) {
+  async addLanguage(language: LanguageSchema, session?: ClientSession) {
     const currentSettings = await this.get();
     currentSettings.languages = currentSettings.languages || [];
     currentSettings.languages.push(language);
-    return settingsModel.save(currentSettings);
+    return settingsModel.save(currentSettings, null, session);
   },
 
   async deleteLanguage(key: string) {

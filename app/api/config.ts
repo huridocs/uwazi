@@ -24,7 +24,7 @@ const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://localhost
 export const config = {
   PORT: process.env.PORT || 3000,
 
-  DBHOST: MONGO_URI || onlyDBHOST(),
+  DBHOST: `${MONGO_URI || onlyDBHOST()}?replicaSet=rs`,
 
   rootPath,
 

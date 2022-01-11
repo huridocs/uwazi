@@ -255,7 +255,7 @@ export default {
       .then(() => 'ok');
   },
 
-  async addLanguage(language) {
+  async addLanguage(language, session) {
     const [languageTranslationAlreadyExists] = await model.get({ locale: language });
     if (languageTranslationAlreadyExists) {
       return Promise.resolve();
@@ -265,12 +265,16 @@ export default {
 
     const [defaultTranslation] = await model.get({ locale: languages.find(l => l.default).key });
 
-    return model.save({
-      ...defaultTranslation,
-      _id: null,
-      locale: language,
-      contexts: defaultTranslation.contexts.map(({ _id, ...context }) => context),
-    });
+    return model.save(
+      {
+        ...defaultTranslation,
+        _id: null,
+        locale: language,
+        contexts: defaultTranslation.contexts.map(({ _id, ...context }) => context),
+      },
+      null,
+      session
+    );
   },
 
   async removeLanguage(language) {

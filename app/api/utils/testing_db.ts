@@ -1,6 +1,6 @@
 import mongoose, { Connection } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Db } from 'mongodb';
+import { Db, SessionOptions } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { PageType } from 'shared/types/pageType';
@@ -10,11 +10,11 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import uniqueID from 'shared/uniqueID';
+import { ensure } from 'shared/tsUtils';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
-import uniqueID from 'shared/uniqueID';
 import { createMongoInstance } from './createMongoInstance';
-import { ensure } from 'shared/tsUtils';
 import { UserSchema } from '../../shared/types/userType';
 
 mongoose.set('useFindAndModify', false);
@@ -63,7 +63,7 @@ export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> 
 const initMongoServer = async (dbName: string) => {
   mongod = await createNewMongoDB(dbName);
   const uri = mongod.getUri();
-  mongooseConnection = await DB.connect(`${uri}${dbName}`);
+  mongooseConnection = await DB.connect(`${uri}${dbName}?replicaSet=rs`);
   connected = true;
 };
 

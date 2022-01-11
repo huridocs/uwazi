@@ -1,5 +1,6 @@
 import mongoose, { Connection, ConnectionOptions } from 'mongoose';
 import { config } from 'api/config';
+import { SessionOptions } from 'mongodb';
 
 let connection: Connection;
 
@@ -27,6 +28,10 @@ const DB = {
 
   getConnection() {
     return connection;
+  },
+
+  async getSession(options?: SessionOptions) {
+    return this.getConnection().startSession(options);
   },
 };
 

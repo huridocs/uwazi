@@ -9,6 +9,7 @@ import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
 
 import { uploadMiddleware } from 'api/files';
+import { Languages } from 'api/i18n/languages';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
@@ -119,19 +120,9 @@ export default app => {
         .required()
     ),
 
-    async (req, res, next) => {
-      try {
-        const newSettings = await settings.addLanguage(req.body);
-        const newTranslations = await translations.addLanguage(req.body.key);
-        await entities.addLanguage(req.body.key);
-        await pages.addLanguage(req.body.key);
-
-        req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-        req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-        res.json(newSettings);
-      } catch (e) {
-        next(e);
-      }
+    async (req, res, _next) => {
+      const { newSettings } = await Languages.add(req.body);
+      res.json(newSettings);
     }
   );
 

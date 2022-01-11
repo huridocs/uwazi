@@ -539,13 +539,13 @@ export default {
     return doc;
   },
 
-  async saveMultiple(docs) {
+  async saveMultiple(docs, session) {
     await docs.reduce(async (prev, doc) => {
       await prev;
       await validateEntity(doc);
     }, Promise.resolve());
 
-    const response = await model.saveMultiple(docs);
+    const response = await model.saveMultiple(docs, session);
     await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
     return response;
   },
@@ -842,7 +842,7 @@ export default {
     );
   },
 
-  async addLanguage(language, limit = 50) {
+  async addLanguage(language, limit = 50, session) {
     const [languageTranslationAlreadyExists] = await this.getUnrestrictedWithDocuments(
       { locale: language },
       null,
@@ -871,7 +871,7 @@ export default {
         }
       );
       const newLanguageEntities = await this.generateNewEntitiesForLanguage(entities, language);
-      const newSavedEntities = await this.saveMultiple(newLanguageEntities);
+      const newSavedEntities = await this.saveMultiple(newLanguageEntities, session);
       await newSavedEntities.reduce(async (previous, entity) => {
         await previous;
         if (entity.file) {
