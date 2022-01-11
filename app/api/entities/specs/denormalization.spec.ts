@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import db, { DBFixture } from 'api/utils/testing_db';
 import entities from 'api/entities';
@@ -6,6 +5,7 @@ import entities from 'api/entities';
 import { EntitySchema } from 'shared/types/entityType';
 import thesauris from 'api/thesauri';
 import { elasticTesting } from 'api/utils/elastic_testing';
+import translations from 'api/i18n/translations';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 
 const load = async (data: DBFixture, index?: string) =>
@@ -13,7 +13,7 @@ const load = async (data: DBFixture, index?: string) =>
     {
       ...data,
       settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
-      translations: [
+      translations: data.translations || [
         { locale: 'en', contexts: [] },
         { locale: 'es', contexts: [] },
       ],
@@ -226,24 +226,24 @@ describe('Denormalize relationships', () => {
   });
 
   describe('when the relationship property has no content', () => {
-    it('should denormalize and index the title on related entities', async () => {
-      const fixtures: DBFixture = {
-        templates: [
-          factory.template('templateA', [
-            factory.relationshipProp('relationship', '', { content: '' }),
-          ]),
-          factory.template('templateB'),
-          factory.template('templateC'),
-        ],
-        entities: [
-          factory.entity('A1', 'templateA', {
-            relationship: [factory.metadataValue('B1'), factory.metadataValue('C1')],
-          }),
-          factory.entity('B1', 'templateB'),
-          factory.entity('C1', 'templateC'),
-        ],
-      };
+    const fixtures: DBFixture = {
+      templates: [
+        factory.template('templateA', [
+          factory.relationshipProp('relationship', '', { content: '' }),
+        ]),
+        factory.template('templateB'),
+        factory.template('templateC'),
+      ],
+      entities: [
+        factory.entity('A1', 'templateA', {
+          relationship: [factory.metadataValue('B1'), factory.metadataValue('C1')],
+        }),
+        factory.entity('B1', 'templateB'),
+        factory.entity('C1', 'templateC'),
+      ],
+    };
 
+    it('should denormalize and index the title on related entities', async () => {
       await load(fixtures, 'index_denormalization');
 
       await modifyEntity('A1', {
@@ -582,6 +582,108 @@ describe('Denormalize relationships', () => {
       expect(A1es?.metadata?.relationshipA).toMatchObject([
         { value: 'B1', inheritedValue: [{ value: 'T1' }, { value: 'T2' }] },
       ]);
+    });
+  });
+
+  describe('thesauri translations', () => {
+    beforeEach(async () => {
+      const translationContext = [
+        {
+          id: factory.id('Numbers'),
+          label: 'Numbers',
+          values: [
+            {
+              key: 'One',
+              value: 'One',
+            },
+            {
+              key: 'Two',
+              value: 'Two',
+            },
+            {
+              key: 'Numbers',
+              value: 'Numbers',
+            },
+          ],
+          type: 'Thesaurus',
+        },
+      ];
+
+      await load(
+        {
+          dictionaries: [factory.thesauri('Numbers', ['One', 'Two'])],
+          templates: [
+            factory.template('templateA', [
+              factory.property('select', 'select', {
+                content: factory.id('Numbers').toString(),
+              }),
+            ]),
+          ],
+          entities: [
+            factory.entity(
+              'A1',
+              'templateA',
+              {
+                select: [{ value: 'One', label: 'One' }],
+              },
+              { language: 'en' }
+            ),
+            factory.entity(
+              'A1',
+              'templateA',
+              {
+                select: [{ value: 'One', label: 'One' }],
+              },
+              { language: 'es' }
+            ),
+          ],
+          translations: [
+            {
+              locale: 'en',
+              contexts: translationContext,
+            },
+            {
+              locale: 'es',
+              contexts: translationContext,
+            },
+          ],
+        },
+        'index_denormalization'
+      );
+    });
+
+    it('should update entities when translating thesauri values', async () => {
+      const [spanishTranslation] = await translations.get({ locale: 'es' });
+      await translations.save({
+        ...spanishTranslation,
+        contexts: [
+          {
+            id: factory.id('Numbers'),
+            label: 'Numbers',
+            values: [
+              {
+                key: 'One',
+                value: 'Uno',
+              },
+              {
+                key: 'Two',
+                value: 'Dos',
+              },
+              {
+                key: 'Numbers',
+                value: 'Números',
+              },
+            ],
+            type: 'Thesaurus',
+          },
+        ],
+      });
+      await elasticTesting.refresh();
+      const results = await elasticTesting.getIndexedEntities();
+      const englishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'en');
+      const spanishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'es');
+      expect(englishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'One' }]);
+      expect(spanishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'Uno' }]);
     });
   });
 });
