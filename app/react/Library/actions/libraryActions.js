@@ -16,6 +16,40 @@ import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActi
 import { filterToQuery } from '../helpers/publishedStatusFilter';
 import { saveEntityWithFiles } from './saveEntityWithFiles';
 
+function encodeSearch(_search, appendQ = true) {
+  const search = { ..._search };
+  Object.keys(search).forEach(key => {
+    if (search[key] && search[key].length === 0) {
+      delete search[key];
+    }
+
+    if (typeof search[key] === 'object' && Object.keys(search[key]).length === 0) {
+      delete search[key];
+    }
+
+    if (search[key] === '') {
+      delete search[key];
+    }
+  });
+
+  if (search.searchTerm) {
+    search.searchTerm = `${encodeURIComponent(search.searchTerm).replace(/%20/g, ' ')}:`;
+  }
+
+  const encodedSearch = rison.encode(search).replace(/searchTerm:'([^:]+):'/, "searchTerm:'$1'");
+  return appendQ ? `?q=${encodedSearch}` : encodedSearch;
+}
+
+function setSearchInUrl(searchParams) {
+  const { pathname } = browserHistory.getCurrentLocation();
+  const path = `${pathname}/`.replace(/\/\//g, '/');
+  const query = browserHistory.getCurrentLocation().query || {};
+
+  query.q = encodeSearch(searchParams, false);
+
+  browserHistory.push(path + toUrlParams(query));
+}
+
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
 }
@@ -196,40 +230,6 @@ export function processFilters(readOnlySearch, filters, limit, from) {
   return search;
 }
 
-export function encodeSearch(_search, appendQ = true) {
-  const search = { ..._search };
-  Object.keys(search).forEach(key => {
-    if (search[key] && search[key].length === 0) {
-      delete search[key];
-    }
-
-    if (typeof search[key] === 'object' && Object.keys(search[key]).length === 0) {
-      delete search[key];
-    }
-
-    if (search[key] === '') {
-      delete search[key];
-    }
-  });
-
-  if (search.searchTerm) {
-    search.searchTerm = `${encodeURIComponent(search.searchTerm).replace(/%20/g, ' ')}:`;
-  }
-
-  const encodedSearch = rison.encode(search).replace(/searchTerm:'([^:]+):'/, "searchTerm:'$1'");
-  return appendQ ? `?q=${encodedSearch}` : encodedSearch;
-}
-
-function setSearchInUrl(searchParams) {
-  const { pathname } = browserHistory.getCurrentLocation();
-  const path = `${pathname}/`.replace(/\/\//g, '/');
-  const query = browserHistory.getCurrentLocation().query || {};
-
-  query.q = encodeSearch(searchParams, false);
-
-  browserHistory.push(path + toUrlParams(query));
-}
-
 export function searchDocuments(
   { search = undefined, filters = undefined },
   storeKey,
@@ -241,10 +241,8 @@ export function searchDocuments(
     const currentSearch = search || state.search;
     let currentFilters = filters || state.filters;
     currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
-
     const searchParams = processFilters(currentSearch, currentFilters, limit, from);
     searchParams.searchTerm = state.search.searchTerm;
-
     const { query } = browserHistory.getCurrentLocation();
     const currentSearchParams = rison.decode(decodeURIComponent(query.q || '()'));
 
@@ -410,3 +408,5 @@ export function setTableViewAllColumnsHidden(hidden) {
     hidden,
   };
 }
+
+export { encodeSearch };
