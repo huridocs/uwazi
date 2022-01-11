@@ -166,14 +166,14 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       sharedId: 'shared2',
-      title: 'Batman',
+      title: 'Batman ar',
       language: 'ar',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
     },
     {
       _id: shared2enId,
       sharedId: 'shared2',
-      title: 'Batman',
+      title: 'Batman en',
       language: 'en',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
     },

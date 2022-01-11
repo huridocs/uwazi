@@ -66,7 +66,7 @@ describe('suggestions routes', () => {
         {
           entityId: shared2enId.toString(),
           sharedId: 'shared2',
-          entityTitle: 'Batman',
+          entityTitle: 'Batman en',
           propertyName: 'super_powers',
           suggestedValue: 'conocimiento científico',
           segment: 'el confía en su propio conocimiento científico',
