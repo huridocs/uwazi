@@ -148,6 +148,7 @@ export default {
         { key: 'fr', label: 'French' },
       ],
       newNameGeneration: true,
+      dateFormat: 'dd/MM/yyyy',
     },
   ],
 

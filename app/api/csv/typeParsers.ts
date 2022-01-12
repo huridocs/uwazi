@@ -55,11 +55,6 @@ export default {
       'YYYY',
     ];
     const date = entityToImport[ensure<string>(property.name)];
-    console.log(
-      moment.utc(date, allowedFormats).isValid(),
-      moment.utc(date, allowedFormats).invalidAt(),
-      moment.utc(date, allowedFormats).creationData().format
-    );
 
     return [{ value: moment.utc(date, allowedFormats).unix() }];
   },
