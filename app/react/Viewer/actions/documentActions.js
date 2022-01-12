@@ -11,10 +11,20 @@ import { notificationActions } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
+import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 import { sortTextSelections } from '../utils/sortTextSelections';
 import EntitiesApi from '../../Entities/EntitiesAPI';
+
+function getEntityDoc(entity, filename, defaultLanguage) {
+  let docByFilename = entity.documents.find(d => d.filename === filename);
+  docByFilename = docByFilename !== undefined ? docByFilename : {};
+
+  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+
+  return filename ? docByFilename : defaultDoc;
+}
 
 export function setDocument(document, html) {
   return {
@@ -48,12 +58,12 @@ export function saveDocument(doc) {
     const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
     const fileID = getState().documentViewer.doc.toJS().defaultDoc._id;
     updateDoc.__extractedMetadata = { fileID, ...extractredMetadata };
-    return documentsApi.save(new RequestParams(updateDoc)).then(updatedDoc => {
+    return saveEntityWithFiles(updateDoc, dispatch).then(updatedDoc => {
       dispatch(notificationActions.notify('Document updated', 'success'));
       dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
-      dispatch(actions.update('viewer/doc', updatedDoc));
-      dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
+      dispatch(actions.update('viewer/doc', updatedDoc.entity));
+      dispatch(relationshipActions.reloadRelationships(updatedDoc.entity.sharedId));
     });
   };
 }
@@ -93,15 +103,6 @@ export function deleteDocument(doc) {
   };
 }
 
-function getEntityDoc(entity, filename, defaultLanguage) {
-  let docByFilename = entity.documents.find(d => d.filename === filename);
-  docByFilename = docByFilename !== undefined ? docByFilename : {};
-
-  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
-
-  return filename ? docByFilename : defaultDoc;
-}
-
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = await EntitiesApi.get(requestParams.add({ omitRelationships: true }));
 
@@ -117,6 +118,17 @@ export function loadTargetDocument(sharedId) {
     ]).then(([targetDoc, references]) => {
       dispatch(actions.set('viewer/targetDoc', targetDoc));
       dispatch(actions.set('viewer/targetDocReferences', references));
+    });
+}
+
+export function reloadDocument(sharedId) {
+  return (dispatch, getState) =>
+    Promise.all([
+      getDocument(new RequestParams({ sharedId }), getState().locale),
+      referencesAPI.get(new RequestParams({ sharedId })),
+    ]).then(([targetDoc, references]) => {
+      dispatch(actions.set('viewer/doc', targetDoc));
+      dispatch(actions.set('viewer/references', references));
     });
 }
 

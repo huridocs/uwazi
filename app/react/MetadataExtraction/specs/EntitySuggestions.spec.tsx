@@ -7,19 +7,20 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { PropertySchema } from 'shared/types/commonTypes';
 import {
   dateSuggestion,
   defaultHeaders,
   reviewedProperty,
   suggestionsData,
 } from 'app/MetadataExtraction/specs/fixtures';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
 
 describe('EntitySuggestions', () => {
   const acceptIXSuggestion = jest.fn();
+
   function renderComponent(property = reviewedProperty) {
     renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
@@ -56,7 +57,6 @@ describe('EntitySuggestions', () => {
           'Olowo Kamali Case',
           'English',
           'Matching',
-          '5',
         ]);
         const secondRow = within(rows[2])
           .getAllByRole('cell')
@@ -68,7 +68,6 @@ describe('EntitySuggestions', () => {
           'Detalle Violación caso 1',
           'Spanish',
           'Empty',
-          '2',
         ]);
       });
     });

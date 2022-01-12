@@ -58,7 +58,7 @@ const fixtures: DBFixture = {
     factory.entity('A14', 'templateToSegmentA'),
   ],
   files: [
-    factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'eng', [
+    factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'eng', '', [
       {
         name: 'property1',
         selection: {
@@ -67,7 +67,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F2', 'A2', 'document', fixturesPdfNameB, 'eng', [
+    factory.file('F2', 'A2', 'document', fixturesPdfNameB, 'eng', '', [
       {
         name: 'text',
         selection: {
@@ -76,7 +76,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F3', 'A3', 'document', fixturesPdfNameC, 'eng', [
+    factory.file('F3', 'A3', 'document', fixturesPdfNameC, 'eng', '', [
       {
         name: 'property1',
         selection: {
@@ -85,7 +85,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F4', 'A4', 'document', fixturesPdfNameD, 'eng', [
+    factory.file('F4', 'A4', 'document', fixturesPdfNameD, 'eng', '', [
       {
         name: 'property2',
         selection: {

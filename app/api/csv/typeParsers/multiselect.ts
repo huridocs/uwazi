@@ -4,13 +4,14 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { normalizeThesaurusLabel } from './select';
 
 function labelNotNull(label: string | null): label is string {
   return label !== null;
 }
 
-export function splitMultiselectLabels(labelString: string): { [k: string]: string } {
+function splitMultiselectLabels(labelString: string): { [k: string]: string } {
   const labels = labelString
     .split('|')
     .map(l => l.trim())
@@ -25,7 +26,7 @@ export function splitMultiselectLabels(labelString: string): { [k: string]: stri
   return result;
 }
 
-export function normalizeMultiselectLabels(labelArray: string[]): string[] {
+function normalizeMultiselectLabels(labelArray: string[]): string[] {
   const normalizedLabels = labelArray.map(l => normalizeThesaurusLabel(l)).filter(labelNotNull);
   return Array.from(new Set(normalizedLabels));
 }
@@ -35,16 +36,15 @@ const multiselect = async (
   property: PropertySchema
 ): Promise<MetadataObjectSchema[]> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
-  const thesauriValues = currentThesauri.values || [];
 
   const values = splitMultiselectLabels(entityToImport[ensure<string>(property.name)]);
+  const thesaurusValues = flatThesaurusValues(currentThesauri);
 
-  const result = Object.keys(values)
-    .map(key => thesauriValues.find(tv => normalizeThesaurusLabel(tv.label) === key))
+  return Object.keys(values)
+    .map(key => thesaurusValues.find(tv => normalizeThesaurusLabel(tv.label) === key))
     .map(tv => tv)
     .map(tv => ({ value: ensure<string>(tv?.id), label: ensure<string>(tv?.label) }));
-
-  return result;
 };
 
 export default multiselect;
+export { splitMultiselectLabels, normalizeMultiselectLabels };

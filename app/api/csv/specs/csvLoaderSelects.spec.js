@@ -2,99 +2,12 @@ import path from 'path';
 
 import translations from 'api/i18n/translations';
 import thesauri from 'api/thesauri';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db from 'api/utils/testing_db';
+import entities from 'api/entities';
+import { fixtureFactory } from 'api/csv/specs/csvLoaderSelectsFixtures';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { fixtures } from './csvLoaderSelectsFixtures';
 
 import { CSVLoader } from '../csvLoader';
-
-const fixtureFactory = getFixturesFactory();
-
-const commonTranslationContexts = (id1, id2) => [
-  {
-    id: 'System',
-    label: 'System',
-    values: [
-      { key: 'original 1', value: 'original 1' },
-      { key: 'original 2', value: 'original 2' },
-      { key: 'original 3', value: 'original 3' },
-    ],
-  },
-  {
-    id: id1.toString(),
-    label: 'select_thesaurus',
-    values: [
-      { key: 'select_thesaurus', value: 'select_thesaurus' },
-      { key: 'A', value: 'A' },
-    ],
-    type: 'Dictionary',
-  },
-  {
-    id: id2.toString(),
-    label: 'multiselect_thesaurus',
-    values: [
-      { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
-      { key: 'A', value: 'A' },
-      { key: 'B', value: 'B' },
-    ],
-    type: 'Dictionary',
-  },
-];
-
-const fixtures = {
-  dictionaries: [
-    fixtureFactory.thesauri('select_thesaurus', ['A']),
-    fixtureFactory.thesauri('multiselect_thesaurus', ['A', 'B']),
-  ],
-  templates: [
-    fixtureFactory.template('template', [
-      fixtureFactory.property('unrelated_property', 'text'),
-      fixtureFactory.property('select_property', 'select', {
-        content: fixtureFactory.id('select_thesaurus'),
-      }),
-      fixtureFactory.property('multiselect_property', 'multiselect', {
-        content: fixtureFactory.id('multiselect_thesaurus'),
-      }),
-    ]),
-    fixtureFactory.template('no_selects_template', [
-      fixtureFactory.property('unrelated_property', 'text'),
-    ]),
-  ],
-  entities: [
-    fixtureFactory.entity('existing_entity_id', 'template', {
-      unrelated_property: fixtureFactory.metadataValue('unrelated_value'),
-      select_property: fixtureFactory.metadataValue('A'),
-      multiselect_property: [fixtureFactory.metadataValue('A'), fixtureFactory.metadataValue('B')],
-    }),
-  ],
-  settings: [
-    {
-      _id: db.id(),
-      site_name: 'Uwazi',
-      languages: [
-        { key: 'en', label: 'English', default: true },
-        { key: 'es', label: 'Spanish' },
-      ],
-    },
-  ],
-  translations: [
-    {
-      _id: db.id(),
-      locale: 'en',
-      contexts: commonTranslationContexts(
-        fixtureFactory.id('select_thesaurus'),
-        fixtureFactory.id('multiselect_thesaurus')
-      ),
-    },
-    {
-      _id: db.id(),
-      locale: 'es',
-      contexts: commonTranslationContexts(
-        fixtureFactory.id('select_thesaurus'),
-        fixtureFactory.id('multiselect_thesaurus')
-      ),
-    },
-  ],
-};
 
 const loader = new CSVLoader();
 
@@ -108,12 +21,12 @@ describe('loader', () => {
   let multiselectLabelsSet;
 
   beforeAll(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures, 'csv_loader.index');
     await loader.load(
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')
     );
-    selectThesaurus = await thesauri.getById(fixtureFactory.id('select_thesaurus'));
+    selectThesaurus = await thesauri.getById(fixtureFactory.id('Select Thesaurus'));
     selectLabels = selectThesaurus.values.map(tv => tv.label);
     selectLabelsSet = new Set(selectLabels);
     multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
@@ -121,7 +34,7 @@ describe('loader', () => {
     multiselectLabelsSet = new Set(multiselectLabels);
   });
   afterAll(async () => {
-    db.disconnect();
+    await testingEnvironment.tearDown();
     fileSpy.mockRestore();
   });
 
@@ -141,6 +54,13 @@ describe('loader', () => {
       'Ees',
       'ges',
     ]);
+  });
+
+  it('should not add new values where there is none', async () => {
+    const unchangedLabels = (
+      await thesauri.getById(fixtureFactory.id('no_new_value_thesaurus'))
+    ).values.map(tv => tv.label);
+    expect(unchangedLabels).toEqual(['1', '2', '3']);
   });
 
   it('should not repeat case sensitive values', async () => {
@@ -169,7 +89,7 @@ describe('loader', () => {
   it('should check that the thesauri saving saves all contexts properly', async () => {
     const trs = await translations.get();
     trs.forEach(tr => {
-      expect(tr.contexts.find(c => c.label === 'select_thesaurus').values).toMatchObject({
+      expect(tr.contexts.find(c => c.label === 'Select Thesaurus').values).toMatchObject({
         A: 'A',
         Aes: 'Aes',
         B: 'B',
@@ -178,7 +98,7 @@ describe('loader', () => {
         Ces: 'Ces',
         d: 'd',
         des: 'des',
-        select_thesaurus: 'select_thesaurus',
+        'Select Thesaurus': 'Select Thesaurus',
       });
       expect(tr.contexts.find(c => c.label === 'multiselect_thesaurus').values).toMatchObject({
         A: 'A',
@@ -194,6 +114,59 @@ describe('loader', () => {
         g: 'g',
         ges: 'ges',
         multiselect_thesaurus: 'multiselect_thesaurus',
+      });
+    });
+  });
+
+  describe('nested thesaurus', () => {
+    let actualEntities;
+
+    const getMetadataValues = propertyName =>
+      actualEntities.reduce(
+        (result, e) => ({
+          ...result,
+          ...(e.metadata[propertyName]?.length
+            ? { [e.title]: e.metadata[propertyName].map(v => v.label).join('|') }
+            : {}),
+        }),
+        {}
+      );
+
+    beforeAll(async () => {
+      actualEntities = await entities.get({
+        template: fixtureFactory.id('template'),
+        language: 'en',
+      });
+    });
+
+    it('should only add as new root values those which are not nested values', async () => {
+      const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
+      const rootLabels = nestedThesaurus.values.map(value => value.label);
+      expect(rootLabels).toEqual(['A', 'C', 'B', 'P', 'D', 'O', 'E', '0']);
+    });
+
+    it('should import a nested value for a select property', async () => {
+      const selectValues = getMetadataValues('nested_select_property');
+      expect(selectValues).toEqual({
+        select_1: 'D',
+        select_2: '1',
+        select_3: 'X',
+        select_4: '2',
+        select_6: 'Y',
+        select_8: 'X',
+        multiselect_3: 'E',
+        multiselect_6: 'B',
+      });
+    });
+
+    it('should import nested values for a multiselect property', async () => {
+      const multiSelectValues = getMetadataValues('nested_multiselect_property');
+      expect(multiSelectValues).toEqual({
+        select_1: '1|X',
+        select_2: 'Z|O',
+        select_5: 'A',
+        select_7: '1',
+        multiselect_7: '0',
       });
     });
   });

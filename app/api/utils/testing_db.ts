@@ -11,11 +11,12 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { ensure } from 'shared/tsUtils';
 import uniqueID from 'shared/uniqueID';
+import { ensure } from 'shared/tsUtils';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 import { createMongoInstance } from './createMongoInstance';
+import { UserSchema } from '../../shared/types/userType';
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
@@ -30,6 +31,7 @@ export type DBFixture = {
   usergroups?: UserGroupSchema[];
   pages?: PageType[];
   ixsuggestions?: IXSuggestionType[];
+  users?: UserSchema[];
   [k: string]: any;
 };
 

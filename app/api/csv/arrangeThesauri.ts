@@ -5,7 +5,9 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import csv, { CSVRow } from './csv';
+import { toSafeName } from './entityRow';
 import { splitMultiselectLabels } from './typeParsers/multiselect';
 import { normalizeThesaurusLabel } from './typeParsers/select';
 
@@ -21,7 +23,9 @@ const filterJSObject = (input: { [k: string]: any }, keys: string[]): { [k: stri
 
 class ArrangeThesauriError extends Error {
   source: Error;
+
   row: CSVRow;
+
   index: number;
 
   constructor(source: Error, row: CSVRow, index: number) {
@@ -64,10 +68,9 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
 
   allRelatedThesauri.forEach(t => {
     const id = t._id.toString();
-    thesauriIdToExistingValues.set(
-      id,
-      new Set(t.values?.map(v => normalizeThesaurusLabel(v.label)))
-    );
+    const a = flatThesaurusValues(t, true);
+    const thesaurusValues = a.map(v => normalizeThesaurusLabel(v.label));
+    thesauriIdToExistingValues.set(id, new Set(thesaurusValues));
     thesauriIdToNewValues.set(id, new Set());
     thesauriIdToNormalizedNewValues.set(id, new Set());
   });
@@ -83,7 +86,7 @@ const syncSaveThesauri = async (
     t => (thesauriIdToNewValues.get(t._id.toString()) || new Set()).size > 0
   );
   for (let i = 0; i < thesauriWithNewValues.length; i += 1) {
-    const thesaurus = allRelatedThesauri[i];
+    const thesaurus = thesauriWithNewValues[i];
     const newValues = Array.from(thesauriIdToNewValues.get(thesaurus._id.toString()) || []).map(
       tval => ({ label: tval })
     );
@@ -99,6 +102,7 @@ const syncSaveThesauri = async (
 const arrangeThesauri = async (
   file: ImportFile,
   template: TemplateSchema,
+  newNameGeneration: boolean,
   languages?: string[],
   stopOnError: boolean = true
 ) => {
@@ -118,18 +122,21 @@ const arrangeThesauri = async (
 
   await csv(await file.readStream(), stopOnError)
     .onRow(async (row: CSVRow) => {
-      Object.entries(filterJSObject(nameToThesauriId, Object.keys(row))).forEach(([name, id]) => {
-        const labels = splitMultiselectLabels(row[name]);
-        Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
-          if (
-            !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
-            !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
-          ) {
-            thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
-            thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
-          }
-        });
-      });
+      const safeNamedRow = toSafeName(row, newNameGeneration);
+      Object.entries(filterJSObject(nameToThesauriId, Object.keys(safeNamedRow))).forEach(
+        ([name, id]) => {
+          const labels = splitMultiselectLabels(safeNamedRow[name]);
+          Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+            if (
+              !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
+              !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
+            ) {
+              thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
+              thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
+            }
+          });
+        }
+      );
     })
     .onError(async (e: Error, row: CSVRow, index: number) => {
       throw new ArrangeThesauriError(e, row, index);

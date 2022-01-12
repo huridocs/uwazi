@@ -32,13 +32,13 @@ export class ExternalDummyService {
 
   private readonly serviceName: string;
 
-  materialsDataPartams: any;
+  materialsDataParams: any;
 
-  materialsFilePartams: any;
+  materialsFileParams: any;
 
-  resutlsDataParams: any;
+  resultsDataParams: any;
 
-  resutlsFileParams: any;
+  resultsFileParams: any;
 
   constructor(port = 1234, serviceName = 'dummy', urlOptions = {}) {
     this.port = port;
@@ -56,7 +56,7 @@ export class ExternalDummyService {
 
     this.app.post(urls.materialsData, (req, res) => {
       this.materials.push(req.body);
-      this.materialsDataPartams = req.params;
+      this.materialsDataParams = req.params;
       res.send('ok');
     });
 
@@ -66,17 +66,17 @@ export class ExternalDummyService {
         this.files.push(files[0].buffer);
         this.filesNames.push(files[0].originalname);
       }
-      this.materialsFilePartams = req.params;
+      this.materialsFileParams = req.params;
       res.send('received');
     });
 
     this.app.get(urls.resultsData, (req, res) => {
-      this.resutlsDataParams = req.params;
+      this.resultsDataParams = req.params;
       res.json(JSON.stringify(this.results));
     });
 
     this.app.get(urls.resultsFile, (req, res) => {
-      this.resutlsFileParams = req.params;
+      this.resultsFileParams = req.params;
       if (!this.fileResults) {
         res.status(404).send('Not found');
         return;

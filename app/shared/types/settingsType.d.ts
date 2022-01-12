@@ -83,6 +83,7 @@ export interface Settings {
   customCSS?: string;
   mapTilerKey?: string;
   newNameGeneration?: true;
+  ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema;
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];
@@ -94,6 +95,9 @@ export interface Settings {
     };
     topicClassification?: boolean;
     favorites?: boolean;
+    ocr?: {
+      url: string;
+    };
     segmentation?: {
       url: string;
     };

@@ -9,7 +9,6 @@ const defaultHeaders = [
   'Segment',
   'Language',
   'StateAllMatchingEmptyPending',
-  'Page',
 ];
 
 const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {

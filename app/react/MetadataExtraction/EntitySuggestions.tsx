@@ -1,29 +1,17 @@
-/* eslint-disable max-statements */
-/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
 
-import {
-  Column,
-  HeaderGroup,
-  Row,
-  useTable,
-  usePagination,
-  useFilters,
-  FilterProps,
-  useRowSelect,
-} from 'react-table';
-import _ from 'lodash';
-import { I18NLink, t, Translate } from 'app/I18N';
-import socket from 'app/socket';
-import { Icon } from 'app/UI';
+import { Icon } from 'UI';
+import { HeaderGroup, Row } from 'react-table';
+import { I18NLink, Translate } from 'app/I18N';
+import { socket } from 'app/socket';
 import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
-import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { PropertySchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
@@ -32,21 +20,6 @@ interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
 }
-
-const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<EntitySuggestionType>) => (
-  <select
-    className={filterValue ? 'filtered' : ''}
-    value={filterValue}
-    onChange={e => {
-      setFilter(e.target.value || undefined);
-    }}
-  >
-    <option value="">{t('System', 'All', 'All', false)}</option>
-    <option value="Matching">{t('System', 'Matching', 'Matching', false)}</option>
-    <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
-    <option value="Pending">{t('System', 'Pending', 'Pending', false)}</option>
-  </select>
-);
 
 export const EntitySuggestions = ({
   property: reviewedProperty,
@@ -68,35 +41,6 @@ export const EntitySuggestions = ({
     setAcceptingSuggestion(true);
   };
 
-  const formatValue = (value: PropertyValueSchema | undefined) => {
-    if (!value) return '-';
-    if (reviewedProperty.type === 'date' && _.isNumber(value)) {
-      return propertyValueFormatter.date(value);
-    }
-    return value;
-  };
-
-  const suggestionCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
-    const suggestion = row.original;
-    const currentValue = formatValue(suggestion.currentValue);
-    const suggestedValue = formatValue(suggestion.suggestedValue);
-    return (
-      <>
-        <div>
-          <span className="suggestion-label">
-            <Translate>{reviewedProperty.label}</Translate>
-          </span>
-          <p className="current-value">{currentValue}</p>
-        </div>
-        <div>
-          <span className="suggestion-label">
-            <Translate>Suggestion</Translate>
-          </span>
-          <p className="suggested-value">{suggestedValue}</p>
-        </div>
-      </>
-    );
-  };
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
     return (
@@ -116,60 +60,6 @@ export const EntitySuggestions = ({
     );
   };
 
-  const columns: Column<EntitySuggestionType>[] = React.useMemo(
-    () => [
-      {
-        id: 'suggestion',
-        Header: () => (
-          <>
-            <Translate>{reviewedProperty.label}</Translate> / <Translate>Suggestion</Translate>
-          </>
-        ),
-        Cell: suggestionCell,
-        className: 'suggestion',
-      },
-      {
-        id: 'action',
-        Header: () => <Translate>Action</Translate>,
-        Cell: actionsCell,
-        className: 'action',
-      },
-      {
-        id: 'entityTitle',
-        accessor: 'entityTitle' as const,
-        Header: () => <Translate>Title</Translate>,
-        className: 'title',
-      },
-      {
-        accessor: 'segment' as const,
-        Header: () => <Translate>Segment</Translate>,
-        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
-      },
-      {
-        accessor: 'language' as const,
-        Header: () => <Translate>Language</Translate>,
-        Cell: ({ row }: { row: Row<EntitySuggestionType> }) => (
-          <Translate>{row.original.language}</Translate>
-        ),
-      },
-      {
-        accessor: 'state' as const,
-        Header: () => <Translate>State</Translate>,
-        Cell: ({ row }: { row: Row<EntitySuggestionType> }) => (
-          <Translate>{row.original.state}</Translate>
-        ),
-        Filter: stateFilter,
-        className: 'state',
-      },
-      {
-        accessor: 'page' as const,
-        Header: () => <Translate>Page</Translate>,
-      },
-    ],
-    []
-  );
-  const hiddenColumns = reviewedProperty.label === 'Title' ? ['entityTitle'] : [];
-
   const {
     getTableProps,
     getTableBodyProps,
@@ -180,27 +70,7 @@ export const EntitySuggestions = ({
     setPageSize,
     selectedFlatRows,
     state: { pageIndex, pageSize, filters },
-  } = useTable(
-    {
-      columns,
-      data: suggestions,
-      manualPagination: true,
-      manualFilters: true,
-      initialState: {
-        hiddenColumns,
-        pageIndex: 0,
-        pageSize: 5,
-      },
-
-      pageCount: totalPages,
-      autoResetPage: false,
-      autoResetFilters: false,
-    },
-
-    useFilters,
-    usePagination,
-    useRowSelect
-  );
+  } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell);
 
   const retrieveSuggestions = () => {
     const queryFilter = filters.reduce(

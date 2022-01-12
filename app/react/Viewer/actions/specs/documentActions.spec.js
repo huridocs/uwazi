@@ -15,6 +15,7 @@ import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
+import * as libraryActions from '../../../Library/actions/saveEntityWithFiles';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
 
@@ -275,18 +276,31 @@ describe('documentActions', () => {
 
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', done => {
-        spyOn(documentsApi, 'save').and.returnValue(Promise.resolve({ sharedId: 'responseId' }));
-        const doc = { name: 'doc', fullText: 'fullText' };
+        spyOn(libraryActions, 'saveEntityWithFiles').and.returnValue(
+          Promise.resolve({ entity: { sharedId: 'responseId' } })
+        );
         spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
           type: 'reloadRelationships',
         });
+        const doc = {
+          name: 'doc',
+          fullText: 'fullText',
+          attachments: [{ _id: '1', originalname: 'supportingFile' }],
+        };
 
         const expectedActions = [
           {
             type: notificationsTypes.NOTIFY,
             notification: { message: 'Document updated', type: 'success', id: 'unique_id' },
           },
-          { type: types.VIEWER_UPDATE_DOCUMENT, doc: { name: 'doc', fullText: 'fullText' } },
+          {
+            type: types.VIEWER_UPDATE_DOCUMENT,
+            doc: {
+              name: 'doc',
+              fullText: 'fullText',
+              attachments: [{ _id: '1', originalname: 'supportingFile' }],
+            },
+          },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
           { type: 'viewer/doc/UPDATE', value: { sharedId: 'responseId' } },
           { type: 'reloadRelationships' },
@@ -301,10 +315,14 @@ describe('documentActions', () => {
         store
           .dispatch(actions.saveDocument(doc))
           .then(() => {
-            expect(documentsApi.save).toHaveBeenCalledWith({
-              data: { __extractedMetadata: { fileID: '' }, name: 'doc' },
-              headers: {},
-            });
+            expect(libraryActions.saveEntityWithFiles).toHaveBeenCalledWith(
+              {
+                __extractedMetadata: { fileID: '' },
+                attachments: [{ _id: '1', originalname: 'supportingFile' }],
+                name: 'doc',
+              },
+              expect.any(Function)
+            );
             expect(store.getActions()).toEqual(expectedActions);
           })
           .then(done)

@@ -1,4 +1,4 @@
-Title , text label  , numeric label, non configured, select_label, not defined type, geolocation_geolocation,auto id, additional tag(s), multi_select_label
+Title , text label  , numeric label, non configured, select_label, not defined type, geolocation_geolocation,auto id, additional tag(s), Multi Select Label
 
 title1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,,tag1, multivalue1
 title2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,,tag2, multivalue2

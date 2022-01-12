@@ -1,64 +1,28 @@
-import testingDB from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import migration from '../index.js';
-import fixtures, { templateId, defaultTemplateName, defaultTemplateTitle } from './fixtures.js';
+import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from './fixtures.js';
 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Suggestion',
-    value: 'Suggestion',
+    key: 'Services',
+    value: 'Services',
   },
   {
-    key: 'All',
-    value: 'All',
+    key: 'Loading',
+    value: 'Loading',
   },
   {
-    key: 'Matching',
-    value: 'Matching',
+    key: 'OCR PDF',
+    value: 'OCR PDF',
   },
   {
-    key: 'Pending',
-    value: 'Pending',
+    key: 'OCR error',
+    value: 'OCR error',
   },
   {
-    key: 'Empty',
-    value: 'Empty',
-  },
-  {
-    key: 'Segment',
-    value: 'Segment',
-  },
-  {
-    key: 'State',
-    value: 'State',
-  },
-  {
-    key: 'Review',
-    value: 'Review',
-  },
-  {
-    key: 'Reviewing',
-    value: 'Reviewing',
-  },
-  {
-    key: 'Dashboard',
-    value: 'Dashboard',
-  },
-  {
-    key: 'Find suggestions',
-    value: 'Find suggestions',
-  },
-  {
-    key: 'per page',
-    value: 'per page',
-  },
-  {
-    key: 'Confirm suggestion acceptance',
-    value: 'Confirm suggestion acceptance',
-  },
-  {
-    key: 'Apply to all languages',
-    value: 'Apply to all languages',
+    key: 'OCR completed',
+    value: 'OCR completed',
   },
 ];
 const alreadyInAllContexts = {

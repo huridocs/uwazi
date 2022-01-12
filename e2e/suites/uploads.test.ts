@@ -90,6 +90,20 @@ describe('Uploads', () => {
     });
   });
 
+  describe('when editing the main file', () => {
+    it('should change the language of the document', async () => {
+      await expect(page).toClick('.item-document', {
+        text: 'Valid',
+      });
+      await page.waitForSelector('.filelist-header');
+      await expect(page).toClick('.file-edit', { text: 'Edit' });
+      await expect(page).toSelect('#language', 'english');
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('div.alert', { text: 'File updated' });
+      await expect(page).toClick('.is-active .closeSidepanel');
+    });
+  });
+
   afterAll(async () => {
     await logout();
   });

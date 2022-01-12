@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /* eslint-disable max-lines */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
@@ -56,7 +55,7 @@ describe('InformationExtraction', () => {
         'app/api/services/informationextraction/specs/uploads/segmentation/documentC.xml'
       );
 
-      expect(IXExternalService.materialsFilePartams).toEqual({
+      expect(IXExternalService.materialsFileParams).toEqual({
         0: '/xml_to_train/tenant1/property1',
         property: 'property1',
         tenant: 'tenant1',
@@ -130,7 +129,7 @@ describe('InformationExtraction', () => {
         'app/api/services/informationextraction/specs/uploads/segmentation/documentA.xml'
       );
 
-      expect(IXExternalService.materialsFilePartams).toEqual({
+      expect(IXExternalService.materialsFileParams).toEqual({
         0: '/xml_to_predict/tenant1/property1',
         property: 'property1',
         tenant: 'tenant1',

@@ -2,7 +2,7 @@ import { actions } from 'app/BasicReducer';
 import { t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { store } from '../store';
-import socket, { reconnectSocket } from '../socket';
+import { socket, reconnectSocket } from '../socket';
 
 let disconnectNotifyId;
 let disconnectTimeoutMessage;

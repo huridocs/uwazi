@@ -1,29 +1,26 @@
-/* eslint-disable max-lines */
-/* eslint-disable camelcase */
-import urljoin from 'url-join';
-import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { uploadsPath, readFile, fileExists } from 'api/files';
-import settings from 'api/settings/settings';
-import { tenants } from 'api/tenants/tenantContext';
-import { ObjectId } from 'mongodb';
-import request from 'shared/JSONRequest';
 import path from 'path';
-import { FileType } from 'shared/types/fileType';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-
-import filesModel from 'api/files/filesModel';
-import { SegmentationType } from 'shared/types/segmentationType';
+import urljoin from 'url-join';
+import _ from 'lodash';
+import { ObjectId } from 'mongodb';
+import { fileExists, readFile, uploadsPath } from 'api/files';
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
-import entities from 'api/entities/entities';
-import { EntitySchema } from 'shared/types/entityType';
-import languages from 'shared/languages';
+import { tenants } from 'api/tenants/tenantContext';
 import { emitToTenant } from 'api/socketio/setupSockets';
+import filesModel from 'api/files/filesModel';
+import entities from 'api/entities/entities';
+import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
+import request from 'shared/JSONRequest';
+import languages from 'shared/languages';
+import { EntitySchema } from 'shared/types/entityType';
+import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
+import { SegmentationType } from 'shared/types/segmentationType';
+import { FileType } from 'shared/types/fileType';
 import { IXModelsModel } from './IXModelsModel';
 
 interface FileWithAggregation extends FileType {
@@ -34,10 +31,12 @@ interface FileWithAggregation extends FileType {
 }
 type RawSuggestion = {
   tenant: string;
+  /* eslint-disable camelcase */
   property_name: string;
   xml_file_name: string;
   text: string;
   segment_text: string;
+  /* eslint-enable camelcase */
 };
 
 class InformationExtraction {
@@ -99,7 +98,6 @@ class InformationExtraction {
 
         await InformationExtraction.sendXmlToService(serviceUrl, xmlName, property, type);
 
-        //eslint-disable-next-line camelcase
         let data: any = {
           xml_file_name: xmlName,
           property_name: property,
@@ -150,13 +148,7 @@ class InformationExtraction {
   };
 
   coerceSuggestionValue = (suggestion: RawSuggestion, templates: TemplateSchema[]) => {
-    const allProps: PropertySchema[] = [];
-
-    templates.forEach(template => {
-      if (template.properties) {
-        allProps.push(...template.properties);
-      }
-    });
+    const allProps: PropertySchema[] = _.flatMap(templates, template => template.properties || []);
 
     const property = allProps.find(p => p.name === suggestion.property_name);
 
@@ -367,14 +359,14 @@ class InformationExtraction {
       status: 'processing',
     });
 
+    if (currentModel) {
+      return { status: 'processing_model', message: 'Training model' };
+    }
+
     const [suggestion] = await IXSuggestionsModel.get({
       propertyName: property,
       status: 'processing',
     });
-
-    if (currentModel) {
-      return { status: 'processing_model', message: 'Training model' };
-    }
 
     if (suggestion) {
       return { status: 'processing_suggestions', message: 'Getting suggestions' };
@@ -407,13 +399,10 @@ class InformationExtraction {
 
   getTemplatesWithProperty = async (property: string) => {
     const settingsValues = await settings.get();
-    const templates: ObjectIdSchema[] = [];
-    settingsValues.features?.metadataExtraction?.templates?.forEach(t => {
-      if (t.properties.includes(property)) {
-        templates.push(new ObjectId(t.template));
-      }
-    });
-    return templates;
+    const metadataExtractionSettings = settingsValues.features?.metadataExtraction?.templates || [];
+    return metadataExtractionSettings
+      .filter(t => t.properties.includes(property) && t.template)
+      .map(t => new ObjectId(t.template));
   };
 
   processResults = async (message: ResultsMessage): Promise<void> => {

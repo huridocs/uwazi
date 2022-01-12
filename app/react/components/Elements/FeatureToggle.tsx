@@ -1,13 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
 
-export type ComponentPropTypes = {
+type ComponentPropTypes = {
   featureActivated: boolean;
   children: React.ReactNode;
 };
 
-export type OwnPropTypes = {
+type OwnPropTypes = {
   feature: string;
 };
 
@@ -24,9 +23,10 @@ function mapStateToProps({ settings }: any, ownProps: OwnPropTypes) {
   const features = settings.collection.get('features');
 
   return {
-    featureActivated: features ? Boolean(get(features.toJS(), ownProps.feature)) : false,
+    featureActivated: features ? Boolean(features.getIn(ownProps.feature.split('.'))) : false,
   };
 }
 
 const container = connect(mapStateToProps)(FeatureToggle);
+export type { ComponentPropTypes, OwnPropTypes };
 export { container as FeatureToggle };

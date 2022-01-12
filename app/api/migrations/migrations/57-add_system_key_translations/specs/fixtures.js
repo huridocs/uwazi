@@ -1,8 +1,8 @@
 import db from 'api/utils/testing_db';
 
-export const templateId = db.id();
-export const defaultTemplateName = 'default template';
-export const defaultTemplateTitle = 'Title';
+const templateId = db.id();
+const defaultTemplateName = 'default template';
+const defaultTemplateTitle = 'Title';
 
 //contexts
 const commonContext = {
@@ -32,7 +32,7 @@ const templateContext = {
   ],
 };
 
-export default {
+const fixtures = {
   templates: [
     //default template name - correct
     {
@@ -86,3 +86,5 @@ export default {
     },
   ],
 };
+
+export { fixtures, templateId, defaultTemplateName, defaultTemplateTitle };

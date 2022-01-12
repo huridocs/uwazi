@@ -93,10 +93,12 @@
     &.segment {
       width: 40%;
       min-width: 100px;
+      max-width: 375px;
     }
 
     &.long-segment {
       width: 55%;
+      max-width: 475px;
     }
 
     &.state {
