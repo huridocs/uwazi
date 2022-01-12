@@ -94,6 +94,11 @@ export default {
           name: templateUtils.safeName('multi_select_label'),
           content: multiSelectThesaurusId.toString(),
         },
+        {
+          type: propertyTypes.date,
+          label: 'Date label',
+          name: templateUtils.safeName('Date label'),
+        },
       ],
     },
     {
