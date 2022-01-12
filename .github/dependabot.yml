@@ -7,3 +7,5 @@ updates:
     allow:
       - dependency-type: "development"
     open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
