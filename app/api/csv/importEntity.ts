@@ -14,9 +14,13 @@ import { generateID } from 'shared/IDGenerator';
 
 import typeParsers from './typeParsers';
 
-const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
+const parse = async (
+  toImportEntity: RawEntity,
+  prop: PropertySchema,
+  dateFormat: string | undefined
+) =>
   typeParsers[prop.type]
-    ? typeParsers[prop.type](toImportEntity, prop)
+    ? typeParsers[prop.type](toImportEntity, prop, dateFormat)
     : typeParsers.text(toImportEntity, prop);
 
 const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
@@ -24,7 +28,8 @@ const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
 
 const toMetadata = async (
   template: TemplateSchema,
-  toImportEntity: RawEntity
+  toImportEntity: RawEntity,
+  dateFormat: string | undefined
 ): Promise<MetadataSchema> =>
   (template.properties || [])
     .filter(prop => hasValidValue(prop, toImportEntity))
@@ -32,7 +37,7 @@ const toMetadata = async (
       async (meta, prop) =>
         ({
           ...(await meta),
-          [ensure<string>(prop.name)]: await parse(toImportEntity, prop),
+          [ensure<string>(prop.name)]: await parse(toImportEntity, prop, dateFormat),
         } as MetadataSchema),
       Promise.resolve({})
     );
@@ -53,28 +58,29 @@ const titleByTemplate = (template: TemplateSchema, entity: RawEntity) => {
 const entityObject = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
-  { language }: Options
+  { language, dateFormat }: Options
 ) => ({
   title: titleByTemplate(template, toImportEntity),
   template: template._id,
-  metadata: await toMetadata(template, toImportEntity),
+  metadata: await toMetadata(template, toImportEntity, dateFormat),
   ...(await currentEntityIdentifiers(toImportEntity.id, language)),
 });
 
 type Options = {
   user?: {};
   language: string;
+  dateFormat?: string;
 };
 
 const importEntity = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
   importFile: ImportFile,
-  { user = {}, language }: Options
+  { user = {}, language, dateFormat }: Options
 ) => {
   const { attachments } = toImportEntity;
   delete toImportEntity.attachments;
-  const eo = await entityObject(toImportEntity, template, { language });
+  const eo = await entityObject(toImportEntity, template, { language, dateFormat });
   const entity = await entities.save(
     eo,
     { user, language },

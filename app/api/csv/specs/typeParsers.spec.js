@@ -67,20 +67,47 @@ describe('csvLoader typeParsers', () => {
   });
 
   describe('date', () => {
-    it('should parse date and return a timestamp', async () => {
-      const templateProp = { name: 'date_prop' };
+    it.each`
+      dateProp               | dateFormat      | timestamp
+      ${'2014'}              | ${'dd/MM/yyyy'} | ${'01-01-2014'}
+      ${'2014'}              | ${'MM/dd/yyyy'} | ${'01-01-2014'}
+      ${'2014'}              | ${'yyyy/MM/dd'} | ${'01-01-2014'}
+      ${'2014'}              | ${'dd-MM-yyyy'} | ${'01-01-2014'}
+      ${'2014'}              | ${'MM-dd-yyyy'} | ${'01-01-2014'}
+      ${'2014'}              | ${'yyyy-MM-dd'} | ${'01-01-2014'}
+      ${'2014 11 6'}         | ${'dd/MM/yyyy'} | ${'06-11-2014'}
+      ${'2014 11 6'}         | ${'MM/dd/yyyy'} | ${'06-11-2014'}
+      ${'2014 11 6'}         | ${'yyyy/MM/dd'} | ${'06-11-2014'}
+      ${'2014 11 6'}         | ${'dd-MM-yyyy'} | ${'06-11-2014'}
+      ${'2014 11 6'}         | ${'MM-dd-yyyy'} | ${'06-11-2014'}
+      ${'2014 11 6'}         | ${'yyyy-MM-dd'} | ${'06-11-2014'}
+      ${'December 17, 1995'} | ${'dd/MM/yyyy'} | ${'17-12-1995'}
+      ${'December 17, 1995'} | ${'MM/dd/yyyy'} | ${'17-12-1995'}
+      ${'December 17, 1995'} | ${'yyyy/MM/dd'} | ${'17-12-1995'}
+      ${'December 17, 1995'} | ${'dd-MM-yyyy'} | ${'17-12-1995'}
+      ${'December 17, 1995'} | ${'MM-dd-yyyy'} | ${'17-12-1995'}
+      ${'December 17, 1995'} | ${'yyyy-MM-dd'} | ${'17-12-1995'}
+      ${'12/01/2021'}        | ${'dd/MM/yyyy'} | ${'12-01-2021'}
+      ${'12/01/2021'}        | ${'MM/dd/yyyy'} | ${'01-12-2021'}
+      ${'2021/12/01'}        | ${'yyyy/MM/dd'} | ${'01-12-2021'}
+      ${'12/01/2021'}        | ${'dd-MM-yyyy'} | ${'12-01-2021'}
+      ${'12/01/2021'}        | ${'MM-dd-yyyy'} | ${'01-12-2021'}
+      ${'2021/12/01'}        | ${'yyyy-MM-dd'} | ${'01-12-2021'}
+      ${'12-01-2021'}        | ${'dd/MM/yyyy'} | ${'12-01-2021'}
+      ${'12-01-2021'}        | ${'MM/dd/yyyy'} | ${'01-12-2021'}
+      ${'2021-12-01'}        | ${'yyyy/MM/dd'} | ${'01-12-2021'}
+      ${'12-01-2021'}        | ${'dd-MM-yyyy'} | ${'12-01-2021'}
+      ${'12-01-2021'}        | ${'MM-dd-yyyy'} | ${'01-12-2021'}
+      ${'2021-12-01'}        | ${'yyyy-MM-dd'} | ${'01-12-2021'}
+    `(
+      "should parse '$dateProp' with format '$dateFormat' and return a timestamp",
+      async ({ dateProp, dateFormat, timestamp }) => {
+        const templateProp = { name: 'date_prop' };
 
-      let expected = await typeParsers.date({ date_prop: '2014' }, templateProp);
-      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('01-01-2014');
+        const expected = await typeParsers.date({ date_prop: dateProp }, templateProp, dateFormat);
 
-      expected = await typeParsers.date({ date_prop: '2014 11 6' }, templateProp);
-      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('06-11-2014');
-
-      expected = await typeParsers.date({ date_prop: '1/1/1996 00:00:00' }, templateProp);
-      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
-
-      expected = await typeParsers.date({ date_prop: '1/1/1996 23:59:59' }, templateProp);
-      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
-    });
+        expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual(timestamp);
+      }
+    );
   });
 });

@@ -51,7 +51,7 @@ export class CSVLoader extends EventEmitter {
     if (!template) {
       throw new Error('template not found!');
     }
-    const { newNameGeneration = false, languages } = await settings.get();
+    const { newNameGeneration = false, languages, dateFormat } = await settings.get();
     const availableLanguages: string[] = ensure<LanguageSchema[]>(languages).map(
       (language: LanguageSchema) => language.key
     );
@@ -67,7 +67,7 @@ export class CSVLoader extends EventEmitter {
           newNameGeneration
         );
         if (rawEntity) {
-          const entity = await importEntity(rawEntity, template, file, options);
+          const entity = await importEntity(rawEntity, template, file, { ...options, dateFormat });
           await translateEntity(entity, rawTranslations, template, file);
           this.emit('entityLoaded', entity);
         }
