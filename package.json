@@ -275,7 +275,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "v7.20.0",
-    "fetch-mock": "^9.10.7",
+    "fetch-mock": "^9.11.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "24.8.0",
     "jest-environment-jsdom-sixteen": "^2.0.0",
