@@ -6,4 +6,4 @@ updates:
       interval: "daily"
     allow:
       - dependency-type: "development"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 3
