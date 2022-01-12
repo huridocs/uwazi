@@ -10185,9 +10185,10 @@ nice-try@^1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/nice-try/-/nice-try-1.0.4.tgz"
 
-nightmare-real-mouse@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/nightmare-real-mouse/-/nightmare-real-mouse-1.0.0.tgz"
+nightmare-real-mouse@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nightmare-real-mouse/-/nightmare-real-mouse-1.1.0.tgz#f5eb199ae0341b7d390e0d18ce4c00241d013906"
+  integrity sha512-rNW0cEJ+V0pwgTd8THecYB1VPqWT8JOAaWztGk4cjjdq9hKAo8npi/bLjSlC0PSkkyrdTa92jz9dnGcACx2tnA==
 
 nightmare-upload@^0.1.1:
   version "0.1.1"
