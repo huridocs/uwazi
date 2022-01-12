@@ -137,12 +137,12 @@ describe('InformationExtraction', () => {
       });
 
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml', 'documentF.xml'].sort()
+        ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml'].sort()
       );
-      expect(IXExternalService.files.length).toBe(5);
+      expect(IXExternalService.files.length).toBe(4);
       expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA]));
 
-      expect(IXExternalService.materials.length).toBe(5);
+      expect(IXExternalService.materials.length).toBe(4);
       expect(IXExternalService.materials.find(m => m.xml_segments_boxes.length)).toEqual({
         xml_file_name: 'documentA.xml',
         property_name: 'property1',
@@ -175,7 +175,7 @@ describe('InformationExtraction', () => {
     it('should create the suggestions placeholder with status processing', async () => {
       await informationExtraction.getSuggestions('property1');
       const suggestions = await IXSuggestionsModel.get();
-      expect(suggestions.length).toBe(5);
+      expect(suggestions.length).toBe(4);
       expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',

@@ -296,7 +296,7 @@ class InformationExtraction {
       {
         $match: {
           'entityData.template': { $in: templates },
-          segmentation: { $ne: [] },
+          'segmentation.status': 'ready',
         },
       },
     ];
