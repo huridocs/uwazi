@@ -286,7 +286,7 @@
     "mongodb-memory-server": "^7.4.1",
     "mutationobserver-shim": "^0.3.7",
     "nightmare": "2.10.0",
-    "nightmare-real-mouse": "^1.0.0",
+    "nightmare-real-mouse": "^1.1.0",
     "nightmare-upload": "^0.1.1",
     "node-sass": "4.14.1",
     "nodemon": "^2.0.7",
