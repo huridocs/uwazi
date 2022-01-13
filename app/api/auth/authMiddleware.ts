@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from 'api/users/usersModel';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
   namespace Express {
     export interface Request {
