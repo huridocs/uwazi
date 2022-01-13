@@ -8,6 +8,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { handleError } from 'api/utils';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
   namespace Express {
     export interface Request {
