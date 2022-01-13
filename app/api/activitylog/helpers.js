@@ -136,7 +136,7 @@ const loadAllowedUsersAndGroups = data => {
 const loadSuggestionData = async data => {
   const suggestion = await Suggestions.getById(data.suggestion._id);
   const entity = await entities.getById(data.suggestion.entityId);
-  return { ...data, ...suggestion, title: entity.title };
+  return { ...data, ...suggestion, title: entity?.title };
 };
 
 export {

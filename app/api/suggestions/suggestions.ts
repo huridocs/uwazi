@@ -6,6 +6,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
+  getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
@@ -154,5 +155,8 @@ export const Suggestions = {
             title: suggestion.suggestedValue,
           }));
     await entities.saveMultiple(entitiesToUpdate);
+  },
+  deleteByEntityId: async (sharedId: string) => {
+    await IXSuggestionsModel.delete({ entityId: sharedId });
   },
 };

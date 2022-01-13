@@ -11,6 +11,7 @@ import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 
+import { Suggestions } from 'api/suggestions/suggestions';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities.js';
@@ -1244,6 +1245,13 @@ describe('entities', () => {
           expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
         });
       });
+    });
+
+    it('should delete the suggestions with the entity sharedId', async () => {
+      await entities.delete('shared');
+      const entitySuggestions = await Suggestions.getByEntityId('shared');
+      expect(entitySuggestions.length).toBe(0);
+      expect((await Suggestions.getByEntityId('other')).length).toBe(1);
     });
   });
 
