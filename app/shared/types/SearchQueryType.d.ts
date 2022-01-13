@@ -1,6 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
+export interface Page {
+  limit?: number;
+  offset?: number;
+}
+
 export interface RangeQuery {
   from?: number;
   to?: number;
@@ -12,10 +17,7 @@ export interface AdvancedQuery {
 }
 
 export interface SearchQuery {
-  page?: {
-    limit?: number;
-    offset?: number;
-  };
+  page?: Page;
   filter?: {
     searchString?: string;
     sharedId?: string;

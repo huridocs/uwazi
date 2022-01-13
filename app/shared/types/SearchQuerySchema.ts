@@ -1,5 +1,12 @@
 export const emitSchemaTypes = true;
 
+export const PageSchema = {
+  title: 'Page',
+  type: 'object',
+  additionalProperties: false,
+  properties: { limit: { type: 'number' }, offset: { type: 'number' } },
+};
+
 export const RangeQuerySchema = {
   title: 'RangeQuery',
   additionalProperties: false,
@@ -19,11 +26,7 @@ export const SearchQuerySchema = {
   title: 'SearchQuery',
   additionalProperties: false,
   properties: {
-    page: {
-      type: 'object',
-      additionalProperties: false,
-      properties: { limit: { type: 'number' }, offset: { type: 'number' } },
-    },
+    page: PageSchema,
     filter: {
       type: 'object',
       additionalProperties: {

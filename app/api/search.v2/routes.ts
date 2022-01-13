@@ -3,7 +3,7 @@ import { Application, Request, Response } from 'express';
 import { elastic } from 'api/search/elastic';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
-import { SearchQuery } from 'shared/types/SearchQueryType';
+import { SearchQuery, Page } from 'shared/types/SearchQueryType';
 
 import { mapResults } from 'api/search.v2/searchResponse';
 import qs from 'qs';
@@ -26,6 +26,22 @@ interface UwaziReq<T> extends Request {
 
 type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
+const link = (limit: number, offset: number) =>
+  `/api/v2/entities?${qs.stringify({
+    page: { limit, offset },
+  })}`;
+
+const prevPaginationLink = (queryLimit: Page['limit'], currentOffset: number) =>
+  queryLimit && currentOffset > 0 ? link(queryLimit, currentOffset - queryLimit) : undefined;
+
+const nextPaginationLink = (queryLimit: Page['limit'], currentOffset: number, lastOffset: number) =>
+  queryLimit && currentOffset < lastOffset
+    ? link(queryLimit, currentOffset + queryLimit)
+    : undefined;
+
+const lastPaginationLink = (queryLimit: Page['limit'], offset: number) =>
+  queryLimit ? link(queryLimit, offset) : undefined;
+
 const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
@@ -44,32 +60,9 @@ const searchRoutes = (app: Application) => {
         links: {
           self: url,
           first: query.page?.limit ? url : undefined,
-          last: query.page?.limit
-            ? `/api/v2/entities?${qs.stringify({
-                page: {
-                  limit: query.page.limit,
-                  offset: lastOffset,
-                },
-              })}`
-            : undefined,
-          next:
-            query.page?.limit && currentOffset < lastOffset
-              ? `/api/v2/entities?${qs.stringify({
-                  page: {
-                    limit: query.page.limit,
-                    offset: currentOffset + query.page.limit,
-                  },
-                })}`
-              : undefined,
-          prev:
-            query.page?.limit && currentOffset > 0
-              ? `/api/v2/entities?${qs.stringify({
-                  page: {
-                    limit: query.page.limit,
-                    offset: currentOffset - query.page.limit,
-                  },
-                })}`
-              : undefined,
+          prev: prevPaginationLink(query.page?.limit, currentOffset),
+          next: nextPaginationLink(query.page?.limit, currentOffset, lastOffset),
+          last: lastPaginationLink(query.page?.limit, lastOffset),
         },
       });
     }
