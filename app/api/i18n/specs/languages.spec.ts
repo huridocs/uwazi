@@ -1,12 +1,14 @@
-import { Languages } from 'api/i18n/languages';
-import { testingDB } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import settings from 'api/settings';
+import { Languages } from 'api/i18n/languages';
 import fixtures from './fixtures';
 
 describe('languages', () => {
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
+
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('add', () => {
     beforeAll(async () => {

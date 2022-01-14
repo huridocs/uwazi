@@ -63,7 +63,7 @@ export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> 
 const initMongoServer = async (dbName: string) => {
   mongod = await createNewMongoDB(dbName);
   const uri = mongod.getUri();
-  mongooseConnection = await DB.connect(`${uri}${dbName}?replicaSet=rs`);
+  mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };
 

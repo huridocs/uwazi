@@ -105,6 +105,10 @@ export class OdmModel<T> {
     await this.logHelper.upsertLogMany(cond, true);
     return this.db.deleteMany(cond);
   }
+
+  async startSession(options?: SessionOptions) {
+    return this.db.startSession(options);
+  }
 }
 
 // models are accessed in api/sync, which cannot be type-safe since the document

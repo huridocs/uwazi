@@ -93,6 +93,10 @@ class MultiTenantMongooseModel<T> {
   async updateOne(conditions: UwaziFilterQuery<DataType<T>>, doc: UwaziUpdateQuery<T>) {
     return this.dbForCurrentTenant().updateOne(conditions, doc);
   }
+
+  async startSession(options?: SessionOptions) {
+    return this.dbForCurrentTenant().startSession(options);
+  }
 }
 
 export { MultiTenantMongooseModel };
