@@ -43,7 +43,7 @@ export default {
   async date(
     entityToImport: RawEntity,
     property: PropertySchema,
-    dateFormat: string | undefined
+    dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
     const allowedFormats = [
       dateFormat.toUpperCase(),

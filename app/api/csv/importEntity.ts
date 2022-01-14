@@ -14,11 +14,7 @@ import { generateID } from 'shared/IDGenerator';
 
 import typeParsers from './typeParsers';
 
-const parse = async (
-  toImportEntity: RawEntity,
-  prop: PropertySchema,
-  dateFormat: string | undefined
-) =>
+const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) =>
   typeParsers[prop.type]
     ? typeParsers[prop.type](toImportEntity, prop, dateFormat)
     : typeParsers.text(toImportEntity, prop);
@@ -29,7 +25,7 @@ const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
 const toMetadata = async (
   template: TemplateSchema,
   toImportEntity: RawEntity,
-  dateFormat: string | undefined
+  dateFormat: string
 ): Promise<MetadataSchema> =>
   (template.properties || [])
     .filter(prop => hasValidValue(prop, toImportEntity))
@@ -58,7 +54,7 @@ const titleByTemplate = (template: TemplateSchema, entity: RawEntity) => {
 const entityObject = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
-  { language, dateFormat }: Options
+  { language, dateFormat = 'YYYY/MM/DD' }: Options
 ) => ({
   title: titleByTemplate(template, toImportEntity),
   template: template._id,
