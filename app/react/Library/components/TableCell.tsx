@@ -6,7 +6,7 @@ import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/c
 import MarkdownViewer from 'app/Markdown';
 
 export interface TableCellProps {
-  content: FormattedMetadataValue;
+  content?: FormattedMetadataValue;
   zoomLevel: number;
 }
 
@@ -14,7 +14,7 @@ export interface FormattedMetadataValue extends PropertySchema {
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
-const formatProperty = (prop: FormattedMetadataValue) => {
+const formatProperty = (prop: FormattedMetadataValue | undefined) => {
   let result;
   if (!prop?.value) {
     return undefined;
