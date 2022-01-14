@@ -1893,13 +1893,6 @@
   dependencies:
     "@types/d3-path" "^1"
 
-"@types/engine.io@*":
-  version "3.1.4"
-  resolved "https://registry.npmjs.org/@types/engine.io/-/engine.io-3.1.4.tgz"
-  integrity sha512-98rXVukLD6/ozrQ2O80NAlWDGA4INg+tqsEReWJldqyi2fulC9V7Use/n28SWgROXKm6003ycWV4gZHoF8GA6w==
-  dependencies:
-    "@types/node" "*"
-
 "@types/enzyme-adapter-react-16@1.0.2":
   version "1.0.2"
   resolved "https://registry.npmjs.org/@types/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.0.2.tgz"
@@ -2373,13 +2366,12 @@
   resolved "https://registry.npmjs.org/@types/socket.io-client/-/socket.io-client-1.4.33.tgz"
   integrity sha512-m4LnxkljsI9fMsjwpW5QhRpMixo2BeeLpFmg0AE+sS4H1pzAd/cs/ftTiL60FLZgfFa8PFRPx5KsHu8O0bADKQ==
 
-"@types/socket.io@^2.1.11":
-  version "2.1.11"
-  resolved "https://registry.npmjs.org/@types/socket.io/-/socket.io-2.1.11.tgz"
-  integrity sha512-bVprmqPhJMLb9ZCm8g0Xy8kwBFRbnanOWSxzWkDkkIwxTvud5tKMfAJymXX6LQbizUKCS1yima7JM4BeLqjNqA==
+"@types/socket.io@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/socket.io/-/socket.io-3.0.2.tgz#606c9639e3f93bb8454cba8f5f0a283d47917759"
+  integrity sha512-pu0sN9m5VjCxBZVK8hW37ZcMe8rjn4HHggBN5CbaRTvFwv5jOmuIRZEuddsBPa9Th0ts0SIo3Niukq+95cMBbQ==
   dependencies:
-    "@types/engine.io" "*"
-    "@types/node" "*"
+    socket.io "*"
 
 "@types/source-list-map@*":
   version "0.1.2"
@@ -13648,7 +13640,7 @@ socket.io-parser@~4.1.1:
     "@socket.io/component-emitter" "~3.0.0"
     debug "~4.3.1"
 
-socket.io@4.4.1:
+socket.io@*, socket.io@4.4.1:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-4.4.1.tgz#cd6de29e277a161d176832bb24f64ee045c56ab8"
   integrity sha512-s04vrBswdQBUmuWJuuNTmXUVJhP0cVky8bBDhdkf8y0Ptsu7fKU2LuLbts9g+pdmAdyMMn8F/9Mf1/wbtUN0fg==
