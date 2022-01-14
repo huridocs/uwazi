@@ -55,6 +55,7 @@ const setupSockets = (server: Server, app: Application) => {
   if (config.redis.activated) {
     const pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
     const subClient = pubClient.duplicate();
+    // @ts-ignore
     io.adapter(createAdapter(pubClient, subClient));
     io.of('/').adapter.on('error', e => {
       handleError(e, { useContext: false });
