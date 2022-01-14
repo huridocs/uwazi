@@ -45,7 +45,6 @@ export default {
     property: PropertySchema,
     dateFormat: string | undefined
   ): Promise<MetadataObjectSchema[]> {
-    console.log(dateFormat);
     const allowedFormats = [
       dateFormat.toUpperCase(),
       'LL',
