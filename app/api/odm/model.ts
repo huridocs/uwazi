@@ -24,7 +24,7 @@ export type WithId<T> = _WithId<T>;
 export type EnforcedWithId<T> = WithId<mongoose.EnforceDocument<DataType<T>, {}>>;
 
 export type UwaziFilterQuery<T> = FilterQuery<T>;
-export type UwaziUpdateQuery<T> = UpdateQuery<Partial<T>>;
+export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
 const generateID = mongoose.Types.ObjectId;
@@ -70,7 +70,7 @@ export class OdmModel<T> {
 
   async updateMany(
     conditions: UwaziFilterQuery<DataType<T>>,
-    doc: UpdateQuery<T>,
+    doc: UwaziUpdateQuery<T>,
     options: ModelUpdateOptions = {}
   ) {
     await this.logHelper.upsertLogMany(conditions);
