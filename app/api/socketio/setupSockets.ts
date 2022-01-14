@@ -8,6 +8,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { handleError } from 'api/utils';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
   namespace Express {
     export interface Request {
@@ -54,6 +55,7 @@ const setupSockets = (server: Server, app: Application) => {
   if (config.redis.activated) {
     const pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
     const subClient = pubClient.duplicate();
+    // @ts-ignore
     io.adapter(createAdapter(pubClient, subClient));
     io.of('/').adapter.on('error', e => {
       handleError(e, { useContext: false });
