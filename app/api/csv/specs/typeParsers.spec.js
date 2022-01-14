@@ -68,7 +68,7 @@ describe('csvLoader typeParsers', () => {
 
   describe('date', () => {
     it.each`
-      dateProp               | dateFormat      | timestamp
+      dateProp               | dateFormat      | expectedDate
       ${'2014'}              | ${'dd/MM/yyyy'} | ${'01-01-2014'}
       ${'2014'}              | ${'MM/dd/yyyy'} | ${'01-01-2014'}
       ${'2014'}              | ${'yyyy/MM/dd'} | ${'01-01-2014'}
@@ -101,12 +101,12 @@ describe('csvLoader typeParsers', () => {
       ${'2021-12-01'}        | ${'yyyy-MM-dd'} | ${'01-12-2021'}
     `(
       "should parse '$dateProp' with format '$dateFormat' and return a timestamp",
-      async ({ dateProp, dateFormat, timestamp }) => {
+      async ({ dateProp, dateFormat, expectedDate }) => {
         const templateProp = { name: 'date_prop' };
 
         const expected = await typeParsers.date({ date_prop: dateProp }, templateProp, dateFormat);
 
-        expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual(timestamp);
+        expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual(expectedDate);
       }
     );
   });
