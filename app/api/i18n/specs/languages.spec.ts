@@ -4,7 +4,7 @@ import { Languages } from 'api/i18n/languages';
 import fixtures from './fixtures';
 
 describe('languages', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
   });
 

@@ -1,4 +1,4 @@
-import mongoose, { ClientSession, SaveOptions, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { SessionOptions } from 'mongodb';
 import {
   DataType,
@@ -6,6 +6,7 @@ import {
   UwaziUpdateQuery,
   UwaziQueryOptions,
   EnforcedWithId,
+  ExecutionOptions,
 } from './model';
 import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
@@ -52,8 +53,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().findOneAndUpdate(query, update, options);
   }
 
-  async create(data: Partial<DataType<T>>, session?: ClientSession) {
-    const options: SaveOptions = { session };
+  async create(data: Partial<DataType<T>>, options?: ExecutionOptions) {
     return this.dbForCurrentTenant().create([data], options);
   }
 

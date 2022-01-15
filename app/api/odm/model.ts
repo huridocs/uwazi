@@ -8,6 +8,7 @@ import mongoose, {
   ClientSession,
 } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { errorLog } from 'api/log';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 
@@ -31,6 +32,10 @@ export type UwaziQueryOptions = QueryOptions;
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
+export interface ExecutionOptions {
+  session: ClientSession;
+}
+
 export class OdmModel<T> {
   db: MultiTenantMongooseModel<T>;
 
@@ -45,14 +50,14 @@ export class OdmModel<T> {
     this.logHelper = logHelper;
   }
 
-  async save(data: Partial<DataType<T>>, query?: any, session?: ClientSession) {
+  async save(data: Partial<DataType<T>>, query?: any, options?: ExecutionOptions) {
     if (await this.documentExists(data)) {
       const saved = await this.db.findOneAndUpdate(
         query || { _id: data._id },
         data as UwaziUpdateQuery<DataType<T>>,
         {
           new: true,
-          session,
+          session: options?.session,
         }
       );
       if (saved === null) {
@@ -61,13 +66,13 @@ export class OdmModel<T> {
       await this.logHelper.upsertLogOne(saved);
       return saved.toObject<WithId<T>>();
     }
-    const [saved] = await this.db.create(data, session);
+    const [saved] = await this.db.create(data, options);
     await this.logHelper.upsertLogOne(saved);
     return saved.toObject<WithId<T>>();
   }
 
-  async saveMultiple(data: Partial<DataType<T>>[], session?: ClientSession) {
-    return Promise.all(data.map(async d => this.save(d, null, session)));
+  async saveMultiple(data: Partial<DataType<T>>[], options?: ExecutionOptions) {
+    return Promise.all(data.map(async d => this.save(d, null, options)));
   }
 
   async updateMany(
@@ -107,7 +112,14 @@ export class OdmModel<T> {
   }
 
   async startSession(options?: SessionOptions) {
-    return this.db.startSession(options);
+    try {
+      // @ts-ignore
+      const { replica } = this.db.dbForCurrentTenant().collection.conn;
+      return replica ? this.db.startSession(options) : Promise.resolve();
+    } catch (e) {
+      errorLog.error(e);
+      return Promise.resolve();
+    }
   }
 }
 
