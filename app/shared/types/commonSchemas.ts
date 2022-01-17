@@ -92,6 +92,15 @@ export const propertyValueSchema = {
   ],
 };
 
+export const inheritedValueSchema = {
+  type: 'object',
+  required: ['value'],
+  additionalProperties: false,
+  properties: {
+    value: { type: 'string' },
+  },
+};
+
 export const metadataObjectSchema = {
   type: 'object',
   definitions: { propertyValueSchema },
@@ -102,7 +111,7 @@ export const metadataObjectSchema = {
     suggestion_confidence: { type: 'number' },
     suggestion_model: { type: 'string' },
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
-    inheritedValue: { value: propertyValueSchema },
+    inheritedValue: { type: 'array', items: inheritedValueSchema },
     inheritedType: { type: 'string' },
   },
 };

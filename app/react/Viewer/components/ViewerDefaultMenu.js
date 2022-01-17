@@ -16,7 +16,7 @@ export class ViewerDefaultMenu extends Component {
             className="btn btn-primary"
             onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')}
           >
-            <Icon icon="chart-bar" />
+            <Icon icon="columns" />
           </div>
         </ShowIf>
       </div>

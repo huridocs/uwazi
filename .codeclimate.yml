@@ -34,3 +34,4 @@ plugins:
 exclude_patterns:
   - '**/index.js'
   - '**/fixtures.js'
+  - '**/*.d.ts'
