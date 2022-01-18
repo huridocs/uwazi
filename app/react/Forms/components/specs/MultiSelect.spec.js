@@ -130,12 +130,12 @@ describe('MultiSelect', () => {
       component
         .find('.group-checkbox')
         .first()
-        .simulate('change', { target: { checked: true } });
+        .simulate('change', { target: { checked: true, dataset: { state: '0' } } });
       expect(props.onChange).toHaveBeenCalledWith(['group-option1', 'group-option2']);
       component
         .find('.group-checkbox')
         .first()
-        .simulate('change', { target: { checked: false } });
+        .simulate('change', { target: { checked: false, dataset: { state: '2' } } });
       expect(props.onChange).toHaveBeenCalledWith([]);
     });
   });

@@ -87,7 +87,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
     let { value } = this.props;
-    if (e.target.checked) {
+    const previouslyChecked = parseInt(e.target.dataset.state!, 10) !== SelectStates.OFF;
+    if (!previouslyChecked) {
       group.options!.forEach(_item => {
         if (this.checked(_item) !== SelectStates.ON) {
           value = this.markChecked(value, _item);
@@ -95,7 +96,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
       });
     }
 
-    if (!e.target.checked) {
+    if (previouslyChecked) {
       group.options!.forEach(_item => {
         if (this.checked(_item) !== SelectStates.OFF) {
           value = this.markUnchecked(value, _item);
@@ -302,6 +303,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
             id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group) !== SelectStates.OFF}
+            data-state={this.checked(group)}
           />
           {this.label({ ...group, results: group.results })}
         </div>

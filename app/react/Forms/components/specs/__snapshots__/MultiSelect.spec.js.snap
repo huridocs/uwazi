@@ -222,6 +222,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       <input
         checked={false}
         className="group-checkbox multiselectItem-input"
+        data-state={0}
         id="undefined"
         onChange={[Function]}
         type="checkbox"
