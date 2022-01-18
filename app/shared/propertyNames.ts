@@ -1,7 +1,7 @@
 const generateNewSafeName = (label: string) =>
   label
     .trim()
-    .replace(/[#|\\|/|*|?|"|<|>|=|||\s|:|.]/gi, '_')
+    .replace(/[#|\\|/|*|?|"|<|>|=|||\s|:|.|[|\]|%]/gi, '_')
     .replace(/^[_|\-|+|$]/, '')
     .toLowerCase();
 
