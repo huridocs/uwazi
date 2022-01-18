@@ -298,9 +298,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
         <div className="multiselectItem">
           <input
             type="checkbox"
-            className={`group-checkbox multiselectItem-input${
-              this.checked(group) === SelectStates.PARTIAL ? ' partial' : ''
-            }`}
+            className="group-checkbox multiselectItem-input"
             id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group) !== SelectStates.OFF}
@@ -328,9 +326,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
       >
         <input
           type="checkbox"
-          className={`multiselectItem-input${
-            this.checked(option) === SelectStates.PARTIAL ? ' partial' : ''
-          }`}
+          className="multiselectItem-input"
           value={option[optionsValue]}
           id={prefix + option[optionsValue]}
           onChange={this.change.bind(this, option)}
