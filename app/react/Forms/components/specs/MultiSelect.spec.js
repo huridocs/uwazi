@@ -56,7 +56,6 @@ describe('MultiSelect', () => {
     render();
     const optionElements = component.find('input[type="checkbox"]');
     expect(optionElements.length).toBe(5);
-    console.log(optionElements.at(0).debug());
     // Group is hoisted.
     expect(optionElements.at(0).props().value).toBe(undefined);
     expect(optionElements.at(0).prop('data-state')).toBe(1);
