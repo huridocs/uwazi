@@ -18,16 +18,19 @@ if (process.env.DBUSER) {
   };
 }
 
-const run = async () => {
+export const run = async () => {
   await DB.connect(config.DBHOST, auth);
   const { db } = await DB.connectionForDB(config.defaultTenant.dbName);
-
+  let migrations: any[] = [];
   await tenants.run(async () => {
-    await migrator.migrate(db);
+    migrations = await migrator.migrate(db);
   });
   //@ts-ignore
   errorLog.closeGraylog();
   await DB.disconnect();
+
+  const reindexNeed = migrations.some(migration => migration.reindex === true);
+  process.stdout.write(`{ reindex: ${reindexNeed} }`);
 };
 
 run().catch(async e => {
