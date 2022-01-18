@@ -718,14 +718,20 @@
     display: none;
     color: $c-success;
   }
+  .checkbox-group {
+    display: none;
+  }
 }
-.multiselectItem-input:checked {
+.multiselectItem-input[data-state="2"] {
   & + label {
     .checkbox-empty {
       display: none;
     }
     .checkbox-checked {
       display: block;
+    }
+    .checkbox-group {
+      display: none;
     }
   }
 
@@ -735,7 +741,7 @@
     color: $c-black;
   }
 }
-.multiselectItem-input.partial:checked {
+.multiselectItem-input[data-state="1"] {
   & + label {
     .checkbox-empty {
       display: none;
@@ -745,6 +751,9 @@
     }
     .checkbox-partial {
       display: block;
+    }
+    .checkbox-group {
+      display: none;
     }
   }
 

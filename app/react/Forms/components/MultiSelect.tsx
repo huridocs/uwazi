@@ -270,6 +270,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
           <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
           <Icon icon="minus" className="checkbox-partial" />
+          <Icon icon={['fas', 'square']} className="checkbox-group" />
         </span>
         <span className="multiselectItem-name">
           <CustomIcon className="item-icon" data={option.icon} />
@@ -334,6 +335,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
           id={prefix + option[optionsValue]}
           onChange={this.change.bind(this, option)}
           checked={this.checked(option) !== SelectStates.OFF}
+          data-state={this.checked(option)}
         />
         {this.label(option)}
       </li>
