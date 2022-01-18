@@ -5,7 +5,6 @@ import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import translations from 'api/i18n';
 import { search } from 'api/search';
-
 import { CSVLoader } from 'api/csv';
 import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import fixtures, { template1Id } from './csvLoaderFixtures';
@@ -160,6 +159,7 @@ describe('csvLoader', () => {
         'auto_id',
         'additional_tag(s)',
         'multi_select_label',
+        'date_label',
       ]);
     });
 
@@ -179,6 +179,9 @@ describe('csvLoader', () => {
 
         const thesauriValues = imported.map(i => i.metadata.select_label[0].label);
         expect(thesauriValues).toEqual(['thesauri1', 'thesauri2', 'thesauri2']);
+
+        const dateValues = imported.map(i => i.metadata.date_label[0].value);
+        expect(dateValues).toEqual([1641168000, 1646092800, 1640995200]);
       });
 
       it('should import properties that contains parentheses in the name', () => {
