@@ -69,6 +69,21 @@ describe('MultiSelect', () => {
     expect(optionElements.at(4).prop('data-state')).toBe(0);
   });
 
+  it('should render correctly when the selection is a proper group', () => {
+    props.value = ['Group'];
+    render();
+    const optionElements = component
+      .find('input[type="checkbox"]')
+      .filterWhere(e => [undefined, 'group-option1', 'group-option2'].includes(e.prop('value')));
+    // Group is hoisted.
+    expect(optionElements.at(0).props().value).toBe(undefined);
+    expect(optionElements.at(0).prop('data-state')).toBe(3);
+    expect(optionElements.at(1).props().value).toBe('group-option1');
+    expect(optionElements.at(1).prop('data-state')).toBe(0);
+    expect(optionElements.at(2).props().value).toBe('group-option2');
+    expect(optionElements.at(2).prop('data-state')).toBe(0);
+  });
+
   it('should not render aggregations on the groups when not defined', () => {
     delete props.options[2].results;
     render();

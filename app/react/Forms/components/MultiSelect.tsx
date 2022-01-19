@@ -13,6 +13,7 @@ enum SelectStates {
   OFF,
   PARTIAL,
   ON,
+  GROUP,
 }
 
 export const defaultProps = {
@@ -31,6 +32,7 @@ export const defaultProps = {
   onChange: (_v: any) => {},
   onFilter: async (_searchTerm: string) => {},
   totalPossibleOptions: 0,
+  allowSelectGroup: false,
 };
 
 export type MultiSelectProps<ValueType> = typeof defaultProps & {
@@ -87,8 +89,19 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
     let { value } = this.props;
-    const previouslyChecked = parseInt(e.target.dataset.state!, 10) !== SelectStates.OFF;
-    if (!previouslyChecked) {
+    const { allowSelectGroup } = this.props;
+    const previousState = parseInt(e.target.dataset.state!, 10);
+
+    if (previousState === SelectStates.OFF && allowSelectGroup) {
+      value = this.markChecked(value, group);
+      group.options!.forEach(_item => {
+        if (this.checked(_item) !== SelectStates.OFF) {
+          value = this.markUnchecked(value, _item);
+        }
+      });
+    }
+
+    if (previousState === SelectStates.OFF && !allowSelectGroup) {
       group.options!.forEach(_item => {
         if (this.checked(_item) !== SelectStates.ON) {
           value = this.markChecked(value, _item);
@@ -96,13 +109,24 @@ abstract class MultiSelectBase<ValueType> extends Component<
       });
     }
 
-    if (previouslyChecked) {
+    if (previousState === SelectStates.GROUP || previousState === SelectStates.PARTIAL) {
+      group.options!.forEach(_item => {
+        if (this.checked(_item) !== SelectStates.ON) {
+          value = this.markChecked(value, _item);
+        }
+      });
+      value = this.markUnchecked(value, group);
+    }
+
+    if (previousState === SelectStates.ON) {
       group.options!.forEach(_item => {
         if (this.checked(_item) !== SelectStates.OFF) {
           value = this.markUnchecked(value, _item);
         }
       });
+      value = this.markUnchecked(value, group);
     }
+
     this.props.onChange(value);
   }
 
@@ -115,6 +139,10 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const partialList = this.getPartialList();
 
     if (option.options) {
+      if (checkedList.includes(option[this.props.optionsValue])) {
+        return SelectStates.GROUP;
+      }
+
       const numChecked = option.options.reduce(
         (nc, _option) => nc + (checkedList.includes(_option[this.props.optionsValue]) ? 1 : 0),
         0
@@ -131,12 +159,15 @@ abstract class MultiSelectBase<ValueType> extends Component<
       }
       return SelectStates.OFF;
     }
+
     if (checkedList.includes(option[this.props.optionsValue])) {
       return SelectStates.ON;
     }
+
     if (partialList.includes(option[this.props.optionsValue])) {
       return SelectStates.PARTIAL;
     }
+
     return SelectStates.OFF;
   }
 
@@ -293,6 +324,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   renderGroup(group: Option, index: number) {
     const { prefix } = this.props;
+    const state = this.checked(group);
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
@@ -301,21 +333,23 @@ abstract class MultiSelectBase<ValueType> extends Component<
             className="group-checkbox multiselectItem-input"
             id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
-            checked={this.checked(group) !== SelectStates.OFF}
-            data-state={this.checked(group)}
+            checked={state !== SelectStates.OFF}
+            data-state={state}
           />
           {this.label({ ...group, results: group.results })}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
-            {group.options!.map((_item, i) => this.renderOption(_item, i, index.toString()))}
+            {group.options!.map((_item, i) =>
+              this.renderOption(_item, i, index.toString(), state === SelectStates.GROUP)
+            )}
           </ul>
         </ShowIf>
       </li>
     );
   }
 
-  renderOption(option: Option, index: number, groupIndex = '') {
+  renderOption(option: Option, index: number, groupIndex = '', disabled = false) {
     const { optionsValue, optionsLabel, prefix } = this.props;
     const key = `${groupIndex}${index}`;
     return (
@@ -332,6 +366,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
           onChange={this.change.bind(this, option)}
           checked={this.checked(option) !== SelectStates.OFF}
           data-state={this.checked(option)}
+          disabled={disabled}
         />
         {this.label(option)}
       </li>
