@@ -20,7 +20,7 @@ if (process.env.DBUSER) {
 
 export const run = async () => {
   await DB.connect(config.DBHOST, auth);
-  const { db } = await DB.connectionForDB(config.defaultTenant.dbName);
+  const { db } = DB.connectionForDB(config.defaultTenant.dbName);
   let migrations: any[] = [];
   await tenants.run(async () => {
     migrations = await migrator.migrate(db);
