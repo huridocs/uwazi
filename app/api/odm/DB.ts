@@ -15,6 +15,7 @@ const DB = {
       useNewUrlParser: true,
     });
 
+    connection.replica = true;
     return this.getConnection();
   },
 

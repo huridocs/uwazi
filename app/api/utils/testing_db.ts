@@ -62,8 +62,8 @@ export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> 
 
 const initMongoServer = async (dbName: string) => {
   mongod = await createNewMongoDB(dbName);
-  const uri = mongod.getUri();
-  mongooseConnection = await DB.connect(`${uri}${dbName}`);
+  const uri = mongod.getUri(dbName);
+  mongooseConnection = await DB.connect(`${uri}&retryWrites=false`);
   connected = true;
 };
 
@@ -80,7 +80,7 @@ const testingDB: {
 } = {
   mongodb: null,
   dbName: '',
-
+	
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
       this.dbName = uniqueID();

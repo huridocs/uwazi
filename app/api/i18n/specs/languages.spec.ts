@@ -11,11 +11,9 @@ describe('languages', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('add', () => {
-    beforeAll(async () => {
-      await Languages.add({ key: 'dt', label: 'Deutsch' });
-    });
-
     it('should add the language to the settings', async () => {
+      await Languages.add({ key: 'dt', label: 'Deutsch' });
+
       const currentSettings = await settings.get();
       expect(currentSettings.languages).toMatchObject([
         {
