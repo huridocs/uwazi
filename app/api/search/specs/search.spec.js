@@ -543,7 +543,6 @@ describe('search', () => {
       ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
-          console.log(template1Aggs);
           expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'missing')).not.toBeDefined();
