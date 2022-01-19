@@ -5,6 +5,7 @@ export const scrollTo = async (selector: string): Promise<void> => {
 };
 
 export const selectDate = async (selector: string, value: string, options?: any): Promise<void> => {
+  await scrollTo(selector);
   await expect(page).toFill(selector, value, options);
   await expect(page).toClick('.react-datepicker__day--selected');
 };
