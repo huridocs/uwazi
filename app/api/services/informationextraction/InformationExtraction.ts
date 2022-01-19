@@ -22,6 +22,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { SegmentationType } from 'shared/types/segmentationType';
 import { FileType } from 'shared/types/fileType';
 import { IXModelsModel } from './IXModelsModel';
+import { EnforcedWithId } from 'api/odm';
 
 interface FileWithAggregation extends FileType {
   filename: string;
@@ -126,6 +127,22 @@ class InformationExtraction {
     );
   };
 
+  _getEntityFromFile = async (file: EnforcedWithId<FileType> | FileWithAggregation) => {
+    let [entity] = await entities.getUnrestricted({
+      sharedId: file.entity,
+      language: languages.get(file.language!, 'ISO639_1'),
+    });
+
+    if (!entity) {
+      const defaultLanguage = await settings.getDefaultLanguage();
+      [entity] = await entities.getUnrestricted({
+        sharedId: file.entity,
+        language: defaultLanguage.key,
+      });
+    }
+    return entity;
+  };
+
   _getEntityFromSuggestion = async (rawSuggestion: RawSuggestion): Promise<void | EntitySchema> => {
     const [segmentation] = await SegmentationModel.get({
       xmlname: rawSuggestion.xml_file_name,
@@ -139,12 +156,8 @@ class InformationExtraction {
     if (!file) {
       return;
     }
-    const [entity] = await entities.getUnrestricted({
-      sharedId: file.entity,
-      language: languages.get(file.language!, 'ISO639_1'),
-    });
 
-    return entity;
+    return this._getEntityFromFile(file);
   };
 
   coerceSuggestionValue = (suggestion: RawSuggestion, templates: TemplateSchema[]) => {
@@ -172,7 +185,6 @@ class InformationExtraction {
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
         const entity = await this._getEntityFromSuggestion(rawSuggestion);
-
         if (!entity) {
           return Promise.resolve();
         }
@@ -197,17 +209,13 @@ class InformationExtraction {
           status: 'ready',
           date: new Date().getTime(),
         };
-
         return IXSuggestionsModel.save(suggestion);
       })
     );
   };
 
   saveSuggestionProcess = async (file: FileWithAggregation, propertyName: string) => {
-    const [entity] = await entities.getUnrestricted({
-      sharedId: file.entityData[0].sharedId,
-      language: languages.get(file.language!, 'ISO639_1'),
-    });
+    const entity = await this._getEntityFromFile(file);
 
     const [existingSuggestions] = await IXSuggestionsModel.get({
       entityId: entity.sharedId,

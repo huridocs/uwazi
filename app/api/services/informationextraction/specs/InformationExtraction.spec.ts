@@ -261,5 +261,32 @@ describe('InformationExtraction', () => {
       });
       expect(suggestions.length).toBe(0);
     });
+
+    it('should store unconfigured languages as default language sugestion', async () => {
+      IXExternalService.setResults([
+        {
+          tenant: 'tenant1',
+          property_name: 'property1',
+          xml_file_name: 'documentE.xml',
+          text: 'Esto es una prueba',
+          segment_text: 'segment_text_1',
+        },
+      ]);
+
+      await informationExtraction.processResults({
+        params: { property_name: 'property1' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'ready',
+        propertyName: 'property1',
+      });
+      expect(suggestions.length).toBe(1);
+      expect(suggestions[0].language).toBe('en');
+    });
   });
 });

@@ -179,6 +179,11 @@ export default {
     });
   },
 
+  async getDefaultLanguage() {
+    const currentSettings = await this.get();
+    return currentSettings.languages?.find(language => language.default);
+  },
+
   async addLanguage(language: LanguageSchema) {
     const currentSettings = await this.get();
     currentSettings.languages = currentSettings.languages || [];

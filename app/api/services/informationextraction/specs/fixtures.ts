@@ -5,6 +5,7 @@ const factory = getFixturesFactory();
 
 const settings = [
   {
+    languages: [{ default: true, label: 'English', key: 'en' }],
     features: {
       metadataExtraction: {
         url: 'http://localhost:1234/',
@@ -94,7 +95,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F5', 'A5', 'document', fixturesPdfNameE, 'eng'),
+    factory.file('F5', 'A5', 'document', fixturesPdfNameE, 'spa'),
     factory.file('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
   ],
   segmentations: [
