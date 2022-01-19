@@ -137,7 +137,7 @@ class InformationExtraction {
       const defaultLanguage = await settings.getDefaultLanguage();
       [entity] = await entities.getUnrestricted({
         sharedId: file.entity,
-        language: defaultLanguage.key,
+        language: defaultLanguage?.key,
       });
     }
     return entity;
