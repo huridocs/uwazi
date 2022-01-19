@@ -7,11 +7,11 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { setupTestUploadedPaths } from 'api/files';
 
 const testingEnvironment = {
-  async setUp(fixtures?: DBFixture, elasticIndex?: string) {
+  async setUp(fixtures?: DBFixture, elasticIndex?: string, transactional: boolean = false) {
     await this.setTenant();
     this.setPermissions();
     this.setRequestId();
-    await this.setFixtures(fixtures);
+    await this.setFixtures(fixtures, transactional);
     await this.setElastic(elasticIndex);
   },
 
@@ -24,9 +24,9 @@ const testingEnvironment = {
     await setupTestUploadedPaths();
   },
 
-  async setFixtures(fixtures?: DBFixture) {
+  async setFixtures(fixtures?: DBFixture, transactional: boolean = false) {
     if (fixtures) {
-      await testingDB.connect();
+      await testingDB.connect({ defaultTenant: true, transactional });
       await testingDB.clearAllAndLoadFixtures(fixtures);
     }
   },

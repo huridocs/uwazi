@@ -5,7 +5,7 @@ import fixtures from './fixtures';
 
 describe('languages', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(fixtures, '', true);
   });
 
   afterAll(async () => testingEnvironment.tearDown());

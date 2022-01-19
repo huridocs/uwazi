@@ -57,20 +57,31 @@ const fixturer = {
 
 let mongooseConnection: Connection;
 
-export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> =>
-  ensure<MongoMemoryServer>(await createMongoInstance(dbName));
+export const createNewMongoDB = async (
+  dbName = '',
+  transactional = false
+): Promise<MongoMemoryServer> =>
+  ensure<MongoMemoryServer>(await createMongoInstance(dbName, transactional));
 
-const initMongoServer = async (dbName: string) => {
-  mongod = await createNewMongoDB(dbName);
+const initMongoServer = async (dbName: string, transactional: boolean = false) => {
+  mongod = await createNewMongoDB(dbName, transactional);
   const uri = mongod.getUri(dbName);
-  mongooseConnection = await DB.connect(`${uri}&retryWrites=false`);
+  const connectionString = transactional ? `${uri}&retryWrites=false` : uri;
+  mongooseConnection = await DB.connect(connectionString);
+  if (transactional) {
+    // @ts-ignore
+    //TODO this should be true from the configuration
+    mongooseConnection.replica = true;
+  }
   connected = true;
 };
 
 const testingDB: {
   mongodb: Db | null;
   dbName: string;
-  connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
+  connect: (
+    options?: { defaultTenant: boolean; transactional?: boolean } | undefined
+  ) => Promise<Connection>;
   disconnect: () => Promise<void>;
   id: (id?: string | undefined) => ObjectIdSchema;
   clear: (collections?: string[] | undefined) => Promise<void>;
@@ -80,11 +91,11 @@ const testingDB: {
 } = {
   mongodb: null,
   dbName: '',
-	
-  async connect(options = { defaultTenant: true }) {
+
+  async connect(options = { defaultTenant: true, transactional: false }) {
     if (!connected) {
       this.dbName = uniqueID();
-      await initMongoServer(this.dbName);
+      await initMongoServer(this.dbName, options.transactional);
       // mongo/mongoose types collisions
       //@ts-ignore
       mongodb = mongooseConnection.db;

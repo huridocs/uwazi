@@ -9,10 +9,10 @@ import { ExecutionOptions } from 'api/odm';
 
 async function addLanguage(language: LanguageSchema, options?: ExecutionOptions) {
   const newSettings = await settings.addLanguage(language, options);
-  /*const newTranslations = await translations.addLanguage(language.key, options);
+  const newTranslations = await translations.addLanguage(language.key, options);
   await entities.addLanguage(language.key);
-  await pages.addLanguage(language.key);*/
-  return { newSettings, newTranslations: null };
+  await pages.addLanguage(language.key);
+  return { newSettings, newTranslations };
 }
 
 export const Languages = {
