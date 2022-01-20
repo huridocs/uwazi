@@ -1,4 +1,4 @@
-import { Response } from 'puppeteer';
+import { HTTPResponse } from 'puppeteer';
 
 export const scrollTo = async (selector: string): Promise<void> => {
   await page.evaluate(str => document.querySelector(str)?.scrollIntoView(), selector);
@@ -15,5 +15,6 @@ export const clearInput = async (selector: string): Promise<void> => {
   await page.keyboard.press('Backspace');
 };
 
-export const waitForNavigation = async (action: Promise<void>): Promise<[void, Response]> =>
-  Promise.all([action, page.waitForNavigation()]);
+export const waitForNavigation = async (
+  action: Promise<void>
+): Promise<[void, HTTPResponse | null]> => Promise.all([action, page.waitForNavigation()]);
