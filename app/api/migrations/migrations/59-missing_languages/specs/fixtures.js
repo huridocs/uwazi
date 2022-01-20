@@ -488,6 +488,8 @@ const fixtures = {
       mongoLanguage: 'en',
       permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
     },
+    //intentional duplication to smoke test faulty behavior:
+    { ...EntityBluePrints.Complete, _id: db.id() },
   ],
 };
 fixtures.entities.push({

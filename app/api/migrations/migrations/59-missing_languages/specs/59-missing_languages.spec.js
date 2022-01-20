@@ -17,6 +17,10 @@ describe('migration missing_languages', () => {
     expect(migration.delta).toBe(59);
   });
 
+  // it('should ignore entities with no language', async () => {
+  //   // fail();
+  // });
+
   it('should create new entities to fill missing languages', async () => {
     // fail();
   });

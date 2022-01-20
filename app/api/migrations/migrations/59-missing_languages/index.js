@@ -1,31 +1,33 @@
 /* eslint-disable max-statements */
 
-const removeFromMappedSets = (missingMap, assignmentMap, key, item) => {
+const removeFromMappedSets = (missingMap, assignmentMap, completedSet, key, item) => {
   const set = missingMap.get(key);
   set.delete(item);
   if (set.size === 0) {
     missingMap.delete(key);
     assignmentMap.delete(key);
+    completedSet.add(key);
   }
 };
 
 const findMissing = async (db, expectedLanguages, defaultLanguage) => {
   const sharedIdToMissing = new Map();
   const sharedIdToAssigned = new Map();
+  const completed = new Set();
   const entities = db.collection('entities').find({}, { projection: { sharedId: 1, language: 1 } });
 
   await entities.forEach(entity => {
     const { sharedId, language } = entity;
-    if (expectedLanguages.has(language)) {
+    if (expectedLanguages.has(language) && !completed.has(sharedId)) {
       if (!sharedIdToAssigned.get(sharedId) || language === defaultLanguage) {
         sharedIdToAssigned.set(sharedId, language);
       }
 
       if (!sharedIdToMissing.has(sharedId)) {
         sharedIdToMissing.set(sharedId, new Set(expectedLanguages));
-        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, sharedId, language);
+        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, completed, sharedId, language);
       } else {
-        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, sharedId, language);
+        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, completed, sharedId, language);
       }
     }
   });
