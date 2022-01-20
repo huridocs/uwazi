@@ -63,7 +63,8 @@
     "lodash-es": "^4.17.21",
     "bl": "^4.0.3",
     "trim": "0.0.3",
-    "normalize-url": "6.0.1"
+    "normalize-url": "6.0.1",
+    "node-fetch": "2.6.5"
   },
   "dependencies": {
     "@babel/register": "7.11.5",
@@ -117,7 +118,7 @@
     "htmlparser2": "^3.9.2",
     "immutable": "^3.7.6",
     "is-reachable": "^5.1.1",
-    "isomorphic-fetch": "2.2.1",
+    "isomorphic-fetch": "3.0.0",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
     "json-schema-to-typescript": "^9.1.1",
