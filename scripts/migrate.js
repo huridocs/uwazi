@@ -1,4 +1,4 @@
-import { DB } from 'api/odm';
+import { DB } from '../app/api/odm';
 import { runMigration } from '../app/api/migrations/migrate';
 
 process.on('unhandledRejection', error => {
