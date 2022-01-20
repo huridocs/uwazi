@@ -14,6 +14,13 @@ async function addSupportingFile(filePath: string) {
   await uploadSupportingFileToEntity(filePath);
 }
 
+async function saveEntityAndClosePanel() {
+  await expect(page).toClick('button', { text: 'Save' });
+  await expect(page).toClick('.alert.alert-success');
+  await refreshIndex();
+  await expect(page).toClick('.is-active button.closeSidepanel');
+}
+
 const createEntityWithSupportingFiles = async (
   title: string,
   files: string[],
@@ -31,7 +38,7 @@ const createEntityWithSupportingFiles = async (
   await expect(page).toFill('.web-attachment-name', webAttachment.name);
   await expect(page).toClick('button', { text: 'Add resource' });
 
-  await expect(page).toClick('button', { text: 'Save' });
+  await saveEntityAndClosePanel();
 };
 
 describe('Entities', () => {
@@ -56,13 +63,12 @@ describe('Entities', () => {
     await expect(page).toClick('button', { text: 'Create entity' });
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
-    await expect(page).toClick('button', { text: 'Save' });
+    await saveEntityAndClosePanel();
   });
 
   it('Should create a new entity with attachments', async () => {
     await goToRestrictedEntities();
     await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
-    await refreshIndex();
     await expect(page).toClick('.item-document', {
       text: entityTitle,
     });
@@ -79,8 +85,7 @@ describe('Entities', () => {
       'input[name="library.sidepanel.metadata.attachments.2.originalname"]',
       'My PDF.pdf'
     );
-    await expect(page).toClick('button', { text: 'Save' });
-    await refreshIndex();
+    await saveEntityAndClosePanel();
     await expect(page).toClick('.item-document', {
       text: entityTitle,
     });
@@ -94,8 +99,7 @@ describe('Entities', () => {
     });
     await expect(page).toClick('button', { text: 'Edit' });
     await expect(page).toClick('.delete-supporting-file');
-    await expect(page).toClick('button', { text: 'Save' });
-    await refreshIndex();
+    await saveEntityAndClosePanel();
     await expect(page).toClick('.item-document', {
       text: entityTitle,
     });
