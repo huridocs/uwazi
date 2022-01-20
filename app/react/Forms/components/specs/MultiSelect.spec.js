@@ -35,54 +35,55 @@ describe('MultiSelect', () => {
     instance = component.instance();
   };
 
-  it('should render the checkboxes empty', () => {
+  it.each`
+    index | value              | state
+    ${0}  | ${'option1'}       | ${0}
+    ${1}  | ${'option2'}       | ${0}
+    ${2}  | ${undefined}       | ${0}
+    ${3}  | ${'group-option1'} | ${0}
+    ${4}  | ${'group-option2'} | ${0}
+  `('should render the checkboxes empty: $value', ({ index, value, state }) => {
     render();
     const optionElements = component.find('input[type="checkbox"]');
     expect(optionElements.length).toBe(5);
-    expect(optionElements.at(0).props().value).toBe('option1');
-    expect(optionElements.at(0).prop('data-state')).toBe(0);
-    expect(optionElements.at(1).props().value).toBe('option2');
-    expect(optionElements.at(1).prop('data-state')).toBe(0);
-    expect(optionElements.at(2).props().value).toBe(undefined);
-    expect(optionElements.at(2).prop('data-state')).toBe(0);
-    expect(optionElements.at(3).props().value).toBe('group-option1');
-    expect(optionElements.at(3).prop('data-state')).toBe(0);
-    expect(optionElements.at(4).props().value).toBe('group-option2');
-    expect(optionElements.at(4).prop('data-state')).toBe(0);
+    expect(optionElements.at(index).props().value).toBe(value);
+    expect(optionElements.at(index).prop('data-state')).toBe(state);
   });
 
-  it('should render the checkboxes partial group', () => {
+  it.each`
+    index | value              | state
+    ${0}  | ${undefined}       | ${1}
+    ${1}  | ${'group-option1'} | ${0}
+    ${2}  | ${'group-option2'} | ${2}
+    ${3}  | ${'option1'}       | ${0}
+    ${4}  | ${'option2'}       | ${0}
+  `('should render the checkboxes partial group: $value', ({ index, value, state }) => {
     props.value = ['group-option2'];
     render();
     const optionElements = component.find('input[type="checkbox"]');
     expect(optionElements.length).toBe(5);
-    // Group is hoisted.
-    expect(optionElements.at(0).props().value).toBe(undefined);
-    expect(optionElements.at(0).prop('data-state')).toBe(1);
-    expect(optionElements.at(1).props().value).toBe('group-option1');
-    expect(optionElements.at(1).prop('data-state')).toBe(0);
-    expect(optionElements.at(2).props().value).toBe('group-option2');
-    expect(optionElements.at(2).prop('data-state')).toBe(2);
-    expect(optionElements.at(3).props().value).toBe('option1');
-    expect(optionElements.at(3).prop('data-state')).toBe(0);
-    expect(optionElements.at(4).props().value).toBe('option2');
-    expect(optionElements.at(4).prop('data-state')).toBe(0);
+    expect(optionElements.at(index).props().value).toBe(value);
+    expect(optionElements.at(index).prop('data-state')).toBe(state);
   });
 
-  it('should render correctly when the selection is a proper group', () => {
-    props.value = ['Group'];
-    render();
-    const optionElements = component
-      .find('input[type="checkbox"]')
-      .filterWhere(e => [undefined, 'group-option1', 'group-option2'].includes(e.prop('value')));
-    // Group is hoisted.
-    expect(optionElements.at(0).props().value).toBe(undefined);
-    expect(optionElements.at(0).prop('data-state')).toBe(3);
-    expect(optionElements.at(1).props().value).toBe('group-option1');
-    expect(optionElements.at(1).prop('data-state')).toBe(0);
-    expect(optionElements.at(2).props().value).toBe('group-option2');
-    expect(optionElements.at(2).prop('data-state')).toBe(0);
-  });
+  it.each`
+    index | value              | state
+    ${0}  | ${undefined}       | ${3}
+    ${1}  | ${'group-option1'} | ${0}
+    ${2}  | ${'group-option2'} | ${0}
+    ${3}  | ${'option1'}       | ${0}
+    ${4}  | ${'option2'}       | ${0}
+  `(
+    'should render correctly when the selection is a proper group: $value',
+    ({ index, value, state }) => {
+      props.value = ['Group'];
+      render();
+      const optionElements = component.find('input[type="checkbox"]');
+      expect(optionElements.length).toBe(5);
+      expect(optionElements.at(index).props().value).toBe(value);
+      expect(optionElements.at(index).prop('data-state')).toBe(state);
+    }
+  );
 
   it('should not render aggregations on the groups when not defined', () => {
     delete props.options[2].results;
@@ -140,18 +141,41 @@ describe('MultiSelect', () => {
   });
 
   describe('checking a group', () => {
-    it('should modify all options of that group', () => {
-      render();
-      component
-        .find('.group-checkbox')
-        .first()
-        .simulate('change', { target: { checked: true, dataset: { state: '0' } } });
-      expect(props.onChange).toHaveBeenCalledWith(['group-option1', 'group-option2']);
-      component
-        .find('.group-checkbox')
-        .first()
-        .simulate('change', { target: { checked: false, dataset: { state: '2' } } });
-      expect(props.onChange).toHaveBeenCalledWith([]);
+    describe('when allowSelectGroup is set', () => {
+      it('should select the group', () => {
+        props.allowSelectGroup = true;
+        render();
+        component
+          .find('.group-checkbox')
+          .first()
+          .simulate('change', { target: { checked: true, dataset: { state: '0' } } });
+        expect(props.onChange).toHaveBeenCalledWith(['Group']);
+        component
+          .find('.group-checkbox')
+          .first()
+          .simulate('change', { target: { checked: false, dataset: { state: '3' } } });
+        expect(props.onChange).toHaveBeenCalledWith(['group-option1', 'group-option2']);
+        component
+          .find('.group-checkbox')
+          .first()
+          .simulate('change', { target: { checked: false, dataset: { state: '2' } } });
+        expect(props.onChange).toHaveBeenCalledWith([]);
+      });
+    });
+    describe('when allowSelectGroup is NOT set', () => {
+      it('should select all options of that group', () => {
+        render();
+        component
+          .find('.group-checkbox')
+          .first()
+          .simulate('change', { target: { checked: true, dataset: { state: '0' } } });
+        expect(props.onChange).toHaveBeenCalledWith(['group-option1', 'group-option2']);
+        component
+          .find('.group-checkbox')
+          .first()
+          .simulate('change', { target: { checked: false, dataset: { state: '2' } } });
+        expect(props.onChange).toHaveBeenCalledWith([]);
+      });
     });
   });
 
