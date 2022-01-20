@@ -196,4 +196,3 @@ it.todo('Allow search query to have a language instead of header Content-Languag
 it.todo('Geolocation');
 
 it.todo('Aggregations');
-
