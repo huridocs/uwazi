@@ -7,6 +7,7 @@ import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManag
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
+import { EnforcedWithId } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import filesModel from 'api/files/filesModel';
@@ -22,7 +23,6 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { SegmentationType } from 'shared/types/segmentationType';
 import { FileType } from 'shared/types/fileType';
 import { IXModelsModel } from './IXModelsModel';
-import { EnforcedWithId } from 'api/odm';
 
 interface FileWithAggregation extends FileType {
   filename: string;
@@ -143,18 +143,18 @@ class InformationExtraction {
     return entity;
   };
 
-  _getEntityFromSuggestion = async (rawSuggestion: RawSuggestion): Promise<void | EntitySchema> => {
+  _getEntityFromSuggestion = async (rawSuggestion: RawSuggestion): Promise<null | EntitySchema> => {
     const [segmentation] = await SegmentationModel.get({
       xmlname: rawSuggestion.xml_file_name,
     });
 
     if (!segmentation) {
-      return;
+      return null;
     }
     const [file] = await filesModel.get({ _id: segmentation.fileID });
 
     if (!file) {
-      return;
+      return null;
     }
 
     return this._getEntityFromFile(file);
@@ -315,8 +315,21 @@ class InformationExtraction {
         {
           $lookup: {
             from: 'ixsuggestions',
-            localField: 'entity',
-            foreignField: 'entityId',
+            let: {
+              entity: '$entity',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$$entity', '$entityId'] },
+                      { $eq: ['$propertyName', property] },
+                    ],
+                  },
+                },
+              },
+            ],
             as: 'suggestions',
           },
         },
@@ -330,7 +343,6 @@ class InformationExtraction {
               },
               {
                 'suggestions.date': { $lte: currentModel.creationDate },
-                'suggestions.propertyName': property,
               },
             ],
           },
