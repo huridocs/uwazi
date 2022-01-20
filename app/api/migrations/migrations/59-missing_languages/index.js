@@ -1,3 +1,50 @@
+/* eslint-disable max-statements */
+
+const removeFromMappedSets = (missingMap, assignmentMap, key, item) => {
+  const set = missingMap.get(key);
+  set.delete(item);
+  if (set.size === 0) {
+    missingMap.delete(key);
+    assignmentMap.delete(key);
+  }
+};
+
+const findMissing = async (db, expectedLanguages, defaultLanguage) => {
+  const sharedIdToMissing = new Map();
+  const sharedIdToAssigned = new Map();
+  const entities = db.collection('entities').find({}, { projection: { sharedId: 1, language: 1 } });
+
+  await entities.forEach(entity => {
+    const { sharedId, language } = entity;
+    if (expectedLanguages.has(language)) {
+      if (!sharedIdToAssigned.get(sharedId) || language === defaultLanguage) {
+        sharedIdToAssigned.set(sharedId, language);
+      }
+
+      if (!sharedIdToMissing.has(sharedId)) {
+        sharedIdToMissing.set(sharedId, new Set(expectedLanguages));
+        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, sharedId, language);
+      } else {
+        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, sharedId, language);
+      }
+    }
+  });
+
+  return { sharedIdToMissing, sharedIdToAssigned };
+};
+
+const flipStringMap = map => {
+  const resultMap = new Map();
+  map.forEach((value, key) => {
+    if (!resultMap.has(value)) {
+      resultMap.set(value, new Set([key]));
+    } else {
+      resultMap.get(value).add(key);
+    }
+  });
+  return resultMap;
+};
+
 const migration = {
   delta: 59,
 
@@ -9,8 +56,23 @@ const migration = {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    process.stdout.write(`DB: ${db}\n`);
+    const settings = await db.collection('settings').findOne({});
+    const defaultLanguage = settings.languages.find(l => l.default).key;
+    const expectedLanguages = new Set(settings.languages.map(l => l.key));
+
+    const { sharedIdToMissing, sharedIdToAssigned } = await findMissing(
+      db,
+      expectedLanguages,
+      defaultLanguage
+    );
+
+    console.log(sharedIdToMissing);
+    console.log(sharedIdToAssigned);
+
+    const assignedToSharedId = flipStringMap(sharedIdToAssigned);
+
+    console.log(assignedToSharedId);
   },
 };
 
-export { migration };
+export default migration;
