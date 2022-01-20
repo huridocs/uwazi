@@ -5,35 +5,31 @@ import { config } from 'api/config';
 import { errorLog } from 'api/log';
 import { migrator } from './migrator';
 
-process.on('unhandledRejection', error => {
-  throw error;
-});
+export const runMigration = async () => {
+  let auth: ConnectionOptions;
 
-let auth: ConnectionOptions;
+  if (process.env.DBUSER) {
+    auth = {
+      user: process.env.DBUSER,
+      pass: process.env.DBPASS,
+    };
+  }
 
-if (process.env.DBUSER) {
-  auth = {
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
+  try {
+    await DB.connect(config.DBHOST, auth);
+    const { db } = DB.connectionForDB(config.defaultTenant.dbName);
+    let migrations: any[] = [];
+    await tenants.run(async () => {
+      migrations = await migrator.migrate(db);
+    });
+    //@ts-ignore
+    errorLog.closeGraylog();
+    await DB.disconnect();
 
-export const run = async () => {
-  await DB.connect(config.DBHOST, auth);
-  const { db } = DB.connectionForDB(config.defaultTenant.dbName);
-  let migrations: any[] = [];
-  await tenants.run(async () => {
-    migrations = await migrator.migrate(db);
-  });
-  //@ts-ignore
-  errorLog.closeGraylog();
-  await DB.disconnect();
-
-  const reindexNeeded = migrations.some(migration => migration.reindex === true);
-  process.stdout.write(JSON.stringify({ reindex: reindexNeeded }));
+    const reindexNeeded = migrations.some(migration => migration.reindex === true);
+    process.stdout.write(JSON.stringify({ reindex: reindexNeeded }));
+  } catch (error) {
+    await DB.disconnect();
+    throw error;
+  }
 };
-
-run().catch(async e => {
-  await DB.disconnect();
-  throw e;
-});

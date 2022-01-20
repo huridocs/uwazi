@@ -1,7 +1,7 @@
 import testingDB from 'api/utils/testing_db';
 import { migrator } from 'api/migrations/migrator';
 import path from 'path';
-import { run } from 'api/migrations/migrate';
+import { runMigration } from 'api/migrations/migrate';
 import { Connection } from 'mongoose';
 import { DB } from 'api/odm';
 
@@ -12,6 +12,7 @@ describe('migrate', () => {
   beforeAll(async () => {
     connection = await testingDB.connect();
     jest.spyOn(DB, 'connectionForDB').mockReturnValue(connection);
+    jest.spyOn(DB, 'connect').mockResolvedValue(Promise.resolve(connection));
     jest.spyOn(DB, 'disconnect').mockResolvedValue(Promise.resolve());
   });
 
@@ -33,7 +34,7 @@ describe('migrate', () => {
     it('should call migrator migrate', async () => {
       const migrateSpy = jest.spyOn(migrator, 'migrate');
 
-      await run();
+      await runMigration();
 
       expect(migrateSpy).toBeCalledWith(connection.db);
     });
@@ -64,7 +65,7 @@ describe('migrate', () => {
         },
       ]);
 
-      await run();
+      await runMigration();
 
       expect(stdoutSpy).toBeCalledWith('{"reindex":false}');
     });
@@ -96,7 +97,7 @@ describe('migrate', () => {
         },
       ]);
 
-      await run();
+      await runMigration();
 
       expect(stdoutSpy).toBeCalledWith('{"reindex":true}');
     });
