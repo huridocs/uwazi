@@ -189,7 +189,7 @@ describe('Metadata filters', () => {
 
 it.todo('Prepare a migration just with reindex');
 
-it.todo('Prepare a migration just with reindex');
+it.todo('Snippets for non fulltext texts');
 
 it.todo('Allow search query to have a language instead of header Content-Language');
 
