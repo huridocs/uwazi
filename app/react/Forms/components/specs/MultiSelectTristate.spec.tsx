@@ -40,15 +40,15 @@ describe('MultiSelectTristate', () => {
     const optionElements = component.find('input[type="checkbox"]');
     expect(optionElements.length).toBe(5);
     expect(optionElements.at(0).props().value).toBe('option1');
-    expect(optionElements.at(0).hasClass('partial')).toBe(false);
+    expect(optionElements.at(0).prop('data-state')).toBe(0);
     expect(optionElements.at(1).props().value).toBe('option2');
-    expect(optionElements.at(1).hasClass('partial')).toBe(false);
+    expect(optionElements.at(1).prop('data-state')).toBe(0);
     expect(optionElements.at(2).props().value).toBe(undefined);
-    expect(optionElements.at(2).hasClass('partial')).toBe(false);
+    expect(optionElements.at(2).prop('data-state')).toBe(0);
     expect(optionElements.at(3).props().value).toBe('group-option1');
-    expect(optionElements.at(3).hasClass('partial')).toBe(false);
+    expect(optionElements.at(3).prop('data-state')).toBe(0);
     expect(optionElements.at(4).props().value).toBe('group-option2');
-    expect(optionElements.at(4).hasClass('partial')).toBe(false);
+    expect(optionElements.at(4).prop('data-state')).toBe(0);
   });
 
   it('should render the with partial', () => {
@@ -63,15 +63,15 @@ describe('MultiSelectTristate', () => {
     expect(optionElements.length).toBe(5);
     // Option2 and Group are hoisted.
     expect(optionElements.at(0).props().value).toBe('option2');
-    expect(optionElements.at(0).hasClass('partial')).toBe(false);
+    expect(optionElements.at(0).prop('data-state')).not.toBe(1);
     expect(optionElements.at(1).props().value).toBe(undefined);
-    expect(optionElements.at(1).hasClass('partial')).toBe(true);
+    expect(optionElements.at(1).prop('data-state')).toBe(1);
     expect(optionElements.at(2).props().value).toBe('group-option1');
-    expect(optionElements.at(2).hasClass('partial')).toBe(true);
+    expect(optionElements.at(2).prop('data-state')).toBe(1);
     expect(optionElements.at(3).props().value).toBe('group-option2');
-    expect(optionElements.at(3).hasClass('partial')).toBe(false);
+    expect(optionElements.at(3).prop('data-state')).not.toBe(1);
     expect(optionElements.at(4).props().value).toBe('option1');
-    expect(optionElements.at(4).hasClass('partial')).toBe(false);
+    expect(optionElements.at(4).prop('data-state')).not.toBe(1);
   });
 
   describe('when checking an option on empty state', () => {
@@ -193,7 +193,7 @@ describe('MultiSelectTristate', () => {
       component
         .find('.group-checkbox')
         .first()
-        .simulate('change', { target: { checked: true } });
+        .simulate('change', { target: { checked: true, dataset: { state: '0' } } });
       expect(props.onChange).toHaveBeenCalledWith({
         added: ['group-option1', 'group-option2'],
         removed: [],
@@ -203,7 +203,7 @@ describe('MultiSelectTristate', () => {
       component
         .find('.group-checkbox')
         .first()
-        .simulate('change', { target: { checked: false } });
+        .simulate('change', { target: { checked: false, dataset: { state: '2' } } });
       expect(props.onChange).toHaveBeenCalledWith({
         added: [],
         removed: [],
@@ -219,11 +219,11 @@ describe('MultiSelectTristate', () => {
         originalPartial: [],
       };
       render();
-      expect(component.find('.group-checkbox').first().hasClass('partial')).toBe(true);
+      expect(component.find('.group-checkbox').first().prop('data-state')).toBe(1);
       component
         .find('.group-checkbox')
         .first()
-        .simulate('change', { target: { checked: true } });
+        .simulate('change', { target: { checked: true, dataset: { state: '1' } } });
       expect(props.onChange).toHaveBeenCalledWith({
         added: ['group-option2'],
         removed: [],
@@ -233,7 +233,7 @@ describe('MultiSelectTristate', () => {
       component
         .find('.group-checkbox')
         .first()
-        .simulate('change', { target: { checked: false } });
+        .simulate('change', { target: { checked: false, dataset: { state: '2' } } });
       expect(props.onChange).toHaveBeenCalledWith({
         added: [],
         removed: ['group-option1'],
