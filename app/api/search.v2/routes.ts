@@ -42,6 +42,18 @@ const nextPaginationLink = (queryLimit: Page['limit'], currentOffset: number, la
 const lastPaginationLink = (queryLimit: Page['limit'], offset: number) =>
   queryLimit ? link(queryLimit, offset) : undefined;
 
+const pagination = (currentUrl: string, totalResults: number, page?: Page) => {
+  const currentOffset = page?.offset || 0;
+  const lastOffset = page?.limit ? totalResults - page.limit : 0;
+  return {
+    self: currentUrl,
+    first: page?.limit ? currentUrl : undefined,
+    prev: prevPaginationLink(page?.limit, currentOffset),
+    next: nextPaginationLink(page?.limit, currentOffset, lastOffset),
+    last: lastPaginationLink(page?.limit, lastOffset),
+  };
+};
+
 const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
@@ -53,17 +65,9 @@ const searchRoutes = (app: Application) => {
     async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
       const { query, language, url } = req;
       const response = await elastic.search({ body: await buildQuery(query, language) });
-      const currentOffset = query.page?.offset || 0;
-      const lastOffset = query.page?.limit ? response.body.hits.total.value - query.page.limit : 0;
       res.json({
         data: mapResults(response.body, query),
-        links: {
-          self: url,
-          first: query.page?.limit ? url : undefined,
-          prev: prevPaginationLink(query.page?.limit, currentOffset),
-          next: nextPaginationLink(query.page?.limit, currentOffset, lastOffset),
-          last: lastPaginationLink(query.page?.limit, lastOffset),
-        },
+        links: pagination(url, response.body.hits.total.value, query.page),
       });
     }
   );

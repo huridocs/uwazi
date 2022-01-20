@@ -63,19 +63,13 @@ describe('Pagination', () => {
       .query({ page: { limit: 2 } })
       .expect(200);
 
-    ({ body } = await request(app)
-      .get(body.links.next)
-      .expect(200));
+    ({ body } = await request(app).get(body.links.next).expect(200));
     expect(body.data).toMatchObject([{ title: 'Third' }, { title: 'Fourth' }]);
 
-    ({ body } = await request(app)
-      .get(body.links.next)
-      .expect(200));
+    ({ body } = await request(app).get(body.links.next).expect(200));
     expect(body.data).toMatchObject([{ title: 'Fifth' }, { title: 'Sixth' }]);
 
-    ({ body } = await request(app)
-      .get(body.links.prev)
-      .expect(200));
+    ({ body } = await request(app).get(body.links.prev).expect(200));
     expect(body.data).toMatchObject([{ title: 'Third' }, { title: 'Fourth' }]);
   });
 
@@ -87,9 +81,7 @@ describe('Pagination', () => {
 
     expect(body.links.prev).toBeUndefined();
 
-    ({ body } = await request(app)
-      .get(body.links.last)
-      .expect(200));
+    ({ body } = await request(app).get(body.links.last).expect(200));
 
     expect(body.data).toMatchObject([{ title: 'Fifth' }, { title: 'Sixth' }]);
     expect(body.links.next).toBeUndefined();

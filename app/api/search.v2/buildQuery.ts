@@ -1,18 +1,15 @@
-import { RangeQuery, AdvancedQuery, SearchQuery } from 'shared/types/SearchQueryType';
+import { RangeFilter, CompoundFilter, SearchQuery } from 'shared/types/SearchQueryType';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
 import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
 
-const isRange = (
-  range: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined
-): range is RangeQuery =>
-  typeof range === 'object' &&
-  (Object.keys(range).includes('from') || Object.keys(range).includes('to'));
+type Filter = (RangeFilter | CompoundFilter | string | number | boolean) | undefined;
 
-const isAdvanced = (
-  filterValue: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined
-): filterValue is AdvancedQuery =>
-  typeof filterValue === 'object' && Object.keys(filterValue).includes('values');
+const isRange = (range: Filter): range is RangeFilter =>
+  typeof range === 'object' && (range.hasOwnProperty('from') || range.hasOwnProperty('to'));
+
+const isCompound = (filterValue: Filter): filterValue is CompoundFilter =>
+  typeof filterValue === 'object' && filterValue.hasOwnProperty('values');
 
 const metadataFilters = (query: SearchQuery) =>
   Object.keys(query.filter || {})
@@ -26,7 +23,7 @@ const metadataFilters = (query: SearchQuery) =>
       }
 
       let queryString = filterValue;
-      if (isAdvanced(filterValue)) {
+      if (isCompound(filterValue)) {
         const operator = filterValue.operator === 'AND' ? ' + ' : ' | ';
         queryString = filterValue.values?.join(operator);
       }
@@ -75,25 +72,26 @@ const termsFilter = (query: SearchQuery, propertyName: string) =>
 
 const defaultFields = ['title', 'template', 'sharedId'];
 
+const buildSortQuery = (query: SearchQuery) => {
+  if (!query.sort) {
+    return [];
+  }
+
+  const isDescending = query.sort.startsWith('-');
+  const order = isDescending ? 'desc' : 'asc';
+  const sortProp = isDescending ? query.sort.substring(1) : query.sort;
+
+  if (sortProp.startsWith('metadata.')) {
+    const labelPriority = { [`${sortProp}.label.sort`]: { unmapped_type: 'keyword', order } };
+    const valuePriority = { [`${sortProp}.value.sort`]: { order } };
+    return [labelPriority, valuePriority];
+  }
+
+  return [{ [`${sortProp}.sort`]: order }];
+};
+
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
   const { searchString, fullTextSearchString, searchMethod } = await extractSearchParams(query);
-
-  let sort = [];
-  if (query.sort) {
-    let order = 'asc';
-    let sortProp = query.sort;
-    if (query.sort.startsWith('-')) {
-      order = 'desc';
-      sortProp = sortProp.substring(1);
-    }
-    sort = [{ [`${sortProp}.sort`]: order }];
-    if (sortProp.startsWith('metadata.')) {
-      sort = [
-        { [`${sortProp}.label.sort`]: { unmapped_type: 'keyword', order } },
-        { [`${sortProp}.value.sort`]: { order } },
-      ];
-    }
-  }
 
   return {
     _source: {
@@ -115,7 +113,7 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
         ],
       },
     },
-    sort,
+    sort: buildSortQuery(query),
     from: query.page?.offset || 0,
     size: query.page?.limit || 30,
   };

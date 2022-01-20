@@ -105,10 +105,7 @@ describe('Sorting', () => {
       filter: { template: factory.id('templateA').toString() },
     };
 
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
+    const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
 
     expect(body.data).toMatchObject([
       { title: 'A First title' },
@@ -125,10 +122,7 @@ describe('Sorting', () => {
       filter: { template: factory.id('templateA').toString() },
     };
 
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
+    const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
 
     expect(body.data).toMatchObject([
       { metadata: { textProperty: [{ value: 'D Last property' }] } },
@@ -145,10 +139,7 @@ describe('Sorting', () => {
       filter: { template: factory.id('templateA').toString() },
     };
 
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
+    const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
 
     expect(body.data).toMatchObject([
       { metadata: { numberProperty: [{ value: -10 }] } },
@@ -165,10 +156,7 @@ describe('Sorting', () => {
       filter: { template: factory.id('templateA').toString() },
     };
 
-    const { body } = await request(app)
-      .get('/api/v2/entities')
-      .query(query)
-      .expect(200);
+    const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
 
     expect(body.data).toMatchObject([
       { metadata: { selectProperty: [{ label: 'a First select' }] } },

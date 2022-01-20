@@ -7,14 +7,14 @@ export const PageSchema = {
   properties: { limit: { type: 'number' }, offset: { type: 'number' } },
 };
 
-export const RangeQuerySchema = {
-  title: 'RangeQuery',
+export const RangeFilterSchema = {
+  title: 'RangeFilter',
   additionalProperties: false,
   properties: { from: { type: 'number' }, to: { type: 'number' } },
 };
 
-export const AdvancedQuerySchema = {
-  title: 'AdvancedQuery',
+export const CompoundFilterSchema = {
+  title: 'CompoundFilter',
   additionalProperties: false,
   properties: {
     values: { type: 'array', items: { type: 'string' } },
@@ -31,8 +31,8 @@ export const SearchQuerySchema = {
       type: 'object',
       additionalProperties: {
         anyOf: [
-          RangeQuerySchema,
-          AdvancedQuerySchema,
+          RangeFilterSchema,
+          CompoundFilterSchema,
           { type: 'string' },
           { type: 'number' },
           { type: 'boolean' },

@@ -6,12 +6,12 @@ export interface Page {
   offset?: number;
 }
 
-export interface RangeQuery {
+export interface RangeFilter {
   from?: number;
   to?: number;
 }
 
-export interface AdvancedQuery {
+export interface CompoundFilter {
   values?: string[];
   operator?: 'AND' | 'OR';
 }
@@ -22,7 +22,7 @@ export interface SearchQuery {
     searchString?: string;
     sharedId?: string;
     published?: boolean;
-    [k: string]: (RangeQuery | AdvancedQuery | string | number | boolean) | undefined;
+    [k: string]: (RangeFilter | CompoundFilter | string | number | boolean) | undefined;
   };
   sort?: string;
   fields?: string[];
