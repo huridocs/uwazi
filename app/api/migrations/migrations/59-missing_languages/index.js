@@ -55,6 +55,8 @@ const migration = {
   description:
     'Migrate missing languages per sharedId, according to the expected languages in the collection.',
 
+  reindex: false,
+
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
@@ -68,12 +70,13 @@ const migration = {
       defaultLanguage
     );
 
-    console.log(sharedIdToMissing);
+    console.log(sharedIdToMissing.size);
     console.log(sharedIdToAssigned);
 
     const assignedToSharedId = flipStringMap(sharedIdToAssigned);
 
     console.log(assignedToSharedId);
+    this.reindex = Boolean(sharedIdToAssigned.size);
   },
 };
 
