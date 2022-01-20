@@ -1,9 +1,10 @@
 import url from 'url';
 
 import { RawEntity } from 'api/csv/entityRow';
-import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
+import moment from 'moment';
 import generatedid from './typeParsers/generatedid';
 import geolocation from './typeParsers/geolocation';
 import multiselect from './typeParsers/multiselect';
@@ -39,10 +40,22 @@ export default {
     return Number.isNaN(Number(value)) ? [{ value }] : [{ value: Number(value) }];
   },
 
-  async date(entityToImport: RawEntity, property: PropertySchema): Promise<MetadataObjectSchema[]> {
-    return [
-      { value: new Date(`${entityToImport[ensure<string>(property.name)]} UTC`).getTime() / 1000 },
+  async date(
+    entityToImport: RawEntity,
+    property: PropertySchema,
+    dateFormat: string
+  ): Promise<MetadataObjectSchema[]> {
+    const allowedFormats = [
+      dateFormat.toUpperCase(),
+      'LL',
+      'YYYY MM DD',
+      'YYYY/MM/DD',
+      'YYYY-MM-DD',
+      'YYYY',
     ];
+    const date = entityToImport[ensure<string>(property.name)];
+
+    return [{ value: moment.utc(date, allowedFormats).unix() }];
   },
 
   async link(
