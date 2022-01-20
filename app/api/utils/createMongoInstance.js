@@ -1,5 +1,4 @@
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { MongoMemoryReplSet } from 'mongodb-memory-server-core';
+import { MongoMemoryServer, MongoMemoryReplSet } from 'mongodb-memory-server';
 
 //eslint-disable-next-line consistent-return
 export const createMongoInstance = async (dbName = '', transactional = false) => {
