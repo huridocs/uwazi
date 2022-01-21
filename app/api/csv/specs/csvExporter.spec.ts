@@ -447,7 +447,7 @@ describe('csvExporter', () => {
       expect(instance).toBeInstanceOf(CSVExporter);
     });
 
-    it('should export a correct csv content', async done => {
+    it('should export a correct csv content', done => {
       const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
       exporter
