@@ -23,10 +23,10 @@ jobs:
           - 27017/tcp
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 14.6.x
+      - name: Use Node.js 14.18.3
         uses: actions/setup-node@v1
         with:
-          node-version: '14.6.x'
+          node-version: '14.18.3'
       - name: Cache node modules
         uses: actions/cache@v2
         with:
