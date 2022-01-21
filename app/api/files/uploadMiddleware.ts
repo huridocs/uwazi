@@ -27,7 +27,7 @@ const singleUpload =
   (filePath?: pathFunction, storage = defaultStorage) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         multer({ storage }).single('file')(req, res, err => {
           if (!err) resolve();
           reject(err);
@@ -45,7 +45,7 @@ const singleUpload =
 
 const multipleUpload = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       multer().any()(req, res, err => {
         if (!err) resolve();
         reject(err);
