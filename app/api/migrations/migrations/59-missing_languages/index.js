@@ -70,13 +70,41 @@ const migration = {
       defaultLanguage
     );
 
-    console.log(sharedIdToMissing.size);
-    console.log(sharedIdToAssigned);
+    const assignedToSharedId = Array.from(flipStringMap(sharedIdToAssigned).entries());
 
-    const assignedToSharedId = flipStringMap(sharedIdToAssigned);
-
-    console.log(assignedToSharedId);
     this.reindex = Boolean(sharedIdToAssigned.size);
+
+    const newEntities = [];
+
+    for (let i = 0; i < assignedToSharedId.length; i += 1) {
+      const assignedLanguage = assignedToSharedId[i][0];
+      const sharedIds = Array.from(assignedToSharedId[i][1]);
+      console.log(assignedLanguage);
+      console.log(sharedIds);
+
+      const assignedEntities = db
+        .collection('entities')
+        .find({ language: assignedLanguage, sharedId: { $in: sharedIds } });
+      // eslint-disable-next-line no-await-in-loop
+      await assignedEntities.forEach(entity => {
+        const sharedId = entity.sharedId;
+        const newLanguages = Array.from(sharedIdToMissing.get(sharedId));
+        newLanguages.forEach(language => {
+          const copy = { ...entity, language, mongoLanguage: language };
+          delete copy._id;
+          newEntities.push(copy);
+        });
+      });
+    }
+
+    if (newEntities.length > 0) {
+      await db.collection('entities').insert(newEntities);
+    }
+
+    // console.log(newEntities);
+    console.log(sharedIdToMissing);
+    // console.log(sharedIdToAssigned);
+    // console.log(assignedToSharedId);
   },
 };
 

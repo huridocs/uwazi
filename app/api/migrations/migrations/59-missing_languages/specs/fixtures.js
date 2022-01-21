@@ -134,6 +134,15 @@ const EntityBluePrints = {
     mongoLanguage: 'pt',
     permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
   },
+  NoLanguage: {
+    title: 'FaultyEntityWithoutLanguage',
+    template: TemplateBluePrints.ThesauriRelatedProperties._id,
+    user: UserBluePrints.admin._id,
+    creationDate: 6,
+    published: false,
+    editDate: 7,
+    sharedId: 'faulty_sharedId',
+  },
 };
 
 const fixtures = {
@@ -488,6 +497,7 @@ const fixtures = {
       mongoLanguage: 'en',
       permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
     },
+    { ...EntityBluePrints.NoLanguage },
     //intentional duplication to smoke test faulty behavior:
     { ...EntityBluePrints.Complete, _id: db.id() },
   ],
@@ -606,14 +616,5 @@ fixtures.entities.push({
   mongoLanguage: 'pt',
   permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
 });
-fixtures.entities.push({
-  title: 'FaultyEntityWithoutLanguage',
-  template: TemplateBluePrints.ThesauriRelatedProperties._id,
-  user: UserBluePrints.admin._id,
-  creationDate: 6,
-  published: false,
-  editDate: 7,
-  sharedId: 'faulty_sharedId',
-});
 
-export { fixtures };
+export { fixtures, EntityBluePrints };
