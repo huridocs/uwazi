@@ -284,7 +284,7 @@ describe('entities', () => {
       });
     });
 
-    it('should ignore the permissions parameter', () => {
+    it('should ignore the permissions parameter', async () => {
       const doc = {
         _id: unpublishedDocId,
         sharedId: 'other',
@@ -292,12 +292,12 @@ describe('entities', () => {
         permissions: [],
       };
 
-      entities.save(doc, { language: 'en' }).then(updatedDoc => {
-        expect(updatedDoc.permissions).toEqual([
-          expect.objectContaining({ refId: 'user1' }),
-          expect.objectContaining({ refId: 'user2' }),
-        ]);
-      });
+      const updatedDoc = await entities.save(doc, { language: 'en' });
+
+      expect(updatedDoc.permissions).toEqual([
+        expect.objectContaining({ refId: 'user1' }),
+        expect.objectContaining({ refId: 'user2' }),
+      ]);
     });
 
     describe('when generatedToc is undefined', () => {
