@@ -151,8 +151,8 @@ describe('Permissions filters', () => {
   describe('type aggregations based on read access to entities', () => {
     it.each`
       user                | template1Count | template2Count | template3Count
-      ${users.user1}      | ${2}           | ${1}           | ${0}
-      ${users.user2}      | ${1}           | ${0}           | ${1}
+      ${users.user1}      | ${2}           | ${1}           | ${undefined}
+      ${users.user2}      | ${1}           | ${undefined}   | ${1}
       ${user3WithGroups}  | ${2}           | ${1}           | ${1}
       ${users.editorUser} | ${2}           | ${1}           | ${1}
     `(
