@@ -21,6 +21,9 @@ export async function displayGraph() {
   //waits until the target is available [see browser.targets] this opens on another pane
   const graphsPageTarget = await browser.waitForTarget(target => target.url().includes(pageUrl));
   const graphsPage = await graphsPageTarget.page();
+  if (graphsPage === null) {
+    throw TypeError('graphsPage should not be null ');
+  }
   // wait for the chart visualization animations to end
   await graphsPage.waitFor(4000);
   return graphsPage;
