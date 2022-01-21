@@ -33,7 +33,7 @@ export default function (zipFile: string) {
                 found = true;
                 zipfile.openReadStream(entry, (error, readStream) => {
                   if (error) reject(error);
-                  resolve(readStream);
+                  resolve(readStream || null);
                 });
                 zipfile.close();
                 return;
