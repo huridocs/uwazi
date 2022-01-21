@@ -135,9 +135,34 @@ describe('migration missing_languages', () => {
     ).toMatchObject(EntityBluePrints.MissingTwo.metadata);
   });
 
-  // it('should translate thesauri related (select, multiselect) properties', async () => {
-  //   fail();
-  // });
+  it('should translate thesauri related (select, multiselect) properties', async () => {
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingTwoSelects.sharedId, language: 'en' })
+      ).metadata
+    ).toMatchObject({
+      select: [{ value: 'BId', label: 'B' }],
+      multi_select: [
+        { value: 'AId', label: 'A' },
+        { value: 'CId', label: 'C' },
+      ],
+    });
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingTwoSelects.sharedId, language: 'es' })
+      ).metadata
+    ).toMatchObject({
+      select: [{ value: 'BId', label: 'B_es' }],
+      multi_select: [
+        { value: 'AId', label: 'A_es' },
+        { value: 'CId', label: 'C_es' },
+      ],
+    });
+  });
 
   // it('should copy non-inherited relationship fields', async () => {
   //   fail();

@@ -290,12 +290,14 @@ const fixtures = {
           label: 'Select',
           type: 'select',
           name: 'select',
+          content: letterThesaurusId.toString(),
         },
         {
           _id: PropertyIds.multiselect,
           label: 'Multi Select',
           type: 'multiselect',
           name: 'multi_select',
+          content: letterThesaurusId.toString(),
         },
       ],
       commonProperties: [

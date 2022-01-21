@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { translator } from './translator.js';
 
 const removeFromMappedSets = (missingMap, assignmentMap, completedSet, key, item) => {
   const set = missingMap.get(key);
@@ -10,7 +11,11 @@ const removeFromMappedSets = (missingMap, assignmentMap, completedSet, key, item
   }
 };
 
-const findMissing = async (db, expectedLanguages, defaultLanguage) => {
+const findMissing = async db => {
+  const settings = await db.collection('settings').findOne({});
+  const defaultLanguage = settings.languages.find(l => l.default).key;
+  const expectedLanguages = new Set(settings.languages.map(l => l.key));
+
   const sharedIdToMissing = new Map();
   const sharedIdToAssigned = new Map();
   const completed = new Set();
@@ -60,37 +65,36 @@ const migration = {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    const settings = await db.collection('settings').findOne({});
-    const defaultLanguage = settings.languages.find(l => l.default).key;
-    const expectedLanguages = new Set(settings.languages.map(l => l.key));
-
-    const { sharedIdToMissing, sharedIdToAssigned } = await findMissing(
-      db,
-      expectedLanguages,
-      defaultLanguage
-    );
-
-    const assignedToSharedId = Array.from(flipStringMap(sharedIdToAssigned).entries());
+    const { sharedIdToMissing, sharedIdToAssigned } = await findMissing(db);
 
     this.reindex = Boolean(sharedIdToAssigned.size);
+    if (!this.reindex) {
+      return;
+    }
+
+    const assignedToSharedId = Array.from(flipStringMap(sharedIdToAssigned).entries());
+    await translator.build(db);
 
     const newEntities = [];
 
     for (let i = 0; i < assignedToSharedId.length; i += 1) {
       const assignedLanguage = assignedToSharedId[i][0];
       const sharedIds = Array.from(assignedToSharedId[i][1]);
-      console.log(assignedLanguage);
-      console.log(sharedIds);
 
       const assignedEntities = db
         .collection('entities')
         .find({ language: assignedLanguage, sharedId: { $in: sharedIds } });
       // eslint-disable-next-line no-await-in-loop
       await assignedEntities.forEach(entity => {
-        const sharedId = entity.sharedId;
+        const { sharedId } = entity;
         const newLanguages = Array.from(sharedIdToMissing.get(sharedId));
         newLanguages.forEach(language => {
-          const copy = { ...entity, language, mongoLanguage: language };
+          const copy = {
+            ...entity,
+            language,
+            mongoLanguage: language,
+            metadata: translator.translateMetadata(entity.metadata, language),
+          };
           delete copy._id;
           newEntities.push(copy);
         });
@@ -98,11 +102,11 @@ const migration = {
     }
 
     if (newEntities.length > 0) {
-      await db.collection('entities').insert(newEntities);
+      await db.collection('entities').insertMany(newEntities);
     }
 
     // console.log(newEntities);
-    console.log(sharedIdToMissing);
+    // console.log(sharedIdToMissing);
     // console.log(sharedIdToAssigned);
     // console.log(assignedToSharedId);
   },
