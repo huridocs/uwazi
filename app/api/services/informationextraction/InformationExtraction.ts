@@ -37,6 +37,7 @@ type RawSuggestion = {
   xml_file_name: string;
   text: string;
   segment_text: string;
+  page: string;
   /* eslint-enable camelcase */
 };
 
@@ -209,6 +210,7 @@ class InformationExtraction {
           segment: rawSuggestion.segment_text,
           status: 'ready',
           date: new Date().getTime(),
+          ...(rawSuggestion.page ? { page: parseInt(rawSuggestion.page, 10) } : {}),
         };
         return IXSuggestionsModel.save(suggestion);
       })

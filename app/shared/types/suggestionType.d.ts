@@ -10,7 +10,7 @@ export interface IXSuggestionType {
   suggestedValue: PropertyValueSchema;
   segment: string;
   language: string;
-  page: number;
+  page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date?: number;
 }
@@ -26,7 +26,7 @@ export interface EntitySuggestionType {
   segment: string;
   language: string;
   state: 'Empty' | 'Matching' | 'Pending';
-  page: number;
+  page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
 }
