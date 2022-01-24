@@ -64,7 +64,7 @@
     "bl": "^4.0.3",
     "trim": "0.0.3",
     "normalize-url": "6.0.1",
-    "node-fetch": "2.6.5"
+    "node-fetch": "2.6.7"
   },
   "dependencies": {
     "@babel/register": "7.11.5",
