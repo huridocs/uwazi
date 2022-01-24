@@ -66,7 +66,6 @@ describe('Metadata Properties', () => {
     await expect(page).toClick('.form-group.relationship li.multiselectItem', {
       text: '19 Comerciantes',
     });
-    await scrollTo('.form-group.date input');
     await selectDate('.form-group.date input', '08/09/1966');
     await selectDate('.form-group.daterange div.DatePicker__From input', '23/11/1963');
     await selectDate('.form-group.daterange div.DatePicker__To input', '12/09/1964');
@@ -75,6 +74,7 @@ describe('Metadata Properties', () => {
     await selectDate('.form-group.multidate .multidate-item:nth-of-type(2) input', '12/09/1964');
     await expect(page).toClick('.form-group.multidaterange button.btn.add');
     await expect(page).toFill('.form-group.link #label', 'Huridocs');
+    await scrollTo('.form-group.link #url');
     await expect(page).toFill('.form-group.link #url', 'https://www.huridocs.org/');
     await selectDate(
       '.form-group.multidaterange .multidate-item:first-of-type div.DatePicker__From input',

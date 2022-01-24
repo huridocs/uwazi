@@ -63,12 +63,7 @@ describe('Graphs in Page ', () => {
 
   describe('Graphs for regular thesauri', () => {
     it('should insert Bar chart graph in created page', async () => {
-      const pageContentsInput = await page.$eval(
-        localSelectors.pageContentsInput,
-        el => el.textContent
-      );
-      expect(pageContentsInput).toContain('<Dataset />');
-
+      await expect(page).toMatch('<Dataset />');
       await page.type(localSelectors.pageContentsInput, graphs.barChart);
       await savePage();
     });

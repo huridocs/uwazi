@@ -67,6 +67,11 @@ export function toUrlParams(_data) {
     .join('&')}`;
 }
 
+const removeUndefinedKeys = obj => {
+  //eslint-disable-next-line no-param-reassign
+  Object.keys(obj).forEach(key => (obj[key] === undefined ? delete obj[key] : {}));
+};
+
 const _fetch = (url, data, method, _headers) => {
   let response;
   let params = '';
@@ -91,6 +96,8 @@ const _fetch = (url, data, method, _headers) => {
   if (URLSearchParams && data instanceof URLSearchParams) {
     body = data;
   }
+
+  removeUndefinedKeys(headers);
 
   return fetch(url + params, {
     method,

@@ -45,7 +45,7 @@ export abstract class Task {
     }
   }
 
-  protected abstract async run(_args: any): Promise<void>;
+  protected abstract run(_args: any): Promise<void>;
 }
 
 export class TaskProvider {

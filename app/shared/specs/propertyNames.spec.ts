@@ -10,7 +10,7 @@ describe('propertyNames (shared)', () => {
     });
 
     describe('less restrictive name generation', () => {
-      it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', () => {
+      it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., [, ], %, and should be lowercase', () => {
         const results = [
           safeName(' my prop ', true),
           safeName('my^foreïgn$próp"', true),
@@ -26,6 +26,8 @@ describe('propertyNames (shared)', () => {
           safeName('te st ', true),
           safeName('test: ', true),
           safeName('te.st. ', true),
+          safeName('[brackets]', true),
+          safeName('test%', true),
         ];
 
         expect(results).toEqual([
@@ -43,6 +45,8 @@ describe('propertyNames (shared)', () => {
           'te_st',
           'test_',
           'te_st_',
+          'brackets_',
+          'test_',
         ]);
       });
 

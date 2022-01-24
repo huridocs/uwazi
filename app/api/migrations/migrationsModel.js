@@ -6,6 +6,7 @@ const entitySchema = new mongoose.Schema({
   name: String,
   description: String,
   migrationDate: { type: Date, default: Date.now },
+  reindex: Boolean,
 });
 
 const Model = instanceModel('migrations', entitySchema);

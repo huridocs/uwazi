@@ -12,7 +12,7 @@ import waitForExpect from 'wait-for-expect';
 import { setupSockets } from '../setupSockets';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent';
 
-const closeServer = async (httpServer: Server) =>
+const closeServer = async (httpServer: Server): Promise<void> =>
   new Promise(resolve => {
     httpServer.close(() => {
       resolve();
@@ -46,7 +46,7 @@ const createServer = async (app: Application, port: number) => {
   redisServer = new RedisServer();
   redisServer.start();
   server = new Server(app);
-  await new Promise(resolve => server.listen(port, 'localhost', resolve));
+  await new Promise<void>(resolve => server.listen(port, resolve));
   app.use(appContextMiddleware);
   app.use(multitenantMiddleware);
   config.redis.activated = true;
