@@ -19,4 +19,8 @@ describe('migration {{ name }}', () => {
   it('should fail', async () => {
     await migration.up();
   });
+
+  it('should check if a reindex is needed', async () => {
+      expect(migration.reindex).toBe(undefined);
+    });
 });
