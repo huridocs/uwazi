@@ -16,7 +16,7 @@ export const formatAttachment = (fileName: string, entityId: string) =>
 const formatRelationship = (field: MetadataObjectSchema[]) =>
   field
     .map(relationship => {
-      if (relationship.inheritedValue) {
+      if (relationship.inheritedValue && relationship.inheritedValue.length) {
         return relationship.inheritedValue[0].value;
       }
       return relationship.label;
