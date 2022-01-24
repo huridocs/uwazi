@@ -223,6 +223,38 @@ describe('csvExporter typeFormatters', () => {
       expect(multipleValue).toBe('E1|E2');
       testEmptyField(typeFormatters.relationship);
     });
+
+    it('should return the entity label when inherited value is not defined', () => {
+      const singleField = [
+        {
+          label: 'Entity 1',
+          value: null,
+          inheritedValue: [],
+          inheritedType: 'text',
+        },
+      ];
+      const multipleField = [
+        {
+          label: 'Entity 1',
+          value: null,
+          inheritedValue: [{ value: 'E1' }],
+          inheritedType: 'text',
+        },
+        {
+          label: 'Entity 2',
+          value: null,
+          inheritedValue: [],
+          inheritedType: 'text',
+        },
+      ];
+
+      const singleValue = typeFormatters.relationship(singleField, {});
+      const multipleValue = typeFormatters.relationship(multipleField, {});
+
+      expect(singleValue).toBe('Entity 1');
+      expect(multipleValue).toBe('E1|Entity 2');
+      testEmptyField(typeFormatters.relationship);
+    })
   });
 
   describe('FILES', () => {
