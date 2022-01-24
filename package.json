@@ -215,6 +215,7 @@
     "@babel/traverse": "^7.16.8",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.5.0",
+    "@types/cheerio": "^0.22.30",
     "@types/child-process-promise": "^2.2.1",
     "@types/cookie": "^0.4.1",
     "@types/enzyme": "3.10.11",
