@@ -29,12 +29,8 @@ describe('User actions', () => {
     });
 
     describe('upon success', () => {
-      beforeEach(async done => {
-        await actions
-          .deleteUser({ _id: 'user1' })(dispatch)
-          .then(() => {
-            done();
-          });
+      beforeEach(async () => {
+        await actions.deleteUser({ _id: 'user1' })(dispatch);
       });
 
       it('should remove user', () => {

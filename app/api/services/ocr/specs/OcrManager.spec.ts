@@ -156,7 +156,7 @@ describe('OcrManager', () => {
         expect(filesApi.generateFileName).toHaveBeenCalled();
         expect(filesApi.fileFromReadStream).toHaveBeenCalledWith(
           'generatedUwaziFilename',
-          'resultFileContent'
+          Buffer.from('resultFileContent')
         );
       });
 
