@@ -32,23 +32,8 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
-      - name: Tgz production build
-        run: tar -czf uwazi_${GITHUB_SHA}.tgz ./prod
-      - name: Copy to server
-        uses: easingthemes/ssh-deploy@v2.1.1
-        env:
-            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-            ARGS: "-rltgoDzvO --delete"
-            SOURCE: uwazi_${GITHUB_SHA}.tgz
-            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
-            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-            TARGET: uwazi_${GITHUB_SHA}.tgz
-      - name: Overwrite latest
-        uses: easingthemes/ssh-deploy@v2.1.1
-        env:
-            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-            ARGS: "-rltgoDzvO --delete"
-            SOURCE: uwazi_${GITHUB_SHA}.tgz
-            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
-            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-            TARGET: uwazi_latest.tgz
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+            ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+      - name: Release
+        run: ./scripts/release.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}
