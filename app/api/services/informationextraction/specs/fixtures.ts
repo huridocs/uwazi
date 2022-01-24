@@ -59,7 +59,7 @@ const fixtures: DBFixture = {
     factory.entity('A14', 'templateToSegmentA'),
   ],
   files: [
-    factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'eng', '', [
+    factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
       {
         name: 'property1',
         selection: {

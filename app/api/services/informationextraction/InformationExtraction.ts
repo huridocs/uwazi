@@ -109,9 +109,10 @@ class InformationExtraction {
         };
 
         if (type === 'labeled_data' && propertyLabeledData) {
+          const defaultTrainingLanguage = 'en';
           data = {
             ...data,
-            language_iso: languages.get(file.language!, 'ISO639_1'),
+            language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
             label_text: propertyLabeledData.selection?.text,
             label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
               const { page, ...selection } = r;
