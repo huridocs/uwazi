@@ -871,7 +871,8 @@ export default {
         }
       );
       const newLanguageEntities = await this.generateNewEntitiesForLanguage(entities, language);
-      const newSavedEntities = await this.saveMultiple(newLanguageEntities);
+      const newSavedEntities = await model.saveMultiple(newLanguageEntities);
+      await search.indexEntities({ _id: { $in: newSavedEntities.map(d => d._id) } }, '+fullText');
       await newSavedEntities.reduce(async (previous, entity) => {
         await previous;
         if (entity.file) {
