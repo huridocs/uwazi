@@ -254,7 +254,7 @@ describe('csvExporter typeFormatters', () => {
       expect(singleValue).toBe('Entity 1');
       expect(multipleValue).toBe('E1|Entity 2');
       testEmptyField(typeFormatters.relationship);
-    })
+    });
   });
 
   describe('FILES', () => {
