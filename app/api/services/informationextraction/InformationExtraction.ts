@@ -248,7 +248,13 @@ class InformationExtraction {
   };
 
   getSuggestions = async (property: string) => {
-    await this.materialsForSuggestions(property);
+    const files = await this.getFilesForSuggestions(property);
+    if (files.length === 0) {
+      emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
+      return;
+    }
+
+    await this.materialsForSuggestions(files, property);
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
@@ -256,15 +262,14 @@ class InformationExtraction {
     });
   };
 
-  materialsForSuggestions = async (property: string) => {
-    const serviceUrl = await this.serviceUrl();
+  getFilesForSuggestions = async (property: string) => {
     const templates = await this.getTemplatesWithProperty(property);
-    const files = await this.getFiles(templates, property, false);
+    return this.getFiles(templates, property, false);
+  };
 
-    if (files.length === 0) {
-      emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
-      return;
-    }
+  materialsForSuggestions = async (files: FileWithAggregation[], property: string) => {
+    const serviceUrl = await this.serviceUrl();
+
     await this.sendMaterials(files, property, serviceUrl, 'prediction_data');
   };
 
