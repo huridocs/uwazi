@@ -34,6 +34,17 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+
+      - name: Cache testing redis
+        id: cache-redis
+        uses: actions/cache@v2
+        with:
+          path: ./redis-bin
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.redis_version') }}
+      - name: install redis for testing
+        if: steps.cache-redis.outputs.cache-hit != 'true'
+        run: yarn install_redis_for_testing
+
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
