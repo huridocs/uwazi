@@ -823,6 +823,23 @@
   line-height: inherit;
 }
 
+.documentTypes-selector .multiselectItem-input:checked {
+  & + label {
+    .checkbox-empty {
+      display: none;
+    }
+    .checkbox-checked {
+      display: block;
+    }
+  }
+
+  & ~ .multiselectItem-label .multiselectItem-name,
+  & ~ .multiselectItem-results {
+    font-weight: bold;
+    color: $c-black;
+  }
+}
+
 .DatePicker__From,
 .DatePicker__To,
 .Numeric__From,
