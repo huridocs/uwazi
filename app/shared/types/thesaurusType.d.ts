@@ -3,6 +3,15 @@
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
+export interface ThesaurusSchema {
+  _id?: ObjectIdSchema;
+  type?: 'thesauri';
+  name: string;
+  enable_classification?: boolean;
+  values?: ThesaurusValueSchema[];
+  [k: string]: unknown | undefined;
+}
+
 export interface ThesaurusValueSchema {
   _id?: ObjectIdSchema;
   id?: string;
@@ -13,13 +22,4 @@ export interface ThesaurusValueSchema {
     label: string;
     name?: string;
   }[];
-}
-
-export interface ThesaurusSchema {
-  _id?: ObjectIdSchema;
-  type?: 'thesauri';
-  name: string;
-  enable_classification?: boolean;
-  values?: ThesaurusValueSchema[];
-  [k: string]: unknown | undefined;
 }
