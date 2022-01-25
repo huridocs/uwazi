@@ -1,13 +1,37 @@
 @import '../../scss/config/colors';
 @import '../../scss/config/typography';
 
-.entity-suggestions{
+.service-request-button {
+  border-color: #e0e0e0;
+  background-color: white;
+  font-weight: 600;
+
+  &.processing {
+    color: #90a4ae;
+    font-style: italic;
+    cursor: progress;
+  }
+
+  &.error {
+    color: #d1d1d1;
+    border-color: #505050;
+    background-color: #505050;
+  }
+
+  &.success {
+    color: #579849;
+  }
+}
+
+.entity-suggestions {
   .panel-subheading {
     font-size: $f-size-lg;
   }
+
   .suggestion-header {
     color: $c-grey-dark;
   }
+
   .suggestion-property {
     font-family: $f-special;
   }
@@ -30,10 +54,12 @@
     &:nth-child(even) > td {
       background-color: #f5f5f5;
     }
+
     &:nth-child(odd) > td {
       background-color: $c-white;
     }
   }
+
   th {
     display: flex;
     align-items: center;
@@ -45,30 +71,37 @@
     min-width: 70px;
     display: flex;
     align-content: center;
-    padding: 10px;
+    padding: 2px;
 
-    &.suggestion{
-      width: 20%;
+    &.suggestion {
+      width: 30%;
       text-overflow: fade;
       min-width: 150px;
     }
-    &.action{
+
+    &.action {
       min-width: 90px;
       padding-left: 5px;
     }
-    &.title{
+
+    &.title {
       width: 15%;
       min-width: 100px;
       text-overflow: fade;
     }
-    &.segment{
+
+    &.segment {
       width: 40%;
       min-width: 100px;
+      max-width: 375px;
     }
-    &.long-segment{
+
+    &.long-segment {
       width: 55%;
+      max-width: 475px;
     }
-    &.state{
+
+    &.state {
       width: 7%;
     }
   }
@@ -79,7 +112,7 @@
     padding: 8px;
     border-bottom: 2px solid $c-grey;
 
-    &.state{
+    &.state {
       width: 7%;
       display: flex;
       justify-content: space-between;
@@ -107,7 +140,7 @@
   }
 
   td {
-    padding: 8px 16px;
+    padding: 8px 5px;
     border-bottom: 2px solid #e0e0e0;
     border-left: 2px solid #e0e0e0;
 
@@ -116,17 +149,17 @@
       font-size: $f-size-sm;
     }
 
-    &.suggestion{
+    &.suggestion {
       border-left: 0;
       display: flex;
       flex-direction: column;
       position: relative;
 
+      .current-value,
       .suggested-value {
-        color: $c-primary;
         display: block;
         display: -webkit-box;
-        height: 2.6em;
+        max-height: 2.6em;
         line-height: 1.3em;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -134,11 +167,44 @@
         text-overflow: ellipsis;
       }
 
-      .suggestion-label{
+      .suggested-value {
+        color: $c-primary;
+      }
+
+      .suggestion-label {
         color: $c-grey-dark;
         font-family: $f-special;
         padding-top: 30px;
       }
+    }
+  }
+}
+
+.suggestion-acceptance-modal {
+  min-height: 100px;
+  min-width: 400px;
+
+  .modal-header {
+    h1 {
+      font-size: 20px;
+      margin: 0 0 0 10px;
+    }
+  }
+
+  .modal-body {
+    min-height: 70px;
+
+    .language-checkbox {
+      display: flex;
+      width: 100%;
+      height: 51px;
+      padding: 16px;
+    }
+  }
+
+  .modal-footer {
+    .btn.cancel-button {
+      opacity: 1;
     }
   }
 }

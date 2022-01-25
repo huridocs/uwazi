@@ -9,12 +9,13 @@ import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import uniqueID from 'shared/uniqueID';
+import { ensure } from 'shared/tsUtils';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
-import uniqueID from 'shared/uniqueID';
 import { createMongoInstance } from './createMongoInstance';
-import { ensure } from 'shared/tsUtils';
 import { UserSchema } from '../../shared/types/userType';
 
 mongoose.set('useFindAndModify', false);
@@ -29,6 +30,7 @@ export type DBFixture = {
   dictionaries?: ThesaurusSchema[];
   usergroups?: UserGroupSchema[];
   pages?: PageType[];
+  ixsuggestions?: IXSuggestionType[];
   users?: UserSchema[];
   [k: string]: any;
 };

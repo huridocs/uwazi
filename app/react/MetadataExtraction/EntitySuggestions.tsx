@@ -1,127 +1,64 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
-import {
-  Column,
-  HeaderGroup,
-  Row,
-  useTable,
-  usePagination,
-  useFilters,
-  FilterProps,
-} from 'react-table';
-import { I18NLink, t, Translate } from 'app/I18N';
-import { Icon } from 'app/UI';
+
+import { Icon } from 'UI';
+import { HeaderGroup, Row } from 'react-table';
+import { I18NLink, Translate } from 'app/I18N';
+import { socket } from 'app/socket';
+import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
-import { SuggestionType } from 'shared/types/suggestionType';
-import { getSuggestions } from './SuggestionsAPI';
+import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
+import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 
 interface EntitySuggestionsProps {
-  propertyName: string;
+  property: PropertySchema;
+  acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
 }
 
-const stateFilter = ({ column: { filterValue, setFilter } }: FilterProps<SuggestionType>) => (
-  <select
-    className={filterValue ? 'filtered' : ''}
-    value={filterValue}
-    onChange={e => {
-      setFilter(e.target.value || undefined);
-    }}
-  >
-    <option value="">{t('System', 'All', 'All', false)}</option>
-    <option value="Filled">{t('System', 'Filled', 'Filled', false)}</option>
-    <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
-  </select>
-);
-
-export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsProps) => {
+export const EntitySuggestions = ({
+  property: reviewedProperty,
+  acceptIXSuggestion,
+}: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [status, setStatus] = useState('ready');
+  const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
 
-  const suggestionCell = ({ row }: { row: Row<SuggestionType> }) => {
-    const suggestion = row.original;
-    const currentValue = suggestion.currentValue || '-';
-    return (
-      <>
-        <div>
-          <span className="suggestion-label">
-            <Translate>{propertyName}</Translate>
-          </span>
-          <p>{currentValue}</p>
-        </div>
-        <div>
-          <span className="suggestion-label">
-            <Translate>Suggestion</Translate>
-          </span>
-          <p className="suggested-value">{suggestion.suggestedValue}</p>
-        </div>
-      </>
-    );
+  socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
+    if (propertyName === reviewedProperty.name) {
+      setStatus(modelStatus);
+    }
+  });
+
+  const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
+    row.toggleRowSelected();
+    setAcceptingSuggestion(true);
   };
 
-  const actionsCell = () => (
-    <div>
-      <button type="button" className="btn btn-outline-primary">
-        <Icon icon="check" />
-        &nbsp;
-        <Translate>Accept</Translate>
-      </button>
-    </div>
-  );
-
-  const columns: Column<SuggestionType>[] = React.useMemo(
-    () => [
-      {
-        id: 'suggestion',
-        Header: () => (
-          <>
-            <Translate>{propertyName}</Translate> / <Translate>Suggestion</Translate>
-          </>
-        ),
-        Cell: suggestionCell,
-        className: 'suggestion',
-      },
-      {
-        id: 'action',
-        Header: () => <Translate>Action</Translate>,
-        Cell: actionsCell,
-        className: 'action',
-      },
-      {
-        id: 'title',
-        accessor: 'title' as const,
-        Header: () => <Translate>Title</Translate>,
-        className: 'title',
-      },
-      {
-        accessor: 'segment' as const,
-        Header: () => <Translate>Segment</Translate>,
-        className: propertyName === 'Title' ? 'long-segment' : 'segment',
-      },
-      {
-        accessor: 'language' as const,
-        Header: () => <Translate>Language</Translate>,
-        Cell: ({ row }: { row: Row<SuggestionType> }) => (
-          <Translate>{row.original.language}</Translate>
-        ),
-      },
-      {
-        accessor: 'state' as const,
-        Header: () => <Translate>State</Translate>,
-        Cell: ({ row }: { row: Row<SuggestionType> }) => (
-          <Translate>{row.original.state}</Translate>
-        ),
-        Filter: stateFilter,
-        className: 'state',
-      },
-      {
-        accessor: 'page' as const,
-        Header: () => <Translate>Page</Translate>,
-      },
-    ],
-    []
-  );
-  const hiddenColumns = propertyName === 'Title' ? ['title'] : [];
+  const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
+    const suggestion = row.original;
+    return (
+      <div>
+        {suggestion.state !== SuggestionState.matching && (
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            onClick={async () => showConfirmationModal(row)}
+          >
+            <Icon icon="check" />
+            &nbsp;
+            <Translate>Accept</Translate>
+          </button>
+        )}
+      </div>
+    );
+  };
 
   const {
     getTableProps,
@@ -131,32 +68,18 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
     prepareRow,
     gotoPage,
     setPageSize,
+    selectedFlatRows,
     state: { pageIndex, pageSize, filters },
-  } = useTable(
-    {
-      columns,
-      data: suggestions,
-      manualPagination: true,
-      manualFilters: true,
-      initialState: {
-        hiddenColumns,
-        pageIndex: 0,
-        pageSize: 5,
-      },
-      pageCount: totalPages,
-      autoResetPage: false,
-      autoResetFilters: false,
-    },
-
-    useFilters,
-    usePagination
-  );
+  } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell);
 
   const retrieveSuggestions = () => {
+    const queryFilter = filters.reduce(
+      (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
+      {}
+    );
     const params = new RequestParams({
-      page: pageIndex + 1,
-      limit: pageSize,
-      filters,
+      page: { number: pageIndex + 1, size: pageSize },
+      filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
       .then((response: any) => {
@@ -166,7 +89,50 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
       .catch(() => {});
   };
 
+  const acceptSuggestion = async (allLanguages: boolean) => {
+    setAcceptingSuggestion(false);
+    if (selectedFlatRows.length > 0) {
+      const acceptedSuggestion = selectedFlatRows[0].original;
+      await acceptIXSuggestion(acceptedSuggestion, allLanguages);
+      selectedFlatRows[0].toggleRowSelected();
+      retrieveSuggestions();
+    }
+  };
+
+  const _trainModel = async () => {
+    const params = new RequestParams({
+      property: reviewedProperty.name,
+    });
+
+    const response = await trainModel(params);
+    const type = response.status === 'error' ? 'danger' : 'success';
+    setStatus(response.status);
+    store?.dispatch(notify(response.message, type));
+    if (status === 'ready') {
+      await retrieveSuggestions();
+    }
+  };
+
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
+  useEffect(() => {
+    const params = new RequestParams({
+      property: reviewedProperty.name,
+    });
+    ixStatus(params)
+      .then((response: any) => {
+        setStatus(response.status);
+      })
+      .catch(() => {
+        setStatus('error');
+      });
+  }, []);
+
+  const ixmessages: { [k: string]: string } = {
+    ready: 'Find suggestions',
+    processing_model: 'Training model...',
+    processing_suggestions: 'Finding suggestions...',
+    error: 'Error',
+  };
 
   return (
     <div className="panel entity-suggestions">
@@ -175,17 +141,25 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           <span className="suggestion-header">
             <Translate>Reviewing</Translate>:&nbsp;
           </span>
+
           <span className="suggestion-property">
-            <Translate>{propertyName}</Translate>
+            <Translate>{reviewedProperty.label}</Translate>
           </span>
         </div>
+        <button
+          type="button"
+          className={`btn service-request-button ${status}`}
+          onClick={_trainModel}
+        >
+          <Translate>{ixmessages[status]}</Translate>
+        </button>
         <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
           <Translate>Dashboard</Translate>
         </I18NLink>
       </div>
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup: HeaderGroup<SuggestionType>) => (
+          {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => {
                 const className =
@@ -203,7 +177,7 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row: Row<SuggestionType>) => {
+          {page.map((row: Row<EntitySuggestionType>) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
@@ -218,6 +192,11 @@ export const EntitySuggestions = ({ propertyName = 'Other' }: EntitySuggestionsP
         </tbody>
       </table>
       <Pagination onPageChange={gotoPage} onPageSizeChange={setPageSize} totalPages={totalPages} />
+      <SuggestionAcceptanceModal
+        isOpen={acceptingSuggestion}
+        onClose={() => setAcceptingSuggestion(false)}
+        onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
+      />
     </div>
   );
 };

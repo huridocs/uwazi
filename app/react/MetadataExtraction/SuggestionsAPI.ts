@@ -1,14 +1,27 @@
 import { RequestParams } from 'app/utils/RequestParams';
-import { SuggestionsSampleData } from './SuggestionsSampleData';
+import api from 'app/utils/api';
 
-const getSuggestions = async (requestParams: RequestParams) =>
-  // temporal sample data, should be replaced by real API call
-  new Promise(resolve => {
-    const data = SuggestionsSampleData(requestParams.data);
-    resolve({
-      suggestions: data,
-      totalPages: 30,
-    });
-  });
+const getSuggestions = async (requestParams: RequestParams) => {
+  const { json: response } = await api.get('suggestions', requestParams);
+  return {
+    suggestions: response.suggestions,
+    totalPages: response.totalPages,
+  };
+};
 
-export { getSuggestions };
+const trainModel = async (requestParams: RequestParams) => {
+  const { json: response } = await api.post('suggestions/train', requestParams);
+  return response;
+};
+
+const ixStatus = async (requestParams: RequestParams) => {
+  const { json: response } = await api.get('suggestions/status', requestParams);
+  return response;
+};
+
+const acceptEntitySuggestion = async (requestParams: RequestParams) => {
+  const { json: response } = await api.post('suggestions/accept', requestParams);
+  return response;
+};
+
+export { getSuggestions, trainModel, ixStatus, acceptEntitySuggestion };

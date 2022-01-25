@@ -1,7 +1,12 @@
 import { ObjectId } from 'mongodb';
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema, MetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import {
+  PropertySchema,
+  MetadataSchema,
+  PropertyValueSchema,
+  ExtractedMetadataSchema,
+} from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
@@ -60,13 +65,21 @@ function getFixturesFactory() {
       };
     },
 
+    inherit(name: string, content: string, property: string, props = {}): PropertySchema {
+      return this.relationshipProp(name, content, {
+        inherit: { property: idMapper(property).toString() },
+        ...props,
+      });
+    },
+
     file: (
       id: string,
       entity: string,
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
       filename: string,
       language: string = 'en',
-      originalname?: string
+      originalname?: string,
+      extractedMetadata: ExtractedMetadataSchema[] = []
     ): FileType => ({
       _id: idMapper(`${id}`),
       entity,
@@ -74,14 +87,8 @@ function getFixturesFactory() {
       type,
       filename,
       originalname: originalname || filename,
+      extractedMetadata,
     }),
-
-    inherit(name: string, content: string, property: string, props = {}): PropertySchema {
-      return this.relationshipProp(name, content, {
-        inherit: { property: idMapper(property).toString() },
-        ...props,
-      });
-    },
 
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
       return this.property(name, 'relationship', {

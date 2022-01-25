@@ -17,6 +17,7 @@ import translate, { getContext } from 'shared/translate';
 import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { Suggestions } from 'api/suggestions/suggestions';
 import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
@@ -743,6 +744,7 @@ export default {
       files.delete({ entity: sharedId }),
       this.deleteFiles(docs),
       this.deleteRelatedEntityFromMetadata(docs[0]),
+      Suggestions.deleteByEntityId(sharedId),
     ]);
     return docs;
   },

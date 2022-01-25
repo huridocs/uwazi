@@ -44,6 +44,26 @@ const newKeyValues = [
     key: 'per page',
     value: 'per page',
   },
+  {
+    key: 'Review',
+    value: 'Review',
+  },
+  {
+    key: 'Confirm suggestion acceptance',
+    value: 'Confirm suggestion acceptance',
+  },
+  {
+    key: 'Apply to all languages',
+    value: 'Apply to all languages',
+  },
+  {
+    key: 'Matching',
+    value: 'Matching',
+  },
+  {
+    key: 'Pending',
+    value: 'Pending',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
@@ -63,7 +83,7 @@ describe('migration add_system_key_translations', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(58);
+    expect(migration.delta).toBe(59);
   });
 
   it('should append new keys, leave existing keys intact.', async () => {
