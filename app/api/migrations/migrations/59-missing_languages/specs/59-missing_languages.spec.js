@@ -164,9 +164,53 @@ describe('migration missing_languages', () => {
     });
   });
 
-  // it('should copy non-inherited relationship fields', async () => {
-  //   fail();
-  // });
+  it('should change labels on inherited relationship fields', async () => {
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingOneRels.sharedId, language: 'pt' })
+      ).metadata
+    ).toMatchObject({
+      no_inheritance: [
+        {
+          value: EntityBluePrints.Complete.sharedId,
+          label: 'CompleteExamplePortuguese',
+          type: 'entity',
+        },
+      ],
+    });
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingTwoRels.sharedId, language: 'en' })
+      ).metadata
+    ).toMatchObject({
+      no_inheritance: [
+        {
+          value: EntityBluePrints.MissingOne.sharedId,
+          label: 'MissingOneEnglish',
+          type: 'entity',
+        },
+      ],
+    });
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingTwoRels.sharedId, language: 'es' })
+      ).metadata
+    ).toMatchObject({
+      no_inheritance: [
+        {
+          value: EntityBluePrints.MissingOne.sharedId,
+          label: 'MissingOneEnglish',
+          type: 'entity',
+        },
+      ],
+    });
+  });
 
   // it('should make inherited values inherit from the entity in the proper language', async () => {
   //   fail();

@@ -134,6 +134,30 @@ const EntityBluePrints = {
     mongoLanguage: 'pt',
     permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
   },
+  MissingOneRels: {
+    title: 'MissingOneRelationshipsEnglish',
+    template: TemplateBluePrints.WithRelationships._id,
+    user: UserBluePrints.admin._id,
+    creationDate: 5,
+    published: true,
+    editDate: 6,
+    language: 'en',
+    sharedId: 'missing_one_rels_sharedId',
+    mongoLanguage: 'en',
+    permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
+  },
+  MissingTwoRels: {
+    title: 'MissingTwoRelationshipsPortuguese',
+    template: TemplateBluePrints.WithRelationships._id,
+    user: UserBluePrints.admin._id,
+    creationDate: 5,
+    published: true,
+    editDate: 6,
+    language: 'pt',
+    sharedId: 'missing_two_rels_sharedId',
+    mongoLanguage: 'pt',
+    permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
+  },
   NoLanguage: {
     title: 'FaultyEntityWithoutLanguage',
     template: TemplateBluePrints.ThesauriRelatedProperties._id,
@@ -443,7 +467,7 @@ const fixtures = {
     { ...EntityBluePrints.MissingTwo },
     { ...EntityBluePrints.MissingTwoSelects },
     {
-      title: 'MissingOneRelationshipsEnglish',
+      ...EntityBluePrints.MissingOneRels,
       metadata: {
         inherited_text: [
           {
@@ -489,15 +513,6 @@ const fixtures = {
           },
         ],
       },
-      template: TemplateBluePrints.WithRelationships._id,
-      user: UserBluePrints.admin._id,
-      creationDate: 5,
-      published: true,
-      editDate: 6,
-      language: 'en',
-      sharedId: 'missing_one_rels_sharedId',
-      mongoLanguage: 'en',
-      permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
     },
     { ...EntityBluePrints.NoLanguage },
     //intentional duplication to smoke test faulty behavior:
@@ -505,6 +520,7 @@ const fixtures = {
   ],
 };
 fixtures.entities.push({
+  ...EntityBluePrints.MissingOneRels,
   title: 'MissingOneRelationshipsSpanish',
   metadata: {
     inherited_text: [
@@ -546,23 +562,16 @@ fixtures.entities.push({
     no_inheritance: [
       {
         value: EntityBluePrints.Complete.sharedId,
-        label: EntityBluePrints.Complete.title,
+        label: fixtures.entities[1].title,
         type: 'entity',
       },
     ],
   },
-  template: TemplateBluePrints.WithRelationships._id,
-  user: UserBluePrints.admin._id,
-  creationDate: 5,
-  published: true,
-  editDate: 6,
   language: 'es',
-  sharedId: fixtures.entities[10].sharedId,
   mongoLanguage: 'es',
-  permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
 });
 fixtures.entities.push({
-  title: 'MissingTwoRelationshipsPortuguese',
+  ...EntityBluePrints.MissingTwoRels,
   metadata: {
     inherited_text: [
       {
@@ -602,21 +611,12 @@ fixtures.entities.push({
     ],
     no_inheritance: [
       {
-        value: EntityBluePrints.Complete.sharedId,
-        label: EntityBluePrints.Complete.title,
+        value: EntityBluePrints.MissingOne.sharedId,
+        label: fixtures.entities[7].title,
         type: 'entity',
       },
     ],
   },
-  template: TemplateBluePrints.WithRelationships._id,
-  user: UserBluePrints.admin._id,
-  creationDate: 5,
-  published: true,
-  editDate: 6,
-  language: 'pt',
-  sharedId: 'missing_two_rels_sharedId',
-  mongoLanguage: 'pt',
-  permissions: [{ refId: UserBluePrints.admin._id.toString(), type: 'user', level: 'write' }],
 });
 
 export { fixtures, EntityBluePrints };

@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { inheritance } from './inheritance.js';
 import { translator } from './translator.js';
 
 const removeFromMappedSets = (missingMap, assignmentMap, completedSet, key, item) => {
@@ -74,12 +75,16 @@ const migration = {
 
     const assignedToSharedId = Array.from(flipStringMap(sharedIdToAssigned).entries());
     await translator.build(db);
+    await inheritance.build(db);
 
     const newEntities = [];
 
     for (let i = 0; i < assignedToSharedId.length; i += 1) {
       const assignedLanguage = assignedToSharedId[i][0];
       const sharedIds = Array.from(assignedToSharedId[i][1]);
+
+      // eslint-disable-next-line no-await-in-loop
+      await inheritance.prepareForBatch(sharedIds, db);
 
       const assignedEntities = db
         .collection('entities')
@@ -106,7 +111,7 @@ const migration = {
     }
 
     // console.log(newEntities);
-    // console.log(sharedIdToMissing);
+    console.log(sharedIdToMissing);
     // console.log(sharedIdToAssigned);
     // console.log(assignedToSharedId);
   },
