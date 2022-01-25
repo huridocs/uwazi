@@ -88,44 +88,62 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   abstract markChecked(value: ValueType, option: Option): ValueType;
 
+  private getGroupStateValue(value: ValueType, group: Option) {
+    let newValue = this.markChecked(value, group);
+    group.options!.forEach(_item => {
+      if (this.checked(_item) !== SelectStates.OFF) {
+        newValue = this.markUnchecked(newValue, _item);
+      }
+    });
+
+    return newValue;
+  }
+
+  private getOnStateValue(value: ValueType, group: Option) {
+    let newValue = this.markUnchecked(value, group);
+    group.options!.forEach(_item => {
+      if (this.checked(_item) !== SelectStates.ON) {
+        newValue = this.markChecked(newValue, _item);
+      }
+    });
+
+    return newValue;
+  }
+
+  private getOffStateValue(value: ValueType, group: Option) {
+    let newValue = this.markUnchecked(value, group);
+    group.options!.forEach(_item => {
+      if (this.checked(_item) !== SelectStates.OFF) {
+        newValue = this.markUnchecked(newValue, _item);
+      }
+    });
+
+    return newValue;
+  }
+
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
     let { value } = this.props;
     const { allowSelectGroup } = this.props;
     const previousState = parseInt(e.target.dataset.state!, 10);
 
     if (previousState === SelectStates.OFF && allowSelectGroup) {
-      value = this.markChecked(value, group);
-      group.options!.forEach(_item => {
-        if (this.checked(_item) !== SelectStates.OFF) {
-          value = this.markUnchecked(value, _item);
-        }
-      });
+      value = this.getGroupStateValue(value, group);
     }
 
     if (previousState === SelectStates.OFF && !allowSelectGroup) {
-      group.options!.forEach(_item => {
-        if (this.checked(_item) !== SelectStates.ON) {
-          value = this.markChecked(value, _item);
-        }
-      });
+      value = this.getOnStateValue(value, group);
     }
 
-    if (previousState === SelectStates.GROUP || previousState === SelectStates.PARTIAL) {
-      group.options!.forEach(_item => {
-        if (this.checked(_item) !== SelectStates.ON) {
-          value = this.markChecked(value, _item);
-        }
-      });
-      value = this.markUnchecked(value, group);
+    if (previousState === SelectStates.GROUP) {
+      value = this.getOnStateValue(value, group);
+    }
+
+    if (previousState === SelectStates.PARTIAL) {
+      value = this.getOffStateValue(value, group);
     }
 
     if (previousState === SelectStates.ON) {
-      group.options!.forEach(_item => {
-        if (this.checked(_item) !== SelectStates.OFF) {
-          value = this.markUnchecked(value, _item);
-        }
-      });
-      value = this.markUnchecked(value, group);
+      value = this.getOffStateValue(value, group);
     }
 
     this.props.onChange(value);
