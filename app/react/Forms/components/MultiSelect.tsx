@@ -126,24 +126,24 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const { allowSelectGroup } = this.props;
     const previousState = parseInt(e.target.dataset.state!, 10);
 
-    if (previousState === SelectStates.OFF && allowSelectGroup) {
-      value = this.getGroupStateValue(value, group);
-    }
-
-    if (previousState === SelectStates.OFF && !allowSelectGroup) {
+    if (previousState === SelectStates.OFF) {
       value = this.getOnStateValue(value, group);
     }
 
     if (previousState === SelectStates.GROUP) {
-      value = this.getOnStateValue(value, group);
+      value = this.getOffStateValue(value, group);
     }
 
     if (previousState === SelectStates.PARTIAL) {
       value = this.getOffStateValue(value, group);
     }
 
-    if (previousState === SelectStates.ON) {
+    if (previousState === SelectStates.ON && !allowSelectGroup) {
       value = this.getOffStateValue(value, group);
+    }
+
+    if (previousState === SelectStates.ON && allowSelectGroup) {
+      value = this.getGroupStateValue(value, group);
     }
 
     this.props.onChange(value);

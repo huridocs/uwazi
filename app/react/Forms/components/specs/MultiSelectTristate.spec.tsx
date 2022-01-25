@@ -225,18 +225,18 @@ describe('MultiSelectTristate', () => {
         .first()
         .simulate('change', { target: { checked: true, dataset: { state: '1' } } });
       expect(props.onChange).toHaveBeenCalledWith({
-        added: ['group-option2'],
-        removed: [],
+        added: [],
+        removed: ['group-option1'],
         originalFull: ['group-option1'],
         originalPartial: [],
       });
       component
         .find('.group-checkbox')
         .first()
-        .simulate('change', { target: { checked: false, dataset: { state: '2' } } });
+        .simulate('change', { target: { checked: false, dataset: { state: '0' } } });
       expect(props.onChange).toHaveBeenCalledWith({
-        added: [],
-        removed: ['group-option1'],
+        added: ['group-option2'],
+        removed: [],
         originalFull: ['group-option1'],
         originalPartial: [],
       });
