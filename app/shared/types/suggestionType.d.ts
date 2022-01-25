@@ -13,6 +13,7 @@ export interface IXSuggestionType {
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date?: number;
+  error?: string;
 }
 
 export interface EntitySuggestionType {

@@ -37,7 +37,8 @@ type RawSuggestion = {
   xml_file_name: string;
   text: string;
   segment_text: string;
-  page: string;
+  page_number: number;
+
   /* eslint-enable camelcase */
 };
 
@@ -187,6 +188,8 @@ class InformationExtraction {
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
         const entity = await this._getEntityFromSuggestion(rawSuggestion);
+        let status: 'ready' | 'failed' = 'ready';
+        let error = '';
         if (!entity) {
           return Promise.resolve();
         }
@@ -198,7 +201,8 @@ class InformationExtraction {
 
         const suggestedValue = this.coerceSuggestionValue(rawSuggestion, templates);
         if (!suggestedValue) {
-          return Promise.resolve();
+          status = 'failed';
+          error = 'Invalid value for property type';
         }
 
         const suggestion: IXSuggestionType = {
@@ -208,9 +212,10 @@ class InformationExtraction {
           propertyName: rawSuggestion.property_name,
           suggestedValue,
           segment: rawSuggestion.segment_text,
-          status: 'ready',
+          status,
+          error,
           date: new Date().getTime(),
-          ...(rawSuggestion.page ? { page: parseInt(rawSuggestion.page, 10) } : {}),
+          page: rawSuggestion.page_number,
         };
         return IXSuggestionsModel.save(suggestion);
       })

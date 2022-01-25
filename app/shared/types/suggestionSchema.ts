@@ -24,6 +24,7 @@ export const IXSuggestionSchema = {
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     date: { type: 'number' },
+    error: { type: 'string' },
   },
   required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language'],
 };
