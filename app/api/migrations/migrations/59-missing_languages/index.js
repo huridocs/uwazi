@@ -53,6 +53,17 @@ const flipStringMap = map => {
   return resultMap;
 };
 
+const createBatches = (array, size) => {
+  const totalCount = Math.ceil(array.length / size);
+  const batches = [];
+  for (let i = 0; i < totalCount; i += 1) {
+    const start = i * size;
+    const end = (i + 1) * size;
+    batches.push(array.slice(start, end));
+  }
+  return batches;
+};
+
 const migration = {
   delta: 59,
 
@@ -62,6 +73,8 @@ const migration = {
     'Migrate missing languages per sharedId, according to the expected languages in the collection.',
 
   reindex: false,
+
+  batchLimit: 1000,
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
@@ -77,57 +90,61 @@ const migration = {
     await translator.build(db);
     await inheritance.build(db);
 
-    const newEntities = [];
-
     for (let i = 0; i < assignedToSharedId.length; i += 1) {
       const assignedLanguage = assignedToSharedId[i][0];
-      const sharedIds = Array.from(assignedToSharedId[i][1]);
+      const allSharedIds = Array.from(assignedToSharedId[i][1]);
+      const sharedIdBatches = createBatches(allSharedIds, this.batchLimit);
 
-      // eslint-disable-next-line no-await-in-loop
-      const assignedEntities = await db
-        .collection('entities')
-        .find({ language: assignedLanguage, sharedId: { $in: sharedIds } })
-        .toArray();
-      // eslint-disable-next-line no-await-in-loop
-      await inheritance.prepareForBatch(
-        db,
-        assignedEntities,
-        sharedIdToMissing,
-        sharedIdToAssigned
-      );
-      // eslint-disable-next-line no-await-in-loop
-      await assignedEntities.forEach(entity => {
-        const { sharedId } = entity;
-        const newLanguages = Array.from(sharedIdToMissing.get(sharedId));
-        newLanguages.forEach(language => {
-          const copy = {
-            ...entity,
-            language,
-            mongoLanguage: language,
-            metadata: translator.translateMetadata(
-              inheritance.inheritMetadata(
-                entity.metadata,
-                entity.template,
-                entity.sharedId,
+      for (let j = 0; j < sharedIdBatches.length; j += 1) {
+        const newEntities = [];
+        const sharedIds = sharedIdBatches[j];
+        // console.log(sharedIds);
+        // eslint-disable-next-line no-await-in-loop
+        const assignedEntities = await db
+          .collection('entities')
+          .find({ language: assignedLanguage, sharedId: { $in: sharedIds } })
+          .toArray();
+        // eslint-disable-next-line no-await-in-loop
+        await inheritance.prepareForBatch(
+          db,
+          assignedEntities,
+          sharedIdToMissing,
+          sharedIdToAssigned
+        );
+        // eslint-disable-next-line no-await-in-loop
+        await assignedEntities.forEach(entity => {
+          const { sharedId } = entity;
+          const newLanguages = Array.from(sharedIdToMissing.get(sharedId));
+          newLanguages.forEach(language => {
+            const copy = {
+              ...entity,
+              language,
+              mongoLanguage: language,
+              metadata: translator.translateMetadata(
+                inheritance.inheritMetadata(
+                  entity.metadata,
+                  entity.template,
+                  entity.sharedId,
+                  language
+                ),
                 language
               ),
-              language
-            ),
-          };
-          delete copy._id;
-          newEntities.push(copy);
+            };
+            delete copy._id;
+            newEntities.push(copy);
+          });
         });
-      });
-    }
 
-    if (newEntities.length > 0) {
-      await db.collection('entities').insertMany(newEntities);
+        if (newEntities.length > 0) {
+          // eslint-disable-next-line no-await-in-loop
+          await db.collection('entities').insertMany(newEntities);
+        }
+      }
+      // console.log(newEntities);
+      // console.log(sharedIdToMissing);
+      // console.log(sharedIdToAssigned);
+      // console.log(assignedToSharedId);
     }
-
-    // console.log(newEntities);
-    // console.log(sharedIdToMissing);
-    // console.log(sharedIdToAssigned);
-    // console.log(assignedToSharedId);
   },
 };
 
