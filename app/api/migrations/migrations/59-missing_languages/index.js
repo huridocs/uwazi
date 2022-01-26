@@ -139,12 +139,12 @@ const migration = {
           // eslint-disable-next-line no-await-in-loop
           await db.collection('entities').insertMany(newEntities);
         }
+        // console.log(newEntities);
       }
-      // console.log(newEntities);
-      // console.log(sharedIdToMissing);
-      // console.log(sharedIdToAssigned);
-      // console.log(assignedToSharedId);
     }
+    console.log(sharedIdToMissing);
+    // console.log(sharedIdToAssigned);
+    // console.log(assignedToSharedId);
   },
 };
 

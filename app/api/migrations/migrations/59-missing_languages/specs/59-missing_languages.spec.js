@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import { fixtures, EntityBluePrints } from './fixtures.js';
@@ -212,7 +213,147 @@ describe('migration missing_languages', () => {
     });
   });
 
-  // it('should make inherited values inherit from the entity in the proper language', async () => {
-  //   fail();
-  // });
+  it('should make inherited values inherit from the entity in the proper language', async () => {
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingOneRels.sharedId, language: 'pt' })
+      ).metadata
+    ).toMatchObject({
+      inherited_text: [
+        {
+          value: EntityBluePrints.Complete.sharedId,
+          label: 'CompleteExamplePortuguese',
+          type: 'entity',
+          inheritedValue: [{ value: 'complete_example_text_portuguese' }],
+          inheritedType: 'text',
+        },
+      ],
+      inherited_number: [
+        {
+          value: EntityBluePrints.Complete.sharedId,
+          label: 'CompleteExamplePortuguese',
+          type: 'entity',
+          inheritedValue: EntityBluePrints.Complete.metadata.numeric,
+          inheritedType: 'numeric',
+        },
+      ],
+      inherited_select: [
+        {
+          value: EntityBluePrints.CompleteSelects.sharedId,
+          label: 'CompleteSelectsPortuguese',
+          type: 'entity',
+          inheritedValue: [{ value: 'AId', label: 'A_pt' }],
+          inheritedType: 'select',
+        },
+      ],
+      inherited_multi_select: [
+        {
+          value: EntityBluePrints.CompleteSelects.sharedId,
+          label: 'CompleteSelectsPortuguese',
+          type: 'entity',
+          inheritedValue: [
+            { value: 'BId', label: 'B_pt' },
+            { value: 'DId', label: 'D_pt' },
+          ],
+          inheritedType: 'multiselect',
+        },
+      ],
+    });
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingTwoRels.sharedId, language: 'en' })
+      ).metadata
+    ).toMatchObject({
+      inherited_text: [
+        {
+          value: EntityBluePrints.MissingOne.sharedId,
+          label: 'MissingOneEnglish',
+          type: 'entity',
+          inheritedValue: [{ value: 'missing_one_text_english' }],
+          inheritedType: 'text',
+        },
+      ],
+      inherited_number: [
+        {
+          value: EntityBluePrints.MissingOne.sharedId,
+          label: 'MissingOneEnglish',
+          type: 'entity',
+          inheritedValue: [{ value: 2 }],
+          inheritedType: 'numeric',
+        },
+      ],
+      inherited_select: [
+        {
+          value: EntityBluePrints.MissingTwoSelects.sharedId,
+          label: EntityBluePrints.MissingTwoSelects.title,
+          type: 'entity',
+          inheritedValue: [{ value: 'BId', label: 'B' }],
+          inheritedType: 'select',
+        },
+      ],
+      inherited_multi_select: [
+        {
+          value: EntityBluePrints.MissingTwoSelects.sharedId,
+          label: EntityBluePrints.MissingTwoSelects.title,
+          type: 'entity',
+          inheritedValue: [
+            { value: 'AId', label: 'A' },
+            { value: 'CId', label: 'C' },
+          ],
+          inheritedType: 'multiselect',
+        },
+      ],
+    });
+    expect(
+      (
+        await db
+          .collection('entities')
+          .findOne({ sharedId: EntityBluePrints.MissingTwoRels.sharedId, language: 'es' })
+      ).metadata
+    ).toMatchObject({
+      inherited_text: [
+        {
+          value: EntityBluePrints.MissingOne.sharedId,
+          label: 'MissingOneEnglish',
+          type: 'entity',
+          inheritedValue: [{ value: 'missing_one_text_english' }],
+          inheritedType: 'text',
+        },
+      ],
+      inherited_number: [
+        {
+          value: EntityBluePrints.MissingOne.sharedId,
+          label: 'MissingOneEnglish',
+          type: 'entity',
+          inheritedValue: [{ value: 2 }],
+          inheritedType: 'numeric',
+        },
+      ],
+      inherited_select: [
+        {
+          value: EntityBluePrints.MissingTwoSelects.sharedId,
+          label: EntityBluePrints.MissingTwoSelects.title,
+          type: 'entity',
+          inheritedValue: [{ value: 'BId', label: 'B_es' }],
+          inheritedType: 'select',
+        },
+      ],
+      inherited_multi_select: [
+        {
+          value: EntityBluePrints.MissingTwoSelects.sharedId,
+          label: EntityBluePrints.MissingTwoSelects.title,
+          type: 'entity',
+          inheritedValue: [
+            { value: 'AId', label: 'A_es' },
+            { value: 'CId', label: 'C_es' },
+          ],
+          inheritedType: 'multiselect',
+        },
+      ],
+    });
+  });
 });
