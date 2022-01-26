@@ -579,13 +579,13 @@ describe('search', () => {
     });
 
     describe('allAggregations', () => {
-      it('should return all aggregations when clasification is not enabled', async () => {
+      it('should return all aggregations when classification is not enabled', async () => {
         userFactory.mock(undefined);
         const allAggregations = await search.search({ allAggregations: true }, 'en');
         const aggregationsIncluded = Object.keys(allAggregations.aggregations.all);
         expect(aggregationsIncluded).toMatchSnapshot();
       });
-      it('should return all aggregations when clasification is enabled', async () => {
+      it('should return all aggregations when classification is enabled', async () => {
         userFactory.mock(undefined);
         const _id = testingDB.id();
         await thesauri.save({
