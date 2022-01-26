@@ -38,7 +38,7 @@ class Inheritance {
       .filter(info => info[1].length !== 0)
       .map(([key, value]) => [key, Object.fromEntries(value)]);
     this.templateInfo = Object.fromEntries(this.templateInfo);
-    console.log(this.templateInfo);
+    // console.log(this.templateInfo);
   }
 
   isPropertyInherited(templateId, propertyName) {
@@ -81,11 +81,11 @@ class Inheritance {
       Object.entries(entity.metadata).forEach(([name, data]) => {
         if (this.isPropertyInherited(entity.template, name)) {
           const sourceSharedId = data[0].value;
-          const requestedLanguages = sharedIdToMissing.get(entity.sharedId);
+          const requestedLanguages = sharedIdToMissing[entity.sharedId];
           const requestedToSource = {};
           requestedLanguages.forEach(lang => {
-            const sourceLanguage = sharedIdToMissing.get(sourceSharedId)?.has(lang)
-              ? sharedIdToAssigned.get(sourceSharedId)
+            const sourceLanguage = sharedIdToMissing[sourceSharedId]?.has(lang)
+              ? sharedIdToAssigned[sourceSharedId]
               : lang;
             if (!(sourceLanguage in languageToSourceSharedId)) {
               languageToSourceSharedId[sourceLanguage] = new Set();

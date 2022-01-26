@@ -3,11 +3,11 @@ import { inheritance } from './inheritance.js';
 import { translator } from './translator.js';
 
 const removeFromMappedSets = (missingMap, assignmentMap, completedSet, key, item) => {
-  const set = missingMap.get(key);
+  const set = missingMap[key];
   set.delete(item);
   if (set.size === 0) {
-    missingMap.delete(key);
-    assignmentMap.delete(key);
+    delete missingMap[key];
+    delete assignmentMap[key];
     completedSet.add(key);
   }
 };
@@ -17,20 +17,20 @@ const findMissing = async db => {
   const defaultLanguage = settings.languages.find(l => l.default).key;
   const expectedLanguages = new Set(settings.languages.map(l => l.key));
 
-  const sharedIdToMissing = new Map();
-  const sharedIdToAssigned = new Map();
+  const sharedIdToMissing = {};
+  const sharedIdToAssigned = {};
   const completed = new Set();
   const entities = db.collection('entities').find({}, { projection: { sharedId: 1, language: 1 } });
 
   await entities.forEach(entity => {
     const { sharedId, language } = entity;
     if (expectedLanguages.has(language) && !completed.has(sharedId)) {
-      if (!sharedIdToAssigned.get(sharedId) || language === defaultLanguage) {
-        sharedIdToAssigned.set(sharedId, language);
+      if (!(sharedId in sharedIdToAssigned) || language === defaultLanguage) {
+        sharedIdToAssigned[sharedId] = language;
       }
 
-      if (!sharedIdToMissing.has(sharedId)) {
-        sharedIdToMissing.set(sharedId, new Set(expectedLanguages));
+      if (!(sharedId in sharedIdToMissing)) {
+        sharedIdToMissing[sharedId] = new Set(expectedLanguages);
         removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, completed, sharedId, language);
       } else {
         removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, completed, sharedId, language);
@@ -41,16 +41,16 @@ const findMissing = async db => {
   return { sharedIdToMissing, sharedIdToAssigned };
 };
 
-const flipStringMap = map => {
-  const resultMap = new Map();
-  map.forEach((value, key) => {
-    if (!resultMap.has(value)) {
-      resultMap.set(value, new Set([key]));
+const reverseStringRelation = dict => {
+  const result = {};
+  Object.entries(dict).forEach(([key, value]) => {
+    if (!(value in result)) {
+      result[value] = new Set([key]);
     } else {
-      resultMap.get(value).add(key);
+      result[value].add(key);
     }
   });
-  return resultMap;
+  return result;
 };
 
 const createBatches = (array, size) => {
@@ -81,12 +81,12 @@ const migration = {
 
     const { sharedIdToMissing, sharedIdToAssigned } = await findMissing(db);
 
-    this.reindex = Boolean(sharedIdToAssigned.size);
+    this.reindex = Boolean(Object.keys(sharedIdToAssigned).length);
     if (!this.reindex) {
       return;
     }
 
-    const assignedToSharedId = Array.from(flipStringMap(sharedIdToAssigned).entries());
+    const assignedToSharedId = Object.entries(reverseStringRelation(sharedIdToAssigned));
     await translator.build(db);
     await inheritance.build(db);
 
@@ -98,7 +98,6 @@ const migration = {
       for (let j = 0; j < sharedIdBatches.length; j += 1) {
         const newEntities = [];
         const sharedIds = sharedIdBatches[j];
-        // console.log(sharedIds);
         // eslint-disable-next-line no-await-in-loop
         const assignedEntities = await db
           .collection('entities')
@@ -114,7 +113,7 @@ const migration = {
         // eslint-disable-next-line no-await-in-loop
         await assignedEntities.forEach(entity => {
           const { sharedId } = entity;
-          const newLanguages = Array.from(sharedIdToMissing.get(sharedId));
+          const newLanguages = Array.from(sharedIdToMissing[sharedId]);
           newLanguages.forEach(language => {
             const copy = {
               ...entity,
@@ -139,12 +138,8 @@ const migration = {
           // eslint-disable-next-line no-await-in-loop
           await db.collection('entities').insertMany(newEntities);
         }
-        // console.log(newEntities);
       }
     }
-    console.log(sharedIdToMissing);
-    // console.log(sharedIdToAssigned);
-    // console.log(assignedToSharedId);
   },
 };
 
