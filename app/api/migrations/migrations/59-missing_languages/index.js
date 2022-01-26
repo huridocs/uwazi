@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { inheritance } from './inheritance.js';
 import { translator } from './translator.js';
 
