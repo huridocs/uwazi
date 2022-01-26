@@ -65,7 +65,7 @@ function processFilters(filters, properties) {
   }, []);
 }
 
-function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
+function aggregationProperties(propertiesToBeAggregated, allProperties) {
   return propertiesToBeAggregated
     .filter(property => {
       const type = property.inherit ? property.inherit.type : property.type;
@@ -78,7 +78,7 @@ function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
       ...property,
       name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
       content: property.inherit
-        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).content
+        ? propertiesHelper.getInheritedProperty(property, allProperties).content
         : property.content,
     }));
 }
@@ -242,7 +242,7 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
 };
 
 const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
-  const properties = propertiesHelper.allUniqueProperties(templates);
+  const properties = propertiesHelper.allProperties(templates);
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (
@@ -676,7 +676,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = aggregationProperties(properties, allUniqueProps);
+  const aggregations = aggregationProperties(properties, propertiesHelper.allProperties(templates));
 
   const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
   // this is where the query filters are built
