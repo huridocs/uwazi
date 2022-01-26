@@ -683,7 +683,8 @@ const buildQuery = async (query, language, user, resources) => {
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  queryBuilder.aggregations(aggregations, dictionaries);
+  const isClasificationEnabled = await dictionariesModel.count({ enable_clasification: true });
+  queryBuilder.aggregations(aggregations, dictionaries, isClasificationEnabled);
 
   return queryBuilder;
 };

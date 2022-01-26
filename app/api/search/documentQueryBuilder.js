@@ -344,7 +344,7 @@ export default function () {
       );
     },
 
-    aggregations(properties, dictionaries) {
+    async aggregations(properties, dictionaries, isClasificationEnabled) {
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
@@ -353,14 +353,16 @@ export default function () {
         );
       });
       // suggested has an implied '__' as a prefix
-      properties.forEach(property => {
-        baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
-          property,
-          dictionaries,
-          baseQuery,
-          true
-        );
-      });
+      if (isClasificationEnabled) {
+        properties.forEach(property => {
+          baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
+            property,
+            dictionaries,
+            baseQuery,
+            true
+          );
+        });
+      }
       return this;
     },
 
