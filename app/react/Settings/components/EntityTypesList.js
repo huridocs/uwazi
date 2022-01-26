@@ -13,6 +13,7 @@ import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
 import Tip from '../../Layout/Tip';
 
+// eslint-disable-next-line import/exports-last
 export class EntityTypesList extends Component {
   setAsDefaultButton(template) {
     return (
@@ -72,6 +73,13 @@ export class EntityTypesList extends Component {
     );
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  sortTemplates(templates) {
+    const def = templates.filter(t => t.default);
+    const sorted = templates.filter(t => !t.default).sort((a, b) => a.name > b.name);
+    return [...def, ...sorted];
+  }
+
   render() {
     return (
       <div className="panel panel-default">
@@ -79,7 +87,7 @@ export class EntityTypesList extends Component {
           <Translate>Templates</Translate>
         </div>
         <ul className="list-group document-types">
-          {this.props.templates.toJS().map((template, index) => (
+          {this.sortTemplates(this.props.templates.toJS()).map((template, index) => (
             <li key={index} className="list-group-item">
               <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
               {template.default ? this.defaultTemplateMessage() : ''}
