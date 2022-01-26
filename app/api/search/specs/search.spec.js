@@ -3,7 +3,8 @@ import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import db from 'api/utils/testing_db';
+import thesauri from 'api/thesauri/thesauri';
+import db, { testingDB } from 'api/utils/testing_db';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
@@ -578,8 +579,20 @@ describe('search', () => {
     });
 
     describe('allAggregations', () => {
-      it('should return all aggregations', async () => {
+      it('should return all aggregations when clasification is not enabled', async () => {
         userFactory.mock(undefined);
+        const allAggregations = await search.search({ allAggregations: true }, 'en');
+        const aggregationsIncluded = Object.keys(allAggregations.aggregations.all);
+        expect(aggregationsIncluded).toMatchSnapshot();
+      });
+      it('should return all aggregations when clasification is enabled', async () => {
+        userFactory.mock(undefined);
+        const _id = testingDB.id();
+        await thesauri.save({
+          name: 'Batman wish list',
+          values: [{ _id, id: '1', label: 'Joker BFF' }],
+          enable_classification: true,
+        });
         const allAggregations = await search.search({ allAggregations: true }, 'en');
         const aggregationsIncluded = Object.keys(allAggregations.aggregations.all);
         expect(aggregationsIncluded).toMatchSnapshot();
