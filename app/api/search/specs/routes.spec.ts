@@ -44,13 +44,13 @@ describe('Search routes', () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: '[]' });
-      expect(res.body.options.length).toBe(5);
+      expect(res.body.options.length).toBe(7);
 
       res = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: JSON.stringify([ids.template1]) });
-      expect(res.body.options.length).toBe(3);
-      expect(res.body.count).toBe(3);
+      expect(res.body.options.length).toBe(5);
+      expect(res.body.count).toBe(5);
     });
 
     it('should include unpublished entities', async () => {
