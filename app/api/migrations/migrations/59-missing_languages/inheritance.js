@@ -1,3 +1,5 @@
+import { translator } from './translator.js';
+
 class Inheritance {
   constructor() {
     this.propertyIdToName = {};
@@ -119,7 +121,11 @@ class Inheritance {
       if ('inheritedValue' in returned) {
         const sourcePropertyId = this.templateInfo[targetTemplateId][name].property;
         const sourcePropertyName = this.propertyIdToName[sourcePropertyId];
-        returned.inheritedValue = source.metadata[sourcePropertyName];
+        returned.inheritedValue = translator.translateProperty(
+          sourcePropertyName,
+          source.metadata[sourcePropertyName],
+          language
+        );
       }
       return [name, [returned]];
     }
