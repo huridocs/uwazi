@@ -11,13 +11,12 @@ class Translator {
 
   async buildPropertyInfo(db) {
     const templates = await db.collection('templates').find().toArray();
-    templates.forEach(t => {
-      t.properties.forEach(p => {
-        if (translatedPropertyTypes.has(p.type)) {
-          this.propertyNameToContent[p.name] = p.content;
-        }
-      });
-    });
+    this.propertyNameToContent = templates
+      .map(t => t.properties)
+      .flat()
+      .filter(p => translatedPropertyTypes.has(p.type))
+      .map(p => [p.name, p.content]);
+    this.propertyNameToContent = Object.fromEntries(this.propertyNameToContent);
   }
 
   async buildDictionaryInfo(db) {
@@ -31,28 +30,25 @@ class Translator {
         },
       })
       .toArray();
-    dictionaries.forEach(d => {
-      const idToLabel = {};
-      d.values.forEach(element => {
-        idToLabel[element.id] = element.label;
-      });
-      this.dictionaryInfo[d._id] = idToLabel;
-    });
+    const asArray = dictionaries.map(d => [
+      d._id,
+      Object.fromEntries(d.values.map(entry => [entry.id, entry.label])),
+    ]);
+    this.dictionaryInfo = Object.fromEntries(asArray);
   }
 
   async buildTranslationInfo(db) {
     const translations = await db.collection('translations').find().toArray();
-    translations.forEach(tr => {
-      const dictIdToContext = {};
-      tr.contexts.forEach(c => {
-        const labelToValue = {};
-        c.values.forEach(element => {
-          labelToValue[element.key] = element.value;
-        });
-        dictIdToContext[c.id] = labelToValue;
-      });
-      this.translationInfo[tr.locale] = dictIdToContext;
-    });
+    const asArray = translations.map(tr => [
+      tr.locale,
+      Object.fromEntries(
+        tr.contexts.map(c => [
+          c.id,
+          Object.fromEntries(c.values.map(element => [element.key, element.value])),
+        ])
+      ),
+    ]);
+    this.translationInfo = Object.fromEntries(asArray);
   }
 
   async build(db) {
