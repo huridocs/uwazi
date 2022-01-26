@@ -84,11 +84,17 @@ const migration = {
       const sharedIds = Array.from(assignedToSharedId[i][1]);
 
       // eslint-disable-next-line no-await-in-loop
-      await inheritance.prepareForBatch(sharedIds, db);
-
-      const assignedEntities = db
+      const assignedEntities = await db
         .collection('entities')
-        .find({ language: assignedLanguage, sharedId: { $in: sharedIds } });
+        .find({ language: assignedLanguage, sharedId: { $in: sharedIds } })
+        .toArray();
+      // eslint-disable-next-line no-await-in-loop
+      await inheritance.prepareForBatch(
+        db,
+        assignedEntities,
+        sharedIdToMissing,
+        sharedIdToAssigned
+      );
       // eslint-disable-next-line no-await-in-loop
       await assignedEntities.forEach(entity => {
         const { sharedId } = entity;
@@ -98,7 +104,15 @@ const migration = {
             ...entity,
             language,
             mongoLanguage: language,
-            metadata: translator.translateMetadata(entity.metadata, language),
+            metadata: translator.translateMetadata(
+              inheritance.inheritMetadata(
+                entity.metadata,
+                entity.template,
+                entity.sharedId,
+                language
+              ),
+              language
+            ),
           };
           delete copy._id;
           newEntities.push(copy);
@@ -111,7 +125,7 @@ const migration = {
     }
 
     // console.log(newEntities);
-    console.log(sharedIdToMissing);
+    // console.log(sharedIdToMissing);
     // console.log(sharedIdToAssigned);
     // console.log(assignedToSharedId);
   },
