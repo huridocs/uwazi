@@ -1,5 +1,6 @@
 class Inheritance {
   constructor() {
+    this.propertyIdToName = {};
     this.templateInfo = {};
     this.cleanup();
   }
@@ -11,7 +12,7 @@ class Inheritance {
 
   async build(db) {
     const templates = await db.collection('templates').find({}).toArray();
-    const propertyIdToName = Object.fromEntries(
+    this.propertyIdToName = Object.fromEntries(
       templates
         .map(t => t.properties)
         .flat()
@@ -27,7 +28,7 @@ class Inheritance {
             p.name,
             {
               ...p.inherit,
-              sourcePropertyName: propertyIdToName[p.inherit?.property],
+              sourcePropertyName: this.propertyIdToName[p.inherit?.property],
               template: p.content,
             },
           ]),
@@ -35,7 +36,7 @@ class Inheritance {
       .filter(info => info[1].length !== 0)
       .map(([key, value]) => [key, Object.fromEntries(value)]);
     this.templateInfo = Object.fromEntries(this.templateInfo);
-    // console.log(this.templateInfo);
+    console.log(this.templateInfo);
   }
 
   isPropertyInherited(templateId, propertyName) {
@@ -105,6 +106,7 @@ class Inheritance {
     return this.sourceEntityInfo[sourceSharedId][sourceLanguage];
   }
 
+  // eslint-disable-next-line max-statements
   inheritProperty(property, targetTemplateId, targetSharedId, language) {
     // console.log(this.sourceEntityInfo);
     const [name, values] = property;
@@ -113,7 +115,13 @@ class Inheritance {
       const sourceSharedId = value.value;
       const source = this.getSource(targetSharedId, sourceSharedId, language);
       // console.log(source);
-      return [name, [{ ...value, label: source.title }]];
+      const returned = { ...value, label: source.title };
+      if ('inheritedValue' in returned) {
+        const sourcePropertyId = this.templateInfo[targetTemplateId][name].property;
+        const sourcePropertyName = this.propertyIdToName[sourcePropertyId];
+        returned.inheritedValue = source.metadata[sourcePropertyName];
+      }
+      return [name, [returned]];
     }
     return property;
   }
