@@ -1,28 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`search multiselect aggregations allAggregations should return all aggregations when clasification is enabled 1`] = `
-Array [
-  "meta",
-  "doc_count",
-  "__groupedDictionary",
-  "groupedDictionary",
-  "nested2",
-  "nested1",
-  "nestedField_nested",
-  "__select1",
-  "__multiselect1",
-  "relationship",
-  "select1",
-  "__relationshipcountry",
-  "relationshipcountry",
-  "_types",
-  "__relationship",
-  "__nestedField_nested",
-  "multiselect1",
-]
-`;
-
-exports[`search multiselect aggregations allAggregations should return all aggregations when clasification is not enabled 1`] = `
+exports[`search multiselect aggregations allAggregations should return all aggregations 1`] = `
 Array [
   "meta",
   "doc_count",
