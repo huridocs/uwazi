@@ -1,6 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
+export interface CompoundFilter {
+  values?: string[];
+  operator?: 'AND' | 'OR';
+}
+
 export interface Page {
   limit?: number;
   offset?: number;
@@ -9,11 +14,6 @@ export interface Page {
 export interface RangeFilter {
   from?: number;
   to?: number;
-}
-
-export interface CompoundFilter {
-  values?: string[];
-  operator?: 'AND' | 'OR';
 }
 
 export interface SearchQuery {
