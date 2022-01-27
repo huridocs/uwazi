@@ -438,7 +438,6 @@ export default {
 
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
-      // await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
 
     if (index) {
