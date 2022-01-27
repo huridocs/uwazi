@@ -96,6 +96,7 @@ const migration = {
 
   async processBatch(db, sharedIds, assignedLanguage) {
     const newEntities = [];
+    const processedIds = new Set();
     const assignedEntities = await db
       .collection('entities')
       .find({ language: assignedLanguage, sharedId: { $in: sharedIds } })
@@ -106,27 +107,30 @@ const migration = {
       this.sharedIdToMissing,
       this.sharedIdToAssigned
     );
-    await assignedEntities.forEach(entity => {
-      const { sharedId } = entity;
-      const newLanguages = Array.from(this.sharedIdToMissing[sharedId]);
-      newLanguages.forEach(language => {
-        const copy = {
-          ...entity,
-          language,
-          mongoLanguage: language,
-          metadata: translator.translateMetadata(
-            inheritance.inheritMetadata(
-              entity.metadata,
-              entity.template,
-              entity.sharedId,
+    assignedEntities.forEach(entity => {
+      if (!processedIds.has(entity.sharedId)) {
+        const { sharedId } = entity;
+        const newLanguages = Array.from(this.sharedIdToMissing[sharedId]);
+        newLanguages.forEach(language => {
+          const copy = {
+            ...entity,
+            language,
+            mongoLanguage: language,
+            metadata: translator.translateMetadata(
+              inheritance.inheritMetadata(
+                entity.metadata,
+                entity.template,
+                entity.sharedId,
+                language
+              ),
               language
             ),
-            language
-          ),
-        };
-        delete copy._id;
-        newEntities.push(copy);
-      });
+          };
+          delete copy._id;
+          newEntities.push(copy);
+          processedIds.add(entity.sharedId);
+        });
+      }
     });
 
     if (newEntities.length > 0) {

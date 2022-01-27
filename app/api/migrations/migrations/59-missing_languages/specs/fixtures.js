@@ -454,6 +454,7 @@ const fixtures = {
       },
     },
     { ...EntityBluePrints.MissingOne },
+    { ...EntityBluePrints.MissingOne },
     {
       ...EntityBluePrints.MissingOne,
       title: 'MissingOnePortuguese',
@@ -560,18 +561,18 @@ fixtures.entities.push({
     inherited_text: [
       {
         value: EntityBluePrints.MissingOne.sharedId,
-        label: fixtures.entities[7].title,
+        label: fixtures.entities[8].title,
         type: 'entity',
-        inheritedValue: fixtures.entities[7].metadata.text,
+        inheritedValue: fixtures.entities[8].metadata.text,
         inheritedType: 'text',
       },
     ],
     inherited_number: [
       {
         value: EntityBluePrints.MissingOne.sharedId,
-        label: fixtures.entities[7].title,
+        label: fixtures.entities[8].title,
         type: 'entity',
-        inheritedValue: fixtures.entities[7].metadata.numeric,
+        inheritedValue: fixtures.entities[8].metadata.numeric,
         inheritedType: 'numeric',
       },
     ],
@@ -596,7 +597,7 @@ fixtures.entities.push({
     no_inheritance: [
       {
         value: EntityBluePrints.MissingOne.sharedId,
-        label: fixtures.entities[7].title,
+        label: fixtures.entities[8].title,
         type: 'entity',
       },
     ],

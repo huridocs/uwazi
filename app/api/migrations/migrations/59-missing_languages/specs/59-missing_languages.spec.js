@@ -4,23 +4,12 @@ import migration from '../index.js';
 import { fixtures, EntityBluePrints } from './fixtures.js';
 
 let db;
-let entities;
-let sharedIds;
-let testedSharedIds;
 
 describe('migration missing_languages', () => {
   beforeAll(async () => {
     // spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
     db = testingDB.mongodb;
-    entities = await db.collection('entities').find({}).toArray();
-    sharedIds = new Set(entities.map(e => e.sharedId));
-    testedSharedIds = new Set(sharedIds);
-    testedSharedIds.delete(EntityBluePrints.Complete.sharedId);
-    testedSharedIds.delete(EntityBluePrints.CompleteSelects.sharedId);
-    testedSharedIds.delete(EntityBluePrints.NoLanguage.sharedId);
-    testedSharedIds = Array.from(testedSharedIds);
-
     await migration.up(db);
   });
 
@@ -71,16 +60,19 @@ describe('migration missing_languages', () => {
   });
 
   it('should create new entities to fill missing languages', async () => {
-    for (let i = 0; i < testedSharedIds.length; i += 1) {
-      const sharedId = testedSharedIds[i];
-      // eslint-disable-next-line no-await-in-loop
+    const testSharedId = async (sharedId, expectedNumber) => {
       const selected = await db.collection('entities').find({ sharedId }).toArray();
-      expect(selected).toHaveLength(3);
       const languages = selected.map(e => e.language);
+      expect(selected).toHaveLength(expectedNumber);
       expect(languages).toContain('en');
       expect(languages).toContain('es');
       expect(languages).toContain('pt');
-    }
+    };
+    await testSharedId('missing_one_sharedId', 4);
+    await testSharedId('missing_two_sharedId', 3);
+    await testSharedId('missing_two_selects_sharedId', 3);
+    await testSharedId('missing_one_rels_sharedId', 3);
+    await testSharedId('missing_two_rels_sharedId', 3);
   });
 
   it('should copy root data and set mongolanguage', async () => {
