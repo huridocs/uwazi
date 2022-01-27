@@ -2300,30 +2300,25 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*":
-  version "14.11.2"
-  resolved "https://registry.npmjs.org/@types/node/-/node-14.11.2.tgz"
-  integrity sha512-jiE3QIxJ8JLNcb1Ps6rDbysDhN4xa8DJJvuC9prr6w+1tIh+QAbYyNF3tyiZNLDBIuBCf4KEcV2UvQm/V60xfA==
+"@types/node@*", "@types/node@>=10.0.0":
+  version "15.6.1"
+  resolved "https://registry.npmjs.org/@types/node/-/node-15.6.1.tgz"
+  integrity sha512-7EIraBEyRHEe7CH+Fm1XvgqU6uwZN8Q7jppJGcqjROMT29qhAuuOxYB1uEY5UMYQKEmA5D+5tBnhdaPXSsLONA==
 
 "@types/node@14.18.9":
   version "14.18.9"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.9.tgz#0e5944eefe2b287391279a19b407aa98bd14436d"
   integrity sha512-j11XSuRuAlft6vLDEX4RvhqC0KxNxx6QIyMXNb0vHHSNPXTPeiy3algESWmOOIzEtiEL0qiowPU3ewW9hHVa7Q==
 
-"@types/node@>=10.0.0":
-  version "15.6.1"
-  resolved "https://registry.npmjs.org/@types/node/-/node-15.6.1.tgz"
-  integrity sha512-7EIraBEyRHEe7CH+Fm1XvgqU6uwZN8Q7jppJGcqjROMT29qhAuuOxYB1uEY5UMYQKEmA5D+5tBnhdaPXSsLONA==
-
 "@types/node@^8.0.24":
   version "8.10.66"
   resolved "https://registry.npmjs.org/@types/node/-/node-8.10.66.tgz"
   integrity sha512-tktOkFUA4kXx2hhhrB8bIFb5TbwzS4uOhKEmwiD+NoiL0qtP2OQ9mFldbgD4dV1djrlBYP6eBuQZiWjuHUpqFw==
 
-"@types/nodemailer@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@types/nodemailer/-/nodemailer-6.4.0.tgz"
-  integrity sha512-KY7bFWB0MahRZvVW4CuW83qcCDny59pJJ0MQ5ifvfcjNwPlIT0vW4uARO4u1gtkYnWdhSvURegecY/tzcukJcA==
+"@types/nodemailer@^6.4.4":
+  version "6.4.4"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.4.tgz#c265f7e7a51df587597b3a49a023acaf0c741f4b"
+  integrity sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==
   dependencies:
     "@types/node" "*"
 
