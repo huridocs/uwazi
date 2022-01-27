@@ -1,3 +1,5 @@
+import { performance } from 'perf_hooks';
+
 import { inheritance } from './inheritance.js';
 import { translator } from './translator.js';
 
@@ -107,7 +109,7 @@ const migration = {
       this.sharedIdToMissing,
       this.sharedIdToAssigned
     );
-    assignedEntities.forEach(entity => {
+    await assignedEntities.forEach(entity => {
       if (!processedIds.has(entity.sharedId)) {
         const { sharedId } = entity;
         const newLanguages = Array.from(this.sharedIdToMissing[sharedId]);
@@ -134,11 +136,15 @@ const migration = {
     });
 
     if (newEntities.length > 0) {
+      console.log('----------batch save ---------------------');
+      console.log(newEntities.length);
       await db.collection('entities').insertMany(newEntities);
     }
   },
 
   async up(db) {
+    const start = performance.now();
+
     process.stdout.write(`${this.name}...\r\n`);
 
     await this.findMissing(db);
@@ -156,6 +162,12 @@ const migration = {
         await this.processBatch(db, sharedIds, assignedLanguage);
       }
     }
+
+  const end = performance.now();
+  const used = process.memoryUsage().heapUsed / 1024 / 1024;
+
+  process.stdout.write(`Took ${Math.round(end - start)} ms.\n`);
+  process.stdout.write(`Used roughly ${used.toFixed(2)} MB memory.\n`);
   },
 };
 
