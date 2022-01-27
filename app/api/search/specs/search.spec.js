@@ -580,7 +580,10 @@ describe('search', () => {
     describe('allAggregations', () => {
       it('should return all aggregations', async () => {
         userFactory.mock(undefined);
-        const allAggregations = await search.search({ allAggregations: true }, 'en');
+        const allAggregations = await search.search(
+          { allAggregations: true, includeReviewAggregations: true },
+          'en'
+        );
         const aggregationsIncluded = Object.keys(allAggregations.aggregations.all);
         expect(aggregationsIncluded).toMatchSnapshot();
       });
