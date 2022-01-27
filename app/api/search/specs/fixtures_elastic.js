@@ -186,7 +186,7 @@ export const fixtures = {
     {
       _id: db.id(),
       sharedId: 'inherited',
-      title: 'Inherited 1 EN',
+      title: 'Inherited 1',
       template: template1,
       language: 'en',
       published: true,
@@ -229,7 +229,7 @@ export const fixtures = {
     {
       _id: db.id(),
       sharedId: 'inherited 2',
-      title: 'Inherited 2 EN',
+      title: 'Inherited 2',
       template: template1,
       language: 'en',
       published: true,

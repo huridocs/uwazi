@@ -397,7 +397,7 @@ describe('search', () => {
         'en'
       );
 
-      expect(results.rows[0].title).toBe('Inherited 1 EN');
+      expect(results.rows[0].title).toBe('Inherited 1');
     });
 
     it('should filter by text values', async () => {
@@ -897,11 +897,11 @@ describe('search', () => {
     it('should filter by template', async () => {
       userFactory.mock(undefined);
       const { options } = await search.autocomplete('en', 'en');
-      expect(options.length).toBe(6);
+      expect(options.length).toBe(4);
       const { options: filteredByTemplateOptions } = await search.autocomplete('en', 'en', [
         ids.template1,
       ]);
-      expect(filteredByTemplateOptions.length).toBe(5);
+      expect(filteredByTemplateOptions.length).toBe(3);
     });
 
     it('should include unpublished entities', async () => {
