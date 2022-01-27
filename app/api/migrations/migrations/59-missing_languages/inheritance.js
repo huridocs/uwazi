@@ -75,7 +75,7 @@ class Inheritance {
     assignedEntities.forEach(entity => {
       this.sourceLanguageInfo[entity.sharedId] = {};
       Object.entries(entity.metadata).forEach(([name, data]) => {
-        if (this.isPropertyInherited(entity.template, name)) {
+        if (this.isPropertyInherited(entity.template, name) && data.length !== 0) {
           const sourceSharedId = data[0].value;
           const requestedLanguages = sharedIdToMissing[entity.sharedId];
           const requestedToSource = {};
@@ -113,7 +113,7 @@ class Inheritance {
 
   inheritProperty(property, targetTemplateId, targetSharedId, language) {
     const [name, values] = property;
-    if (this.isPropertyInherited(targetTemplateId, name)) {
+    if (this.isPropertyInherited(targetTemplateId, name) && values.length !== 0) {
       const [value] = values;
       const source = this.getSource(targetSharedId, value.value, language);
       const returned = { ...value, label: source.title };

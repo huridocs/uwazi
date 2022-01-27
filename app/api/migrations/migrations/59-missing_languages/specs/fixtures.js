@@ -478,15 +478,7 @@ const fixtures = {
             inheritedType: 'text',
           },
         ],
-        inherited_number: [
-          {
-            value: EntityBluePrints.Complete.sharedId,
-            label: EntityBluePrints.Complete.title,
-            type: 'entity',
-            inheritedValue: EntityBluePrints.Complete.metadata.numeric,
-            inheritedType: 'numeric',
-          },
-        ],
+        inherited_number: [],
         inherited_select: [
           {
             value: EntityBluePrints.CompleteSelects.sharedId,
@@ -532,15 +524,7 @@ fixtures.entities.push({
         inheritedType: 'text',
       },
     ],
-    inherited_number: [
-      {
-        value: EntityBluePrints.Complete.sharedId,
-        label: fixtures.entities[1].title,
-        type: 'entity',
-        inheritedValue: fixtures.entities[1].metadata.numeric,
-        inheritedType: 'numeric',
-      },
-    ],
+    inherited_number: [],
     inherited_select: [
       {
         value: EntityBluePrints.CompleteSelects.sharedId,

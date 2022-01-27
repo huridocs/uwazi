@@ -227,15 +227,7 @@ describe('migration missing_languages', () => {
           inheritedType: 'text',
         },
       ],
-      inherited_number: [
-        {
-          value: EntityBluePrints.Complete.sharedId,
-          label: 'CompleteExamplePortuguese',
-          type: 'entity',
-          inheritedValue: EntityBluePrints.Complete.metadata.numeric,
-          inheritedType: 'numeric',
-        },
-      ],
+      inherited_number: [],
       inherited_select: [
         {
           value: EntityBluePrints.CompleteSelects.sharedId,
