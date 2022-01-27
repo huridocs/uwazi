@@ -85,8 +85,7 @@ describe('migration missing_languages', () => {
 
   it('should copy root data and set mongolanguage', async () => {
     let expected = { ...EntityBluePrints.MissingOne, language: 'es', mongoLanguage: 'es' };
-    delete expected._id;
-    delete expected.metadata;
+    ['_id', 'metadata'].forEach(key => delete expected[key]);
     expect(
       await db
         .collection('entities')
@@ -94,8 +93,7 @@ describe('migration missing_languages', () => {
     ).toMatchObject(expected);
 
     expected = { ...EntityBluePrints.MissingTwo, language: 'en', mongoLanguage: 'en' };
-    delete expected._id;
-    delete expected.metadata;
+    ['_id', 'metadata'].forEach(key => delete expected[key]);
     expect(
       await db
         .collection('entities')
@@ -103,8 +101,7 @@ describe('migration missing_languages', () => {
     ).toMatchObject(expected);
 
     expected = { ...EntityBluePrints.MissingTwo, language: 'pt', mongoLanguage: 'pt' };
-    delete expected._id;
-    delete expected.metadata;
+    ['_id', 'metadata'].forEach(key => delete expected[key]);
     expect(
       await db
         .collection('entities')

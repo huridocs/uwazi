@@ -1,45 +1,6 @@
 import { inheritance } from './inheritance.js';
 import { translator } from './translator.js';
 
-const removeFromMappedSets = (missingMap, assignmentMap, completedSet, key, item) => {
-  const set = missingMap[key];
-  set.delete(item);
-  if (set.size === 0) {
-    delete missingMap[key];
-    delete assignmentMap[key];
-    completedSet.add(key);
-  }
-};
-
-const findMissing = async db => {
-  const settings = await db.collection('settings').findOne({});
-  const defaultLanguage = settings.languages.find(l => l.default).key;
-  const expectedLanguages = new Set(settings.languages.map(l => l.key));
-
-  const sharedIdToMissing = {};
-  const sharedIdToAssigned = {};
-  const completed = new Set();
-  const entities = db.collection('entities').find({}, { projection: { sharedId: 1, language: 1 } });
-
-  await entities.forEach(entity => {
-    const { sharedId, language } = entity;
-    if (expectedLanguages.has(language) && !completed.has(sharedId)) {
-      if (!(sharedId in sharedIdToAssigned) || language === defaultLanguage) {
-        sharedIdToAssigned[sharedId] = language;
-      }
-
-      if (!(sharedId in sharedIdToMissing)) {
-        sharedIdToMissing[sharedId] = new Set(expectedLanguages);
-        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, completed, sharedId, language);
-      } else {
-        removeFromMappedSets(sharedIdToMissing, sharedIdToAssigned, completed, sharedId, language);
-      }
-    }
-  });
-
-  return { sharedIdToMissing, sharedIdToAssigned };
-};
-
 const reverseStringRelation = dict => {
   const result = {};
   Object.entries(dict).forEach(([key, value]) => {
@@ -75,68 +36,120 @@ const migration = {
 
   batchLimit: 1000,
 
+  sharedIdToMissing: {},
+  sharedIdToAssigned: {},
+  completedSharedIds: new Set(),
+  assignedToSharedId: {},
+
+  removeFromMappedSets(key, item) {
+    const set = this.sharedIdToMissing[key];
+    set.delete(item);
+    if (set.size === 0) {
+      delete this.sharedIdToMissing[key];
+      delete this.sharedIdToAssigned[key];
+      this.completedSharedIds.add(key);
+    }
+  },
+
+  async findMissing(db) {
+    const settings = await db.collection('settings').findOne({});
+    const defaultLanguage = settings.languages.find(l => l.default).key;
+    const expectedLanguages = new Set(settings.languages.map(l => l.key));
+
+    this.sharedIdToMissing = {};
+    this.sharedIdToAssigned = {};
+    this.completedSharedIds = new Set();
+    const entities = db
+      .collection('entities')
+      .find({}, { projection: { sharedId: 1, language: 1 } });
+
+    await entities.forEach(entity => {
+      const { sharedId, language } = entity;
+      if (expectedLanguages.has(language) && !this.completedSharedIds.has(sharedId)) {
+        if (!(sharedId in this.sharedIdToAssigned) || language === defaultLanguage) {
+          this.sharedIdToAssigned[sharedId] = language;
+        }
+
+        if (!(sharedId in this.sharedIdToMissing)) {
+          this.sharedIdToMissing[sharedId] = new Set(expectedLanguages);
+          this.removeFromMappedSets(sharedId, language);
+        } else {
+          this.removeFromMappedSets(sharedId, language);
+        }
+      }
+    });
+    this.assignedToSharedId = Object.entries(reverseStringRelation(this.sharedIdToAssigned));
+    this.reindex = Boolean(Object.keys(this.sharedIdToAssigned).length);
+  },
+
+  async buildResources(db) {
+    await translator.build(db);
+    await inheritance.build(db);
+  },
+
+  prepareLanguage(index) {
+    const assignedLanguage = this.assignedToSharedId[index][0];
+    const allSharedIds = Array.from(this.assignedToSharedId[index][1]);
+    const sharedIdBatches = createBatches(allSharedIds, this.batchLimit);
+    return [assignedLanguage, sharedIdBatches];
+  },
+
+  async processBatch(db, sharedIds, assignedLanguage) {
+    const newEntities = [];
+    const assignedEntities = await db
+      .collection('entities')
+      .find({ language: assignedLanguage, sharedId: { $in: sharedIds } })
+      .toArray();
+    await inheritance.prepareForBatch(
+      db,
+      assignedEntities,
+      this.sharedIdToMissing,
+      this.sharedIdToAssigned
+    );
+    await assignedEntities.forEach(entity => {
+      const { sharedId } = entity;
+      const newLanguages = Array.from(this.sharedIdToMissing[sharedId]);
+      newLanguages.forEach(language => {
+        const copy = {
+          ...entity,
+          language,
+          mongoLanguage: language,
+          metadata: translator.translateMetadata(
+            inheritance.inheritMetadata(
+              entity.metadata,
+              entity.template,
+              entity.sharedId,
+              language
+            ),
+            language
+          ),
+        };
+        delete copy._id;
+        newEntities.push(copy);
+      });
+    });
+
+    if (newEntities.length > 0) {
+      await db.collection('entities').insertMany(newEntities);
+    }
+  },
+
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    const { sharedIdToMissing, sharedIdToAssigned } = await findMissing(db);
-
-    this.reindex = Boolean(Object.keys(sharedIdToAssigned).length);
+    await this.findMissing(db);
     if (!this.reindex) {
       return;
     }
 
-    const assignedToSharedId = Object.entries(reverseStringRelation(sharedIdToAssigned));
-    await translator.build(db);
-    await inheritance.build(db);
+    await this.buildResources(db);
 
-    for (let i = 0; i < assignedToSharedId.length; i += 1) {
-      const assignedLanguage = assignedToSharedId[i][0];
-      const allSharedIds = Array.from(assignedToSharedId[i][1]);
-      const sharedIdBatches = createBatches(allSharedIds, this.batchLimit);
-
+    for (let i = 0; i < this.assignedToSharedId.length; i += 1) {
+      const [assignedLanguage, sharedIdBatches] = this.prepareLanguage(i);
       for (let j = 0; j < sharedIdBatches.length; j += 1) {
-        const newEntities = [];
         const sharedIds = sharedIdBatches[j];
         // eslint-disable-next-line no-await-in-loop
-        const assignedEntities = await db
-          .collection('entities')
-          .find({ language: assignedLanguage, sharedId: { $in: sharedIds } })
-          .toArray();
-        // eslint-disable-next-line no-await-in-loop
-        await inheritance.prepareForBatch(
-          db,
-          assignedEntities,
-          sharedIdToMissing,
-          sharedIdToAssigned
-        );
-        // eslint-disable-next-line no-await-in-loop
-        await assignedEntities.forEach(entity => {
-          const { sharedId } = entity;
-          const newLanguages = Array.from(sharedIdToMissing[sharedId]);
-          newLanguages.forEach(language => {
-            const copy = {
-              ...entity,
-              language,
-              mongoLanguage: language,
-              metadata: translator.translateMetadata(
-                inheritance.inheritMetadata(
-                  entity.metadata,
-                  entity.template,
-                  entity.sharedId,
-                  language
-                ),
-                language
-              ),
-            };
-            delete copy._id;
-            newEntities.push(copy);
-          });
-        });
-
-        if (newEntities.length > 0) {
-          // eslint-disable-next-line no-await-in-loop
-          await db.collection('entities').insertMany(newEntities);
-        }
+        await this.processBatch(db, sharedIds, assignedLanguage);
       }
     }
   },

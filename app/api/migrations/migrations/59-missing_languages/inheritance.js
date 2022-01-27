@@ -101,21 +101,24 @@ class Inheritance {
     return this.sourceEntityInfo[sourceSharedId][sourceLanguage];
   }
 
+  getInheritedValue(name, targetTemplateId, source, language) {
+    const sourcePropertyId = this.templateInfo[targetTemplateId][name].property;
+    const sourcePropertyName = this.propertyIdToName[sourcePropertyId];
+    return translator.translateProperty(
+      sourcePropertyName,
+      source.metadata[sourcePropertyName],
+      language
+    );
+  }
+
   inheritProperty(property, targetTemplateId, targetSharedId, language) {
     const [name, values] = property;
     if (this.isPropertyInherited(targetTemplateId, name)) {
       const [value] = values;
-      const sourceSharedId = value.value;
-      const source = this.getSource(targetSharedId, sourceSharedId, language);
+      const source = this.getSource(targetSharedId, value.value, language);
       const returned = { ...value, label: source.title };
       if ('inheritedValue' in returned) {
-        const sourcePropertyId = this.templateInfo[targetTemplateId][name].property;
-        const sourcePropertyName = this.propertyIdToName[sourcePropertyId];
-        returned.inheritedValue = translator.translateProperty(
-          sourcePropertyName,
-          source.metadata[sourcePropertyName],
-          language
-        );
+        returned.inheritedValue = this.getInheritedValue(name, targetTemplateId, source, language);
       }
       return [name, [returned]];
     }
