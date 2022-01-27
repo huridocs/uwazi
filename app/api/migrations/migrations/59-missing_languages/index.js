@@ -3,6 +3,24 @@ import { performance } from 'perf_hooks';
 import { inheritance } from './inheritance.js';
 import { translator } from './translator.js';
 
+const supportedLanguages = new Set([
+  'da',
+  'nl',
+  'en',
+  'fi',
+  'fr',
+  'de',
+  'hu',
+  'it',
+  'nb',
+  'pt',
+  'ro',
+  'ru',
+  'es',
+  'sv',
+  'tr',
+]);
+
 const reverseStringRelation = dict => {
   const result = {};
   Object.entries(dict).forEach(([key, value]) => {
@@ -117,7 +135,7 @@ const migration = {
           const copy = {
             ...entity,
             language,
-            mongoLanguage: language,
+            mongoLanguage: supportedLanguages.has(language) ? language : 'none',
             metadata: translator.translateMetadata(
               inheritance.inheritMetadata(
                 entity.metadata,
