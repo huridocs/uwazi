@@ -2,27 +2,14 @@ import { Application } from 'express';
 import request from 'supertest';
 
 import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import db, { DBFixture, testingDB } from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import entities from 'api/entities';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
 import { searchRoutes } from '../routes';
 import { elasticTesting } from 'api/utils/elastic_testing';
-
-const load = async (data: DBFixture, index?: string) =>
-  testingEnvironment.setUp(
-    {
-      ...data,
-      settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
-      translations: [
-        { locale: 'en', contexts: [] },
-        { locale: 'es', contexts: [] },
-      ],
-    },
-    index
-  );
+import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Sorting', () => {
   const factory = getFixturesFactory();
@@ -52,7 +39,7 @@ describe('Sorting', () => {
       inheritedProperty: [factory.metadataValue('inherited entity 2')],
     });
 
-    await load(
+    await setupTestingEnviroment(
       {
         templates: [
           factory.template('templateA', [

@@ -1,32 +1,19 @@
 import { Application } from 'express';
 import request from 'supertest';
-import db, { DBFixture, testingDB } from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 
 import { setUpApp } from 'api/utils/testingRoutes';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { searchRoutes } from '../routes';
-
-const load = async (data: DBFixture, index?: string) =>
-  testingEnvironment.setUp(
-    {
-      ...data,
-      settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
-      translations: [
-        { locale: 'en', contexts: [] },
-        { locale: 'es', contexts: [] },
-      ],
-    },
-    index
-  );
+import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Metadata filters', () => {
   const factory = getFixturesFactory();
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
-    await load(
+    await setupTestingEnviroment(
       {
         templates: [
           factory.template('templateA', [

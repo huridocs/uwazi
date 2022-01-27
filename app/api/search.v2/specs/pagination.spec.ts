@@ -1,34 +1,21 @@
+import qs from 'qs';
 import { Application } from 'express';
 import request from 'supertest';
 
 import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import db, { DBFixture, testingDB } from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 import { searchRoutes } from '../routes';
 import { elasticTesting } from 'api/utils/elastic_testing';
-import qs from 'qs';
-
-const load = async (data: DBFixture, index?: string) =>
-  testingEnvironment.setUp(
-    {
-      ...data,
-      settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
-      translations: [
-        { locale: 'en', contexts: [] },
-        { locale: 'es', contexts: [] },
-      ],
-    },
-    index
-  );
+import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Pagination', () => {
   const factory = getFixturesFactory();
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
-    await load(
+    await setupTestingEnviroment(
       {
         templates: [factory.template('templateA', []), factory.template('templateB', [])],
         entities: [
