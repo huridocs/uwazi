@@ -173,3 +173,11 @@ describe('Metadata filters', () => {
     ]);
   });
 });
+
+it.todo('Snippets for non fulltext texts');
+
+it.todo('Allow search query to have a language instead of header Content-Language');
+
+it.todo('Geolocation');
+
+it.todo('Aggregations');
