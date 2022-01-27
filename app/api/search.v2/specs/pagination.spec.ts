@@ -86,6 +86,4 @@ describe('Pagination', () => {
     expect(body.data).toMatchObject([{ title: 'Fifth' }, { title: 'Sixth' }]);
     expect(body.links.next).toBeUndefined();
   });
-
-  it.todo('should be able to handle pagination with 10,000+ with relation "eq"');
 });
