@@ -64,6 +64,11 @@ Object {
         "raw": Object {
           "type": "keyword",
         },
+        "sort": Object {
+          "analyzer": "string_sorter",
+          "fielddata": true,
+          "type": "text",
+        },
       },
       "type": "keyword",
     },
