@@ -344,7 +344,7 @@ export default function () {
       );
     },
 
-    aggregations(properties, dictionaries, classificationIsEnabled) {
+    aggregations(properties, dictionaries, includeReviewAggregations) {
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
@@ -352,7 +352,7 @@ export default function () {
           baseQuery
         );
       });
-      if (classificationIsEnabled) {
+      if (includeReviewAggregations) {
         // suggested has an implied '__' as a prefix
         properties.forEach(property => {
           baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(

@@ -60,6 +60,7 @@ export const searchParamsSchema = {
         unpublished: { type: 'boolean' },
         select: { type: 'array', items: [{ type: 'string' }] },
         geolocation: { type: 'boolean' },
+        includeReviewAggregations: { type: 'boolean' },
       },
     },
   },
