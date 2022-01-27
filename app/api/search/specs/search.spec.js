@@ -387,21 +387,17 @@ describe('search', () => {
         return 'not-catched';
       });
 
-      try {
-        const results = await search.search(
-          {
-            types: [ids.template1],
-            filters: {
-              relationshipdate: { from: 'first-day-last-month', to: 'last-day-last-month' },
-            },
+      const results = await search.search(
+        {
+          types: [ids.template1],
+          filters: {
+            relationshipdate: { from: 'first-day-last-month', to: 'last-day-last-month' },
           },
-          'en'
-        );
+        },
+        'en'
+      );
 
-        expect(results.rows[0].title).toBe('Inherited 1 EN');
-      } catch (err) {
-        fail(err);
-      }
+      expect(results.rows[0].title).toBe('Inherited 1 EN');
     });
 
     it('should filter by text values', async () => {
