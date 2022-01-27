@@ -1,4 +1,4 @@
-import { RangeFilter, CompoundFilter, SearchQuery } from 'shared/types/SearchQueryType';
+import { CompoundFilter, RangeFilter, SearchQuery } from 'shared/types/SearchQueryType';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
 import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';
@@ -11,30 +11,35 @@ const isRange = (range: Filter): range is RangeFilter =>
 const isCompound = (filterValue: Filter): filterValue is CompoundFilter =>
   typeof filterValue === 'object' && filterValue.hasOwnProperty('values');
 
+const getFilterValue = (filterValue: Filter) => {
+  if (isCompound(filterValue)) {
+    const operator = filterValue.operator === 'AND' ? ' + ' : ' | ';
+    return filterValue.values?.join(operator);
+  }
+
+  return filterValue;
+};
+
+const buildPropertyFilter = (query: SearchQuery) => (key: string) => {
+  const filterValue = query.filter?.[key];
+  if (isRange(filterValue)) {
+    return {
+      range: { [`${key}.value`]: { gte: filterValue.from, lte: filterValue.to } },
+    };
+  }
+
+  return {
+    simple_query_string: {
+      query: getFilterValue(filterValue),
+      fields: [`${key}.value`],
+    },
+  };
+};
+
 const metadataFilters = (query: SearchQuery) =>
   Object.keys(query.filter || {})
     .filter(filter => filter.startsWith('metadata.'))
-    .map(key => {
-      const filterValue = query.filter?.[key];
-      if (isRange(filterValue)) {
-        return {
-          range: { [`${key}.value`]: { gte: filterValue.from, lte: filterValue.to } },
-        };
-      }
-
-      let queryString = filterValue;
-      if (isCompound(filterValue)) {
-        const operator = filterValue.operator === 'AND' ? ' + ' : ' | ';
-        queryString = filterValue.values?.join(operator);
-      }
-
-      return {
-        simple_query_string: {
-          query: queryString,
-          fields: [`${key}.value`],
-        },
-      };
-    });
+    .map(buildPropertyFilter(query));
 
 const fullTextSearch = (
   searchString: string | undefined,
