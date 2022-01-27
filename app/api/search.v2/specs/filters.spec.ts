@@ -181,3 +181,5 @@ it.todo('Allow search query to have a language instead of header Content-Languag
 it.todo('Geolocation');
 
 it.todo('Aggregations');
+
+it.todo('should be able to handle pagination with 10,000+ with relation "eq"');
