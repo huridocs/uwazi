@@ -43,6 +43,7 @@ export interface SearchParams {
     unpublished?: boolean;
     select?: [] | [string];
     geolocation?: boolean;
+    includeReviewAggregations?: boolean;
   };
   [k: string]: unknown | undefined;
 }
