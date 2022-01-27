@@ -26,7 +26,6 @@ const selectTemplateOptions = createSelector(
   templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
-// eslint-disable-next-line import/exports-last
 export class MetadataForm extends Component {
   constructor(props) {
     super(props);
@@ -51,14 +50,7 @@ export class MetadataForm extends Component {
 
   renderTemplateSelect(templateOptions, template) {
     if (templateOptions.size) {
-      const templateId = template.get('_id');
-      let sortedTemplates = templateOptions
-        .toJS()
-        .filter(defTemp => defTemp.value !== templateId)
-        .sort((a, b) => a.label > b.label);
-
-      const defTemplate = templateOptions.toJS().filter(temp => temp.value === templateId);
-      sortedTemplates = [...defTemplate, ...sortedTemplates];
+      const sortedTemplates = templateOptions.toJS().sort((a, b) => a.label > b.label);
 
       return (
         <FormGroup>
