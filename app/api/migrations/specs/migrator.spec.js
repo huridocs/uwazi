@@ -53,7 +53,28 @@ describe('migrator', () => {
         .migrate(connection.db)
         .then(() => migrationsModel.get())
         .then(migrations => {
-          expect(migrations.map(m => m.delta)).toEqual([1, 2, 10]);
+          expect(
+            migrations.map(({ delta, description, reindex }) => ({
+              delta,
+              description,
+              reindex,
+            }))
+          ).toEqual([
+            {
+              delta: 1,
+              description: 'migration test 1',
+            },
+            {
+              delta: 2,
+              description: 'migration test 2',
+              reindex: true,
+            },
+            {
+              delta: 10,
+              description: 'migration test 10',
+              reindex: false,
+            },
+          ]);
           done();
         });
     });

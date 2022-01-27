@@ -5,6 +5,10 @@ on:
     branches:
       - release
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -12,10 +16,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'release'
-      - name: Use Node.js 14.6.x
+      - name: Use Node.js 14.18.3
         uses: actions/setup-node@v1
         with:
-          node-version: '14.6.x'
+          node-version: '14.18.3'
       - name: Cache node modules
         uses: actions/cache@v1.1.2
         with:
@@ -32,23 +36,8 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
-      - name: Tgz production build
-        run: tar -czf uwazi_release_${GITHUB_SHA}.tgz ./prod
-      - name: Copy to server
-        uses: easingthemes/ssh-deploy@v2.1.1
-        env:
-            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-            ARGS: "-rltgoDzvO --delete"
-            SOURCE: uwazi_release_${GITHUB_SHA}.tgz
-            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
-            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-            TARGET: uwazi_release_${GITHUB_SHA}.tgz
-      - name: Overwrite latest
-        uses: easingthemes/ssh-deploy@v2.1.1
-        env:
-            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-            ARGS: "-rltgoDzvO --delete"
-            SOURCE: uwazi_release_${GITHUB_SHA}.tgz
-            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
-            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-            TARGET: uwazi_release_latest.tgz
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+            ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+      - name: Pre release
+        run: ./scripts/pre-release.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}

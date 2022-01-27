@@ -2,8 +2,6 @@
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 import { ObjectId } from 'mongodb';
 
-export type ObjectIdSchema = string | ObjectId;
-
 export interface AttachmentSchema {
   _id?: string | ObjectId;
   originalname?: string;
@@ -15,14 +13,35 @@ export interface AttachmentSchema {
   [k: string]: unknown | undefined;
 }
 
-export interface LinkSchema {
-  label?: string | null;
-  url?: string | null;
-}
-
 export interface DateRangeSchema {
   from?: number | null;
   to?: number | null;
+}
+
+export interface ExtractedMetadataSchema {
+  propertyID?: string;
+  name?: string;
+  timestamp?: string;
+  selection?: {
+    text?: string;
+    selectionRectangles?: {
+      top?: number;
+      left?: number;
+      width?: number;
+      height?: number;
+      page?: string;
+    }[];
+  };
+}
+
+export type GeolocationSchema = {
+  label?: string;
+  lat: number;
+  lon: number;
+}[];
+
+export interface InheritedValueSchema {
+  value: string;
 }
 
 export interface LanguageSchema {
@@ -47,24 +66,9 @@ export interface LatLonSchema {
   lon: number;
 }
 
-export type GeolocationSchema = {
-  label?: string;
-  lat: number;
-  lon: number;
-}[];
-
-export type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | boolean
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[];
-
-export interface InheritedValueSchema {
-  value: string;
+export interface LinkSchema {
+  label?: string | null;
+  url?: string | null;
 }
 
 export interface MetadataObjectSchema {
@@ -84,41 +88,7 @@ export interface MetadataSchema {
   [k: string]: MetadataObjectSchema[] | undefined;
 }
 
-export type SelectionRectanglesSchema = {
-  top?: number;
-  left?: number;
-  width?: number;
-  height?: number;
-  page?: string;
-}[];
-
-export interface TocSchema {
-  selectionRectangles?: {
-    top?: number;
-    left?: number;
-    width?: number;
-    height?: number;
-    page?: string;
-  }[];
-  label?: string;
-  indentation?: number;
-}
-
-export interface ExtractedMetadataSchema {
-  propertyID?: string;
-  name?: string;
-  timestamp?: string;
-  selection?: {
-    text?: string;
-    selectionRectangles?: {
-      top?: number;
-      left?: number;
-      width?: number;
-      height?: number;
-      page?: string;
-    }[];
-  };
-}
+export type ObjectIdSchema = string | ObjectId;
 
 export interface PropertySchema {
   _id?: ObjectIdSchema;
@@ -179,4 +149,34 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
+}
+
+export type PropertyValueSchema =
+  | null
+  | string
+  | number
+  | boolean
+  | LinkSchema
+  | DateRangeSchema
+  | LatLonSchema
+  | LatLonSchema[];
+
+export type SelectionRectanglesSchema = {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  page?: string;
+}[];
+
+export interface TocSchema {
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    page?: string;
+  }[];
+  label?: string;
+  indentation?: number;
 }

@@ -1,3 +1,5 @@
+import { ensure } from 'shared/tsUtils';
+import { ElementHandle } from 'puppeteer';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
@@ -8,7 +10,9 @@ import { goToRestrictedEntities } from '../helpers/publishedFilter';
 const createMenuLinkToPublicForm = async (linkText: string) => {
   const element = await page.waitForSelector('.alert-info a.pull-right[target="_blank"]');
   const value = (
-    await element.evaluate(el => (el instanceof HTMLAnchorElement ? el.href : ''))
+    await ensure<ElementHandle>(element).evaluate(el =>
+      el instanceof HTMLAnchorElement ? el.href : ''
+    )
   ).replace('http://localhost:3000', '');
   await expect(page).toClick('a', { text: 'Menu' });
   await expect(page).toClick('button', { text: 'Add link' });

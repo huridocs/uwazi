@@ -158,7 +158,6 @@ describe('Permissions filters', () => {
         expect.arrayContaining([
           [users.user1._id.toString(), 2, 'User 1', undefined],
           [users.user2._id.toString(), 1, 'User 2', undefined],
-          [users.user3._id.toString(), 0, 'User 3', undefined],
           [users.adminUser._id.toString(), 1, 'admin', undefined],
           [users.editorUser._id.toString(), 1, 'editor', undefined],
           [group1.toString(), 3, 'Group1', 'users'],
@@ -188,7 +187,6 @@ describe('Permissions filters', () => {
 
       expect(canRead.map(a => [a.key, a.filtered.doc_count, a.label, a.icon])).toEqual(
         expect.arrayContaining([
-          [users.user3._id.toString(), 0, 'User 3', undefined],
           [group1.toString(), 3, 'Group1', 'users'],
           ['any', 6, 'Any', undefined],
         ])

@@ -8,6 +8,10 @@ on:
       - release
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit_test:
     runs-on: ubuntu-latest
@@ -18,10 +22,10 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
-      - name: Use Node.js 14.6.x
+      - name: Use Node.js 14.18.3
         uses: actions/setup-node@v1
         with:
-          node-version: '14.6.x'
+          node-version: '14.18.3'
       - uses: actions/checkout@v2
       - name: Cache node modules
         uses: actions/cache@v2
@@ -30,6 +34,17 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+
+      - name: Cache testing redis
+        id: cache-redis
+        uses: actions/cache@v2
+        with:
+          path: ./redis-bin
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.redis_version') }}
+      - name: install redis for testing
+        if: steps.cache-redis.outputs.cache-hit != 'true'
+        run: yarn install_redis_for_testing
+
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
