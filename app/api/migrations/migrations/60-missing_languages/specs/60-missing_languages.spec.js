@@ -18,7 +18,7 @@ describe('migration missing_languages', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(59);
+    expect(migration.delta).toBe(60);
   });
 
   it('should reindex when adding new entites', async () => {

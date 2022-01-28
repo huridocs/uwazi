@@ -43,7 +43,7 @@ const createBatches = (array, size) => {
 };
 
 const migration = {
-  delta: 59,
+  delta: 60,
 
   name: 'missing_languages',
 
