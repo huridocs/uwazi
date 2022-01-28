@@ -73,7 +73,7 @@ export class EntityTypesList extends Component {
   }
 
   sortTemplates() {
-    return this.props.templates.toJS().sort((a, b) => a.name > b.name);
+    return this.props.templates.toJS().sort((a, b) => (a.name > b.name ? 1 : -1));
   }
 
   render() {

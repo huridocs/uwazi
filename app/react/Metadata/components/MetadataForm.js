@@ -50,7 +50,7 @@ export class MetadataForm extends Component {
 
   renderTemplateSelect(templateOptions, template) {
     if (templateOptions.size) {
-      const sortedTemplates = templateOptions.toJS().sort((a, b) => a.label > b.label);
+      const sortedTemplates = templateOptions.toJS().sort((a, b) => (a.label > b.label ? 1 : -1));
 
       return (
         <FormGroup>
