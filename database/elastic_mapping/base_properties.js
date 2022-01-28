@@ -26,6 +26,7 @@ const properties = {
     index: true,
     analyzer: 'other',
     fields: {
+      raw: { type: 'text' },
       sort: textSortField,
       sayt: { type: 'search_as_you_type' },
       sayt_ngram: {
