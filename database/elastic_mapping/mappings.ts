@@ -35,6 +35,7 @@ const id = {
   type: 'keyword',
   fields: {
     raw: { type: 'keyword' },
+    sort: textSortField,
   },
 };
 

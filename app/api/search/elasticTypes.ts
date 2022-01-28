@@ -40,7 +40,7 @@ export interface SearchResponse<T> {
   _scroll_id?: string;
   _shards: ShardsResponse;
   hits: {
-    total: number;
+    total: { value: number; relation: 'eq' | 'gte' };
     // eslint-disable-next-line camelcase
     max_score: number;
     hits: Array<ElasticHit<T>>;
