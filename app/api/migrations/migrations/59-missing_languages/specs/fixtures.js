@@ -587,6 +587,13 @@ fixtures.entities.push({
     ],
     inherited_multi_select: [
       {
+        value: EntityBluePrints.CompleteSelects.sharedId,
+        label: EntityBluePrints.CompleteSelects.title,
+        type: 'entity',
+        inheritedValue: EntityBluePrints.CompleteSelects.metadata.multi_select,
+        inheritedType: 'multiselect',
+      },
+      {
         value: EntityBluePrints.MissingTwoSelects.sharedId,
         label: EntityBluePrints.MissingTwoSelects.title,
         type: 'entity',

@@ -154,8 +154,6 @@ const migration = {
     });
 
     if (newEntities.length > 0) {
-      console.log('----------batch save ---------------------');
-      console.log(newEntities.length);
       await db.collection('entities').insertMany(newEntities);
     }
   },
@@ -167,8 +165,10 @@ const migration = {
 
     await this.findMissing(db);
     if (!this.reindex) {
+      console.log('skipping...');
       return;
     }
+    console.log('migrating...');
 
     await this.buildResources(db);
 

@@ -278,6 +278,16 @@ describe('migration missing_languages', () => {
       ],
       inherited_multi_select: [
         {
+          value: EntityBluePrints.CompleteSelects.sharedId,
+          label: 'CompleteSelectsEnglish',
+          type: 'entity',
+          inheritedValue: [
+            { value: 'BId', label: 'B' },
+            { value: 'DId', label: 'D' },
+          ],
+          inheritedType: 'multiselect',
+        },
+        {
           value: EntityBluePrints.MissingTwoSelects.sharedId,
           label: EntityBluePrints.MissingTwoSelects.title,
           type: 'entity',
@@ -324,6 +334,16 @@ describe('migration missing_languages', () => {
         },
       ],
       inherited_multi_select: [
+        {
+          value: EntityBluePrints.CompleteSelects.sharedId,
+          label: 'CompleteSelectsSpanish',
+          type: 'entity',
+          inheritedValue: [
+            { value: 'BId', label: 'B_es' },
+            { value: 'DId', label: 'D_es' },
+          ],
+          inheritedType: 'multiselect',
+        },
         {
           value: EntityBluePrints.MissingTwoSelects.sharedId,
           label: EntityBluePrints.MissingTwoSelects.title,

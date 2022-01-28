@@ -76,20 +76,22 @@ class Inheritance {
       this.sourceLanguageInfo[entity.sharedId] = {};
       Object.entries(entity.metadata).forEach(([name, data]) => {
         if (this.isPropertyInherited(entity.template, name) && data.length !== 0) {
-          const sourceSharedId = data[0].value;
           const requestedLanguages = sharedIdToMissing[entity.sharedId];
-          const requestedToSource = {};
-          requestedLanguages.forEach(lang => {
-            const sourceLanguage = sharedIdToMissing[sourceSharedId]?.has(lang)
-              ? sharedIdToAssigned[sourceSharedId]
-              : lang;
-            if (!(sourceLanguage in languageToSourceSharedId)) {
-              languageToSourceSharedId[sourceLanguage] = new Set();
-            }
-            requestedToSource[lang] = sourceLanguage;
-            languageToSourceSharedId[sourceLanguage].add(sourceSharedId);
+          data.forEach(item => {
+            const requestedToSource = {};
+            const sourceSharedId = item.value;
+            requestedLanguages.forEach(lang => {
+              const sourceLanguage = sharedIdToMissing[sourceSharedId]?.has(lang)
+                ? sharedIdToAssigned[sourceSharedId]
+                : lang;
+              if (!(sourceLanguage in languageToSourceSharedId)) {
+                languageToSourceSharedId[sourceLanguage] = new Set();
+              }
+              requestedToSource[lang] = sourceLanguage;
+              languageToSourceSharedId[sourceLanguage].add(sourceSharedId);
+            });
+            this.sourceLanguageInfo[entity.sharedId][sourceSharedId] = requestedToSource;
           });
-          this.sourceLanguageInfo[entity.sharedId][sourceSharedId] = requestedToSource;
         }
       });
     });
@@ -113,14 +115,21 @@ class Inheritance {
 
   inheritProperty(property, targetTemplateId, targetSharedId, language) {
     const [name, values] = property;
-    if (this.isPropertyInherited(targetTemplateId, name) && values.length !== 0) {
-      const [value] = values;
-      const source = this.getSource(targetSharedId, value.value, language);
-      const returned = { ...value, label: source.title };
-      if ('inheritedValue' in returned) {
-        returned.inheritedValue = this.getInheritedValue(name, targetTemplateId, source, language);
-      }
-      return [name, [returned]];
+    if (this.isPropertyInherited(targetTemplateId, name)) {
+      const newValues = values.map(value => {
+        const source = this.getSource(targetSharedId, value.value, language);
+        const newValue = { ...value, label: source.title };
+        if ('inheritedValue' in newValue) {
+          newValue.inheritedValue = this.getInheritedValue(
+            name,
+            targetTemplateId,
+            source,
+            language
+          );
+        }
+        return newValue;
+      });
+      return [name, newValues];
     }
     return property;
   }
