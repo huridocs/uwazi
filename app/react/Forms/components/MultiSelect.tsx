@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
 
 import ShowIf from 'app/App/ShowIf';
