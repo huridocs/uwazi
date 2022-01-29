@@ -23,13 +23,10 @@ function processParentThesauri(property, values, dictionaries, properties) {
     return values;
   }
 
-  let sourceProperty = property;
-
-  if (property.type === 'relationship') {
-    sourceProperty = properties.find(
-      p => p._id.toString() === property.inherit.property.toString()
-    );
-  }
+  const sourceProperty =
+    property.type === 'relationship'
+      ? properties.find(p => p._id.toString() === property.inherit.property.toString())
+      : property;
 
   if (!sourceProperty || !['select', 'multiselect'].includes(sourceProperty.type)) {
     return values;
@@ -39,7 +36,9 @@ function processParentThesauri(property, values, dictionaries, properties) {
   return values.reduce((memo, v) => {
     const dictionaryValue = dictionary.values.find(dv => dv.id === v);
 
-    if (!dictionaryValue || !dictionaryValue.values) return [...memo, v];
+    if (!dictionaryValue || !dictionaryValue.values) {
+      return [...memo, v];
+    }
 
     return [...memo, ...dictionaryValue.values.map(dvv => dvv.id)];
   }, []);

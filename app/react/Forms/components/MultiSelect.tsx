@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
 
 import ShowIf from 'app/App/ShowIf';
@@ -122,31 +123,19 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
-    let { value } = this.props;
-    const { allowSelectGroup } = this.props;
-    const previousState = parseInt(e.target.dataset.state!, 10);
+    const { value, allowSelectGroup } = this.props;
+    const previousState: SelectStates = parseInt(e.target.dataset.state!, 10);
 
-    if (previousState === SelectStates.OFF) {
-      value = this.getOnStateValue(value, group);
-    }
+    const transitionCallbacks: {
+      [k in SelectStates]: (value: ValueType, group: Option) => ValueType;
+    } = {
+      [SelectStates.OFF]: this.getOnStateValue,
+      [SelectStates.GROUP]: this.getOffStateValue,
+      [SelectStates.PARTIAL]: this.getOffStateValue,
+      [SelectStates.ON]: allowSelectGroup ? this.getGroupStateValue : this.getOffStateValue,
+    };
 
-    if (previousState === SelectStates.GROUP) {
-      value = this.getOffStateValue(value, group);
-    }
-
-    if (previousState === SelectStates.PARTIAL) {
-      value = this.getOffStateValue(value, group);
-    }
-
-    if (previousState === SelectStates.ON && !allowSelectGroup) {
-      value = this.getOffStateValue(value, group);
-    }
-
-    if (previousState === SelectStates.ON && allowSelectGroup) {
-      value = this.getGroupStateValue(value, group);
-    }
-
-    this.props.onChange(value);
+    this.props.onChange(transitionCallbacks[previousState].call(this, value, group));
   }
 
   checked(option: Option): SelectStates {
