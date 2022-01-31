@@ -109,7 +109,6 @@ describe('MetadataForm', () => {
     ]);
     render();
     const templateDropdown = component.find(SimpleSelect);
-    // console.log(component.debug());
     expect(templateDropdown.props().options[0].label).toEqual('Aaron');
     expect(templateDropdown.props().options[1].label).toEqual('Template1');
     expect(templateDropdown.props().options[2].label).toEqual('Yezzy');
