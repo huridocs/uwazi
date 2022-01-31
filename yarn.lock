@@ -5307,6 +5307,15 @@ disposables@^1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/disposables/-/disposables-1.0.2.tgz"
 
+dnd-core@14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-14.0.1.tgz#76d000e41c494983210fb20a48b835f81a203c2e"
+  integrity sha512-+PVS2VPTgKFPYWo3vAFEA8WPbTf7/xo43TifH9G8S1KqnrQu0o77A3unrF5yOugy4mIz7K5wAVFHUcha7wsz6A==
+  dependencies:
+    "@react-dnd/asap" "^4.0.0"
+    "@react-dnd/invariant" "^2.0.0"
+    redux "^4.1.1"
+
 dnd-core@^10.0.2:
   version "10.0.2"
   resolved "https://registry.npmjs.org/dnd-core/-/dnd-core-10.0.2.tgz"
@@ -5316,7 +5325,7 @@ dnd-core@^10.0.2:
     "@react-dnd/invariant" "^2.0.0"
     redux "^4.0.4"
 
-dnd-core@^2.5.1, dnd-core@^2.6.0:
+dnd-core@^2.6.0:
   version "2.6.0"
   resolved "https://registry.npmjs.org/dnd-core/-/dnd-core-2.6.0.tgz"
   dependencies:
@@ -12387,11 +12396,12 @@ react-dnd-html5-backend@2.6.0:
   dependencies:
     lodash "^4.2.0"
 
-react-dnd-test-backend@2.5.1:
-  version "2.5.1"
-  resolved "https://registry.npmjs.org/react-dnd-test-backend/-/react-dnd-test-backend-2.5.1.tgz"
+react-dnd-test-backend@14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/react-dnd-test-backend/-/react-dnd-test-backend-14.0.1.tgz#687ed2834a3b51df91706a97a42f6d43b55dc054"
+  integrity sha512-jLGc03K0qd5a0Q+knR8qzUzHqFDEhu3yOxOhJNyWIQucGUbyRhklghJblTJnuvOCNFusnHYOuHERwcvJjXMMbg==
   dependencies:
-    dnd-core "^2.5.1"
+    dnd-core "14.0.1"
 
 react-dnd@*:
   version "10.0.2"
@@ -12901,7 +12911,7 @@ redux@^3.7.1, redux@^3.7.2:
     loose-envify "^1.1.0"
     symbol-observable "^1.0.3"
 
-redux@^4.0.0, redux@^4.0.4, redux@^4.0.5:
+redux@^4.0.0, redux@^4.0.4, redux@^4.0.5, redux@^4.1.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.1.2.tgz#140f35426d99bb4729af760afcf79eaaac407104"
   integrity sha512-SH8PglcebESbd/shgf6mii6EIoRM0zrQyjcuQ+ojmfxjTtE0z9Y8pa62iA/OJ58qjP6j27uyW4kUF4jl/jd6sw==
