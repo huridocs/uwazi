@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb';
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
-import {
-  PropertySchema,
-  MetadataSchema,
-  PropertyValueSchema,
-  ExtractedMetadataSchema,
-} from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import {
+  PropertySchema,
+  MetadataSchema,
+  PropertyValueSchema,
+  MetadataObjectSchema,
+} from 'shared/types/commonTypes';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -111,7 +111,9 @@ function getFixturesFactory() {
       ...props,
     }),
 
-    metadataValue: (value: PropertyValueSchema) => ({ value }),
+    metadataValue: (value: PropertyValueSchema): MetadataObjectSchema => ({
+      value,
+    }),
 
     thesauri: (name: string, values: Array<string | [string, string]>) => ({
       name,

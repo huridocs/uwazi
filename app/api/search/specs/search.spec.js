@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks, max-lines */
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
+import date from 'api/utils/date';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
@@ -373,6 +374,30 @@ describe('search', () => {
       expect(spain.rows.length).toBe(1);
       expect(egypt.rows.length).toBe(2);
       expect(both.rows.length).toBe(2);
+    });
+
+    it('should filter by range values using descriptive timestamps', async () => {
+      spyOn(date, 'descriptionToTimestamp').and.callFake(value => {
+        if (value === 'first-day-last-month') {
+          return 15;
+        }
+        if (value === 'last-day-last-month') {
+          return 25;
+        }
+        return 'not-catched';
+      });
+
+      const results = await search.search(
+        {
+          types: [ids.template1],
+          filters: {
+            relationshipdate: { from: 'first-day-last-month', to: 'last-day-last-month' },
+          },
+        },
+        'en'
+      );
+
+      expect(results.rows[0].title).toBe('Inherited 1');
     });
 
     it('should filter by text values', async () => {
