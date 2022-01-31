@@ -5,10 +5,6 @@ import { config } from 'api/config';
 import { errorLog } from 'api/log';
 import { migrator } from './migrator';
 
-process.on('unhandledRejection', error => {
-  throw error;
-});
-
 let auth: ConnectionOptions;
 
 if (process.env.DBUSER) {
@@ -18,19 +14,17 @@ if (process.env.DBUSER) {
   };
 }
 
-const run = async () => {
+export const runMigration = async () => {
   await DB.connect(config.DBHOST, auth);
-  const { db } = await DB.connectionForDB(config.defaultTenant.dbName);
-
+  const { db } = DB.connectionForDB(config.defaultTenant.dbName);
+  let migrations: any[] = [];
   await tenants.run(async () => {
-    await migrator.migrate(db);
+    migrations = await migrator.migrate(db);
   });
   //@ts-ignore
   errorLog.closeGraylog();
   await DB.disconnect();
-};
 
-run().catch(async e => {
-  await DB.disconnect();
-  throw e;
-});
+  const reindexNeeded = migrations.some(migration => migration.reindex === true);
+  process.stdout.write(JSON.stringify({ reindex: reindexNeeded }));
+};
