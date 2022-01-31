@@ -33,19 +33,11 @@ describe('Settings', () => {
 
   it('should display Account', async () => {
     const screenshot = await navigateToPage('Account', 'div.account-settings');
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
   it('should display Users', async () => {
     const screenshot = await navigateToPage('Users', 'div.settings-content');
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
 
   it('should display Collection', async () => {
@@ -54,11 +46,7 @@ describe('Settings', () => {
     const className = 'div.collection-settings';
     await page.waitForSelector(className);
     const collectionsPage = ensure<ElementHandle>(await page.$(className));
-    expect(await collectionsPage.screenshot()).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(await collectionsPage.screenshot()).toMatchImageSnapshot();
   });
 
   describe('Pages', () => {
@@ -67,11 +55,7 @@ describe('Settings', () => {
       const className = 'div.settings-content';
       await page.waitForSelector(className);
       const createPagesPage = ensure<ElementHandle>(await page.$(className));
-      expect(await createPagesPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await createPagesPage.screenshot()).toMatchImageSnapshot();
     });
   });
   describe('Filters', () => {
@@ -83,11 +67,7 @@ describe('Settings', () => {
       await navigateAndClick('Filters', 'div.settings-footer > button');
       await page.waitForSelector('div.settings-content');
       const filtersGroupPage = ensure<ElementHandle>(await page.$('div.settings-content'));
-      expect(await filtersGroupPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await filtersGroupPage.screenshot()).toMatchImageSnapshot();
     });
   });
 
@@ -102,11 +82,7 @@ describe('Settings', () => {
       await navigateAndClick('Templates', 'div.settings-footer > a');
       await page.waitForSelector('div.settings-content');
       const newTemplatesPage = ensure<ElementHandle>(await page.$('div.settings-content'));
-      expect(await newTemplatesPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await newTemplatesPage.screenshot()).toMatchImageSnapshot();
     });
 
     it('should display new templates page with more metadata options', async () => {
@@ -115,31 +91,19 @@ describe('Settings', () => {
       await expect(page).toClick(getMetadataOptionSelector(4));
       await page.waitForSelector('div.settings-content');
       const templatesMetadataPage = ensure<ElementHandle>(await page.$('div.settings-content'));
-      expect(await templatesMetadataPage.screenshot()).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(await templatesMetadataPage.screenshot()).toMatchImageSnapshot();
     });
 
     describe('Thesauri', () => {
       it('should display Thesaurus page', async () => {
         const screenshot = await navigateToPage('Thesauri', 'div.settings-content');
-        expect(screenshot).toMatchImageSnapshot({
-          failureThreshold: 0.07,
-          failureThresholdType: 'percent',
-          allowSizeMismatch: true,
-        });
+        expect(screenshot).toMatchImageSnapshot();
       });
       it('should display new Thesaurus page', async () => {
         await navigateAndClick('Thesauri', 'div.settings-footer > a');
         await page.waitForSelector('div.settings-content');
         const newThesaurisPage = ensure<ElementHandle>(await page.$('div.settings-content'));
-        expect(await newThesaurisPage.screenshot()).toMatchImageSnapshot({
-          failureThreshold: 0.07,
-          failureThresholdType: 'percent',
-          allowSizeMismatch: true,
-        });
+        expect(await newThesaurisPage.screenshot()).toMatchImageSnapshot();
       });
       it('should display new Thesaurus with groups page', async () => {
         await navigateAndClick('Thesauri', 'div.settings-footer > a');
@@ -148,31 +112,19 @@ describe('Settings', () => {
         await expect(page).toClick('div.settings-footer > button');
         await page.waitForSelector('div.settings-content');
         const newThesauriGroupsPage = ensure<ElementHandle>(await page.$('div.settings-content'));
-        expect(await newThesauriGroupsPage.screenshot()).toMatchImageSnapshot({
-          failureThreshold: 0.07,
-          failureThresholdType: 'percent',
-          allowSizeMismatch: true,
-        });
+        expect(await newThesauriGroupsPage.screenshot()).toMatchImageSnapshot();
       });
     });
   });
 
   it('should display Languages', async () => {
     const screenshot = await navigateToPage('Languages', '.settings-content');
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
 
   it('should display Translations', async () => {
     const screenshot = await navigateToPage('Translations', 'div.settings-content');
-    expect(screenshot).toMatchImageSnapshot({
-      failureThreshold: 0.07,
-      failureThresholdType: 'percent',
-      allowSizeMismatch: true,
-    });
+    expect(screenshot).toMatchImageSnapshot();
   });
 
   afterAll(async () => {
