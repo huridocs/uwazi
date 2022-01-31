@@ -88,37 +88,51 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   abstract markChecked(value: ValueType, option: Option): ValueType;
 
-  private getGroupStateValue(value: ValueType, group: Option) {
-    let newValue = this.markChecked(value, group);
+  private getStateValue(
+    value: ValueType,
+    group: Option,
+    {
+      markGroup,
+      conditionValue,
+      markOptions,
+    }: {
+      markGroup: (value: ValueType, option: Option) => ValueType;
+      conditionValue: SelectStates;
+      markOptions: (value: ValueType, option: Option) => ValueType;
+    }
+  ) {
+    let newValue = markGroup(value, group);
     group.options!.forEach(_item => {
-      if (this.checked(_item) !== SelectStates.OFF) {
-        newValue = this.markUnchecked(newValue, _item);
+      if (this.checked(_item) !== conditionValue) {
+        newValue = markOptions(newValue, _item);
       }
     });
 
     return newValue;
+  }
+
+  private getGroupStateValue(value: ValueType, group: Option) {
+    return this.getStateValue(value, group, {
+      markGroup: this.markChecked.bind(this),
+      conditionValue: SelectStates.OFF,
+      markOptions: this.markUnchecked.bind(this),
+    });
   }
 
   private getOnStateValue(value: ValueType, group: Option) {
-    let newValue = this.markUnchecked(value, group);
-    group.options!.forEach(_item => {
-      if (this.checked(_item) !== SelectStates.ON) {
-        newValue = this.markChecked(newValue, _item);
-      }
+    return this.getStateValue(value, group, {
+      markGroup: this.markUnchecked.bind(this),
+      conditionValue: SelectStates.ON,
+      markOptions: this.markChecked.bind(this),
     });
-
-    return newValue;
   }
 
   private getOffStateValue(value: ValueType, group: Option) {
-    let newValue = this.markUnchecked(value, group);
-    group.options!.forEach(_item => {
-      if (this.checked(_item) !== SelectStates.OFF) {
-        newValue = this.markUnchecked(newValue, _item);
-      }
+    return this.getStateValue(value, group, {
+      markGroup: this.markUnchecked.bind(this),
+      conditionValue: SelectStates.OFF,
+      markOptions: this.markUnchecked.bind(this),
     });
-
-    return newValue;
   }
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
