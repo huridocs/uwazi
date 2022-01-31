@@ -159,8 +159,11 @@ describe('Settings', () => {
 
   it('should display Languages', async () => {
     const screenshot = await navigateToPage('Languages', '.settings-content');
-    expect(screenshot).toMatchImageSnapshot();
-    await page.waitFor(30000);
+    expect(screenshot).toMatchImageSnapshot({
+      failureThreshold: 0.07,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
   });
 
   it('should display Translations', async () => {
