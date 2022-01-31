@@ -97,7 +97,11 @@ describe('Graphs in Page ', () => {
         '.recharts-responsive-container'
       );
 
-      expect(chartScreenshot).toMatchImageSnapshot();
+      expect(chartScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.07,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
       await graphsPage.close();
     });
 
@@ -109,7 +113,11 @@ describe('Graphs in Page ', () => {
 
     it('should display List chart graph', async () => {
       const { graphsPage, chartScreenshot } = await takeScreenshot('.ListChart');
-      expect(chartScreenshot).toMatchImageSnapshot();
+      expect(chartScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.07,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
       await graphsPage.close();
     });
   });
@@ -137,7 +145,11 @@ describe('Graphs in Page ', () => {
       );
       const chartScreenshot = await chartContainer.screenshot();
 
-      expect(chartScreenshot).toMatchImageSnapshot();
+      expect(chartScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.07,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
       await graphsPage.close();
     });
 
@@ -156,7 +168,11 @@ describe('Graphs in Page ', () => {
       );
       const chartScreenshot = await chartContainer.screenshot();
 
-      expect(chartScreenshot).toMatchImageSnapshot();
+      expect(chartScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.07,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
       await graphsPage.close();
     });
 
@@ -169,7 +185,11 @@ describe('Graphs in Page ', () => {
     it('should display List chart graph', async () => {
       const chartContainer = ensure<ElementHandle>(await graphsPage.$('.ListChart'));
       const chartScreenshot = await chartContainer.screenshot();
-      expect(chartScreenshot).toMatchImageSnapshot();
+      expect(chartScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.07,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
       await graphsPage.close();
     });
   });

@@ -22,7 +22,11 @@ describe('Homepage entities', () => {
     await page.waitForSelector(className);
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
 
-    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
+    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot({
+      failureThreshold: 0.07,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
   });
 
   it('should display entity details', async () => {
@@ -32,7 +36,11 @@ describe('Homepage entities', () => {
     const className = '.metadata-sidepanel';
     await page.waitForSelector(className);
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
-    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
+    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot({
+      failureThreshold: 0.07,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
   });
   it('should display entity view page', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`);
@@ -40,7 +48,11 @@ describe('Homepage entities', () => {
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
     const viewPage = ensure<ElementHandle>(await page.$(className));
-    expect(await viewPage.screenshot()).toMatchImageSnapshot();
+    expect(await viewPage.screenshot()).toMatchImageSnapshot({
+      failureThreshold: 0.07,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
   });
   it('should display entity edit page', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`);
@@ -50,7 +62,11 @@ describe('Homepage entities', () => {
     const className = 'div.app-content.container-fluid';
     await page.waitForSelector(className);
     const editPage = ensure<ElementHandle>(await page.$(className));
-    expect(await editPage.screenshot()).toMatchImageSnapshot();
+    expect(await editPage.screenshot()).toMatchImageSnapshot({
+      failureThreshold: 0.07,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
   });
 
   it('should display entity connections page', async () => {
@@ -60,7 +76,11 @@ describe('Homepage entities', () => {
     const className = 'div.relationships-graph';
     await page.waitForSelector(className);
     const connections = ensure<ElementHandle>(await page.$(className));
-    expect(await connections.screenshot()).toMatchImageSnapshot();
+    expect(await connections.screenshot()).toMatchImageSnapshot({
+      failureThreshold: 0.07,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
   });
 
   afterAll(async () => {
