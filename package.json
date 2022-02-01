@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.50.1",
+  "version": "1.52.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -42,6 +42,7 @@
     "fixtures": "./uwazi-fixtures/restore.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
     "migrate": "node --max-http-header-size 20000 scripts/run.js ../scripts/migrate.js",
+    "migrate-and-reindex": "node --max-http-header-size 20000 scripts/run.js ../scripts/migrate_and_reindex.js",
     "test-debug": "node --max-http-header-size 20000 --inspect ./node_modules/.bin/jest --watch --no-cache -i",
     "test": "node --max-http-header-size 20000 ./node_modules/.bin/jest",
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
