@@ -3,19 +3,6 @@
 
 import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 
-export interface IXSuggestionType {
-  _id?: ObjectIdSchema;
-  entityId: string;
-  propertyName: string;
-  suggestedValue: PropertyValueSchema;
-  segment: string;
-  language: string;
-  page?: number;
-  status?: 'processing' | 'failed' | 'ready';
-  date?: number;
-  error?: string;
-}
-
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
@@ -32,10 +19,17 @@ export interface EntitySuggestionType {
   date: number;
 }
 
-export interface IXSuggestionsFilter {
-  language?: string;
-  propertyName?: string;
-  state?: 'Empty' | 'Matching' | 'Pending';
+export interface IXSuggestionType {
+  _id?: ObjectIdSchema;
+  entityId: string;
+  propertyName: string;
+  suggestedValue: PropertyValueSchema;
+  segment: string;
+  language: string;
+  page?: number;
+  status?: 'processing' | 'failed' | 'ready';
+  date?: number;
+  error?: string;
 }
 
 export interface IXSuggestionsQuery {
@@ -44,4 +38,10 @@ export interface IXSuggestionsQuery {
     number?: number;
     size?: number;
   };
+}
+
+export interface IXSuggestionsFilter {
+  language?: string;
+  propertyName?: string;
+  state?: 'Empty' | 'Matching' | 'Pending';
 }
