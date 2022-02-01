@@ -654,9 +654,9 @@ const buildQuery = async (query, language, user, resources) => {
     queryBuilder.onlyUnpublished();
   }
 
-  const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
+  const allProps = propertiesHelper.allProperties(templates);
   if (query.sort) {
-    const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
+    const sortingProp = allProps.find(p => `metadata.${p.name}` === query.sort);
     if (sortingProp && sortingProp.type === 'select') {
       queryBuilder.sort(query.sort, query.order, true);
     } else {
@@ -672,13 +672,13 @@ const buildQuery = async (query, language, user, resources) => {
       : propertiesHelper.comonFilters(templates, filteringTypes);
 
   if (query.allAggregations) {
-    properties = allUniqueProps;
+    properties = allProps;
   }
 
   // this is where we decide which aggregations to send to elastic
   const aggregations = aggregationProperties(properties, propertiesHelper.allProperties(templates));
 
-  const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
+  const filters = processFilters(query.filters, [...allProps, ...properties]);
   // this is where the query filters are built
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
