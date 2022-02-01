@@ -50,6 +50,8 @@ export class MetadataForm extends Component {
 
   renderTemplateSelect(templateOptions, template) {
     if (templateOptions.size) {
+      const sortedTemplates = templateOptions.toJS().sort((a, b) => (a.label > b.label ? 1 : -1));
+
       return (
         <FormGroup>
           <ul className="search__filter">
@@ -71,7 +73,7 @@ export class MetadataForm extends Component {
               <SimpleSelect
                 className="form-control"
                 value={template.get('_id')}
-                options={templateOptions.toJS()}
+                options={sortedTemplates}
                 onChange={e => {
                   this.props.changeTemplate(this.props.model, e.target.value);
                 }}
