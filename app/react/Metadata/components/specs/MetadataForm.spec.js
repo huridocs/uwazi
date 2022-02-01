@@ -97,6 +97,24 @@ describe('MetadataForm', () => {
     expect(formFields.props().template).toBe(props.templates.get(0));
   });
 
+  it('should render templates sorted', () => {
+    props.templateOptions = Immutable.fromJS([
+      {
+        label: 'Zues',
+        value: 'zues',
+      },
+      { label: 'Yezzy', value: 'yezzy' },
+      { label: 'Template1', value: 'template1' },
+      { label: 'Aaron', value: 'Aaron' },
+    ]);
+    render();
+    const templateDropdown = component.find(SimpleSelect);
+    expect(templateDropdown.props().options[0].label).toEqual('Aaron');
+    expect(templateDropdown.props().options[1].label).toEqual('Template1');
+    expect(templateDropdown.props().options[2].label).toEqual('Yezzy');
+    expect(templateDropdown.props().options[3].label).toEqual('Zues');
+  });
+
   it('should pass the model to Form and MetadataFormFields', () => {
     render();
     const form = component.find(Form);
