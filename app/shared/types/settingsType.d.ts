@@ -18,34 +18,6 @@ export interface SettingsFilterSchema {
   }[];
 }
 
-export interface SettingsSyncTemplateSchema {
-  properties: string[];
-  filter?: string;
-}
-
-export type SettingsSyncRelationtypesSchema = string[];
-
-export interface SettingsSyncSchema {
-  url?: string;
-  active?: boolean;
-  username?: boolean;
-  password?: boolean;
-  config?: {
-    templates?: {
-      [k: string]:
-        | (
-            | {
-                properties: string[];
-                filter?: string;
-              }
-            | string[]
-          )
-        | undefined;
-    };
-    relationTypes?: string[];
-  };
-}
-
 export interface SettingsLinkSchema {
   _id?: ObjectIdSchema;
   title?: string;
@@ -115,4 +87,32 @@ export interface Settings {
     lat: number;
     lon: number;
   }[];
+}
+
+export type SettingsSyncRelationtypesSchema = string[];
+
+export interface SettingsSyncSchema {
+  url?: string;
+  active?: boolean;
+  username?: boolean;
+  password?: boolean;
+  config?: {
+    templates?: {
+      [k: string]:
+        | (
+            | {
+                properties: string[];
+                filter?: string;
+              }
+            | string[]
+          )
+        | undefined;
+    };
+    relationTypes?: string[];
+  };
+}
+
+export interface SettingsSyncTemplateSchema {
+  properties: string[];
+  filter?: string;
 }

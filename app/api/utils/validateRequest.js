@@ -19,21 +19,26 @@ const JoiDeprecatedValidation = (schema, propTovalidate, req, next) => {
   }
 };
 
+const ajvValidation = async (ajvInstance, schema, req, next) => {
+  try {
+    const validator = wrapValidator(ajvInstance.compile({ ...schema, $async: true }));
+    await validator(req);
+    next();
+  } catch (e) {
+    next(createError(e, 400));
+  }
+};
+
 const createRequestValidator =
   ajvInstance =>
   (schema, propTovalidate = 'body') =>
   async (req, _res, next) => {
     if (schema.isJoi) {
       JoiDeprecatedValidation(schema, propTovalidate, req, next);
-    } else {
-      try {
-        const validator = wrapValidator(ajvInstance.compile({ ...schema, $async: true }));
-        await validator(req);
-        next();
-      } catch (e) {
-        next(createError(e, 400));
-      }
+      return;
     }
+
+    await ajvValidation(ajvInstance, schema, req, next);
   };
 
 export const validateAndCoerceRequest = createRequestValidator(coercedAjv);

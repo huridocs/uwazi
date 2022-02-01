@@ -101,21 +101,13 @@ describe('entities get searchString', () => {
       expect(bodyEs.data).toEqual([expect.objectContaining({ title: 'titulo to search' })]);
     });
 
-    it('should allow limiting the results and return required links', async () => {
-      const {
-        body,
-        // @ts-ignore
-        req: { path },
-      } = await request(app)
+    it('should return entities that match the searchString, when it is a number', async () => {
+      const { body: bodyEn } = await request(app)
         .get('/api/v2/entities')
-        .query({ filter: { searchString: 'title:(title)' }, page: { limit: 2 } });
+        .query({ filter: { searchString: '2' } })
+        .expect(200);
 
-      expect(body.data).toEqual([
-        expect.objectContaining({ _id: entity1en.toString() }),
-        expect.objectContaining({ _id: entity2en.toString() }),
-      ]);
-
-      expect(body.links.first).toEqual(path);
+      expect(bodyEn.data).toEqual([expect.objectContaining({ title: 'title to search 2' })]);
     });
 
     it('should still search with simple query for no valid lucene syntax', async () => {
@@ -143,16 +135,6 @@ describe('entities get searchString', () => {
         { _id: entity3en.toString(), sharedId: 'entity3SharedId', language: 'en' },
       ]);
     });
-
-    it.each([3, null, ''])(
-      'should throw an error is a field is not a string',
-      async invalidField => {
-        await request(app)
-          .get('/api/v2/entities')
-          .query({ fields: ['sharedId', 'language', invalidField] })
-          .expect(400);
-      }
-    );
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {
