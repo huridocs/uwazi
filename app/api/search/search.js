@@ -23,6 +23,7 @@ function processFilters(filters, properties) {
     const suggested = filterName.startsWith('__');
     const propertyName = suggested ? filterName.substring(2) : filterName;
     const property = properties.find(p => p.name === propertyName);
+
     if (!property) {
       return res;
     }
@@ -34,22 +35,25 @@ function processFilters(filters, properties) {
       ({ type } = propertiesHelper.getInheritedProperty(property, properties));
     }
 
-    if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
-      value = value.toLowerCase();
-    }
-    if (['date', 'multidate', 'numeric'].includes(type)) {
-      type = 'range';
-    }
-    if (['select', 'multiselect', 'relationship'].includes(type)) {
-      type = 'multiselect';
-    }
-    if (type === 'multidaterange' || type === 'daterange') {
-      type = 'daterange';
-    }
-
     if (['multidaterange', 'daterange', 'date', 'multidate'].includes(type)) {
       value.from = date.descriptionToTimestamp(value.from);
       value.to = date.descriptionToTimestamp(value.to);
+    }
+
+    if (['text', 'markdown', 'generatedid'].includes(type) && typeof value === 'string') {
+      value = value.toLowerCase();
+    }
+
+    if (['date', 'multidate', 'numeric'].includes(type)) {
+      type = 'range';
+    }
+
+    if (['select', 'multiselect', 'relationship'].includes(type)) {
+      type = 'multiselect';
+    }
+
+    if (type === 'multidaterange' || type === 'daterange') {
+      type = 'daterange';
     }
 
     return [
