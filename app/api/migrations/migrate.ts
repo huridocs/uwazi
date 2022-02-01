@@ -26,5 +26,5 @@ export const runMigration = async () => {
   await DB.disconnect();
 
   const reindexNeeded = migrations.some(migration => migration.reindex === true);
-  process.stdout.write(JSON.stringify({ reindex: reindexNeeded }));
+  return { reindex: reindexNeeded };
 };
