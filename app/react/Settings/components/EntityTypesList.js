@@ -72,6 +72,10 @@ export class EntityTypesList extends Component {
     );
   }
 
+  sortTemplates() {
+    return this.props.templates.toJS().sort((a, b) => (a.name > b.name ? 1 : -1));
+  }
+
   render() {
     return (
       <div className="panel panel-default">
@@ -79,7 +83,7 @@ export class EntityTypesList extends Component {
           <Translate>Templates</Translate>
         </div>
         <ul className="list-group document-types">
-          {this.props.templates.toJS().map((template, index) => (
+          {this.sortTemplates().map((template, index) => (
             <li key={index} className="list-group-item">
               <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
               {template.default ? this.defaultTemplateMessage() : ''}
