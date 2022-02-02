@@ -7,7 +7,7 @@
 
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
-import TestBackend from 'react-dnd-test-backend';
+import { TestBackend } from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';

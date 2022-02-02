@@ -7,7 +7,6 @@ import { DB } from 'api/odm';
 
 describe('migrate', () => {
   let connection: Connection;
-  let stdoutSpy: jest.SpyInstance;
 
   beforeAll(async () => {
     connection = await testingDB.connect();
@@ -24,11 +23,6 @@ describe('migrate', () => {
     beforeEach(async () => {
       await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
-      stdoutSpy = jest.spyOn(process.stdout, 'write');
-    });
-
-    afterEach(() => {
-      stdoutSpy.mockRestore();
     });
 
     it('should call migrator migrate', async () => {
@@ -65,9 +59,9 @@ describe('migrate', () => {
         },
       ]);
 
-      await runMigration();
+      const result = await runMigration();
 
-      expect(stdoutSpy).toBeCalledWith('{"reindex":false}');
+      expect(result).toEqual({ reindex: false });
     });
 
     it('prints result when migrations need reindex', async () => {
@@ -97,9 +91,8 @@ describe('migrate', () => {
         },
       ]);
 
-      await runMigration();
-
-      expect(stdoutSpy).toBeCalledWith('{"reindex":true}');
+      const result = await runMigration();
+      expect(result).toEqual({ reindex: true });
     });
   });
 });
