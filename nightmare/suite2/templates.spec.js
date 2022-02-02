@@ -17,7 +17,7 @@ const localSelectors = {
   backbutton:
     '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > a',
   template:
-    '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(10) > a',
+    '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(9) > a',
   templatesListItems: '#app > div.content > div > div > div.settings-content > div > ul > li',
   relationShipSelect:
     '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(8) > div.propery-form.expand > div > div:nth-child(2) > select',

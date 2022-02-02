@@ -3,7 +3,7 @@ import { SearchQuery } from 'shared/types/SearchQueryType';
 
 export const cleanUp = (value: any) => value;
 
-const searchStringMethod = async (searchString: string | number) => {
+const searchStringMethod = async (searchString: string) => {
   const validationResult = await elastic.indices.validateQuery({
     body: { query: { query_string: { query: searchString } } },
   });
@@ -11,7 +11,7 @@ const searchStringMethod = async (searchString: string | number) => {
 };
 
 async function extractSearchParams(query: SearchQuery): Promise<{
-  searchString?: string | number | undefined;
+  searchString?: string;
   fullTextSearchString?: string;
   searchMethod: string;
 }> {

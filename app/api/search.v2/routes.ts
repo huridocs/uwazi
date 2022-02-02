@@ -1,13 +1,12 @@
 import { Application, Request, Response } from 'express';
-//@ts-ignore
-import queryTypes from 'query-types';
 
 import { elastic } from 'api/search/elastic';
-import validateRequest from 'api/utils/validateRequest';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
-import { SearchQuery } from 'shared/types/SearchQueryType';
+import { SearchQuery, Page } from 'shared/types/SearchQueryType';
 
 import { mapResults } from 'api/search.v2/searchResponse';
+import qs from 'qs';
 import { buildQuery } from './buildQuery';
 
 interface UwaziResponse {
@@ -15,6 +14,9 @@ interface UwaziResponse {
   links?: {
     self: string;
     first?: string | null;
+    last?: string | null;
+    next?: string | null;
+    prev?: string | null;
   };
 }
 
@@ -24,26 +26,48 @@ interface UwaziReq<T> extends Request {
 
 type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
+const link = (limit: number, offset: number) =>
+  `/api/v2/entities?${qs.stringify({
+    page: { limit, offset },
+  })}`;
+
+const prevPaginationLink = (queryLimit: Page['limit'], currentOffset: number) =>
+  queryLimit && currentOffset > 0 ? link(queryLimit, currentOffset - queryLimit) : undefined;
+
+const nextPaginationLink = (queryLimit: Page['limit'], currentOffset: number, lastOffset: number) =>
+  queryLimit && currentOffset < lastOffset
+    ? link(queryLimit, currentOffset + queryLimit)
+    : undefined;
+
+const lastPaginationLink = (queryLimit: Page['limit'], offset: number) =>
+  queryLimit ? link(queryLimit, offset) : undefined;
+
+const pagination = (currentUrl: string, totalResults: number, page?: Page) => {
+  const currentOffset = page?.offset || 0;
+  const lastOffset = page?.limit ? totalResults - page.limit : 0;
+  return {
+    self: currentUrl,
+    first: page?.limit ? currentUrl : undefined,
+    prev: prevPaginationLink(page?.limit, currentOffset),
+    next: nextPaginationLink(page?.limit, currentOffset, lastOffset),
+    last: lastPaginationLink(page?.limit, lastOffset),
+  };
+};
+
 const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
-    queryTypes.middleware(),
-    validateRequest({
+    validateAndCoerceRequest({
       properties: {
         query: SearchQuerySchema,
       },
     }),
     async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
       const { query, language, url } = req;
-
       const response = await elastic.search({ body: await buildQuery(query, language) });
-
       res.json({
         data: mapResults(response.body, query),
-        links: {
-          self: url,
-          first: query.page?.limit ? url : undefined,
-        },
+        links: pagination(url, response.body.hits.total.value, query.page),
       });
     }
   );
