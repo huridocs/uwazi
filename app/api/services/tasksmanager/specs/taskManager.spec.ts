@@ -1,9 +1,10 @@
 /* eslint-disable max-statements */
 import waitForExpect from 'wait-for-expect';
 import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager';
-import { RedisServer } from '../RedisServer';
-import { ExternalDummyService } from './ExternalDummyService';
 import { config } from 'api/config';
+import * as handleError from 'api/utils/handleError.js';
+import { ExternalDummyService } from './ExternalDummyService';
+import { RedisServer } from '../RedisServer';
 
 describe('taskManager', () => {
   let taskManager: TaskManager | undefined;
@@ -20,7 +21,7 @@ describe('taskManager', () => {
     service = {
       serviceName: 'KonzNGaboHellKitchen',
       processResults: jest.fn(),
-      processRessultsMessageHiddenTime: 1,
+      processResultsMessageHiddenTime: 1,
     };
     redisServer = new RedisServer(port);
     await redisServer.start();
@@ -123,6 +124,28 @@ describe('taskManager', () => {
       });
 
       expect(queueAttributes!.msgs).toBe(0);
+    });
+
+    it('should handle errors during results processing and keep the message for tracking', async () => {
+      const task = {
+        task: 'Tofu',
+        tenant: 'Gabo',
+        data_url: 'http://localhost:1234/results',
+      };
+
+      await externalDummyService.sendFinishedMessage(task);
+      service.processResults = jest.fn().mockRejectedValue('error');
+      jest.spyOn(handleError, 'handleError');
+
+      await waitForExpect(async () => {
+        expect(service.processResults).toHaveBeenCalledWith(task);
+      });
+
+      expect(handleError.handleError).toHaveBeenCalledWith('error', { useContext: false });
+      const queueAttributes = await taskManager?.redisSMQ!.getQueueAttributesAsync({
+        qname: taskManager.resultsQueue,
+      });
+      expect(queueAttributes!.msgs).toBe(1);
     });
   });
 
