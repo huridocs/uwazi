@@ -6,43 +6,44 @@ import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { files } from 'api/files';
 import { PermissionType } from 'shared/types/permissionSchema';
+import { Suggestions } from 'api/suggestions/suggestions';
 
-export const formatLanguage = langKey => {
+const formatLanguage = langKey => {
   const lang = allLanguages.find(({ key }) => key === langKey);
   return lang ? `${lang.label} (${lang.key})` : langKey;
 };
 
-export const formatDataLanguage = data => formatLanguage(data.key);
+const formatDataLanguage = data => formatLanguage(data.key);
 
-export const translationsName = data => {
+const translationsName = data => {
   const [context] = data.contexts;
   return data.contexts.length === 1
     ? `in ${context.label} (${context.id})`
     : 'in multiple contexts';
 };
 
-export const nameFunc = data => `${data.label} (${data.key})`;
+const nameFunc = data => `${data.label} (${data.key})`;
 
-export const migrationLog = log => {
+const migrationLog = log => {
   const data = JSON.parse(log.body);
   return typeParsers[data.type] ? typeParsers[data.type](data) : { action: 'RAW' };
 };
 
-export const templateName = data =>
+const templateName = data =>
   data.templateData ? `${data.templateData.name} (${data._id})` : data._id;
 
-export const loadEntityFromPublicForm = async data => {
+const loadEntityFromPublicForm = async data => {
   const entity = JSON.parse(data.entity);
   const templateData = await templates.getById(entity.template);
   return { ...data, templateData, title: entity.title };
 };
 
-export const loadTemplate = async data => {
+const loadTemplate = async data => {
   const templateData = await templates.getById(data.template || data._id);
   return { ...data, templateData };
 };
 
-export const loadEntity = async data => {
+const loadEntity = async data => {
   const _id = data.entityId || data._id;
   const sharedId = data.sharedId || data.entity;
   const query = { ...(_id && { _id }), ...(sharedId && { sharedId }) };
@@ -50,26 +51,26 @@ export const loadEntity = async data => {
   return { ...data, entity, title: entity ? entity.title : undefined };
 };
 
-export const loadFile = async data => {
+const loadFile = async data => {
   const [file] = await files.get({ _id: data._id });
   return { ...data, file, title: file ? file.originalname : `id: ${data._id}` };
 };
 
-export const extraTemplate = data =>
+const extraTemplate = data =>
   `of type ${
     data.templateData
       ? data.templateData.name
       : `(${data.template ? data.template.toString() : 'unassigned'})`
   }`;
 
-export const extraAttachmentLanguage = data =>
+const extraAttachmentLanguage = data =>
   data.entity
     ? `of entity '${data.entity.title}' (${data.entity.sharedId}) ${formatLanguage(
         data.entity.language
       )} version`
     : null;
 
-export const updatedFile = data => {
+const updatedFile = data => {
   let name;
   if (data.toc) {
     name = 'ToC, ';
@@ -79,12 +80,12 @@ export const updatedFile = data => {
   return `${name}${data.title}`;
 };
 
-export const groupMembers = data => {
+const groupMembers = data => {
   const members = data.members.map(member => member.username).join(', ');
   return members.length > 0 ? `with members: ${members}` : 'with no members';
 };
 
-export const loadPermissionsData = async data => {
+const loadPermissionsData = async data => {
   const updateEntities = await entities.getUnrestricted(
     { sharedId: { $in: data.ids } },
     { title: 1 }
@@ -108,7 +109,7 @@ export const loadPermissionsData = async data => {
   };
 };
 
-export const entitiesNames = data => data.entities.map(e => e.title).join(', ');
+const entitiesNames = data => data.entities.map(e => e.title).join(', ');
 
 function getNameOfAllowedPeople(source, field) {
   return p => {
@@ -117,7 +118,7 @@ function getNameOfAllowedPeople(source, field) {
   };
 }
 
-export const loadAllowedUsersAndGroups = data => {
+const loadAllowedUsersAndGroups = data => {
   const usersPermissions = data.permissions.filter(p => p.type === PermissionType.USER);
   const groupsPermissions = data.permissions.filter(p => p.type === PermissionType.GROUP);
   const grantedUsers = usersPermissions
@@ -130,4 +131,31 @@ export const loadAllowedUsersAndGroups = data => {
   return ` with permissions for${grantedUsers.length ? ` USERS: ${grantedUsers};` : ''}${
     grantedNames.length ? ` GROUPS: ${grantedNames}` : ''
   }${data.public ? '; PUBLIC' : ''}`;
+};
+
+const loadSuggestionData = async data => {
+  const suggestion = await Suggestions.getById(data.suggestion._id);
+  const entity = await entities.getById(data.suggestion.entityId);
+  return { ...data, ...suggestion, title: entity?.title };
+};
+
+export {
+  translationsName,
+  formatLanguage,
+  formatDataLanguage,
+  nameFunc,
+  migrationLog,
+  templateName,
+  loadEntityFromPublicForm,
+  loadTemplate,
+  loadEntity,
+  loadFile,
+  extraTemplate,
+  extraAttachmentLanguage,
+  updatedFile,
+  groupMembers,
+  loadPermissionsData,
+  entitiesNames,
+  loadAllowedUsersAndGroups,
+  loadSuggestionData,
 };

@@ -1,0 +1,30 @@
+@import '../../scss/config/colors';
+
+.table-pagination{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px;
+
+  .page-numbers{
+    display: flex;
+  }
+
+  .page-button{
+    font-size: 15px;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+
+    &.active{
+      color: $c-primary;
+      font-weight: bold;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      color: gray;
+    }
+  }
+}
