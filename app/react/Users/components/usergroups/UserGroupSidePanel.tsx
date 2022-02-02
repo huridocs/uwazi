@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
-import MultiSelect from 'app/Forms/components/MultiSelect';
+import { MultiSelect } from 'app/Forms/components/MultiSelect';
 import { UserSchema } from 'shared/types/userType';
 
 export interface UserGroupSidePanelProps {

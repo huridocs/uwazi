@@ -321,7 +321,7 @@ describe('search', () => {
 
   describe('filtering by metadata inheritValue', () => {
     it('should filter by select / multiselect', async () => {
-      const [spain, egypt, both, bothAnd] = await Promise.all([
+      const [spain, egypt, both, bothAnd, europeInherited, europeMultiselect] = await Promise.all([
         search.search(
           { types: [ids.template1], filters: { relationshipcountry: { values: ['SpainID'] } } },
           'en'
@@ -344,12 +344,28 @@ describe('search', () => {
           },
           'en'
         ),
+        search.search(
+          {
+            types: [ids.template1],
+            filters: { relationshipcountry: { values: ['EuropeID'] } },
+          },
+          'en'
+        ),
+        search.search(
+          {
+            types: [ids.templateMetadata1],
+            filters: { groupedDictionary: { values: ['EuropeID'] } },
+          },
+          'en'
+        ),
       ]);
 
       expect(spain.rows.length).toBe(1);
       expect(egypt.rows.length).toBe(2);
       expect(both.rows.length).toBe(2);
       expect(bothAnd.rows.length).toBe(1);
+      expect(europeInherited.rows.length).toBe(1);
+      expect(europeMultiselect.rows.length).toBe(2);
     });
 
     it('should filter by range values', async () => {

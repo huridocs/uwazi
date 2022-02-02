@@ -1,5 +1,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faAlignJustify } from '@fortawesome/free-solid-svg-icons/faAlignJustify';
+import { faAngleDoubleLeft } from '@fortawesome/free-solid-svg-icons/faAngleDoubleLeft';
+import { faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons/faAngleDoubleRight';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
@@ -74,6 +76,7 @@ import { faSort } from '@fortawesome/free-solid-svg-icons/faSort';
 import { faSortAlphaDown } from '@fortawesome/free-solid-svg-icons/faSortAlphaDown';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 import { faSquare } from '@fortawesome/free-regular-svg-icons/faSquare';
+import { faSquare as faSolidSquare } from '@fortawesome/free-solid-svg-icons/faSquare';
 import { faStar } from '@fortawesome/free-solid-svg-icons/faStar';
 import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
 import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
@@ -113,6 +116,8 @@ import { funnelFilter } from './funnel-filter';
 
 const icons = {
   faAlignJustify,
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
   faAngleLeft,
   faAngleRight,
   faArrowLeft,
@@ -188,6 +193,7 @@ const icons = {
   faSortAlphaDown,
   faSpinner,
   faSquare,
+  faSolidSquare,
   faStar,
   faStop,
   faSync,

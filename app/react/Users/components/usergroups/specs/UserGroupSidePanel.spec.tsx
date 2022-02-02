@@ -10,7 +10,7 @@ import {
   UserGroupSidePanelProps,
 } from 'app/Users/components/usergroups/UserGroupSidePanel';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import MultiSelect from 'app/Forms/components/MultiSelect';
+import { MultiSelect } from 'app/Forms/components/MultiSelect';
 
 describe('UserGroupSidePanel', () => {
   const userGroup = {
