@@ -127,12 +127,14 @@
   }
 
   .panel-subheading {
+    display: flex;
     background-color: transparent;
     font-size: $f-size-xl;
     font-weight: 400;
     padding-left: 0;
     padding-right: 0;
     padding-bottom: 10px;
+    justify-content: space-between;
   }
 
   h2 {

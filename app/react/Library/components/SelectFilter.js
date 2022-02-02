@@ -13,6 +13,7 @@ const SelectFilter = ({
   sort,
   lookup,
   totalPossibleOptions,
+  allowSelectGroup,
 }) => (
   <ul className="search__filter is-active">
     <li>
@@ -28,6 +29,7 @@ const SelectFilter = ({
         sort={sort}
         lookup={lookup}
         totalPossibleOptions={totalPossibleOptions}
+        allowSelectGroup={allowSelectGroup}
       />
     </li>
   </ul>
@@ -42,6 +44,7 @@ SelectFilter.defaultProps = {
   options: [],
   lookup: null,
   totalPossibleOptions: 0,
+  allowSelectGroup: false,
 };
 
 SelectFilter.propTypes = {
@@ -54,6 +57,7 @@ SelectFilter.propTypes = {
   totalPossibleOptions: PropTypes.number,
   lookup: PropTypes.func,
   label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
+  allowSelectGroup: PropTypes.bool,
 };
 
 export default SelectFilter;

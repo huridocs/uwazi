@@ -6,9 +6,9 @@ import JSONRequest from 'shared/JSONRequest';
 import { provenanceTypes } from 'shared/provenanceTypes';
 import { TaskProvider } from 'shared/tasks/tasks';
 import { SyncArgs, syncEntity } from '../sync';
-import fixtures, { e1 } from './fixtures';
+import fixtures, { e1, e3 } from './fixtures';
 
-function fakeTopicClassification(url: string, data: any, _headers: any) {
+function fakeTopicClassification(url: string) {
   if (url === `${topicClassification.tcServer}/models/list?filter=%5Eundefined`) {
     return {
       status: 200,
@@ -27,16 +27,20 @@ function fakeTopicClassification(url: string, data: any, _headers: any) {
     };
   }
   if (url === `${topicClassification.tcServer}/classify?model=undefined-topmovies`) {
-    expect(data).toEqual({
-      refresh_predictions: true,
-      samples: [{ seq: 'title1 who am I? I am Batman.', sharedId: 'e1' }],
-    });
     return {
       status: 200,
       json: {
         samples: [
           {
             sharedId: 'e1',
+            predicted_labels: [
+              { topic: '1.1', quality: 0.4 },
+              { topic: '2.2', quality: 0.7 },
+            ],
+            model_version: '123',
+          },
+          {
+            sharedId: 'e3',
             predicted_labels: [
               { topic: '1.1', quality: 0.4 },
               { topic: '2.2', quality: 0.7 },
@@ -97,34 +101,51 @@ describe('templates utils', () => {
       ]);
     });
   });
+
   describe('sync all', () => {
     it('run sync task', async () => {
       const t = TaskProvider.getOrCreate('test', 'TopicClassificationSync');
-      t.start({ noDryRun: true, mode: 'onlynew', overwrite: true } as SyncArgs);
+      t.start({ batchSize: 1, noDryRun: true, mode: 'onlynew', overwrite: true } as SyncArgs);
       await t.wait();
-      expect(t.status).toEqual(
-        expect.objectContaining({
-          result: { index: 1, seen: 2, total: 2 },
-          state: 'done',
-        })
-      );
+      expect(t.status).toMatchObject({
+        result: { index: 2, seen: 3, total: 3 },
+        state: 'done',
+      });
+
       const e = await entities.getById(e1);
-      expect(e!.suggestedMetadata!.movies).toEqual([
-        expect.objectContaining({
+      expect(e!.suggestedMetadata!.movies).toMatchObject([
+        {
           label: 'spiderman',
           suggestion_confidence: 0.7,
           suggestion_model: '123',
           value: '2.2',
-        }),
-        expect.objectContaining({
+        },
+        {
           label: 'groundhog day',
           suggestion_confidence: 0.4,
           suggestion_model: '123',
           value: '1.1',
-        }),
+        },
+      ]);
+
+      const entity3 = await entities.getById(e3);
+      expect(entity3!.suggestedMetadata!.movies).toMatchObject([
+        {
+          label: 'spiderman',
+          suggestion_confidence: 0.7,
+          suggestion_model: '123',
+          value: '2.2',
+        },
+        {
+          label: 'groundhog day',
+          suggestion_confidence: 0.4,
+          suggestion_model: '123',
+          value: '1.1',
+        },
       ]);
     });
   });
+
   describe('autoaccept one', () => {
     it('add labels to single entity', async () => {
       const e = await entities.getById(e1);
@@ -187,12 +208,10 @@ describe('templates utils', () => {
         autoAcceptConfidence: 0.5,
       } as SyncArgs);
       await t.wait();
-      expect(t.status).toEqual(
-        expect.objectContaining({
-          result: { index: 1, seen: 2, total: 2 },
-          state: 'done',
-        })
-      );
+      expect(t.status).toMatchObject({
+        result: { index: 2, seen: 3, total: 3 },
+        state: 'done',
+      });
       const e = await entities.getById(e1);
       expect(e!.metadata!.movies).toEqual([
         expect.objectContaining({

@@ -635,6 +635,28 @@ export default {
       ],
     },
   ],
+  ixsuggestions: [
+    {
+      _id: db.id(),
+      entityId: 'shared',
+      propertyName: 'title',
+      suggestedValue: 'different title',
+      segment: 'different title',
+      language: 'en',
+      date: 5,
+      page: 2,
+    },
+    {
+      _id: db.id(),
+      entityId: 'other',
+      propertyName: 'title',
+      suggestedValue: 'other title',
+      segment: 'other title',
+      language: 'en',
+      date: 3,
+      page: 1,
+    },
+  ],
 };
 
 export {
