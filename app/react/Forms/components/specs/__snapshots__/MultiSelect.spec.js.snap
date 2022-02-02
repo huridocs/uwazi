@@ -110,6 +110,8 @@ exports[`MultiSelect should not render an empty group 1`] = `
     <input
       checked={false}
       className="multiselectItem-input"
+      data-state={0}
+      disabled={false}
       id="option1"
       onChange={[Function]}
       type="checkbox"
@@ -139,6 +141,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
           className="checkbox-partial"
           icon="minus"
         />
+        <Connect(Icon)
+          className="checkbox-group"
+          icon={
+            Array [
+              "fas",
+              "square",
+            ]
+          }
+        />
       </span>
       <span
         className="multiselectItem-name"
@@ -165,6 +176,8 @@ exports[`MultiSelect should not render an empty group 1`] = `
     <input
       checked={false}
       className="multiselectItem-input"
+      data-state={0}
+      disabled={false}
       id="option2"
       onChange={[Function]}
       type="checkbox"
@@ -194,6 +207,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
           className="checkbox-partial"
           icon="minus"
         />
+        <Connect(Icon)
+          className="checkbox-group"
+          icon={
+            Array [
+              "fas",
+              "square",
+            ]
+          }
+        />
       </span>
       <span
         className="multiselectItem-name"
@@ -222,6 +244,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       <input
         checked={false}
         className="group-checkbox multiselectItem-input"
+        data-state={0}
         id="undefined"
         onChange={[Function]}
         type="checkbox"
@@ -249,6 +272,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
           <Connect(Icon)
             className="checkbox-partial"
             icon="minus"
+          />
+          <Connect(Icon)
+            className="checkbox-group"
+            icon={
+              Array [
+                "fas",
+                "square",
+              ]
+            }
           />
         </span>
         <span
@@ -290,6 +322,8 @@ exports[`MultiSelect should not render an empty group 1`] = `
           <input
             checked={false}
             className="multiselectItem-input"
+            data-state={0}
+            disabled={false}
             id="group-option1"
             onChange={[Function]}
             type="checkbox"
@@ -319,6 +353,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
                 className="checkbox-partial"
                 icon="minus"
               />
+              <Connect(Icon)
+                className="checkbox-group"
+                icon={
+                  Array [
+                    "fas",
+                    "square",
+                  ]
+                }
+              />
             </span>
             <span
               className="multiselectItem-name"
@@ -345,6 +388,8 @@ exports[`MultiSelect should not render an empty group 1`] = `
           <input
             checked={false}
             className="multiselectItem-input"
+            data-state={0}
+            disabled={false}
             id="group-option2"
             onChange={[Function]}
             type="checkbox"
@@ -373,6 +418,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
               <Connect(Icon)
                 className="checkbox-partial"
                 icon="minus"
+              />
+              <Connect(Icon)
+                className="checkbox-group"
+                icon={
+                  Array [
+                    "fas",
+                    "square",
+                  ]
+                }
               />
             </span>
             <span

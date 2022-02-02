@@ -18,7 +18,33 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 
-function processFilters(filters, properties) {
+function processParentThesauri(property, values, dictionaries, properties) {
+  if (!values) {
+    return values;
+  }
+
+  const sourceProperty =
+    property.type === 'relationship'
+      ? properties.find(p => p._id.toString() === property.inherit.property.toString())
+      : property;
+
+  if (!sourceProperty || !['select', 'multiselect'].includes(sourceProperty.type)) {
+    return values;
+  }
+
+  const dictionary = dictionaries.find(d => d._id.toString() === sourceProperty.content.toString());
+  return values.reduce((memo, v) => {
+    const dictionaryValue = dictionary.values.find(dv => dv.id === v);
+
+    if (!dictionaryValue || !dictionaryValue.values) {
+      return [...memo, v];
+    }
+
+    return [...memo, ...dictionaryValue.values.map(dvv => dvv.id)];
+  }, []);
+}
+
+function processFilters(filters, properties, dictionaries) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
     const suggested = filterName.startsWith('__');
     const propertyName = suggested ? filterName.substring(2) : filterName;
@@ -50,6 +76,7 @@ function processFilters(filters, properties) {
 
     if (['select', 'multiselect', 'relationship'].includes(type)) {
       type = 'multiselect';
+      value.values = processParentThesauri(property, value.values, dictionaries, properties);
     }
 
     if (type === 'multidaterange' || type === 'daterange') {
@@ -682,7 +709,7 @@ const buildQuery = async (query, language, user, resources) => {
   // this is where we decide which aggregations to send to elastic
   const aggregations = aggregationProperties(properties, allUniqueProps);
 
-  const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
+  const filters = processFilters(query.filters, [...allUniqueProps, ...properties], dictionaries);
   // this is where the query filters are built
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);

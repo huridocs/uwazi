@@ -11,6 +11,7 @@ exports[`SelectFilter should render a text filter field with a label and passing
     className="wide"
   >
     <LookupMultiSelect
+      allowSelectGroup={false}
       lookup={null}
       model="model.values"
       onChange={[Function]}
@@ -43,6 +44,7 @@ exports[`SelectFilter when showBoolSwitch should render the and/or bool switch 1
     className="wide"
   >
     <LookupMultiSelect
+      allowSelectGroup={false}
       lookup={null}
       model="model.values"
       onChange={[Function]}
@@ -70,6 +72,7 @@ exports[`SelectFilter when sort prop is set to true should activate sorting in t
     className="wide"
   >
     <LookupMultiSelect
+      allowSelectGroup={false}
       lookup={null}
       model="model.values"
       onChange={[Function]}
