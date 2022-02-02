@@ -82,6 +82,7 @@ export interface ConnectionSchema {
                     lat: number;
                     lon: number;
                   }[];
+              label?: string;
             }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;
@@ -142,6 +143,7 @@ export interface ConnectionSchema {
                     lat: number;
                     lon: number;
                   }[];
+              label?: string;
             }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;

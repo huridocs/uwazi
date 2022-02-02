@@ -98,6 +98,7 @@ export const inheritedValueSchema = {
   additionalProperties: false,
   properties: {
     value: propertyValueSchema,
+    label: { type: 'string' },
   },
 };
 

@@ -64,6 +64,7 @@ export interface InheritedValueSchema {
         lat: number;
         lon: number;
       }[];
+  label?: string;
 }
 
 export interface LanguageSchema {
@@ -101,6 +102,7 @@ export interface MetadataObjectSchema {
   provenance?: '' | 'BULK_ACCEPT';
   inheritedValue?: {
     value: PropertyValueSchema;
+    label?: string;
   }[];
   inheritedType?: string;
   [k: string]: unknown | undefined;
