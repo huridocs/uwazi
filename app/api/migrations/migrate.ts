@@ -26,12 +26,10 @@ export const runMigration = async () => {
     errorLog.closeGraylog();
     await DB.disconnect();
 
-
     const reindexNeeded = migrations.some(migration => migration.reindex === true);
     return { reindex: reindexNeeded };
   } catch (e: any) {
     process.stderr.write(`${JSON.stringify({ error: e.message })}\n`);
     process.exit(1);
   }
-
 };
