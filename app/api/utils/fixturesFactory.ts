@@ -10,6 +10,7 @@ import {
   MetadataSchema,
   PropertyValueSchema,
   MetadataObjectSchema,
+  ExtractedMetadataSchema,
 } from 'shared/types/commonTypes';
 
 function getIdMapper() {
