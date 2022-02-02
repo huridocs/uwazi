@@ -1,3 +1,6 @@
+/* eslint-disable max-lines */
+/* eslint-disable import/no-default-export */
+/* eslint-disable import/exports-last */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup, NavigationControl, setRTLTextPlugin } from 'react-map-gl';
@@ -31,7 +34,6 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   showControls: false,
   mapViewStyle: 'street',
 });
-
 export default class Map extends Component {
   constructor(props) {
     super(props);
@@ -372,8 +374,8 @@ export default class Map extends Component {
     const { showControls } = this.state;
     if (showControls) {
       return (
-        <div className="mapbox-navigation">
-          <NavigationControl onViewportChange={this._onViewportChange} />
+        <div className="mapbox-controls">
+          <NavigationControl onViewportChange={this._onViewportChange} showCompass={false} />
         </div>
       );
     }
