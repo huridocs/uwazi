@@ -8,6 +8,7 @@ export interface SegmentationType {
   autoexpire?: number | null;
   fileID?: ObjectIdSchema;
   filename?: string;
+  xmlname?: string;
   status?: 'processing' | 'failed' | 'ready';
   segmentation?: {
     page_width?: number;
