@@ -112,7 +112,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           '\x1b[33m%s\x1b[0m',
           '==> Your database needs to be migrated, please run:\n\n yarn migrate & yarn reindex\n\n'
         );
-        process.exit();
+        process.exit(1);
       }
     });
   }
