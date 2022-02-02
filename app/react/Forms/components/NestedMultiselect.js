@@ -7,7 +7,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import { store } from 'app/store';
 import { Icon } from 'UI';
-import MultiSelect from './MultiSelect';
+import { MultiSelect } from './MultiSelect';
 
 export default class NestedMultiselect extends Component {
   constructor(props) {
