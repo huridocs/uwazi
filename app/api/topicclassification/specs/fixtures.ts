@@ -6,6 +6,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 export const template1 = db.id();
 export const e1 = db.id();
+export const e3 = db.id();
 export const e2 = db.id();
 export const dictionaryId = db.id();
 export const moviesId = db.id();
@@ -74,6 +75,16 @@ export default {
       language: 'en',
       metadata: {
         text: [{ value: 'who am I? I am Batman.' }],
+      },
+    },
+    {
+      _id: e3,
+      template: template1,
+      sharedId: 'e3',
+      title: 'title3',
+      language: 'en',
+      metadata: {
+        text: [{ value: 'who am I? I am the Joker.' }],
       },
     },
     {
