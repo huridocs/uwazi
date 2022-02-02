@@ -2,21 +2,23 @@ import { EntitySchema } from 'shared/types/entityType';
 import entities from 'api/entities';
 
 export async function QueryForEach(batchSize: number, fn: (e: EntitySchema) => Promise<void>) {
-  const totalNumber = await entities.count({ language: 'en' });
-  let offset = 0;
-  while (offset < totalNumber) {
+  let lastId;
+  let batch;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
     // eslint-disable-next-line no-await-in-loop
-    const batch = await entities.getWithoutDocuments(
-      { language: 'en' },
+    batch = await entities.getWithoutDocuments(
+      { language: 'en', ...(lastId ? { _id: { $gt: lastId } } : {}) },
       {},
-      { sort: 'id', skip: offset, limit: batchSize }
+      { sort: '_id', limit: batchSize }
     );
 
     if (!batch || !batch.length) {
       break;
     }
+    lastId = batch[batch.length - 1]._id;
+
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(batch.map(fn));
-    offset += batch.length;
   }
 }
