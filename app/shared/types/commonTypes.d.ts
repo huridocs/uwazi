@@ -65,6 +65,7 @@ export interface InheritedValueSchema {
         lon: number;
       }[];
   label?: string;
+  [k: string]: unknown | undefined;
 }
 
 export interface LanguageSchema {
@@ -103,6 +104,7 @@ export interface MetadataObjectSchema {
   inheritedValue?: {
     value: PropertyValueSchema;
     label?: string;
+    [k: string]: unknown | undefined;
   }[];
   inheritedType?: string;
   [k: string]: unknown | undefined;

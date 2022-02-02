@@ -83,6 +83,7 @@ export interface ConnectionSchema {
                     lon: number;
                   }[];
               label?: string;
+              [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;
@@ -144,6 +145,7 @@ export interface ConnectionSchema {
                     lon: number;
                   }[];
               label?: string;
+              [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;

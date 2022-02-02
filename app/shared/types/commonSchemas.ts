@@ -95,7 +95,6 @@ export const propertyValueSchema = {
 export const inheritedValueSchema = {
   type: 'object',
   required: ['value'],
-  additionalProperties: false,
   properties: {
     value: propertyValueSchema,
     label: { type: 'string' },
