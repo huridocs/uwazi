@@ -19,6 +19,7 @@ export const segmentationSchema = {
     autoexpire: { oneOf: [{ type: 'number' }, { type: 'null' }] },
     fileID: objectIdSchema,
     filename: { type: 'string', minLength: 1 },
+    xmlname: { type: 'string', minLength: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     segmentation: {
       type: 'object',

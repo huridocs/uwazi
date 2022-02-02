@@ -72,6 +72,7 @@ export const FiltersFromProperties = ({
             showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
             sort={property.type === 'relationship'}
             totalPossibleOptions={property.totalPossibleOptions}
+            allowSelectGroup
           />
         );
       }

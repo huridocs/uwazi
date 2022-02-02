@@ -1,5 +1,4 @@
-import 'jest-extended';
-
+import { toHaveBeenCalledBefore } from 'jest-extended';
 import path from 'path';
 
 import { catchErrors } from '../../utils/jasmineHelpers';
@@ -9,6 +8,8 @@ import migration2 from './testMigrations/2-migrationTest';
 import migrationsModel from '../migrationsModel';
 import { migrator } from '../migrator';
 import testingDB from '../../utils/testing_db';
+
+expect.extend({ toHaveBeenCalledBefore });
 
 describe('migrator', () => {
   let connection;

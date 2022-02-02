@@ -12,8 +12,8 @@ describe('EntityTypesList', () => {
   beforeEach(() => {
     props = {
       templates: Immutable.fromJS([
-        { _id: 1, name: 'Decision' },
         { _id: 2, name: 'Ruling' },
+        { _id: 1, name: 'Decision' },
         { _id: 3, name: 'Judge', isEntity: true },
       ]),
       notify: jasmine.createSpy('notify'),
@@ -32,6 +32,14 @@ describe('EntityTypesList', () => {
   const render = () => {
     component = shallow(<EntityTypesList {...props} />, { context });
   };
+
+  it('should sort templates alphabetically', () => {
+    render();
+    const templatesList = component.find('.list-group-item');
+    expect(templatesList.at(0).find('Link').at(0).props().children).toEqual('Decision');
+    expect(templatesList.at(1).find('Link').at(0).props().children).toEqual('Judge');
+    expect(templatesList.at(2).find('Link').at(0).props().children).toEqual('Ruling');
+  });
 
   describe('when deleting a document type', () => {
     it('should check if can be deleted', done => {
