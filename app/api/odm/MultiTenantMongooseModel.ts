@@ -88,6 +88,10 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().aggregate(aggregations);
   }
 
+  async facet(aggregations: any[], pipelines: any, project: any) {
+    return this.dbForCurrentTenant().aggregate(aggregations).facet(pipelines).project(project);
+  }
+
   async updateOne(conditions: UwaziFilterQuery<DataType<T>>, doc: UwaziUpdateQuery<T>) {
     return this.dbForCurrentTenant().updateOne(conditions, doc);
   }

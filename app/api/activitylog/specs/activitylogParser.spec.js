@@ -2,8 +2,9 @@
 /* eslint-disable max-statements */
 
 import db from 'api/utils/testing_db';
-import { fileId, groupId, userId } from 'api/activitylog/specs/fixturesParser';
-import fixtures, {
+import { fileId, groupId, suggestionId, userId } from 'api/activitylog/specs/fixturesParser';
+import {
+  fixtures,
   firstTemplate,
   firstDoc,
   firstDocSharedId,
@@ -1095,6 +1096,50 @@ describe('Activitylog Parser', () => {
             }
           );
         });
+      });
+    });
+
+    describe('routes: /api/suggestions/accept', () => {
+      it('should beautify as UPDATE with entity title', async () => {
+        await testBeautified(
+          {
+            method: 'POST',
+            url: '/api/suggestions/accept',
+            body: JSON.stringify({
+              allLanguages: true,
+              suggestion: {
+                _id: suggestionId,
+                sharedId: firstDocSharedId.toString(),
+                entityId: firstDoc,
+              },
+            }),
+          },
+          {
+            action: 'UPDATE',
+            description: 'Accepted suggestion on entity',
+            name: 'doc1',
+            extra: ' updated property: title, with value: Red Robin . All languages: true',
+          }
+        );
+      });
+    });
+
+    describe('routes: /api/suggestions/train', () => {
+      it('should beautify as CREATE with the property name', async () => {
+        await testBeautified(
+          {
+            method: 'POST',
+            url: '/api/suggestions/train',
+            body: JSON.stringify({
+              property: 'title',
+            }),
+          },
+          {
+            action: 'CREATE',
+            description: 'Information extraction training',
+            extra: ' property title ',
+          }
+        );
       });
     });
 

@@ -143,6 +143,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           tocServiceRepeater.start();
         }
 
+        const anHour = 3600000;
         const topicClassificationRepeater = new Repeater(
           () =>
             TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
@@ -150,11 +151,12 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
               noDryRun: true,
               overwrite: true,
             }),
-          10000
+          anHour
         );
         topicClassificationRepeater.start();
 
         if (config.externalServices) {
+          console.info('==> 📡  starting external segmentation service ....');
           const segmentationConnector = new PDFSegmentation();
           const segmentationRepeater = new DistributedLoop(
             'segmentation_repeat',

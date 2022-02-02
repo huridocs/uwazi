@@ -4,7 +4,7 @@ import { SegmentationType } from 'shared/types/segmentationType';
 
 const props = {
   autoexpire: { type: Date, expires: 86400, default: Date.now }, // 24 hours
-  file: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
+  fileID: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
   status: { type: String, enum: ['processing', 'failed', 'ready'], default: 'processing' },
 };
 

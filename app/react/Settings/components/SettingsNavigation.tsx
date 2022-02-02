@@ -63,7 +63,7 @@ const SettingsNavigation = () => (
             <Translate>Templates</Translate>
           </I18NLink>
         </NeedAuthorization>
-        <FeatureToggle feature="metadata-extraction">
+        <FeatureToggle feature="metadataExtraction.url">
           <NeedAuthorization roles={['admin']}>
             <I18NLink
               to="settings/metadata_extraction"
