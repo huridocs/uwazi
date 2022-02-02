@@ -680,7 +680,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = aggregationProperties(properties, propertiesHelper.allProperties(templates));
+  const aggregations = aggregationProperties(properties, allProps);
 
   const filters = processFilters(query.filters, [...allProps, ...properties]);
   // this is where the query filters are built
