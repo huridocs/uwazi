@@ -75,7 +75,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - run: xvfb-run -a yarn e2e-puppeteer graphs.test.ts
+      - run: xvfb-run -a yarn e2e-puppeteer-regression
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
