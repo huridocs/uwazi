@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "@types/*"
     allow:
       - dependency-type: "development"
     open-pull-requests-limit: 3
