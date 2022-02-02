@@ -12,7 +12,7 @@ GITHUB_TOKEN="$gh_token" gh release create "$release_version"\
   --title "$release_version"\
   --notes "Release notes"\
   --prerelease\
-  --target release
+  --target release\
   uwazi_pre_release.tgz
 
 # scp uwazi_pre_release.tgz "$ssh_user"@"$server":/home/"$ssh_user"/uwazi-operations/release_builds/uwazi_pre_release.tgz

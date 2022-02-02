@@ -17,13 +17,10 @@ const dateToMilliseconds = (value: string) => {
 const updateSelection = (
   selection: { [key: string]: string },
   fieldName: string,
-  fieldId?: string,
-  fieldType?: string
+  fieldId?: string
 ) => {
   const selected = { ...selection };
-  if (fieldType === 'date') {
-    selected.text = dateToMilliseconds(selection.text).toString();
-  }
+
   const data = {
     ...(fieldId && { propertyID: fieldId }),
     name: fieldName,
