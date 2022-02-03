@@ -102,6 +102,18 @@ describe('TableCell', () => {
     expect(links.at(0).props().to).toBe('/entity/Entity1');
   });
 
+  it('should render inherited properties', () => {
+    props.content = {
+      inheritedName: 'sexo',
+      label: 'Relationship',
+      type: 'inherit',
+      name: 'relationship',
+      value: [{ label: 'Sexo', name: 'sexo', value: 'Mujer' }],
+    };
+    const cellContent = renderContent();
+    expect(cellContent.props().children).toEqual('Mujer');
+  });
+
   it('should render a geolocation as a compact view', () => {
     props.content = {
       label: 'Geolocation',
