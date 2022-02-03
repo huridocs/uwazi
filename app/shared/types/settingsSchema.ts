@@ -166,14 +166,22 @@ const settingsSchema = {
           },
         },
         metadataExtraction: {
-          type: 'array',
-          items: {
-            type: 'object',
-            additionalProperties: false,
-            required: ['template', 'properties'],
-            properties: {
-              template: objectIdSchema,
-              properties: { type: 'array', items: { type: 'string' } },
+          type: 'object',
+          additionalProperties: false,
+          required: ['url'],
+          properties: {
+            url: { type: 'string' },
+            templates: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['template', 'properties'],
+                properties: {
+                  template: objectIdSchema,
+                  properties: { type: 'array', items: { type: 'string' } },
+                },
+              },
             },
           },
         },

@@ -18,7 +18,33 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 
-function processFilters(filters, properties) {
+function processParentThesauri(property, values, dictionaries, properties) {
+  if (!values) {
+    return values;
+  }
+
+  const sourceProperty =
+    property.type === 'relationship'
+      ? properties.find(p => p._id.toString() === property.inherit.property.toString())
+      : property;
+
+  if (!sourceProperty || !['select', 'multiselect'].includes(sourceProperty.type)) {
+    return values;
+  }
+
+  const dictionary = dictionaries.find(d => d._id.toString() === sourceProperty.content.toString());
+  return values.reduce((memo, v) => {
+    const dictionaryValue = dictionary.values.find(dv => dv.id === v);
+
+    if (!dictionaryValue || !dictionaryValue.values) {
+      return [...memo, v];
+    }
+
+    return [...memo, ...dictionaryValue.values.map(dvv => dvv.id)];
+  }, []);
+}
+
+function processFilters(filters, properties, dictionaries) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
     const suggested = filterName.startsWith('__');
     const propertyName = suggested ? filterName.substring(2) : filterName;
@@ -50,6 +76,7 @@ function processFilters(filters, properties) {
 
     if (['select', 'multiselect', 'relationship'].includes(type)) {
       type = 'multiselect';
+      value.values = processParentThesauri(property, value.values, dictionaries, properties);
     }
 
     if (type === 'multidaterange' || type === 'daterange') {
@@ -69,7 +96,7 @@ function processFilters(filters, properties) {
   }, []);
 }
 
-function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
+function aggregationProperties(propertiesToBeAggregated, allProperties) {
   return propertiesToBeAggregated
     .filter(property => {
       const type = property.inherit ? property.inherit.type : property.type;
@@ -82,7 +109,7 @@ function aggregationProperties(propertiesToBeAggregated, allUniqueProperties) {
       ...property,
       name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
       content: property.inherit
-        ? propertiesHelper.getInheritedProperty(property, allUniqueProperties).content
+        ? propertiesHelper.getInheritedProperty(property, allProperties).content
         : property.content,
     }));
 }
@@ -246,7 +273,7 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
 };
 
 const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
-  const properties = propertiesHelper.allUniqueProperties(templates);
+  const properties = propertiesHelper.allProperties(templates);
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (
@@ -627,7 +654,7 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 }
 
-const buildQuery = async (query, language, user, resources) => {
+const buildQuery = async (query, language, user, resources, includeReviewAggregations) => {
   const [templates, dictionaries] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
   const searchTextType = query.searchTerm
@@ -658,9 +685,9 @@ const buildQuery = async (query, language, user, resources) => {
     queryBuilder.onlyUnpublished();
   }
 
-  const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
+  const allProps = propertiesHelper.allProperties(templates);
   if (query.sort) {
-    const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
+    const sortingProp = allProps.find(p => `metadata.${p.name}` === query.sort);
     if (sortingProp && sortingProp.type === 'select') {
       queryBuilder.sort(query.sort, query.order, true);
     } else {
@@ -676,18 +703,18 @@ const buildQuery = async (query, language, user, resources) => {
       : propertiesHelper.comonFilters(templates, filteringTypes);
 
   if (query.allAggregations) {
-    properties = allUniqueProps;
+    properties = allProps;
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = aggregationProperties(properties, allUniqueProps);
+  const aggregations = aggregationProperties(properties, allProps);
 
-  const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
+  const filters = processFilters(query.filters, [...allProps, ...properties], dictionaries);
   // this is where the query filters are built
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  queryBuilder.aggregations(aggregations, dictionaries);
+  queryBuilder.aggregations(aggregations, dictionaries, includeReviewAggregations);
 
   return queryBuilder;
 };
@@ -696,7 +723,14 @@ const search = {
   async search(query, language, user) {
     const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
     const [templates, dictionaries] = resources;
-    const queryBuilder = await buildQuery(query, language, user, resources);
+    const includeReviewAggregations = query.includeReviewAggregations || false;
+    const queryBuilder = await buildQuery(
+      query,
+      language,
+      user,
+      resources,
+      includeReviewAggregations
+    );
     if (query.geolocation) {
       searchGeolocation(queryBuilder, templates);
     }

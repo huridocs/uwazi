@@ -1,0 +1,210 @@
+@import '../../scss/config/colors';
+@import '../../scss/config/typography';
+
+.service-request-button {
+  border-color: #e0e0e0;
+  background-color: white;
+  font-weight: 600;
+
+  &.processing {
+    color: #90a4ae;
+    font-style: italic;
+    cursor: progress;
+  }
+
+  &.error {
+    color: #d1d1d1;
+    border-color: #505050;
+    background-color: #505050;
+  }
+
+  &.success {
+    color: #579849;
+  }
+}
+
+.entity-suggestions {
+  .panel-subheading {
+    font-size: $f-size-lg;
+  }
+
+  .suggestion-header {
+    color: $c-grey-dark;
+  }
+
+  .suggestion-property {
+    font-family: $f-special;
+  }
+
+  table {
+    table-layout: fixed;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+    border: 0;
+    border-collapse: separate;
+    font-size: $f-size-sm;
+    overflow-x: scroll;
+  }
+
+  tr {
+    display: flex;
+
+    &:nth-child(even) > td {
+      background-color: #f5f5f5;
+    }
+
+    &:nth-child(odd) > td {
+      background-color: $c-white;
+    }
+  }
+
+  th {
+    display: flex;
+    align-items: center;
+  }
+
+  th,
+  td {
+    width: 6%;
+    min-width: 70px;
+    display: flex;
+    align-content: center;
+    padding: 2px;
+
+    &.suggestion {
+      width: 30%;
+      text-overflow: fade;
+      min-width: 150px;
+    }
+
+    &.action {
+      min-width: 90px;
+      padding-left: 5px;
+    }
+
+    &.title {
+      width: 15%;
+      min-width: 100px;
+      text-overflow: fade;
+    }
+
+    &.segment {
+      width: 40%;
+      min-width: 100px;
+      max-width: 375px;
+    }
+
+    &.long-segment {
+      width: 55%;
+      max-width: 475px;
+    }
+
+    &.state {
+      width: 7%;
+    }
+  }
+
+  th {
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
+    height: 30px;
+    padding: 8px;
+    border-bottom: 2px solid $c-grey;
+
+    &.state {
+      width: 7%;
+      display: flex;
+      justify-content: space-between;
+
+      &.filtered {
+        color: $c-primary;
+      }
+
+      select {
+        width: 17px;
+        border: 0;
+        margin-bottom: 0;
+        text-indent: 100%;
+        color: $c-grey-dark;
+
+        &.filtered {
+          color: $c-primary;
+        }
+
+        option {
+          font-size: $f-size-sm;
+        }
+      }
+    }
+  }
+
+  td {
+    padding: 8px 5px;
+    border-bottom: 2px solid #e0e0e0;
+    border-left: 2px solid #e0e0e0;
+
+    button {
+      background: $c-white;
+      font-size: $f-size-sm;
+    }
+
+    &.suggestion {
+      border-left: 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+
+      .current-value,
+      .suggested-value {
+        display: block;
+        display: -webkit-box;
+        max-height: 2.6em;
+        line-height: 1.3em;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .suggested-value {
+        color: $c-primary;
+      }
+
+      .suggestion-label {
+        color: $c-grey-dark;
+        font-family: $f-special;
+        padding-top: 30px;
+      }
+    }
+  }
+}
+
+.suggestion-acceptance-modal {
+  min-height: 100px;
+  min-width: 400px;
+
+  .modal-header {
+    h1 {
+      font-size: 20px;
+      margin: 0 0 0 10px;
+    }
+  }
+
+  .modal-body {
+    min-height: 70px;
+
+    .language-checkbox {
+      display: flex;
+      width: 100%;
+      height: 51px;
+      padding: 16px;
+    }
+  }
+
+  .modal-footer {
+    .btn.cancel-button {
+      opacity: 1;
+    }
+  }
+}

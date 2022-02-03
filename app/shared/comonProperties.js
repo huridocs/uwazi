@@ -72,6 +72,9 @@ const allUniqueProperties = templates =>
     return filters;
   }, []);
 
+const allProperties = templates =>
+  templates.reduce((properties, template) => properties.concat(template.properties), []);
+
 const getInheritedProperty = (property, properties) =>
   properties.find(p => property.inherit.property.toString() === p._id.toString());
 
@@ -81,6 +84,7 @@ const textFields = templates =>
   );
 
 export default {
+  allProperties,
   getInheritedProperty,
   comonProperties,
   comonFilters,

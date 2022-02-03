@@ -177,6 +177,19 @@ const entryValues: { [key: string]: EntryValue } = {
     nameFunc: helpers.entitiesNames,
     extra: helpers.loadAllowedUsersAndGroups,
   },
+  'POST/api/suggestions/accept': {
+    desc: 'Accepted suggestion on entity',
+    method: Methods.Update,
+    related: helpers.loadSuggestionData,
+    nameField: 'entityId',
+    extra: data =>
+      ` updated property: ${data.propertyName}, with value: ${data.suggestedValue} . All languages: ${data.allLanguages}`,
+  },
+  'POST/api/suggestions/train': {
+    desc: 'Information extraction training',
+    method: Methods.Create,
+    extra: data => ` property ${data.property} `,
+  },
 };
 
 const getSemanticData = async (data: any) => {

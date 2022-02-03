@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import debounce from 'app/utils/debounce';
-import MultiSelect, { MultiSelectProps, Option, defaultProps } from './MultiSelect';
+import { MultiSelect, MultiSelectProps, Option, defaultProps } from './MultiSelect';
 
 export type LookupMultiSelectProps = MultiSelectProps<string[]> & {
   lookup: Function;
