@@ -8,6 +8,9 @@ import insertFixtures from '../helpers/insertFixtures';
 import { displayGraph } from '../helpers/graphs';
 import disableTransitions from '../helpers/disableTransitions';
 
+const COMMON_THRESHOLD = 0.07;
+const PERCENTAGE = Math.floor(COMMON_THRESHOLD * 100);
+
 const localSelectors = {
   pageContentsInput: '.tab-content > textarea',
   createdPageLink: '.document-viewer > div.alert-info a',
@@ -68,7 +71,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Bar chart graph in page with no more than a 7% difference', async () => {
+    it(`should display Bar chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
@@ -76,7 +79,7 @@ describe('Graphs in Page ', () => {
       );
 
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
+        failureThreshold: COMMON_THRESHOLD,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
@@ -89,7 +92,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Pie chart graph in page with no more than a 7% difference', async () => {
+    it(`should display Pie chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
@@ -97,7 +100,7 @@ describe('Graphs in Page ', () => {
       );
 
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
+        failureThreshold: COMMON_THRESHOLD,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
@@ -110,12 +113,12 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display List chart graph in page with no more than a 7% difference', async () => {
+    it(`should display List chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
 
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
+        failureThreshold: COMMON_THRESHOLD,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
@@ -140,14 +143,14 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Bar chart graph in page with no more than a 7% difference', async () => {
+    it(`should display Bar chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
 
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
+        failureThreshold: COMMON_THRESHOLD,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
@@ -163,14 +166,14 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display Pie chart graph in page with no more than a 7% difference', async () => {
+    it(`should display Pie chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
 
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
+        failureThreshold: COMMON_THRESHOLD,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
@@ -183,10 +186,10 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display List chart graph in page with no more than a 7% difference', async () => {
+    it(`should display List chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
+        failureThreshold: COMMON_THRESHOLD,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
