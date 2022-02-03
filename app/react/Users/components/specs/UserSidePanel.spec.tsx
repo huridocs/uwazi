@@ -9,7 +9,7 @@ import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
 import { UserRole } from 'shared/types/userSchema';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
-import MultiSelect from 'app/Forms/components/MultiSelect';
+import { MultiSelect } from 'app/Forms/components/MultiSelect';
 
 describe('UserSidePanel', () => {
   const newUser = {

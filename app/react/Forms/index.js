@@ -3,7 +3,7 @@ import DatePicker from './components/DatePicker';
 import Captcha from './components/Captcha';
 import DateRange from './components/DateRange';
 import FormGroup from './components/FormGroup';
-import MultiSelect, { MultiSelectTristate } from './components/MultiSelect';
+import { MultiSelect, MultiSelectTristate } from './components/MultiSelect';
 import { LookupMultiSelect } from './components/LookupMultiSelect';
 import { MarkDown } from './components/MarkDown';
 import Nested from './components/Nested';
