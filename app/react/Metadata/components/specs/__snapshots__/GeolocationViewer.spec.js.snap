@@ -6,6 +6,7 @@ exports[`GeolocationViewer should not fail if points is just an empty array 1`] 
     height={370}
     mapStyleSwitcher={true}
     markers={Array []}
+    showControls={true}
   />
   <div
     className="print-view-alt"
@@ -59,6 +60,7 @@ exports[`GeolocationViewer should render a map with markers when onlyForCards is
         },
       ]
     }
+    showControls={true}
   />
   <div
     className="print-view-alt"
