@@ -50,7 +50,19 @@ describe('TableCell', () => {
       value: [{ value: 'Español' }, { value: 'English' }],
     };
     const cellContent = renderContent();
-    expect(cellContent.props().children).toBe('Español, English');
+    expect(cellContent.props().children).toMatchSnapshot();
+  });
+
+  it('should render a multi select of nested values as a list of values', () => {
+    props.content = {
+      parent: 'Male',
+      label: 'People',
+      type: 'multiselect',
+      name: 'people',
+      value: [{ value: 'A guy' }],
+    };
+    const cellContent = renderContent();
+    expect(cellContent.props().children).toMatchSnapshot();
   });
 
   it('should render an external link', () => {

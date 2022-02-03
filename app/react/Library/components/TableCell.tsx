@@ -12,6 +12,7 @@ export interface TableCellProps {
 }
 
 export interface FormattedMetadataValue extends PropertySchema {
+  parent?: string;
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
