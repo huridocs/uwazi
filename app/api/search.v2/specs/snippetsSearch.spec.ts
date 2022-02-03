@@ -5,6 +5,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { searchRoutes } from 'api/search.v2/routes';
 import { testingDB } from 'api/utils/testing_db';
 import { fixturesSnippetsSearch, entity1enId } from 'api/search.v2/specs/snippetsSearchFixtures';
+import {loadFetchedInReduxForm} from "app/Metadata/actions/actions";
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -116,5 +117,27 @@ describe('searchSnippets', () => {
       },
     ];
     expect(body.data).toEqual(expected);
+  });
+
+  it('should return title snippets of an entity', async () => {
+    const expected = [
+      {
+        snippets: {
+          count: 1,
+          metadata: [
+            {
+              field: 'title',
+              texts: ['<b>entity:with</b> a document'],
+            },
+          ],
+        },
+      },
+    ];
+    const { body } = await request(app)
+      .get('/api/v2/entities')
+      .query(qs.stringify({ filter: { searchString: 'title:("entity:with")' }, fields: ['snippets', 'title'] }))
+      .expect(200);
+    const snippets = body.data;
+    expect(snippets).toMatchObject(expected);
   });
 });
