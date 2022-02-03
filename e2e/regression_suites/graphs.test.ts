@@ -183,10 +183,10 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it('should display List chart graph in page with no more than a 8% difference', async () => {
+    it('should display List chart graph in page with no more than a 7% difference', async () => {
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
       expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.08,
+        failureThreshold: 0.07,
         failureThresholdType: 'percent',
         allowSizeMismatch: true,
       });
