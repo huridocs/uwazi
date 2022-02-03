@@ -12,8 +12,10 @@ export interface TableCellProps {
 }
 
 export interface FormattedMetadataValue extends PropertySchema {
+  inheritedName?: string;
   parent?: string;
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
+  type: 'inherit' | PropertySchema['type'];
 }
 
 const formatProperty = (prop: FormattedMetadataValue | undefined) => {
@@ -53,6 +55,11 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
           </React.Fragment>
         )
       );
+      break;
+    case 'inherit':
+      result = (prop.value as MetadataObjectSchema[]).find(
+        (p: MetadataObjectSchema) => p.name === prop.inheritedName
+      )?.value;
       break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value as MetadataObjectSchema[]} onlyForCards />;
