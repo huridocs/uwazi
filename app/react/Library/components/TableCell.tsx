@@ -11,12 +11,12 @@ export interface TableCellProps {
   zoomLevel: number;
 }
 
-export interface FormattedMetadataValue extends PropertySchema {
+export type FormattedMetadataValue = Omit<PropertySchema, 'type'> & {
   inheritedName?: string;
   parent?: string;
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
   type: 'inherit' | PropertySchema['type'];
-}
+};
 
 const formatProperty = (prop: FormattedMetadataValue | undefined) => {
   let result;
