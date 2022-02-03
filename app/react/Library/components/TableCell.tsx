@@ -4,6 +4,7 @@ import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import MarkdownViewer from 'app/Markdown';
+import { showByType } from 'app/Metadata/components/Metadata';
 
 export interface TableCellProps {
   content?: FormattedMetadataValue;
@@ -27,6 +28,8 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
 
   switch (prop.type) {
     case 'multiselect':
+      result = showByType(prop, true);
+      break;
     case 'multidaterange':
     case 'multidate':
       result = (prop.value as MetadataObjectSchema[])
