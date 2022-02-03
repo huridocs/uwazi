@@ -92,6 +92,7 @@ export default class Geolocation extends Component {
           height={370}
           autoCenter={false}
           mapStyleSwitcher
+          showControls
         />
         <div className="form-row">
           <div className="form-group half-width">
