@@ -41,7 +41,7 @@ const GeolocationViewer = ({ points, onlyForCards }) => {
 
   return (
     <>
-      <Map {...componentProps} height={370} markers={markers} mapStyleSwitcher />
+      <Map {...componentProps} height={370} markers={markers} mapStyleSwitcher showControls />
       <div className="print-view-alt">
         <p>
           <Translate>Latitude</Translate>: {componentProps.latitude}
