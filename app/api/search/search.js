@@ -654,7 +654,7 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 }
 
-const buildQuery = async (query, language, user, resources) => {
+const buildQuery = async (query, language, user, resources, includeReviewAggregations) => {
   const [templates, dictionaries] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
   const searchTextType = query.searchTerm
@@ -714,7 +714,7 @@ const buildQuery = async (query, language, user, resources) => {
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  queryBuilder.aggregations(aggregations, dictionaries);
+  queryBuilder.aggregations(aggregations, dictionaries, includeReviewAggregations);
 
   return queryBuilder;
 };
@@ -723,7 +723,14 @@ const search = {
   async search(query, language, user) {
     const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
     const [templates, dictionaries] = resources;
-    const queryBuilder = await buildQuery(query, language, user, resources);
+    const includeReviewAggregations = query.includeReviewAggregations || false;
+    const queryBuilder = await buildQuery(
+      query,
+      language,
+      user,
+      resources,
+      includeReviewAggregations
+    );
     if (query.geolocation) {
       searchGeolocation(queryBuilder, templates);
     }
