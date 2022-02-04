@@ -9,6 +9,9 @@ import { Server } from 'http';
 import mongoose from 'mongoose';
 import path from 'path';
 
+import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
+
 import { TaskProvider } from 'shared/tasks/tasks';
 import { OcrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
@@ -42,6 +45,19 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler';
 mongoose.Promise = Promise;
 
 const app = express();
+if (config.sentry.dsn) {
+  Sentry.init({
+    dsn: config.sentry.dsn,
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Tracing.Integrations.Express({ app }),
+    ],
+    tracesSampleRate: config.sentry.tracesSampleRate,
+  });
+  app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.tracingHandler());
+}
+
 routesErrorHandler(app);
 app.use(helmet());
 
@@ -102,6 +118,9 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   );
   apiRoutes(app, http);
   serverRenderingRoutes(app);
+  if (config.sentry.dsn) {
+    app.use(Sentry.Handlers.errorHandler());
+  }
   app.use(errorHandlingMiddleware);
 
   if (!config.multiTenant && !config.clusterMode) {
@@ -184,5 +203,22 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
       console.info('==> 📦 webpack is watching...');
       console.info(uwaziMessage);
     }
+  });
+
+  process.on('SIGINT', () => {
+    process.stdout.write('SIGNIT signal received.\r\n');
+    http.close(error => {
+      process.stdout.write('Gracefully closing express connections\r\n');
+      if (error) {
+        process.stderr.write(error.toString());
+        process.exit(1);
+      }
+
+      DB.disconnect().then(() => {
+        process.stdout.write('Disconnected from database\r\n');
+        process.stdout.write('Server closed succesfully\r\n');
+        process.exit(0);
+      });
+    });
   });
 });
