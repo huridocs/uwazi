@@ -1,10 +1,37 @@
 import Ajv from 'ajv';
 import { wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, languagesListSchema, geolocationSchema } from 'shared/types/commonSchemas';
+import { Settings } from './settingsType';
 
 const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
+
+ajv.addKeyword('hasDefaultLanguage', {
+  errors: true,
+  type: 'object',
+  validate(schema: boolean, settings: Settings) {
+    const errors: Ajv.ErrorObject[] = [];
+    const { languages = [] } = settings;
+    const defaultLanguage = languages.filter(language => language.default === true);
+
+    if (defaultLanguage.length !== 1) {
+      errors.push({
+        keyword: 'hasDefaultLanguage',
+        schemaPath: '',
+        params: { keyword: 'hasDefaultLanguage', schema },
+        message: 'One language must be selected as default',
+        dataPath: 'settings.languages',
+      });
+    }
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
+  },
+});
 
 const itemSchema = {
   type: 'object',
@@ -94,6 +121,7 @@ const settingsSchema = {
     settingsSyncSchema,
   },
   additionalProperties: false,
+  hasDefaultLanguage: true,
   properties: {
     _id: objectIdSchema,
     __v: { type: 'number' },
