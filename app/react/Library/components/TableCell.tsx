@@ -4,15 +4,19 @@ import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import MarkdownViewer from 'app/Markdown';
+import { showByType } from 'app/Metadata/components/Metadata';
 
-export interface TableCellProps {
+interface TableCellProps {
   content?: FormattedMetadataValue;
   zoomLevel: number;
 }
 
-export interface FormattedMetadataValue extends PropertySchema {
+type FormattedMetadataValue = Omit<PropertySchema, 'type'> & {
+  inheritedName?: string;
+  parent?: string;
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
-}
+  type: 'inherit' | PropertySchema['type'];
+};
 
 const formatProperty = (prop: FormattedMetadataValue | undefined) => {
   let result;
@@ -27,6 +31,8 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
 
   switch (prop.type) {
     case 'multiselect':
+      result = showByType(prop, true);
+      break;
     case 'multidaterange':
     case 'multidate':
       result = (prop.value as MetadataObjectSchema[])
@@ -50,6 +56,11 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
         )
       );
       break;
+    case 'inherit':
+      result = (prop.value as MetadataObjectSchema[]).find(
+        (p: MetadataObjectSchema) => p.name === prop.inheritedName
+      )?.value;
+      break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value as MetadataObjectSchema[]} onlyForCards />;
       break;
@@ -71,3 +82,5 @@ export const TableCellComponent = (props: TableCellProps) => {
 };
 
 export const TableCell = React.memo(TableCellComponent);
+
+export type { TableCellProps, FormattedMetadataValue };
