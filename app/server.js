@@ -9,6 +9,9 @@ import { Server } from 'http';
 import mongoose from 'mongoose';
 import path from 'path';
 
+import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
+
 import { TaskProvider } from 'shared/tasks/tasks';
 import { OcrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
@@ -38,15 +41,13 @@ import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { tocService } from './api/toc_generation/tocService';
 import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
-import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
 
 mongoose.Promise = Promise;
 
 const app = express();
-if (config.sentry.apiDsn) {
+if (config.sentry.dsn) {
   Sentry.init({
-    dsn: config.sentry.apiDsn,
+    dsn: config.sentry.dsn,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
@@ -56,7 +57,6 @@ if (config.sentry.apiDsn) {
   app.use(Sentry.Handlers.requestHandler());
   app.use(Sentry.Handlers.tracingHandler());
 }
-
 
 routesErrorHandler(app);
 app.use(helmet());
@@ -118,7 +118,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   );
   apiRoutes(app, http);
   serverRenderingRoutes(app);
-  if (config.sentry.apiDsn) {
+  if (config.sentry.dsn) {
     app.use(Sentry.Handlers.errorHandler());
   }
   app.use(errorHandlingMiddleware);
@@ -222,4 +222,3 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     });
   });
 });
-

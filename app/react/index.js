@@ -1,19 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
+
 import { AppContainer } from 'react-hot-loader';
 
 import App from './App';
 
 import './App/sockets';
-import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
 
-Sentry.init({
-  dsn: 'https://9fc1606d2d884615ad395eb38bde0fbe@o1134623.ingest.sentry.io/6182268',
-  integrations: [new BrowserTracing()],
-  tracesSampleRate: 1.0,
-});
+if (process.env.SENTRY_APP_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_APP_DSN,
+    integrations: [new BrowserTracing()],
+    tracesSampleRate: 0.1,
+  });
+}
 
 const render = Component => {
   ReactDOM.hydrate(

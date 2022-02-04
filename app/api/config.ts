@@ -11,6 +11,7 @@ const {
   MONGO_URI,
   ELASTICSEARCH_URL,
   DBHOST,
+  SENTRY_API_DSN,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -58,7 +59,7 @@ export const config = {
   },
 
   sentry: {
+    dsn: SENTRY_API_DSN,
     tracesSampleRate: 0.1,
-    apiDsn: 'https://d0a4ee207bc444a9b1c088729044771a@o1134623.ingest.sentry.io/6182284',
   },
 };
