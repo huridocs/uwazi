@@ -185,4 +185,21 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
       console.info(uwaziMessage);
     }
   });
+
+  process.on('SIGINT', () => {
+    process.stdout.write('SIGNIT signal received.\r\n');
+    http.close(error => {
+      process.stdout.write('Gracefully closing express connections\r\n');
+      if (error) {
+        process.stderr.write(error.toString());
+        process.exit(1);
+      }
+
+      DB.disconnect().then(() => {
+        process.stdout.write('Disconnected from database\r\n');
+        process.stdout.write('Server closed succesfully\r\n');
+        process.exit(0);
+      });
+    });
+  });
 });
