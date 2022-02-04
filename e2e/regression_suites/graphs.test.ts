@@ -8,14 +8,12 @@ import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
-import {
-  displayGraph,
-  GLOBAL_IMAGE_REGRESSION_THRESHOLD,
-  GLOBAL_IMAGE_REGRESSION_PERCENTAGE,
-  prepareToMatchImageSnapshot,
-} from '../helpers/regression';
+import { displayGraph, prepareToMatchImageSnapshot } from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
+
+const threshold = 0.07;
+const percentage = Math.floor(threshold * 100);
 
 const localSelectors = {
   pageContentsInput: '.tab-content > textarea',
@@ -32,7 +30,7 @@ const graphs = {
 };
 
 const matchParameters: MatchImageSnapshotOptions = {
-  failureThreshold: GLOBAL_IMAGE_REGRESSION_THRESHOLD,
+  failureThreshold: threshold,
   failureThresholdType: 'percent',
   allowSizeMismatch: true,
 };
@@ -83,7 +81,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Bar chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it(`should display Bar chart graph in page with no more than a ${percentage}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
@@ -100,7 +98,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Pie chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it(`should display Pie chart graph in page with no more than a ${percentage}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
@@ -117,7 +115,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display List chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it(`should display List chart graph in page with no more than a ${percentage}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
 
@@ -143,7 +141,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Bar chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it(`should display Bar chart graph in page with no more than a ${percentage}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
@@ -162,7 +160,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Pie chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it(`should display Pie chart graph in page with no more than a ${percentage}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
@@ -178,7 +176,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display List chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it(`should display List chart graph in page with no more than a ${percentage}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
       expect(chartScreenshot).toMatchImageSnapshot(matchParameters);
       await graphsPage.close();
