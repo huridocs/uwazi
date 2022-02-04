@@ -6,12 +6,12 @@ import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/c
 import MarkdownViewer from 'app/Markdown';
 import { showByType } from 'app/Metadata/components/Metadata';
 
-export interface TableCellProps {
+interface TableCellProps {
   content?: FormattedMetadataValue;
   zoomLevel: number;
 }
 
-export type FormattedMetadataValue = Omit<PropertySchema, 'type'> & {
+type FormattedMetadataValue = Omit<PropertySchema, 'type'> & {
   inheritedName?: string;
   parent?: string;
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
@@ -82,3 +82,5 @@ export const TableCellComponent = (props: TableCellProps) => {
 };
 
 export const TableCell = React.memo(TableCellComponent);
+
+export type { TableCellProps, FormattedMetadataValue };
