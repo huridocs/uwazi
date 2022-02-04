@@ -1,19 +1,21 @@
 /*global page*/
+import { MatchImageSnapshotOptions } from 'jest-image-snapshot';
 import sharp from 'sharp';
 import { ElementHandle } from 'puppeteer';
 
 import { ensure } from 'shared/tsUtils';
-
 import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
-import { displayGraph, prepareToMatchImageSnapshot } from '../helpers/regression';
+import {
+  displayGraph,
+  GLOBAL_IMAGE_REGRESSION_THRESHOLD,
+  GLOBAL_IMAGE_REGRESSION_PERCENTAGE,
+  prepareToMatchImageSnapshot,
+} from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
-
-const COMMON_THRESHOLD = 0.07;
-const PERCENTAGE = Math.floor(COMMON_THRESHOLD * 100);
 
 const localSelectors = {
   pageContentsInput: '.tab-content > textarea',
@@ -27,6 +29,12 @@ const graphs = {
   barChartScatter: '<BarChart property="categor_a" scatter="true"/>',
   pieChartScatter: '<PieChart property="categor_a" scatter="true"/>',
   listChartScatter: '<ListChart property="categor_a" excludeZero="true" scatter="true"/>',
+};
+
+const matchParameters: MatchImageSnapshotOptions = {
+  failureThreshold: GLOBAL_IMAGE_REGRESSION_THRESHOLD,
+  failureThresholdType: 'percent',
+  allowSizeMismatch: true,
 };
 
 const DEFAULT_WIDTH = 1000;
@@ -75,18 +83,14 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Bar chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
+    it(`should display Bar chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: COMMON_THRESHOLD,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot(matchParameters);
       await graphsPage.close();
     });
 
@@ -96,18 +100,14 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Pie chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
+    it(`should display Pie chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: COMMON_THRESHOLD,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot(matchParameters);
       await graphsPage.close();
     });
 
@@ -117,15 +117,11 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display List chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
+    it(`should display List chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
       const graphsPage = await displayGraph();
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: COMMON_THRESHOLD,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot(matchParameters);
       await graphsPage.close();
     });
   });
@@ -147,17 +143,13 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Bar chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
+    it(`should display Bar chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: COMMON_THRESHOLD,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot(matchParameters);
       await graphsPage.close();
     });
 
@@ -170,17 +162,13 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Pie chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
+    it(`should display Pie chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(
         graphsPage,
         '.recharts-responsive-container'
       );
 
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: COMMON_THRESHOLD,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot(matchParameters);
       await graphsPage.close();
     });
 
@@ -190,13 +178,9 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display List chart graph in page with no more than a ${PERCENTAGE}% difference`, async () => {
+    it(`should display List chart graph in page with no more than a ${GLOBAL_IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
       const chartScreenshot = await getChartContainerScreenshot(graphsPage, '.ListChart');
-      expect(chartScreenshot).toMatchImageSnapshot({
-        failureThreshold: COMMON_THRESHOLD,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
+      expect(chartScreenshot).toMatchImageSnapshot(matchParameters);
       await graphsPage.close();
     });
   });

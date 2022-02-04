@@ -3,11 +3,17 @@
 
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import _ from 'lodash';
+import { ElementHandle } from 'puppeteer';
+
+import { ensure } from 'shared/tsUtils';
 import { host } from '../config';
+
+const GLOBAL_IMAGE_REGRESSION_THRESHOLD = 0.07;
+const GLOBAL_IMAGE_REGRESSION_PERCENTAGE = Math.floor(GLOBAL_IMAGE_REGRESSION_THRESHOLD * 100);
 
 const prepareToMatchImageSnapshot = () => {
   expect.extend({ toMatchImageSnapshot });
-}
+};
 
 const displayGraph = async () => {
   const pageID = page.url().split('/').pop() || '';
@@ -29,6 +35,23 @@ const displayGraph = async () => {
   // wait for the chart visualization animations to end
   await graphsPage.waitFor(4000);
   return graphsPage;
-}
+};
 
-export { displayGraph, prepareToMatchImageSnapshot }
+const testSelectorShot = async (selector: string, threshold?: number) => {
+  await page.waitForSelector(selector);
+  const element = ensure<ElementHandle>(await page.$(selector));
+  const screenshot = await element.screenshot();
+  expect(screenshot).toMatchImageSnapshot({
+    failureThreshold: threshold || GLOBAL_IMAGE_REGRESSION_THRESHOLD,
+    failureThresholdType: 'percent',
+    allowSizeMismatch: true,
+  });
+};
+
+export {
+  displayGraph,
+  GLOBAL_IMAGE_REGRESSION_THRESHOLD,
+  GLOBAL_IMAGE_REGRESSION_PERCENTAGE,
+  prepareToMatchImageSnapshot,
+  testSelectorShot,
+};
