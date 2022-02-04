@@ -44,27 +44,19 @@ import * as Tracing from '@sentry/tracing';
 mongoose.Promise = Promise;
 
 const app = express();
+if (config.sentry.apiDsn) {
+  Sentry.init({
+    dsn: config.sentry.apiDsn,
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Tracing.Integrations.Express({ app }),
+    ],
+    tracesSampleRate: config.sentry.tracesSampleRate,
+  });
+  app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.tracingHandler());
+}
 
-Sentry.init({
-  dsn: 'https://d0a4ee207bc444a9b1c088729044771a@o1134623.ingest.sentry.io/6182284',
-  integrations: [
-    // enable HTTP calls tracing
-    new Sentry.Integrations.Http({ tracing: true }),
-    // enable Express.js middleware tracing
-    new Tracing.Integrations.Express({ app }),
-  ],
-
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
-
-// RequestHandler creates a separate execution context using domains, so that every
-// transaction/span/breadcrumb is attached to its own Hub instance
-app.use(Sentry.Handlers.requestHandler());
-// TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler());
 
 routesErrorHandler(app);
 app.use(helmet());
@@ -126,7 +118,9 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   );
   apiRoutes(app, http);
   serverRenderingRoutes(app);
-  app.use(Sentry.Handlers.errorHandler());
+  if (config.sentry.apiDsn) {
+    app.use(Sentry.Handlers.errorHandler());
+  }
   app.use(errorHandlingMiddleware);
 
   if (!config.multiTenant && !config.clusterMode) {

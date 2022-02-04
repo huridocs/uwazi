@@ -60,6 +60,5 @@ export const config = {
   sentry: {
     tracesSampleRate: 0.1,
     apiDsn: 'https://d0a4ee207bc444a9b1c088729044771a@o1134623.ingest.sentry.io/6182284',
-    apDsn: 'https://9fc1606d2d884615ad395eb38bde0fbe@o1134623.ingest.sentry.io/6182268',
   },
 };
