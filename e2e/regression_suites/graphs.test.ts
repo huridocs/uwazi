@@ -1,12 +1,16 @@
 /*global page*/
 import sharp from 'sharp';
 import { ElementHandle } from 'puppeteer';
+
 import { ensure } from 'shared/tsUtils';
+
+import disableTransitions from '../helpers/disableTransitions';
+import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import { displayGraph } from '../helpers/graphs';
-import disableTransitions from '../helpers/disableTransitions';
+import { displayGraph, prepareToMatchImageSnapshot } from '../helpers/regression';
+
+prepareToMatchImageSnapshot();
 
 const COMMON_THRESHOLD = 0.07;
 const PERCENTAGE = Math.floor(COMMON_THRESHOLD * 100);

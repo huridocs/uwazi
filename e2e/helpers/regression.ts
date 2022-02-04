@@ -5,9 +5,11 @@ import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import _ from 'lodash';
 import { host } from '../config';
 
-expect.extend({ toMatchImageSnapshot });
+const prepareToMatchImageSnapshot = () => {
+  expect.extend({ toMatchImageSnapshot });
+}
 
-export async function displayGraph() {
+const displayGraph = async () => {
   const pageID = page.url().split('/').pop() || '';
 
   const pageTitle = await page.$eval('.template-name > div > input', input =>
@@ -28,3 +30,5 @@ export async function displayGraph() {
   await graphsPage.waitFor(4000);
   return graphsPage;
 }
+
+export { displayGraph, prepareToMatchImageSnapshot }
