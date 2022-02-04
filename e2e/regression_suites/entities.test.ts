@@ -1,4 +1,5 @@
 /*global page*/
+import { MatchImageSnapshotOptions } from 'jest-image-snapshot';
 import { ElementHandle } from 'puppeteer';
 
 import { ensure } from 'shared/tsUtils';
@@ -11,6 +12,12 @@ import proxyMock from '../helpers/proxyMock';
 import { prepareToMatchImageSnapshot } from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
+
+const snapshotParameters: MatchImageSnapshotOptions  = {
+  failureThreshold: 0.07,
+  failureThresholdType: 'percent',
+  allowSizeMismatch: true,
+};
 
 describe('Homepage entities', () => {
   beforeAll(async () => {
@@ -25,11 +32,7 @@ describe('Homepage entities', () => {
     await page.waitForSelector(elementSelector);
     const elementContainer = ensure<ElementHandle>(await page.$(elementSelector));
     const elementScreenshot = await elementContainer.screenshot();
-    expect(elementScreenshot).toMatchImageSnapshot({
-        failureThreshold: 0.07,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-    });
+    expect(elementScreenshot).toMatchImageSnapshot(snapshotParameters);
   });
 
   it('should display entity details', async () => {
@@ -38,7 +41,7 @@ describe('Homepage entities', () => {
     const className = '.metadata-sidepanel';
     await page.waitForSelector(className);
     const homepageScreenshot = ensure<ElementHandle>(await page.$(className));
-    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot();
+    expect(await homepageScreenshot.screenshot()).toMatchImageSnapshot(snapshotParameters);
   });
 
   it('should display entity view page', async () => {
@@ -46,27 +49,25 @@ describe('Homepage entities', () => {
     const className = 'div.entity-metadata';
     await page.waitForSelector(className);
     const viewPage = ensure<ElementHandle>(await page.$(className));
-    expect(await viewPage.screenshot()).toMatchImageSnapshot();
+    expect(await viewPage.screenshot()).toMatchImageSnapshot(snapshotParameters);
   });
 
-//   it('should display entity edit page', async () => {
-//     await expect(page).toClick('span', { text: 'Edit' });
-//     await disableTransitions();
-//     const className = 'div.entity-metadata';
-//     await page.waitForSelector(className);
-//     const editPage = ensure<ElementHandle>(await page.$(className));
-//     expect(await editPage.screenshot()).toMatchImageSnapshot();
-//   });
+  it('should display entity edit page', async () => {
+    await expect(page).toClick('span', { text: 'Edit' });
+    const className = 'div.entity-metadata';
+    await page.waitForSelector(className);
+    const editPage = ensure<ElementHandle>(await page.$(className));
+    expect(await editPage.screenshot()).toMatchImageSnapshot(snapshotParameters);
+  });
 
-//   it('should display entity connections page', async () => {
-//     await page.goto(`${host}/entity/7amlebw43dw8kt9`);
-//     await disableTransitions();
-//     await expect(page).toClick('div[aria-label="Connections"]');
-//     const className = 'div.relationships-graph';
-//     await page.waitForSelector(className);
-//     const connections = ensure<ElementHandle>(await page.$(className));
-//     expect(await connections.screenshot()).toMatchImageSnapshot();
-//   });
+  it('should display entity connections page', async () => {
+    await page.goto(`${host}/entity/7amlebw43dw8kt9`);
+    await expect(page).toClick('div[aria-label="Connections"]');
+    const className = 'div.relationships-graph';
+    await page.waitForSelector(className);
+    const connections = ensure<ElementHandle>(await page.$(className));
+    expect(await connections.screenshot()).toMatchImageSnapshot(snapshotParameters);
+  });
 
   afterAll(async () => {
     await logout();
