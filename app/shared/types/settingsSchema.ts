@@ -15,12 +15,22 @@ ajv.addKeyword('hasDefaultLanguage', {
     const { languages = [] } = settings;
     const defaultLanguage = languages.filter(language => language.default === true);
 
-    if (defaultLanguage.length !== 1) {
+    if (languages.length > 0 && defaultLanguage.length === 0) {
       errors.push({
         keyword: 'hasDefaultLanguage',
         schemaPath: '',
         params: { keyword: 'hasDefaultLanguage', schema },
-        message: 'One language must be selected as default',
+        message: 'At least one language must be selected as default',
+        dataPath: 'settings.languages',
+      });
+    }
+
+    if (defaultLanguage.length > 1) {
+      errors.push({
+        keyword: 'hasDefaultLanguage',
+        schemaPath: '',
+        params: { keyword: 'hasDefaultLanguage', schema },
+        message: 'Only one language must be selected as default',
         dataPath: 'settings.languages',
       });
     }
