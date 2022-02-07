@@ -77,4 +77,8 @@ const setupSockets = (server: Server, app: Application) => {
   });
 };
 
-export { setupSockets, emitToTenant };
+const closeSockets = () => {
+  io.disconnectSockets();
+};
+
+export { setupSockets, emitToTenant, closeSockets };
