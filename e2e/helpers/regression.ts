@@ -8,7 +8,7 @@ import { ElementHandle } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
 import { host } from '../config';
 
-const IMAGE_REGRESSION_THRESHOLD = 0.03;
+const IMAGE_REGRESSION_THRESHOLD = 0.02;
 const IMAGE_REGRESSION_PERCENTAGE = Math.floor(IMAGE_REGRESSION_THRESHOLD * 100);
 
 const prepareToMatchImageSnapshot = () => {

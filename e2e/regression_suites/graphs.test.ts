@@ -7,11 +7,15 @@ import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
-import { displayGraph, prepareToMatchImageSnapshot } from '../helpers/regression';
+import {
+  displayGraph,
+  IMAGE_REGRESSION_THRESHOLD,
+  prepareToMatchImageSnapshot,
+} from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
 
-const threshold = 0.07;
+const threshold = IMAGE_REGRESSION_THRESHOLD;
 const percentage = Math.floor(threshold * 100);
 
 const localSelectors = {
