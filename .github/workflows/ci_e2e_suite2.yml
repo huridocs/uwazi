@@ -8,6 +8,10 @@ on:
       - release
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e_test:
     runs-on: ubuntu-18.04
