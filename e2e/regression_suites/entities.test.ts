@@ -12,6 +12,9 @@ describe('Homepage entities', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
+  });
+
+  beforeEach(async () => {
     await disableTransitions();
   });
 
