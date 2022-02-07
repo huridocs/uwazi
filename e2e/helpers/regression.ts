@@ -8,7 +8,7 @@ import { ElementHandle, Page } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
 import { host } from '../config';
 
-const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0.01;
+const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0;
 
 const prepareToMatchImageSnapshot = () => {
   expect.extend({ toMatchImageSnapshot });
