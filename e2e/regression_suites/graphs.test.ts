@@ -1,6 +1,5 @@
 /*global page*/
 import { MatchImageSnapshotOptions } from 'jest-image-snapshot';
-import sharp from 'sharp';
 import { ElementHandle } from 'puppeteer';
 
 import { ensure } from 'shared/tsUtils';
@@ -35,10 +34,6 @@ const matchParameters: MatchImageSnapshotOptions = {
   allowSizeMismatch: true,
 };
 
-const DEFAULT_WIDTH = 1000;
-
-const resizeImage = async (image: any) => sharp(image).resize(DEFAULT_WIDTH).toBuffer();
-
 const insertChart = async (chart: string, chartName: string) => {
   await expect(page).toFill('input[name="page.data.title"]', chartName);
   await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
@@ -54,7 +49,7 @@ const savePage = async () => {
 
 const getChartContainerScreenshot = async (page: any, className: string) => {
   const chartContainer = ensure<ElementHandle>(await page.$(className));
-  return resizeImage(await chartContainer.screenshot());
+  return chartContainer.screenshot();
 };
 
 describe('Graphs in Page ', () => {
