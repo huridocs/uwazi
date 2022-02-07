@@ -284,7 +284,7 @@ describe('templates', () => {
       const allTemplates = await templates.get();
       const newDoc = allTemplates.find(template => template.name === 'created_template');
       newDoc.entityViewPage = pageSharedId;
-      await templates.save(newDoc);
+      await templates.save(newDoc, 'en', false);
       expect(entities.updateMetadataProperties).not.toHaveBeenCalled();
     });
     it('should update metadata properties if properties/commonProperties changes', async () => {
@@ -297,7 +297,7 @@ describe('templates', () => {
       const allTemplates = await templates.get();
       const newDoc = allTemplates.find(template => template.name === 'created_template');
       newDoc.commonProperties[0].label = 'new label';
-      await templates.save(newDoc);
+      await templates.save(newDoc, 'en', false);
       expect(entities.updateMetadataProperties).toHaveBeenCalled();
     });
 
