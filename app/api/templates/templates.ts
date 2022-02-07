@@ -183,7 +183,7 @@ export default {
     const hasProps = changedProperties.find(
       (key: string) => key.startsWith('properties') || key.startsWith('commonProperties')
     );
-    if (hasProps) {
+    if (hasProps || reindex) {
       await entities.updateMetadataProperties(template, currentTemplate, language, {
         reindex,
         generatedIdAdded,
