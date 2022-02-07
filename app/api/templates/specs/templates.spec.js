@@ -287,6 +287,22 @@ describe('templates', () => {
       await templates.save(newDoc, 'en', false);
       expect(entities.updateMetadataProperties).not.toHaveBeenCalled();
     });
+
+    it('should not update metadata properties if media fullWidth changes', async () => {
+      spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
+      const newTemplate = {
+        name: 'created_template',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [{ name: 'media', label: 'media', type: 'media', fullWidth: true }],
+      };
+      await templates.save(newTemplate);
+      const allTemplates = await templates.get();
+      const newDoc = allTemplates.find(template => template.name === 'created_template');
+      newDoc.properties[0].fullWidth = false;
+      await templates.save(newDoc, 'en', false);
+      expect(entities.updateMetadataProperties).not.toHaveBeenCalled();
+    });
+
     it('should update metadata properties if properties/commonProperties changes', async () => {
       spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
       const newTemplate = {

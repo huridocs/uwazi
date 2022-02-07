@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import entities from 'api/entities';
 import translations from 'api/i18n/translations';
 import createError from 'api/utils/Error';
@@ -180,10 +181,14 @@ export default {
       currentTemplate,
       Object.keys(template)
     );
-    const hasProps = changedProperties.find(
-      (key: string) => key.startsWith('properties') || key.startsWith('commonProperties')
+    const shouldUpdateMetadata = changedProperties.find(
+      (key: string) =>
+        (key.startsWith('properties') &&
+          key !== 'properties.style' &&
+          key !== 'properties.fullWidth') ||
+        key.startsWith('commonProperties')
     );
-    if (hasProps || reindex) {
+    if (shouldUpdateMetadata || reindex) {
       await entities.updateMetadataProperties(template, currentTemplate, language, {
         reindex,
         generatedIdAdded,
