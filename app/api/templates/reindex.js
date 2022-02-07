@@ -88,3 +88,5 @@ export async function checkIfReindex(updatedTemplate) {
   }
   return false;
 }
+
+export { compareShallowProperties };
