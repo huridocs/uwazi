@@ -185,6 +185,7 @@ export default {
       (key: string) =>
         (key.startsWith('properties') &&
           key !== 'properties.style' &&
+          key !== 'properties.nestedProperties' &&
           key !== 'properties.fullWidth') ||
         key.startsWith('commonProperties')
     );
