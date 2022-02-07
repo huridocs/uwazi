@@ -3,7 +3,7 @@
 
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import _ from 'lodash';
-import { ElementHandle } from 'puppeteer';
+import { ElementHandle, Page } from 'puppeteer';
 
 import { ensure } from 'shared/tsUtils';
 import { host } from '../config';
@@ -37,12 +37,16 @@ const displayGraph = async () => {
   return graphsPage;
 };
 
-const testSelectorShot = async (selector: string, threshold?: number) => {
-  await page.waitForSelector(selector);
-  const element = ensure<ElementHandle>(await page.$(selector));
+const testSelectorShot = async (
+  selector: string,
+  options: { threshold?: number; page?: Page } = {}
+) => {
+  const checkedPage = options.page || page;
+  await checkedPage.waitForSelector(selector);
+  const element = ensure<ElementHandle>(await checkedPage.$(selector));
   const screenshot = await element.screenshot();
   expect(screenshot).toMatchImageSnapshot({
-    failureThreshold: threshold || IMAGE_REGRESSION_THRESHOLD,
+    failureThreshold: options.threshold || IMAGE_REGRESSION_THRESHOLD,
     failureThresholdType: 'percent',
     allowSizeMismatch: true,
   });
