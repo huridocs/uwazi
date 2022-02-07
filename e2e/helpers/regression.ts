@@ -8,8 +8,7 @@ import { ElementHandle, Page } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
 import { host } from '../config';
 
-const IMAGE_REGRESSION_THRESHOLD = 0.01;
-const IMAGE_REGRESSION_PERCENTAGE = Math.floor(IMAGE_REGRESSION_THRESHOLD * 100);
+const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0.01;
 
 const prepareToMatchImageSnapshot = () => {
   expect.extend({ toMatchImageSnapshot });
@@ -46,7 +45,7 @@ const testSelectorShot = async (
   const element = ensure<ElementHandle>(await checkedPage.$(selector));
   const screenshot = await element.screenshot();
   expect(screenshot).toMatchImageSnapshot({
-    failureThreshold: options.threshold || IMAGE_REGRESSION_THRESHOLD,
+    failureThreshold: options.threshold || DEFAULT_IMAGE_REGRESSION_THRESHOLD,
     failureThresholdType: 'percent',
     allowSizeMismatch: true,
   });
@@ -54,8 +53,7 @@ const testSelectorShot = async (
 
 export {
   displayGraph,
-  IMAGE_REGRESSION_THRESHOLD,
-  IMAGE_REGRESSION_PERCENTAGE,
+  DEFAULT_IMAGE_REGRESSION_THRESHOLD,
   prepareToMatchImageSnapshot,
   testSelectorShot,
 };

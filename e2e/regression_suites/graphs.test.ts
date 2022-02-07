@@ -3,12 +3,7 @@ import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
-import {
-  displayGraph,
-  IMAGE_REGRESSION_PERCENTAGE,
-  testSelectorShot,
-  prepareToMatchImageSnapshot,
-} from '../helpers/regression';
+import { displayGraph, testSelectorShot, prepareToMatchImageSnapshot } from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
 
@@ -63,7 +58,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Bar chart graph in page with no more than a ${IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it('should display Bar chart graph in page', async () => {
       const graphsPage = await displayGraph();
       await testSelectorShot('.recharts-responsive-container', { page: graphsPage });
       await graphsPage.close();
@@ -75,7 +70,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Pie chart graph in page with no more than a ${IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it('should display Pie chart graph in page', async () => {
       const graphsPage = await displayGraph();
       await testSelectorShot('.recharts-responsive-container', { page: graphsPage });
       await graphsPage.close();
@@ -87,7 +82,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display List chart graph in page with no more than a ${IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it('should display List chart graph in page', async () => {
       const graphsPage = await displayGraph();
       await testSelectorShot('.ListChart', { page: graphsPage });
       await graphsPage.close();
@@ -111,7 +106,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Bar chart graph in page with no more than a ${IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it('should display Bar chart graph in page', async () => {
       await testSelectorShot('.recharts-responsive-container', { page: graphsPage });
       await graphsPage.close();
     });
@@ -125,7 +120,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display Pie chart graph in page with no more than a ${IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it('should display Pie chart graph in page', async () => {
       await testSelectorShot('.recharts-responsive-container', { page: graphsPage });
       await graphsPage.close();
     });
@@ -136,7 +131,7 @@ describe('Graphs in Page ', () => {
       await savePage();
     });
 
-    it(`should display List chart graph in page with no more than a ${IMAGE_REGRESSION_PERCENTAGE}% difference`, async () => {
+    it('should display List chart graph in page', async () => {
       await testSelectorShot('.ListChart', { page: graphsPage });
       await graphsPage.close();
     });
