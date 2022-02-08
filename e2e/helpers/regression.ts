@@ -1,12 +1,11 @@
 /*global page*/
 /*global browser*/
-
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import _ from 'lodash';
-import { ElementHandle, Page } from 'puppeteer';
+import { BoundingBox, ElementHandle, Page, ScreenshotOptions } from 'puppeteer';
 
 import { ensure } from 'shared/tsUtils';
-import { host } from '../config';
+import { host, BROWSER_WINDOW_SIZE } from '../config';
 
 const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0;
 
@@ -43,7 +42,21 @@ const testSelectorShot = async (
   const checkedPage = options.page || page;
   await checkedPage.waitForSelector(selector);
   const element = ensure<ElementHandle>(await checkedPage.$(selector));
-  const screenshot = await element.screenshot();
+
+  const screenshotOptions: ScreenshotOptions = {};
+
+  const box = ensure<BoundingBox>(await element.boundingBox());
+
+  if (box.height > BROWSER_WINDOW_SIZE.height) {
+    screenshotOptions.clip = {
+      x: box.x,
+      y: 0,
+      width: Math.min(box.width, BROWSER_WINDOW_SIZE.width),
+      height: Math.min(box.height, BROWSER_WINDOW_SIZE.height),
+    };
+  }
+  const screenshot = await element.screenshot(screenshotOptions);
+
   expect(screenshot).toMatchImageSnapshot({
     failureThreshold: options.threshold || DEFAULT_IMAGE_REGRESSION_THRESHOLD,
     failureThresholdType: 'percent',
