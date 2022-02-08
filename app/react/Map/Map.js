@@ -31,7 +31,6 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   showControls: false,
   mapViewStyle: 'street',
 });
-
 export default class Map extends Component {
   constructor(props) {
     super(props);
@@ -372,8 +371,8 @@ export default class Map extends Component {
     const { showControls } = this.state;
     if (showControls) {
       return (
-        <div className="mapbox-navigation">
-          <NavigationControl onViewportChange={this._onViewportChange} />
+        <div className="mapbox-controls">
+          <NavigationControl onViewportChange={this._onViewportChange} showCompass={false} />
         </div>
       );
     }

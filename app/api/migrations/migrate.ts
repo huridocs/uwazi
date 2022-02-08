@@ -15,21 +15,16 @@ if (process.env.DBUSER) {
 }
 
 export const runMigration = async () => {
-  try {
-    await DB.connect(config.DBHOST, auth);
-    const { db } = DB.connectionForDB(config.defaultTenant.dbName);
-    let migrations: any[] = [];
-    await tenants.run(async () => {
-      migrations = await migrator.migrate(db);
-    });
-    //@ts-ignore
-    errorLog.closeGraylog();
-    await DB.disconnect();
+  await DB.connect(config.DBHOST, auth);
+  const { db } = DB.connectionForDB(config.defaultTenant.dbName);
+  let migrations: any[] = [];
+  await tenants.run(async () => {
+    migrations = await migrator.migrate(db);
+  });
+  //@ts-ignore
+  errorLog.closeGraylog();
+  await DB.disconnect();
 
-    const reindexNeeded = migrations.some(migration => migration.reindex === true);
-    return { reindex: reindexNeeded };
-  } catch (e: any) {
-    process.stderr.write(`${JSON.stringify({ error: e.message })}\n`);
-    process.exit(1);
-  }
+  const reindexNeeded = migrations.some(migration => migration.reindex === true);
+  return { reindex: reindexNeeded };
 };
