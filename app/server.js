@@ -38,6 +38,7 @@ import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { tocService } from './api/toc_generation/tocService';
 import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
+import { closeSockets } from './api/socketio/setupSockets';
 
 mongoose.Promise = Promise;
 
@@ -186,7 +187,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   });
 
   process.on('SIGINT', () => {
-    process.stdout.write('SIGNIT signal received.\r\n');
+    process.stdout.write('SIGINT signal received.\r\n');
     http.close(error => {
       process.stdout.write('Gracefully closing express connections\r\n');
       if (error) {
@@ -200,5 +201,6 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         process.exit(0);
       });
     });
+    closeSockets();
   });
 });
