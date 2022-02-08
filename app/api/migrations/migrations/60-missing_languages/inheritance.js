@@ -74,7 +74,7 @@ class Inheritance {
     const languageToSourceSharedId = {};
     assignedEntities.forEach(entity => {
       this.sourceLanguageInfo[entity.sharedId] = {};
-      Object.entries(entity.metadata).forEach(([name, data]) => {
+      Object.entries(entity.metadata || {}).forEach(([name, data]) => {
         if (this.isPropertyInherited(entity.template, name) && data.length !== 0) {
           const requestedLanguages = sharedIdToMissing[entity.sharedId];
           data.forEach(item => {
@@ -135,7 +135,7 @@ class Inheritance {
   }
 
   inheritMetadata(metadata, targetTemplateId, targetSharedId, language) {
-    const returned = Object.entries(metadata).map(p =>
+    const returned = Object.entries(metadata || {}).map(p =>
       this.inheritProperty(p, targetTemplateId, targetSharedId, language)
     );
     return Object.fromEntries(returned);
