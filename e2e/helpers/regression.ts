@@ -7,7 +7,7 @@ import { BoundingBox, ElementHandle, Page, ScreenshotOptions } from 'puppeteer';
 import { ensure } from 'shared/tsUtils';
 import { host, BROWSER_WINDOW_SIZE } from '../config';
 
-const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0;
+const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0.3;
 
 const prepareToMatchImageSnapshot = () => {
   expect.extend({ toMatchImageSnapshot });
