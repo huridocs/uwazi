@@ -17,7 +17,6 @@ config.plugins = config.plugins.concat([
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify('production'),
-      SENTRY_APP_DSN: JSON.stringify(''),
     },
   }),
 ]);
