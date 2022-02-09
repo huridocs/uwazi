@@ -109,13 +109,17 @@ const saveEntity = async (
 ) => {
   const fileSaveErrors: string[] = [];
   const entity = { ..._entity };
+  const attachments: FileType[] = fileAttachments || [];
+  const savedFiles: FileType[] = [];
 
   await Promise.all(
     Object.entries(entity.metadata || {}).map(async ([property, value]) => {
       if (value && value[0].hasOwnProperty('attachment')) {
         const index = value[0].attachment;
-        const storedFile = await storeFile(attachmentsPath, fileAttachments[index]);
+        const storedFile = await storeFile(attachmentsPath, attachments[index]);
         entity.metadata[property] = [{ value: `api/files/${storedFile.filename}` }];
+        savedFiles.push(storedFile);
+        attachments.splice(index, 1);
       }
       return null;
     })
@@ -127,11 +131,19 @@ const saveEntity = async (
     { includeDocuments: false }
   );
 
-  const attachments = await processAttachments(entity, updatedEntity, fileAttachments);
+  const savedFilesWithSharedId = savedFiles.map(file => ({
+    ...file,
+    entity: updatedEntity.sharedId,
+    type: 'attachment',
+  }));
 
-  if (attachments.length) {
+  const proccessedAttachments = await processAttachments(entity, updatedEntity, attachments);
+
+  const allAttachments = proccessedAttachments.concat(savedFilesWithSharedId);
+
+  if (allAttachments.length) {
     await Promise.all(
-      attachments.map(async attachment => {
+      allAttachments.map(async attachment => {
         try {
           await files.save(attachment, false);
         } catch (e) {
