@@ -2,12 +2,14 @@ import db from 'api/utils/testing_db';
 import { search } from 'api/search';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { errorLog } from 'api/log';
+import { files as filesAPI } from 'api/files';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import {
   editorUser,
   entityId,
   fixtures,
-  templateId,
+  template1Id,
+  template2Id,
   textFile,
   pdfFile,
 } from './entitySavingManagerFixtures';
@@ -40,7 +42,7 @@ describe('entitySavingManager', () => {
     };
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {
-        const entity = { title: 'newEntity', template: templateId };
+        const entity = { title: 'newEntity', template: template1Id };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
         expect(savedEntity.permissions).toEqual([
           { level: 'write', refId: 'userId', type: 'user' },
@@ -49,7 +51,7 @@ describe('entitySavingManager', () => {
       it('should create an entity with attachments', async () => {
         const entity = {
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
@@ -75,7 +77,7 @@ describe('entitySavingManager', () => {
           _id: entityId,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
         };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
         expect(savedEntity.attachments).toMatchObject([
@@ -105,7 +107,7 @@ describe('entitySavingManager', () => {
           _id: entityId,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ ...changedFile }, pdfFile],
         };
 
@@ -130,7 +132,7 @@ describe('entitySavingManager', () => {
           _id: entityId,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ ...textFile }],
         };
 
@@ -148,7 +150,7 @@ describe('entitySavingManager', () => {
           _id: entityId,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ ...textFile }, { originalname: 'malformed url', url: 'malformed' }],
         };
       });
@@ -174,7 +176,7 @@ describe('entitySavingManager', () => {
           _id: entityId,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [
             { ...textFile },
             { ...pdfFile },
@@ -183,6 +185,47 @@ describe('entitySavingManager', () => {
         };
         await saveEntity(entity, { ...reqData });
         expect(search.indexEntities).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('entity with predefined image metadata fields', () => {
+      it('should allow to set an image metadata field referencing an attached file', async () => {
+        const imageFile = {
+          originalname: 'image.jpg',
+          mimetype: 'image/jpeg',
+          size: 12,
+          buffer: Buffer.from('sample content'),
+        };
+        const entity: EntityWithFilesSchema = {
+          title: 'newEntity',
+          template: template2Id,
+          metadata: {
+            image: [{ value: '', attachment: 0 }],
+            text: [
+              {
+                value: 'a text',
+              },
+            ],
+          },
+        };
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [imageFile],
+        });
+
+        const [savedFile] = await filesAPI.get({
+          entity: savedEntity.sharedId,
+          type: 'attachment',
+        });
+
+        console.log(savedFile);
+        console.log(savedEntity.metadata.image);
+
+        const imageNameInEntityMetadata = savedEntity.metadata.image[0].value.split('/')[2];
+
+        expect(savedFile.originalname).toBe('image.jpg');
+
+        expect(imageNameInEntityMetadata).toBe(savedFile.filename);
       });
     });
   });
