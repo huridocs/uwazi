@@ -190,12 +190,20 @@ describe('entitySavingManager', () => {
 
     describe('entity with predefined image metadata fields', () => {
       it('should allow to set an image metadata field referencing an attached file', async () => {
-        const imageFile = {
-          originalname: 'image.jpg',
-          mimetype: 'image/jpeg',
-          size: 12,
-          buffer: Buffer.from('sample content'),
-        };
+        const newFiles = [
+          {
+            originalname: 'image.jpg',
+            mimetype: 'image/jpeg',
+            size: 12,
+            buffer: Buffer.from('sample content'),
+          },
+          {
+            originalname: 'pdf.pdf',
+            mimetype: 'text/pdf',
+            size: 12,
+            buffer: Buffer.from('sample content'),
+          },
+        ];
         const entity: EntityWithFilesSchema = {
           title: 'newEntity',
           template: template2Id,
@@ -208,18 +216,17 @@ describe('entitySavingManager', () => {
             ],
           },
         };
+
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [imageFile],
+          files: newFiles,
         });
 
         const [savedFile] = await filesAPI.get({
           entity: savedEntity.sharedId,
           type: 'attachment',
+          originalname: 'image.jpg',
         });
-
-        console.log(savedFile);
-        console.log(savedEntity.metadata.image);
 
         const imageNameInEntityMetadata = savedEntity.metadata.image[0].value.split('/')[2];
 
