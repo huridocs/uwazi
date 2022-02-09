@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 import { search } from 'api/search';
 import { saveEntity } from 'api/entities/entitySavingManager';

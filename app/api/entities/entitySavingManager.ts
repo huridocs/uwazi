@@ -1,5 +1,6 @@
+/* eslint-disable max-statements */
 import { WithId } from 'api/odm';
-import { attachmentsPath, files, storeFile } from 'api/files';
+import { attachmentsPath, files, generateFileName, storeFile } from 'api/files';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
 import entities from 'api/entities/entities';
@@ -109,21 +110,13 @@ const saveEntity = async (
 ) => {
   const fileSaveErrors: string[] = [];
   const entity = { ..._entity };
-  const attachments: FileType[] = fileAttachments || [];
-  const savedFiles: FileType[] = [];
 
-  await Promise.all(
-    Object.entries(entity.metadata || {}).map(async ([property, value]) => {
-      if (value && value[0].hasOwnProperty('attachment')) {
-        const index = value[0].attachment;
-        const storedFile = await storeFile(attachmentsPath, attachments[index]);
-        entity.metadata[property] = [{ value: `api/files/${storedFile.filename}` }];
-        savedFiles.push(storedFile);
-        attachments.splice(index, 1);
-      }
-      return null;
-    })
-  );
+  const attachments = (fileAttachments || []).map(file => ({
+    ...file,
+    filename: generateFileName(file),
+  }));
+
+  const newMetadata = (entity.metadata || {}).entries();
 
   const updatedEntity = await entities.save(
     entity,
@@ -131,19 +124,11 @@ const saveEntity = async (
     { includeDocuments: false }
   );
 
-  const savedFilesWithSharedId = savedFiles.map(file => ({
-    ...file,
-    entity: updatedEntity.sharedId,
-    type: 'attachment',
-  }));
-
   const proccessedAttachments = await processAttachments(entity, updatedEntity, attachments);
 
-  const allAttachments = proccessedAttachments.concat(savedFilesWithSharedId);
-
-  if (allAttachments.length) {
+  if (proccessedAttachments.length) {
     await Promise.all(
-      allAttachments.map(async attachment => {
+      proccessedAttachments.map(async attachment => {
         try {
           await files.save(attachment, false);
         } catch (e) {
