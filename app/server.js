@@ -143,7 +143,8 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      if (!config.multiTenant && !config.clusterMode) {
+      const noMultiTenantLegacyServices = !config.multiTenant && !config.clusterMode;
+      if (noMultiTenantLegacyServices) {
         syncWorker.start();
 
         const { evidencesVault, features } = await settings.get();
@@ -174,22 +175,20 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           anHour
         );
         topicClassificationRepeater.start();
-
-        if (config.externalServices) {
-          console.info('==> 📡  starting external segmentation service ....');
-          const segmentationConnector = new PDFSegmentation();
-          const segmentationRepeater = new DistributedLoop(
-            'segmentation_repeat',
-            segmentationConnector.segmentPdfs,
-            { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
-          );
-
-          segmentationRepeater.start();
-        }
       }
 
       if (config.externalServices) {
+        console.info('==> 📡 starting external services...');
         OcrManager.start();
+
+        const segmentationConnector = new PDFSegmentation();
+        const segmentationRepeater = new DistributedLoop(
+          'segmentation_repeat',
+          segmentationConnector.segmentPdfs,
+          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
+        );
+
+        segmentationRepeater.start();
       }
     });
 
