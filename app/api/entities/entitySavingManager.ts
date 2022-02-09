@@ -85,7 +85,6 @@ const processAttachments = async (
     fileAttachments,
     updatedEntity
   );
-  const fileSaveErrors: string[] = [];
 
   if (entity._id && entity.attachments) {
     const entityFiles: WithId<FileType>[] = await files.get(
@@ -97,7 +96,7 @@ const processAttachments = async (
     attachments.push(...renamedAttachments);
   }
 
-  return { attachments, fileSaveErrors };
+  return attachments;
 };
 
 const saveEntity = async (
@@ -108,17 +107,15 @@ const saveEntity = async (
     files: fileAttachments,
   }: { user: UserSchema; language: string; files?: FileType[] }
 ) => {
+  const fileSaveErrors: string[] = [];
+
   const updatedEntity = await entities.save(
     entity,
     { user, language },
     { includeDocuments: false }
   );
 
-  const { attachments, fileSaveErrors } = await processAttachments(
-    entity,
-    updatedEntity,
-    fileAttachments
-  );
+  const attachments = await processAttachments(entity, updatedEntity, fileAttachments);
 
   if (attachments.length) {
     await Promise.all(
