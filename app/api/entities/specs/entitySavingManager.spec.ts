@@ -42,6 +42,7 @@ describe('entitySavingManager', () => {
       size: 12,
       buffer,
     };
+
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {
         const entity = { title: 'newEntity', template: template1Id };
@@ -50,6 +51,7 @@ describe('entitySavingManager', () => {
           { level: 'write', refId: 'userId', type: 'user' },
         ]);
       });
+
       it('should create an entity with attachments', async () => {
         const entity = {
           title: 'newEntity',
@@ -73,6 +75,7 @@ describe('entitySavingManager', () => {
         ]);
       });
     });
+
     describe('update entity', () => {
       it('should keep existing attachments', async () => {
         const entity = {
@@ -103,6 +106,7 @@ describe('entitySavingManager', () => {
           },
         ]);
       });
+
       it('should update files for renamed attachments', async () => {
         const changedFile = { ...textFile, originalname: 'newName.txt' };
         const entity = {
@@ -129,6 +133,7 @@ describe('entitySavingManager', () => {
           },
         ]);
       });
+
       it('should remove files for deleted attachments', async () => {
         const entity = {
           _id: entity1Id,
@@ -142,9 +147,11 @@ describe('entitySavingManager', () => {
         expect(savedEntity.attachments).toMatchObject([textFile]);
       });
     });
+
     describe('file save error', () => {
       let entity: EntityWithFilesSchema;
       let originalSilent: boolean | undefined;
+
       beforeAll(() => {
         originalSilent = errorLog.transports[1].silent;
         errorLog.transports[1].silent = true;
@@ -196,7 +203,7 @@ describe('entitySavingManager', () => {
           title: 'newEntity',
           template: template2Id,
           metadata: {
-            image: [{ value: '', attachment: 0 }],
+            image: [{ attachment: 0 }],
             text: [
               {
                 value: 'a text',
@@ -212,13 +219,13 @@ describe('entitySavingManager', () => {
               originalname: 'image.jpg',
               mimetype: 'image/jpeg',
               size: 12,
-              buffer: Buffer.from('sample content'),
+              buffer,
             },
             {
               originalname: 'pdf.pdf',
               mimetype: 'text/pdf',
               size: 12,
-              buffer: Buffer.from('sample content'),
+              buffer,
             },
           ],
         });
@@ -254,7 +261,7 @@ describe('entitySavingManager', () => {
               originalname: 'image2.jpg',
               mimetype: 'image/jpeg',
               size: 12,
-              buffer: Buffer.from('sample content'),
+              buffer,
             },
           ],
         });

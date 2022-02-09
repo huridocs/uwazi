@@ -21,7 +21,7 @@ async function prepareNewAttachments(
   if (newFiles.length) {
     await Promise.all(
       newFiles.map(async (file: any) => {
-        const savedFile = await storeFile(attachmentsPath, file);
+        const savedFile = await storeFile(attachmentsPath, file, true);
         attachments.push({
           ...savedFile,
           entity: updatedEntity.sharedId,
@@ -116,7 +116,12 @@ const saveEntity = async (
     filename: generateFileName(file),
   }));
 
-  const newMetadata = (entity.metadata || {}).entries();
+  Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
+    if (entity.metadata && _value && _value[0].hasOwnProperty('attachment')) {
+      const value = _value;
+      value[0].value = `api/files/${attachments[_value[0].attachment].filename}`;
+    }
+  });
 
   const updatedEntity = await entities.save(
     entity,
