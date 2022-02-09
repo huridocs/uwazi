@@ -94,6 +94,14 @@ class Root extends Component {
         {headTag(head, CSS, reduxData)}
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
+          {process.env.SENTRY_APP_DSN && (
+            <script
+              //eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{
+                __html: `window.SENTRY_APP_DSN = "${process.env.SENTRY_APP_DSN}"`,
+              }}
+            />
+          )}
           {this.renderInitialData()}
           {head.script.toComponent()}
           {JS.map((file, index) => (
