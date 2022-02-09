@@ -5,7 +5,8 @@ import { FileType } from 'shared/types/fileType';
 
 const template1Id = db.id();
 const template2Id = db.id();
-const entityId = db.id();
+const entity1Id = db.id();
+const entity2Id = db.id();
 
 const editorUser: UserSchema = {
   _id: db.id(),
@@ -37,10 +38,18 @@ const pdfFile: FileType = {
 const fixtures: DBFixture = {
   entities: [
     {
-      _id: entityId,
+      _id: entity1Id,
       sharedId: 'shared1',
       language: 'en',
       title: 'entity1',
+    },
+    {
+      _id: entity2Id,
+      sharedId: 'shared2',
+      language: 'en',
+      title: 'entity2',
+      metadata: {},
+      attachments: [{ ...textFile }],
     },
   ],
   files: [{ ...textFile }, { ...pdfFile }],
@@ -77,4 +86,4 @@ const fixtures: DBFixture = {
   users: [editorUser],
 };
 
-export { fixtures, template1Id, template2Id, editorUser, entityId, textFile, pdfFile };
+export { fixtures, template1Id, template2Id, editorUser, entity1Id, entity2Id, textFile, pdfFile };
