@@ -3,7 +3,8 @@ import { UserSchema } from 'shared/types/userType';
 import { UserRole } from 'shared/types/userSchema';
 import { FileType } from 'shared/types/fileType';
 
-const templateId = db.id();
+const template1Id = db.id();
+const template2Id = db.id();
 const entityId = db.id();
 
 const editorUser: UserSchema = {
@@ -45,10 +46,29 @@ const fixtures: DBFixture = {
   files: [{ ...textFile }, { ...pdfFile }],
   templates: [
     {
-      _id: templateId,
+      _id: template1Id,
       name: 'template1',
       commonProperties: [],
       properties: [],
+    },
+    {
+      _id: template2Id,
+      name: 'template2',
+      commonProperties: [],
+      properties: [
+        {
+          _id: db.id(),
+          label: 'Text',
+          type: 'text',
+          name: 'text',
+        },
+        {
+          _id: db.id(),
+          label: 'Image',
+          type: 'image',
+          name: 'image',
+        },
+      ],
     },
   ],
   settings: [
@@ -57,4 +77,4 @@ const fixtures: DBFixture = {
   users: [editorUser],
 };
 
-export { fixtures, templateId, editorUser, entityId, textFile, pdfFile };
+export { fixtures, template1Id, template2Id, editorUser, entityId, textFile, pdfFile };

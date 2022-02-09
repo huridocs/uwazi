@@ -54,6 +54,7 @@ export interface ConnectionSchema {
                   lat: number;
                   lon: number;
                 }[];
+            attachment?: number;
             label?: string;
             suggestion_confidence?: number;
             suggestion_model?: string;
@@ -116,6 +117,7 @@ export interface ConnectionSchema {
                   lat: number;
                   lon: number;
                 }[];
+            attachment?: number;
             label?: string;
             suggestion_confidence?: number;
             suggestion_model?: string;

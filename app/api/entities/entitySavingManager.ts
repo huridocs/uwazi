@@ -100,7 +100,7 @@ const processAttachments = async (
 };
 
 const saveEntity = async (
-  entity: EntityWithFilesSchema,
+  _entity: EntityWithFilesSchema,
   {
     user,
     language,
@@ -108,6 +108,18 @@ const saveEntity = async (
   }: { user: UserSchema; language: string; files?: FileType[] }
 ) => {
   const fileSaveErrors: string[] = [];
+  const entity = { ..._entity };
+
+  await Promise.all(
+    Object.entries(entity.metadata || {}).map(async ([property, value]) => {
+      if (value && value[0].hasOwnProperty('attachment')) {
+        const index = value[0].attachment;
+        const storedFile = await storeFile(attachmentsPath, fileAttachments[index]);
+        entity.metadata[property] = [{ value: `api/files/${storedFile.filename}` }];
+      }
+      return null;
+    })
+  );
 
   const updatedEntity = await entities.save(
     entity,
