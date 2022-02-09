@@ -131,11 +131,11 @@ const getFileContent = async (fileName: FilePath): Promise<string> =>
 
 const readFile = async (fileName: FilePath): Promise<Buffer> => fs.readFile(fileName);
 
-const storeFile: (filePathFunction: pathFunction, file: any) => Promise<FileType> = async (
-  filePathFunction,
-  file,
-  overrideFilename = false
-) => {
+const storeFile: (
+  filePathFunction: pathFunction,
+  file: any,
+  overrideFilename: boolean
+) => Promise<FileType> = async (filePathFunction, file, overrideFilename = false) => {
   const filename = (overrideFilename && file.filename) || generateFileName(file);
   await fs.appendFile(filePathFunction(filename), file.buffer);
   return Object.assign(file, { filename, destination: filePathFunction() });
