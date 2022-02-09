@@ -36,7 +36,7 @@ import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
-import {startLegacyServicesNoMultiTenant} from "./legacyServicesNoMultiTenant";
+import { startLegacyServicesNoMultiTenant } from './legacyServicesNoMultiTenant';
 
 mongoose.Promise = Promise;
 
