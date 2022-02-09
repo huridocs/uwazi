@@ -8,8 +8,8 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { uwaziFS as fs } from './uwaziFS';
 import { FileType } from '../../shared/types/fileType';
 
-export type FilePath = string;
-export type pathFunction = (fileName?: string) => FilePath;
+type FilePath = string;
+type pathFunction = (fileName?: string) => FilePath;
 
 const uploadsPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().uploadedDocuments, fileName);
@@ -133,9 +133,10 @@ const readFile = async (fileName: FilePath): Promise<Buffer> => fs.readFile(file
 
 const storeFile: (filePathFunction: pathFunction, file: any) => Promise<FileType> = async (
   filePathFunction,
-  file
+  file,
+  overrideFilename = false
 ) => {
-  const filename = generateFileName(file);
+  const filename = (overrideFilename && file.filename) || generateFileName(file);
   await fs.appendFile(filePathFunction(filename), file.buffer);
   return Object.assign(file, { filename, destination: filePathFunction() });
 };
@@ -159,3 +160,5 @@ export {
   readFile,
   storeFile,
 };
+
+export type { FilePath, pathFunction };
