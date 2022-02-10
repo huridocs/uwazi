@@ -113,14 +113,16 @@ const bindAttachmentsToMetadataProperties = (
   attachments: FileType[]
 ) => {
   const updatedEntity = entity;
-  Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
-    if (entity.metadata && _value && _value[0].attachment !== undefined) {
-      const value = _value;
-      value[0].value = attachments[_value[0].attachment]
-        ? `api/files/${attachments[_value[0].attachment].filename}`
-        : '';
-    }
-  });
+  if (attachments.length) {
+    Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
+      if (entity.metadata && _value && _value[0].attachment !== undefined) {
+        const value = _value;
+        value[0].value = attachments[_value[0].attachment]
+          ? `api/files/${attachments[_value[0].attachment].filename}`
+          : '';
+      }
+    });
+  }
   return updatedEntity;
 };
 
@@ -139,8 +141,7 @@ const saveEntity = async (
     filename: generateFileName(file),
   }));
 
-  const entity =
-    attachments.length > 0 ? bindAttachmentsToMetadataProperties(_entity, attachments) : _entity;
+  const entity = bindAttachmentsToMetadataProperties(_entity, attachments);
 
   const updatedEntity = await entities.save(
     entity,
