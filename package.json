@@ -283,7 +283,7 @@
     "eslint-plugin-jest": "v24.0.1",
     "eslint-plugin-jsx-a11y": "6.5.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "v7.20.0",
     "fetch-mock": "^9.11.0",
     "identity-obj-proxy": "^3.0.0",
