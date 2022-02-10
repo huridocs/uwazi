@@ -217,7 +217,7 @@ describe('entitySavingManager', () => {
           title: 'newEntity',
           template: template2Id,
           metadata: {
-            image: [{ attachment: 0 }],
+            image: [{ value: '', attachment: 0 }],
             text: [
               {
                 value: 'a text',
@@ -243,14 +243,14 @@ describe('entitySavingManager', () => {
         expect(savedEntity.metadata.image[0].value).toBe(`api/files/${savedFiles[0].filename}`);
       });
 
-      it('should work when updating existing entities with existing attachments', async () => {
+      it('should work when updating existing entities with other existing attachments', async () => {
         const entity = {
           _id: entity2Id,
           sharedId: 'shared2',
           title: 'entity2',
           template: template2Id,
           metadata: {
-            image: [{ attachment: 1 }],
+            image: [{ value: '', attachment: 1 }],
           },
           attachments: [anotherTextFile],
         };
@@ -273,14 +273,14 @@ describe('entitySavingManager', () => {
         expect(savedEntity.metadata.image[0].value).toBe(`api/files/${savedFiles[2].filename}`);
       });
 
-      it('should ignore references to unexisting attachments', async () => {
+      it('should ignore references to non existing attachments', async () => {
         const entity = {
           _id: entity2Id,
           sharedId: 'shared2',
           title: 'entity2',
           template: template2Id,
           metadata: {
-            image: [{ attachment: 5 }],
+            image: [{ value: '', attachment: 5 }],
           },
           attachments: [anotherTextFile],
         };
