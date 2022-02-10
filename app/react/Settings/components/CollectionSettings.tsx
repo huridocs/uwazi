@@ -46,7 +46,14 @@ const CollectionSettings = ({
   const collectionSettingsObject = collectionSettings.toJS();
   const templatesObject: ClientTemplateSchema[] = templates.toJS();
 
-  const { register, handleSubmit, watch, setValue, getValues } = useForm({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm({
     defaultValues: collectionSettingsObject,
   });
 
@@ -57,7 +64,7 @@ const CollectionSettings = ({
   register('newNameGeneration');
   register('ocrServiceEnabled');
   register('home_page', {
-    validate: (val: string) => validateHomePageRoute(val),
+    validate: (val: string) => validateHomePageRoute(val) || 'Invalid route',
   });
 
   const save = async (newCollectionSettings: Settings) => {
@@ -113,7 +120,7 @@ const CollectionSettings = ({
             </div>
           </ToggleChildren>
         </SettingsFormElement>
-
+        {errors.home_page && <p className="alert alert-danger">Invalid home page url value</p>}
         <SettingsFormElement label="Default view">
           <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="defaultLibraryView" className="form-control" ref={register}>
