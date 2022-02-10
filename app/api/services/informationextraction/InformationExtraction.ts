@@ -10,7 +10,7 @@ import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
 import { EnforcedWithId } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { emitToTenant } from 'api/socketio/setupSockets';
-import filesModel from 'api/files/filesModel';
+import { filesModel } from 'api/files/filesModel';
 import entities from 'api/entities/entities';
 import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
