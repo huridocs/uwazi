@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import entities from 'api/entities';
 import translations from 'api/i18n/translations';
 import createError from 'api/utils/Error';
