@@ -12,7 +12,6 @@ import path from 'path';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 
-import { TaskProvider } from 'shared/tasks/tasks';
 import { OcrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
 import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
@@ -24,24 +23,20 @@ import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
-import vaultSync from './api/evidences_vault';
 
 import { migrator } from './api/migrations/migrator';
-import settings from './api/settings';
-import syncWorker from './api/sync/syncWorker';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
 import { handleError } from './api/utils/handleError.js';
-import { Repeater } from './api/utils/Repeater';
 import serverRenderingRoutes from './react/server.js';
 import { DB } from './api/odm';
 import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
-import { tocService } from './api/toc_generation/tocService';
 import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
+import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
 
 mongoose.Promise = Promise;
 
@@ -143,53 +138,21 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      if (!config.multiTenant && !config.clusterMode) {
-        syncWorker.start();
 
-        const { evidencesVault, features } = await settings.get();
-        if (evidencesVault && evidencesVault.token && evidencesVault.template) {
-          console.info('==> 📥  evidences vault config detected, started sync ....');
-          const vaultSyncRepeater = new Repeater(
-            () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
-            10000
-          );
-          vaultSyncRepeater.start();
-        }
-
-        if (features && features.tocGeneration && features.tocGeneration.url) {
-          console.info('==> 🗂️ automatically generating TOCs using external service');
-          const service = tocService(features.tocGeneration.url);
-          const tocServiceRepeater = new Repeater(() => service.processNext(), 10000);
-          tocServiceRepeater.start();
-        }
-
-        const anHour = 3600000;
-        const topicClassificationRepeater = new Repeater(
-          () =>
-            TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
-              mode: 'onlynew',
-              noDryRun: true,
-              overwrite: true,
-            }),
-          anHour
-        );
-        topicClassificationRepeater.start();
-
-        if (config.externalServices) {
-          console.info('==> 📡  starting external segmentation service ....');
-          const segmentationConnector = new PDFSegmentation();
-          const segmentationRepeater = new DistributedLoop(
-            'segmentation_repeat',
-            segmentationConnector.segmentPdfs,
-            { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
-          );
-
-          segmentationRepeater.start();
-        }
-      }
+      await startLegacyServicesNoMultiTenant();
 
       if (config.externalServices) {
+        console.info('==> 📡 starting external services...');
         OcrManager.start();
+
+        const segmentationConnector = new PDFSegmentation();
+        const segmentationRepeater = new DistributedLoop(
+          'segmentation_repeat',
+          segmentationConnector.segmentPdfs,
+          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
+        );
+
+        segmentationRepeater.start();
       }
     });
 

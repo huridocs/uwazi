@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import * as Sentry from '@sentry/react';
+
 import { BrowserTracing } from '@sentry/tracing';
 
 import { AppContainer } from 'react-hot-loader';
@@ -10,9 +11,9 @@ import App from './App';
 
 import './App/sockets';
 
-if (process.env.SENTRY_APP_DSN) {
+if (window.SENTRY_APP_DSN) {
   Sentry.init({
-    dsn: process.env.SENTRY_APP_DSN,
+    dsn: window.SENTRY_APP_DSN,
     integrations: [new BrowserTracing()],
     tracesSampleRate: 0.1,
   });
