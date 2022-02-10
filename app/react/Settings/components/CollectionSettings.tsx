@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
@@ -13,6 +14,7 @@ import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+import { validateHomePageRoute } from 'app/utils/routeHelpers';
 import { ToggleChildren } from './ToggleChildren';
 import * as tips from './collectionSettingsTips';
 import { SettingsFormElement } from './SettingsFormElement';
@@ -54,6 +56,9 @@ const CollectionSettings = ({
   register('cookiepolicy');
   register('newNameGeneration');
   register('ocrServiceEnabled');
+  register('home_page', {
+    validate: (val: string) => validateHomePageRoute(val),
+  });
 
   const save = async (newCollectionSettings: Settings) => {
     const saveParameters = new RequestParams({
