@@ -9,6 +9,15 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
 
+type FileAttachments = {
+  originalname: string;
+  buffer: Buffer;
+  mimetype: string;
+  size: number;
+  encoding?: string;
+  fieldname?: string;
+};
+
 async function prepareNewAttachments(
   entityAttachments: FileType[] = [],
   fileAttachments: FileType[] = [],
@@ -106,7 +115,7 @@ const saveEntity = async (
     user,
     language,
     files: fileAttachments,
-  }: { user: UserSchema; language: string; files?: FileType[] }
+  }: { user: UserSchema; language: string; files?: FileAttachments[] }
 ) => {
   const fileSaveErrors: string[] = [];
   const entity = { ..._entity };
