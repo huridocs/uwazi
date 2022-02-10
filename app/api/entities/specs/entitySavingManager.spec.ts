@@ -240,7 +240,7 @@ describe('entitySavingManager', () => {
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe(`api/files/${savedFiles[0].filename}`);
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[0].filename}`);
       });
 
       it('should work when updating existing entities with other existing attachments', async () => {
@@ -270,7 +270,7 @@ describe('entitySavingManager', () => {
           expect.objectContaining({ originalname: 'image.jpg' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe(`api/files/${savedFiles[2].filename}`);
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[2].filename}`);
       });
 
       it('should ignore references to non existing attachments', async () => {

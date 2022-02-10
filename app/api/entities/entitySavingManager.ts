@@ -118,7 +118,7 @@ const bindAttachmentsToMetadataProperties = (
       if (entity.metadata && _value && _value[0].attachment !== undefined) {
         const value = _value;
         value[0].value = attachments[_value[0].attachment]
-          ? `api/files/${attachments[_value[0].attachment].filename}`
+          ? `/api/files/${attachments[_value[0].attachment].filename}`
           : '';
       }
     });
