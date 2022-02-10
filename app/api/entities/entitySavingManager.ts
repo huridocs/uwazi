@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { WithId } from 'api/odm';
 import { attachmentsPath, files, generateFileName, storeFile } from 'api/files';
 import { search } from 'api/search';
@@ -109,6 +108,20 @@ const processAttachments = async (
   return attachments;
 };
 
+const bindAttachmentsToMetadataProperties = (
+  entity: EntityWithFilesSchema,
+  attachments: FileType[]
+) => {
+  const updatedEntity = entity;
+  Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
+    if (entity.metadata && _value && _value[0].attachment !== undefined) {
+      const value = _value;
+      value[0].value = `api/files/${attachments[_value[0].attachment].filename}`;
+    }
+  });
+  return updatedEntity;
+};
+
 const saveEntity = async (
   _entity: EntityWithFilesSchema,
   {
@@ -118,19 +131,14 @@ const saveEntity = async (
   }: { user: UserSchema; language: string; files?: FileAttachments[] }
 ) => {
   const fileSaveErrors: string[] = [];
-  const entity = { ..._entity };
 
   const attachments = (fileAttachments || []).map(file => ({
     ...file,
     filename: generateFileName(file),
   }));
 
-  Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
-    if (entity.metadata && _value && _value[0].attachment !== undefined) {
-      const value = _value;
-      value[0].value = `api/files/${attachments[_value[0].attachment].filename}`;
-    }
-  });
+  const entity =
+    attachments.length > 0 ? bindAttachmentsToMetadataProperties(_entity, attachments) : _entity;
 
   const updatedEntity = await entities.save(
     entity,
