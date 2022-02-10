@@ -117,7 +117,7 @@ const saveEntity = async (
   }));
 
   Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
-    if (entity.metadata && _value && _value[0].hasOwnProperty('attachment')) {
+    if (entity.metadata && _value && _value[0].attachment !== undefined) {
       const value = _value;
       value[0].value = `api/files/${attachments[_value[0].attachment].filename}`;
     }
