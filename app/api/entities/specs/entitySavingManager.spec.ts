@@ -13,6 +13,7 @@ import {
   template1Id,
   template2Id,
   textFile,
+  anotherTextFile,
   pdfFile,
 } from './entitySavingManagerFixtures';
 
@@ -230,16 +231,17 @@ describe('entitySavingManager', () => {
           ],
         });
 
-        const [savedFile] = await filesAPI.get({
+        const savedFiles = await filesAPI.get({
           entity: savedEntity.sharedId,
-          type: 'attachment',
-          originalname: 'image.jpg',
         });
 
-        const imageNameInEntityMetadata = savedEntity.metadata.image[0].value.split('/')[2];
+        const imageNameInEntityMetadata = savedEntity.metadata.image[0].value;
+        expect(savedFiles).toEqual([
+          expect.objectContaining({ originalname: 'image.jpg' }),
+          expect.objectContaining({ originalname: 'pdf.pdf' }),
+        ]);
 
-        expect(savedFile.originalname).toBe('image.jpg');
-        expect(imageNameInEntityMetadata).toBe(savedFile.filename);
+        expect(imageNameInEntityMetadata).toBe(`api/files/${savedFiles[0].filename}`);
       });
 
       it('should work when updating existing entities with existing attachments', async () => {
@@ -249,14 +251,20 @@ describe('entitySavingManager', () => {
           title: 'entity2',
           template: template2Id,
           metadata: {
-            image: [{ value: '', attachment: 0 }],
+            image: [{ value: '', attachment: 1 }],
           },
-          attachments: [{ originalname: 'new url', url: 'https://google.com' }],
+          attachments: [anotherTextFile],
         };
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
           files: [
+            {
+              originalname: 'pdf.pdf',
+              mimetype: 'text/pdf',
+              size: 12,
+              buffer,
+            },
             {
               originalname: 'image2.jpg',
               mimetype: 'image/jpeg',
@@ -266,16 +274,19 @@ describe('entitySavingManager', () => {
           ],
         });
 
-        const [savedFile] = await filesAPI.get({
-          entity: savedEntity.sharedId,
-          type: 'attachment',
-          originalname: 'image2.jpg',
+        const savedFiles = await filesAPI.get({
+          entity: entity.sharedId,
         });
 
-        const imageNameInEntityMetadata = savedEntity.metadata.image[0].value.split('/')[2];
+        const imageNameInEntityMetadata = savedEntity.metadata.image[0].value;
 
-        expect(savedFile.originalname).toBe('image2.jpg');
-        expect(imageNameInEntityMetadata).toBe(savedFile.filename);
+        expect(savedFiles).toEqual([
+          expect.objectContaining({ originalname: 'Sample Text File.txt' }),
+          expect.objectContaining({ originalname: 'pdf.pdf' }),
+          expect.objectContaining({ originalname: 'image2.jpg' }),
+        ]);
+
+        expect(imageNameInEntityMetadata).toBe(`api/files/${savedFiles[2].filename}`);
       });
     });
   });
