@@ -116,7 +116,9 @@ const bindAttachmentsToMetadataProperties = (
   Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
     if (entity.metadata && _value && _value[0].attachment !== undefined) {
       const value = _value;
-      value[0].value = `api/files/${attachments[_value[0].attachment].filename}`;
+      value[0].value = attachments[_value[0].attachment]
+        ? `api/files/${attachments[_value[0].attachment].filename}`
+        : '';
     }
   });
   return updatedEntity;

@@ -251,7 +251,7 @@ describe('entitySavingManager', () => {
           title: 'entity2',
           template: template2Id,
           metadata: {
-            image: [{ value: '', attachment: 1 }],
+            image: [{ attachment: 1 }],
           },
           attachments: [anotherTextFile],
         };
@@ -287,6 +287,42 @@ describe('entitySavingManager', () => {
         ]);
 
         expect(imageNameInEntityMetadata).toBe(`api/files/${savedFiles[2].filename}`);
+      });
+
+      it('should ignore references to unexisting attachments', async () => {
+        const entity = {
+          _id: entity2Id,
+          sharedId: 'shared2',
+          title: 'entity2',
+          template: template2Id,
+          metadata: {
+            image: [{ attachment: 5 }],
+          },
+          attachments: [anotherTextFile],
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [
+            {
+              originalname: 'pdf.pdf',
+              mimetype: 'text/pdf',
+              size: 12,
+              buffer,
+            },
+          ],
+        });
+
+        const savedFiles = await filesAPI.get({
+          entity: entity.sharedId,
+        });
+
+        expect(savedFiles).toEqual([
+          expect.objectContaining({ originalname: 'Sample Text File.txt' }),
+          expect.objectContaining({ originalname: 'pdf.pdf' }),
+        ]);
+
+        expect(savedEntity.metadata.image[0].value).toBe('');
       });
     });
   });
