@@ -199,6 +199,19 @@ describe('entitySavingManager', () => {
     });
 
     describe('entity with predefined image metadata fields', () => {
+      const newImageFile = {
+        originalname: 'image.jpg',
+        mimetype: 'image/jpeg',
+        size: 12,
+        buffer,
+      };
+      const newPdfFile = {
+        originalname: 'pdf.pdf',
+        mimetype: 'text/pdf',
+        size: 12,
+        buffer,
+      };
+
       it('should allow to set an image metadata field referencing an attached file that is not yet saved', async () => {
         const entity = {
           title: 'newEntity',
@@ -215,33 +228,19 @@ describe('entitySavingManager', () => {
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [
-            {
-              originalname: 'image.jpg',
-              mimetype: 'image/jpeg',
-              size: 12,
-              buffer,
-            },
-            {
-              originalname: 'pdf.pdf',
-              mimetype: 'text/pdf',
-              size: 12,
-              buffer,
-            },
-          ],
+          files: [newImageFile, newPdfFile],
         });
 
         const savedFiles = await filesAPI.get({
           entity: savedEntity.sharedId,
         });
 
-        const imageNameInEntityMetadata = savedEntity.metadata.image[0].value;
         expect(savedFiles).toEqual([
           expect.objectContaining({ originalname: 'image.jpg' }),
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(imageNameInEntityMetadata).toBe(`api/files/${savedFiles[0].filename}`);
+        expect(savedEntity.metadata.image[0].value).toBe(`api/files/${savedFiles[0].filename}`);
       });
 
       it('should work when updating existing entities with existing attachments', async () => {
@@ -258,35 +257,20 @@ describe('entitySavingManager', () => {
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [
-            {
-              originalname: 'pdf.pdf',
-              mimetype: 'text/pdf',
-              size: 12,
-              buffer,
-            },
-            {
-              originalname: 'image2.jpg',
-              mimetype: 'image/jpeg',
-              size: 12,
-              buffer,
-            },
-          ],
+          files: [newPdfFile, newImageFile],
         });
 
         const savedFiles = await filesAPI.get({
           entity: entity.sharedId,
         });
 
-        const imageNameInEntityMetadata = savedEntity.metadata.image[0].value;
-
         expect(savedFiles).toEqual([
           expect.objectContaining({ originalname: 'Sample Text File.txt' }),
           expect.objectContaining({ originalname: 'pdf.pdf' }),
-          expect.objectContaining({ originalname: 'image2.jpg' }),
+          expect.objectContaining({ originalname: 'image.jpg' }),
         ]);
 
-        expect(imageNameInEntityMetadata).toBe(`api/files/${savedFiles[2].filename}`);
+        expect(savedEntity.metadata.image[0].value).toBe(`api/files/${savedFiles[2].filename}`);
       });
 
       it('should ignore references to unexisting attachments', async () => {
@@ -303,14 +287,7 @@ describe('entitySavingManager', () => {
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [
-            {
-              originalname: 'pdf.pdf',
-              mimetype: 'text/pdf',
-              size: 12,
-              buffer,
-            },
-          ],
+          files: [newPdfFile],
         });
 
         const savedFiles = await filesAPI.get({
