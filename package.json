@@ -287,7 +287,7 @@
     "eslint-plugin-react": "v7.20.0",
     "fetch-mock": "^9.11.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "24.8.0",
+    "jest": "27.5.1",
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "jest-extended": "1.2.1",
     "jest-image-snapshot": "^4.5.1",
