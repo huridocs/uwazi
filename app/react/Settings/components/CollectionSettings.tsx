@@ -55,6 +55,7 @@ const CollectionSettings = ({
     formState: { errors },
   } = useForm({
     defaultValues: collectionSettingsObject,
+    mode: 'onSubmit',
   });
 
   register('private');
