@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import ActivitylogRow from '../ActivitylogRow';
 
-jest.mock('moment', function baseCall() {
+jest.mock('moment', () => {
   function format(formatString) {
     return `formatted: ${this.initialDate}, with: ${formatString} (locale: ${this.locale});`;
   }
@@ -24,7 +24,7 @@ jest.mock('moment', function baseCall() {
     };
   }
 
-  return moment.bind(this);
+  return moment.bind(moment);
 });
 
 describe('ActivitylogRow', () => {

@@ -98,7 +98,7 @@ describe('CejilChart002', () => {
 
     it('should sort and format the results appropriately', done => {
       const tree = shallow(<CejilChart.WrappedComponent {...props} />);
-      setImmediate(() => {
+      setTimeout(() => {
         tree.update();
         expect(tree).toMatchSnapshot();
         done();
@@ -108,7 +108,7 @@ describe('CejilChart002', () => {
     it('should allow changing the filter property', done => {
       props.filterProperty = 'mandatos_de_la_comisi_n';
       const tree = shallow(<CejilChart.WrappedComponent {...props} />);
-      setImmediate(() => {
+      setTimeout(() => {
         tree.update();
         expect(tree).toMatchSnapshot();
         done();
