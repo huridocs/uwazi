@@ -1,5 +1,5 @@
 /**
- * @jest-environment jest-environment-jsdom-sixteen
+ * @jest-environment jest-environment-jsdom
  */
 import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
