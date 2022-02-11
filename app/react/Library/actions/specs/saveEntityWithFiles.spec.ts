@@ -77,10 +77,7 @@ describe('saveEntityWithFiles', () => {
 
       const updatedEntity = await saveEntityWithFiles(entity, dispatch);
 
-      expect(mockUpload.attach).toHaveBeenCalledWith(
-        'attachments[0]',
-        expect.objectContaining({ size: fileSize, type: fileType })
-      );
+      expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
 
       expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
       expect(updatedEntity).toEqual({ title: 'entity1' });

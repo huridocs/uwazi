@@ -155,9 +155,9 @@ describe('OCRStatus', () => {
       fireEvent.click(ocrButton);
 
       await new Promise<void>(resolve => {
-        setImmediate(() => {
+        setTimeout(() => {
           resolve();
-        });
+        }, 0);
       });
     };
 

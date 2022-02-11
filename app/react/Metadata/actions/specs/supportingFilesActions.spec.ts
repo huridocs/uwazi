@@ -43,7 +43,7 @@ describe('upload supporting files', () => {
         filename: 'testFile.txt',
         mimetype: 'text/plain',
         originalname: 'testFile.txt',
-        serializedFile: 'data:text/plain;charset=undefined,testFile',
+        serializedFile: 'data:text/plain;base64,dGVzdEZpbGU=',
         type: 'attachment',
       });
     });

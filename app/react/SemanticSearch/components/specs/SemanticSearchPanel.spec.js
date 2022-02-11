@@ -86,10 +86,10 @@ describe('SemanticSearchPanel', () => {
 
   it('should fetch all searches when mounted', done => {
     render();
-    setImmediate(() => {
+    setTimeout(() => {
       expect(actions.fetchSearches).toHaveBeenCalled();
       done();
-    });
+    }, 0);
   });
 
   it('should register for updates when mounted the first time', () => {
