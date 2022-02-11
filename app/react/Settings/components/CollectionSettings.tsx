@@ -64,7 +64,7 @@ const CollectionSettings = ({
   register('newNameGeneration');
   register('ocrServiceEnabled');
   register('home_page', {
-    validate: (val: string) => validateHomePageRoute(val) || 'Invalid route',
+    validate: (val: string) => validateHomePageRoute(val) || val === '',
   });
 
   const save = async (newCollectionSettings: Settings) => {
@@ -112,15 +112,17 @@ const CollectionSettings = ({
               setValue('home_page', '');
             }}
           >
-            <div className="input-group">
+            <div className={`input-group ${errors.home_page ? 'has-error' : ''}`}>
               <span className="input-group-addon" id="basic-addon1">
                 <Translate>https://yourdomain</Translate>
               </span>
               <input type="text" className="form-control" name="home_page" ref={register} />
             </div>
+            <div className="has-error">
+              {errors.home_page && <div style={{ color: '#D9534F' }}>Invalid home page url</div>}
+            </div>
           </ToggleChildren>
         </SettingsFormElement>
-        {errors.home_page && <p className="alert alert-danger">Invalid home page url value</p>}
         <SettingsFormElement label="Default view">
           <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="defaultLibraryView" className="form-control" ref={register}>
