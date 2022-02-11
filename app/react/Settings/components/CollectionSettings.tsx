@@ -119,7 +119,11 @@ const CollectionSettings = ({
               <input type="text" className="form-control" name="home_page" ref={register} />
             </div>
             <div className="has-error">
-              {errors.home_page && <div className="error-message">Invalid home page url</div>}
+              {errors.home_page && (
+                <div className="error-message">
+                  <Translate>Invalid home page url</Translate>
+                </div>
+              )}
             </div>
           </ToggleChildren>
         </SettingsFormElement>
