@@ -60,7 +60,7 @@ class PageViewer extends Component {
   }
 
   render() {
-    const { page, itemLists, datasets, error } = this.props;
+    const { page, itemLists, datasets, error, setBrowserTitle } = this.props;
     const lists = itemLists.toJS();
     const originalText = page.getIn(['metadata', 'content']) || '';
     const scriptRendered = page.getIn(['scriptRendered']);
@@ -72,7 +72,7 @@ class PageViewer extends Component {
       <div className="row">
         {!parsedPageError && (
           <>
-            <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
+            {setBrowserTitle && <Helmet title={page.get('title') ? page.get('title') : 'Page'} />}
             <main className="page-viewer document-viewer">
               <div className="main-wrapper">
                 {this.state.customPageError && this.renderErrorWarning()}
@@ -105,6 +105,7 @@ PageViewer.defaultProps = {
   itemLists: Immutable.fromJS([]),
   datasets: Immutable.fromJS({}),
   error: Immutable.fromJS({}),
+  setBrowserTitle: true,
 };
 
 PageViewer.propTypes = {
@@ -112,6 +113,7 @@ PageViewer.propTypes = {
   itemLists: PropTypes.instanceOf(Immutable.List),
   datasets: PropTypes.instanceOf(Immutable.Map),
   error: PropTypes.instanceOf(Immutable.Map),
+  setBrowserTitle: PropTypes.bool,
 };
 
 const mapStateToProps = ({ page }) => ({
