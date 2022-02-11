@@ -1,14 +1,19 @@
+/* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 import { search } from 'api/search';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { errorLog } from 'api/log';
+import { files as filesAPI } from 'api/files';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import {
   editorUser,
-  entityId,
+  entity1Id,
+  entity2Id,
   fixtures,
-  templateId,
+  template1Id,
+  template2Id,
   textFile,
+  anotherTextFile,
   pdfFile,
 } from './entitySavingManagerFixtures';
 
@@ -38,18 +43,20 @@ describe('entitySavingManager', () => {
       size: 12,
       buffer,
     };
+
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {
-        const entity = { title: 'newEntity', template: templateId };
+        const entity = { title: 'newEntity', template: template1Id };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
         expect(savedEntity.permissions).toEqual([
           { level: 'write', refId: 'userId', type: 'user' },
         ]);
       });
+
       it('should create an entity with attachments', async () => {
         const entity = {
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
@@ -69,13 +76,14 @@ describe('entitySavingManager', () => {
         ]);
       });
     });
+
     describe('update entity', () => {
       it('should keep existing attachments', async () => {
         const entity = {
-          _id: entityId,
+          _id: entity1Id,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
         };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
         expect(savedEntity.attachments).toMatchObject([
@@ -99,13 +107,14 @@ describe('entitySavingManager', () => {
           },
         ]);
       });
+
       it('should update files for renamed attachments', async () => {
         const changedFile = { ...textFile, originalname: 'newName.txt' };
         const entity = {
-          _id: entityId,
+          _id: entity1Id,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ ...changedFile }, pdfFile],
         };
 
@@ -125,12 +134,13 @@ describe('entitySavingManager', () => {
           },
         ]);
       });
+
       it('should remove files for deleted attachments', async () => {
         const entity = {
-          _id: entityId,
+          _id: entity1Id,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ ...textFile }],
         };
 
@@ -138,17 +148,19 @@ describe('entitySavingManager', () => {
         expect(savedEntity.attachments).toMatchObject([textFile]);
       });
     });
+
     describe('file save error', () => {
       let entity: EntityWithFilesSchema;
       let originalSilent: boolean | undefined;
+
       beforeAll(() => {
         originalSilent = errorLog.transports[1].silent;
         errorLog.transports[1].silent = true;
         entity = {
-          _id: entityId,
+          _id: entity1Id,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [{ ...textFile }, { originalname: 'malformed url', url: 'malformed' }],
         };
       });
@@ -171,10 +183,10 @@ describe('entitySavingManager', () => {
     describe('indexing entities', () => {
       it('should index entities', async () => {
         const entity = {
-          _id: entityId,
+          _id: entity1Id,
           sharedId: 'shared1',
           title: 'newEntity',
-          template: templateId,
+          template: template1Id,
           attachments: [
             { ...textFile },
             { ...pdfFile },
@@ -183,6 +195,111 @@ describe('entitySavingManager', () => {
         };
         await saveEntity(entity, { ...reqData });
         expect(search.indexEntities).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('entity with predefined image metadata fields', () => {
+      const newImageFile = {
+        originalname: 'image.jpg',
+        mimetype: 'image/jpeg',
+        size: 12,
+        buffer,
+      };
+      const newPdfFile = {
+        originalname: 'pdf.pdf',
+        mimetype: 'text/pdf',
+        size: 12,
+        buffer,
+      };
+
+      it('should allow to set an image metadata field referencing an attached file that is not yet saved', async () => {
+        const entity = {
+          title: 'newEntity',
+          template: template2Id,
+          metadata: {
+            image: [{ value: '', attachment: 0 }],
+            text: [
+              {
+                value: 'a text',
+              },
+            ],
+          },
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [newImageFile, newPdfFile],
+        });
+
+        const savedFiles = await filesAPI.get({
+          entity: savedEntity.sharedId,
+        });
+
+        expect(savedFiles).toEqual([
+          expect.objectContaining({ originalname: 'image.jpg' }),
+          expect.objectContaining({ originalname: 'pdf.pdf' }),
+        ]);
+
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[0].filename}`);
+      });
+
+      it('should work when updating existing entities with other existing attachments', async () => {
+        const entity = {
+          _id: entity2Id,
+          sharedId: 'shared2',
+          title: 'entity2',
+          template: template2Id,
+          metadata: {
+            image: [{ value: '', attachment: 1 }],
+          },
+          attachments: [anotherTextFile],
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [newPdfFile, newImageFile],
+        });
+
+        const savedFiles = await filesAPI.get({
+          entity: entity.sharedId,
+        });
+
+        expect(savedFiles).toEqual([
+          expect.objectContaining({ originalname: 'Sample Text File.txt' }),
+          expect.objectContaining({ originalname: 'pdf.pdf' }),
+          expect.objectContaining({ originalname: 'image.jpg' }),
+        ]);
+
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[2].filename}`);
+      });
+
+      it('should ignore references to non existing attachments', async () => {
+        const entity = {
+          _id: entity2Id,
+          sharedId: 'shared2',
+          title: 'entity2',
+          template: template2Id,
+          metadata: {
+            image: [{ value: '', attachment: 5 }],
+          },
+          attachments: [anotherTextFile],
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [newPdfFile],
+        });
+
+        const savedFiles = await filesAPI.get({
+          entity: entity.sharedId,
+        });
+
+        expect(savedFiles).toEqual([
+          expect.objectContaining({ originalname: 'Sample Text File.txt' }),
+          expect.objectContaining({ originalname: 'pdf.pdf' }),
+        ]);
+
+        expect(savedEntity.metadata.image[0].value).toBe('');
       });
     });
   });
