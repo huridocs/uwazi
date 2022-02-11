@@ -323,7 +323,7 @@
   "config": {
     "mongodbMemoryServer": {
       "version": "4.4.8",
-      "debug": "yes",
+      "debug": "no",
       "preferGlobalPath": "0",
       "runtimeDownload": "0"
     }
