@@ -107,6 +107,7 @@ export const metadataObjectSchema = {
   required: ['value'],
   properties: {
     value: propertyValueSchema,
+    attachment: { type: 'number' },
     label: { type: 'string' },
     suggestion_confidence: { type: 'number' },
     suggestion_model: { type: 'string' },
