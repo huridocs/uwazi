@@ -11,6 +11,7 @@ const {
   MONGO_URI,
   ELASTICSEARCH_URL,
   DBHOST,
+  SENTRY_API_DSN,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -55,5 +56,10 @@ export const config = {
     activated: CLUSTER_MODE,
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '', 10) || 6379,
+  },
+
+  sentry: {
+    dsn: SENTRY_API_DSN,
+    tracesSampleRate: 0.1,
   },
 };

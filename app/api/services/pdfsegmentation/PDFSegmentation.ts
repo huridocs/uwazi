@@ -2,7 +2,7 @@ import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManag
 import { uploadsPath, fileFromReadStream, createDirIfNotExists, readFile } from 'api/files';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import filesModel from 'api/files/filesModel';
+import { filesModel } from 'api/files/filesModel';
 import path from 'path';
 import { FileType } from 'shared/types/fileType';
 import { Settings } from 'shared/types/settingsType';

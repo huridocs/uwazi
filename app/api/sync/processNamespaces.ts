@@ -13,7 +13,7 @@ import templatesModel from 'api/templates/templatesModel';
 import { TemplateSchema } from 'shared/types/templateType';
 import entitiesModel from 'api/entities/entitiesModel';
 import { EntitySchema } from 'shared/types/entityType';
-import filesModel from 'api/files/filesModel';
+import { filesModel } from 'api/files/filesModel';
 import { FileType } from 'shared/types/fileType';
 
 const noDataFound = 'NO_DATA_FOUND';
