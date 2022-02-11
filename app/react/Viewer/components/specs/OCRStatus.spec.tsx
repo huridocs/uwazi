@@ -1,5 +1,5 @@
 /**
- * @jest-environment jest-environment-jsdom-sixteen
+ * @jest-environment jest-environment-jsdom
  */
 import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
@@ -155,9 +155,9 @@ describe('OCRStatus', () => {
       fireEvent.click(ocrButton);
 
       await new Promise<void>(resolve => {
-        setImmediate(() => {
+        setTimeout(() => {
           resolve();
-        });
+        }, 0);
       });
     };
 

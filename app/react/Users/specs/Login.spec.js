@@ -95,12 +95,13 @@ describe('Login', () => {
           props.private = true;
           render();
 
-          spyOn(window.location, 'assign');
+          delete window.location;
+          window.location = { assign: jest.fn() };
 
           instance
             .submit('credentials')
             .then(() => {
-              expect(window.location.assign).toHaveBeenCalledWith('/');
+              expect(window.location.assign).toHaveBeenCalled();
               done();
             })
             .catch(done.fail);

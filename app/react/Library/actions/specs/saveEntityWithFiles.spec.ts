@@ -30,62 +30,56 @@ describe('saveEntityWithFiles', () => {
     ${contentForFiles.text}  | ${'sample.pdf'}   | ${'application/pdf'}    | ${160}
     ${contentForFiles.image} | ${'image.jpg'}    | ${'image/jpg'}          | ${168}
     ${contentForFiles.text}  | ${'document.doc'} | ${'application/msword'} | ${160}
-  `(
-    'should save the entity with attached files',
-    async ({ fileContent, fileName, fileType, fileSize }) => {
-      const file = new File([Buffer.from(fileContent).toString('base64')], fileName, {
-        type: fileType,
-      });
+  `('should save the entity with attached files', async ({ fileContent, fileName, fileType }) => {
+    const file = new File([Buffer.from(fileContent).toString('base64')], fileName, {
+      type: fileType,
+    });
 
-      let serializedFile = '';
-      await readFileAsBase64(file, info => {
-        serializedFile = info.toString();
-      });
+    let serializedFile = '';
+    await readFileAsBase64(file, info => {
+      serializedFile = info.toString();
+    });
 
-      const entity = {
-        _id: 'entity1',
-        title: 'entity1',
-        attachments: [
-          {
-            _id: 'file_id',
-            serializedFile,
-            originalname: fileName,
-          },
-          {
-            _id: 'file2_id',
-            originalname: 'existing file',
-          },
-        ],
-      };
+    const entity = {
+      _id: 'entity1',
+      title: 'entity1',
+      attachments: [
+        {
+          _id: 'file_id',
+          serializedFile,
+          originalname: fileName,
+        },
+        {
+          _id: 'file2_id',
+          originalname: 'existing file',
+        },
+      ],
+    };
 
-      const expectedEntityJson = JSON.stringify({
-        _id: 'entity1',
-        title: 'entity1',
-        attachments: [
-          {
-            _id: 'file_id',
-            originalname: fileName,
-          },
-          {
-            _id: 'file2_id',
-            originalname: 'existing file',
-          },
-        ],
-      });
+    const expectedEntityJson = JSON.stringify({
+      _id: 'entity1',
+      title: 'entity1',
+      attachments: [
+        {
+          _id: 'file_id',
+          originalname: fileName,
+        },
+        {
+          _id: 'file2_id',
+          originalname: 'existing file',
+        },
+      ],
+    });
 
-      const mockUpload = mockSuperAgent();
+    const mockUpload = mockSuperAgent();
 
-      const updatedEntity = await saveEntityWithFiles(entity, dispatch);
+    const updatedEntity = await saveEntityWithFiles(entity, dispatch);
 
-      expect(mockUpload.attach).toHaveBeenCalledWith(
-        'attachments[0]',
-        expect.objectContaining({ size: fileSize, type: fileType })
-      );
+    expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
 
-      expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
-      expect(updatedEntity).toEqual({ title: 'entity1' });
-    }
-  );
+    expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
+    expect(updatedEntity).toEqual({ title: 'entity1' });
+  });
 
   it('should save the entity without files', async () => {
     const entity = {
