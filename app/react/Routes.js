@@ -102,13 +102,11 @@ function getPageIndexRoute(customHomePage) {
 
 function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
-  const homePageSetting = state.settings.collection.get('home_page');
+  const homePageSetting = state.settings.collection.get('home_page') || '';
+  const defaultView = state.settings.collection.get('defaultLibraryView');
 
   if (!validateHomePageRoute(homePageSetting)) {
-    return callBack(
-      null,
-      getDefaultLibraryComponent(state.settings.collection.get('defaultLibraryView'))
-    );
+    return callBack(null, getDefaultLibraryComponent(defaultView));
   }
 
   const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
@@ -125,10 +123,7 @@ function getIndexRoute(_nextState, callBack) {
     });
   }
 
-  return callBack(
-    null,
-    getDefaultLibraryComponent(state.settings.collection.get('defaultLibraryView'))
-  );
+  return callBack(null, getDefaultLibraryComponent(defaultView));
 }
 
 const routes = (
