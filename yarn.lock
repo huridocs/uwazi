@@ -176,13 +176,6 @@
     jsesc "^2.5.1"
     source-map "^0.5.0"
 
-"@babel/helper-annotate-as-pure@^7.10.4":
-  version "7.10.4"
-  resolved "https://registry.npmjs.org/@babel/helper-annotate-as-pure/-/helper-annotate-as-pure-7.10.4.tgz"
-  integrity sha512-XQlqKQP4vXFB7BN8fEEerrmYvHp3fK/rBkRFz9jaJbzK0B1DSfej9Kc7ZzE8Z/OnId1jpJdNAZ3BFQjWG68rcA==
-  dependencies:
-    "@babel/types" "^7.10.4"
-
 "@babel/helper-annotate-as-pure@^7.16.7":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/helper-annotate-as-pure/-/helper-annotate-as-pure-7.16.7.tgz#bb2339a7534a9c128e3102024c60760a3a7f3862"
@@ -198,13 +191,13 @@
     "@babel/helper-explode-assignable-expression" "^7.16.7"
     "@babel/types" "^7.16.7"
 
-"@babel/helper-builder-react-jsx@^7.10.4":
-  version "7.10.4"
-  resolved "https://registry.npmjs.org/@babel/helper-builder-react-jsx/-/helper-builder-react-jsx-7.10.4.tgz"
-  integrity sha512-5nPcIZ7+KKDxT1427oBivl9V9YTal7qk0diccnh7RrcgrT/pGFOjgGw1dgryyx1GvHEpXVfoDF6Ak3rTiWh8Rg==
+"@babel/helper-builder-react-jsx@^7.16.7":
+  version "7.16.7"
+  resolved "https://registry.yarnpkg.com/@babel/helper-builder-react-jsx/-/helper-builder-react-jsx-7.16.7.tgz#6f9da7cea0fde8420e0938d490837feb5bde8dda"
+  integrity sha512-XKorXOl2868Un8/XK2o4GLlXr8Q08KthWI5W3qyCkh6tCGf5Ncg3HR4oN2UO+sqPoAlcMgz9elFW/FZvAHYotA==
   dependencies:
-    "@babel/helper-annotate-as-pure" "^7.10.4"
-    "@babel/types" "^7.10.4"
+    "@babel/helper-annotate-as-pure" "^7.16.7"
+    "@babel/types" "^7.16.7"
 
 "@babel/helper-call-delegate@^7.11.4":
   version "7.11.4"
@@ -987,13 +980,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.16.7"
 
-"@babel/plugin-transform-react-inline-elements@7.10.4":
-  version "7.10.4"
-  resolved "https://registry.npmjs.org/@babel/plugin-transform-react-inline-elements/-/plugin-transform-react-inline-elements-7.10.4.tgz"
-  integrity sha512-Pu5eO9xGwtsPA7N7Qp36D0BKdfmuh0rmWKBEoJHfzPWICOSkJX/UPwqLr1myCnjccpvkOhBcP2WFbEAPTAkYiA==
+"@babel/plugin-transform-react-inline-elements@7.16.7":
+  version "7.16.7"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-inline-elements/-/plugin-transform-react-inline-elements-7.16.7.tgz#87d470ae5fc8ad5c803494070f7dc513846c03fe"
+  integrity sha512-jFGuZSebHob02zhrXsJhnI8xcemiDfdlJa1KR2LUfVj/4y9G2iwbJNGVsiH8mW6HEQVh5XwzWWbo/YoroDlQRg==
   dependencies:
-    "@babel/helper-builder-react-jsx" "^7.10.4"
-    "@babel/helper-plugin-utils" "^7.10.4"
+    "@babel/helper-builder-react-jsx" "^7.16.7"
+    "@babel/helper-plugin-utils" "^7.16.7"
 
 "@babel/plugin-transform-react-jsx-development@^7.16.7":
   version "7.16.7"
