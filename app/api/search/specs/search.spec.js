@@ -440,6 +440,19 @@ describe('search', () => {
     });
   });
 
+  it('should filter by a relationship property', async () => {
+    const entities = await search.search(
+      {
+        types: [ids.template1],
+        filters: { relationship: { values: ['shared2'] } },
+      },
+      'en'
+    );
+
+    expect(entities.rows.length).toBe(1);
+    expect(entities.rows[0].title).toBe('Batman finishes en');
+  });
+
   it('should filter by daterange metadata', async () => {
     let entities = await search.search(
       {

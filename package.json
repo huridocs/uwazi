@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.53.0-rc6",
+  "version": "1.53.2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -204,7 +204,7 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.11.6",
+    "@babel/cli": "7.17.0",
     "@babel/core": "7.17.2",
     "@babel/eslint-parser": "7.11.5",
     "@babel/helper-call-delegate": "^7.11.4",
@@ -269,7 +269,7 @@
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
     "assets-webpack-plugin": "5.1.1",
-    "babel-loader": "8.1.0",
+    "babel-loader": "8.2.3",
     "babel-plugin-module-resolver": "4.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "clean-webpack-plugin": "3.0.0",
@@ -304,7 +304,7 @@
     "optimize-css-assets-webpack-plugin": "^6.0.1",
     "plop": "^2.7.6",
     "prettier": "2.5.1",
-    "puppeteer": "^13.3.0",
+    "puppeteer": "^13.3.2",
     "react-dnd-test-backend": "14.0.1",
     "redux-mock-store": "^1.0.2",
     "rtlcss-webpack-plugin": "4.0.6",
@@ -320,7 +320,7 @@
     "webpack-cli": "4.9.2",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "^2.25.1",
-    "winston-transport": "^4.4.0"
+    "winston-transport": "^4.5.0"
   },
   "config": {
     "mongodbMemoryServer": {

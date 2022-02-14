@@ -24,7 +24,7 @@ function processParentThesauri(property, values, dictionaries, properties) {
   }
 
   const sourceProperty =
-    property.type === 'relationship'
+    property.type === 'relationship' && property.inherit
       ? properties.find(p => p._id.toString() === property.inherit.property.toString())
       : property;
 
