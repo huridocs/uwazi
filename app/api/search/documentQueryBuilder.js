@@ -24,7 +24,7 @@ const nested = (filters, path) => ({
 });
 
 export default function () {
-  const defaultFilter = [
+  const getDefaultFilter = () => [
     {
       bool: {
         should: [
@@ -67,7 +67,7 @@ export default function () {
       bool: {
         must: [{ bool: { should: [] } }],
         must_not: [],
-        filter: defaultFilter,
+        filter: getDefaultFilter(),
       },
     },
     sort: [],
@@ -86,7 +86,7 @@ export default function () {
                 filter: {
                   bool: {
                     must: [{ bool: { should: [] } }],
-                    filter: defaultFilter,
+                    filter: getDefaultFilter(),
                   },
                 },
               },
