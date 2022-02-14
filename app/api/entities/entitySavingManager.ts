@@ -1,5 +1,5 @@
 import { WithId } from 'api/odm';
-import { attachmentsPath, files, storeFile } from 'api/files';
+import { attachmentsPath, files, generateFileName, storeFile } from 'api/files';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
 import entities from 'api/entities/entities';
@@ -7,6 +7,15 @@ import { prettifyError } from 'api/utils/handleError';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
+
+type FileAttachments = {
+  originalname: string;
+  buffer: Buffer;
+  mimetype: string;
+  size: number;
+  encoding?: string;
+  fieldname?: string;
+};
 
 async function prepareNewAttachments(
   entityAttachments: FileType[] = [],
@@ -20,7 +29,7 @@ async function prepareNewAttachments(
   if (newFiles.length) {
     await Promise.all(
       newFiles.map(async (file: any) => {
-        const savedFile = await storeFile(attachmentsPath, file);
+        const savedFile = await storeFile(attachmentsPath, file, true);
         attachments.push({
           ...savedFile,
           entity: updatedEntity.sharedId,
@@ -85,7 +94,6 @@ const processAttachments = async (
     fileAttachments,
     updatedEntity
   );
-  const fileSaveErrors: string[] = [];
 
   if (entity._id && entity.attachments) {
     const entityFiles: WithId<FileType>[] = await files.get(
@@ -97,32 +105,55 @@ const processAttachments = async (
     attachments.push(...renamedAttachments);
   }
 
-  return { attachments, fileSaveErrors };
+  return attachments;
+};
+
+const bindAttachmentsToMetadataProperties = (
+  entity: EntityWithFilesSchema,
+  attachments: FileType[]
+) => {
+  const updatedEntity = entity;
+  if (attachments.length) {
+    Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
+      if (entity.metadata && _value && _value[0].attachment !== undefined) {
+        const value = _value;
+        value[0].value = attachments[_value[0].attachment]
+          ? `/api/files/${attachments[_value[0].attachment].filename}`
+          : '';
+      }
+    });
+  }
+  return updatedEntity;
 };
 
 const saveEntity = async (
-  entity: EntityWithFilesSchema,
+  _entity: EntityWithFilesSchema,
   {
     user,
     language,
     files: fileAttachments,
-  }: { user: UserSchema; language: string; files?: FileType[] }
+  }: { user: UserSchema; language: string; files?: FileAttachments[] }
 ) => {
+  const fileSaveErrors: string[] = [];
+
+  const attachments = (fileAttachments || []).map(file => ({
+    ...file,
+    filename: generateFileName(file),
+  }));
+
+  const entity = bindAttachmentsToMetadataProperties(_entity, attachments);
+
   const updatedEntity = await entities.save(
     entity,
     { user, language },
     { includeDocuments: false }
   );
 
-  const { attachments, fileSaveErrors } = await processAttachments(
-    entity,
-    updatedEntity,
-    fileAttachments
-  );
+  const proccessedAttachments = await processAttachments(entity, updatedEntity, attachments);
 
-  if (attachments.length) {
+  if (proccessedAttachments.length) {
     await Promise.all(
-      attachments.map(async attachment => {
+      proccessedAttachments.map(async attachment => {
         try {
           await files.save(attachment, false);
         } catch (e) {

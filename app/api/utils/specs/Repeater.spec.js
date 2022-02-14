@@ -18,7 +18,7 @@ describe('Repeater', () => {
   });
 
   beforeEach(() => {
-    jest.useFakeTimers();
+    jest.useFakeTimers('legacy');
 
     callbackOne = jasmine.createSpy('callbackone').and.callFake(() => Promise.resolve());
     callbackTwo = jasmine.createSpy('callbackone').and.callFake(() => Promise.resolve());

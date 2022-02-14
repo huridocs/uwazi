@@ -68,7 +68,8 @@
     "bl": "^4.0.3",
     "trim": "0.0.3",
     "normalize-url": "6.0.1",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "@types/istanbul-lib-report": "^3.0.0"
   },
   "dependencies": {
     "@babel/register": "7.11.5",
@@ -215,7 +216,7 @@
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/plugin-transform-react-constant-elements": "7.10.4",
-    "@babel/plugin-transform-react-inline-elements": "7.10.4",
+    "@babel/plugin-transform-react-inline-elements": "7.16.7",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-react": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
@@ -287,8 +288,8 @@
     "eslint-plugin-react": "v7.20.0",
     "fetch-mock": "^9.11.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "24.8.0",
-    "jest-environment-jsdom-sixteen": "^2.0.0",
+    "jest": "27.5.1",
+    "jest-environment-jsdom": "^27.0.6",
     "jest-extended": "1.2.1",
     "jest-image-snapshot": "^4.5.1",
     "jest-puppeteer": "4.4.0",
@@ -312,6 +313,7 @@
     "stream-mock": "^2.0.5",
     "supertest": "6.2.2",
     "terser-webpack-plugin": "^4.2.0",
+    "ts-node": "^10.5.0",
     "wait-for-expect": "^3.0.2",
     "webpack": "4.44.1",
     "webpack-bundle-analyzer": "^4.5.0",
@@ -323,7 +325,7 @@
   "config": {
     "mongodbMemoryServer": {
       "version": "4.4.8",
-      "debug": "yes",
+      "debug": "no",
       "preferGlobalPath": "0",
       "runtimeDownload": "0"
     }

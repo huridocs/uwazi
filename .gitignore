@@ -41,4 +41,5 @@ app/api/files/specs/file2
 dump.rdb
 data_elastic
 data_mongo
+e2e/**/__diff_output__/
 
