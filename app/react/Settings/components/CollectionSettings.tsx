@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
@@ -13,6 +14,7 @@ import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+import { validateHomePageRoute } from 'app/utils/routeHelpers';
 import { ToggleChildren } from './ToggleChildren';
 import * as tips from './collectionSettingsTips';
 import { SettingsFormElement } from './SettingsFormElement';
@@ -44,8 +46,16 @@ const CollectionSettings = ({
   const collectionSettingsObject = collectionSettings.toJS();
   const templatesObject: ClientTemplateSchema[] = templates.toJS();
 
-  const { register, handleSubmit, watch, setValue, getValues } = useForm({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm({
     defaultValues: collectionSettingsObject,
+    mode: 'onSubmit',
   });
 
   register('private');
@@ -54,6 +64,9 @@ const CollectionSettings = ({
   register('cookiepolicy');
   register('newNameGeneration');
   register('ocrServiceEnabled');
+  register('home_page', {
+    validate: (val: string) => validateHomePageRoute(val) || val === '',
+  });
 
   const save = async (newCollectionSettings: Settings) => {
     const saveParameters = new RequestParams({
@@ -100,15 +113,21 @@ const CollectionSettings = ({
               setValue('home_page', '');
             }}
           >
-            <div className="input-group">
+            <div className={`input-group ${errors.home_page ? 'has-error' : ''}`}>
               <span className="input-group-addon" id="basic-addon1">
                 <Translate>https://yourdomain</Translate>
               </span>
               <input type="text" className="form-control" name="home_page" ref={register} />
             </div>
+            <div className="has-error">
+              {errors.home_page && (
+                <div className="error-message">
+                  <Translate>Invalid home page url</Translate>
+                </div>
+              )}
+            </div>
           </ToggleChildren>
         </SettingsFormElement>
-
         <SettingsFormElement label="Default view">
           <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="defaultLibraryView" className="form-control" ref={register}>
