@@ -6,7 +6,7 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 const production = true;
 const config = require('./webpack/config')(production);
 
-config.devtool = '';
+config.devtool = 'source-map';
 config.context = __dirname;
 config.mode = 'production';
 
