@@ -241,10 +241,12 @@ export default function () {
         if (shouldFilter.term && shouldFilter.term.published) {
           delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
         }
-        aggregations._types.aggregations.filtered.filter.bool.filter =
-          baseQuery.query.bool.filter[0].bool.should;
-        return this;
       }
+      aggregations._types.aggregations.filtered.filter.bool.filter.splice(
+        0,
+        1,
+        baseQuery.query.bool.filter[0]
+      );
       return this;
     },
 
