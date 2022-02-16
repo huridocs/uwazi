@@ -230,8 +230,7 @@ export default function () {
       baseQuery.query.bool.filter[0].bool.must = baseQuery.query.bool.filter[0].bool.should;
       baseQuery.query.bool.filter[0].bool.must[0].term.published = false;
       delete baseQuery.query.bool.filter[0].bool.should;
-      aggregations._types.aggregations.filtered.filter.bool.filter =
-        baseQuery.query.bool.filter[0].bool.must;
+      aggregations._types.aggregations.filtered.filter.bool.filter = baseQuery.query.bool.filter;
       return this;
     },
 
