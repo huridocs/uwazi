@@ -174,7 +174,6 @@ export default {
     await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
-
     await entities.updateMetadataProperties(template, currentTemplate, language, {
       reindex,
       generatedIdAdded,
