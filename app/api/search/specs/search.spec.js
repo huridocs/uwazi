@@ -564,6 +564,12 @@ describe('search', () => {
       expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID')).not.toBeDefined();
       expect(template1UnpubishedAggs.find(a => a.key === 'SpainID')).not.toBeDefined();
     });
+
+    it('should return aggregations for all templates when filtering by template', async () => {
+      userFactory.mock(undefined);
+      const results = await search.search({ types: [ids.templateMetadata1] }, 'en');
+      expect(results.aggregations.all._types.count).toBe(6);
+    });
   });
 
   describe('inherit aggregations', () => {
