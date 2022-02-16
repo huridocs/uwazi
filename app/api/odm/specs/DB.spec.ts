@@ -50,7 +50,7 @@ describe('DB', () => {
   });
 
   describe('newDB', () => {
-    it('should not instantiate new connections for same dbName', () => {
+    it('should not instantiate new connections for same dbName by default', () => {
       const dbConnection = DB.connectionForDB('newDB');
       expect(dbConnection).toBe(DB.connectionForDB('newDB'));
     });
