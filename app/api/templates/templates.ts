@@ -19,7 +19,6 @@ import {
   denormalizeInheritedProperties,
   updateExtractedMetadataProperties,
 } from './utils';
-import { compareShallowProperties } from './reindex';
 
 const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
@@ -175,25 +174,11 @@ export default {
     await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
-    const changedProperties = compareShallowProperties(
-      template,
-      currentTemplate,
-      Object.keys(template)
-    );
-    const shouldUpdateMetadata = changedProperties.find(
-      (key: string) =>
-        (key.startsWith('properties') &&
-          key !== 'properties.style' &&
-          key !== 'properties.nestedProperties' &&
-          key !== 'properties.fullWidth') ||
-        key.startsWith('commonProperties')
-    );
-    if (shouldUpdateMetadata || reindex) {
-      await entities.updateMetadataProperties(template, currentTemplate, language, {
-        reindex,
-        generatedIdAdded,
-      });
-    }
+
+    await entities.updateMetadataProperties(template, currentTemplate, language, {
+      reindex,
+      generatedIdAdded,
+    });
     return savedTemplate;
   },
 
