@@ -23,6 +23,11 @@ const nested = (filters, path) => ({
   },
 });
 
+const matchAggregationsToFilter = (aggregations, baseQuery) => {
+  const { filter } = aggregations._types.aggregations.filtered.filter.bool;
+  filter.splice(0, 1, baseQuery.query.bool.filter[0]);
+};
+
 export default function () {
   const getDefaultFilter = () => [
     {
@@ -230,7 +235,7 @@ export default function () {
       baseQuery.query.bool.filter[0].bool.must = baseQuery.query.bool.filter[0].bool.should;
       baseQuery.query.bool.filter[0].bool.must[0].term.published = false;
       delete baseQuery.query.bool.filter[0].bool.should;
-      aggregations._types.aggregations.filtered.filter.bool.filter = baseQuery.query.bool.filter;
+      matchAggregationsToFilter(aggregations, baseQuery);
       return this;
     },
 
@@ -242,11 +247,7 @@ export default function () {
           delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
         }
       }
-      aggregations._types.aggregations.filtered.filter.bool.filter.splice(
-        0,
-        1,
-        baseQuery.query.bool.filter[0]
-      );
+      matchAggregationsToFilter(aggregations, baseQuery);
       return this;
     },
 
