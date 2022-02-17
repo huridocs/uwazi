@@ -7,7 +7,6 @@ import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
-import ID from 'shared/uniqueID';
 import templateCommonProperties from './utils/templateCommonProperties';
 import { OnTemplateLoaded } from './components/OnTemplateLoaded';
 
@@ -16,7 +15,7 @@ const prepareTemplate = template => {
 
   return {
     ...template,
-    properties: template.properties.map(p => ({ ...p, localID: ID() })),
+    properties: template.properties.map(p => ({ ...p })),
     commonProperties: commonPropertiesExists
       ? template.commonProperties
       : templateCommonProperties.get(),

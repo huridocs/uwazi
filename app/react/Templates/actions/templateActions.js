@@ -4,7 +4,6 @@ import { RequestParams } from 'app/utils/RequestParams';
 import * as types from 'app/Templates/actions/actionTypes';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/Templates/TemplatesAPI';
-import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 import entitiesApi from 'app/Entities/EntitiesAPI';
 
@@ -17,7 +16,6 @@ export function resetTemplate() {
 
 export function setPropertyDefaults(getState, property) {
   const propertyWithDefaults = property;
-  propertyWithDefaults.localID = ID();
   if (property.type === 'select' || property.type === 'multiselect') {
     propertyWithDefaults.content = getState().thesauris.get(0).get('_id');
   }
@@ -102,6 +100,7 @@ export function validateMapping(template) {
 }
 
 export function saveTemplate(data) {
+  console.log(data);
   const template = sanitize(data);
   return dispatch => {
     dispatch({ type: types.SAVING_TEMPLATE });
