@@ -249,6 +249,17 @@ describe('Map', () => {
     });
   });
 
+  describe('show controls behavior', () => {
+    beforeEach(() => {
+      props.showControls = true;
+      render();
+    });
+    it('should show controls', () => {
+      expect(instance.state.showControls).toEqual(true);
+      expect(component.find('.mapbox-controls').length).toBe(1);
+    });
+  });
+
   describe('style switch behavior', () => {
     beforeEach(() => {
       render();

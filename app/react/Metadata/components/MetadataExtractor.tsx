@@ -29,7 +29,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
   return bindActionCreators(
     {
       updateField: value => updateFormField(value, model, fieldType),
-      setSelection: selection => updateSelection(selection, fieldName, fieldId, fieldType),
+      setSelection: selection => updateSelection(selection, fieldName, fieldId),
     },
     dispatch
   );

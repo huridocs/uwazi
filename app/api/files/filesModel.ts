@@ -18,6 +18,8 @@ const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   versionKey: false,
 });
 
-const Model = instanceModel<FileType>('files', mongoSchema);
+mongoSchema.index({ 'toc.0': 1, type: 1 }, { partialFilterExpression: { type: 'document' } });
 
-export default Model;
+const filesModel = instanceModel<FileType>('files', mongoSchema);
+
+export { filesModel };

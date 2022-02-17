@@ -10,7 +10,7 @@ import {
   UserGroupSidePanelProps,
 } from 'app/Users/components/usergroups/UserGroupSidePanel';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import MultiSelect from 'app/Forms/components/MultiSelect';
+import { MultiSelect } from 'app/Forms/components/MultiSelect';
 
 describe('UserGroupSidePanel', () => {
   const userGroup = {
@@ -84,7 +84,7 @@ describe('UserGroupSidePanel', () => {
         props.userGroup = { ...newGroup, [field]: value };
         const wrapper = render(props);
         wrapper.find('form').simulate('submit');
-        setImmediate(() => {
+        setTimeout(() => {
           wrapper.update();
           const error = wrapper
             .find({ id: `${field}_field` })
@@ -94,7 +94,7 @@ describe('UserGroupSidePanel', () => {
           expect(defaultProps.onSave).not.toBeCalled();
           expect(error.text()).toEqual(message);
           done();
-        });
+        }, 0);
       }
     );
 
@@ -155,14 +155,14 @@ describe('UserGroupSidePanel', () => {
         nameInput.instance().value = 'GROUP 1';
         nameInput.simulate('change');
         component.find('form').simulate('submit');
-        setImmediate(() => {
+        setTimeout(() => {
           expect(defaultProps.onSave).toHaveBeenCalledWith({
             _id: 'group1Id',
             name: 'GROUP 1',
             members: [{ refId: 'user2' }, { refId: 'user1' }],
           });
           done();
-        });
+        }, 0);
       });
     });
   });
@@ -183,14 +183,14 @@ describe('UserGroupSidePanel', () => {
 
     it('should save the group with its members', done => {
       component.find('form').simulate('submit');
-      setImmediate(() => {
+      setTimeout(() => {
         expect(defaultProps.onSave).toHaveBeenCalledWith({
           _id: 'group1Id',
           name: 'Group 1',
           members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
         });
         done();
-      });
+      }, 0);
     });
   });
 

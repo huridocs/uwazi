@@ -25,26 +25,26 @@ describe('UnlockAccount', () => {
 
   it('should call unlockAccount with params', done => {
     renderComponent();
-    setImmediate(() => {
+    setTimeout(() => {
       expect(props.unlockAccount).toHaveBeenCalledWith(props.params);
       done();
-    });
+    }, 0);
   });
 
   it('should redirect to login on success', done => {
     renderComponent();
-    setImmediate(() => {
+    setTimeout(() => {
       expect(browserHistory.push).toHaveBeenCalledWith('/login');
       done();
-    });
+    }, 0);
   });
 
   it('should redirect to login on failure', done => {
     props.resetPassword = jest.fn().mockRejectedValue('error');
     renderComponent();
-    setImmediate(() => {
+    setTimeout(() => {
       expect(browserHistory.push).toHaveBeenCalledWith('/login');
       done();
-    });
+    }, 0);
   });
 });

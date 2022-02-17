@@ -10,7 +10,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import Immutable from 'immutable';
 import thunk from 'redux-thunk';
 import { shallow } from 'enzyme';
-import TestBackend from 'react-dnd-test-backend';
+import { TestBackend } from 'react-dnd-test-backend';
 
 import entitiesApi from 'app/Entities/EntitiesAPI';
 import pagesApi from 'app/Pages/PagesAPI';

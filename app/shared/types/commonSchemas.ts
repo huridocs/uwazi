@@ -95,9 +95,9 @@ export const propertyValueSchema = {
 export const inheritedValueSchema = {
   type: 'object',
   required: ['value'],
-  additionalProperties: false,
   properties: {
-    value: { type: 'string' },
+    value: propertyValueSchema,
+    label: { type: 'string' },
   },
 };
 
@@ -107,6 +107,7 @@ export const metadataObjectSchema = {
   required: ['value'],
   properties: {
     value: propertyValueSchema,
+    attachment: { type: 'number' },
     label: { type: 'string' },
     suggestion_confidence: { type: 'number' },
     suggestion_model: { type: 'string' },

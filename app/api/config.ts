@@ -11,6 +11,8 @@ const {
   MONGO_URI,
   ELASTICSEARCH_URL,
   DBHOST,
+  SENTRY_API_DSN,
+  MONGO_CONNECTION_POOL_SIZE,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -25,6 +27,8 @@ export const config = {
   PORT: process.env.PORT || 3000,
 
   DBHOST: MONGO_URI || onlyDBHOST(),
+
+  mongo_connection_pool_size: Number(MONGO_CONNECTION_POOL_SIZE) || 5,
 
   rootPath,
 
@@ -55,5 +59,10 @@ export const config = {
     activated: CLUSTER_MODE,
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '', 10) || 6379,
+  },
+
+  sentry: {
+    dsn: SENTRY_API_DSN,
+    tracesSampleRate: 0.1,
   },
 };

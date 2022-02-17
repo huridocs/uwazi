@@ -1,12 +1,9 @@
-/**
- * @jest-environment jsdom
- */
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-
+import { I18NLink } from 'app/I18N';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import MetadataExtractionDashboard from '../MetadataExtractionDashboard';
+import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
 
 const factory = getFixturesFactory();
 const templates = Immutable.fromJS([
@@ -35,20 +32,22 @@ const templates = Immutable.fromJS([
 const settings = {
   collection: Immutable.fromJS({
     features: {
-      metadataExtraction: [
-        {
-          template: factory.id('templateA'),
-          properties: ['AonlyText', 'ABsharedDate', 'ACsharedMarkdown', 'ABC shared Number'],
-        },
-        {
-          template: factory.id('templateB'),
-          properties: ['BonlyText', 'ABsharedDate', 'BCsharedMarkdown', 'ABC shared number'],
-        },
-        {
-          template: factory.id('templateC'),
-          properties: ['ConlyText', 'ACsharedMarkdown', 'BCsharedMarkdown', 'abc shared number'],
-        },
-      ],
+      metadataExtraction: {
+        templates: [
+          {
+            template: factory.id('templateA'),
+            properties: ['aonlytext', 'abshareddate', 'acsharedmarkdown', 'abc_shared_number'],
+          },
+          {
+            template: factory.id('templateB'),
+            properties: ['bonlytext', 'abshareddate', 'bcsharedmarkdown', 'abc_shared_number'],
+          },
+          {
+            template: factory.id('templateC'),
+            properties: ['conlytext', 'acsharedmarkdown', 'bcsharedmarkdown', 'abc_shared_number'],
+          },
+        ],
+      },
     },
   }),
 };
@@ -118,6 +117,26 @@ describe('MetadataExtractionDashboard', () => {
     it('should fetch template and properties into expected format.', () => {
       render();
       expect(component.state()).toMatchObject(expectedFormattedData);
+    });
+  });
+
+  describe('review suggestions', () => {
+    it('should show a link to the suggestions review panel for each property', () => {
+      render();
+      const links = component
+        .find('td')
+        .find(I18NLink)
+        .map(l => l.props().to);
+      expect(links.length).toBe(7);
+      expect(links).toEqual([
+        'settings/metadata_extraction/suggestions/aonlytext',
+        'settings/metadata_extraction/suggestions/abshareddate',
+        'settings/metadata_extraction/suggestions/acsharedmarkdown',
+        'settings/metadata_extraction/suggestions/abc_shared_number',
+        'settings/metadata_extraction/suggestions/bonlytext',
+        'settings/metadata_extraction/suggestions/bcsharedmarkdown',
+        'settings/metadata_extraction/suggestions/conlytext',
+      ]);
     });
   });
 });

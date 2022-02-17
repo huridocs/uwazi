@@ -1,4 +1,3 @@
-/** @format */
 import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
 import { trackPage } from 'app/App/GoogleAnalytics';
@@ -29,7 +28,6 @@ import {
   ThesauriList,
   TranslationsList,
 } from 'app/Settings';
-import MetadataExtractionDashboard from 'app/MetadataExtraction/MetadataExtractionDashboard';
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauri/EditThesauri';
@@ -45,8 +43,11 @@ import React from 'react';
 
 import { IndexRoute, Route } from 'react-router';
 import { UserManagement } from 'app/Users/UserManagement';
+import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
+import { IXSuggestions } from 'app/MetadataExtraction/SuggestionsContainer';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
+import { validateHomePageRoute } from './utils/routeHelpers';
 
 function onEnter() {
   trackPage();
@@ -101,10 +102,15 @@ function getPageIndexRoute(customHomePage) {
 
 function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
-  const homePageSetting = state.settings.collection.get('home_page');
+  const homePageSetting = state.settings.collection.get('home_page') || '';
+  const defaultView = state.settings.collection.get('defaultLibraryView');
+
+  if (!validateHomePageRoute(homePageSetting)) {
+    return callBack(null, getDefaultLibraryComponent(defaultView));
+  }
+
   const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
   const isPageRoute = customHomePage.includes('page');
-
   if (isPageRoute) {
     return callBack(null, getPageIndexRoute(customHomePage));
   }
@@ -117,10 +123,7 @@ function getIndexRoute(_nextState, callBack) {
     });
   }
 
-  return callBack(
-    null,
-    getDefaultLibraryComponent(state.settings.collection.get('defaultLibraryView'))
-  );
+  return callBack(null, getDefaultLibraryComponent(defaultView));
 }
 
 const routes = (
@@ -142,6 +145,7 @@ const routes = (
         <Route path="edit/:templateId" component={EditTemplate} />
       </Route>
       <Route path="metadata_extraction" component={MetadataExtractionDashboard} />
+      <Route path="metadata_extraction/suggestions/:propertyName" component={IXSuggestions} />
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />
         <Route path="new" component={NewRelationType} />

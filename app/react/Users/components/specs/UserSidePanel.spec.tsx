@@ -9,7 +9,7 @@ import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
 import { UserRole } from 'shared/types/userSchema';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
-import MultiSelect from 'app/Forms/components/MultiSelect';
+import { MultiSelect } from 'app/Forms/components/MultiSelect';
 
 describe('UserSidePanel', () => {
   const newUser = {
@@ -94,7 +94,7 @@ describe('UserSidePanel', () => {
         const wrapper = render(props);
         wrapper.find('form').simulate('submit');
 
-        setImmediate(() => {
+        setTimeout(() => {
           wrapper.update();
           const error = wrapper
             .find({ id: `${field}_field` })
@@ -104,7 +104,7 @@ describe('UserSidePanel', () => {
           expect(defaultProps.onSave).not.toBeCalled();
           expect(error.text()).toEqual(message);
           done();
-        });
+        }, 0);
       }
     );
 
@@ -128,10 +128,10 @@ describe('UserSidePanel', () => {
         username: 'juan ramirez',
         using2fa: '',
       };
-      setImmediate(() => {
+      setTimeout(() => {
         expect(defaultProps.onSave).toHaveBeenCalledWith(savedUser);
         done();
-      });
+      }, 0);
     });
   });
 
@@ -178,7 +178,7 @@ describe('UserSidePanel', () => {
 
       it('should save the user with the groups she belongs to', done => {
         component.find('form').simulate('submit');
-        setImmediate(() => {
+        setTimeout(() => {
           expect(defaultProps.onSave).toHaveBeenCalledWith({
             _id: 'user1',
             email: 'juanr@test.test',
@@ -192,7 +192,7 @@ describe('UserSidePanel', () => {
             ],
           });
           done();
-        });
+        }, 0);
       });
     });
   });

@@ -95,7 +95,9 @@ export class OneUpReviewBase extends RouteHandler {
       select: ['sharedId'],
       unpublished: !!requestParams.data.unpublished,
       includeUnpublished: !!requestParams.data.includeUnpublished,
+      includeReviewAggregations: true,
     });
+
     const [templates, thesauri, relationTypes, documents] = await Promise.all([
       TemplatesAPI.get(requestParams.onlyHeaders()),
       ThesauriAPI.getThesauri(requestParams.onlyHeaders()),

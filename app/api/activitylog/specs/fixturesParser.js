@@ -1,15 +1,16 @@
-import db from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 
-const firstTemplate = db.id();
-const firstDoc = db.id();
+const firstTemplate = testingDB.id();
+const firstDoc = testingDB.id();
 const firstDocSharedId = 'doc1';
-const firstSemanticSearch = db.id();
-const nonExistentId = db.id();
-const fileId = db.id();
-const userId = db.id();
-const groupId = db.id();
+const firstSemanticSearch = testingDB.id();
+const nonExistentId = testingDB.id();
+const fileId = testingDB.id();
+const userId = testingDB.id();
+const groupId = testingDB.id();
+const suggestionId = testingDB.id();
 
-export default {
+const fixtures = {
   activitylogs: [
     {
       method: 'POST',
@@ -56,9 +57,22 @@ export default {
       members: [{ refId: userId }],
     },
   ],
+  ixsuggestions: [
+    {
+      _id: suggestionId,
+      entityId: firstDocSharedId,
+      propertyName: 'title',
+      suggestedValue: 'Red Robin',
+      segment: 'Red Robin.',
+      language: 'en',
+      date: 5,
+      page: 2,
+    },
+  ],
 };
 
 export {
+  fixtures,
   firstTemplate,
   firstDoc,
   firstDocSharedId,
@@ -67,4 +81,5 @@ export {
   fileId,
   userId,
   groupId,
+  suggestionId,
 };

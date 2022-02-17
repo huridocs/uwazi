@@ -50,7 +50,19 @@ describe('TableCell', () => {
       value: [{ value: 'Español' }, { value: 'English' }],
     };
     const cellContent = renderContent();
-    expect(cellContent.props().children).toBe('Español, English');
+    expect(cellContent.props().children).toMatchSnapshot();
+  });
+
+  it('should render a multi select of nested values as a list of values', () => {
+    props.content = {
+      parent: 'Male',
+      label: 'People',
+      type: 'multiselect',
+      name: 'people',
+      value: [{ value: 'A guy' }],
+    };
+    const cellContent = renderContent();
+    expect(cellContent.props().children).toMatchSnapshot();
   });
 
   it('should render an external link', () => {
@@ -88,6 +100,18 @@ describe('TableCell', () => {
     const links = cellContent.find(I18NLink);
     expect(cellContent.text()).toBe('<Connect(I18NLink) />, <Connect(I18NLink) />');
     expect(links.at(0).props().to).toBe('/entity/Entity1');
+  });
+
+  it('should render inherited properties', () => {
+    props.content = {
+      inheritedName: 'sexo',
+      label: 'Relationship',
+      type: 'inherit',
+      name: 'relationship',
+      value: [{ label: 'Sexo', name: 'sexo', value: 'Mujer' }],
+    };
+    const cellContent = renderContent();
+    expect(cellContent.props().children).toEqual('Mujer');
   });
 
   it('should render a geolocation as a compact view', () => {

@@ -7,7 +7,7 @@ import {
   debounceTime,
 } from '../LookupMultiSelect';
 
-import MultiSelect, { MultiSelectProps } from '../MultiSelect';
+import { MultiSelect, MultiSelectProps } from '../MultiSelect';
 import { sleep } from 'shared/tsUtils';
 
 describe('LookupMultiSelect', () => {

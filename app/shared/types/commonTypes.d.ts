@@ -41,7 +41,31 @@ export type GeolocationSchema = {
 }[];
 
 export interface InheritedValueSchema {
-  value: string;
+  value:
+    | null
+    | string
+    | number
+    | boolean
+    | {
+        label?: string | null;
+        url?: string | null;
+      }
+    | {
+        from?: number | null;
+        to?: number | null;
+      }
+    | {
+        label?: string;
+        lat: number;
+        lon: number;
+      }
+    | {
+        label?: string;
+        lat: number;
+        lon: number;
+      }[];
+  label?: string;
+  [k: string]: unknown | undefined;
 }
 
 export interface LanguageSchema {
@@ -73,12 +97,15 @@ export interface LinkSchema {
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
+  attachment?: number;
   label?: string;
   suggestion_confidence?: number;
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
   inheritedValue?: {
-    value: string;
+    value: PropertyValueSchema;
+    label?: string;
+    [k: string]: unknown | undefined;
   }[];
   inheritedType?: string;
   [k: string]: unknown | undefined;

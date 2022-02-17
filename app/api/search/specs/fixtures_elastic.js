@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 
@@ -185,6 +186,7 @@ export const fixtures = {
     {
       _id: db.id(),
       sharedId: 'inherited',
+      title: 'Inherited 1',
       template: template1,
       language: 'en',
       published: true,
@@ -227,6 +229,7 @@ export const fixtures = {
     {
       _id: db.id(),
       sharedId: 'inherited 2',
+      title: 'Inherited 2',
       template: template1,
       language: 'en',
       published: true,
@@ -660,6 +663,7 @@ export const ids = {
   batmanFinishes,
   metadataSnippets,
   userId,
+  template: template.toString(),
   template1: template1.toString(),
   template2: template2.toString(),
   templateMetadata1: templateMetadata1.toString(),

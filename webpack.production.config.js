@@ -6,7 +6,7 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 const production = true;
 const config = require('./webpack/config')(production);
 
-config.devtool = '';
+config.devtool = 'source-map';
 config.context = __dirname;
 config.mode = 'production';
 
@@ -14,7 +14,11 @@ config.plugins = config.plugins.concat([
   new webpack.optimize.OccurrenceOrderPlugin(),
   new OptimizeCssAssetsPlugin(),
   new webpack.optimize.AggressiveMergingPlugin(),
-  new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify('production') } }),
+  new webpack.DefinePlugin({
+    'process.env': {
+      NODE_ENV: JSON.stringify('production'),
+    },
+  }),
 ]);
 
 config.optimization.minimize = true;

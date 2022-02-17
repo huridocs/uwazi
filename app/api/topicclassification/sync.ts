@@ -21,6 +21,7 @@ export interface SyncArgs {
   noDryRun?: boolean;
   overwrite?: boolean;
   autoAcceptConfidence?: number;
+  batchSize?: number;
 }
 
 // eslint-disable-next-line max-params, max-statements
@@ -193,7 +194,7 @@ class SyncTask extends Task {
     res.total = await entities.count({ language: 'en' });
     res.seen = 0;
     res.index = 0;
-    await QueryForEach(50, async e => {
+    await QueryForEach(args.batchSize || 50, async e => {
       if (res.index > (args.limit ?? 1000000)) {
         return;
       }

@@ -54,12 +54,37 @@ export interface ConnectionSchema {
                   lat: number;
                   lon: number;
                 }[];
+            attachment?: number;
             label?: string;
             suggestion_confidence?: number;
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
             inheritedValue?: {
-              value: string;
+              value:
+                | null
+                | string
+                | number
+                | boolean
+                | {
+                    label?: string | null;
+                    url?: string | null;
+                  }
+                | {
+                    from?: number | null;
+                    to?: number | null;
+                  }
+                | {
+                    label?: string;
+                    lat: number;
+                    lon: number;
+                  }
+                | {
+                    label?: string;
+                    lat: number;
+                    lon: number;
+                  }[];
+              label?: string;
+              [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;
@@ -92,12 +117,37 @@ export interface ConnectionSchema {
                   lat: number;
                   lon: number;
                 }[];
+            attachment?: number;
             label?: string;
             suggestion_confidence?: number;
             suggestion_model?: string;
             provenance?: '' | 'BULK_ACCEPT';
             inheritedValue?: {
-              value: string;
+              value:
+                | null
+                | string
+                | number
+                | boolean
+                | {
+                    label?: string | null;
+                    url?: string | null;
+                  }
+                | {
+                    from?: number | null;
+                    to?: number | null;
+                  }
+                | {
+                    label?: string;
+                    lat: number;
+                    lon: number;
+                  }
+                | {
+                    label?: string;
+                    lat: number;
+                    lon: number;
+                  }[];
+              label?: string;
+              [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
             [k: string]: unknown | undefined;

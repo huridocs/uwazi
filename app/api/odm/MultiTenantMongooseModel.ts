@@ -24,15 +24,10 @@ class MultiTenantMongooseModel<T> {
 
   dbForCurrentTenant() {
     const currentTenant = tenants.current();
-
-    if (!this.dbs[currentTenant.name]) {
-      this.dbs[currentTenant.name] = DB.connectionForDB(currentTenant.dbName).model<DataType<T>>(
-        this.collectionName,
-        this.schema
-      );
-    }
-
-    return this.dbs[currentTenant.name];
+    return DB.connectionForDB(currentTenant.dbName).model<DataType<T>>(
+      this.collectionName,
+      this.schema
+    );
   }
 
   findById(id: any, select?: any) {
@@ -86,6 +81,10 @@ class MultiTenantMongooseModel<T> {
 
   async aggregate(aggregations?: any[]) {
     return this.dbForCurrentTenant().aggregate(aggregations);
+  }
+
+  async facet(aggregations: any[], pipelines: any, project: any) {
+    return this.dbForCurrentTenant().aggregate(aggregations).facet(pipelines).project(project);
   }
 
   async updateOne(conditions: UwaziFilterQuery<DataType<T>>, doc: UwaziUpdateQuery<T>) {

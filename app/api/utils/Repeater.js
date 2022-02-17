@@ -18,7 +18,7 @@ export class Repeater {
 
     await this.cb();
     await timeout(this.interval);
-    await this.start(this.cb, this.interval);
+    await this.start();
   }
 
   async stop() {

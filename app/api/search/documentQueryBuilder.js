@@ -23,8 +23,13 @@ const nested = (filters, path) => ({
   },
 });
 
+const matchAggregationsToFilter = (aggregations, baseQuery) => {
+  const { filter } = aggregations._types.aggregations.filtered.filter.bool;
+  filter.splice(0, 1, baseQuery.query.bool.filter[0]);
+};
+
 export default function () {
-  const defaultFilter = [
+  const getDefaultFilter = () => [
     {
       bool: {
         should: [
@@ -67,7 +72,7 @@ export default function () {
       bool: {
         must: [{ bool: { should: [] } }],
         must_not: [],
-        filter: defaultFilter,
+        filter: getDefaultFilter(),
       },
     },
     sort: [],
@@ -86,7 +91,7 @@ export default function () {
                 filter: {
                   bool: {
                     must: [{ bool: { should: [] } }],
-                    filter: defaultFilter,
+                    filter: getDefaultFilter(),
                   },
                 },
               },
@@ -230,6 +235,7 @@ export default function () {
       baseQuery.query.bool.filter[0].bool.must = baseQuery.query.bool.filter[0].bool.should;
       baseQuery.query.bool.filter[0].bool.must[0].term.published = false;
       delete baseQuery.query.bool.filter[0].bool.should;
+      matchAggregationsToFilter(aggregations, baseQuery);
       return this;
     },
 
@@ -241,6 +247,7 @@ export default function () {
           delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
         }
       }
+      matchAggregationsToFilter(aggregations, baseQuery);
       return this;
     },
 
@@ -344,7 +351,7 @@ export default function () {
       );
     },
 
-    aggregations(properties, dictionaries) {
+    aggregations(properties, dictionaries, includeReviewAggregations) {
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
@@ -352,15 +359,17 @@ export default function () {
           baseQuery
         );
       });
-      // suggested has an implied '__' as a prefix
-      properties.forEach(property => {
-        baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
-          property,
-          dictionaries,
-          baseQuery,
-          true
-        );
-      });
+      if (includeReviewAggregations) {
+        // suggested has an implied '__' as a prefix
+        properties.forEach(property => {
+          baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
+            property,
+            dictionaries,
+            baseQuery,
+            true
+          );
+        });
+      }
       return this;
     },
 
