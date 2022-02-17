@@ -32,7 +32,7 @@ class PDFSegmentation {
   }
 
   segmentOnePdf = async (
-    file: FileType & { filename: string; _id: ObjectIdSchema },
+    file: { filename: string; _id: ObjectIdSchema },
     serviceUrl: string,
     tenant: string
   ) => {
@@ -67,33 +67,35 @@ class PDFSegmentation {
       status: processing ? 'processing' : 'failed',
     });
 
-  getFilesToSegment = async (): Promise<FileType & { filename: string; _id: ObjectIdSchema }[]> =>
-    filesModel.db.aggregate([
+  getFilesToSegment = async (): Promise<{ filename: string; _id: ObjectIdSchema }[]> => {
+    const segmentations = await SegmentationModel.get({}, 'fileID', {
+      projection: { _id: 1, fileID: 1 },
+    });
+
+    const segmentedFiles = segmentations
+      .map(segmentation =>
+        segmentation && segmentation.fileID ? segmentation.fileID.toString() : ''
+      )
+      .filter(x => x);
+
+    const files = await filesModel.get(
       {
-        $match: {
-          type: 'document',
-          filename: { $exists: true },
-        },
+        type: 'document',
+        filename: { $exists: true },
+        _id: { $nin: segmentedFiles },
       },
-      {
-        $lookup: {
-          from: 'segmentations',
-          localField: '_id',
-          foreignField: 'fileID',
-          as: 'segmentation',
-        },
-      },
-      {
-        $match: {
-          segmentation: {
-            $size: 0,
-          },
-        },
-      },
-      {
-        $limit: this.batchSize,
-      },
-    ]);
+      'filename',
+      { limit: this.batchSize }
+    );
+
+    return files
+      .map(file =>
+        file && file.filename && file._id
+          ? { _id: file._id, filename: file.filename }
+          : { _id: '', filename: '' }
+      )
+      .filter(x => x._id);
+  };
 
   segmentPdfs = async () => {
     const pendingTasks = await this.segmentationTaskManager.countPendingTasks();
