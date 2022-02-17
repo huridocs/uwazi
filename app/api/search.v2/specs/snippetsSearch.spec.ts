@@ -4,8 +4,9 @@ import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { searchRoutes } from 'api/search.v2/routes';
 import { testingDB } from 'api/utils/testing_db';
-import { fixturesSnippetsSearch, entity1enId } from 'api/search.v2/specs/snippetsSearchFixtures';
-import {loadFetchedInReduxForm} from "app/Metadata/actions/actions";
+
+import { fixturesSnippetsSearch, entity1enId } from './fixturesSnippetsSearch';
+import { advancedSort } from 'app/utils/advancedSort';
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -116,7 +117,7 @@ describe('searchSnippets', () => {
         },
       },
     ];
-    expect(body.data).toEqual(expected);
+    expect(body.data).toMatchObject(expected);
   });
 
   it('should return title snippets of an entity', async () => {
@@ -135,9 +136,66 @@ describe('searchSnippets', () => {
     ];
     const { body } = await request(app)
       .get('/api/v2/entities')
-      .query(qs.stringify({ filter: { searchString: 'title:("entity:with")' }, fields: ['snippets', 'title'] }))
+      .query(
+        qs.stringify({
+          filter: { searchString: 'title:("entity:with")' },
+          fields: ['snippets', 'title'],
+        })
+      )
       .expect(200);
     const snippets = body.data;
     expect(snippets).toMatchObject(expected);
+  });
+
+  it('should return metadata snippets of an entity', async () => {
+    const expected = [
+      {
+        snippets: {
+          count: 2,
+          metadata: [
+            {
+              field: 'metadata.markdown_field.value',
+              texts: ['Another <b>short</b> string'],
+            },
+            {
+              field: 'metadata.text_field.value',
+              texts: ['A <b>short</b> string that we know it&#x27;s going to come with a snippet'],
+            },
+          ],
+        },
+      },
+      {
+        snippets: {
+          count: 1,
+          metadata: [
+            {
+              field: 'metadata.text_field.value',
+              texts: ['Tests are not <b>short</b>'],
+            },
+          ],
+        },
+      },
+    ];
+
+    const { body } = await request(app)
+      .get('/api/v2/entities')
+      .query(
+        qs.stringify({
+          filter: { searchString: 'short' },
+          fields: ['snippets', 'title'],
+        })
+      )
+      .expect(200);
+    const results = body.data;
+    const firstResultSnippets = advancedSort(results[0].snippets.metadata, { property: 'field' });
+    const secondResultSnippets = advancedSort(results[1].snippets.metadata, { property: 'field' });
+
+    expect(results.length).toBe(2);
+
+    expect(results[0].snippets.count).toBe(2);
+    expect(firstResultSnippets).toMatchObject(expected[0].snippets.metadata);
+
+    expect(results[1].snippets.count).toBe(1);
+    expect(secondResultSnippets).toMatchObject(expected[1].snippets.metadata);
   });
 });

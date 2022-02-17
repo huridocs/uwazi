@@ -174,7 +174,7 @@ describe('Metadata filters', () => {
   });
 });
 
-it.todo('Snippets for non fulltext texts');
+it.todo('Snippets for non fulltext texts: add denormalized labels');
 
 it.todo('Allow search query to have a language instead of header Content-Language');
 

@@ -2,6 +2,7 @@ import db, { testingDB, DBFixture } from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 
 const entity1enId = testingDB.id();
+const template1Id = testingDB.id();
 
 const fileWithFullText = (sharedId: string, fullText: {}): FileType => ({
   _id: db.id(),
@@ -14,12 +15,26 @@ const fileWithFullText = (sharedId: string, fullText: {}): FileType => ({
 
 const fixturesSnippetsSearch: DBFixture = {
   settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+  templates: [
+    {
+      _id: template1Id,
+      properties: [
+        { name: 'text_field', type: 'text' },
+        { name: 'markdown_field', type: 'markdown' },
+      ],
+    },
+  ],
   entities: [
     {
       _id: entity1enId,
       sharedId: 'entity1SharedId',
       title: 'entity with a document',
       language: 'en',
+      template: template1Id,
+      metadata: {
+        text_field: [{ value: "A short string that we know it's going to come with a snippet" }],
+        markdown_field: [{ value: 'Another short string' }],
+      },
     },
     {
       _id: testingDB.id(),
@@ -45,6 +60,10 @@ const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity4SharedId',
       title: 'entity:with a document',
       language: 'en',
+      template: template1Id,
+      metadata: {
+        text_field: [{ value: 'Tests are not short' }],
+      },
     },
   ],
   files: [

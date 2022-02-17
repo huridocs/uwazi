@@ -3,7 +3,12 @@ import { ElasticHit, SearchResponse } from 'api/search/elasticTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
 function getSnippetsForNonFullText(hit: ElasticHit<EntitySchema>) {
-  return hit.highlight ? [{ field: 'title', texts: hit.highlight.title }] : [];
+  return hit.highlight
+    ? Object.entries(hit.highlight).reduce<any>((memo, [property, highlights]: [any, any]) => {
+        memo.push({ field: property, texts: highlights });
+        return memo;
+      }, [])
+    : [];
 }
 
 function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
@@ -24,8 +29,15 @@ function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
     });
   }
 
+  const hitsCount = hit.highlight
+    ? Object.values(hit.highlight).reduce<number>(
+        (memo, highlights: any) => memo + highlights.length,
+        0
+      )
+    : 0;
+
   return {
-    count: fullTextSnippets.length + (hit.highlight ? hit.highlight.title.length : 0),
+    count: fullTextSnippets.length + hitsCount,
     metadata: getSnippetsForNonFullText(hit),
     fullText: fullTextSnippets,
   };

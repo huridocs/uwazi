@@ -129,6 +129,7 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
       fragmenter: 'span',
       fields: {
         title: {},
+        'metadata.*': {},
       },
     },
     sort: buildSortQuery(query),
