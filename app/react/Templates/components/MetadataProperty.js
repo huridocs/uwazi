@@ -36,7 +36,7 @@ const isErrorOnThisField = (error, index, isCommonProperty, template) => {
     : errorIndex === index.toString() && !isCommonProperty;
 };
 
-export class MetadataProperty extends Component {
+class MetadataProperty extends Component {
   renderForm() {
     const { type, index } = this.props;
     let defaultInput = <FormConfigInput type={type} index={index} />;
@@ -77,7 +77,7 @@ export class MetadataProperty extends Component {
       connectDropTarget,
       uiState,
       index,
-      localID,
+      _id,
       inserting,
       hasErrors,
       submitFailed,
@@ -94,7 +94,7 @@ export class MetadataProperty extends Component {
     }
 
     const iconClass = Icons[this.props.type] || 'font';
-    const beingEdited = editingProperty === localID;
+    const beingEdited = editingProperty === _id;
 
     const property = (
       <div className={propertyClass}>
@@ -135,7 +135,7 @@ export class MetadataProperty extends Component {
           <button
             type="button"
             className="btn btn-default btn-xs property-edit"
-            onClick={() => this.props.editProperty(beingEdited ? null : localID)}
+            onClick={() => this.props.editProperty(beingEdited ? null : _id)}
           >
             <Icon icon="pencil-alt" /> <Translate>Edit</Translate>
           </button>
@@ -157,7 +157,7 @@ export class MetadataProperty extends Component {
         <li>
           {property}
           <ShowIf if={beingEdited && !isDragging}>
-            <div className={`propery-form${editingProperty === localID ? ' expand' : ''}`}>
+            <div className={`propery-form${editingProperty === _id ? ' expand' : ''}`}>
               {this.renderForm()}
             </div>
           </ShowIf>
@@ -169,7 +169,7 @@ export class MetadataProperty extends Component {
       <li>
         {connectDragSource(property)}
         <ShowIf if={beingEdited && !isDragging}>
-          <div className={`propery-form${editingProperty === localID ? ' expand' : ''}`}>
+          <div className={`propery-form${editingProperty === _id ? ' expand' : ''}`}>
             {this.renderForm()}
           </div>
         </ShowIf>
@@ -195,7 +195,7 @@ MetadataProperty.propTypes = {
   isRelationDuplicated: PropTypes.bool,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
-  localID: PropTypes.any.isRequired,
+  _id: PropTypes.any.isRequired,
   type: PropTypes.string,
   label: PropTypes.string,
   isCommonProperty: PropTypes.bool,
@@ -210,7 +210,7 @@ const target = {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
     const item = monitor.getItem();
-    if (props.localID === item.editingProperty) {
+    if (props._id === item.editingProperty) {
       props.editProperty(null);
     }
     if (typeof dragIndex === 'undefined') {
@@ -282,6 +282,6 @@ const mapStateToProps = ({ template }, ownProps) => ({
   submitFailed: template.formState.$form.submitFailed,
 });
 
-export { dragSource, dropTarget };
+export { dragSource, dropTarget, MetadataProperty };
 
 export default connect(mapStateToProps, mapDispatchToProps)(dragSource);

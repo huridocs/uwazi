@@ -25,6 +25,7 @@ import {
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
+import ID from 'shared/uniqueID';
 
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
@@ -48,7 +49,7 @@ interface MetadataTemplateProps {
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
   template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
 
-export class MetadataTemplate extends Component<MetadataTemplateProps> {
+class MetadataTemplate extends Component<MetadataTemplateProps> {
   static propTypes: any;
 
   static contextTypes = {
@@ -176,25 +177,24 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
               {connectDropTarget(
                 <ul className="metadataTemplate-list list-group">
                   {commonProperties.map((config: any, index: number) => {
-                    const localID = config.localID || config._id;
+                    const _id = config._id || ID();
                     return (
                       <MetadataProperty
                         {...config}
-                        key={localID}
-                        localID={localID}
+                        key={_id}
+                        _id
                         index={index - commonProperties.length}
                       />
                     );
                   })}
                   {this.props.properties.map((config: any, index: number) => {
-                    const localID = config.localID || config._id;
+                    const _id = config._id || ID();
                     return (
                       <MetadataProperty
-                        _id={config._id}
+                        _id
                         type={config.type}
                         inserting={config.inserting}
-                        key={localID}
-                        localID={localID}
+                        key={_id}
                         index={index}
                       />
                     );
@@ -277,9 +277,7 @@ const dropTarget = DropTarget('METADATA_OPTION', target, (connector: any) => ({
   connectDropTarget: connector.dropTarget(),
 }))(MetadataTemplate);
 
-export { dropTarget };
-
-export const mapStateToProps = (
+const mapStateToProps = (
   {
     template,
     templates,
@@ -315,5 +313,5 @@ function mapDispatchToProps(dispatch: any) {
     dispatch
   );
 }
-
+export { MetadataTemplate, mapStateToProps, dropTarget };
 export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(dropTarget);

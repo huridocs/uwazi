@@ -100,7 +100,6 @@ export function validateMapping(template) {
 }
 
 export function saveTemplate(data) {
-  console.log(data);
   const template = sanitize(data);
   return dispatch => {
     dispatch({ type: types.SAVING_TEMPLATE });
