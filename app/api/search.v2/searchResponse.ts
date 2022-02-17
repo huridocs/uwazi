@@ -2,14 +2,8 @@ import { SearchQuery } from 'shared/types/SearchQueryType';
 import { ElasticHit, SearchResponse } from 'api/search/elasticTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
-function getSnippetsForMetadata(hit: ElasticHit<EntitySchema>) {
-  // metadata: [
-  //     {
-  //         field: 'title',
-  //         texts: [matches],
-  //     },
-  // ],
-  return [{ field: 'title', texts: hit.highlight.title }];
+function getSnippetsForNonFullText(hit: ElasticHit<EntitySchema>) {
+  return hit.highlight ? [{ field: 'title', texts: hit.highlight.title }] : [];
 }
 
 function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
@@ -29,9 +23,10 @@ function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
       });
     });
   }
+
   return {
-    count: fullTextSnippets.length + hit.highlight.title.length,
-    metadata: getSnippetsForMetadata(hit),
+    count: fullTextSnippets.length + (hit.highlight ? hit.highlight.title.length : 0),
+    metadata: getSnippetsForNonFullText(hit),
     fullText: fullTextSnippets,
   };
 }
