@@ -4,7 +4,6 @@ import { Readable } from 'stream';
 import urljoin from 'url-join';
 import { filesModel } from 'api/files/filesModel';
 import path from 'path';
-import { FileType } from 'shared/types/fileType';
 import { Settings } from 'shared/types/settingsType';
 import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
