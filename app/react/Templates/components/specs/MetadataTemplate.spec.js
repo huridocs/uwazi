@@ -226,6 +226,7 @@ describe('MetadataTemplate', () => {
       const templateWithId = {
         _id: 'template1',
         properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+        commonProperties: [{ title: 'Title' }],
       };
 
       async function submitTemplate(templateToSubmit, entityCount = 100) {
@@ -263,6 +264,7 @@ describe('MetadataTemplate', () => {
             expect(props.saveTemplate).toHaveBeenCalledWith({
               _id: templateWithId._id,
               properties: templateWithId.properties,
+              commonProperties: templateWithId.commonProperties,
               reindex: true,
             });
           });
