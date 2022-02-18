@@ -86,9 +86,10 @@ export function generateIds(properties: PropertySchema[] = []) {
   }));
 }
 
+//CHANGE NAME
 export const generateNamesAndIds = async (properties: PropertySchema[] = []) => {
   const { newNameGeneration = false } = await settings.get();
-  return generateIds(generateNames(properties, newNameGeneration));
+  return generateNames(properties, newNameGeneration);
 };
 
 export interface PropertyOrThesaurusSchema

@@ -36,7 +36,7 @@ const isErrorOnThisField = (error, index, isCommonProperty, template) => {
     : errorIndex === index.toString() && !isCommonProperty;
 };
 
-export class MetadataProperty extends Component {
+class MetadataProperty extends Component {
   renderForm() {
     const { type, index } = this.props;
     let defaultInput = <FormConfigInput type={type} index={index} />;
@@ -282,6 +282,6 @@ const mapStateToProps = ({ template }, ownProps) => ({
   submitFailed: template.formState.$form.submitFailed,
 });
 
-export { dragSource, dropTarget };
+export { dragSource, dropTarget, MetadataProperty };
 
 export default connect(mapStateToProps, mapDispatchToProps)(dragSource);

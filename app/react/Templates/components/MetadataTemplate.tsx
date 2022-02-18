@@ -25,6 +25,7 @@ import {
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
+import { ClientPropertySchema } from 'app/istore';
 
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
@@ -48,7 +49,7 @@ interface MetadataTemplateProps {
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
   template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
 
-export class MetadataTemplate extends Component<MetadataTemplateProps> {
+class MetadataTemplate extends Component<MetadataTemplateProps> {
   static propTypes: any;
 
   static contextTypes = {
@@ -175,30 +176,24 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
               </div>
               {connectDropTarget(
                 <ul className="metadataTemplate-list list-group">
-                  {commonProperties.map((config: any, index: number) => {
-                    const localID = config.localID || config._id;
-                    return (
-                      <MetadataProperty
-                        {...config}
-                        key={localID}
-                        localID={localID}
-                        index={index - commonProperties.length}
-                      />
-                    );
-                  })}
-                  {this.props.properties.map((config: any, index: number) => {
-                    const localID = config.localID || config._id;
-                    return (
-                      <MetadataProperty
-                        _id={config._id}
-                        type={config.type}
-                        inserting={config.inserting}
-                        key={localID}
-                        localID={localID}
-                        index={index}
-                      />
-                    );
-                  })}
+                  {commonProperties.map((property: ClientPropertySchema, index: number) => (
+                    <MetadataProperty
+                      {...property}
+                      key={property.localID}
+                      localID={property.localID}
+                      index={index - commonProperties.length}
+                    />
+                  ))}
+                  {this.props.properties.map((property: ClientPropertySchema, index: number) => (
+                    <MetadataProperty
+                      _id={property._id}
+                      type={property.type}
+                      inserting={property.inserting}
+                      key={property.localID}
+                      localID={property.localID}
+                      index={index}
+                    />
+                  ))}
                   <div className="no-properties">
                     <span className="no-properties-wrap">
                       <Icon icon="clone" />
@@ -277,9 +272,7 @@ const dropTarget = DropTarget('METADATA_OPTION', target, (connector: any) => ({
   connectDropTarget: connector.dropTarget(),
 }))(MetadataTemplate);
 
-export { dropTarget };
-
-export const mapStateToProps = (
+const mapStateToProps = (
   {
     template,
     templates,
@@ -315,5 +308,7 @@ function mapDispatchToProps(dispatch: any) {
     dispatch
   );
 }
+
+export { dropTarget, MetadataTemplate, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(dropTarget);

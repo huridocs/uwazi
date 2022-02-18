@@ -14,12 +14,14 @@ import { OnTemplateLoaded } from './components/OnTemplateLoaded';
 const prepareTemplate = template => {
   const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
 
+  const commonProperties = commonPropertiesExists
+    ? template.commonProperties
+    : templateCommonProperties.get();
+
   return {
     ...template,
     properties: template.properties.map(p => ({ ...p, localID: ID() })),
-    commonProperties: commonPropertiesExists
-      ? template.commonProperties
-      : templateCommonProperties.get(),
+    commonProperties: commonProperties.map(p => ({ ...p, localID: ID() })),
   };
 };
 
