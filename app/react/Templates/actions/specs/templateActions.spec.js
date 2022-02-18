@@ -157,6 +157,7 @@ describe('templateActions', () => {
         spyOn(api, 'save').and.returnValue(Promise.resolve({}));
         const originalTemplateData = {
           name: 'name',
+          commonProperties: [{ title: 'Title' }],
           properties: [
             {
               localID: '1',
@@ -173,12 +174,12 @@ describe('templateActions', () => {
         expect(api.save).toHaveBeenCalledWith(
           new RequestParams({
             name: 'name',
+            commonProperties: [{ title: 'Title' }],
             properties: [
               {
                 content: '',
                 inherit: false,
                 label: 'label',
-                localID: '1',
                 relationType: '1',
                 type: 'relationship',
               },
@@ -191,6 +192,7 @@ describe('templateActions', () => {
         spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
         const originalTemplateData = {
           name: 'my template',
+          commonProperties: [{ title: 'Title' }],
           properties: [
             { localID: 'a1b2', label: 'my property' },
             { localID: 'a1b3', label: 'my property' },
@@ -225,6 +227,7 @@ describe('templateActions', () => {
 
           const originalTemplateData = {
             name: 'my template',
+            commonProperties: [{ title: 'Title' }],
             properties: [{ localID: 'a1b2', label: 'my property' }],
           };
 
