@@ -98,8 +98,6 @@ export const sanitize = data => {
     }
     delete prop.inserting;
     delete prop.localID;
-    //REMOVE
-    delete prop.id;
     return prop;
   });
   return { ...data, properties, commonProperties };
