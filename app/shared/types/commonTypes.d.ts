@@ -119,8 +119,6 @@ export type ObjectIdSchema = string | ObjectId;
 
 export interface PropertySchema {
   _id?: ObjectIdSchema;
-  id?: string;
-  localID?: string;
   label: string;
   name: string;
   isCommonProperty?: boolean;
