@@ -159,7 +159,7 @@ export default {
     currentTemplate.properties = currentTemplate.properties || [];
     currentTemplate.properties.forEach(prop => {
       const swapingNameWithExistingProperty = (template.properties || []).find(
-        p => p.name === prop.name && p.id !== prop.id
+        p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
       if (swapingNameWithExistingProperty) {
         throw createError(`Properties can't swap names: ${prop.name}`, 400);
