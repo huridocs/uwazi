@@ -75,14 +75,15 @@ class MetadataProperty extends Component {
       connectDragSource,
       isDragging,
       connectDropTarget,
-      uiState,
       index,
       _id,
+      editingProperty,
       inserting,
       hasErrors,
       submitFailed,
     } = this.props;
-    const { editingProperty } = uiState.toJS();
+
+    console.log(editingProperty);
 
     let propertyClass = 'list-group-item';
     if (isDragging || inserting) {
@@ -184,6 +185,7 @@ MetadataProperty.defaultProps = {
   hasErrors: false,
   isLabelDuplicated: false,
   isRelationDuplicated: false,
+  editingProperty: '',
 };
 
 MetadataProperty.propTypes = {
@@ -195,13 +197,13 @@ MetadataProperty.propTypes = {
   isRelationDuplicated: PropTypes.bool,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
-  _id: PropTypes.any.isRequired,
+  _id: PropTypes.string.isRequired,
+  editingProperty: PropTypes.string,
   type: PropTypes.string,
   label: PropTypes.string,
   isCommonProperty: PropTypes.bool,
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,
-  uiState: PropTypes.object,
   editProperty: PropTypes.func,
 };
 
@@ -266,21 +268,24 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const mapStateToProps = ({ template }, ownProps) => ({
-  uiState: template.uiState,
-  hasErrors: Object.keys(template.formState.$form.errors || {}).reduce(
-    (result, error) =>
-      result ||
-      (isErrorOnThisField(error, ownProps.index, ownProps.isCommonProperty, template.data) &&
-        template.formState.$form.errors[error]),
-    false
-  ),
-  isLabelDuplicated: isLabelDuplicated(ownProps.index, template.data, template.formState),
-  isRelationDuplicated: Boolean(
-    template.formState.$form.errors[`properties.${ownProps.index}.relationType.duplicated`]
-  ),
-  submitFailed: template.formState.$form.submitFailed,
-});
+const mapStateToProps = ({ template }, ownProps) => {
+  const { editingProperty } = template.uiState.toJS();
+  return {
+    editingProperty,
+    hasErrors: Object.keys(template.formState.$form.errors || {}).reduce(
+      (result, error) =>
+        result ||
+        (isErrorOnThisField(error, ownProps.index, ownProps.isCommonProperty, template.data) &&
+          template.formState.$form.errors[error]),
+      false
+    ),
+    isLabelDuplicated: isLabelDuplicated(ownProps.index, template.data, template.formState),
+    isRelationDuplicated: Boolean(
+      template.formState.$form.errors[`properties.${ownProps.index}.relationType.duplicated`]
+    ),
+    submitFailed: template.formState.$form.submitFailed,
+  };
+};
 
 export { dragSource, dropTarget, MetadataProperty };
 

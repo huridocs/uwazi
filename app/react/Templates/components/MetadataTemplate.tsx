@@ -176,22 +176,19 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
               </div>
               {connectDropTarget(
                 <ul className="metadataTemplate-list list-group">
-                  {commonProperties.map((config: any, index: number) => {
-                    const _id = config._id || ID();
-                    return (
-                      <MetadataProperty
-                        {...config}
-                        key={_id}
-                        _id
-                        index={index - commonProperties.length}
-                      />
-                    );
-                  })}
+                  {commonProperties.map((config: any, index: number) => (
+                    <MetadataProperty
+                      {...config}
+                      key={config._id}
+                      _id={config._id}
+                      index={index - commonProperties.length}
+                    />
+                  ))}
                   {this.props.properties.map((config: any, index: number) => {
                     const _id = config._id || ID();
                     return (
                       <MetadataProperty
-                        _id
+                        _id={_id}
                         type={config.type}
                         inserting={config.inserting}
                         key={_id}
