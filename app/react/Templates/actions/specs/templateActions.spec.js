@@ -154,7 +154,6 @@ describe('templateActions', () => {
 
     describe('saveTemplate', () => {
       it('should sanitize the properties before saving', () => {
-        spyOn(api, 'save').and.returnValue(Promise.resolve({}));
         const originalTemplateData = {
           name: 'name',
           commonProperties: [{ title: 'Title' }],
@@ -170,6 +169,7 @@ describe('templateActions', () => {
             },
           ],
         };
+        spyOn(api, 'save').and.returnValue(Promise.resolve(actions.sanitize(originalTemplateData)));
         actions.saveTemplate(originalTemplateData)(() => {});
         expect(api.save).toHaveBeenCalledWith(
           new RequestParams({
@@ -190,6 +190,7 @@ describe('templateActions', () => {
 
       it('should save the template and dispatch a TEMPLATE_SAVED action', async () => {
         spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
+
         const originalTemplateData = {
           name: 'my template',
           commonProperties: [{ title: 'Title' }],
@@ -199,10 +200,12 @@ describe('templateActions', () => {
           ],
         };
 
+        const saveResponse = actions.prepareTemplate(originalTemplateData);
+
         const expectedActions = [
           { type: types.SAVING_TEMPLATE },
-          { type: types.TEMPLATE_SAVED, data: { name: 'saved_template' } },
-          { type: 'templates/UPDATE', value: { name: 'saved_template' } },
+          { type: types.TEMPLATE_SAVED, data: saveResponse },
+          { type: 'templates/UPDATE', value: saveResponse },
           { type: 'mergeAction' },
           {
             type: notificationsTypes.NOTIFY,
@@ -211,13 +214,12 @@ describe('templateActions', () => {
         ];
         const store = mockStore({});
 
+        spyOn(api, 'save').and.returnValue(Promise.resolve(actions.sanitize(originalTemplateData)));
         await store.dispatch(actions.saveTemplate(originalTemplateData));
 
         expect(store.getActions()).toEqual(expectedActions);
         expect(originalTemplateData.properties[0].localID).toBe('a1b2');
-        expect(formActions.merge).toHaveBeenCalledWith('template.data', {
-          name: 'saved_template',
-        });
+        expect(formActions.merge).toHaveBeenCalledWith('template.data', saveResponse);
       });
 
       describe('on error', () => {
