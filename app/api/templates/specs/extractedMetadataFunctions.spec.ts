@@ -26,14 +26,12 @@ describe('updateExtractedMetadataProperties()', () => {
           label: 'Property A',
           name: 'property_a',
           type: 'text',
-          id: '1',
         },
         {
           _id: propertyD.toString(),
           label: 'Property D',
           name: 'property_d',
           type: 'link',
-          id: '4',
         },
         {
           label: 'New unrelated property',
@@ -83,28 +81,24 @@ describe('updateExtractedMetadataProperties()', () => {
           label: 'Property A',
           name: 'property_a',
           type: 'text',
-          id: '1',
         },
         {
           _id: propertyB.toString(),
           label: 'Property B',
           name: 'property_b',
           type: 'markdown',
-          id: '2',
         },
         {
           _id: propertyC.toString(),
           label: 'Property C but renamed',
           name: 'property_c_but_renamed',
           type: 'numeric',
-          id: '3',
         },
         {
           _id: propertyD.toString(),
           label: 'Property D',
           name: 'property_d',
           type: 'link',
-          id: '4',
         },
       ],
     };

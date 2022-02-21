@@ -4,6 +4,8 @@ import { propertyTypes } from 'shared/propertyTypes';
 const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
 const templateWithContents = db.id();
+const select3id = db.id();
+const select4id = db.id();
 const swapTemplate = db.id();
 const relatedTo = db.id();
 const templateToBeInherited = db.id();
@@ -86,16 +88,14 @@ export default {
       commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }],
       properties: [
         {
-          _id: db.id(),
-          id: '1',
+          _id: select3id,
           type: propertyTypes.select,
           content: thesauriId1.toString(),
           label: 'select3',
           name: 'select3',
         },
         {
-          _id: db.id(),
-          id: '2',
+          _id: select4id,
           type: propertyTypes.multiselect,
           content: thesauriId1.toString(),
           label: 'select4',
@@ -103,7 +103,6 @@ export default {
         },
         {
           _id: db.id(),
-          id: '95fc3307-7078-41a5-95b5-9c535d629c54',
           type: propertyTypes.generatedid,
           label: 'Generated Id',
           name: 'generated_id',
@@ -115,8 +114,8 @@ export default {
       name: 'swap names template',
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
-        { id: '1', type: propertyTypes.text, name: 'text', label: 'Text' },
-        { id: '2', type: propertyTypes.select, name: 'select5', label: 'Select5' },
+        { _id: 'text_id', type: propertyTypes.text, name: 'text', label: 'Text' },
+        { _id: 'select_id', type: propertyTypes.select, name: 'select5', label: 'Select5' },
       ],
     },
     {
@@ -131,7 +130,6 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
         {
-          id: '1',
           type: propertyTypes.relationship,
           name: 'inherit',
           label: 'Inherit',
@@ -154,28 +152,24 @@ export default {
           label: 'Property A',
           name: 'property_a',
           type: 'text',
-          id: '1',
         },
         {
           _id: propertyB,
           label: 'Property B',
           name: 'property_b',
           type: 'markdown',
-          id: '2',
         },
         {
           _id: propertyC,
           label: 'Property C',
           name: 'property_c',
           type: 'numeric',
-          id: '3',
         },
         {
           _id: propertyD,
           label: 'Property D',
           name: 'property_d',
           type: 'link',
-          id: '4',
         },
       ],
     },
@@ -245,4 +239,6 @@ export {
   propertyB,
   propertyC,
   propertyD,
+  select3id,
+  select4id,
 };

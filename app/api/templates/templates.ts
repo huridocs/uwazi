@@ -92,7 +92,9 @@ const removeExcludedPropertiesValues = async (
   const templateContentProperties = (template.properties || []).filter(p => p.content);
   const toRemoveValues = currentTemplateContentProperties
     .map(prop => {
-      const sameProperty = templateContentProperties.find(p => p.id === prop.id);
+      const sameProperty = templateContentProperties.find(
+        p => p._id?.toString() === prop._id?.toString()
+      );
       if (sameProperty && sameProperty.content !== prop.content) {
         return sameProperty.name;
       }

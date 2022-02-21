@@ -23,6 +23,8 @@ import fixtures, {
   relatedTo,
   thesauriId1,
   thesauriId2,
+  select3id,
+  select4id,
 } from './fixtures/fixtures.js';
 
 describe('templates', () => {
@@ -128,8 +130,18 @@ describe('templates', () => {
           name: 'changed',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
-            { id: '1', type: 'select', content: thesauriId2.toString(), label: 'select3' },
-            { id: '2', type: 'multiselect', content: thesauriId2.toString(), label: 'multiselect' },
+            {
+              _id: select3id,
+              type: 'select',
+              content: thesauriId2.toString(),
+              label: 'select3',
+            },
+            {
+              _id: select4id,
+              type: propertyTypes.multiselect,
+              content: thesauriId2.toString(),
+              label: 'select4',
+            },
           ],
         };
 
@@ -137,7 +149,7 @@ describe('templates', () => {
           .save(changedTemplate)
           .then(() => {
             expect(entities.removeValuesFromEntities).toHaveBeenCalledWith(
-              ['select3', 'multiselect'],
+              ['select3', 'select4'],
               templateWithContents
             );
             done();
@@ -152,9 +164,9 @@ describe('templates', () => {
         name: 'swap names template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
-          { id: '1', type: 'text', name: 'text', label: 'Select5' },
+          { _id: 'text_id', type: 'text', name: 'text', label: 'Select5' },
           {
-            id: '2',
+            _id: 'select_id',
             type: 'select',
             name: 'select5',
             label: 'Text',
