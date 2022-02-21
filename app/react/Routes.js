@@ -1,4 +1,3 @@
-/** @format */
 import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
 import { trackPage } from 'app/App/GoogleAnalytics';
@@ -48,6 +47,7 @@ import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtr
 import { IXSuggestions } from 'app/MetadataExtraction/SuggestionsContainer';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
+import { validateHomePageRoute } from './utils/routeHelpers';
 
 function onEnter() {
   trackPage();
@@ -102,10 +102,15 @@ function getPageIndexRoute(customHomePage) {
 
 function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
-  const homePageSetting = state.settings.collection.get('home_page');
+  const homePageSetting = state.settings.collection.get('home_page') || '';
+  const defaultView = state.settings.collection.get('defaultLibraryView');
+
+  if (!validateHomePageRoute(homePageSetting)) {
+    return callBack(null, getDefaultLibraryComponent(defaultView));
+  }
+
   const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
   const isPageRoute = customHomePage.includes('page');
-
   if (isPageRoute) {
     return callBack(null, getPageIndexRoute(customHomePage));
   }
@@ -118,10 +123,7 @@ function getIndexRoute(_nextState, callBack) {
     });
   }
 
-  return callBack(
-    null,
-    getDefaultLibraryComponent(state.settings.collection.get('defaultLibraryView'))
-  );
+  return callBack(null, getDefaultLibraryComponent(defaultView));
 }
 
 const routes = (

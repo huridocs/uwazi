@@ -564,6 +564,50 @@ describe('search', () => {
       expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID')).not.toBeDefined();
       expect(template1UnpubishedAggs.find(a => a.key === 'SpainID')).not.toBeDefined();
     });
+
+    describe('_type aggregations', () => {
+      const expectBucket = (buckets, id, count) => {
+        expect(buckets.find(bucket => bucket.key === id).filtered.doc_count).toBe(count);
+      };
+
+      it('should return aggregations for all templates when filtering by template', async () => {
+        const onlyPublished = await search.search({ types: [ids.templateMetadata1] }, 'en');
+        const { buckets } = onlyPublished.aggregations.all._types;
+        expect(onlyPublished.aggregations.all._types.count).toBe(6);
+        expectBucket(buckets, ids.template, 2);
+        expectBucket(buckets, ids.template1, 5);
+        expectBucket(buckets, ids.template2, 1);
+        expectBucket(buckets, ids.templateMetadata1, 3);
+        expectBucket(buckets, ids.templateMetadata2, 2);
+      });
+
+      it('should return correct aggregations for unpublished', async () => {
+        const onlyUnpublished = await search.search(
+          { includeUnpublished: false, unpublished: true },
+          'en',
+          editorUser
+        );
+        expect(onlyUnpublished.aggregations.all._types.count).toBe(2);
+        const { buckets } = onlyUnpublished.aggregations.all._types;
+        expectBucket(buckets, ids.template, 1);
+        expectBucket(buckets, ids.templateMetadata1, 1);
+      });
+
+      it('should return aggregations for include unpublished', async () => {
+        const includeUnpublished = await search.search(
+          { includeUnpublished: true, unpublished: false },
+          'en',
+          editorUser
+        );
+        const { buckets } = includeUnpublished.aggregations.all._types;
+        expect(includeUnpublished.aggregations.all._types.count).toBe(6);
+        expectBucket(buckets, ids.template, 3);
+        expectBucket(buckets, ids.template1, 5);
+        expectBucket(buckets, ids.template2, 1);
+        expectBucket(buckets, ids.templateMetadata1, 4);
+        expectBucket(buckets, ids.templateMetadata2, 2);
+      });
+    });
   });
 
   describe('inherit aggregations', () => {

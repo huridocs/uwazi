@@ -663,6 +663,7 @@ export const ids = {
   batmanFinishes,
   metadataSnippets,
   userId,
+  template: template.toString(),
   template1: template1.toString(),
   template2: template2.toString(),
   templateMetadata1: templateMetadata1.toString(),

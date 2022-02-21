@@ -12,6 +12,7 @@ const DB = {
       ...auth,
       useUnifiedTopology: true,
       useNewUrlParser: true,
+      poolSize: config.mongo_connection_pool_size,
     });
 
     return this.getConnection();
@@ -21,8 +22,8 @@ const DB = {
     return mongoose.disconnect();
   },
 
-  connectionForDB(dbName: string) {
-    return this.getConnection().useDb(dbName, { useCache: true });
+  connectionForDB(dbName: string, options = { useCache: true, noListener: true }) {
+    return this.getConnection().useDb(dbName, options);
   },
 
   getConnection() {
