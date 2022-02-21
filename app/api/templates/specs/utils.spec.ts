@@ -92,8 +92,8 @@ describe('templates utils', () => {
   });
 
   describe('generateIds()', () => {
-    it('should generate unique IDs for properties without them', () => {
-      const result = generateIds([{}, { id: '123' }] as PropertySchema[]);
+    it('should generate unique IDs for thesauri without them', () => {
+      const result = generateIds([{ name: 'entry 1' }, { name: 'entry 2', id: '123' }]);
       expect(result[0].id).toBeDefined();
       expect(result[1].id).toBe('123');
     });
@@ -148,15 +148,16 @@ describe('templates utils', () => {
 
   describe('getDeletedProperties()', () => {
     it('should return the properties that have been deleted', () => {
+      const propId = db.id();
       const oldProperties: PropertySchema[] = [
-        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
-        { id: '2', name: 'boromir', label: 'label', type: 'text' },
+        { _id: propId, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: db.id(), name: 'boromir', label: 'label', type: 'text' },
       ];
-      const newProperties: PropertySchema[] = [
-        { id: '1', name: 'I_just_changed_my_name', label: 'label', type: 'text' },
+      const changedProperties: PropertySchema[] = [
+        { _id: propId, name: 'I_just_changed_my_name', label: 'label', type: 'text' },
       ];
 
-      const result = getDeletedProperties(oldProperties, newProperties);
+      const result = getDeletedProperties(oldProperties, changedProperties);
       expect(result).toEqual(['boromir']);
     });
 

@@ -127,7 +127,12 @@ function getUpdatedNames(
 
 const notIncludedIn =
   (propertyCollection: PropertyOrThesaurusSchema[]) => (property: PropertyOrThesaurusSchema) =>
-    !propertyCollection.find(p => p.id === property.id);
+    !propertyCollection.find(p => {
+      if (p.id) {
+        return p.id === property.id;
+      }
+      return p._id?.toString() === property._id?.toString();
+    });
 
 function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
