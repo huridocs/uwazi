@@ -149,7 +149,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         const segmentationRepeater = new DistributedLoop(
           'segmentation_repeat',
           segmentationConnector.segmentPdfs,
-          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 2000 }
+          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 5000 }
         );
 
         segmentationRepeater.start();

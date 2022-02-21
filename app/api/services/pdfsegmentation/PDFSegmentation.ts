@@ -11,6 +11,8 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import request from 'shared/JSONRequest';
 import { handleError } from 'api/utils';
 import { SegmentationModel } from './segmentationModel';
+import { SegmentationType } from 'shared/types/segmentationType';
+import { FileType } from 'shared/types/fileType';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';
@@ -21,7 +23,7 @@ class PDFSegmentation {
 
   features: Settings | undefined;
 
-  batchSize = 10;
+  batchSize = 50;
 
   constructor() {
     this.segmentationTaskManager = new TaskManager({
@@ -67,17 +69,14 @@ class PDFSegmentation {
     });
 
   getFilesToSegment = async (): Promise<{ filename: string; _id: ObjectIdSchema }[]> => {
-    const segmentations = await SegmentationModel.get({}, 'fileID', {
-      projection: { _id: 1, fileID: 1 },
-    });
+    const segmentations = (await SegmentationModel.get(
+      { fileID: { $exists: true } },
+      'fileID'
+    )) as (SegmentationType & { fileID: string })[];
 
-    const segmentedFiles = segmentations
-      .map(segmentation =>
-        segmentation && segmentation.fileID ? segmentation.fileID.toString() : ''
-      )
-      .filter(x => x);
+    const segmentedFiles = segmentations.map(segmentation => segmentation.fileID);
 
-    const files = await filesModel.get(
+    const files = (await filesModel.get(
       {
         type: 'document',
         filename: { $exists: true },
@@ -85,15 +84,9 @@ class PDFSegmentation {
       },
       'filename',
       { limit: this.batchSize }
-    );
+    )) as (FileType & { filename: string; _id: ObjectIdSchema })[];
 
-    return files
-      .map(file =>
-        file && file.filename && file._id
-          ? { _id: file._id, filename: file.filename }
-          : { _id: '', filename: '' }
-      )
-      .filter(x => x._id);
+    return files.map(file => ({ _id: file._id, filename: file.filename }));
   };
 
   segmentPdfs = async () => {

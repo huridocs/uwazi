@@ -120,15 +120,15 @@ export class TaskManager {
         vt: this.service.processResultsMessageHiddenTime,
       })) as QueueMessage;
 
+      await this.redisSMQ.deleteMessageAsync({
+        qname: this.resultsQueue,
+        id: message.id,
+      });
+
       if (message.id && this.service.processResults) {
         const processedMessage = JSON.parse(message.message);
 
         await this.service.processResults(processedMessage);
-
-        await this.redisSMQ.deleteMessageAsync({
-          qname: this.resultsQueue,
-          id: message.id,
-        });
       }
     } catch (e) {
       handleError(e, { useContext: false });
