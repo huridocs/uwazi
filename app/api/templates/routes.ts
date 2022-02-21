@@ -25,7 +25,7 @@ const prepareRequest = async (body: TemplateSchema & { reindex?: boolean }) => {
   delete request.reindex;
   const template = { ...request };
 
-  const templateProperties = await generateNames(template.properties);
+  const templateProperties = await generateNames(template.properties || []);
   const { valid, error } = await checkMapping({ ...template, properties: templateProperties });
 
   return { template, fullReindex, valid, error };
