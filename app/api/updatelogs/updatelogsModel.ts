@@ -3,7 +3,7 @@ import { MultiTenantMongooseModel } from 'api/odm/MultiTenantMongooseModel';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 const updateLogSchema = new mongoose.Schema({
-  timestamp: Number,
+  timestamp: { type: Number, index: true },
   namespace: String,
   mongoId: { type: mongoose.Schema.Types.ObjectId, index: true },
   deleted: Boolean,

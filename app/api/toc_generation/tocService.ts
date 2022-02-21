@@ -46,9 +46,9 @@ const tocService = (serviceUrl: string) => ({
   async processNext() {
     const [nextFile] = await files.get(
       {
-        $or: [{ toc: { $size: 0 } }, { toc: { $exists: false } }],
         type: 'document',
         filename: { $exists: true },
+        'toc.0': { $exists: false },
       },
       '',
       { sort: { _id: 1 }, limit: 1 }

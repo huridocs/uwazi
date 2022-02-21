@@ -4,7 +4,7 @@ import { search } from 'api/search';
 import entities from 'api/entities';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
-import model from './filesModel';
+import { filesModel } from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
 import { FileType } from '../../shared/types/fileType';
 
@@ -16,18 +16,18 @@ export const files = {
       file.mimetype = mimetype;
     }
 
-    const savedFile = await model.save(await validateFile(file));
+    const savedFile = await filesModel.save(await validateFile(file));
     if (index) {
       await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
     }
     return savedFile;
   },
 
-  get: model.get.bind(model),
+  get: filesModel.get.bind(filesModel),
 
   async delete(query: any = {}) {
-    const toDeleteFiles: FileType[] = await model.get(query);
-    await model.delete(query);
+    const toDeleteFiles: FileType[] = await filesModel.get(query);
+    await filesModel.delete(query);
     if (toDeleteFiles.length > 0) {
       await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
       await deleteUploadedFiles(toDeleteFiles);
