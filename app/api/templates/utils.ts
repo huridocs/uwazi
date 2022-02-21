@@ -108,12 +108,9 @@ function getUpdatedNames(
 ) {
   const propertiesWithNewName: { [k: string]: string | undefined } = {};
   flattenProperties(oldProperties).forEach(property => {
-    const newProperty = flattenProperties(newProperties).find(p => {
-      if (property.id) {
-        return p.id === property.id;
-      }
-      return p._id?.toString() === property._id?.toString();
-    });
+    const newProperty = flattenProperties(newProperties).find(p =>
+      property.id ? p.id === property.id : p._id?.toString() === property._id?.toString()
+    );
     if (newProperty && newProperty[prop] !== property[prop]) {
       const key = property[outKey];
       if (key) {
@@ -127,12 +124,9 @@ function getUpdatedNames(
 
 const notIncludedIn =
   (propertyCollection: PropertyOrThesaurusSchema[]) => (property: PropertyOrThesaurusSchema) =>
-    !propertyCollection.find(p => {
-      if (p.id) {
-        return p.id === property.id;
-      }
-      return p._id?.toString() === property._id?.toString();
-    });
+    !propertyCollection.find(p =>
+      p.id ? p.id === property.id : p._id?.toString() === property._id?.toString()
+    );
 
 function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
