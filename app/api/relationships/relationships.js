@@ -8,7 +8,7 @@ import { createError } from 'api/utils';
 
 import model from './model';
 import { search } from '../search';
-import { generateNamesAndIds } from '../templates/utils';
+import { generateNames } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
 import {
@@ -501,7 +501,7 @@ export default {
     const actions = {};
     actions.$rename = {};
     actions.$unset = {};
-    template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await generateNames(template.properties);
     template.properties.forEach(property => {
       const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
       if (currentProperty && currentProperty.name !== property.name) {

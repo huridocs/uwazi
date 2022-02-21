@@ -1,7 +1,7 @@
 import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
 
-import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from '../templates/utils';
+import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
 
 const checkDuplicated = relationtype =>
@@ -76,7 +76,7 @@ export default {
   },
 
   async save(relationtype) {
-    relationtype.properties = await generateNamesAndIds(relationtype.properties || []);
+    relationtype.properties = await generateNames(relationtype.properties || []);
 
     return checkDuplicated(relationtype).then(() => {
       if (!relationtype._id) {

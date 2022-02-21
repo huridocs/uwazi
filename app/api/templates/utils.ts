@@ -9,7 +9,7 @@ import { safeName as sharedSafeName } from 'shared/propertyNames';
 import { ensure } from 'shared/tsUtils';
 import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import model from './templatesModel';
 
 const safeName = sharedSafeName;
@@ -73,25 +73,20 @@ const generateName = (property: PropertySchema, newNameGeneration: boolean) => {
     : name;
 };
 
-const generateNames = (properties: PropertySchema[], newNameGeneration: boolean) =>
-  properties.map(property => ({
+const generateNames = async (properties: PropertySchema[]) => {
+  const { newNameGeneration = false } = await settings.get();
+  return properties.map(property => ({
     ...property,
     name: generateName(property, newNameGeneration),
   }));
+};
 
-function generateIds(properties: PropertySchema[] = []) {
+function generateIds(properties: ThesaurusSchema[] = []) {
   return properties.map(property => ({
     ...property,
     id: property.id || uuid.v4(),
   }));
 }
-
-//CHANGE NAME
-const generateNamesAndIds = async (properties: PropertySchema[] = []) => {
-  const { newNameGeneration = false } = await settings.get();
-  return generateNames(properties, newNameGeneration);
-};
-
 interface PropertyOrThesaurusSchema
   extends Partial<PropertySchema>,
     Partial<ThesaurusValueSchema> {}
@@ -220,7 +215,7 @@ export {
   denormalizeInheritedProperties,
   generateIds,
   getUpdatedNames,
-  generateNamesAndIds,
+  generateNames,
   getDeletedProperties,
   getRenamedTitle,
   updateExtractedMetadataProperties,

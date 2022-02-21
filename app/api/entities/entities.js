@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { generateNamesAndIds } from 'api/templates/utils';
+import { generateNames } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
 import date from 'api/utils/date';
@@ -651,7 +651,7 @@ export default {
     options = { reindex: true, generatedIdAdded: false }
   ) {
     const actions = { $rename: {}, $unset: {} };
-    template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await generateNames(template.properties);
     template.properties.forEach(property => {
       const currentProperty = currentTemplate.properties.find(
         p => p._id.toString() === (property._id || '').toString()

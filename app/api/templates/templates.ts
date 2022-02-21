@@ -12,7 +12,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import model from './templatesModel';
 import {
-  generateNamesAndIds,
+  generateNames,
   getRenamedTitle,
   getDeletedProperties,
   getUpdatedNames,
@@ -130,7 +130,7 @@ export default {
   async save(template: TemplateSchema, language: string, reindex = true) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
-    template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await generateNames(template.properties);
     template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 

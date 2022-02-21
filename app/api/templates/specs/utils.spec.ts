@@ -5,7 +5,7 @@ import {
   generateIds,
   getUpdatedNames,
   getDeletedProperties,
-  generateNamesAndIds,
+  generateNames,
   PropertyOrThesaurusSchema,
 } from '../utils';
 
@@ -18,7 +18,7 @@ describe('templates utils', () => {
     describe('default name generation', () => {
       it('should sanitize the labels and append the type', async () => {
         await settings.save({});
-        const result = await generateNamesAndIds([
+        const result = await generateNames([
           { label: ' my prop ', name: '', type: 'text' },
           { label: 'my^foreïgn$próp"', name: '', type: 'text' },
           { label: ' my prop ', name: '', type: 'geolocation' },
@@ -33,7 +33,7 @@ describe('templates utils', () => {
     describe('less restrictive name generation', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
         await settings.save({ newNameGeneration: true });
-        const result = await generateNamesAndIds([
+        const result = await generateNames([
           { label: ' my prop ', name: '', type: 'text' },
           { label: 'my^foreïgn$próp"', name: '', type: 'text' },
           { label: ' my prop ', name: '', type: 'geolocation' },
@@ -72,7 +72,7 @@ describe('templates utils', () => {
 
       it('should not start with _, -, +, $', async () => {
         await settings.save({ newNameGeneration: true });
-        const result = await generateNamesAndIds([
+        const result = await generateNames([
           { label: '.test ', name: '', type: 'text' },
           { label: '_test', name: '', type: 'text' },
           { label: '+test', name: '', type: 'text' },
