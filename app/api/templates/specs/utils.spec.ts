@@ -101,14 +101,16 @@ describe('templates utils', () => {
 
   describe('getUpdatedNames()', () => {
     it('should return the properties that have a new name', () => {
+      const prop1Id = db.id();
+      const prop2Id = db.id();
       const oldProperties: PropertySchema[] = [
-        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
-        { id: '2', name: 'my_prop_two', label: 'label', type: 'text' },
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_prop_two', label: 'label', type: 'text' },
       ];
 
       const newProperties: PropertySchema[] = [
-        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
-        { id: '2', name: 'my_fancy_new_name', label: 'label', type: 'text' },
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_fancy_new_name', label: 'label', type: 'text' },
       ];
 
       const result = getUpdatedNames(oldProperties, newProperties);

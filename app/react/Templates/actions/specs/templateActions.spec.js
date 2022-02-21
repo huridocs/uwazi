@@ -190,7 +190,6 @@ describe('templateActions', () => {
 
       it('should save the template and dispatch a TEMPLATE_SAVED action', async () => {
         spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
-
         const originalTemplateData = {
           name: 'my template',
           commonProperties: [{ title: 'Title' }],
@@ -199,9 +198,7 @@ describe('templateActions', () => {
             { localID: 'a1b3', label: 'my property' },
           ],
         };
-
         const saveResponse = actions.prepareTemplate(originalTemplateData);
-
         const expectedActions = [
           { type: types.SAVING_TEMPLATE },
           { type: types.TEMPLATE_SAVED, data: saveResponse },
@@ -213,7 +210,6 @@ describe('templateActions', () => {
           },
         ];
         const store = mockStore({});
-
         spyOn(api, 'save').and.returnValue(Promise.resolve(actions.sanitize(originalTemplateData)));
         await store.dispatch(actions.saveTemplate(originalTemplateData));
 
