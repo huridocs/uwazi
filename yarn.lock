@@ -12844,9 +12844,10 @@ redux-devtools-extension@^2.13.2:
   version "2.13.2"
   resolved "https://registry.npmjs.org/redux-devtools-extension/-/redux-devtools-extension-2.13.2.tgz"
 
-redux-mock-store@^1.0.2:
-  version "1.5.1"
-  resolved "https://registry.npmjs.org/redux-mock-store/-/redux-mock-store-1.5.1.tgz"
+redux-mock-store@^1.5.4:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/redux-mock-store/-/redux-mock-store-1.5.4.tgz#90d02495fd918ddbaa96b83aef626287c9ab5872"
+  integrity sha512-xmcA0O/tjCLXhh9Fuiq6pMrJCwFRaouA8436zcikdIpYWWCjU76CRk+i2bHx8EeiSiMGnB85/lZdU3wIJVXHTA==
   dependencies:
     lodash.isplainobject "^4.0.6"
 
