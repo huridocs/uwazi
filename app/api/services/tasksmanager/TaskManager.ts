@@ -23,7 +23,7 @@ export interface ResultsMessage {
   data_url?: string;
   file_url?: string;
   success?: boolean;
-  error?: string;
+  error_message?: string;
 }
 /* eslint-enable camelcase */
 

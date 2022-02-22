@@ -22,7 +22,11 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
 import { IXModelsModel } from './IXModelsModel';
-import { FileWithAggregation, getFilesForTraining, getFilesForSuggestions } from 'api/services/informationextraction/getFiles';
+import {
+  FileWithAggregation,
+  getFilesForTraining,
+  getFilesForSuggestions,
+} from 'api/services/informationextraction/getFiles';
 
 type RawSuggestion = {
   tenant: string;
@@ -164,8 +168,8 @@ class InformationExtraction {
     if (property?.type === 'date') {
       suggestedValue = new Date(suggestion.text).getTime();
     }
-    // eslint-disable-next-line use-isnan
-    if (suggestedValue === NaN) {
+
+    if (Number.isNaN(suggestedValue)) {
       return null;
     }
 
@@ -179,21 +183,26 @@ class InformationExtraction {
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
         const entity = await this._getEntityFromSuggestion(rawSuggestion);
-        let status: 'ready' | 'failed' = 'ready';
-        let error = '';
         if (!entity) {
           return Promise.resolve();
         }
-
         const [currentSuggestion] = await IXSuggestionsModel.get({
           entityId: entity.sharedId,
           propertyName: rawSuggestion.property_name,
         });
 
+        let status: 'ready' | 'failed' = 'ready';
+        let error = '';
+
         const suggestedValue = this.coerceSuggestionValue(rawSuggestion, templates);
-        if (!suggestedValue) {
+        if (suggestedValue === null) {
           status = 'failed';
           error = 'Invalid value for property type';
+        }
+
+        if (!message.success) {
+          status = 'failed';
+          error = message.error_message ? message.error_message : 'Unknown error';
         }
 
         const suggestion: IXSuggestionType = {
@@ -363,7 +372,7 @@ class InformationExtraction {
         await this.getSuggestions(message.params!.property_name);
       }
 
-      if (message.task === 'suggestions' && message.success) {
+      if (message.task === 'suggestions') {
         await this.saveSuggestions(message);
         await this.getSuggestions(message.params!.property_name);
       }
