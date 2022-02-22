@@ -101,19 +101,16 @@ export function reorderProperty(originIndex, targetIndex) {
 }
 
 export const sanitize = data => {
-  const commonProperties = data.commonProperties.map(_prop => {
-    const prop = { ..._prop };
-    delete prop.localID;
-    return prop;
+  const commonProperties = data.commonProperties.map(prop => {
+    const { localID, ...sanitizedProp } = prop;
+    return sanitizedProp;
   });
-  const properties = data.properties.map(_prop => {
-    const prop = { ..._prop };
-    if (prop.inherit && !prop.content) {
-      prop.inherit = false;
+  const properties = data.properties.map(prop => {
+    const { localID, inserting, ...sanitizedProp } = prop;
+    if (sanitizedProp.inherit && !sanitizedProp.content) {
+      sanitizedProp.inherit = false;
     }
-    delete prop.inserting;
-    delete prop.localID;
-    return prop;
+    return sanitizedProp;
   });
   return { ...data, properties, commonProperties };
 };
