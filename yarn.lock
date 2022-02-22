@@ -1686,10 +1686,15 @@
   resolved "https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.17.tgz"
   integrity sha512-0p1rCgM3LLbAdwBnc7gqgnvjHg9KpbhcSphergHShlkWz8EdPawoMJ3/VbezI0mGC5eKCDzMaPgF9Yca6cKvrg==
 
-"@react-dnd/asap@^4.0.0":
+"@react-dnd/asap@4.0.0", "@react-dnd/asap@^4.0.0":
   version "4.0.0"
   resolved "https://registry.npmjs.org/@react-dnd/asap/-/asap-4.0.0.tgz"
   integrity sha512-0XhqJSc6pPoNnf8DhdsPHtUhRzZALVzYMTzRwV4VI6DJNJ/5xxfL9OQUwb8IH5/2x7lSf7nAZrnzUD+16VyOVQ==
+
+"@react-dnd/invariant@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@react-dnd/invariant/-/invariant-3.0.0.tgz#ea55db612b8be3284e87b67f1a1567595cd4c386"
+  integrity sha512-keberJRIqPX15IK3SWS/iO1t/kGETiL1oczKrDitAaMnQ+kpHf81l3MrRmFjvfqcnApE+izEvwM6GsyoIcpsVA==
 
 "@react-dnd/invariant@^2.0.0":
   version "2.0.0"
@@ -5469,13 +5474,13 @@ disposables@^1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/disposables/-/disposables-1.0.2.tgz"
 
-dnd-core@14.0.1:
-  version "14.0.1"
-  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-14.0.1.tgz#76d000e41c494983210fb20a48b835f81a203c2e"
-  integrity sha512-+PVS2VPTgKFPYWo3vAFEA8WPbTf7/xo43TifH9G8S1KqnrQu0o77A3unrF5yOugy4mIz7K5wAVFHUcha7wsz6A==
+dnd-core@15.1.1:
+  version "15.1.1"
+  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-15.1.1.tgz#b4dce2d892be2a7c9ca32ffdd545350be8d52f4f"
+  integrity sha512-Mtj/Sltcx7stVXzeDg4g7roTe/AmzRuIf/FYOxX6F8gULbY54w066BlErBOzQfn9RIJ3gAYLGX7wvVvoBSq7ig==
   dependencies:
-    "@react-dnd/asap" "^4.0.0"
-    "@react-dnd/invariant" "^2.0.0"
+    "@react-dnd/asap" "4.0.0"
+    "@react-dnd/invariant" "3.0.0"
     redux "^4.1.1"
 
 dnd-core@^10.0.2:
@@ -12358,12 +12363,12 @@ react-dnd-html5-backend@2.6.0:
   dependencies:
     lodash "^4.2.0"
 
-react-dnd-test-backend@14.0.1:
-  version "14.0.1"
-  resolved "https://registry.yarnpkg.com/react-dnd-test-backend/-/react-dnd-test-backend-14.0.1.tgz#687ed2834a3b51df91706a97a42f6d43b55dc054"
-  integrity sha512-jLGc03K0qd5a0Q+knR8qzUzHqFDEhu3yOxOhJNyWIQucGUbyRhklghJblTJnuvOCNFusnHYOuHERwcvJjXMMbg==
+react-dnd-test-backend@15.1.1:
+  version "15.1.1"
+  resolved "https://registry.yarnpkg.com/react-dnd-test-backend/-/react-dnd-test-backend-15.1.1.tgz#2629515baaa83d7fd6b4c566203b46bfea65bcda"
+  integrity sha512-zdztC6u7j4vRxPcYM/GFFQlRSyBbRzG7MV3igKDf1kMhS5qyY9HS3cWRmZ/4Xo3gEgO+73sb+Wo9KJBCtiNTCg==
   dependencies:
-    dnd-core "14.0.1"
+    dnd-core "15.1.1"
 
 react-dnd@*:
   version "10.0.2"
