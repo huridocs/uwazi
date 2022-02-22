@@ -8,6 +8,7 @@ import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel'
 import { FileType } from 'shared/types/fileType';
 
 const BATCH_SIZE = 50;
+const MAX_TRAINING_FILES_NUMBER = 500;
 
 interface FileWithAggregation {
   segmentation: SegmentationType;
@@ -63,7 +64,8 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
       _id: { $in: await getSegmentedFilesIds() },
       entity: { $in: entitiesFromTrainingTemplatesIds },
     },
-    'extractedMetadata entity language filename'
+    'extractedMetadata entity language filename',
+    { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
 
   return getFilesWithAggregations(files);
