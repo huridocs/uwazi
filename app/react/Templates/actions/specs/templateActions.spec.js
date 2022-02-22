@@ -198,11 +198,11 @@ describe('templateActions', () => {
             { localID: 'a1b3', label: 'my property' },
           ],
         };
-        const saveResponse = actions.prepareTemplate(originalTemplateData);
+        const preparedResponse = actions.prepareTemplate(originalTemplateData);
         const expectedActions = [
           { type: types.SAVING_TEMPLATE },
-          { type: types.TEMPLATE_SAVED, data: saveResponse },
-          { type: 'templates/UPDATE', value: saveResponse },
+          { type: types.TEMPLATE_SAVED, data: preparedResponse },
+          { type: 'templates/UPDATE', value: preparedResponse },
           { type: 'mergeAction' },
           {
             type: notificationsTypes.NOTIFY,
@@ -215,7 +215,7 @@ describe('templateActions', () => {
 
         expect(store.getActions()).toEqual(expectedActions);
         expect(originalTemplateData.properties[0].localID).toBe('a1b2');
-        expect(formActions.merge).toHaveBeenCalledWith('template.data', saveResponse);
+        expect(formActions.merge).toHaveBeenCalledWith('template.data', preparedResponse);
       });
 
       describe('on error', () => {
