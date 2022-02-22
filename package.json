@@ -204,7 +204,7 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.17.0",
+    "@babel/cli": "7.17.6",
     "@babel/core": "7.17.5",
     "@babel/eslint-parser": "7.11.5",
     "@babel/helper-call-delegate": "^7.11.4",
@@ -294,7 +294,7 @@
     "jest-image-snapshot": "^4.5.1",
     "jest-puppeteer": "4.4.0",
     "mini-css-extract-plugin": "^1.6.2",
-    "mongodb-memory-server": "^8.3.0",
+    "mongodb-memory-server": "^8.4.0",
     "mutationobserver-shim": "^0.3.7",
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.1.0",
