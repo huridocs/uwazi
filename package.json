@@ -293,7 +293,7 @@
     "jest-extended": "2.0.0",
     "jest-image-snapshot": "^4.5.1",
     "jest-puppeteer": "4.4.0",
-    "mini-css-extract-plugin": "^1.6.0",
+    "mini-css-extract-plugin": "^1.6.2",
     "mongodb-memory-server": "^8.3.0",
     "mutationobserver-shim": "^0.3.7",
     "nightmare": "2.10.0",
