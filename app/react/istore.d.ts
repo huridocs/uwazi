@@ -87,6 +87,7 @@ export interface TableViewColumn extends PropertySchema {
 export interface ClientTemplateSchema extends TemplateSchema {
   _id: string;
   properties: ClientPropertySchema[];
+  commonProperties?: [ClientPropertySchema, ...ClientPropertySchema[]];
 }
 
 export interface ClientFile extends FileType {
