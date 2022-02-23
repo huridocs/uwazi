@@ -19,7 +19,8 @@ const suggestionsTable = (
   reviewedProperty: PropertySchema,
   suggestions: EntitySuggestionType[],
   totalPages: number,
-  actionsCell: Function
+  actionsCell: Function,
+  segmentCell: Function
 ) => {
   const stateFilter = ({
     column: { filterValue, setFilter },
@@ -96,6 +97,7 @@ const suggestionsTable = (
         accessor: 'segment' as const,
         Header: () => <Translate>Segment</Translate>,
         className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
+        Cell: segmentCell,
       },
       {
         accessor: 'language' as const,

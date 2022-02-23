@@ -5,6 +5,7 @@ import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
 import { I18NLink, Translate } from 'app/I18N';
 import { socket } from 'app/socket';
+import { SidePanel } from 'app/Layout';
 import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -29,6 +30,7 @@ export const EntitySuggestions = ({
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
     if (propertyName === reviewedProperty.name) {
@@ -60,6 +62,25 @@ export const EntitySuggestions = ({
     );
   };
 
+  // TEST!!!
+
+  const openPDFSidePanel = () => {
+    setSidePanelOpen(true);
+  };
+
+  const closePDFSidePanel = () => {
+    setSidePanelOpen(false);
+  };
+
+  const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
+    <>
+      <button type="button" onClick={() => openPDFSidePanel()}>
+        PDF
+      </button>
+      {row.original.segment}
+    </>
+  );
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -70,7 +91,7 @@ export const EntitySuggestions = ({
     setPageSize,
     selectedFlatRows,
     state: { pageIndex, pageSize, filters },
-  } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell);
+  } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
   const retrieveSuggestions = () => {
     const queryFilter = filters.reduce(
@@ -135,68 +156,97 @@ export const EntitySuggestions = ({
   };
 
   return (
-    <div className="panel entity-suggestions">
-      <div className="panel-subheading">
-        <div>
-          <span className="suggestion-header">
-            <Translate>Reviewing</Translate>:&nbsp;
-          </span>
+    <>
+      <div className="panel entity-suggestions">
+        <div className="panel-subheading">
+          <div>
+            <span className="suggestion-header">
+              <Translate>Reviewing</Translate>:&nbsp;
+            </span>
 
-          <span className="suggestion-property">
-            <Translate>{reviewedProperty.label}</Translate>
-          </span>
+            <span className="suggestion-property">
+              <Translate>{reviewedProperty.label}</Translate>
+            </span>
+          </div>
+          <button
+            type="button"
+            className={`btn service-request-button ${status}`}
+            onClick={_trainModel}
+          >
+            <Translate>{ixmessages[status]}</Translate>
+          </button>
+          <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
+            <Translate>Dashboard</Translate>
+          </I18NLink>
         </div>
-        <button
-          type="button"
-          className={`btn service-request-button ${status}`}
-          onClick={_trainModel}
-        >
-          <Translate>{ixmessages[status]}</Translate>
-        </button>
-        <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
-          <Translate>Dashboard</Translate>
-        </I18NLink>
-      </div>
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => {
-                const className =
-                  column.className + (filters.find(f => f.id === column.id) ? ' filtered' : '');
-                return (
-                  <th {...column.getHeaderProps({ className })}>
-                    <>
-                      {column.render('Header')}
-                      {column.canFilter && column.Filter && column.render('Filter')}
-                    </>
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map((row: Row<EntitySuggestionType>) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
-                  <td {...cell.getCellProps({ className: cell.column.className })}>
-                    {cell.render('Cell')}
-                  </td>
-                ))}
+        <table {...getTableProps()}>
+          <thead>
+            {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => {
+                  const className =
+                    column.className + (filters.find(f => f.id === column.id) ? ' filtered' : '');
+                  return (
+                    <th {...column.getHeaderProps({ className })}>
+                      <>
+                        {column.render('Header')}
+                        {column.canFilter && column.Filter && column.render('Filter')}
+                      </>
+                    </th>
+                  );
+                })}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <Pagination onPageChange={gotoPage} onPageSizeChange={setPageSize} totalPages={totalPages} />
-      <SuggestionAcceptanceModal
-        isOpen={acceptingSuggestion}
-        onClose={() => setAcceptingSuggestion(false)}
-        onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
-      />
-    </div>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {page.map((row: Row<EntitySuggestionType>) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map(cell => (
+                    <td {...cell.getCellProps({ className: cell.column.className })}>
+                      {cell.render('Cell')}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <Pagination
+          onPageChange={gotoPage}
+          onPageSizeChange={setPageSize}
+          totalPages={totalPages}
+        />
+        <SuggestionAcceptanceModal
+          isOpen={acceptingSuggestion}
+          onClose={() => setAcceptingSuggestion(false)}
+          onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
+        />
+      </div>
+      <SidePanel className="wide" open={sidePanelOpen}>
+        <>
+          <div className="sidepanel-header buttons-align-right">
+            <button
+              type="button"
+              className="closeSidepanel close-modal"
+              onClick={closePDFSidePanel}
+              aria-label="Close side panel"
+            >
+              <Icon icon="times" />
+            </button>
+            <div className="button-list">
+              <button type="button" className="btn btn-default">
+                <Translate>Cancel</Translate>
+              </button>
+              <button type="submit" className="btn btn-success">
+                <Translate>Save</Translate>
+              </button>
+            </div>
+          </div>
+          Aqui texto
+        </>
+      </SidePanel>
+    </>
   );
 };

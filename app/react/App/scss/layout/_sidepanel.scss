@@ -21,9 +21,13 @@ $c-sidebar: $c-white;
     right: -100%;
   }
 
-  .only-mobile { display: none; };
+  .only-mobile {
+    display: none;
+  }
   @media (max-width: 1023px) {
-    .only-mobile { display: inline-block; }
+    .only-mobile {
+      display: inline-block;
+    }
   }
   @media (min-width: 454px) {
     width: 400px;
@@ -52,6 +56,13 @@ $c-sidebar: $c-white;
     display: flex;
     > div {
       border-left: 1px solid $c-grey-light;
+    }
+  }
+
+  &.wide {
+    min-width: 901px;
+    &.is-hidden {
+      right: -901px;
     }
   }
 
@@ -93,6 +104,7 @@ $c-sidebar: $c-white;
     z-index: 5;
     border: 0;
     background-color: transparent;
+
     &:hover {
       color: $c-grey-dark;
     }
@@ -217,6 +229,24 @@ $c-sidebar: $c-white;
   border-bottom: 1px solid $c-grey-light;
   padding: 0 15px;
 
+  .button-list > button {
+    margin-right: 15px;
+  }
+
+  &.buttons-align-right {
+    text-align: right;
+
+    .button-list > button {
+      margin-left: 15px;
+      margin-right: unset;
+    }
+
+    .closeSidepanel {
+      right: unset;
+      left: 0;
+    }
+  }
+
   &.no-border {
     border-bottom: 0;
   }
@@ -238,7 +268,7 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-footer {
-  z-index:1;
+  z-index: 1;
   position: absolute;
   bottom: 2em;
   left: 50%;
@@ -306,7 +336,6 @@ $c-sidebar: $c-white;
   justify-content: space-between;
 
   .filter-buttons {
-
     .clear-button {
       text-decoration: none;
       letter-spacing: normal;
@@ -321,7 +350,7 @@ $c-sidebar: $c-white;
     .push-left {
       margin-right: 25px;
     }
-    
+
     @media (min-width: 1030px) {
       .remove-margin {
         margin-right: 0px;
