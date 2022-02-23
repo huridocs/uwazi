@@ -229,7 +229,46 @@ describe('InformationExtraction', () => {
       );
     });
 
-    it('should not store empty suggestions or suggestions invalid for the field', async () => {
+    it('should store failed suggestions', async () => {
+      IXExternalService.setResults([
+        {
+          tenant: 'tenant1',
+          property_name: 'property1',
+          xml_file_name: 'documentA.xml',
+          text: '',
+          segment_text: '',
+        },
+      ]);
+
+      await informationExtraction.processResults({
+        params: { property_name: 'property1' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: false,
+        error_message: 'Issue calculation suggestion',
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'failed',
+        propertyName: 'property1',
+      });
+
+      expect(suggestions.length).toBe(1);
+      expect(suggestions[0]).toEqual(
+        expect.objectContaining({
+          entityId: 'A1',
+          language: 'en',
+          propertyName: 'property1',
+          suggestedValue: '',
+          segment: '',
+          status: 'failed',
+          error: 'Issue calculation suggestion',
+        })
+      );
+    });
+
+    it('should not store invalid suggestions for the field as ready', async () => {
       IXExternalService.setResults([
         {
           tenant: 'tenant1',
@@ -262,7 +301,54 @@ describe('InformationExtraction', () => {
       expect(suggestions.length).toBe(0);
     });
 
-    it('should store unconfigured languages as default language sugestion', async () => {
+    it('should store empty suggestions when they are of type text', async () => {
+      IXExternalService.setResults([
+        {
+          tenant: 'tenant1',
+          property_name: 'property1',
+          xml_file_name: 'documentA.xml',
+          text: '',
+          segment_text: '',
+        },
+        {
+          tenant: 'tenant1',
+          property_name: 'property4',
+          xml_file_name: 'documentA.xml',
+          text: '',
+          segment_text: '',
+        },
+      ]);
+
+      await informationExtraction.processResults({
+        params: { property_name: 'property1' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      await informationExtraction.processResults({
+        params: { property_name: 'property4' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestionsText = await IXSuggestionsModel.get({
+        status: 'ready',
+        propertyName: 'property1',
+      });
+      expect(suggestionsText.length).toBe(1);
+
+      const suggestionsMarkdown = await IXSuggestionsModel.get({
+        status: 'ready',
+        propertyName: 'property4',
+      });
+      expect(suggestionsMarkdown.length).toBe(1);
+    });
+
+    it('should store non-configured languages as default language suggestion', async () => {
       IXExternalService.setResults([
         {
           tenant: 'tenant1',

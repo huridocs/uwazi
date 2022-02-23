@@ -23,7 +23,7 @@ export interface ResultsMessage {
   data_url?: string;
   file_url?: string;
   success?: boolean;
-  error?: string;
+  error_message?: string;
 }
 /* eslint-enable camelcase */
 
@@ -121,14 +121,14 @@ export class TaskManager {
       })) as QueueMessage;
 
       if (message.id && this.service.processResults) {
-        const processedMessage = JSON.parse(message.message);
-
-        await this.service.processResults(processedMessage);
-
         await this.redisSMQ.deleteMessageAsync({
           qname: this.resultsQueue,
           id: message.id,
         });
+
+        const processedMessage = JSON.parse(message.message);
+
+        await this.service.processResults(processedMessage);
       }
     } catch (e) {
       handleError(e, { useContext: false });
