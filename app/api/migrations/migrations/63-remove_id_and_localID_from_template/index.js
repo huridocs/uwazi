@@ -15,13 +15,15 @@ export default {
 
     while (await cursor.hasNext()) {
       const template = await cursor.next();
-      const properties = template.properties.map(property => {
-        const sanitizedProperty = { ...property };
-        delete sanitizedProperty.id;
-        delete sanitizedProperty.localID;
-        return sanitizedProperty;
-      });
-      await db.collection('templates').updateOne({ _id: template._id }, { $set: { properties } });
+      if (template.properties && template.properties.length > 0) {
+        const properties = template.properties.map(property => {
+          const sanitizedProperty = { ...property };
+          delete sanitizedProperty.id;
+          delete sanitizedProperty.localID;
+          return sanitizedProperty;
+        });
+        await db.collection('templates').updateOne({ _id: template._id }, { $set: { properties } });
+      }
     }
   },
 };

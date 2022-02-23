@@ -133,6 +133,51 @@ const fixtures = {
         },
       ],
     },
+    {
+      _id: db.id(),
+      name: 'Template with no props',
+      commonProperties: [
+        {
+          _id: db.id(),
+          label: 'Title',
+          name: 'title',
+          isCommonProperty: true,
+          type: 'text',
+          prioritySorting: false,
+        },
+        {
+          _id: db.id(),
+          label: 'Date added',
+          name: 'creationDate',
+          isCommonProperty: true,
+          type: 'date',
+          prioritySorting: false,
+        },
+      ],
+    },
+    {
+      _id: db.id(),
+      name: 'template with empty props',
+      commonProperties: [
+        {
+          _id: db.id(),
+          label: 'Title',
+          name: 'title',
+          isCommonProperty: true,
+          type: 'text',
+          prioritySorting: false,
+        },
+        {
+          _id: db.id(),
+          label: 'Date added',
+          name: 'creationDate',
+          isCommonProperty: true,
+          type: 'date',
+          prioritySorting: false,
+        },
+      ],
+      properties: [],
+    },
   ],
 };
 
