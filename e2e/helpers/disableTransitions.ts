@@ -12,6 +12,10 @@ export default async () => {
           animation-duration: 0s !important;
           animation-play-state: paused !important;
           caret-color: transparent !important;
-      }`,
+      }
+      #nprogress {
+        visibility: hidden !important;
+      }
+      `,
   });
 };

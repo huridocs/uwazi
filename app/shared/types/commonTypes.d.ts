@@ -97,6 +97,7 @@ export interface LinkSchema {
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
+  attachment?: number;
   label?: string;
   suggestion_confidence?: number;
   suggestion_model?: string;

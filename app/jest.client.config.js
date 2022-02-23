@@ -4,6 +4,7 @@ const { defaults } = require('jest-config');
 module.exports = {
   name: 'client',
   displayName: 'Client',
+  testRunner: 'jasmine2',
   testMatch: ['**/react/**/specs/*spec.(j|t)s?(x)'],
   testPathIgnorePatterns: [],
   testEnvironment: 'node',

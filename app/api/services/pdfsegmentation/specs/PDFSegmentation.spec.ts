@@ -8,7 +8,7 @@ import {
   fixturesOtherFile,
   fixturesPdfNameA,
   fixturesPdfNameB,
-  fixturesTwelveFiles,
+  fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
 } from 'api/services/pdfsegmentation/specs/fixtures';
@@ -102,10 +102,10 @@ describe('PDFSegmentation', () => {
     );
   });
 
-  it('should send 10 pdfs to segment', async () => {
-    await fixturer.clearAllAndLoad(dbOne, fixturesTwelveFiles);
+  it('should send 50 pdfs to segment', async () => {
+    await fixturer.clearAllAndLoad(dbOne, fixturesOneHundredFiles);
     await segmentPdfs.segmentPdfs();
-    expect(request.uploadFile).toHaveBeenCalledTimes(10);
+    expect(request.uploadFile).toHaveBeenCalledTimes(50);
   });
 
   it('should send pdfs from different tenants with the information extraction on', async () => {

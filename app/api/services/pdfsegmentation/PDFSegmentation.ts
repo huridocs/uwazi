@@ -2,9 +2,8 @@ import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManag
 import { uploadsPath, fileFromReadStream, createDirIfNotExists, readFile } from 'api/files';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import filesModel from 'api/files/filesModel';
+import { filesModel } from 'api/files/filesModel';
 import path from 'path';
-import { FileType } from 'shared/types/fileType';
 import { Settings } from 'shared/types/settingsType';
 import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
@@ -12,6 +11,8 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import request from 'shared/JSONRequest';
 import { handleError } from 'api/utils';
 import { SegmentationModel } from './segmentationModel';
+import { SegmentationType } from 'shared/types/segmentationType';
+import { FileType } from 'shared/types/fileType';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';
@@ -22,7 +23,7 @@ class PDFSegmentation {
 
   features: Settings | undefined;
 
-  batchSize = 10;
+  batchSize = 50;
 
   constructor() {
     this.segmentationTaskManager = new TaskManager({
@@ -32,7 +33,7 @@ class PDFSegmentation {
   }
 
   segmentOnePdf = async (
-    file: FileType & { filename: string; _id: ObjectIdSchema },
+    file: { filename: string; _id: ObjectIdSchema },
     serviceUrl: string,
     tenant: string
   ) => {
@@ -67,33 +68,26 @@ class PDFSegmentation {
       status: processing ? 'processing' : 'failed',
     });
 
-  getFilesToSegment = async (): Promise<FileType & { filename: string; _id: ObjectIdSchema }[]> =>
-    filesModel.db.aggregate([
+  getFilesToSegment = async (): Promise<{ filename: string; _id: ObjectIdSchema }[]> => {
+    const segmentations = (await SegmentationModel.get(
+      { fileID: { $exists: true } },
+      'fileID'
+    )) as (SegmentationType & { fileID: string })[];
+
+    const segmentedFiles = segmentations.map(segmentation => segmentation.fileID);
+
+    const files = (await filesModel.get(
       {
-        $match: {
-          type: 'document',
-          filename: { $exists: true },
-        },
+        type: 'document',
+        filename: { $exists: true },
+        _id: { $nin: segmentedFiles },
       },
-      {
-        $lookup: {
-          from: 'segmentations',
-          localField: '_id',
-          foreignField: 'fileID',
-          as: 'segmentation',
-        },
-      },
-      {
-        $match: {
-          segmentation: {
-            $size: 0,
-          },
-        },
-      },
-      {
-        $limit: this.batchSize,
-      },
-    ]);
+      'filename',
+      { limit: this.batchSize }
+    )) as (FileType & { filename: string; _id: ObjectIdSchema })[];
+
+    return files.map(file => ({ _id: file._id, filename: file.filename }));
+  };
 
   segmentPdfs = async () => {
     const pendingTasks = await this.segmentationTaskManager.countPendingTasks();

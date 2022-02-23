@@ -27,11 +27,11 @@ describe('PDFUploadButton', () => {
     component.find('input').simulate('change', { target: { files } });
 
     expect(uploadActions.createDocument).toHaveBeenCalledWith({ title: 'Fighting crime 101' });
-    setImmediate(() => {
+    setTimeout(() => {
       expect(uploadActions.uploadDocument).toHaveBeenCalledWith('abc1', files[0]);
       expect(uploadActions.uploadDocument).toHaveBeenCalledWith('abc1', files[1]);
       expect(libraryActions.unselectAllDocuments).toHaveBeenCalled();
       done();
-    });
+    }, 0);
   });
 });

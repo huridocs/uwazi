@@ -79,38 +79,14 @@ const fixturesFiveFiles: DBFixture = {
   ],
 };
 
-const fixturesTwelveFiles: DBFixture = {
+const fixturesOneHundredFiles: DBFixture = {
   settings,
-  entities: [
-    factory.entity('A1', 'templateToSegmentA'),
-    factory.entity('A2', 'templateToSegmentA'),
-    factory.entity('A3', 'templateToSegmentA'),
-    factory.entity('A4', 'templateToSegmentA'),
-    factory.entity('A5', 'templateToSegmentA'),
-    factory.entity('A6', 'templateToSegmentA'),
-    factory.entity('A7', 'templateToSegmentA'),
-    factory.entity('A8', 'templateToSegmentA'),
-    factory.entity('A9', 'templateToSegmentA'),
-    factory.entity('A10', 'templateToSegmentA'),
-    factory.entity('A11', 'templateToSegmentA'),
-    factory.entity('A12', 'templateToSegmentA'),
-    factory.entity('A13', 'templateToSegmentA'),
-    factory.entity('A14', 'templateToSegmentA'),
-  ],
-  files: [
-    factory.file('F1', 'A1', 'document', fixturesPdfNameA),
-    factory.file('F2', 'A2', 'document', fixturesPdfNameA),
-    factory.file('F3', 'A3', 'document', fixturesPdfNameA),
-    factory.file('F4', 'A4', 'document', fixturesPdfNameA),
-    factory.file('F5', 'A5', 'document', fixturesPdfNameA),
-    factory.file('F6', 'A6', 'document', fixturesPdfNameA),
-    factory.file('F7', 'A7', 'document', fixturesPdfNameA),
-    factory.file('F8', 'A8', 'document', fixturesPdfNameA),
-    factory.file('F9', 'A9', 'document', fixturesPdfNameA),
-    factory.file('F10', 'A10', 'document', fixturesPdfNameA),
-    factory.file('F11', 'A11', 'document', fixturesPdfNameA),
-    factory.file('F12', 'A12', 'document', fixturesPdfNameA),
-  ],
+  entities: [...Array(100).keys()].map(x =>
+    factory.entity('A' + x.toString(), 'templateToSegmentA')
+  ),
+  files: [...Array(100).keys()].map(x =>
+    factory.file('F' + x.toString(), 'A' + x.toString(), 'document', fixturesPdfNameA)
+  ),
 };
 
 export {
@@ -118,7 +94,7 @@ export {
   fixturesPdfNameB,
   fixturesOneFile,
   fixturesOtherFile,
-  fixturesTwelveFiles,
+  fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
 };

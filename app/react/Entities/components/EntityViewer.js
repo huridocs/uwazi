@@ -32,7 +32,7 @@ import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
 
-export class EntityViewer extends Component {
+class EntityViewer extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -134,7 +134,7 @@ export class EntityViewer extends Component {
           <Tabs selectedTab={selectedTab}>
             {hasPageView && (
               <TabContent for="page">
-                <PageViewer />
+                <PageViewer setBrowserTitle={false} />
               </TabContent>
             )}
             <TabContent
@@ -335,7 +335,7 @@ const selectRelationTypes = createSelector(
   r => r.toJS()
 );
 
-export const mapStateToProps = state => {
+const mapStateToProps = state => {
   const entityTemplateId = state.entityView.entity && state.entityView.entity.get('template');
   const entityTemplate = state.templates.find(template => template.get('_id') === entityTemplateId);
   const templateWithPageView = entityTemplate.get('entityViewPage');
@@ -368,4 +368,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { EntityViewer, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

@@ -12,7 +12,7 @@ const settings = [
         templates: [
           {
             template: factory.id('templateToSegmentA'),
-            properties: ['property1', 'property2', 'property3'],
+            properties: ['property1', 'property2', 'property3', 'property4'],
           },
           {
             template: factory.id('templateToSegmentB'),
@@ -174,6 +174,7 @@ const fixtures: DBFixture = {
   ],
   ixmodels: [
     { propertyName: 'property1', creationDate: 200, status: 'ready' },
+    { propertyName: 'property4', creationDate: 200, status: 'ready' },
     { propertyName: 'property2', creationDate: 200, status: 'ready' },
   ],
   templates: [
@@ -181,6 +182,7 @@ const fixtures: DBFixture = {
       factory.property('property1', 'text'),
       factory.property('property2', 'date'),
       factory.property('property3', 'numeric'),
+      factory.property('property4', 'markdown'),
     ]),
     factory.template('templateToSegmentB', [factory.property('property1', 'text')]),
   ],
