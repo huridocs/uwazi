@@ -257,6 +257,7 @@ describe('MetadataTemplate', () => {
             context.confirm.calls.mostRecent().args[0].accept();
             expect(props.saveTemplate).toHaveBeenCalledWith({
               _id: templateWithId._id,
+              commonProperties: templateWithId.commonProperties,
               properties: templateWithId.properties,
               reindex: false,
             });
