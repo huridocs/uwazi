@@ -119,7 +119,14 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     confirmationKey: 'templateConflict' | 'largeNumberOfEntities'
   ) {
     return this.context.confirm({
-      accept: () => this.props.saveTemplate({ ...template, reindex: true }),
+      accept: () => {
+        try {
+          this.props.saveTemplate({ ...template, reindex: confirmationKey === 'templateConflict' });
+        } catch (e) {
+          if (e.status === 409) return this.confirmAndSaveTemplate(template, 'templateConflict');
+        }
+      },
+
       cancel: () => {},
       title: t('System', this.confirmation[confirmationKey].title, null, false),
       message: t(
