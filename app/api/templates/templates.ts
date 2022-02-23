@@ -132,7 +132,12 @@ const _save = async (template: TemplateSchema) => {
 };
 
 export default {
-  async save(template: TemplateSchema, language: string, reindex = true) {
+  async save(
+    template: TemplateSchema,
+    language: string,
+    reindex = true,
+    templateSctrutureChanges = true
+  ) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = await generateNamesAndIds(template.properties);
@@ -146,7 +151,9 @@ export default {
       await updateMapping([template]);
     }
 
-    return template._id ? this._update(template, language, reindex) : _save(template);
+    return template._id
+      ? this._update(template, language, reindex, templateSctrutureChanges)
+      : _save(template);
   },
 
   async swapNamesValidation(template: TemplateSchema) {
@@ -167,9 +174,14 @@ export default {
     });
   },
 
-  async _update(template: TemplateSchema, language: string, reindex = true) {
+  async _update(
+    template: TemplateSchema,
+    language: string,
+    reindex = true,
+    templateSctrutureChanges = true
+  ) {
     const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
-    if (reindex) {
+    if (templateSctrutureChanges) {
       await updateTranslation(currentTemplate, template);
       await removeExcludedPropertiesValues(currentTemplate, template);
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
@@ -177,7 +189,7 @@ export default {
 
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
-    if (reindex) {
+    if (templateSctrutureChanges) {
       await entities.updateMetadataProperties(template, currentTemplate, language, {
         reindex,
         generatedIdAdded,
