@@ -5,7 +5,6 @@ import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
 import { I18NLink, Translate } from 'app/I18N';
 import { socket } from 'app/socket';
-import { SidePanel } from 'app/Layout';
 import { store } from 'app/store';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -16,7 +15,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
-
+import { PDFSidePanel } from './PDFSidePanel';
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
@@ -30,7 +29,8 @@ export const EntitySuggestions = ({
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
-  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [sidePanelOpened, setSidePanelOpened] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState({});
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
     if (propertyName === reviewedProperty.name) {
@@ -64,17 +64,18 @@ export const EntitySuggestions = ({
 
   // TEST!!!
 
-  const openPDFSidePanel = () => {
-    setSidePanelOpen(true);
+  const showPDF = (row: Row<EntitySuggestionType>) => {
+    setSelectedRowData(row.original);
+    setSidePanelOpened(true);
   };
 
   const closePDFSidePanel = () => {
-    setSidePanelOpen(false);
+    setSidePanelOpened(false);
   };
 
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
     <>
-      <button type="button" onClick={() => openPDFSidePanel()}>
+      <button type="button" onClick={() => showPDF(row)}>
         PDF
       </button>
       {row.original.segment}
@@ -224,29 +225,11 @@ export const EntitySuggestions = ({
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
       </div>
-      <SidePanel className="wide" open={sidePanelOpen}>
-        <>
-          <div className="sidepanel-header buttons-align-right">
-            <button
-              type="button"
-              className="closeSidepanel close-modal"
-              onClick={closePDFSidePanel}
-              aria-label="Close side panel"
-            >
-              <Icon icon="times" />
-            </button>
-            <div className="button-list">
-              <button type="button" className="btn btn-default">
-                <Translate>Cancel</Translate>
-              </button>
-              <button type="submit" className="btn btn-success">
-                <Translate>Save</Translate>
-              </button>
-            </div>
-          </div>
-          Aqui texto
-        </>
-      </SidePanel>
+      <PDFSidePanel
+        open={sidePanelOpened}
+        closeSidePanel={closePDFSidePanel}
+        data={selectedRowData}
+      />
     </>
   );
 };
