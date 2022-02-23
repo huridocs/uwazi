@@ -50,11 +50,20 @@ const updateTranslation = (current, thesauri) => {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
 
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
+    prop: 'label',
+    outKey: 'label',
+    filterBy: 'id',
+  });
   if (current.name !== thesauri.name) {
     updatedLabels[current.name] = thesauri.name;
   }
-  const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  const deletedPropertiesByLabel = getDeletedProperties(
+    currentProperties,
+    newProperties,
+    'id',
+    'label'
+  );
   const context = thesauriToTranslatioNContext(thesauri);
 
   context[thesauri.name] = thesauri.name;
@@ -71,14 +80,18 @@ const updateTranslation = (current, thesauri) => {
 async function updateOptionsInEntities(current, thesauri) {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
-  const deletedPropertiesById = getDeletedProperties(currentProperties, newProperties, 'id');
+  const deletedPropertiesById = getDeletedProperties(currentProperties, newProperties, 'id', 'id');
   await Promise.all(
     deletedPropertiesById.map(deletedId =>
       entities.deleteThesaurusFromMetadata(deletedId, thesauri._id)
     )
   );
 
-  const updatedIds = getUpdatedNames(currentProperties, newProperties, 'label', 'id');
+  const updatedIds = getUpdatedNames(currentProperties, newProperties, {
+    prop: 'label',
+    outKey: 'id',
+    filterBy: 'id',
+  });
   const toUpdate = [];
 
   Object.keys(updatedIds).forEach(id => {

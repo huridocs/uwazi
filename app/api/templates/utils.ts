@@ -103,13 +103,20 @@ const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
 function getUpdatedNames(
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[],
-  prop: 'name' | 'label' = 'name',
-  outKey: 'name' | 'label' = prop
+  {
+    prop,
+    outKey,
+    filterBy,
+  }: {
+    prop: 'name' | 'label';
+    outKey: 'name' | 'label' | 'id';
+    filterBy: 'id' | '_id';
+  }
 ) {
   const propertiesWithNewName: { [k: string]: string | undefined } = {};
   flattenProperties(oldProperties).forEach(property => {
-    const newProperty = flattenProperties(newProperties).find(p =>
-      property.id ? p.id === property.id : p._id?.toString() === property._id?.toString()
+    const newProperty = flattenProperties(newProperties).find(
+      p => p[filterBy]?.toString() === property[filterBy]?.toString()
     );
     if (newProperty && newProperty[prop] !== property[prop]) {
       const key = property[outKey];
@@ -123,18 +130,18 @@ function getUpdatedNames(
 }
 
 const notIncludedIn =
-  (propertyCollection: PropertyOrThesaurusSchema[]) => (property: PropertyOrThesaurusSchema) =>
-    !propertyCollection.find(p =>
-      p.id ? p.id === property.id : p._id?.toString() === property._id?.toString()
-    );
+  (propertyCollection: PropertyOrThesaurusSchema[], filterBy: 'id' | '_id') =>
+  (property: PropertyOrThesaurusSchema) =>
+    !propertyCollection.find(p => p[filterBy]?.toString() === property[filterBy]?.toString());
 
 function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[],
-  prop: 'name' | 'label' = 'name'
+  filterBy: 'id' | '_id',
+  prop: 'name' | 'label' | 'id' = 'name'
 ) {
   return flattenProperties(oldProperties)
-    .filter(notIncludedIn(flattenProperties(newProperties)))
+    .filter(notIncludedIn(flattenProperties(newProperties), filterBy))
     .map(property => property[prop]);
 }
 

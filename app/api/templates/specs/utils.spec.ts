@@ -113,7 +113,11 @@ describe('templates utils', () => {
         { _id: prop2Id, name: 'my_fancy_new_name', label: 'label', type: 'text' },
       ];
 
-      const result = getUpdatedNames(oldProperties, newProperties);
+      const result = getUpdatedNames(oldProperties, newProperties, {
+        prop: 'name',
+        outKey: 'name',
+        filterBy: '_id',
+      });
       expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
     });
 
@@ -141,7 +145,11 @@ describe('templates utils', () => {
         },
       ];
 
-      const result = getUpdatedNames(oldProperties, newProperties);
+      const result = getUpdatedNames(oldProperties, newProperties, {
+        prop: 'name',
+        outKey: 'name',
+        filterBy: 'id',
+      });
       expect(result).toEqual({ look_at_me: 'I_changed' });
     });
   });
@@ -157,7 +165,7 @@ describe('templates utils', () => {
         { _id: propId, name: 'I_just_changed_my_name', label: 'label', type: 'text' },
       ];
 
-      const result = getDeletedProperties(oldProperties, changedProperties);
+      const result = getDeletedProperties(oldProperties, changedProperties, '_id');
       expect(result).toEqual(['boromir']);
     });
 
@@ -183,7 +191,7 @@ describe('templates utils', () => {
         },
       ];
 
-      const result = getDeletedProperties(oldProperties, newProperties);
+      const result = getDeletedProperties(oldProperties, newProperties, 'id');
       expect(result).toEqual(['boromir']);
     });
   });

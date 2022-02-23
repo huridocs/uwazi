@@ -58,11 +58,20 @@ const addTemplateTranslation = async (template: TemplateSchema) =>
 const updateTranslation = async (currentTemplate: TemplateSchema, template: TemplateSchema) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties || [];
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
+    prop: 'label',
+    outKey: 'label',
+    filterBy: '_id',
+  });
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
-  const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  const deletedPropertiesByLabel = getDeletedProperties(
+    currentProperties,
+    newProperties,
+    '_id',
+    'label'
+  );
   deletedPropertiesByLabel.push(
     ...getRenamedTitle(
       ensure<PropertySchema[]>(currentTemplate.commonProperties),
