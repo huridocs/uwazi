@@ -87,6 +87,7 @@ export interface Settings {
     lat: number;
     lon: number;
   }[];
+  tilesProvider?: string;
 }
 
 export type SettingsSyncRelationtypesSchema = string[];

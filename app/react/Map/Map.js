@@ -426,7 +426,6 @@ export default class Map extends Component {
             {...settings}
             dragRotate
             mapStyle={this.mapStyle}
-            token={this.mapboxToken}
             onViewportChange={this._onViewportChange}
             onViewStateChange={this._onViewStateChange}
             onClick={this.onClick}

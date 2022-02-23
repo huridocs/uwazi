@@ -27,3 +27,14 @@
     cursor: pointer;
   }
 }
+
+#map-container {
+  position: relative;
+}
+
+#leafletmap {
+  position: relative;
+  top: 0;
+  bottom: 0;
+  height: 600px;
+}

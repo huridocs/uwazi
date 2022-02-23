@@ -226,6 +226,7 @@ const settingsSchema = {
       },
     },
     mapStartingPoint: geolocationSchema,
+    tilesProvider: { type: 'string' },
   },
 };
 
