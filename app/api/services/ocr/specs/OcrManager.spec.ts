@@ -313,7 +313,7 @@ describe('OcrManager', () => {
       await mocks.taskManagerMock.trigger({
         ...mockedMessageFromRedis,
         success: false,
-        error: 'some error message',
+        error_message: 'some error message',
       });
 
       const matchingRecords = await OcrModel.get({

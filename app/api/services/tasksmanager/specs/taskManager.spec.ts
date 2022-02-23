@@ -126,7 +126,7 @@ describe('taskManager', () => {
       expect(queueAttributes!.msgs).toBe(0);
     });
 
-    it('should handle errors during results processing and keep the message for tracking', async () => {
+    it('should handle errors during results processing and delete the message', async () => {
       const task = {
         task: 'Tofu',
         tenant: 'Gabo',
@@ -145,7 +145,7 @@ describe('taskManager', () => {
       const queueAttributes = await taskManager?.redisSMQ!.getQueueAttributesAsync({
         qname: taskManager.resultsQueue,
       });
-      expect(queueAttributes!.msgs).toBe(1);
+      expect(queueAttributes!.msgs).toBe(0);
     });
   });
 
