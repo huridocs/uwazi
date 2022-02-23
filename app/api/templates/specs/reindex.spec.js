@@ -3,7 +3,7 @@ import { search } from 'api/search';
 import { propertyTypes } from 'shared/propertyTypes';
 import templates from '../templates';
 import { checkIfReindex } from '../reindex';
-import fixtures, { templateWithContents } from './fixtures/fixtures';
+import fixtures, { templateWithContents, pageSharedId } from './fixtures/fixtures';
 
 const getAndUpdateTemplate = async props => {
   const [template] = await templates.get({ _id: templateWithContents });
@@ -26,6 +26,15 @@ describe('reindex', () => {
   describe('Not Reindex', () => {
     it('should not reindex if name has changed', async () => {
       const { reindex, template } = await getAndUpdateTemplate({ name: 'Updated name' });
+
+      expect(reindex).toEqual(false);
+
+      await templates.save(template, 'en', reindex);
+      expect(search.indexEntities).not.toHaveBeenCalled();
+    });
+
+    it('should not reindex if entityViewPage has changed', async () => {
+      const { reindex, template } = await getAndUpdateTemplate({ entityViewPage: pageSharedId });
 
       expect(reindex).toEqual(false);
 

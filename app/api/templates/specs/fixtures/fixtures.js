@@ -15,6 +15,7 @@ const propertyA = db.id();
 const propertyB = db.id();
 const propertyC = db.id();
 const propertyD = db.id();
+const pageSharedId = 'pageid';
 
 export default {
   templates: [
@@ -228,6 +229,19 @@ export default {
       extractedMetadata: [],
     },
   ],
+  pages: [
+    {
+      _id: db.id(),
+      title: 'Main page',
+      metadata: {
+        content: '## Page\nWelcome to the main page',
+      },
+      creationDate: 1643973497164,
+      language: 'en',
+      sharedId: pageSharedId,
+      entityView: true,
+    },
+  ],
 };
 
 export {
@@ -245,4 +259,5 @@ export {
   propertyB,
   propertyC,
   propertyD,
+  pageSharedId,
 };
