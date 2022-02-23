@@ -205,7 +205,7 @@
   box-shadow: none;
 }
 
-input[type=number].form-control {
+input[type='number'].form-control {
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     margin: 0;
@@ -267,6 +267,10 @@ input[type=number].form-control {
   .form-control {
     border-color: $c-danger;
   }
+  .error-message {
+    color: $c-danger;
+  }
+
   .error {
     display: block;
     position: absolute;

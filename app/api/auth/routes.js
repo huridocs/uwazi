@@ -25,7 +25,10 @@ export default app => {
     session({
       secret: app.get('env') === 'production' ? config.userSessionSecret : 'harvey&lola',
       store: new MongoStore({
-        mongooseConnection: DB.connectionForDB(config.SHARED_DB),
+        mongooseConnection: DB.connectionForDB(config.SHARED_DB, {
+          useCache: true,
+          noListener: false,
+        }),
       }),
       resave: false,
       saveUninitialized: false,

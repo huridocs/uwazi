@@ -18,6 +18,7 @@ import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
+import Error from 'api/utils/Error';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -47,6 +48,9 @@ if (config.sentry.dsn) {
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
+      new Tracing.Integrations.Mongo({
+        useMongoose: true,
+      }),
     ],
     tracesSampleRate: config.sentry.tracesSampleRate,
   });
@@ -115,7 +119,13 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   apiRoutes(app, http);
   serverRenderingRoutes(app);
   if (config.sentry.dsn) {
-    app.use(Sentry.Handlers.errorHandler());
+    app.use(
+      Sentry.Handlers.errorHandler({
+        shouldHandleError(error) {
+          return error instanceof Error || error.code >= 500;
+        },
+      })
+    );
   }
   app.use(errorHandlingMiddleware);
 
