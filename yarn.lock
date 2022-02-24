@@ -148,13 +148,13 @@
     "@babel/helper-annotate-as-pure" "^7.16.7"
     "@babel/types" "^7.16.7"
 
-"@babel/helper-call-delegate@^7.11.4":
-  version "7.11.4"
-  resolved "https://registry.npmjs.org/@babel/helper-call-delegate/-/helper-call-delegate-7.11.4.tgz"
-  integrity sha512-JionsxeZH+NQPj7Z2xZiJj/b5Duo9m3qz7SjTgQS4T/p2QDbzWXjG15DbmAogbnE3CMCi9UeeplaB5UY4gUejg==
+"@babel/helper-call-delegate@^7.12.13":
+  version "7.12.13"
+  resolved "https://registry.yarnpkg.com/@babel/helper-call-delegate/-/helper-call-delegate-7.12.13.tgz#119ef367451f90bed006c685816ba60fc33fee78"
+  integrity sha512-K1kF0RXK/GpdS9OZDlBllG0+RQQtyzG/TC+nk0VkrUry4l4Xh2T7HdDsDOVlXQY/KcqvE/JQ84pKjKucdrg3FQ==
   dependencies:
-    "@babel/helper-hoist-variables" "^7.10.4"
-    "@babel/types" "^7.10.4"
+    "@babel/helper-hoist-variables" "^7.12.13"
+    "@babel/types" "^7.12.13"
 
 "@babel/helper-compilation-targets@^7.13.0", "@babel/helper-compilation-targets@^7.16.7":
   version "7.16.7"
@@ -231,7 +231,7 @@
   dependencies:
     "@babel/types" "^7.16.7"
 
-"@babel/helper-hoist-variables@^7.10.4", "@babel/helper-hoist-variables@^7.16.7":
+"@babel/helper-hoist-variables@^7.12.13", "@babel/helper-hoist-variables@^7.16.7":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/helper-hoist-variables/-/helper-hoist-variables-7.16.7.tgz#86bcb19a77a509c7b77d0e22323ef588fa58c246"
   integrity sha512-m04d/0Op34H5v7pbZw6pSKP7weA6lsMvfiIAMeIvkY/R4xQtBSMFEigu9QTZ2qB/9l22vsxtM8a+Q8CzD255fg==
@@ -1119,7 +1119,7 @@
     debug "^4.1.0"
     globals "^11.1.0"
 
-"@babel/types@^7.0.0", "@babel/types@^7.10.4", "@babel/types@^7.16.0", "@babel/types@^7.16.7", "@babel/types@^7.16.8", "@babel/types@^7.17.0", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.0", "@babel/types@^7.4.4":
+"@babel/types@^7.0.0", "@babel/types@^7.12.13", "@babel/types@^7.16.0", "@babel/types@^7.16.7", "@babel/types@^7.16.8", "@babel/types@^7.17.0", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.0", "@babel/types@^7.4.4":
   version "7.17.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.17.0.tgz#a826e368bccb6b3d84acd76acad5c0d87342390b"
   integrity sha512-TmKSNO4D5rzhL5bjWFcVHHLETzfQ/AmbKpKPOSjlP0WoHZ6L911fgoOKY4Alp/emzG4cHJdyN49zpgkbXFEHHw==
