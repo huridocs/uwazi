@@ -2,13 +2,15 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore } from 'app/istore';
 import { LMap, RMap } from 'app/Map/index';
+import { TemplateSchema } from 'shared/types/templateType';
 
 interface MapComponentProps {
   onClick: () => {};
 }
 
-const mapStateToProps = ({ settings }: IStore) => ({
+const mapStateToProps = ({ settings, templates }: IStore) => ({
   collectionSettings: settings.collection,
+  templates,
 });
 
 const connector = connect(mapStateToProps);
@@ -16,11 +18,25 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = MapComponentProps & mappedProps;
 
-const MapComponent = ({ collectionSettings, ...props }: ComponentProps) => {
+const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProps) => {
   const startingPoint = collectionSettings?.get('mapStartingPoint')?.toJS();
   const mapProvider = collectionSettings?.get('tilesProvider') || 'google';
   const token = collectionSettings?.get('mapApiKey');
-  const mapProps = { ...props, startingPoint, mapProvider, token };
+  const templatesInfo = templates.reduce(
+    (info, t) => ({
+      ...info,
+      ...(t
+        ? {
+            [t.get('_id')]: {
+              color: t.get('color'),
+              name: t.get('name'),
+            },
+          }
+        : {}),
+    }),
+    {}
+  );
+  const mapProps = { ...props, startingPoint, mapProvider, token, templatesInfo };
   return mapProvider === 'openmaptiles' ? <RMap {...mapProps} /> : <LMap {...mapProps} />;
 };
 

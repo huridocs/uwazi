@@ -14,6 +14,8 @@ interface LMapProps {
   showControls: boolean;
   mapProvider: string;
   startingPoint: GeolocationSchema;
+  renderPopupInfo?: (marker: any) => any;
+  templatesInfo: {};
 }
 
 class DataMarker extends L.Marker {
@@ -43,8 +45,11 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       [markerPoint.latlng.lat, markerPoint.latlng.lng],
       markerPoint.properties
     );
-    if (markerPoint.properties?.entity?.title) {
-      marker.bindTooltip(markerPoint.properties?.entity?.title);
+    if (props.renderPopupInfo && marker.properties.entity) {
+      const templateInfo = props.templatesInfo[marker.properties.entity.template];
+      const info = `<div><span className='btn-color' style={{ backgroundColor: ${templateInfo.color}}}>${templateInfo.name}</span>
+                    &nbsp;${marker.properties.entity.title}</div>`;
+      marker.bindTooltip(info);
     }
     marker.addTo(markerGroup);
   };
@@ -68,7 +73,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
     if (pointMarkers.length) {
       map.fitBounds(markerGroup.getBounds(), { maxZoom: 6 });
     }
-    map.addLayer(markerGroup);
+    markerGroup.addTo(map);
   };
 
   const initMap = () => {
