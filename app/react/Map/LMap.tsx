@@ -1,29 +1,32 @@
 import React, { useEffect } from 'react';
-import L from 'leaflet';
+import L, { latLng } from 'leaflet';
 import 'leaflet.markercluster';
 import { getMapProvider } from 'app/Map/TileProviderFactory';
+import { GeolocationSchema } from 'shared/types/commonTypes';
 
 interface LMapProps {
   markers: { latitude: number; longitude: number; properties: { entity?: { title: string } } }[];
   height: number;
   clickOnMarker: (marker: DataMarker) => {};
   clickOnCluster: (cluster: DataMarker[]) => {};
-  onClick: () => {};
+  onClick: (event: {}) => {};
   showControls: boolean;
   mapProvider: string;
+  startingPoint: GeolocationSchema;
 }
 
 class DataMarker extends L.Marker {
   properties: any;
 
-  constructor(latLng: L.LatLngExpression, properties: any, options?: L.MarkerOptions) {
-    super(latLng, options);
+  constructor(latLngExpression: L.LatLngExpression, properties: any, options?: L.MarkerOptions) {
+    super(latLngExpression, options);
     this.properties = properties;
   }
 }
 
-const LMap = (props: LMapProps) => {
-  let map: L.Map | L.LayerGroup;
+const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
+  let map: L.Map;
+  let markerGroup: L.MarkerClusterGroup;
 
   const clickOnClusterHandler = (cluster: any) => {
     props.clickOnCluster(cluster.layer.getAllChildMarkers());
@@ -33,36 +36,62 @@ const LMap = (props: LMapProps) => {
     props.clickOnMarker(marker.layer);
   };
 
-  useEffect(() => {
-    if (map) return;
-    try {
-      const { layers, baseMaps } = getMapProvider(props.mapProvider);
-      map = L.map('leafletmap', { center: [46, 6], zoom: 6 });
-      L.control.layers(baseMaps).addTo(map);
-      layers[0].addTo(map);
-      const marketPoints = props.markers || [];
-      if (!marketPoints.length) {
-        marketPoints.push({ latitude: 46, longitude: 6, properties: {} });
-      }
-      const markerGroup = L.markerClusterGroup();
-      marketPoints.forEach(markerPoint => {
-        const marker = new DataMarker(
-          [markerPoint.latitude, markerPoint.longitude],
-          markerPoint.properties
-        );
-        if (markerPoint.properties?.entity?.title) {
-          marker.bindTooltip(markerPoint.properties?.entity?.title);
-        }
-        markerGroup.addLayer(marker);
-      });
-      markerGroup.on('clusterclick', clickOnClusterHandler);
-      markerGroup.on('click', clickOnMarkerHandler);
-      map.on('click', props.onClick);
-      map.addLayer(markerGroup);
-      map.fitBounds(markerGroup.getBounds());
-    } catch (e) {
-      console.log(e);
+  const addClusterMarker = (markerPoint: any) => {
+    const marker = new DataMarker(
+      [markerPoint.latlng.lat, markerPoint.latlng.lng],
+      markerPoint.properties
+    );
+    if (markerPoint.properties?.entity?.title) {
+      marker.bindTooltip(markerPoint.properties?.entity?.title);
     }
+    markerGroup.addLayer(marker);
+  };
+
+  const clickHandler = (markerPoint: any) => {
+    if (!props.onClick) return;
+    markerGroup.clearLayers();
+    addClusterMarker(markerPoint);
+    const event = { lngLat: [markerPoint.latlng.lng, markerPoint.latlng.lat] };
+    props.onClick(event);
+  };
+
+  const initMarkers = () => {
+    const markers = pointMarkers.map(pointMarker => ({
+      latlng: latLng(pointMarker.latitude, pointMarker.longitude),
+    }));
+    markers.forEach(marker => addClusterMarker(marker));
+    markerGroup.on('clusterclick', clickOnClusterHandler);
+    markerGroup.on('click', clickOnMarkerHandler);
+    if (pointMarkers.length) {
+      map.fitBounds(markerGroup.getBounds(), { maxZoom: 6 });
+    }
+    map.addLayer(markerGroup);
+  };
+
+  const initMap = () => {
+    const { layers, baseMaps } = getMapProvider(props.mapProvider);
+    map = L.map('leafletmap', {
+      center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
+      zoom: 6,
+      maxZoom: 20,
+    });
+    markerGroup = L.markerClusterGroup();
+    initMarkers();
+    L.control.layers(baseMaps).addTo(map);
+    layers[0].addTo(map);
+    map.on('click', clickHandler);
+  };
+
+  useEffect(() => {
+    if (!map) {
+      const container = L.DomUtil.get('leafletmap');
+      if (container != null) {
+        // @ts-ignore
+        container._leaflet_id = null;
+      }
+    }
+
+    initMap();
   }, []);
 
   return (
