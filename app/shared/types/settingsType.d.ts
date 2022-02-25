@@ -53,7 +53,7 @@ export interface Settings {
         [k: string]: unknown | undefined;
       };
   customCSS?: string;
-  mapTilerKey?: string;
+  mapApiKey?: string;
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema;

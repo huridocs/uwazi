@@ -127,7 +127,6 @@ function setDefaults(storedSettings: Settings[]) {
   const [settings] = storedSettings;
   if (!settings) return {};
 
-  settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
   settings.mapStartingPoint =
     settings.mapStartingPoint && settings.mapStartingPoint.length
       ? settings.mapStartingPoint

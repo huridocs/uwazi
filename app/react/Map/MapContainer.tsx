@@ -19,7 +19,7 @@ type ComponentProps = MapComponentProps & mappedProps;
 const MapComponent = ({ collectionSettings, ...props }: ComponentProps) => {
   const startingPoint = collectionSettings?.get('mapStartingPoint')?.get(0)?.toJS();
   const mapProvider = collectionSettings?.get('tilesProvider') || 'google';
-  const token = collectionSettings?.get('mapTilerKey');
+  const token = collectionSettings?.get('mapApiKey');
   const mapProps = { ...props, startingPoint, mapProvider, token };
   return mapProvider === 'openmaptiles' ? <RMap {...mapProps} /> : <LMap {...mapProps} />;
 };
