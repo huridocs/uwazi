@@ -15,8 +15,8 @@ const reindexAllTemplates = async () => {
 };
 
 const saveTemplate = async (template: TemplateSchema, language: string, fullReindex?: boolean) => {
-  const reindex = fullReindex ? false : await checkIfReindex(template);
-  return templates.save(template, language, reindex);
+  const templateSctrutureChanges = await checkIfReindex(template);
+  return templates.save(template, language, !fullReindex, templateSctrutureChanges);
 };
 
 const prepareRequest = async (body: TemplateSchema & { reindex?: boolean }) => {
