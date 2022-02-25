@@ -1,6 +1,10 @@
 import entities from 'api/entities';
 import db from 'api/utils/testing_db';
-import { fixtures, templateId } from 'api/templates/specs/generatedIdPropertyAutoFillerFixtures';
+import {
+  fixtures,
+  templateId,
+  textPropertyId,
+} from 'api/templates/specs/generatedIdPropertyAutoFillerFixtures';
 import { unique } from 'api/utils/filters';
 import { EntitySchema } from 'shared/types/entityType';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -24,9 +28,9 @@ describe('generatedId property auto filler', () => {
       const templateToUpdate: TemplateSchema = {
         _id: templateId,
         name: 'template',
-        commonProperties: [{ id: 'title', name: 'title', label: 'title', type: 'text' }],
+        commonProperties: [{ name: 'title', label: 'title', type: 'text' }],
         properties: [
-          { id: 'text', name: 'text', type: 'text', label: 'Text' },
+          { _id: textPropertyId, name: 'text', type: 'text', label: 'Text' },
           { name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' },
           { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
         ],

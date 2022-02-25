@@ -6,7 +6,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
-import { generateNamesAndIds } from './utils';
+import { generateNames } from './utils';
 import { checkIfReindex } from './reindex';
 
 const reindexAllTemplates = async () => {
@@ -25,7 +25,7 @@ const prepareRequest = async (body: TemplateSchema & { reindex?: boolean }) => {
   delete request.reindex;
   const template = { ...request };
 
-  const templateProperties = await generateNamesAndIds(template.properties);
+  const templateProperties = await generateNames(template.properties || []);
   const { valid, error } = await checkMapping({ ...template, properties: templateProperties });
 
   return { template, fullReindex, valid, error };

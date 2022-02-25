@@ -24,9 +24,9 @@ export default {
       commonProperties: [{ name: 'title', label: 'title', type: 'text' }],
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.numeric,
           label: 'براي',
-          id: '1',
           name: templateUtils.safeName('براي'),
         },
       ],
@@ -37,8 +37,8 @@ export default {
       commonProperties: [{ name: 'title', label: 'title', type: 'text' }],
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.text,
-          id: '2',
           label: 'país',
           name: 'pa_s',
         },

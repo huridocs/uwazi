@@ -28,7 +28,6 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: propertyTypes.text }],
       properties: [
         {
-          id: '1',
           type: propertyTypes.relationship,
           name: 'inherit',
           label: 'Inherit',
