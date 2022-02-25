@@ -3,7 +3,6 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 const templateCommonProperties = [
   {
     _id: '6193bf8c86a5e87060962287',
-    localID: 'commonTitle',
     label: 'Title',
     name: 'title',
     isCommonProperty: true,
@@ -13,7 +12,6 @@ const templateCommonProperties = [
   },
   {
     _id: '6193bf8c86a5e87060962288',
-    localID: 'commonCreationDate',
     label: 'Date added',
     name: 'creationDate',
     isCommonProperty: true,
@@ -22,7 +20,6 @@ const templateCommonProperties = [
   },
   {
     _id: '6193bf8c86a5e87060962289',
-    localID: 'commonEditDate',
     label: 'Date modified',
     name: 'editDate',
     isCommonProperty: true,
@@ -73,7 +70,6 @@ const fixtures = {
       properties: [
         {
           _id: 'zxc',
-          id: 'select_property',
           label: 'select_property',
           name: 'select_property',
           type: 'select',

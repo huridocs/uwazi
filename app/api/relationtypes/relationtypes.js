@@ -1,7 +1,7 @@
 import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
 
-import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from '../templates/utils';
+import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
 
 const checkDuplicated = relationtype =>
@@ -36,11 +36,20 @@ const updateTranslation = (currentTemplate, template) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties;
 
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
+    prop: 'label',
+    outKey: 'label',
+    filterBy: '_id',
+  });
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
-  const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  const deletedPropertiesByLabel = getDeletedProperties(
+    currentProperties,
+    newProperties,
+    '_id',
+    'label'
+  );
   const context = template.properties.reduce((ctx, prop) => {
     ctx[prop.label] = prop.label;
     return ctx;
@@ -76,7 +85,7 @@ export default {
   },
 
   async save(relationtype) {
-    relationtype.properties = await generateNamesAndIds(relationtype.properties || []);
+    relationtype.properties = await generateNames(relationtype.properties || []);
 
     return checkDuplicated(relationtype).then(() => {
       if (!relationtype._id) {

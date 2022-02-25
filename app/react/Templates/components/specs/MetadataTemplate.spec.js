@@ -226,6 +226,7 @@ describe('MetadataTemplate', () => {
       const templateWithId = {
         _id: 'template1',
         properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+        commonProperties: [{ title: 'Title' }],
       };
 
       async function submitTemplate(templateToSubmit, entityCount = 100) {
@@ -256,6 +257,7 @@ describe('MetadataTemplate', () => {
             context.confirm.calls.mostRecent().args[0].accept();
             expect(props.saveTemplate).toHaveBeenCalledWith({
               _id: templateWithId._id,
+              commonProperties: templateWithId.commonProperties,
               properties: templateWithId.properties,
               reindex: false,
             });

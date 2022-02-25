@@ -19,6 +19,7 @@ import fixtures, {
   batmanFinishesId,
   templateId,
   templateChangingNames,
+  templateChangingNamesProps,
   syncPropertiesEntityId,
   templateWithEntityAsThesauri,
   docId1,
@@ -1024,10 +1025,9 @@ describe('entities', () => {
       currentTemplate = {
         _id: templateChangingNames,
         properties: [
-          { id: '1', type: 'text', name: 'property1' },
-          { id: '2', type: 'text', name: 'property2' },
-          { id: '3', type: 'text', name: 'property3' },
-          { type: 'text', label: 'new property' },
+          { _id: templateChangingNamesProps.prop1id, type: 'text', name: 'property1' },
+          { _id: templateChangingNamesProps.prop2id, type: 'text', name: 'property2' },
+          { _id: templateChangingNamesProps.prop3id, type: 'text', name: 'property3' },
         ],
       };
     });
@@ -1048,9 +1048,24 @@ describe('entities', () => {
       const template = {
         _id: templateChangingNames,
         properties: [
-          { id: '1', type: 'text', name: 'property1', label: 'new name1' },
-          { id: '2', type: 'text', name: 'property2', label: 'new name2' },
-          { id: '3', type: 'text', name: 'property3', label: 'property3' },
+          {
+            _id: templateChangingNamesProps.prop1id,
+            type: 'text',
+            name: 'property1',
+            label: 'new name1',
+          },
+          {
+            _id: templateChangingNamesProps.prop2id,
+            type: 'text',
+            name: 'property2',
+            label: 'new name2',
+          },
+          {
+            _id: templateChangingNamesProps.prop3id,
+            type: 'text',
+            name: 'property3',
+            label: 'property3',
+          },
         ],
       };
 
@@ -1081,7 +1096,14 @@ describe('entities', () => {
     it('should delete and rename properties passed', done => {
       const template = {
         _id: templateChangingNames,
-        properties: [{ id: '2', type: 'text', name: 'property2', label: 'new name' }],
+        properties: [
+          {
+            _id: templateChangingNamesProps.prop2id,
+            type: 'text',
+            name: 'property2',
+            label: 'new name',
+          },
+        ],
       };
 
       entities
@@ -1105,7 +1127,14 @@ describe('entities', () => {
     it('should delete missing properties', done => {
       const template = {
         _id: templateChangingNames,
-        properties: [{ id: '2', type: 'text', name: 'property2', label: 'property2' }],
+        properties: [
+          {
+            _id: templateChangingNamesProps.prop2id,
+            type: 'text',
+            name: 'property2',
+            label: 'property2',
+          },
+        ],
       };
 
       entities

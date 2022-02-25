@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -31,7 +32,6 @@ describe('template schema', () => {
       label,
       name: safeName(label),
       type,
-      id: label,
       isCommonProperty: false,
       prioritySorting: false,
       ...args,
