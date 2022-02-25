@@ -3,6 +3,7 @@ import L, { latLng } from 'leaflet';
 import 'leaflet.markercluster';
 import { getMapProvider } from 'app/Map/TileProviderFactory';
 import { GeolocationSchema } from 'shared/types/commonTypes';
+import { generateID } from 'shared/IDGenerator';
 
 interface LMapProps {
   markers: { latitude: number; longitude: number; properties: { entity?: { title: string } } }[];
@@ -16,7 +17,7 @@ interface LMapProps {
 }
 
 class DataMarker extends L.Marker {
-  properties: any;
+  properties?: any;
 
   constructor(latLngExpression: L.LatLngExpression, properties: any, options?: L.MarkerOptions) {
     super(latLngExpression, options);
@@ -27,6 +28,7 @@ class DataMarker extends L.Marker {
 const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   let map: L.Map;
   let markerGroup: L.MarkerClusterGroup;
+  const containerId = generateID(3, 4, 0);
 
   const clickOnClusterHandler = (cluster: any) => {
     props.clickOnCluster(cluster.layer.getAllChildMarkers());
@@ -44,7 +46,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
     if (markerPoint.properties?.entity?.title) {
       marker.bindTooltip(markerPoint.properties?.entity?.title);
     }
-    markerGroup.addLayer(marker);
+    marker.addTo(markerGroup);
   };
 
   const clickHandler = (markerPoint: any) => {
@@ -58,8 +60,9 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   const initMarkers = () => {
     const markers = pointMarkers.map(pointMarker => ({
       latlng: latLng(pointMarker.latitude, pointMarker.longitude),
+      properties: pointMarker.properties,
     }));
-    markers.forEach(marker => addClusterMarker(marker));
+    markers.forEach(m => addClusterMarker(m));
     markerGroup.on('clusterclick', clickOnClusterHandler);
     markerGroup.on('click', clickOnMarkerHandler);
     if (pointMarkers.length) {
@@ -70,7 +73,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
 
   const initMap = () => {
     const { layers, baseMaps } = getMapProvider(props.mapProvider);
-    map = L.map('leafletmap', {
+    map = L.map(containerId, {
       center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
       zoom: 6,
       maxZoom: 20,
@@ -84,7 +87,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
 
   useEffect(() => {
     if (!map) {
-      const container = L.DomUtil.get('leafletmap');
+      const container = L.DomUtil.get(containerId);
       if (container != null) {
         // @ts-ignore
         container._leaflet_id = null;
@@ -96,7 +99,11 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
 
   return (
     <div id="map-container">
-      <div id="leafletmap" style={{ width: '100%', height: props.height }} />
+      <div
+        id={containerId}
+        className="leafletmap"
+        style={{ width: '100%', height: props.height }}
+      />
     </div>
   );
 };
