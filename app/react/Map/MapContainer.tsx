@@ -17,7 +17,7 @@ type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = MapComponentProps & mappedProps;
 
 const MapComponent = ({ collectionSettings, ...props }: ComponentProps) => {
-  const startingPoint = collectionSettings?.get('mapStartingPoint')?.get(0)?.toJS();
+  const startingPoint = collectionSettings?.get('mapStartingPoint')?.toJS();
   const mapProvider = collectionSettings?.get('tilesProvider') || 'google';
   const token = collectionSettings?.get('mapApiKey');
   const mapProps = { ...props, startingPoint, mapProvider, token };
