@@ -228,7 +228,7 @@ export const EntitySuggestions = ({
       <PDFSidePanel
         open={sidePanelOpened}
         closeSidePanel={closePDFSidePanel}
-        data={selectedRowData}
+        entitySuggestion={selectedRowData}
       />
     </>
   );
