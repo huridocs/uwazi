@@ -6,7 +6,6 @@ import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import SourceDocument from 'app/Viewer/components/SourceDocument';
-import Document from 'app/Viewer/components/Document';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -59,7 +58,7 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
             <Icon icon="times" />
           </button>
           <div className="button-list">
-            <button type="button" className="btn btn-default">
+            <button type="button" className="btn btn-default" onClick={closeSidePanel}>
               <Translate>Cancel</Translate>
             </button>
             <button type="submit" className="btn btn-success">
