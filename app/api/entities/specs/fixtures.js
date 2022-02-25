@@ -12,6 +12,11 @@ const templateWithEntityAsThesauri = db.id();
 const templateWithEntityAsThesauri2 = db.id();
 const templateWithOnlySelect = db.id();
 const templateWithOnlyMultiselect = db.id();
+const templateChangingNamesProps = {
+  prop1id: db.id(),
+  prop2id: db.id(),
+  prop3id: db.id(),
+};
 
 const dictionary = db.id();
 const c1 = db.id();
@@ -550,15 +555,15 @@ export default {
       name: 'template_changing_names',
       default: true,
       properties: [
-        { _id: db.id(), id: '1', type: 'text', name: 'property1' },
-        { _id: db.id(), id: '2', type: 'text', name: 'property2' },
-        { _id: db.id(), id: '3', type: 'text', name: 'property3' },
+        { _id: templateChangingNamesProps.prop1id, type: 'text', name: 'property1' },
+        { _id: templateChangingNamesProps.prop2id, type: 'text', name: 'property2' },
+        { _id: templateChangingNamesProps.prop3id, type: 'text', name: 'property3' },
       ],
     },
     {
       _id: entityGetTestTemplateId,
       name: 'entityGetTestTemplate',
-      properties: [{ _id: db.id(), id: '1', type: 'text', name: 'some_property' }],
+      properties: [{ _id: db.id(), type: 'text', name: 'some_property' }],
     },
   ],
   connections: [
@@ -664,6 +669,7 @@ export {
   syncPropertiesEntityId,
   templateId,
   templateChangingNames,
+  templateChangingNamesProps,
   templateWithEntityAsThesauri,
   docId1,
   shared2,

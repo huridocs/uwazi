@@ -6,8 +6,6 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: "@types/*"
-    allow:
-      - dependency-type: "development"
     open-pull-requests-limit: 3
     labels:
       - "dependencies"

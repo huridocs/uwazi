@@ -16,7 +16,7 @@ Array [
           "generatedId": false,
           "isCommonProperty": true,
           "label": "Title",
-          "localID": "commonTitle",
+          "localID": "unique_id",
           "name": "title",
           "prioritySorting": false,
           "type": "text",
@@ -24,7 +24,7 @@ Array [
         Object {
           "isCommonProperty": true,
           "label": "Date added",
-          "localID": "commonCreationDate",
+          "localID": "unique_id",
           "name": "creationDate",
           "prioritySorting": false,
           "type": "date",
@@ -32,7 +32,7 @@ Array [
         Object {
           "isCommonProperty": true,
           "label": "Date modified",
-          "localID": "commonEditDate",
+          "localID": "unique_id",
           "name": "editDate",
           "prioritySorting": false,
           "type": "date",

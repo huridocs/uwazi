@@ -7,6 +7,21 @@ import api from 'app/Templates/TemplatesAPI';
 import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 import entitiesApi from 'app/Entities/EntitiesAPI';
+import templateCommonProperties from '../utils/templateCommonProperties';
+
+export const prepareTemplate = template => {
+  const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
+
+  const commonProperties = commonPropertiesExists
+    ? template.commonProperties
+    : templateCommonProperties.get();
+
+  return {
+    ...template,
+    commonProperties: commonProperties.map(p => ({ ...p, localID: ID() })),
+    properties: template.properties.map(p => ({ ...p, localID: ID() })),
+  };
+};
 
 export function resetTemplate() {
   return dispatch => {
@@ -86,15 +101,18 @@ export function reorderProperty(originIndex, targetIndex) {
 }
 
 export const sanitize = data => {
-  const properties = data.properties.map(_prop => {
-    const prop = { ..._prop };
-    if (prop.inherit && !prop.content) {
-      prop.inherit = false;
-    }
-    delete prop.inserting;
-    return prop;
+  const commonProperties = data.commonProperties.map(prop => {
+    const { localID, ...sanitizedProp } = prop;
+    return sanitizedProp;
   });
-  return { ...data, properties };
+  const properties = data.properties.map(prop => {
+    const { localID, inserting, ...sanitizedProp } = prop;
+    if (sanitizedProp.inherit && !sanitizedProp.content) {
+      sanitizedProp.inherit = false;
+    }
+    return sanitizedProp;
+  });
+  return { ...data, properties, commonProperties };
 };
 
 export function validateMapping(template) {
@@ -102,15 +120,16 @@ export function validateMapping(template) {
 }
 
 export function saveTemplate(data) {
-  const template = sanitize(data);
+  let template = sanitize(data);
   return dispatch => {
     dispatch({ type: types.SAVING_TEMPLATE });
     return api
       .save(new RequestParams(template))
       .then(response => {
-        dispatch({ type: types.TEMPLATE_SAVED, data: response });
-        dispatch(actions.update('templates', response));
-        dispatch(formActions.merge('template.data', response));
+        template = prepareTemplate(response);
+        dispatch({ type: types.TEMPLATE_SAVED, data: template });
+        dispatch(actions.update('templates', template));
+        dispatch(formActions.merge('template.data', template));
         dispatch(notificationActions.notify('Saved successfully.', 'success'));
       })
       .catch(e => {

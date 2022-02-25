@@ -9,10 +9,10 @@ import { safeName as sharedSafeName } from 'shared/propertyNames';
 import { ensure } from 'shared/tsUtils';
 import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import model from './templatesModel';
 
-export const safeName = sharedSafeName;
+const safeName = sharedSafeName;
 
 const getInheritedProps = async (templates: TemplateSchema[]) => {
   const properties: PropertySchema[] = propertiesHelper
@@ -50,7 +50,7 @@ const getInheritedProps = async (templates: TemplateSchema[]) => {
   ).reduce((indexed, prop) => ({ ...indexed, [prop._id.toString()]: prop }), {});
 };
 
-export const denormalizeInheritedProperties = async (template: TemplateSchema) => {
+const denormalizeInheritedProperties = async (template: TemplateSchema) => {
   const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
 
   return template.properties?.map(prop => {
@@ -73,25 +73,21 @@ const generateName = (property: PropertySchema, newNameGeneration: boolean) => {
     : name;
 };
 
-const generateNames = (properties: PropertySchema[], newNameGeneration: boolean) =>
-  properties.map(property => ({
+const generateNames = async (properties: PropertySchema[]) => {
+  const { newNameGeneration = false } = await settings.get();
+  return properties.map(property => ({
     ...property,
     name: generateName(property, newNameGeneration),
   }));
+};
 
-export function generateIds(properties: PropertySchema[] = []) {
+function generateIds(properties: ThesaurusSchema[] = []) {
   return properties.map(property => ({
     ...property,
     id: property.id || uuid.v4(),
   }));
 }
-
-export const generateNamesAndIds = async (properties: PropertySchema[] = []) => {
-  const { newNameGeneration = false } = await settings.get();
-  return generateIds(generateNames(properties, newNameGeneration));
-};
-
-export interface PropertyOrThesaurusSchema
+interface PropertyOrThesaurusSchema
   extends Partial<PropertySchema>,
     Partial<ThesaurusValueSchema> {}
 
@@ -104,15 +100,24 @@ const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
     return [...flatProps, p];
   }, []);
 
-export function getUpdatedNames(
+function getUpdatedNames(
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[],
-  prop: 'name' | 'label' = 'name',
-  outKey: 'name' | 'label' = prop
+  {
+    prop,
+    outKey,
+    filterBy,
+  }: {
+    prop: 'name' | 'label';
+    outKey: 'name' | 'label' | 'id';
+    filterBy: 'id' | '_id';
+  }
 ) {
   const propertiesWithNewName: { [k: string]: string | undefined } = {};
   flattenProperties(oldProperties).forEach(property => {
-    const newProperty = flattenProperties(newProperties).find(p => p.id === property.id);
+    const newProperty = flattenProperties(newProperties).find(
+      p => p[filterBy]?.toString() === property[filterBy]?.toString()
+    );
     if (newProperty && newProperty[prop] !== property[prop]) {
       const key = property[outKey];
       if (key) {
@@ -125,20 +130,22 @@ export function getUpdatedNames(
 }
 
 const notIncludedIn =
-  (propertyCollection: PropertyOrThesaurusSchema[]) => (property: PropertyOrThesaurusSchema) =>
-    !propertyCollection.find(p => p.id === property.id);
+  (propertyCollection: PropertyOrThesaurusSchema[], filterBy: 'id' | '_id') =>
+  (property: PropertyOrThesaurusSchema) =>
+    !propertyCollection.find(p => p[filterBy]?.toString() === property[filterBy]?.toString());
 
-export function getDeletedProperties(
+function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[],
-  prop: 'name' | 'label' = 'name'
+  filterBy: 'id' | '_id',
+  prop: 'name' | 'label' | 'id' = 'name'
 ) {
   return flattenProperties(oldProperties)
-    .filter(notIncludedIn(flattenProperties(newProperties)))
+    .filter(notIncludedIn(flattenProperties(newProperties), filterBy))
     .map(property => property[prop]);
 }
 
-export function getRenamedTitle(
+function getRenamedTitle(
   oldCommonProperties: PropertySchema[],
   newCommonProperties: PropertySchema[]
 ) {
@@ -169,7 +176,7 @@ const propertyUpdater = async (
     }, Promise.resolve());
   }, Promise.resolve());
 
-export const updateExtractedMetadataProperties = async (
+const updateExtractedMetadataProperties = async (
   oldProperties: PropertySchema[] = [],
   newProperties: PropertySchema[] = []
 ) => {
@@ -206,4 +213,16 @@ export const updateExtractedMetadataProperties = async (
   }
 
   return null;
+};
+
+export type { PropertyOrThesaurusSchema };
+export {
+  safeName,
+  denormalizeInheritedProperties,
+  generateIds,
+  getUpdatedNames,
+  generateNames,
+  getDeletedProperties,
+  getRenamedTitle,
+  updateExtractedMetadataProperties,
 };

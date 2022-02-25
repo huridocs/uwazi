@@ -29,6 +29,11 @@ interface EntityDisplayState {
   search: any;
   filters: IImmutable<{ documentTypes: [] }>;
 }
+
+export interface ClientPropertySchema extends PropertySchema {
+  localID?: string;
+  inserting?: boolean;
+}
 export interface TasksState {
   SyncState?: TaskStatus;
   TrainState?: TaskStatus;
@@ -81,6 +86,8 @@ export interface TableViewColumn extends PropertySchema {
 }
 export interface ClientTemplateSchema extends TemplateSchema {
   _id: string;
+  properties: ClientPropertySchema[];
+  commonProperties?: [ClientPropertySchema, ...ClientPropertySchema[]];
 }
 
 export interface ClientFile extends FileType {

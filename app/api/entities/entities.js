@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { generateNamesAndIds } from 'api/templates/utils';
+import { generateNames } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
 import date from 'api/utils/date';
@@ -651,15 +651,18 @@ export default {
     options = { reindex: true, generatedIdAdded: false }
   ) {
     const actions = { $rename: {}, $unset: {} };
-    template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await generateNames(template.properties);
     template.properties.forEach(property => {
-      const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+      const currentProperty = currentTemplate.properties.find(
+        p => p._id.toString() === (property._id || '').toString()
+      );
       if (currentProperty && currentProperty.name !== property.name) {
         actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
       }
     });
+
     currentTemplate.properties.forEach(property => {
-      if (!template.properties.find(p => p.id === property.id)) {
+      if (!template.properties.find(p => (p._id || '').toString() === property._id.toString())) {
         actions.$unset[`metadata.${property.name}`] = '';
       }
     });
@@ -677,6 +680,7 @@ export default {
     if (actions.$unset || actions.$rename) {
       await model.updateMany({ template: template._id }, actions);
     }
+
     await reindexEntitiesByTemplate(template, options);
     return this.bulkUpdateMetadataFromRelationships(
       { template: template._id, language },

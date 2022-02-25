@@ -1,6 +1,7 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 
 const templateId = db.id();
+const textPropertyId = db.id();
 
 const fixtures: DBFixture = {
   settings: [
@@ -12,8 +13,8 @@ const fixtures: DBFixture = {
     {
       _id: templateId,
       name: 'template',
-      commonProperties: [{ id: 'title', name: 'title', label: 'title', type: 'text' }],
-      properties: [{ id: 'text', name: 'text', type: 'text', label: 'Text' }],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'title', type: 'text' }],
+      properties: [{ _id: textPropertyId, name: 'text', type: 'text', label: 'Text' }],
     },
   ],
   entities: [
@@ -65,4 +66,4 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures, templateId };
+export { fixtures, templateId, textPropertyId };
