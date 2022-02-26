@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore } from 'app/istore';
-import { LMap, RMap } from 'app/Map/index';
-import { TemplateSchema } from 'shared/types/templateType';
+import { LMap } from 'app/Map/index';
 
 interface MapComponentProps {
   onClick: () => {};
@@ -37,7 +36,7 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
     {}
   );
   const mapProps = { ...props, startingPoint, mapProvider, token, templatesInfo };
-  return mapProvider === 'openmaptiles' ? <RMap {...mapProps} /> : <LMap {...mapProps} />;
+  return <LMap {...mapProps} />;
 };
 
 const container = connector(MapComponent);

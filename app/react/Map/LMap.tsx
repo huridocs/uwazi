@@ -1,12 +1,24 @@
 import React, { useEffect } from 'react';
-import L, { latLng } from 'leaflet';
+import L, { LatLng, latLng } from 'leaflet';
 import 'leaflet.markercluster';
 import { getMapProvider } from 'app/Map/TilesProviderFactory';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import { generateID } from 'shared/IDGenerator';
 
+interface MarkerProperties {
+  entity?: {
+    title: string;
+    template: string;
+  };
+}
+
+interface Marker {
+  latlng: LatLng;
+  properties: MarkerProperties;
+}
+
 interface LMapProps {
-  markers: { latitude: number; longitude: number; properties: { entity?: { title: string } } }[];
+  markers: { latitude: number; longitude: number; properties: MarkerProperties }[];
   height: number;
   clickOnMarker: (marker: DataMarker) => {};
   clickOnCluster: (cluster: DataMarker[]) => {};
@@ -14,14 +26,18 @@ interface LMapProps {
   showControls: boolean;
   mapProvider: string;
   startingPoint: GeolocationSchema;
-  renderPopupInfo?: (marker: any) => any;
+  renderPopupInfo?: (marker: Marker) => any;
   templatesInfo: { [k: string]: { color: string; name: string } };
 }
 
 class DataMarker extends L.Marker {
-  properties?: any;
+  properties?: MarkerProperties;
 
-  constructor(latLngExpression: L.LatLngExpression, properties: any, options?: L.MarkerOptions) {
+  constructor(
+    latLngExpression: L.LatLngExpression,
+    properties: MarkerProperties,
+    options?: L.MarkerOptions
+  ) {
     super(latLngExpression, options);
     this.properties = properties;
   }
@@ -32,20 +48,12 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   let markerGroup: L.MarkerClusterGroup;
   const containerId = generateID(3, 4, 0);
 
-  const clickOnClusterHandler = (cluster: any) => {
-    props.clickOnCluster(cluster.layer.getAllChildMarkers());
-  };
-
-  const clickOnMarkerHandler = (marker: any) => {
-    props.clickOnMarker(marker.layer);
-  };
-
-  const addClusterMarker = (markerPoint: any) => {
+  const addClusterMarker = (markerPoint: Marker) => {
     const marker = new DataMarker(
       [markerPoint.latlng.lat, markerPoint.latlng.lng],
       markerPoint.properties
     );
-    if (props.renderPopupInfo && marker.properties.entity) {
+    if (props.renderPopupInfo && marker.properties?.entity) {
       const templateInfo = props.templatesInfo[marker.properties.entity.template];
       const info = `<div><span className='btn-color' style={{ backgroundColor: ${templateInfo.color}}}>${templateInfo.name}</span>
                     &nbsp;${marker.properties.entity.title}</div>`;
@@ -67,9 +75,15 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       latlng: latLng(pointMarker.latitude, pointMarker.longitude),
       properties: pointMarker.properties,
     }));
+
     markers.forEach(m => addClusterMarker(m));
-    markerGroup.on('clusterclick', clickOnClusterHandler);
-    markerGroup.on('click', clickOnMarkerHandler);
+    markerGroup.on('clusterclick', cluster => {
+      props.clickOnCluster(cluster.layer.getAllChildMarkers());
+    });
+    markerGroup.on('click', marker => {
+      props.clickOnMarker(marker.layer);
+    });
+
     if (pointMarkers.length) {
       map.fitBounds(markerGroup.getBounds(), { maxZoom: 6 });
     }
