@@ -1,24 +1,15 @@
 import L, { TileLayer } from 'leaflet';
 
 const mapBoxStyles: { [k: string]: string } = {
-  streets: 'mapbox/streets-v11',
-  satelliteStreets: 'mapbox/satellite-streets-v11',
-  satellite: 'mapbox/satellite-v9',
-  outdoors: 'mapbox/outdoors-v11',
-  light: 'mapbox/light-v10',
-  dark: 'mapbox/dark-v10',
-  navigationDay: 'mapbox/navigation-day-v1',
-  navigationNight: 'mapbox/navigation-night-v1',
+  Streets: 'mapbox/streets-v11',
+  Satellite: 'mapbox/satellite-v9',
+  Hybrid: 'mapbox/satellite-streets-v11',
 };
 
 const GoogleMapStyles: { [k: string]: string } = {
-  maps: 'https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
-  satellite: 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}',
-  hybrid: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
-  terrain: 'https://mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}',
-  traffic:
-    'https://mt1.google.com/vt?lyrs=h@159000000,traffic|seconds_into_week:-1&style=3&x={x}&y={y}&z={z}',
-  roads: 'https://mt1.google.com/vt/lyrs=h&x={x}&y={y}&z={z}',
+  Streets: 'https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
+  Satellite: 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}',
+  Hybrid: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
 };
 
 const getGoogleLayers = () =>

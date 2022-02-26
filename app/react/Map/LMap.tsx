@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import L, { latLng } from 'leaflet';
 import 'leaflet.markercluster';
-import { getMapProvider } from 'app/Map/TileProviderFactory';
+import { getMapProvider } from 'app/Map/TilesProviderFactory';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import { generateID } from 'shared/IDGenerator';
 
@@ -15,7 +15,7 @@ interface LMapProps {
   mapProvider: string;
   startingPoint: GeolocationSchema;
   renderPopupInfo?: (marker: any) => any;
-  templatesInfo: {};
+  templatesInfo: { [k: string]: { color: string; name: string } };
 }
 
 class DataMarker extends L.Marker {
@@ -98,9 +98,8 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
         container._leaflet_id = null;
       }
     }
-
     initMap();
-  }, []);
+  }, [pointMarkers]);
 
   return (
     <div id="map-container">
