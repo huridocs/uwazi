@@ -112,7 +112,7 @@
     "diacritics": "^1.3.0",
     "dotenv": "^8.2.0",
     "enzyme-adapter-react-16": "^1.15.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-http-proxy": "^1.6.2",
     "express-query-boolean": "^2.0.0",
     "express-session": "^1.17.1",
