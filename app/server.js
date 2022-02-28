@@ -3,6 +3,7 @@
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
+import promBundle from 'express-prom-bundle';
 
 import helmet from 'helmet';
 import { Server } from 'http';
@@ -42,9 +43,23 @@ import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTe
 mongoose.Promise = Promise;
 
 const app = express();
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  customLabels: {
+    port: config.PORT,
+    env: config.ENVIRONMENT,
+  },
+  promClient: {
+    collectDefaultMetrics: {},
+  },
+});
+
+app.use(metricsMiddleware);
 if (config.sentry.dsn) {
   Sentry.init({
     dsn: config.sentry.dsn,
+    env: config.ENVIRONMENT,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
