@@ -10,6 +10,14 @@ const settings = [
         hashtags: ['#hashtag-example'],
       },
     },
+    languages: [
+      {
+        _id: db.id(),
+        key: 'en',
+        label: 'English',
+        default: true,
+      },
+    ],
   },
 ];
 
@@ -34,12 +42,19 @@ const fixturesTenantWithoutTwitter: DBFixture = {
 };
 
 const fixturesOneTenant: DBFixture = {
-  entities: [factory.entity('A1', 'templateToSegmentA')],
+  templates: [
+    factory.template('hashtags'),
+    factory.template('tweets', [{ label: 'text', name: 'text', type: 'markdown' }]),
+  ],
   settings,
 };
 
 const fixturesOtherTenant: DBFixture = {
-  entities: [factory.entity('A2', 'templateToSegmentB')],
+  templates: [
+    factory.template('hashtags'),
+    factory.template('#hashtag_example', [{ label: 'text', name: 'text', type: 'markdown' }]),
+  ],
+  entities: [factory.entity('A2', 'hashtag_example')],
   settings: otherSettings,
 };
 
