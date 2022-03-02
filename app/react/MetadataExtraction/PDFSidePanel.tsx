@@ -6,6 +6,7 @@ import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import Document from 'app/Viewer/components/Document';
+import scroller from 'app/Viewer/utils/Scroller';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -45,6 +46,19 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
         setFile(dummyFile);
       })
       .catch(e => console.log(e));
+  }, [entitySuggestion]);
+
+  useEffect(() => {
+    scroller
+      .to(`.document-viewer div#page-${entitySuggestion.page}`, '.document-viewer', {
+        duration: 50,
+        dividerOffset: 1,
+        offset: 50,
+      })
+      .then(() => {})
+      .catch(e => {
+        console.log(e);
+      });
   }, [entitySuggestion]);
 
   return (
