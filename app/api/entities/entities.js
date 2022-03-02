@@ -26,7 +26,7 @@ import { denormalizeRelated } from './denormalize';
 import { saveSelections } from './metadataExtraction/saveSelections';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
-async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
+async function denormalizeMetadata(metadata, entity, template, thesauriByKey) {
   if (!metadata) {
     return metadata;
   }
@@ -48,8 +48,8 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
           return elem;
         }
         if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
-          const dict = dictionariesByKey
-            ? dictionariesByKey[prop.content]
+          const dict = thesauriByKey
+            ? thesauriByKey[prop.content]
             : await dictionariesModel.getById(prop.content);
           if (dict) {
             const context = getContext(translation, prop.content);
@@ -151,9 +151,9 @@ async function updateEntity(entity, _template, unrestricted = false) {
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
 
-  const dictionaryIds = template.properties.map(p => p.content).filter(p => p);
-  const dictionaries = await dictionariesModel.get({ _id: { $in: dictionaryIds } });
-  const dictionariesByKey = Object.fromEntries(dictionaries.map(d => [d._id, d]));
+  const thesauriIds = template.properties.map(p => p.content).filter(p => p);
+  const thesauri = await dictionariesModel.get({ _id: { $in: thesauriIds } });
+  const thesauriByKey = Object.fromEntries(thesauri.map(d => [d._id, d]));
 
   return Promise.all(
     docLanguages.map(async d => {
@@ -167,7 +167,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
             entity.metadata,
             entity,
             template,
-            dictionariesByKey
+            thesauriByKey
           );
         }
 
@@ -176,7 +176,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
             entity.suggestedMetadata,
             entity,
             template,
-            dictionariesByKey
+            thesauriByKey
           );
         }
 
@@ -201,7 +201,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
             toSave[metadataParent],
             toSave,
             template,
-            dictionariesByKey
+            thesauriByKey
           );
         }
       }, Promise.resolve());
