@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { fromJS } from 'immutable';
 import { Icon } from 'UI';
-import { store } from 'app/store';
 import { SidePanel } from 'app/Layout';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import SourceDocument from 'app/Viewer/components/SourceDocument';
+import Document from 'app/Viewer/components/Document';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { setViewerState } from 'app/Viewer/actions/routeActions';
 
 const dummyFile = {
   _id: '6218d3f90e33f52f5e0b889c',
@@ -39,21 +37,12 @@ const fetchEntity = async (entitySharedId: string) => {
 const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelProps) => {
   const [entity, setEntity] = useState(fromJS({}));
   const [file, setFile] = useState<FileType>({});
-  const state = store?.getState();
 
   useEffect(() => {
     fetchEntity(entitySuggestion.sharedId)
       .then(response => {
         setEntity(fromJS(response[0]));
         setFile(dummyFile);
-        setViewerState({
-          ...state,
-          documentViewer: {
-            doc: {
-              ...dummyFile,
-            },
-          },
-        })(store?.dispatch);
       })
       .catch(e => console.log(e));
   }, [entitySuggestion]);
@@ -81,11 +70,12 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
         </div>
         {entity.get('sharedId') && file.filename && (
           <div className="document-viewer">
-            <SourceDocument
+            <Document
               file={file}
-              searchTerm=""
+              doc={entity}
               onPageChange={() => {}}
               onDocumentReady={() => {}}
+              unsetSelection={() => {}}
             />
           </div>
         )}
