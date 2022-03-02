@@ -48,28 +48,28 @@ async function denormalizeMetadata(metadata, entity, template, thesauriByKey) {
           return elem;
         }
         if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
-          const dict = thesauriByKey
+          const thesaurus = thesauriByKey
             ? thesauriByKey[prop.content]
             : await dictionariesModel.getById(prop.content);
-          if (dict) {
+          if (thesaurus) {
             const context = getContext(translation, prop.content);
-            const flattenValues = dict.values.reduce(
+            const flattenValues = thesaurus.values.reduce(
               (result, dv) =>
                 dv.values
                   ? result.concat(dv.values.map(v => ({ ...v, parent: dv })))
                   : result.concat([dv]),
               []
             );
-            const dictElem = flattenValues.find(v => v.id === elem.value);
+            const thesaurusValue = flattenValues.find(v => v.id === elem.value);
 
-            if (dictElem && dictElem.label) {
-              elem.label = translate(context, dictElem.label, dictElem.label);
+            if (thesaurusValue && thesaurusValue.label) {
+              elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
             }
 
-            if (dictElem && dictElem.parent) {
+            if (thesaurusValue && thesaurusValue.parent) {
               elem.parent = {
-                value: dictElem.parent.id,
-                label: translate(context, dictElem.parent.label, dictElem.parent.label),
+                value: thesaurusValue.parent.id,
+                label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
               };
             }
           }
