@@ -3,6 +3,7 @@
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
+import promBundle from 'express-prom-bundle';
 
 import helmet from 'helmet';
 import { Server } from 'http';
@@ -42,9 +43,35 @@ import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTe
 mongoose.Promise = Promise;
 
 const app = express();
+const metricsMiddleware = promBundle({
+  normalizePath: [
+    ['^/api/files/(.*\\..*)', '/api/files/#filename'],
+    ['^/uploaded_documents/(.*\\..*)', '/uploaded_documents/#filename'],
+    ['^/.*\\.(js|css).*', '/#filename'],
+    ['^/public/(.*\\..*)', '/public/#filename'],
+    ['^/flags/.*', '/flags/#filename'],
+    ['^/assets/(.*\\..*)', '/assets/#filename'],
+    ['.*/entity/.*', '/entity/#id'],
+    ['.*/document/.*', '/document/#id'],
+    ['.*/page/.*', '/page/#id'],
+    ['.*/library', '/library/'],
+  ],
+  includeMethod: true,
+  includePath: true,
+  customLabels: {
+    port: config.PORT,
+    env: config.ENVIRONMENT,
+  },
+  promClient: {
+    collectDefaultMetrics: {},
+  },
+});
+
+app.use(metricsMiddleware);
 if (config.sentry.dsn) {
   Sentry.init({
     dsn: config.sentry.dsn,
+    env: config.ENVIRONMENT,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
