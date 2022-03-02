@@ -1,4 +1,4 @@
-import testingDB from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
@@ -9,7 +9,7 @@ describe('migration remove maptiler apikey', () => {
   });
 
   afterAll(async () => {
-    await testingDB.tearDown();
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {
