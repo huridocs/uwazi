@@ -85,7 +85,7 @@ Immutable.List [
 `;
 
 exports[`MapView render() should render a map 1`] = `
-<ForwardRef
+<Connect(MapComponent)
   clickOnCluster={[Function]}
   clickOnMarker={[Function]}
   cluster={true}
