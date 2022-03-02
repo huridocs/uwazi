@@ -1,8 +1,3 @@
-//eslint-disable-next-line node/no-restricted-import
-import * as fs from 'fs';
-
-import csv from 'api/csv/csv';
-
 /*
 This migration is meant to be repeatable.
 After copy pasting:
@@ -11,11 +6,7 @@ After copy pasting:
   - change the tests, if necessary
 */
 
-// eslint-disable-next-line max-statements
-async function readCsvToSystemKeys(db, filename) {
-  const fstream = fs.createReadStream(filename);
-  const rows = await csv(fstream).read();
-  fstream.close();
+async function insertSystemKeys(db, newKeys) {
   const translations = await db.collection('translations').find().toArray();
   const locales = translations.map(tr => tr.locale);
 
@@ -28,8 +19,8 @@ async function readCsvToSystemKeys(db, filename) {
     locToKeys[loc] = new Set(context.values.map(v => v.key));
   });
 
-  rows.forEach(row => {
-    const { key, optionalValue } = row;
+  newKeys.forEach(row => {
+    const { key, value: optionalValue } = row;
 
     locales.forEach(loc => {
       if (!locToKeys[loc].has(key)) {
@@ -56,10 +47,20 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-
-    await readCsvToSystemKeys(
-      db,
-      'app/api/migrations/migrations/62-add_system_key_translations/system_keys.csv'
-    );
+    const systemKeys = [
+      {
+        key: 'Google Maps',
+      },
+      {
+        key: 'MapBox',
+      },
+      {
+        key: 'Map api key tooltip',
+        value:
+          // eslint-disable-next-line max-len
+          'An API key is required to use Mapbox. If you plan to use Google Maps for commercial use, enter your API key, otherwise it is not required.',
+      },
+    ];
+    await insertSystemKeys(db, systemKeys);
   },
 };

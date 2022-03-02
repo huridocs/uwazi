@@ -10,12 +10,13 @@ const newKeyValues = [
       'An API key is required to use Mapbox. If you plan to use Google Maps for commercial use, enter your API key, otherwise it is not required.',
   },
   {
-    key: "Google Maps",
-    value: "Google Maps",
+    key: 'Google Maps',
+    value: 'Google Maps',
   },
   {
-    key: "MapBox",
-    value: "MapBox",
+    key: 'MapBox',
+    value: 'MapBox',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
@@ -35,7 +36,7 @@ describe('migration add_system_key_translations', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(62);
+    expect(migration.delta).toBe(65);
   });
 
   it('should append new keys, leave existing keys intact.', async () => {
