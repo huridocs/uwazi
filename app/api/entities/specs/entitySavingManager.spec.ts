@@ -16,6 +16,7 @@ import {
   anotherTextFile,
   pdfFile,
 } from './entitySavingManagerFixtures';
+import { advancedSort } from 'app/utils/advancedSort';
 
 describe('entitySavingManager', () => {
   beforeAll(() => {
@@ -60,17 +61,17 @@ describe('entitySavingManager', () => {
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
-        expect(savedEntity.attachments).toMatchObject([
-          {
-            mimetype: 'text/plain',
-            originalname: 'sampleFile.txt',
-            size: 12,
-            type: 'attachment',
-          },
+        expect(advancedSort(savedEntity.attachments, { property: 'originalname' })).toMatchObject([
           {
             mimetype: 'text/html',
             originalname: 'Google link',
             url: 'https://google.com',
+            type: 'attachment',
+          },
+          {
+            mimetype: 'text/plain',
+            originalname: 'sampleFile.txt',
+            size: 12,
             type: 'attachment',
           },
         ]);
@@ -235,12 +236,15 @@ describe('entitySavingManager', () => {
           entity: savedEntity.sharedId,
         });
 
-        expect(savedFiles).toEqual([
+        const sortedSavedFiles = advancedSort(savedFiles, { property: 'originalname' });
+        expect(sortedSavedFiles).toEqual([
           expect.objectContaining({ originalname: 'image.jpg' }),
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[0].filename}`);
+        expect(savedEntity.metadata.image[0].value).toBe(
+          `/api/files/${sortedSavedFiles[0].filename}`
+        );
       });
 
       it('should work when updating existing entities with other existing attachments', async () => {
