@@ -69,7 +69,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(
             entity.metadata,
-            { ...entity, template: template._id },
+            entity.language,
+            template._id.toString(),
             thesauriByKey
           );
         }
@@ -77,7 +78,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
             entity.suggestedMetadata,
-            entity,
+            entity.language,
+            template._id.toString(),
             thesauriByKey
           );
         }
@@ -101,7 +103,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
           });
           toSave[metadataParent] = await denormalizeMetadata(
             toSave[metadataParent],
-            toSave,
+            toSave.language,
+            template._id.toString(),
             thesauriByKey
           );
         }
@@ -134,9 +137,17 @@ async function createEntity(doc, languages, sharedId) {
       }
       langDoc.language = lang.key;
       langDoc.sharedId = sharedId;
-      langDoc.metadata = await denormalizeMetadata(langDoc.metadata, langDoc);
+      langDoc.metadata = await denormalizeMetadata(
+        langDoc.metadata,
+        langDoc.language,
+        langDoc.template.toString()
+      );
 
-      langDoc.suggestedMetadata = await denormalizeMetadata(langDoc.suggestedMetadata, langDoc);
+      langDoc.suggestedMetadata = await denormalizeMetadata(
+        langDoc.suggestedMetadata,
+        langDoc.language,
+        langDoc.template.toString()
+      );
 
       return model.save(langDoc);
     })
@@ -377,8 +388,16 @@ export default {
       docTemplate = defaultTemplate;
     }
     const entity = this.sanitize(doc, docTemplate);
-    entity.metadata = await denormalizeMetadata(entity.metadata, entity);
-    entity.suggestedMetadata = await denormalizeMetadata(entity.suggestedMetadata, entity);
+    entity.metadata = await denormalizeMetadata(
+      entity.metadata,
+      entity.language,
+      entity.template.toString()
+    );
+    entity.suggestedMetadata = await denormalizeMetadata(
+      entity.suggestedMetadata,
+      entity.language,
+      entity.template.toString()
+    );
     return entity;
   },
 
@@ -744,8 +763,16 @@ export default {
       entities.map(async _entity => {
         const { __v, _id, ...entity } = _entity;
         entity.language = language;
-        entity.metadata = await this.denormalizeMetadata(entity.metadata, entity);
-        entity.suggestedMetadata = await this.denormalizeMetadata(entity.suggestedMetadata, entity);
+        entity.metadata = await this.denormalizeMetadata(
+          entity.metadata,
+          language,
+          entity.template.toString()
+        );
+        entity.suggestedMetadata = await this.denormalizeMetadata(
+          entity.suggestedMetadata,
+          language,
+          entity.template.toString()
+        );
         return entity;
       })
     );

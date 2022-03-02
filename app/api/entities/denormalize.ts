@@ -338,17 +338,18 @@ const resolveProp = async (
 
 async function denormalizeMetadata(
   metadata: MetadataSchema,
-  entity: EntitySchema,
+  language: string,
+  templateId: string,
   thesauriByKey: Record<string, ThesaurusSchema>
 ) {
   if (!metadata) {
     return metadata;
   }
 
-  const translation = (await translationsModel.get({ locale: entity.language }))[0];
+  const translation = (await translationsModel.get({ locale: language }))[0];
   const allTemplates = await templates.get();
 
-  const template = allTemplates.find(t => t._id.toString() === entity.template?.toString());
+  const template = allTemplates.find(t => t._id.toString() === templateId);
   if (!template) {
     return metadata;
   }
@@ -363,7 +364,7 @@ async function denormalizeMetadata(
         thesauriByKey,
         translation,
         allTemplates,
-        entity.language!
+        language
       ),
     }),
     Promise.resolve({})
