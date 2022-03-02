@@ -46,13 +46,13 @@ async function readCsvToSystemKeys(db, filename) {
 }
 
 export default {
-  delta: 62,
+  delta: 65,
 
   reindex: false,
 
   name: 'add_system_key_translations',
 
-  description: 'Adding missing translations for system keys, through importing from a csv file.',
+  description: 'Adding missing translations for system keys.',
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
