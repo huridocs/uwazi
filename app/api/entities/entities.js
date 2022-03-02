@@ -140,7 +140,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
     docLanguages[0].template.toString() !== entity.template.toString()
   ) {
     await Promise.all([
-      this.deleteRelatedEntityFromMetadata(docLanguages[0]),
+      this.deleteRelatedEntityFromMetadata(docLanguages[0]), // this should be okay, all queries are batch ones with a different purpose
       relationships.delete({ entity: entity.sharedId }, null, false),
     ]);
   }
@@ -150,6 +150,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
     .map(p => p.name);
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
+
+  const dictionaryIds = template.properties.map(p => p.content).filter(p => p);
+  const dictionaries = await dictionariesModel.get({ _id: { $in: dictionaryIds } });
+  const dictionariesByKey = Object.fromEntries(dictionaries.map(d => [d._id, d]));
+
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
@@ -158,14 +163,20 @@ async function updateEntity(entity, _template, unrestricted = false) {
         delete toSave.permissions;
 
         if (entity.metadata) {
-          toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
+          toSave.metadata = await denormalizeMetadata(
+            entity.metadata,
+            entity,
+            template,
+            dictionariesByKey
+          );
         }
 
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
             entity.suggestedMetadata,
             entity,
-            template
+            template,
+            dictionariesByKey
           );
         }
 
@@ -189,7 +200,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
           toSave[metadataParent] = await denormalizeMetadata(
             toSave[metadataParent],
             toSave,
-            template
+            template,
+            dictionariesByKey
           );
         }
       }, Promise.resolve());
@@ -404,7 +416,7 @@ export default {
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
-    await saveSelections(_doc);
+    await saveSelections(_doc); // change related main file (1)
     const doc = _doc;
 
     if (!doc.sharedId) {
