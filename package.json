@@ -150,7 +150,7 @@
     "passport-local": "^1.0.0",
     "pdfjs-dist": "2.3.200",
     "prom-client": "^14.0.1",
-    "prop-types": "^15.7.2",
+    "prop-types": "^15.8.1",
     "qrcode.react": "^1.0.0",
     "qs": "^6.10.1",
     "react": "16.14.0",
