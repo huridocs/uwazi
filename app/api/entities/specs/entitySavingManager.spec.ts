@@ -264,13 +264,17 @@ describe('entitySavingManager', () => {
           entity: entity.sharedId,
         });
 
-        expect(savedFiles).toEqual([
-          expect.objectContaining({ originalname: 'Sample Text File.txt' }),
-          expect.objectContaining({ originalname: 'pdf.pdf' }),
-          expect.objectContaining({ originalname: 'image.jpg' }),
-        ]);
+        expect(savedFiles).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ originalname: 'Sample Text File.txt' }),
+            expect.objectContaining({ originalname: 'image.jpg' }),
+            expect.objectContaining({ originalname: 'pdf.pdf' }),
+          ])
+        );
+        expect(savedFiles.length).toBe(3);
 
-        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[2].filename}`);
+        const savedImage = savedFiles.find(f => f.originalname === 'image.jpg');
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedImage!.filename}`);
       });
 
       it('should ignore references to non existing attachments', async () => {

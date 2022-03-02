@@ -36,16 +36,16 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
-async function updateEntity(_entity, _template, unrestricted = false) {
-  const docLanguages = await this.getAllLanguages(_entity.sharedId);
+async function updateEntity(entity, _template, unrestricted = false) {
+  const docLanguages = await this.getAllLanguages(entity.sharedId);
   if (
     docLanguages[0].template &&
-    _entity.template &&
-    docLanguages[0].template.toString() !== _entity.template.toString()
+    entity.template &&
+    docLanguages[0].template.toString() !== entity.template.toString()
   ) {
     await Promise.all([
       this.deleteRelatedEntityFromMetadata(docLanguages[0]), // this should be okay, all queries are batch ones with a different purpose
-      relationships.delete({ entity: _entity.sharedId }, null, false),
+      relationships.delete({ entity: entity.sharedId }, null, false),
     ]);
   }
   const template = _template || { properties: [] };
@@ -67,7 +67,11 @@ async function updateEntity(_entity, _template, unrestricted = false) {
         delete toSave.permissions;
 
         if (entity.metadata) {
-          toSave.metadata = await denormalizeMetadata(entity.metadata, entity, thesauriByKey);
+          toSave.metadata = await denormalizeMetadata(
+            entity.metadata,
+            { ...entity, template: template._id },
+            thesauriByKey
+          );
         }
 
         if (entity.suggestedMetadata) {
