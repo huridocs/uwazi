@@ -5,10 +5,12 @@ import { SidePanel } from 'app/Layout';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import Document from 'app/Viewer/components/Document';
 import scroller from 'app/Viewer/utils/Scroller';
+import { unsetSelection, setSelection } from 'app/Viewer/actions/selectionActions';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
+import SourceDocument from 'app/Viewer/components/SourceDocument';
+import { MetadataForm } from 'app/Metadata';
 
 const dummyFile = {
   _id: '6218d3f90e33f52f5e0b889c',
@@ -83,15 +85,19 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
           </div>
         </div>
         {entity.get('sharedId') && file.filename && (
-          <div className="document-viewer">
-            <Document
-              file={file}
-              doc={entity}
-              onPageChange={() => {}}
-              onDocumentReady={() => {}}
-              unsetSelection={() => {}}
-            />
-          </div>
+          <>
+            <div>
+              <MetadataForm
+                model="library.sidepanel.metadata"
+                sharedId={entity.get('sharedId')}
+                templateId={entity.get('template')}
+                showSubset={[entitySuggestion.propertyName]}
+              />
+            </div>
+            <div className="document-viewer">
+              <SourceDocument file={file} doc={entity} />
+            </div>
+          </>
         )}
       </>
     </SidePanel>
