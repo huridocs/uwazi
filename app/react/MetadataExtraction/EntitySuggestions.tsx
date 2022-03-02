@@ -74,12 +74,7 @@ export const EntitySuggestions = ({
   };
 
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
-    <>
-      <button type="button" onClick={() => showPDF(row)}>
-        PDF
-      </button>
-      {row.original.segment}
-    </>
+    <div onClick={() => showPDF(row)}>{row.original.segment}</div>
   );
 
   const {
