@@ -355,6 +355,16 @@ const denormalizeRelationshipProperty = async (
   });
 };
 
+const validateValuesAreDenormalizable = (values: MetadataObjectSchema[] | undefined) => {
+  if (!Array.isArray(values)) {
+    throw new Error('denormalizeMetadata received non-array prop!');
+  }
+
+  if (values.some(value => !value.hasOwnProperty('value'))) {
+    throw new Error('denormalizeMetadata received non-value prop!');
+  }
+};
+
 const denormalizeProperty = async (
   property: PropertySchema | undefined,
   values: MetadataObjectSchema[] | undefined,
@@ -369,25 +379,18 @@ const denormalizeProperty = async (
     allTemplates: TemplateSchema[];
   }
 ) => {
-  if (!Array.isArray(values)) {
-    throw new Error('denormalizeMetadata received non-array prop!');
-  }
-  values.forEach(elem => {
-    if (!elem.hasOwnProperty('value')) {
-      throw new Error('denormalizeMetadata received non-value prop!');
-    }
-  });
+  validateValuesAreDenormalizable(values);
 
   if (!property) {
     return values;
   }
 
   if (property.content && ['select', 'multiselect'].includes(property.type)) {
-    return denormalizeSelectProperty(property, values, thesauriByKey, translation);
+    return denormalizeSelectProperty(property, values!, thesauriByKey, translation);
   }
 
   if (property.type === 'relationship') {
-    return denormalizeRelationshipProperty(property, values, language, allTemplates);
+    return denormalizeRelationshipProperty(property, values!, language, allTemplates);
   }
 
   return values;
