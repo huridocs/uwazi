@@ -19,7 +19,6 @@ import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
-import Error from 'api/utils/Error';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -71,7 +70,7 @@ app.use(metricsMiddleware);
 if (config.sentry.dsn) {
   Sentry.init({
     dsn: config.sentry.dsn,
-    env: config.ENVIRONMENT,
+    environment: config.ENVIRONMENT,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
