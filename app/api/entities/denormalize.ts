@@ -254,9 +254,9 @@ const denormalizeThesauriLabelInMetadata = async (
 
 const denormalizeSelectProperty = async (
   property: PropertySchema,
-  value: MetadataObjectSchema[],
+  values: MetadataObjectSchema[],
   thesauriByKey: Record<string, ThesaurusSchema>,
-  translation: any
+  translation: unknown
 ) => {
   const thesaurus = thesauriByKey
     ? thesauriByKey[property.content!]
@@ -276,21 +276,21 @@ const denormalizeSelectProperty = async (
     }
   });
 
-  return value.map(_elem => {
-    const elem = { ..._elem };
-    const thesaurusValue = flattenValues.find(v => v.id === elem.value);
+  return values.map(value => {
+    const denormalizedValue = { ...value };
+    const thesaurusValue = flattenValues.find(v => v.id === denormalizedValue.value);
 
     if (thesaurusValue && thesaurusValue.label) {
-      elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
+      denormalizedValue.label = translate(context, thesaurusValue.label, thesaurusValue.label);
     }
 
     if (thesaurusValue && thesaurusValue.parent) {
-      elem.parent = {
+      denormalizedValue.parent = {
         value: thesaurusValue.parent.id,
         label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
       };
     }
-    return elem;
+    return denormalizedValue;
   });
 };
 
@@ -317,12 +317,12 @@ const denormalizeInheritedProperty = (
 
 const denormalizeRelationshipProperty = async (
   property: PropertySchema,
-  value: MetadataObjectSchema[],
+  values: MetadataObjectSchema[],
   language: string,
   allTemplates: TemplateSchema[]
 ) => {
   const partners = await model.getUnrestricted({
-    sharedId: { $in: value.map(v => v.value as string) },
+    sharedId: { $in: values.map(value => value.value as string) },
     language,
   });
 
@@ -331,55 +331,66 @@ const denormalizeRelationshipProperty = async (
     partnersBySharedId[partner.sharedId!] = partner;
   });
 
-  return value.map(_elem => {
-    let elem = { ..._elem };
+  return values.map(value => {
+    let denormalizedValue = { ...value };
 
-    const partner = partnersBySharedId[elem.value as string];
+    const partner = partnersBySharedId[denormalizedValue.value as string];
 
     if (partner && partner.title) {
-      elem.label = partner.title;
-      elem.icon = partner.icon;
-      elem.type = partner.file ? 'document' : 'entity';
+      denormalizedValue.label = partner.title;
+      denormalizedValue.icon = partner.icon;
+      denormalizedValue.type = partner.file ? 'document' : 'entity';
     }
 
     if (property.inherit && property.inherit.property && partner) {
-      elem = denormalizeInheritedProperty(property, elem, partner, allTemplates);
+      denormalizedValue = denormalizeInheritedProperty(
+        property,
+        denormalizedValue,
+        partner,
+        allTemplates
+      );
     }
 
-    return elem;
+    return denormalizedValue;
   });
 };
 
 const denormalizeProperty = async (
   property: PropertySchema | undefined,
-  value: MetadataObjectSchema[] | undefined,
-  thesauriByKey: Record<string, ThesaurusSchema>,
-  translation: any,
-  allTemplates: TemplateSchema[],
-  language: string
+  values: MetadataObjectSchema[] | undefined,
+  language: string,
+  {
+    thesauriByKey,
+    translation,
+    allTemplates,
+  }: {
+    thesauriByKey: Record<string, ThesaurusSchema>;
+    translation: unknown;
+    allTemplates: TemplateSchema[];
+  }
 ) => {
-  if (!Array.isArray(value)) {
+  if (!Array.isArray(values)) {
     throw new Error('denormalizeMetadata received non-array prop!');
   }
-  value.forEach(elem => {
+  values.forEach(elem => {
     if (!elem.hasOwnProperty('value')) {
       throw new Error('denormalizeMetadata received non-value prop!');
     }
   });
 
   if (!property) {
-    return value;
+    return values;
   }
 
   if (property.content && ['select', 'multiselect'].includes(property.type)) {
-    return denormalizeSelectProperty(property, value, thesauriByKey, translation);
+    return denormalizeSelectProperty(property, values, thesauriByKey, translation);
   }
 
   if (property.type === 'relationship') {
-    return denormalizeRelationshipProperty(property, value, language, allTemplates);
+    return denormalizeRelationshipProperty(property, values, language, allTemplates);
   }
 
-  return value;
+  return values;
 };
 
 async function denormalizeMetadata(
@@ -401,15 +412,13 @@ async function denormalizeMetadata(
   }
 
   return Object.keys(metadata).reduce(
-    async (meta, prop) => ({
+    async (meta, propertyName) => ({
       ...(await meta),
-      [prop]: await denormalizeProperty(
-        template.properties?.find(p => p.name === prop),
-        metadata[prop],
-        thesauriByKey,
-        translation,
-        allTemplates,
-        language
+      [propertyName]: await denormalizeProperty(
+        template.properties?.find(p => p.name === propertyName),
+        metadata[propertyName],
+        language,
+        { thesauriByKey, translation, allTemplates }
       ),
     }),
     Promise.resolve({})
