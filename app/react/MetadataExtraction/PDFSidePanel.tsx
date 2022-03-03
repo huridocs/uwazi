@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fromJS } from 'immutable';
 import { Icon } from 'UI';
+import { store } from 'app/store';
 import { SidePanel } from 'app/Layout';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
@@ -10,6 +11,7 @@ import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import SourceDocument from 'app/Viewer/components/SourceDocument';
 import { MetadataForm } from 'app/Metadata';
+import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 
 const dummyFile = {
   _id: '6218d3f90e33f52f5e0b889c',
@@ -39,12 +41,18 @@ const fetchEntity = async (entitySharedId: string) => {
 const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelProps) => {
   const [entity, setEntity] = useState(fromJS({}));
   const [file, setFile] = useState<FileType>({});
+  const templates = store?.getState().templates;
 
   useEffect(() => {
     fetchEntity(entitySuggestion.sharedId)
       .then(response => {
         setEntity(fromJS(response[0]));
         setFile(dummyFile);
+        loadFetchedInReduxForm(
+          'documentViewer.sidepanel.metadata',
+          response[0],
+          templates?.toJS()
+        ).forEach(action => store?.dispatch(action));
       })
       .catch(e => console.log(e));
   }, [entitySuggestion]);
@@ -85,15 +93,13 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
         </div>
         {entity.get('sharedId') && file.filename && (
           <>
-            <div>
-              <MetadataForm
-                model="library.sidepanel.metadata"
-                sharedId={entity.get('sharedId')}
-                templateId={entity.get('template')}
-                showSubset={[entitySuggestion.propertyName]}
-                storeKey="documentViewer"
-              />
-            </div>
+            <MetadataForm
+              model="documentViewer.sidepanel.metadata"
+              sharedId={entity.get('sharedId')}
+              templateId={entity.get('template')}
+              showSubset={[entitySuggestion.propertyName]}
+              storeKey="documentViewer"
+            />
             <div className="document-viewer">
               <SourceDocument file={file} doc={entity} />
             </div>
