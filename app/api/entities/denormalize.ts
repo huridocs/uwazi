@@ -281,35 +281,37 @@ const resolveProp = async (
     const thesaurus = thesauriByKey
       ? thesauriByKey[prop.content]
       : await dictionariesModel.getById(prop.content);
-    if (thesaurus) {
-      const context = getContext(translation, prop.content);
-
-      const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
-      thesaurus.values?.forEach(dv => {
-        if (dv.values) {
-          dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
-        } else {
-          flattenValues.push(dv);
-        }
-      });
-
-      return value.map(_elem => {
-        const elem = { ..._elem };
-        const thesaurusValue = flattenValues.find(v => v.id === elem.value);
-
-        if (thesaurusValue && thesaurusValue.label) {
-          elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
-        }
-
-        if (thesaurusValue && thesaurusValue.parent) {
-          elem.parent = {
-            value: thesaurusValue.parent.id,
-            label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
-          };
-        }
-        return elem;
-      });
+    if (!thesaurus) {
+      return;
     }
+
+    const context = getContext(translation, prop.content);
+
+    const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
+    thesaurus.values?.forEach(dv => {
+      if (dv.values) {
+        dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
+      } else {
+        flattenValues.push(dv);
+      }
+    });
+
+    return value.map(_elem => {
+      const elem = { ..._elem };
+      const thesaurusValue = flattenValues.find(v => v.id === elem.value);
+
+      if (thesaurusValue && thesaurusValue.label) {
+        elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
+      }
+
+      if (thesaurusValue && thesaurusValue.parent) {
+        elem.parent = {
+          value: thesaurusValue.parent.id,
+          label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
+        };
+      }
+      return elem;
+    });
   }
 
   if (prop.type === 'relationship') {
