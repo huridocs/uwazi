@@ -8,12 +8,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import translate, { getContext } from 'shared/translate';
-import {
-  MetadataSchema,
-  MetadataObjectSchema,
-  PropertySchema,
-  PropertyValueSchema,
-} from 'shared/types/commonTypes';
+import { MetadataSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { isString } from 'util';
 
 import model from './entitiesModel';
@@ -317,25 +312,12 @@ const resolveProp = async (
     }
   }
 
-  // const partnerSharedIds: string[] = [];
-  // value.forEach(p => p?.forEach(v => partnerSharedIds.push(v.value as string)));
+  if (prop.type === 'relationship') {
+    return Promise.all(
+      // eslint-disable-next-line max-statements
+      value.map(async _elem => {
+        const elem = { ..._elem };
 
-  // const partners = await model.getUnrestricted({
-  //   sharedId: { $in: partnerSharedIds },
-  //   language,
-  // });
-
-  // const partnersBySharedId: Record<string, EntitySchema> = {};
-  // partners.forEach(partner => {
-  //   partnersBySharedId[partner.sharedId!] = partner;
-  // });
-
-  return Promise.all(
-    // eslint-disable-next-line max-statements
-    value.map(async _elem => {
-      const elem = { ..._elem };
-
-      if (prop.type === 'relationship') {
         const [partner] = await model.getUnrestricted({
           sharedId: elem.value as string,
           language,
@@ -359,10 +341,26 @@ const resolveProp = async (
           elem.inheritedValue = partner!.metadata?.[inheritedProperty!.name] || [];
           elem.inheritedType = inheritedProperty!.type;
         }
-      }
-      return elem;
-    })
-  );
+
+        return elem;
+      })
+    );
+  }
+
+  return value;
+
+  // const partnerSharedIds: string[] = [];
+  // value.forEach(p => p?.forEach(v => partnerSharedIds.push(v.value as string)));
+
+  // const partners = await model.getUnrestricted({
+  //   sharedId: { $in: partnerSharedIds },
+  //   language,
+  // });
+
+  // const partnersBySharedId: Record<string, EntitySchema> = {};
+  // partners.forEach(partner => {
+  //   partnersBySharedId[partner.sharedId!] = partner;
+  // });
 };
 
 // eslint-disable-next-line max-statements
