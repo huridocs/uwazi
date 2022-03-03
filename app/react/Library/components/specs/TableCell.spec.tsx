@@ -111,7 +111,7 @@ describe('TableCell', () => {
       value: [{ label: 'Sexo', name: 'sexo', value: 'Mujer' }],
     };
     const cellContent = renderContent();
-    expect(cellContent.props().children).toEqual('Mujer');
+    expect(cellContent.props().children).toEqual(['Mujer']);
   });
 
   it('should render a geolocation as a compact view', () => {
