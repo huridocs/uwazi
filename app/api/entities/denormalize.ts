@@ -313,15 +313,21 @@ const resolveProp = async (
   }
 
   if (prop.type === 'relationship') {
+    const partners = await model.getUnrestricted({
+      sharedId: { $in: value.map(v => v.value as string) },
+      language,
+    });
+
+    const partnersBySharedId: Record<string, EntitySchema> = {};
+    partners.forEach(partner => {
+      partnersBySharedId[partner.sharedId!] = partner;
+    });
     return Promise.all(
       // eslint-disable-next-line max-statements
       value.map(async _elem => {
         const elem = { ..._elem };
 
-        const [partner] = await model.getUnrestricted({
-          sharedId: elem.value as string,
-          language,
-        });
+        const partner = partnersBySharedId[elem.value as string];
 
         if (partner && partner.title) {
           elem.label = partner.title;
@@ -348,19 +354,6 @@ const resolveProp = async (
   }
 
   return value;
-
-  // const partnerSharedIds: string[] = [];
-  // value.forEach(p => p?.forEach(v => partnerSharedIds.push(v.value as string)));
-
-  // const partners = await model.getUnrestricted({
-  //   sharedId: { $in: partnerSharedIds },
-  //   language,
-  // });
-
-  // const partnersBySharedId: Record<string, EntitySchema> = {};
-  // partners.forEach(partner => {
-  //   partnersBySharedId[partner.sharedId!] = partner;
-  // });
 };
 
 // eslint-disable-next-line max-statements
