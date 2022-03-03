@@ -8,7 +8,12 @@ import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import translate, { getContext } from 'shared/translate';
-import { MetadataSchema, MetadataObjectSchema, PropertySchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import {
+  MetadataSchema,
+  MetadataObjectSchema,
+  PropertySchema,
+  PropertyValueSchema,
+} from 'shared/types/commonTypes';
 import { isString } from 'util';
 
 import model from './entitiesModel';
@@ -252,6 +257,7 @@ const denormalizeThesauriLabelInMetadata = async (
   await reindexUpdates(valueId, language, updates);
 };
 
+// eslint-disable-next-line max-statements
 const resolveProp = async (
   key: string,
   value: MetadataObjectSchema[] | undefined,
@@ -259,55 +265,81 @@ const resolveProp = async (
   thesauriByKey: Record<string, ThesaurusSchema>,
   translation: any,
   allTemplates: TemplateSchema[],
-  partnersBySharedId: Record<string, EntitySchema>
+  language: string
 ) => {
   if (!Array.isArray(value)) {
     throw new Error('denormalizeMetadata received non-array prop!');
   }
   const prop = template.properties?.find(p => p.name === key);
+
+  value.forEach(elem => {
+    if (!elem.hasOwnProperty('value')) {
+      throw new Error('denormalizeMetadata received non-value prop!');
+    }
+  });
+
+  if (!prop) {
+    return value;
+  }
+
+  if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
+    const thesaurus = thesauriByKey
+      ? thesauriByKey[prop.content]
+      : await dictionariesModel.getById(prop.content);
+    if (thesaurus) {
+      const context = getContext(translation, prop.content);
+
+      const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
+      thesaurus.values?.forEach(dv => {
+        if (dv.values) {
+          dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
+        } else {
+          flattenValues.push(dv);
+        }
+      });
+
+      return value.map(_elem => {
+        const elem = { ..._elem };
+        const thesaurusValue = flattenValues.find(v => v.id === elem.value);
+
+        if (thesaurusValue && thesaurusValue.label) {
+          elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
+        }
+
+        if (thesaurusValue && thesaurusValue.parent) {
+          elem.parent = {
+            value: thesaurusValue.parent.id,
+            label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
+          };
+        }
+        return elem;
+      });
+    }
+  }
+
+  // const partnerSharedIds: string[] = [];
+  // value.forEach(p => p?.forEach(v => partnerSharedIds.push(v.value as string)));
+
+  // const partners = await model.getUnrestricted({
+  //   sharedId: { $in: partnerSharedIds },
+  //   language,
+  // });
+
+  // const partnersBySharedId: Record<string, EntitySchema> = {};
+  // partners.forEach(partner => {
+  //   partnersBySharedId[partner.sharedId!] = partner;
+  // });
+
   return Promise.all(
     // eslint-disable-next-line max-statements
     value.map(async _elem => {
       const elem = { ..._elem };
-      if (!elem.hasOwnProperty('value')) {
-        throw new Error('denormalizeMetadata received non-value prop!');
-      }
-      if (!prop) {
-        return elem;
-      }
-      if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
-        const thesaurus = thesauriByKey
-          ? thesauriByKey[prop.content]
-          : await dictionariesModel.getById(prop.content);
-        if (thesaurus) {
-          const context = getContext(translation, prop.content);
-
-          const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
-          thesaurus.values?.forEach(dv => {
-            if (dv.values) {
-              dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
-            } else {
-              flattenValues.push(dv);
-            }
-          });
-
-          const thesaurusValue = flattenValues.find(v => v.id === elem.value);
-
-          if (thesaurusValue && thesaurusValue.label) {
-            elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
-          }
-
-          if (thesaurusValue && thesaurusValue.parent) {
-            elem.parent = {
-              value: thesaurusValue.parent.id,
-              label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
-            };
-          }
-        }
-      }
 
       if (prop.type === 'relationship') {
-        const partner = partnersBySharedId[elem.value as string];
+        const [partner] = await model.getUnrestricted({
+          sharedId: elem.value as string,
+          language,
+        });
 
         if (partner && partner.title) {
           elem.label = partner.title;
@@ -345,37 +377,13 @@ async function denormalizeMetadata(
   }
 
   const translation = (await translationsModel.get({ locale: language }))[0];
+  console.log(translation);
   const allTemplates = await templates.get();
 
   const template = allTemplates.find(t => t._id.toString() === templateId);
   if (!template) {
     return metadata;
   }
-
-  // const [partner] = await model.getUnrestricted({
-  //   sharedId: elem.value as string,
-  //   language,
-  // });
-
-  // Object.entries(metadata).filter()
-
-  const relationshipProperties =
-    template.properties?.filter(p => p.type === 'relationship').map(p => p.name) || [];
-  const partnerSharedIds: string[] = [];
-  relationshipProperties
-    .map(pname => metadata[pname])
-    .forEach(p => p?.forEach(v => partnerSharedIds.push(v.value as string)));
-  // relationshipValues = Array.from(new Set(relationshipValues));
-
-  const partners = await model.getUnrestricted({
-    sharedId: { $in: partnerSharedIds },
-    language,
-  });
-
-  const partnersBySharedId: Record<string, EntitySchema> = {};
-  partners.forEach(partner => {
-    partnersBySharedId[partner.sharedId!] = partner;
-  });
 
   return Object.keys(metadata).reduce(
     async (meta, prop) => ({
@@ -387,7 +395,7 @@ async function denormalizeMetadata(
         thesauriByKey,
         translation,
         allTemplates,
-        partnersBySharedId
+        language
       ),
     }),
     Promise.resolve({})
