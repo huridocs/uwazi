@@ -57,9 +57,16 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
       );
       break;
     case 'inherit':
-      result = (prop.value as MetadataObjectSchema[]).find(
-        (p: MetadataObjectSchema) => p.name === prop.inheritedName
-      )?.value;
+      result = (prop.value as MetadataObjectSchema[]).map((p: MetadataObjectSchema) => {
+        if (p.value && (p.value as LinkSchema).url) {
+          return (
+            <React.Fragment key={p.value as string}>
+              <I18NLink to={(p.value as LinkSchema).url}>{(p.value as LinkSchema).label}</I18NLink>
+            </React.Fragment>
+          );
+        }
+        return p.value;
+      });
       break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value as MetadataObjectSchema[]} onlyForCards />;
