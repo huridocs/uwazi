@@ -1,5 +1,5 @@
 import { DB } from 'api/odm';
-import { fixturer, createNewMongoDB } from 'api/utils/testing_db';
+import { fixturer, createNewMongoDB, testingDB } from 'api/utils/testing_db';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
 import { Db } from 'mongodb';
@@ -11,8 +11,19 @@ import {
 import { tenants } from 'api/tenants';
 import request from 'shared/JSONRequest';
 import EntitiesModel from 'api/entities/entitiesModel';
+import templates from 'api/templates/templates';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
+
+const ONE_TWEET_PARAMS = {
+  title: 'tweet title',
+  text: 'tweet text',
+  source: 'url',
+  user_name: 'user',
+  user_url: 'user_url',
+  date: 1645747200,
+  hashtags: [],
+};
 
 describe('TwitterIntegration', () => {
   let twitterIntegration: TwitterIntegration;
@@ -73,20 +84,20 @@ describe('TwitterIntegration', () => {
     expect(twitterIntegration.twitterTaskManager.startTask).not.toHaveBeenCalled();
   });
 
-  it('should send a twitter request', async () => {
+  it('should send a twitter requests', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesOneTenant);
 
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { hashtag: ['#hashtag-example'], fromUTCTimestamp: 0 },
+      params: { hashtag: '#hashtag-example', fromUTCTimestamp: 0 },
       tenant: 'tenant',
       task: 'get-hashtag',
     });
   });
 
   it('should send a twitter request for different tenants', async () => {
-    await fixturer.clearAllAndLoad(dbTwo, fixturesOneTenant);
+    await fixturer.clearAllAndLoad(dbOne, fixturesOneTenant);
     await fixturer.clearAllAndLoad(dbTwo, fixturesOtherTenant);
 
     tenants.tenants = { tenant, tenantTwo };
@@ -94,62 +105,111 @@ describe('TwitterIntegration', () => {
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { hashtag: ['#hashtag-example'], fromUTCTimestamp: 0 },
+      params: { hashtag: '#hashtag-example', fromUTCTimestamp: 0 },
       tenant: 'tenant',
       task: 'get-hashtag',
     });
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { hashtag: ['#other-hashtag-example'], fromUTCTimestamp: 0 },
+      params: { hashtag: '#other-hashtag-example', fromUTCTimestamp: 0 },
+      tenant: 'tenantTwo',
+      task: 'get-hashtag',
+    });
+
+    expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
+      params: { hashtag: '#other-hashtag-example2', fromUTCTimestamp: 0 },
       tenant: 'tenantTwo',
       task: 'get-hashtag',
     });
   });
 
-  it('should store one tweet', async () => {
-    await fixturer.clearAllAndLoad(dbOne, fixturesOneTenant);
+  it('should create templates if they do not exist', async () => {
+    await testingDB.setupFixturesAndContext(fixturesOneTenant, 'tenant');
 
     await twitterIntegration.processResults({
       tenant: tenant.name,
       task: 'get-hashtag',
-      params: { text: 'tweet text #hashtag_example', hashtags: ['#hashtag_example'] },
+      params: ONE_TWEET_PARAMS,
     });
 
     await tenants.run(async () => {
-      const hashtagsEntities = await EntitiesModel.getUnrestricted({ title: '#hashtag_example' });
-      const tweetsEntities = await EntitiesModel.getUnrestricted({ title: 'one' });
+      const [hashtagTemplate] = await templates.get({ name: 'Hashtags' });
+      const [tweetsTemplate] = await templates.get({ name: 'Tweets' });
+      expect(hashtagTemplate.name).toBe('Hashtags');
+      expect(tweetsTemplate.name).toBe('Tweets');
+    }, tenant.name);
+  });
+
+  it('should create other templates if they do not exist', async () => {
+    await testingDB.setupFixturesAndContext(fixturesOtherTenant, 'tenant');
+
+    await twitterIntegration.processResults({
+      tenant: tenant.name,
+      task: 'get-hashtag',
+      params: ONE_TWEET_PARAMS,
+    });
+
+    await tenants.run(async () => {
+      const [hashtagTemplate] = await templates.get({ name: 'OtherHashtags' });
+      const [tweetsTemplate] = await templates.get({ name: 'OtherTweets' });
+      expect(hashtagTemplate.name).toBe('OtherHashtags');
+      expect(tweetsTemplate.name).toBe('OtherTweets');
+    }, tenant.name);
+  });
+
+  it('should store one tweet', async () => {
+    await testingDB.setupFixturesAndContext(fixturesOneTenant, 'tenant');
+
+    await twitterIntegration.processResults({
+      tenant: tenant.name,
+      task: 'get-hashtag',
+      params: ONE_TWEET_PARAMS,
+    });
+
+    await tenants.run(async () => {
+      const tweetsEntities = await EntitiesModel.getUnrestricted();
 
       const [tweetEntity] = tweetsEntities;
-      expect(hashtagsEntities.length).toBe(1);
+      expect(tweetsEntities.length).toBe(1);
       expect(tweetEntity).toMatchObject({
-        metadata: { text: [{ value: 'tweet text #hashtag_example' }] },
+        title: 'tweet title',
+        metadata: {
+          tweet_text: [{ value: 'tweet text' }],
+          tweet_source: [{ value: { label: 'link', url: 'url' } }],
+          tweet_author: [{ value: { label: 'user', url: 'user_url' } }],
+          tweet_date: [{ value: 1645747200 }],
+        },
       });
     }, tenant.name);
   });
 
-  it('should store another tweet', async () => {
+  /*  it('should store another tweet', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesOneTenant);
 
     await twitterIntegration.processResults({
       tenant: tenant.name,
       task: 'get-hashtag',
       params: {
-        text: 'other tweet text #other_hashtag_example',
-        hashtags: ['#other_hashtag_example'],
+        text: 'other tweet text #other_hashtag_example #hashtag_example',
+        hashtag: '#other_hashtag_example',
       },
     });
 
     await tenants.run(async () => {
       const hashtagsEntities = await EntitiesModel.getUnrestricted({
-        title: '#other_hashtag_example',
+        $or: [{ title: '#other_hashtag_example' }, { title: '#hashtag_example' }],
       });
       const tweetsEntities = await EntitiesModel.getUnrestricted({ title: 'one' });
 
       const [tweetEntity] = tweetsEntities;
-      expect(hashtagsEntities.length).toBe(1);
+      expect(hashtagsEntities.length).toBe(2);
+      expect(hashtagsEntities.map(x => x.title)).toEqual([
+        '#other_hashtag_example',
+        '#hashtag_example',
+      ]);
       expect(tweetEntity).toMatchObject({
-        metadata: { text: [{ value: 'other tweet text #other_hashtag_example' }] },
+        metadata: { text: [{ value: 'other tweet text #other_hashtag_example #hashtag_example' }] },
       });
     }, tenant.name);
-  });
+  });*/
 });
