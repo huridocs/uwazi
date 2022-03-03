@@ -33,7 +33,12 @@ export const SuggestionAcceptanceModal = ({
         </label>
       </Modal.Body>
       <Modal.Footer>
-        <button type="button" className="btn btn-default cancel-button" onClick={onClose}>
+        <button
+          type="button"
+          className="btn btn-default cancel-button"
+          aria-label="Close acceptance modal"
+          onClick={onClose}
+        >
           <Translate>Cancel</Translate>
         </button>
         <button
