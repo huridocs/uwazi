@@ -94,7 +94,7 @@ class Root extends Component {
       <html lang={language}>
         {headTag(head, CSS, reduxData)}
         <body>
-          <div id="root" dangerouslySetInnerHTML={{ __html: content }} /> 
+          <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
           <script
             //eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
