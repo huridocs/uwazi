@@ -377,7 +377,6 @@ async function denormalizeMetadata(
   }
 
   const translation = (await translationsModel.get({ locale: language }))[0];
-  console.log(translation);
   const allTemplates = await templates.get();
 
   const template = allTemplates.find(t => t._id.toString() === templateId);

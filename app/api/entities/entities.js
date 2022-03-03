@@ -69,7 +69,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(
             entity.metadata,
-            entity.language,
+            d.language,
             template._id.toString(),
             thesauriByKey
           );
