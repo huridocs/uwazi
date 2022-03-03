@@ -252,11 +252,107 @@ const denormalizeThesauriLabelInMetadata = async (
   await reindexUpdates(valueId, language, updates);
 };
 
-// eslint-disable-next-line max-statements
-const resolveProp = async (
-  key: string,
+const denormalizeSelectProperty = async (
+  property: PropertySchema,
+  value: MetadataObjectSchema[],
+  thesauriByKey: Record<string, ThesaurusSchema>,
+  translation: any
+) => {
+  const thesaurus = thesauriByKey
+    ? thesauriByKey[property.content!]
+    : await dictionariesModel.getById(property.content);
+  if (!thesaurus) {
+    return undefined;
+  }
+
+  const context = getContext(translation, property.content);
+
+  const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
+  thesaurus.values?.forEach(dv => {
+    if (dv.values) {
+      dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
+    } else {
+      flattenValues.push(dv);
+    }
+  });
+
+  return value.map(_elem => {
+    const elem = { ..._elem };
+    const thesaurusValue = flattenValues.find(v => v.id === elem.value);
+
+    if (thesaurusValue && thesaurusValue.label) {
+      elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
+    }
+
+    if (thesaurusValue && thesaurusValue.parent) {
+      elem.parent = {
+        value: thesaurusValue.parent.id,
+        label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
+      };
+    }
+    return elem;
+  });
+};
+
+const denormalizeInheritedProperty = (
+  property: PropertySchema,
+  value: MetadataObjectSchema,
+  partner: EntitySchema,
+  allTemplates: TemplateSchema[]
+) => {
+  const partnerTemplate = allTemplates.find(
+    t => t._id!.toString() === partner.template!.toString()
+  );
+
+  const inheritedProperty = partnerTemplate!.properties!.find(
+    p => p._id && p._id.toString() === property!.inherit!.property!.toString()
+  );
+
+  return {
+    ...value,
+    inheritedValue: partner!.metadata?.[inheritedProperty!.name] || [],
+    inheritedType: inheritedProperty!.type,
+  };
+};
+
+const denormalizeRelationshipProperty = async (
+  property: PropertySchema,
+  value: MetadataObjectSchema[],
+  language: string,
+  allTemplates: TemplateSchema[]
+) => {
+  const partners = await model.getUnrestricted({
+    sharedId: { $in: value.map(v => v.value as string) },
+    language,
+  });
+
+  const partnersBySharedId: Record<string, EntitySchema> = {};
+  partners.forEach(partner => {
+    partnersBySharedId[partner.sharedId!] = partner;
+  });
+
+  return value.map(_elem => {
+    let elem = { ..._elem };
+
+    const partner = partnersBySharedId[elem.value as string];
+
+    if (partner && partner.title) {
+      elem.label = partner.title;
+      elem.icon = partner.icon;
+      elem.type = partner.file ? 'document' : 'entity';
+    }
+
+    if (property.inherit && property.inherit.property && partner) {
+      elem = denormalizeInheritedProperty(property, elem, partner, allTemplates);
+    }
+
+    return elem;
+  });
+};
+
+const denormalizeProperty = async (
+  property: PropertySchema | undefined,
   value: MetadataObjectSchema[] | undefined,
-  template: TemplateSchema,
   thesauriByKey: Record<string, ThesaurusSchema>,
   translation: any,
   allTemplates: TemplateSchema[],
@@ -265,100 +361,27 @@ const resolveProp = async (
   if (!Array.isArray(value)) {
     throw new Error('denormalizeMetadata received non-array prop!');
   }
-  const prop = template.properties?.find(p => p.name === key);
-
   value.forEach(elem => {
     if (!elem.hasOwnProperty('value')) {
       throw new Error('denormalizeMetadata received non-value prop!');
     }
   });
 
-  if (!prop) {
+  if (!property) {
     return value;
   }
 
-  if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
-    const thesaurus = thesauriByKey
-      ? thesauriByKey[prop.content]
-      : await dictionariesModel.getById(prop.content);
-    if (!thesaurus) {
-      return;
-    }
-
-    const context = getContext(translation, prop.content);
-
-    const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
-    thesaurus.values?.forEach(dv => {
-      if (dv.values) {
-        dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
-      } else {
-        flattenValues.push(dv);
-      }
-    });
-
-    return value.map(_elem => {
-      const elem = { ..._elem };
-      const thesaurusValue = flattenValues.find(v => v.id === elem.value);
-
-      if (thesaurusValue && thesaurusValue.label) {
-        elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
-      }
-
-      if (thesaurusValue && thesaurusValue.parent) {
-        elem.parent = {
-          value: thesaurusValue.parent.id,
-          label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
-        };
-      }
-      return elem;
-    });
+  if (property.content && ['select', 'multiselect'].includes(property.type)) {
+    return denormalizeSelectProperty(property, value, thesauriByKey, translation);
   }
 
-  if (prop.type === 'relationship') {
-    const partners = await model.getUnrestricted({
-      sharedId: { $in: value.map(v => v.value as string) },
-      language,
-    });
-
-    const partnersBySharedId: Record<string, EntitySchema> = {};
-    partners.forEach(partner => {
-      partnersBySharedId[partner.sharedId!] = partner;
-    });
-    return Promise.all(
-      // eslint-disable-next-line max-statements
-      value.map(async _elem => {
-        const elem = { ..._elem };
-
-        const partner = partnersBySharedId[elem.value as string];
-
-        if (partner && partner.title) {
-          elem.label = partner.title;
-          elem.icon = partner.icon;
-          elem.type = partner.file ? 'document' : 'entity';
-        }
-
-        if (prop.inherit && prop.inherit.property && partner) {
-          const partnerTemplate = allTemplates.find(
-            t => t._id!.toString() === partner.template!.toString()
-          );
-
-          const inheritedProperty = partnerTemplate!.properties!.find(
-            p => p._id && p._id.toString() === prop!.inherit!.property!.toString()
-          );
-
-          elem.inheritedValue = partner!.metadata?.[inheritedProperty!.name] || [];
-          elem.inheritedType = inheritedProperty!.type;
-        }
-
-        return elem;
-      })
-    );
+  if (property.type === 'relationship') {
+    return denormalizeRelationshipProperty(property, value, language, allTemplates);
   }
 
   return value;
 };
 
-// eslint-disable-next-line max-statements
 async function denormalizeMetadata(
   metadata: MetadataSchema,
   language: string,
@@ -380,10 +403,9 @@ async function denormalizeMetadata(
   return Object.keys(metadata).reduce(
     async (meta, prop) => ({
       ...(await meta),
-      [prop]: await resolveProp(
-        prop,
+      [prop]: await denormalizeProperty(
+        template.properties?.find(p => p.name === prop),
         metadata[prop],
-        template,
         thesauriByKey,
         translation,
         allTemplates,
