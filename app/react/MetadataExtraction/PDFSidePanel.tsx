@@ -6,7 +6,6 @@ import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import scroller from 'app/Viewer/utils/Scroller';
-import { unsetSelection, setSelection } from 'app/Viewer/actions/selectionActions';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import SourceDocument from 'app/Viewer/components/SourceDocument';
@@ -92,6 +91,7 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
                 sharedId={entity.get('sharedId')}
                 templateId={entity.get('template')}
                 showSubset={[entitySuggestion.propertyName]}
+                storeKey="documentViewer"
               />
             </div>
             <div className="document-viewer">
