@@ -1,4 +1,5 @@
 import db, { DBFixture } from 'api/utils/testing_db';
+import { ObjectID } from 'mongodb';
 
 const settings = [
   {
@@ -15,6 +16,7 @@ const settings = [
         hashtags: ['#hashtag-example'],
         hashtagsTemplateName: 'Hashtags',
         tweetsTemplateName: 'Tweets',
+        language: 'en',
       },
     },
   },
@@ -36,6 +38,7 @@ const otherSettings = [
         hashtags: ['#other-hashtag-example', '#other-hashtag-example2'],
         hashtagsTemplateName: 'OtherHashtags',
         tweetsTemplateName: 'OtherTweets',
+        language: 'en',
       },
     },
   },
@@ -58,4 +61,23 @@ const fixturesOtherTenant: DBFixture = {
   settings: otherSettings,
 };
 
-export { fixturesOneTenant, fixturesOtherTenant, fixturesTenantWithoutTwitter };
+const fixturesWithTweets: DBFixture = {
+  entities: [
+    {
+      template: new ObjectID('6218eaf9b419df7782dcb76f'),
+      metadata: {
+        tweet_date: [{ value: 12344 }],
+      },
+    },
+    {
+      template: new ObjectID('6218eaf9b419df7782dcb76f'),
+      metadata: {
+        tweet_date: [{ value: 12345 }],
+      },
+    },
+  ],
+  templates: [{ name: 'Tweets', _id: new ObjectID('6218eaf9b419df7782dcb76f') }],
+  settings,
+};
+
+export { fixturesOneTenant, fixturesOtherTenant, fixturesTenantWithoutTwitter, fixturesWithTweets };

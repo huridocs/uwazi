@@ -38,6 +38,7 @@ import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
+import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
 
 mongoose.Promise = Promise;
 
@@ -163,6 +164,15 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         );
 
         segmentationRepeater.start();
+
+        const twitterIntegration = new TwitterIntegration();
+        const twitterRepeater = new DistributedLoop(
+          'twitter_repeat',
+          twitterIntegration.addTweetsRequestsToQueue,
+          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 300000 }
+        );
+
+        twitterRepeater.start();
       }
     });
 
