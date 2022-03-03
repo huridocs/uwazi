@@ -44,7 +44,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
     docLanguages[0].template.toString() !== entity.template.toString()
   ) {
     await Promise.all([
-      this.deleteRelatedEntityFromMetadata(docLanguages[0]), // this should be okay, all queries are batch ones with a different purpose
+      this.deleteRelatedEntityFromMetadata(docLanguages[0]),
       relationships.delete({ entity: entity.sharedId }, null, false),
     ]);
   }
@@ -766,12 +766,12 @@ export default {
         entity.metadata = await this.denormalizeMetadata(
           entity.metadata,
           language,
-          entity.template.toString()
+          entity.template?.toString()
         );
         entity.suggestedMetadata = await this.denormalizeMetadata(
           entity.suggestedMetadata,
           language,
-          entity.template.toString()
+          entity.template?.toString()
         );
         return entity;
       })

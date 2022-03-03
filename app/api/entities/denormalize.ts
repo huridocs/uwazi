@@ -8,7 +8,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import translate, { getContext } from 'shared/translate';
-import { MetadataSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import { MetadataSchema, MetadataObjectSchema, PropertySchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { isString } from 'util';
 
 import model from './entitiesModel';
@@ -259,7 +259,7 @@ const resolveProp = async (
   thesauriByKey: Record<string, ThesaurusSchema>,
   translation: any,
   allTemplates: TemplateSchema[],
-  language: string
+  partnersBySharedId: Record<string, EntitySchema>
 ) => {
   if (!Array.isArray(value)) {
     throw new Error('denormalizeMetadata received non-array prop!');
@@ -307,10 +307,7 @@ const resolveProp = async (
       }
 
       if (prop.type === 'relationship') {
-        const [partner] = await model.getUnrestricted({
-          sharedId: elem.value as string,
-          language,
-        });
+        const partner = partnersBySharedId[elem.value as string];
 
         if (partner && partner.title) {
           elem.label = partner.title;
@@ -336,6 +333,7 @@ const resolveProp = async (
   );
 };
 
+// eslint-disable-next-line max-statements
 async function denormalizeMetadata(
   metadata: MetadataSchema,
   language: string,
@@ -354,6 +352,31 @@ async function denormalizeMetadata(
     return metadata;
   }
 
+  // const [partner] = await model.getUnrestricted({
+  //   sharedId: elem.value as string,
+  //   language,
+  // });
+
+  // Object.entries(metadata).filter()
+
+  const relationshipProperties =
+    template.properties?.filter(p => p.type === 'relationship').map(p => p.name) || [];
+  const partnerSharedIds: string[] = [];
+  relationshipProperties
+    .map(pname => metadata[pname])
+    .forEach(p => p?.forEach(v => partnerSharedIds.push(v.value as string)));
+  // relationshipValues = Array.from(new Set(relationshipValues));
+
+  const partners = await model.getUnrestricted({
+    sharedId: { $in: partnerSharedIds },
+    language,
+  });
+
+  const partnersBySharedId: Record<string, EntitySchema> = {};
+  partners.forEach(partner => {
+    partnersBySharedId[partner.sharedId!] = partner;
+  });
+
   return Object.keys(metadata).reduce(
     async (meta, prop) => ({
       ...(await meta),
@@ -364,7 +387,7 @@ async function denormalizeMetadata(
         thesauriByKey,
         translation,
         allTemplates,
-        language
+        partnersBySharedId
       ),
     }),
     Promise.resolve({})
