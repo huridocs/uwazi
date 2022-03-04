@@ -30,6 +30,13 @@ const fetchFile = async (fileId: string) => {
   return api.get('files', fileRequest);
 };
 
+const scrollToPage = async (pageNumber: number) =>
+  scroller.to(`.document-viewer div#page-${pageNumber}`, '.document-viewer', {
+    duration: 0,
+    dividerOffset: 1,
+    offset: 50,
+  });
+
 const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelProps) => {
   const [entity, setEntity] = useState<ClientEntitySchema>({});
   const [file, setFile] = useState<FileType>({});
@@ -58,58 +65,48 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
     }
   }, [entitySuggestion]);
 
-  useEffect(() => {
-    if (file._id) {
-      scroller
-        .to(`.document-viewer div#page-${2}`, '.document-viewer', {
-          duration: 50,
-          dividerOffset: 1,
-          offset: 50,
-        })
-        .then(() => {})
-        .catch(() => {});
-    }
-  }, [file]);
-
-  return (
-    open && (
-      <SidePanel className="wide" open={open}>
-        <>
-          <div className="sidepanel-header buttons-align-right">
-            <button
-              type="button"
-              className="closeSidepanel close-modal"
-              onClick={closeSidePanel}
-              aria-label="Close side panel"
-            >
-              <Icon icon="times" />
+  return open ? (
+    <SidePanel className="wide" open={open}>
+      <>
+        <div className="sidepanel-header buttons-align-right">
+          <button
+            type="button"
+            className="closeSidepanel close-modal"
+            onClick={closeSidePanel}
+            aria-label="Close side panel"
+          >
+            <Icon icon="times" />
+          </button>
+          <div className="button-list">
+            <button type="button" className="btn btn-default" onClick={closeSidePanel}>
+              <Translate>Cancel</Translate>
             </button>
-            <div className="button-list">
-              <button type="button" className="btn btn-default" onClick={closeSidePanel}>
-                <Translate>Cancel</Translate>
-              </button>
-              <button type="submit" className="btn btn-success" form="metadataForm">
-                <Translate>Save</Translate>
-              </button>
-            </div>
+            <button type="submit" className="btn btn-success" form="metadataForm">
+              <Translate>Save</Translate>
+            </button>
           </div>
-          {entity.sharedId && file.filename && (
-            <>
-              <MetadataForm
-                model="documentViewer.sidepanel.metadata"
-                sharedId={entity.sharedId}
-                templateId={entity.template?.toString()}
-                showSubset={[entitySuggestion.propertyName]}
-                storeKey="documentViewer"
+        </div>
+        {entity.sharedId && file.filename && (
+          <>
+            <MetadataForm
+              model="documentViewer.sidepanel.metadata"
+              sharedId={entity.sharedId}
+              templateId={entity.template?.toString()}
+              showSubset={[entitySuggestion.propertyName]}
+              storeKey="documentViewer"
+            />
+            <div className="document-viewer">
+              <SourceDocument
+                file={file}
+                onPDFLoaded={async () => scrollToPage(entitySuggestion.page || 1)}
               />
-              <div className="document-viewer">
-                <SourceDocument file={file} />
-              </div>
-            </>
-          )}
-        </>
-      </SidePanel>
-    )
+            </div>
+          </>
+        )}
+      </>
+    </SidePanel>
+  ) : (
+    <></>
   );
 };
 

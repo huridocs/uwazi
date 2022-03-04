@@ -75,7 +75,7 @@ export class Document extends Component {
         this.props.doScrollToActive
       );
     }
-
+    this.props.onPDFLoaded();
     this.componentDidUpdate();
   }
 
@@ -132,6 +132,7 @@ Document.defaultProps = {
   onDocumentReady: () => {},
   onPageChange: () => {},
   onClick: () => {},
+  onPDFLoaded: () => {},
   file: {},
   searchTerm: '',
   page: 1,
@@ -149,6 +150,7 @@ Document.defaultProps = {
 Document.propTypes = {
   onPageChange: PropTypes.func,
   onDocumentReady: PropTypes.func,
+  onPDFLoaded: PropTypes.func,
   doc: PropTypes.object,
   file: PropTypes.object,
   selectedSnippet: PropTypes.instanceOf(Immutable.Map),
