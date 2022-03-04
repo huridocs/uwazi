@@ -93,6 +93,7 @@ export default class Geolocation extends Component {
           autoCenter={false}
           mapStyleSwitcher
           showControls
+          tilesProvider={this.props.tilesProvider}
         />
         <div className="form-row">
           <div className="form-group half-width">
@@ -136,9 +137,11 @@ export default class Geolocation extends Component {
 
 Geolocation.defaultProps = {
   value: [{ ...defaultValue }],
+  tilesProvider: '',
 };
 
 Geolocation.propTypes = {
   value: PropTypes.arrayOf(PropTypes.object),
+  tilesProvider: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 };

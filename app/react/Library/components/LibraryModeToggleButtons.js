@@ -41,36 +41,6 @@ export class LibraryModeToggleButtons extends Component {
     } = this.props;
     return (
       <div className="list-view-mode">
-        {mapViewMode && showGeolocation && (
-          <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
-            <button
-              className={`street btn btn-default ${
-                this.state.mapStyle === 'street' ? 'is-active' : ''
-              }`}
-              onClick={this.switchMapToStreet}
-              type="button"
-              aria-label={t('System', 'Street View', null, false)}
-            >
-              <Icon icon="map-marker-alt" />
-              <span className="tab-link-tooltip">
-                <Translate>Street</Translate>
-              </span>
-            </button>
-            <button
-              className={`satellite btn btn-default ${
-                this.state.mapStyle === 'satellite' ? 'is-active' : ''
-              }`}
-              onClick={this.switchMapToSatellite}
-              type="button"
-              aria-label={t('System', 'Satellite View', null, false)}
-            >
-              <Icon icon="map" />
-              <span className="tab-link-tooltip">
-                <Translate>Satellite</Translate>
-              </span>
-            </button>
-          </div>
-        )}
         {tableViewMode && (
           <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}

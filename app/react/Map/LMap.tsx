@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import L, { LatLng, latLng } from 'leaflet';
 import 'leaflet.markercluster';
 import { getMapProvider } from 'app/Map/TilesProviderFactory';
 import { GeolocationSchema } from 'shared/types/commonTypes';
-import { generateID } from 'shared/IDGenerator';
+import uniqueID from 'shared/uniqueID';
 
 interface MarkerProperties {
   entity?: {
@@ -17,8 +17,14 @@ interface Marker {
   properties: MarkerProperties;
 }
 
+interface PointMarker {
+  latitude: number;
+  longitude: number;
+  properties: MarkerProperties;
+}
+
 interface LMapProps {
-  markers: { latitude: number; longitude: number; properties: MarkerProperties }[];
+  markers: PointMarker[];
   height: number;
   clickOnMarker: (marker: DataMarker) => {};
   clickOnCluster: (cluster: DataMarker[]) => {};
@@ -28,6 +34,7 @@ interface LMapProps {
   startingPoint: GeolocationSchema;
   renderPopupInfo?: (marker: Marker) => any;
   templatesInfo: { [k: string]: { color: string; name: string } };
+  tilesProvider: string;
 }
 
 class DataMarker extends L.Marker {
@@ -46,7 +53,9 @@ class DataMarker extends L.Marker {
 const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   let map: L.Map;
   let markerGroup: L.MarkerClusterGroup;
-  const containerId = generateID(3, 4, 0);
+  const containerId = uniqueID();
+  const [currentMarkers, setCurrentMarkers] = useState<PointMarker[]>();
+  const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
 
   const addClusterMarker = (markerPoint: Marker) => {
     const marker = new DataMarker(
@@ -55,9 +64,17 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
     );
     if (props.renderPopupInfo && marker.properties?.entity) {
       const templateInfo = props.templatesInfo[marker.properties.entity.template];
-      const info = `<div><span className='btn-color' style={{ backgroundColor: ${templateInfo.color}}}>${templateInfo.name}</span>
-                    &nbsp;${marker.properties.entity.title}</div>`;
-      marker.bindTooltip(info);
+
+      const info = `<div class="popup-container">
+            <span class="btn-color btn-color-8">
+              <span class="translation">${templateInfo.name}</span>
+            </span>&nbsp;
+            <span class="popup-name">${marker.properties.entity.title}</span>
+            &nbsp;(<span class="popup-metadata-property">Geolocation</span>)
+          </div>
+        </div>
+      `;
+      marker.bindPopup(info);
     }
     marker.addTo(markerGroup);
   };
@@ -67,6 +84,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
     markerGroup.clearLayers();
     addClusterMarker(markerPoint);
     const event = { lngLat: [markerPoint.latlng.lng, markerPoint.latlng.lat] };
+
     props.onClick(event);
   };
 
@@ -96,15 +114,26 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
       zoom: 6,
       maxZoom: 20,
+      zoomControl: false,
     });
     markerGroup = L.markerClusterGroup();
     initMarkers();
-    L.control.layers(baseMaps).addTo(map);
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
+    L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     layers[0].addTo(map);
     map.on('click', clickHandler);
   };
 
   useEffect(() => {
+    if (
+      currentMarkers !== undefined &&
+      currentMarkers.length > 0 &&
+      currentTilesProvider === props.tilesProvider
+    ) {
+      return;
+    }
+    setCurrentMarkers(pointMarkers);
+    setCurrentTilesProvider(props.tilesProvider);
     if (!map) {
       const container = L.DomUtil.get(containerId);
       if (container != null) {
@@ -113,10 +142,10 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       }
     }
     initMap();
-  }, [pointMarkers]);
+  }, [pointMarkers, props.tilesProvider]);
 
   return (
-    <div id="map-container">
+    <div className="map-container">
       <div
         id={containerId}
         className="leafletmap"

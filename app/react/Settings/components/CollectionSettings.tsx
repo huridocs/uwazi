@@ -327,6 +327,7 @@ const CollectionSettings = ({
           <div className="settings-map">
             <Geolocation
               value={watch('mapStartingPoint')}
+              tilesProvider={watch('tilesProvider')}
               onChange={(values: Settings['mapStartingPoint']) => {
                 setValue('mapStartingPoint', values);
               }}
