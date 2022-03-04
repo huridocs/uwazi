@@ -5,42 +5,67 @@ import entities from 'api/entities/entities';
 import templates from 'api/templates';
 import EntitiesModel from 'api/entities/entitiesModel';
 import relationtypes from 'api/relationtypes';
+import { EntitySchema } from 'shared/types/entityType';
+
+interface TweetParamsType {
+  title: string;
+  text: string;
+  source: string;
+  // eslint-disable-next-line camelcase
+  user: { display_name: string; url: string };
+  // eslint-disable-next-line camelcase
+  created_at: number;
+  hashtags: string[];
+  images: string[];
+}
+
+interface TwitterIntegrationSettingsType {
+  hashtags: string[];
+  hashtagsTemplateName: string;
+  tweetsTemplateName: string;
+  language: string;
+  tweetsLanguages: string[];
+}
 
 class TwitterIntegration {
   static SERVICE_NAME = 'twitter_crawler';
+
   public twitterTaskManager: TaskManager;
 
   constructor() {
     this.twitterTaskManager = new TaskManager({
       serviceName: TwitterIntegration.SERVICE_NAME,
-      processResults: this.addTweetsRequestsToQueue,
+      processResults: this.processResults,
     });
   }
 
-  getTwitterIntegrationSettings = async (): Promise<
-    | {
-        hashtags: string[];
-        hashtagsTemplateName: string;
-        tweetsTemplateName: string;
-        language: string;
-      }
-    | unknown
-  > => {
+  getTwitterIntegrationSettings = async (): Promise<TwitterIntegrationSettingsType> => {
     const settingsValues = await settings.get();
     if (!settingsValues.features || !settingsValues.features.twitterIntegration) {
-      return;
+      return {
+        hashtags: [],
+        hashtagsTemplateName: '',
+        tweetsTemplateName: '',
+        language: '',
+        tweetsLanguages: [],
+      };
     }
 
-    return settingsValues.features.twitterIntegration;
+    return settingsValues.features.twitterIntegration as TwitterIntegrationSettingsType;
   };
 
   addTweetsRequestsToQueue = async () => {
+    const pendingTasks = await this.twitterTaskManager.countPendingTasks();
+    if (pendingTasks > 0) {
+      return;
+    }
+
     await Promise.all(
       Object.keys(tenants.tenants).map(async tenant => {
         await tenants.run(async () => {
           const twitterIntegration = await this.getTwitterIntegrationSettings();
 
-          if (!twitterIntegration) {
+          if (!twitterIntegration.hashtagsTemplateName) {
             return;
           }
 
@@ -51,19 +76,25 @@ class TwitterIntegration {
             { limit: 1, sort: { 'metadata.tweet_date': -1 } }
           );
 
-          const utcTimestampEntities = newestEntity.length
-            ? newestEntity[0].metadata.tweet_date[0].value
-            : 0;
-
-          const { hashtags } = twitterIntegration;
+          const utcTimestampEntities =
+            newestEntity.length && newestEntity[0].metadata?.tweet_date
+              ? newestEntity[0].metadata.tweet_date[0].value
+              : 0;
 
           // eslint-disable-next-line @typescript-eslint/no-misused-promises,no-restricted-syntax
-          for (const hashtag of hashtags) {
+          for (const hashtag of twitterIntegration.hashtags) {
             // eslint-disable-next-line no-await-in-loop
             await this.twitterTaskManager.startTask({
               task: 'get-hashtag',
               tenant,
-              params: { query: hashtag, from_UTC_timestamp: utcTimestampEntities },
+              params: {
+                query: hashtag,
+                from_UTC_timestamp: utcTimestampEntities,
+                tweets_languages:
+                  twitterIntegration && twitterIntegration.tweetsLanguages
+                    ? twitterIntegration.tweetsLanguages
+                    : [],
+              },
             });
           }
         }, tenant);
@@ -75,41 +106,47 @@ class TwitterIntegration {
     await tenants.run(async () => {
       const twitterIntegration = await this.getTwitterIntegrationSettings();
 
-      if (!twitterIntegration) {
+      if (!twitterIntegration.hashtagsTemplateName) {
         return;
       }
 
       const templateTweet = await this.getTemplateTweets(twitterIntegration);
-      const tweetHashtags = await this.saveHashtags(twitterIntegration, message.params.hashtags);
+      const tweetHashtags = await this.saveHashtags(twitterIntegration, message.params?.hashtags);
 
-      await entities.save(
+      const entity = await entities.save(
         {
-          title: message.params.title,
+          title: message.params?.title,
           metadata: {
-            tweet_text: [{ value: message.params.text }],
-            tweet_source: [{ value: { label: 'link', url: message.params.source } }],
+            tweet_text: [{ value: message.params?.text }],
+            tweet_source: [{ value: { label: 'link', url: message.params?.source } }],
             tweet_author: [
-              { value: { label: message.params.user.display_name, url: message.params.user.url } },
+              {
+                value: { label: message.params?.user.display_name, url: message.params?.user.url },
+              },
             ],
-            tweet_date: [{ value: message.params.created_at }],
+            tweet_date: [{ value: message.params?.created_at }],
             tweet_hashtags: tweetHashtags,
           },
           template: templateTweet._id,
         },
-        { user: {}, language: twitterIntegration.language },
+        { user: {}, language: twitterIntegration?.language },
         { updateRelationships: false }
       );
+      await this.getImages(entity, message.params?.images_url);
     }, message.tenant);
   };
 
-  private saveHashtags = async (twitterIntegration, hashtags: string[]) => {
+  private saveHashtags = async (
+    twitterIntegration: TwitterIntegrationSettingsType,
+    hashtags: string[]
+  ) => {
     const templateHashtag = await this.getHashtagsTemplate(twitterIntegration);
 
     const tweetHashtags = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const hashtag of hashtags) {
       // eslint-disable-next-line no-await-in-loop
-      const hashtagEntities = await entities.get({
+      const hashtagEntities = await entities.getUnrestricted({
         title: hashtag.toString(),
         template: templateHashtag._id,
       });
@@ -139,7 +176,7 @@ class TwitterIntegration {
     return tweetHashtags;
   };
 
-  private getTemplateTweets = async twitterIntegration => {
+  private getTemplateTweets = async (twitterIntegration: TwitterIntegrationSettingsType) => {
     const templatesTweet = await templates.get({ name: twitterIntegration.tweetsTemplateName });
 
     if (templatesTweet.length) {
@@ -163,9 +200,9 @@ class TwitterIntegration {
           { name: 'editDate', label: 'Date modified', type: 'date' },
         ],
         properties: [
-          { name: 'tweet_text', label: 'Tweet text', type: 'markdown' },
-          { name: 'tweet_source', label: 'Tweet source', type: 'link' },
-          { name: 'tweet_author', label: 'Tweet author', type: 'link' },
+          { name: 'tweet_text', label: 'Tweet text', type: 'markdown', showInCard: true },
+          { name: 'tweet_source', label: 'Tweet source', type: 'link', showInCard: true },
+          { name: 'tweet_author', label: 'Tweet author', type: 'link', showInCard: true },
           { name: 'tweet_date', label: 'Tweet date', type: 'date' },
           {
             name: 'tweet_hashtags',
@@ -173,6 +210,7 @@ class TwitterIntegration {
             type: 'relationship',
             relationType: relationType._id.toString(),
             content: hashtagsTemplate._id.toString(),
+            filter: true,
           },
         ],
       },
@@ -180,7 +218,7 @@ class TwitterIntegration {
     );
   };
 
-  private getHashtagsTemplate = async twitterIntegration => {
+  private getHashtagsTemplate = async (twitterIntegration: TwitterIntegrationSettingsType) => {
     const templatesHashtag = await templates.get({
       name: twitterIntegration.hashtagsTemplateName,
     });
@@ -195,6 +233,12 @@ class TwitterIntegration {
           twitterIntegration.language
         );
   };
+
+  private getImages = async (entity: EntitySchema, images_urls: string[]) => {
+    //TODO save image
+
+  };
 }
 
 export { TwitterIntegration };
+export type { TweetParamsType };

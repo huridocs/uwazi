@@ -1,7 +1,10 @@
 import { DB } from 'api/odm';
 import { fixturer, createNewMongoDB, testingDB } from 'api/utils/testing_db';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
+import {
+  TweetParamsType,
+  TwitterIntegration,
+} from 'api/services/twitterintegration/TwitterIntegration';
 import { Db } from 'mongodb';
 import {
   fixturesOneTenant,
@@ -15,19 +18,7 @@ import templates from 'api/templates/templates';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
-interface paramsType {
-  title: string;
-  text: string;
-  source: string;
-  // eslint-disable-next-line camelcase
-  user: { display_name: string; url: string };
-  // eslint-disable-next-line camelcase
-  created_at: number;
-  hashtags: string[];
-  images: string[];
-}
-
-const ONE_TWEET_PARAMS: paramsType = {
+const ONE_TWEET_PARAMS: TweetParamsType = {
   title: 'tweet title',
   text: 'tweet text',
   source: 'url',
@@ -84,6 +75,10 @@ describe('TwitterIntegration', () => {
     tenants.tenants = { tenant };
   });
 
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
   it('should do nothing with tenant without the twitter setup', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesTenantWithoutTwitter);
 
@@ -98,7 +93,7 @@ describe('TwitterIntegration', () => {
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { query: '#hashtag-example', from_UTC_timestamp: 0 },
+      params: { query: '#hashtag-example', from_UTC_timestamp: 0, tweets_languages: ['en'] },
       tenant: 'tenant',
       task: 'get-hashtag',
     });
@@ -112,13 +107,21 @@ describe('TwitterIntegration', () => {
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { query: '#other-hashtag-example', from_UTC_timestamp: 0 },
+      params: {
+        query: '#other-hashtag-example',
+        from_UTC_timestamp: 0,
+        tweets_languages: ['es', 'my'],
+      },
       tenant: 'tenant2',
       task: 'get-hashtag',
     });
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { query: '#other-hashtag-example2', from_UTC_timestamp: 0 },
+      params: {
+        query: '#other-hashtag-example2',
+        from_UTC_timestamp: 0,
+        tweets_languages: ['es', 'my'],
+      },
       tenant: 'tenant2',
       task: 'get-hashtag',
     });
@@ -132,7 +135,7 @@ describe('TwitterIntegration', () => {
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { query: '#hashtag-example', from_UTC_timestamp: 12345 },
+      params: { query: '#hashtag-example', from_UTC_timestamp: 12345, tweets_languages: ['en'] },
       tenant: 'tenant',
       task: 'get-hashtag',
     });

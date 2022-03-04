@@ -169,7 +169,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         const twitterRepeater = new DistributedLoop(
           'twitter_repeat',
           twitterIntegration.addTweetsRequestsToQueue,
-          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 300000 }
+          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 120000 }
         );
 
         twitterRepeater.start();
