@@ -414,17 +414,23 @@ async function denormalizeMetadata(
     return metadata;
   }
 
-  return Object.keys(metadata).reduce(
-    async (meta, propertyName) => ({
-      ...(await meta),
+  const denormalizedProperties = await Promise.all(
+    Object.keys(metadata).map(async propertyName => ({
       [propertyName]: await denormalizeProperty(
         template.properties?.find(p => p.name === propertyName),
         metadata[propertyName],
         language,
         { thesauriByKey, translation, allTemplates }
       ),
+    }))
+  );
+
+  return denormalizedProperties.reduce(
+    (partialMetadata, property) => ({
+      ...partialMetadata,
+      ...property,
     }),
-    Promise.resolve({})
+    {}
   );
 }
 
