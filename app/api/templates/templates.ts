@@ -12,7 +12,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import model from './templatesModel';
 import {
-  generateNamesAndIds,
+  generateNames,
   getRenamedTitle,
   getDeletedProperties,
   getUpdatedNames,
@@ -58,11 +58,20 @@ const addTemplateTranslation = async (template: TemplateSchema) =>
 const updateTranslation = async (currentTemplate: TemplateSchema, template: TemplateSchema) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties || [];
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
+    prop: 'label',
+    outKey: 'label',
+    filterBy: '_id',
+  });
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
-  const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  const deletedPropertiesByLabel = getDeletedProperties(
+    currentProperties,
+    newProperties,
+    '_id',
+    'label'
+  );
   deletedPropertiesByLabel.push(
     ...getRenamedTitle(
       ensure<PropertySchema[]>(currentTemplate.commonProperties),
@@ -92,7 +101,9 @@ const removeExcludedPropertiesValues = async (
   const templateContentProperties = (template.properties || []).filter(p => p.content);
   const toRemoveValues = currentTemplateContentProperties
     .map(prop => {
-      const sameProperty = templateContentProperties.find(p => p.id === prop.id);
+      const sameProperty = templateContentProperties.find(
+        p => p._id?.toString() === prop._id?.toString()
+      );
       if (sameProperty && sameProperty.content !== prop.content) {
         return sameProperty.name;
       }
@@ -140,7 +151,7 @@ export default {
   ) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
-    template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await generateNames(template.properties);
     template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
@@ -166,7 +177,7 @@ export default {
     currentTemplate.properties = currentTemplate.properties || [];
     currentTemplate.properties.forEach(prop => {
       const swapingNameWithExistingProperty = (template.properties || []).find(
-        p => p.name === prop.name && p.id !== prop.id
+        p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
       if (swapingNameWithExistingProperty) {
         throw createError(`Properties can't swap names: ${prop.name}`, 400);

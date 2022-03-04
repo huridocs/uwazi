@@ -17,7 +17,6 @@ const templates: TemplateSchema[] = [
     name: 'Paragraph',
     properties: [
       {
-        id: 'propertyID1',
         _id: '_propertyID1',
         name: 'thesaurus_name',
         label: 'ThesaurusName',
@@ -39,7 +38,6 @@ const templates: TemplateSchema[] = [
     name: 'Recommendation',
     properties: [
       {
-        id: 'propertyID2',
         _id: '_propertyID2',
         name: 'recommendation',
         label: 'Recommendation',

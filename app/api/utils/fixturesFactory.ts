@@ -104,7 +104,6 @@ function getFixturesFactory() {
       props = {}
     ): PropertySchema => ({
       _id: idMapper(name),
-      id: name,
       label: name,
       name,
       type,
