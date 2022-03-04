@@ -414,20 +414,23 @@ async function denormalizeMetadata(
     return metadata;
   }
 
-  const denormalizedProperties: [string, MetadataObjectSchema[] | undefined][] = await Promise.all(
-    Object.keys(metadata).map(async propertyName => [
+  const denormalizedProperties: {
+    propertyName: string;
+    denormalizedValue: MetadataObjectSchema[] | undefined;
+  }[] = await Promise.all(
+    Object.keys(metadata).map(async propertyName => ({
       propertyName,
-      await denormalizeProperty(
+      denormalizedValue: await denormalizeProperty(
         template.properties?.find(p => p.name === propertyName),
         metadata[propertyName],
         language,
         { thesauriByKey, translation, allTemplates }
       ),
-    ])
+    }))
   );
 
   const denormalizedMetadata: Record<string, MetadataObjectSchema[] | undefined> = {};
-  denormalizedProperties.forEach(([propertyName, denormalizedValue]) => {
+  denormalizedProperties.forEach(({ propertyName, denormalizedValue }) => {
     denormalizedMetadata[propertyName] = denormalizedValue;
   });
 
