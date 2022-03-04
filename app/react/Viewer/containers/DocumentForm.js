@@ -14,7 +14,7 @@ function mapStateToProps({ documentViewer, templates, thesauris }) {
   };
 }
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       changeTemplate: actions.changeTemplate,
@@ -27,4 +27,4 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 const connected = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
-export { connected as DocumentForm };
+export { connected as DocumentForm, mapDispatchToProps };
