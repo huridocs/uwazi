@@ -414,24 +414,24 @@ async function denormalizeMetadata(
     return metadata;
   }
 
-  const denormalizedProperties = await Promise.all(
-    Object.keys(metadata).map(async propertyName => ({
-      [propertyName]: await denormalizeProperty(
+  const denormalizedProperties: [string, MetadataObjectSchema[] | undefined][] = await Promise.all(
+    Object.keys(metadata).map(async propertyName => [
+      propertyName,
+      await denormalizeProperty(
         template.properties?.find(p => p.name === propertyName),
         metadata[propertyName],
         language,
         { thesauriByKey, translation, allTemplates }
       ),
-    }))
+    ])
   );
 
-  return denormalizedProperties.reduce(
-    (partialMetadata, property) => ({
-      ...partialMetadata,
-      ...property,
-    }),
-    {}
-  );
+  const denormalizedMetadata: Record<string, MetadataObjectSchema[] | undefined> = {};
+  denormalizedProperties.forEach(([propertyName, denormalizedValue]) => {
+    denormalizedMetadata[propertyName] = denormalizedValue;
+  });
+
+  return denormalizedMetadata;
 }
 
 export { denormalizeMetadata, denormalizeRelated, denormalizeThesauriLabelInMetadata };
