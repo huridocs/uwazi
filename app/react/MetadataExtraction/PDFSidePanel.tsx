@@ -49,7 +49,7 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
   }, [entitySuggestion]);
 
   useEffect(() => {
-    fetchFile('6218d3f90e33f52f5e0b889c' /*entitySuggestion.fileId*/)
+    fetchFile(entitySuggestion.fileId)
       .then(response => {
         setFile(response.json[0]);
       })

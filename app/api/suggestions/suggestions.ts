@@ -103,6 +103,7 @@ export const Suggestions = {
             entityId: '$entity._id',
             sharedId: '$entity.sharedId',
             entityTitle: '$entity.title',
+            fileId: 1,
             language: 1,
             propertyName: 1,
             suggestedValue: 1,
