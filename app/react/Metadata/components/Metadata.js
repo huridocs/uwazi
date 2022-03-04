@@ -1,3 +1,4 @@
+/* eslint-disable import/exports-last */
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
@@ -37,6 +38,18 @@ export const showByType = (prop, compact) => {
       result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
       break;
     }
+    case 'inherit':
+      result = prop.value.map(p => {
+        if (p.value && p.value.url) {
+          return (
+            <React.Fragment key={p.value}>
+              <I18NLink to={p.value.url}>{p.value.label}</I18NLink>
+            </React.Fragment>
+          );
+        }
+        return p.value;
+      });
+      break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
       break;

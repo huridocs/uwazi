@@ -31,6 +31,7 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
 
   switch (prop.type) {
     case 'multiselect':
+    case 'inherit':
       result = showByType(prop, true);
       break;
     case 'multidaterange':
@@ -55,18 +56,6 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
           </React.Fragment>
         )
       );
-      break;
-    case 'inherit':
-      result = (prop.value as MetadataObjectSchema[]).map((p: MetadataObjectSchema) => {
-        if (p.value && (p.value as LinkSchema).url) {
-          return (
-            <React.Fragment key={p.value as string}>
-              <I18NLink to={(p.value as LinkSchema).url}>{(p.value as LinkSchema).label}</I18NLink>
-            </React.Fragment>
-          );
-        }
-        return p.value;
-      });
       break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value as MetadataObjectSchema[]} onlyForCards />;
