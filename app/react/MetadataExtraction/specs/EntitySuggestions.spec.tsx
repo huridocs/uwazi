@@ -241,7 +241,7 @@ describe('EntitySuggestions', () => {
       expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], false);
     });
     it('should not accept a suggestion in confirmation is cancelled', async () => {
-      const cancelButton = screen.getByText('Cancel').parentElement!;
+      const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
       await act(async () => {
         fireEvent.click(cancelButton);
       });

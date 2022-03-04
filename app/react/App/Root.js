@@ -1,3 +1,4 @@
+import { config } from 'api/config';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
@@ -94,6 +95,12 @@ class Root extends Component {
         {headTag(head, CSS, reduxData)}
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
+          <script
+            //eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `window.UWAZI_ENVIRONMENT = "${config.ENVIRONMENT}"`,
+            }}
+          />
           {process.env.SENTRY_APP_DSN && (
             <script
               //eslint-disable-next-line react/no-danger

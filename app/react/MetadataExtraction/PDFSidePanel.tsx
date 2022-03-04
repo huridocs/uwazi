@@ -1,29 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { fromJS } from 'immutable';
 import { Icon } from 'UI';
 import { store } from 'app/store';
 import { SidePanel } from 'app/Layout';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import SourceDocument from 'app/Viewer/components/SourceDocument';
+import { ClientEntitySchema } from 'app/istore';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { setViewerState } from 'app/Viewer/actions/routeActions';
-
-const dummyFile = {
-  _id: '6218d3f90e33f52f5e0b889c',
-  mimetype: 'application/pdf',
-  filename: '1645794297976o11ri1199ed.pdf',
-  size: 1656567,
-  entity: '0cf0og75jodt',
-  type: 'document',
-  status: 'ready',
-  creationDate: 1645794297987.0,
-  language: 'spa',
-  toc: [],
-  totalPages: 111,
-};
+import api from 'app/utils/api';
+import scroller from 'app/Viewer/utils/Scroller';
+import SourceDocument from 'app/Viewer/components/SourceDocument';
+import { MetadataForm } from 'app/Metadata';
+import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 
 interface PDFSidePanelProps {
   open: boolean;
@@ -36,26 +25,46 @@ const fetchEntity = async (entitySharedId: string) => {
   return EntitiesAPI.get(entityRequest);
 };
 
+const fetchFile = async (fileId: string) => {
+  const fileRequest = new RequestParams({ _id: fileId });
+  return api.get('files', fileRequest);
+};
+
 const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelProps) => {
-  const [entity, setEntity] = useState(fromJS({}));
+  const [entity, setEntity] = useState<ClientEntitySchema>({});
   const [file, setFile] = useState<FileType>({});
-  const state = store?.getState();
+  const templates = store?.getState().templates;
 
   useEffect(() => {
     fetchEntity(entitySuggestion.sharedId)
       .then(response => {
-        setEntity(fromJS(response[0]));
-        setFile(dummyFile);
-        setViewerState({
-          ...state,
-          documentViewer: {
-            doc: {
-              ...dummyFile,
-            },
-          },
-        })(store?.dispatch);
+        setEntity(response[0]);
+        loadFetchedInReduxForm(
+          'documentViewer.sidepanel.metadata',
+          response[0],
+          templates?.toJS()
+        ).forEach(action => store?.dispatch(action));
       })
-      .catch(e => console.log(e));
+      .catch(() => {});
+  }, [entitySuggestion]);
+
+  useEffect(() => {
+    fetchFile('6218d3f90e33f52f5e0b889c' /*entitySuggestion.fileId*/)
+      .then(response => {
+        setFile(response.json[0]);
+      })
+      .catch(() => {});
+  }, [entitySuggestion]);
+
+  useEffect(() => {
+    scroller
+      .to(`.document-viewer div#page-${entitySuggestion.page}`, '.document-viewer', {
+        duration: 50,
+        dividerOffset: 1,
+        offset: 50,
+      })
+      .then(() => {})
+      .catch(() => {});
   }, [entitySuggestion]);
 
   return (
@@ -74,20 +83,24 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
             <button type="button" className="btn btn-default" onClick={closeSidePanel}>
               <Translate>Cancel</Translate>
             </button>
-            <button type="submit" className="btn btn-success">
+            <button type="submit" className="btn btn-success" form="metadataForm">
               <Translate>Save</Translate>
             </button>
           </div>
         </div>
-        {entity.get('sharedId') && file.filename && (
-          <div className="document-viewer">
-            <SourceDocument
-              file={file}
-              searchTerm=""
-              onPageChange={() => {}}
-              onDocumentReady={() => {}}
+        {entity.sharedId && file.filename && (
+          <>
+            <MetadataForm
+              model="documentViewer.sidepanel.metadata"
+              sharedId={entity.sharedId}
+              templateId={entity.template?.toString()}
+              showSubset={[entitySuggestion.propertyName]}
+              storeKey="documentViewer"
             />
-          </div>
+            <div className="document-viewer">
+              <SourceDocument file={file} />
+            </div>
+          </>
         )}
       </>
     </SidePanel>

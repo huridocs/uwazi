@@ -16,6 +16,7 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
+
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
@@ -74,12 +75,7 @@ export const EntitySuggestions = ({
   };
 
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
-    <>
-      <button type="button" onClick={() => showPDF(row)}>
-        PDF
-      </button>
-      {row.original.segment}
-    </>
+    <div onClick={() => showPDF(row)}>{row.original.segment}</div>
   );
 
   const {
