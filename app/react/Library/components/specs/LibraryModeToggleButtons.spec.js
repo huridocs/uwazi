@@ -38,10 +38,6 @@ describe('LibraryModeToggleButtons', () => {
       expect(component.find(I18NLink).at(2).props().to).toBe('library/map?q="asd"');
     });
 
-    it('should show map type buttons', () => {
-      expect(component.find('div.map-type-buttons').length).toBe(1);
-    });
-
     it('should hold zoom buttons', () => {
       let zoomButtons = component.find('div.list-view-mode-zoom');
       expect(zoomButtons.props().className).toContain('list-view-buttons-zoom-3');

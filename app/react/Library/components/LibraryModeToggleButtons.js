@@ -99,7 +99,6 @@ LibraryModeToggleButtons.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
   storeKey: PropTypes.string.isRequired,
   tableViewMode: PropTypes.bool,
-  mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
 };
 
