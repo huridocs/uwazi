@@ -60,7 +60,7 @@ export const showByType = (prop, compact) => {
         prop.value = prop.value.map(_value => {
           const value = showByType(_value, compact);
           const sanitizedValue = value && value.value ? value : { value };
-          return sanitizedValue.value.url ? (
+          return sanitizedValue.value && sanitizedValue.value.url ? (
             <React.Fragment key={sanitizedValue.value}>
               <I18NLink to={sanitizedValue.value.url}>{sanitizedValue.value.label}</I18NLink>
             </React.Fragment>
