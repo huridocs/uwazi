@@ -11,34 +11,9 @@ import { createSelector } from 'reselect';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
-  constructor(props) {
-    super(props);
-    this.switchMapToStreet = this.switchMapToStreet.bind(this);
-    this.switchMapToSatellite = this.switchMapToSatellite.bind(this);
-    this.state = { mapStyle: 'street' };
-  }
-
-  switchMapToStreet() {
-    this.props.setMapStyle('street');
-    this.setState({ mapStyle: 'street' });
-  }
-
-  switchMapToSatellite() {
-    this.props.setMapStyle('satellite');
-    this.setState({ mapStyle: 'satellite' });
-  }
-
   render() {
-    const {
-      zoomLevel,
-      zoomOut,
-      zoomIn,
-      showGeolocation,
-      searchUrl,
-      storeKey,
-      tableViewMode,
-      mapViewMode,
-    } = this.props;
+    const { zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl, storeKey, tableViewMode } =
+      this.props;
     return (
       <div className="list-view-mode">
         {tableViewMode && (
@@ -126,7 +101,6 @@ LibraryModeToggleButtons.propTypes = {
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
-  setMapStyle: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -135,7 +109,6 @@ LibraryModeToggleButtons.defaultProps = {
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},
-  setMapStyle: () => {},
 };
 
 export const encodedSearch = createSelector(
