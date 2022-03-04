@@ -6,36 +6,16 @@ import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientEntitySchema } from 'app/istore';
-import EntitiesAPI from 'app/Entities/EntitiesAPI';
-import { RequestParams } from 'app/utils/RequestParams';
-import api from 'app/utils/api';
-import scroller from 'app/Viewer/utils/Scroller';
 import SourceDocument from 'app/Viewer/components/SourceDocument';
-import { MetadataForm } from 'app/Metadata';
+import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
 import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
+import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
 interface PDFSidePanelProps {
   open: boolean;
   entitySuggestion: EntitySuggestionType;
   closeSidePanel: () => void;
 }
-
-const fetchEntity = async (entitySharedId: string) => {
-  const entityRequest = new RequestParams({ sharedId: entitySharedId });
-  return EntitiesAPI.get(entityRequest);
-};
-
-const fetchFile = async (fileId: string) => {
-  const fileRequest = new RequestParams({ _id: fileId });
-  return api.get('files', fileRequest);
-};
-
-const scrollToPage = async (pageNumber: number) =>
-  scroller.to(`.document-viewer div#page-${pageNumber}`, '.document-viewer', {
-    duration: 0,
-    dividerOffset: 1,
-    offset: 50,
-  });
 
 const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelProps) => {
   const [entity, setEntity] = useState<ClientEntitySchema>({});
@@ -88,10 +68,8 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
         </div>
         {entity.sharedId && file.filename && (
           <>
-            <MetadataForm
-              model="documentViewer.sidepanel.metadata"
+            <DocumentForm
               sharedId={entity.sharedId}
-              templateId={entity.template?.toString()}
               showSubset={[entitySuggestion.propertyName]}
               storeKey="documentViewer"
             />
