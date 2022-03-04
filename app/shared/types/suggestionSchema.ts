@@ -17,6 +17,7 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
     segment: { type: 'string', minLength: 1 },

@@ -166,7 +166,7 @@ class InformationExtraction {
     let suggestedValue: any = suggestion.text.trim();
 
     if (property?.type === 'date') {
-      suggestedValue = new Date(suggestion.text).getTime();
+      suggestedValue = new Date(suggestion.text).getTime() / 1000;
     }
 
     if (Number.isNaN(suggestedValue)) {
@@ -233,6 +233,7 @@ class InformationExtraction {
     const suggestion: IXSuggestionType = {
       ...existingSuggestions,
       entityId: entity.sharedId!,
+      fileId: file._id,
       language: entity.language!,
       propertyName,
       status: 'processing',

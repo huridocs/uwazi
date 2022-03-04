@@ -11,13 +11,19 @@ const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
 
 interface FileWithAggregation {
+  _id: ObjectIdSchema;
   segmentation: SegmentationType;
   entity: string;
   language: string;
   extractedMetadata: ExtractedMetadataSchema[];
 }
 
-type FileEnforcedNotUndefined = { filename: string; language: string; entity: string };
+type FileEnforcedNotUndefined = {
+  _id: ObjectIdSchema;
+  filename: string;
+  language: string;
+  entity: string;
+};
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
   const filesIds = files.filter(x => x.filename).map(x => x.filename);
@@ -36,6 +42,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
 
   return files.map(file => {
     return {
+      _id: file._id,
       language: file.language,
       extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
       entity: file.entity,
