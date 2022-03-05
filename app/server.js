@@ -15,6 +15,7 @@ import * as Tracing from '@sentry/tracing';
 import { OcrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
 import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
+import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
@@ -38,7 +39,6 @@ import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
-import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
 
 mongoose.Promise = Promise;
 

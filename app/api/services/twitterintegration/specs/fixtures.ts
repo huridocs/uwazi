@@ -1,11 +1,11 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import { ObjectID } from 'mongodb';
+import { factory } from 'api/services/informationextraction/specs/fixtures';
 
 const settings = [
   {
     languages: [
       {
-        _id: db.id(),
         key: 'en',
         label: 'English',
         default: true,
@@ -13,7 +13,7 @@ const settings = [
     ],
     features: {
       twitterIntegration: {
-        hashtags: ['#hashtag-example'],
+        searchQueries: ['#hashtag-example'],
         hashtagsTemplateName: 'Hashtags',
         tweetsTemplateName: 'Tweets',
         language: 'en',
@@ -23,6 +23,9 @@ const settings = [
   },
 ];
 
+const fixturesOneTenant: DBFixture = {
+  settings,
+};
 const otherSettings = [
   {
     _id: db.id(),
@@ -36,7 +39,7 @@ const otherSettings = [
     ],
     features: {
       twitterIntegration: {
-        hashtags: ['#other-hashtag-example', '#other-hashtag-example2'],
+        searchQueries: ['#other-hashtag-example', '#other-hashtag-example2'],
         hashtagsTemplateName: 'OtherHashtags',
         tweetsTemplateName: 'OtherTweets',
         language: 'en',
@@ -50,13 +53,8 @@ const fixturesTenantWithoutTwitter: DBFixture = {
   settings: [
     {
       _id: db.id(),
-      features: {},
     },
   ],
-};
-
-const fixturesOneTenant: DBFixture = {
-  settings,
 };
 
 const fixturesOtherTenant: DBFixture = {
@@ -65,20 +63,14 @@ const fixturesOtherTenant: DBFixture = {
 
 const fixturesWithTweets: DBFixture = {
   entities: [
-    {
-      template: new ObjectID('6218eaf9b419df7782dcb76f'),
-      metadata: {
-        tweet_date: [{ value: 12344 }],
-      },
-    },
-    {
-      template: new ObjectID('6218eaf9b419df7782dcb76f'),
-      metadata: {
-        tweet_date: [{ value: 12345 }],
-      },
-    },
+    factory.entity('A1', 'Tweets', {
+      tweet_date: [{ value: 12344 }],
+    }),
+    factory.entity('A2', 'Tweets', {
+      tweet_date: [{ value: 12345 }],
+    }),
   ],
-  templates: [{ name: 'Tweets', _id: new ObjectID('6218eaf9b419df7782dcb76f') }],
+  templates: [factory.template('Tweets', [factory.property('tweet_date', 'date')])],
   settings,
 };
 

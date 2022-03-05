@@ -5,7 +5,13 @@ import entities from 'api/entities/entities';
 import templates from 'api/templates';
 import EntitiesModel from 'api/entities/entitiesModel';
 import relationtypes from 'api/relationtypes';
-import { EntitySchema } from 'shared/types/entityType';
+import {
+  getTextWithAttachedImages,
+  getTwitterImages,
+  getTwitterImagesData,
+  TwitterImageData,
+} from 'api/services/twitterintegration/getTwitterImages';
+import { generateFileName } from 'api/files';
 
 interface TweetParamsType {
   title: string;
@@ -16,11 +22,12 @@ interface TweetParamsType {
   // eslint-disable-next-line camelcase
   created_at: number;
   hashtags: string[];
-  images: string[];
+  // eslint-disable-next-line camelcase
+  images_urls: string[];
 }
 
 interface TwitterIntegrationSettingsType {
-  hashtags: string[];
+  searchQueries: string[];
   hashtagsTemplateName: string;
   tweetsTemplateName: string;
   language: string;
@@ -40,10 +47,10 @@ class TwitterIntegration {
   }
 
   getTwitterIntegrationSettings = async (): Promise<TwitterIntegrationSettingsType> => {
-    const settingsValues = await settings.get();
+    const settingsValues = await settings.get({}, 'features');
     if (!settingsValues.features || !settingsValues.features.twitterIntegration) {
       return {
-        hashtags: [],
+        searchQueries: [],
         hashtagsTemplateName: '',
         tweetsTemplateName: '',
         language: '',
@@ -82,7 +89,7 @@ class TwitterIntegration {
               : 0;
 
           // eslint-disable-next-line @typescript-eslint/no-misused-promises,no-restricted-syntax
-          for (const hashtag of twitterIntegration.hashtags) {
+          for (const hashtag of twitterIntegration.searchQueries) {
             // eslint-disable-next-line no-await-in-loop
             await this.twitterTaskManager.startTask({
               task: 'get-hashtag',
@@ -113,11 +120,13 @@ class TwitterIntegration {
       const templateTweet = await this.getTemplateTweets(twitterIntegration);
       const tweetHashtags = await this.saveHashtags(twitterIntegration, message.params?.hashtags);
 
+      const twitterImagesData: TwitterImageData[] = getTwitterImagesData(message);
+      const textWithAttachedImages = getTextWithAttachedImages(message, twitterImagesData);
       const entity = await entities.save(
         {
           title: message.params?.title,
           metadata: {
-            tweet_text: [{ value: message.params?.text }],
+            tweet_text: [{ value: textWithAttachedImages }],
             tweet_source: [{ value: { label: 'link', url: message.params?.source } }],
             tweet_author: [
               {
@@ -129,10 +138,10 @@ class TwitterIntegration {
           },
           template: templateTweet._id,
         },
-        { user: {}, language: twitterIntegration?.language },
-        { updateRelationships: false }
+        { user: {}, language: twitterIntegration?.language }
       );
-      await this.getImages(entity, message.params?.images_url);
+
+      await getTwitterImages(entity, twitterImagesData);
     }, message.tenant);
   };
 
@@ -206,7 +215,7 @@ class TwitterIntegration {
           { name: 'tweet_date', label: 'Tweet date', type: 'date' },
           {
             name: 'tweet_hashtags',
-            label: 'Tweet Hashtags',
+            label: 'Tweet hashtags',
             type: 'relationship',
             relationType: relationType._id.toString(),
             content: hashtagsTemplate._id.toString(),
@@ -218,7 +227,7 @@ class TwitterIntegration {
     );
   };
 
-  private getHashtagsTemplate = async (twitterIntegration: TwitterIntegrationSettingsType) => {
+  getHashtagsTemplate = async (twitterIntegration: TwitterIntegrationSettingsType) => {
     const templatesHashtag = await templates.get({
       name: twitterIntegration.hashtagsTemplateName,
     });
@@ -233,12 +242,7 @@ class TwitterIntegration {
           twitterIntegration.language
         );
   };
-
-  private getImages = async (entity: EntitySchema, images_urls: string[]) => {
-    //TODO save image
-
-  };
 }
 
 export { TwitterIntegration };
-export type { TweetParamsType };
+export type { TweetParamsType, TwitterIntegrationSettingsType };
