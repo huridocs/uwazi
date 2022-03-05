@@ -223,7 +223,7 @@ describe('TwitterIntegration', () => {
     expect(fileFromReadStreamSpy).toHaveBeenCalledWith(
       'generatedUwaziFilename',
       expect.anything(),
-      '/home/gabo/projects/uwazi/app/api/files/specs/uploads/'
+      expect.anything()
     );
     expect(tweetsEntities[0]).toMatchObject({
       metadata: {

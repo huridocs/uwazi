@@ -79,7 +79,6 @@ export interface Settings {
       tweetsTemplateName: string;
       language: string;
       tweetsLanguages: string[];
-      [k: string]: unknown | undefined;
     };
     metadataExtraction?: {
       url: string;

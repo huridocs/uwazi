@@ -11,7 +11,6 @@ import {
   getTwitterImagesData,
   TwitterImageData,
 } from 'api/services/twitterintegration/getTwitterImages';
-import { generateFileName } from 'api/files';
 
 interface TweetParamsType {
   title: string;
