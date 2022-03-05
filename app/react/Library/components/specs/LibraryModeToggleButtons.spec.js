@@ -39,6 +39,8 @@ describe('LibraryModeToggleButtons', () => {
     });
 
     it('should hold zoom buttons', () => {
+      props.mapViewMode = false;
+      render();
       let zoomButtons = component.find('div.list-view-mode-zoom');
       expect(zoomButtons.props().className).toContain('list-view-buttons-zoom-3');
 
