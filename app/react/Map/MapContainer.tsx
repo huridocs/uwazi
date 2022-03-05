@@ -20,7 +20,8 @@ type ComponentProps = MapComponentProps & mappedProps;
 
 const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProps) => {
   const startingPoint = collectionSettings?.get('mapStartingPoint')?.toJS();
-  const mapProvider = props.tilesProvider || collectionSettings?.get('tilesProvider') || 'google';
+  const mapProvider =
+    props.tilesProvider || collectionSettings?.get('tilesProvider') || 'opengoogle';
   const token = collectionSettings?.get('mapApiKey');
   const templatesInfo = templates.reduce(
     (info, t) => ({
