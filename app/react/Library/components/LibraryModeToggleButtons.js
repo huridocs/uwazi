@@ -104,7 +104,6 @@ LibraryModeToggleButtons.propTypes = {
 
 LibraryModeToggleButtons.defaultProps = {
   tableViewMode: false,
-  mapViewMode: false,
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},

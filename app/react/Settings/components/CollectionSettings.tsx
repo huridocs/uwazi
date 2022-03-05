@@ -313,6 +313,7 @@ const CollectionSettings = ({
         <SettingsFormElement label="Map provider">
           <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="tilesProvider" className="form-control" ref={register}>
+              <option value="opengoogle">{t('System', 'Open Google Maps', null, false)}</option>
               <option value="google">{t('System', 'Google Maps', null, false)}</option>
               <option value="mapbox">{t('System', 'MapBox', null, false)}</option>
             </select>

@@ -52,6 +52,9 @@ export default {
         key: 'Google Maps',
       },
       {
+        key: 'Open Google Maps',
+      },
+      {
         key: 'MapBox',
       },
       {

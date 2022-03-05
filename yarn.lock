@@ -2241,6 +2241,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/leaflet.gridlayer.googlemutant@^0.4.6":
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/@types/leaflet.gridlayer.googlemutant/-/leaflet.gridlayer.googlemutant-0.4.6.tgz#86d3ba9d432dec29b4796e37d815c233680e7fcb"
+  integrity sha512-L0J7NadcZp5bcKQrv4DVlsEbQ90xLsOKScckAMnxoghh/wogk0GVkauYOYHBKeKDkx9qkMRzTf8oO+fKeYD7oQ==
+  dependencies:
+    "@types/leaflet" "*"
+
 "@types/leaflet.markercluster@^1.4.6":
   version "1.4.6"
   resolved "https://registry.yarnpkg.com/@types/leaflet.markercluster/-/leaflet.markercluster-1.4.6.tgz#1159460b374ba5e329cb678d0e427f99dca75be5"
@@ -9430,6 +9437,11 @@ lazy-cache@^1.0.3:
   version "1.0.4"
   resolved "https://registry.npmjs.org/lazy-cache/-/lazy-cache-1.0.4.tgz"
   integrity sha1-odePw6UEdMuAhF07O24dpJpEbo4=
+
+leaflet.gridlayer.googlemutant@^0.13.5:
+  version "0.13.5"
+  resolved "https://registry.yarnpkg.com/leaflet.gridlayer.googlemutant/-/leaflet.gridlayer.googlemutant-0.13.5.tgz#7182c26f479e726bff8b85a7ebf9d3f44dd3ea57"
+  integrity sha512-DHUEXpo1t0WZ9tpdLUHHkrTK7LldCXr/gqkV5E/4hHidDJB2srceLLCZj4PV/pl0jPdTkVBT+Lr8nL9EZDB5hw==
 
 leaflet.markercluster@^1.5.3:
   version "1.5.3"
