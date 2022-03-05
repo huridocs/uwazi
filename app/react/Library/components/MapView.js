@@ -76,7 +76,6 @@ export class MapView extends Component {
                 this.map = ref;
               }}
               markers={processedMarkers}
-              zoom={1}
               clickOnMarker={this.clickOnMarker}
               clickOnCluster={this.clickOnCluster}
               renderPopupInfo={renderInfo}

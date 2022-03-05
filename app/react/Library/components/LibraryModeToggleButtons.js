@@ -12,37 +12,47 @@ import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
-    const { zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl, storeKey, tableViewMode } =
-      this.props;
+    const {
+      zoomLevel,
+      zoomOut,
+      zoomIn,
+      showGeolocation,
+      searchUrl,
+      storeKey,
+      tableViewMode,
+      mapViewMode,
+    } = this.props;
     return (
       <div className="list-view-mode">
         {tableViewMode && (
           <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
-        <div
-          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
-            tableViewMode ? 'unpinned-mode' : ''
-          }`}
-        >
-          <button
-            className="btn btn-default zoom-out"
-            onClick={zoomOut}
-            type="button"
-            aria-label={t('System', 'Zoom out library view', null, false)}
+        {!mapViewMode && (
+          <div
+            className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
+              tableViewMode ? 'unpinned-mode' : ''
+            }`}
           >
-            <Icon icon="search-minus" />
-            <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
-          </button>
-          <button
-            className="btn btn-default zoom-in"
-            onClick={zoomIn}
-            type="button"
-            aria-label={t('System', 'Zoom in library view', null, false)}
-          >
-            <Icon icon="search-plus" />
-            <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
-          </button>
-        </div>
+            <button
+              className="btn btn-default zoom-out"
+              onClick={zoomOut}
+              type="button"
+              aria-label={t('System', 'Zoom out library view', null, false)}
+            >
+              <Icon icon="search-minus" />
+              <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
+            </button>
+            <button
+              className="btn btn-default zoom-in"
+              onClick={zoomIn}
+              type="button"
+              aria-label={t('System', 'Zoom in library view', null, false)}
+            >
+              <Icon icon="search-plus" />
+              <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
+            </button>
+          </div>
+        )}
 
         <div className="list-view-mode-map buttons-group">
           <I18NLink
@@ -99,11 +109,13 @@ LibraryModeToggleButtons.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
   storeKey: PropTypes.string.isRequired,
   tableViewMode: PropTypes.bool,
+  mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
   tableViewMode: false,
+  mapViewMode: false,
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},

@@ -7,7 +7,6 @@ import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleBu
 
 describe('LibraryMap', () => {
   let component;
-  let instance;
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
@@ -15,33 +14,12 @@ describe('LibraryMap', () => {
     const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
 
     component = shallow(<LibraryMap {...props} />, { context });
-    instance = component.instance();
   });
 
   it('should render the MapView', () => {
     expect(component.find(MapView).props().storeKey).toBe('library');
   });
 
-  it('should include the Toggle Buttons with zoom in and out functionality', () => {
-    const zoomIn = jasmine.createSpy('zoomIn');
-    const zoomOut = jasmine.createSpy('zoomOut');
-
-    instance.mapView = { getWrappedInstance: () => ({ map: { zoomIn, zoomOut } }) };
-    const libraryButtons = component.find(LibraryModeToggleButtons);
-
-    expect(libraryButtons.props().zoomLevel).toBe(0);
-    expect(libraryButtons.props().storeKey).toBe('library');
-
-    expect(zoomIn).not.toHaveBeenCalled();
-    expect(zoomOut).not.toHaveBeenCalled();
-
-    libraryButtons.props().zoomIn();
-    expect(zoomIn).toHaveBeenCalled();
-    expect(zoomOut).not.toHaveBeenCalled();
-
-    libraryButtons.props().zoomOut();
-    expect(zoomOut).toHaveBeenCalled();
-  });
   it('should enable mapViewMode', () => {
     const libraryMode = component.find(LibraryModeToggleButtons);
     expect(libraryMode.props().mapViewMode).toBe(true);

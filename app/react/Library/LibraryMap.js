@@ -13,17 +13,7 @@ export default class LibraryMap extends Library {
   render() {
     return (
       <LibraryLayout className="library-map-layout">
-        <LibraryModeToggleButtons
-          storeKey="library"
-          zoomIn={() => {
-            this.mapView.getWrappedInstance().map.zoomIn();
-          }}
-          zoomOut={() => {
-            this.mapView.getWrappedInstance().map.zoomOut();
-          }}
-          zoomLevel={0}
-          mapViewMode
-        />
+        <LibraryModeToggleButtons storeKey="library" mapViewMode />
         <MapView
           storeKey="library"
           ref={ref => {
