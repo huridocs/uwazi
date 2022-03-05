@@ -2,6 +2,15 @@ import { SearchQuery } from 'shared/types/SearchQueryType';
 import { ElasticHit, SearchResponse } from 'api/search/elasticTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
+function getSnippetsForNonFullText(hit: ElasticHit<EntitySchema>) {
+  return hit.highlight
+    ? Object.entries(hit.highlight).reduce<any>((memo, [property, highlights]: [any, any]) => {
+        memo.push({ field: property, texts: highlights });
+        return memo;
+      }, [])
+    : [];
+}
+
 function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
   const fullTextSnippets: { text: string; page: number }[] = [];
 
@@ -19,7 +28,19 @@ function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
       });
     });
   }
-  return { count: fullTextSnippets.length, metadata: [], fullText: fullTextSnippets };
+
+  const hitsCount = hit.highlight
+    ? Object.values(hit.highlight).reduce<number>(
+        (memo, highlights: any) => memo + highlights.length,
+        0
+      )
+    : 0;
+
+  return {
+    count: fullTextSnippets.length + hitsCount,
+    metadata: getSnippetsForNonFullText(hit),
+    fullText: fullTextSnippets,
+  };
 }
 
 export const mapResults = (entityResults: SearchResponse<EntitySchema>, searchQuery: SearchQuery) =>

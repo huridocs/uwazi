@@ -94,7 +94,7 @@ export const customErrorMessages = {
   [propertyTypes.markdown]: 'should be a string',
   [propertyTypes.media]: 'should be a string',
   [propertyTypes.image]: 'should be a string',
-  [propertyTypes.select]: 'should be string',
+  [propertyTypes.select]: 'should be a "[ { value: string } ]" with a single object',
   [propertyTypes.multiselect]: 'should be an array of non empty strings',
   [propertyTypes.relationship]: 'should be an array of non empty strings',
   [propertyTypes.numeric]: 'should be number',
