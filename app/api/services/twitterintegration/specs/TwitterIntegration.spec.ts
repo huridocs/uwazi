@@ -31,6 +31,8 @@ const ONE_TWEET_PARAMS: TweetParamsType = {
   images_urls: [],
 };
 
+const tenantName = 'tenant1';
+
 describe('TwitterIntegration', () => {
   let twitterIntegration: TwitterIntegration;
 
@@ -46,9 +48,9 @@ describe('TwitterIntegration', () => {
     };
 
     const tenant1 = {
-      name: 'tenant1',
-      dbName: 'tenant1',
-      indexName: 'tenant1',
+      name: tenantName,
+      dbName: tenantName,
+      indexName: tenantName,
       ...folders,
     };
 
@@ -64,7 +66,7 @@ describe('TwitterIntegration', () => {
   it('should do nothing with tenant without the twitter setup', async () => {
     await testingEnvironment.setUp(fixturesTenantWithoutTwitter);
     testingTenants.changeCurrentTenant({
-      name: 'tenant1',
+      name: tenantName,
     });
     await twitterIntegration.addTweetsRequestsToQueue();
 
@@ -72,34 +74,34 @@ describe('TwitterIntegration', () => {
   });
 
   it('should send a twitter requests', async () => {
-    await testingDB.setupFixturesAndContext(fixturesOneTenant, 'tenant1');
+    await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
       params: { query: '#hashtag-example', from_UTC_timestamp: 0, tweets_languages: ['en'] },
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
     });
   });
 
   it('should send a twitter request with the timestamp of last tweet', async () => {
-    await testingDB.setupFixturesAndContext(fixturesWithTweets, 'tenant1');
+    await testingDB.setupFixturesAndContext(fixturesWithTweets, tenantName);
 
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
       params: { query: '#hashtag-example', from_UTC_timestamp: 12345, tweets_languages: ['en'] },
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
     });
   });
 
   it('should create templates if they do not exist', async () => {
-    await testingDB.setupFixturesAndContext(fixturesOneTenant, 'tenant1');
+    await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
     await twitterIntegration.processResults({
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
       params: ONE_TWEET_PARAMS,
     });
@@ -111,10 +113,10 @@ describe('TwitterIntegration', () => {
   });
 
   it('should create other templates if they do not exist', async () => {
-    await testingDB.setupFixturesAndContext(fixturesOtherTenant, 'tenant1');
+    await testingDB.setupFixturesAndContext(fixturesOtherTenant, tenantName);
 
     await twitterIntegration.processResults({
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
       params: ONE_TWEET_PARAMS,
     });
@@ -126,10 +128,10 @@ describe('TwitterIntegration', () => {
   });
 
   it('should store one tweet', async () => {
-    await testingDB.setupFixturesAndContext(fixturesOneTenant, 'tenant1');
+    await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
     await twitterIntegration.processResults({
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
       params: ONE_TWEET_PARAMS,
     });
@@ -150,16 +152,16 @@ describe('TwitterIntegration', () => {
   });
 
   it('should store the hashtags', async () => {
-    await testingDB.setupFixturesAndContext(fixturesOneTenant, 'tenant1');
+    await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
     await twitterIntegration.processResults({
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
       params: ONE_TWEET_PARAMS,
     });
 
     await twitterIntegration.processResults({
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
       params: ONE_TWEET_PARAMS,
     });
@@ -194,7 +196,7 @@ describe('TwitterIntegration', () => {
       headers: { 'Content-Type': 'some/mimetype' },
     });
 
-    await testingDB.setupFixturesAndContext(fixturesOneTenant, 'tenant1');
+    await testingDB.setupFixturesAndContext(fixturesOneTenant, tenantName);
 
     const imageParams = {
       ...ONE_TWEET_PARAMS,
@@ -203,7 +205,7 @@ describe('TwitterIntegration', () => {
     };
 
     await twitterIntegration.processResults({
-      tenant: 'tenant1',
+      tenant: tenantName,
       task: 'get-hashtag',
       params: imageParams,
     });
