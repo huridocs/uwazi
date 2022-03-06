@@ -73,6 +73,13 @@ export interface Settings {
     segmentation?: {
       url: string;
     };
+    twitterIntegration?: {
+      searchQueries: string[];
+      hashtagsTemplateName: string;
+      tweetsTemplateName: string;
+      language: string;
+      tweetsLanguages: string[];
+    };
     metadataExtraction?: {
       url: string;
       templates?: {
