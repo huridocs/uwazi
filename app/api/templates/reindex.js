@@ -12,7 +12,6 @@ const SHOULD_NOT_TRIGGER_REINDEX = [
   'properties.style',
   'properties.fullWidth',
   'properties.nestedProperties',
-  'properties.localID',
   'commonProperties.filter',
   'commonProperties.defaultfilter',
   'commonProperties.noLabel',

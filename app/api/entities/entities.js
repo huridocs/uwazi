@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { generateNamesAndIds } from 'api/templates/utils';
+import { generateNames } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
 import date from 'api/utils/date';
@@ -26,7 +26,7 @@ import { denormalizeRelated } from './denormalize';
 import { saveSelections } from './metadataExtraction/saveSelections';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
-async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
+async function denormalizeMetadata(metadata, entity, template, thesauriByKey) {
   if (!metadata) {
     return metadata;
   }
@@ -48,28 +48,28 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
           return elem;
         }
         if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
-          const dict = dictionariesByKey
-            ? dictionariesByKey[prop.content]
+          const thesaurus = thesauriByKey
+            ? thesauriByKey[prop.content]
             : await dictionariesModel.getById(prop.content);
-          if (dict) {
+          if (thesaurus) {
             const context = getContext(translation, prop.content);
-            const flattenValues = dict.values.reduce(
+            const flattenValues = thesaurus.values.reduce(
               (result, dv) =>
                 dv.values
                   ? result.concat(dv.values.map(v => ({ ...v, parent: dv })))
                   : result.concat([dv]),
               []
             );
-            const dictElem = flattenValues.find(v => v.id === elem.value);
+            const thesaurusValue = flattenValues.find(v => v.id === elem.value);
 
-            if (dictElem && dictElem.label) {
-              elem.label = translate(context, dictElem.label, dictElem.label);
+            if (thesaurusValue && thesaurusValue.label) {
+              elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
             }
 
-            if (dictElem && dictElem.parent) {
+            if (thesaurusValue && thesaurusValue.parent) {
               elem.parent = {
-                value: dictElem.parent.id,
-                label: translate(context, dictElem.parent.label, dictElem.parent.label),
+                value: thesaurusValue.parent.id,
+                label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
               };
             }
           }
@@ -140,7 +140,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
     docLanguages[0].template.toString() !== entity.template.toString()
   ) {
     await Promise.all([
-      this.deleteRelatedEntityFromMetadata(docLanguages[0]),
+      this.deleteRelatedEntityFromMetadata(docLanguages[0]), // this should be okay, all queries are batch ones with a different purpose
       relationships.delete({ entity: entity.sharedId }, null, false),
     ]);
   }
@@ -150,6 +150,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
     .map(p => p.name);
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
+
+  const thesauriIds = template.properties.map(p => p.content).filter(p => p);
+  const thesauri = await dictionariesModel.get({ _id: { $in: thesauriIds } });
+  const thesauriByKey = Object.fromEntries(thesauri.map(d => [d._id, d]));
+
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
@@ -158,14 +163,20 @@ async function updateEntity(entity, _template, unrestricted = false) {
         delete toSave.permissions;
 
         if (entity.metadata) {
-          toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
+          toSave.metadata = await denormalizeMetadata(
+            entity.metadata,
+            entity,
+            template,
+            thesauriByKey
+          );
         }
 
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
             entity.suggestedMetadata,
             entity,
-            template
+            template,
+            thesauriByKey
           );
         }
 
@@ -189,7 +200,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
           toSave[metadataParent] = await denormalizeMetadata(
             toSave[metadataParent],
             toSave,
-            template
+            template,
+            thesauriByKey
           );
         }
       }, Promise.resolve());
@@ -404,7 +416,7 @@ export default {
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
-    await saveSelections(_doc);
+    await saveSelections(_doc); // change related main file (1)
     const doc = _doc;
 
     if (!doc.sharedId) {
@@ -651,15 +663,18 @@ export default {
     options = { reindex: true, generatedIdAdded: false }
   ) {
     const actions = { $rename: {}, $unset: {} };
-    template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await generateNames(template.properties);
     template.properties.forEach(property => {
-      const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+      const currentProperty = currentTemplate.properties.find(
+        p => p._id.toString() === (property._id || '').toString()
+      );
       if (currentProperty && currentProperty.name !== property.name) {
         actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
       }
     });
+
     currentTemplate.properties.forEach(property => {
-      if (!template.properties.find(p => p.id === property.id)) {
+      if (!template.properties.find(p => (p._id || '').toString() === property._id.toString())) {
         actions.$unset[`metadata.${property.name}`] = '';
       }
     });
@@ -677,6 +692,7 @@ export default {
     if (actions.$unset || actions.$rename) {
       await model.updateMany({ template: template._id }, actions);
     }
+
     await reindexEntitiesByTemplate(template, options);
     return this.bulkUpdateMetadataFromRelationships(
       { template: template._id, language },

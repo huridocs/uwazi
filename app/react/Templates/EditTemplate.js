@@ -7,21 +7,8 @@ import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
-import ID from 'shared/uniqueID';
-import templateCommonProperties from './utils/templateCommonProperties';
 import { OnTemplateLoaded } from './components/OnTemplateLoaded';
-
-const prepareTemplate = template => {
-  const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
-
-  return {
-    ...template,
-    properties: template.properties.map(p => ({ ...p, localID: ID() })),
-    commonProperties: commonPropertiesExists
-      ? template.commonProperties
-      : templateCommonProperties.get(),
-  };
-};
+import { prepareTemplate } from './actions/templateActions';
 
 export default class EditTemplate extends RouteHandler {
   static async requestState(requestParams) {

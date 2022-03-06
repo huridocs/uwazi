@@ -13,6 +13,7 @@ import './App/sockets';
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({
+    environment: window.UWAZI_ENVIRONMENT,
     dsn: window.SENTRY_APP_DSN,
     integrations: [new BrowserTracing()],
     tracesSampleRate: 0.1,

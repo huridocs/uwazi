@@ -5,7 +5,7 @@ import {
   generateIds,
   getUpdatedNames,
   getDeletedProperties,
-  generateNamesAndIds,
+  generateNames,
   PropertyOrThesaurusSchema,
 } from '../utils';
 
@@ -18,7 +18,7 @@ describe('templates utils', () => {
     describe('default name generation', () => {
       it('should sanitize the labels and append the type', async () => {
         await settings.save({});
-        const result = await generateNamesAndIds([
+        const result = await generateNames([
           { label: ' my prop ', name: '', type: 'text' },
           { label: 'my^foreïgn$próp"', name: '', type: 'text' },
           { label: ' my prop ', name: '', type: 'geolocation' },
@@ -33,7 +33,7 @@ describe('templates utils', () => {
     describe('less restrictive name generation', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
         await settings.save({ newNameGeneration: true });
-        const result = await generateNamesAndIds([
+        const result = await generateNames([
           { label: ' my prop ', name: '', type: 'text' },
           { label: 'my^foreïgn$próp"', name: '', type: 'text' },
           { label: ' my prop ', name: '', type: 'geolocation' },
@@ -72,7 +72,7 @@ describe('templates utils', () => {
 
       it('should not start with _, -, +, $', async () => {
         await settings.save({ newNameGeneration: true });
-        const result = await generateNamesAndIds([
+        const result = await generateNames([
           { label: '.test ', name: '', type: 'text' },
           { label: '_test', name: '', type: 'text' },
           { label: '+test', name: '', type: 'text' },
@@ -92,8 +92,8 @@ describe('templates utils', () => {
   });
 
   describe('generateIds()', () => {
-    it('should generate unique IDs for properties without them', () => {
-      const result = generateIds([{}, { id: '123' }] as PropertySchema[]);
+    it('should generate unique IDs for thesauri without them', () => {
+      const result = generateIds([{ name: 'entry 1' }, { name: 'entry 2', id: '123' }]);
       expect(result[0].id).toBeDefined();
       expect(result[1].id).toBe('123');
     });
@@ -101,17 +101,23 @@ describe('templates utils', () => {
 
   describe('getUpdatedNames()', () => {
     it('should return the properties that have a new name', () => {
+      const prop1Id = db.id();
+      const prop2Id = db.id();
       const oldProperties: PropertySchema[] = [
-        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
-        { id: '2', name: 'my_prop_two', label: 'label', type: 'text' },
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_prop_two', label: 'label', type: 'text' },
       ];
 
       const newProperties: PropertySchema[] = [
-        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
-        { id: '2', name: 'my_fancy_new_name', label: 'label', type: 'text' },
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_fancy_new_name', label: 'label', type: 'text' },
       ];
 
-      const result = getUpdatedNames(oldProperties, newProperties);
+      const result = getUpdatedNames(oldProperties, newProperties, {
+        prop: 'name',
+        outKey: 'name',
+        filterBy: '_id',
+      });
       expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
     });
 
@@ -139,22 +145,27 @@ describe('templates utils', () => {
         },
       ];
 
-      const result = getUpdatedNames(oldProperties, newProperties);
+      const result = getUpdatedNames(oldProperties, newProperties, {
+        prop: 'name',
+        outKey: 'name',
+        filterBy: 'id',
+      });
       expect(result).toEqual({ look_at_me: 'I_changed' });
     });
   });
 
   describe('getDeletedProperties()', () => {
     it('should return the properties that have been deleted', () => {
+      const propId = db.id();
       const oldProperties: PropertySchema[] = [
-        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
-        { id: '2', name: 'boromir', label: 'label', type: 'text' },
+        { _id: propId, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: db.id(), name: 'boromir', label: 'label', type: 'text' },
       ];
-      const newProperties: PropertySchema[] = [
-        { id: '1', name: 'I_just_changed_my_name', label: 'label', type: 'text' },
+      const changedProperties: PropertySchema[] = [
+        { _id: propId, name: 'I_just_changed_my_name', label: 'label', type: 'text' },
       ];
 
-      const result = getDeletedProperties(oldProperties, newProperties);
+      const result = getDeletedProperties(oldProperties, changedProperties, '_id');
       expect(result).toEqual(['boromir']);
     });
 
@@ -180,7 +191,7 @@ describe('templates utils', () => {
         },
       ];
 
-      const result = getDeletedProperties(oldProperties, newProperties);
+      const result = getDeletedProperties(oldProperties, newProperties, 'id');
       expect(result).toEqual(['boromir']);
     });
   });
