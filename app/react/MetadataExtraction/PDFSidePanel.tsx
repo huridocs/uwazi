@@ -15,9 +15,15 @@ interface PDFSidePanelProps {
   open: boolean;
   entitySuggestion: EntitySuggestionType;
   closeSidePanel: () => void;
+  handleSave: () => void;
 }
 
-const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelProps) => {
+const PDFSidePanel = ({
+  open,
+  entitySuggestion,
+  closeSidePanel,
+  handleSave,
+}: PDFSidePanelProps) => {
   const [entity, setEntity] = useState<ClientEntitySchema>({});
   const [file, setFile] = useState<FileType>({});
   const templates = store?.getState().templates;
@@ -72,6 +78,10 @@ const PDFSidePanel = ({ open, entitySuggestion, closeSidePanel }: PDFSidePanelPr
               sharedId={entity.sharedId}
               showSubset={[entitySuggestion.propertyName]}
               storeKey="documentViewer"
+              fileID={entitySuggestion.fileId}
+              onEntitySave={() => {
+                handleSave();
+              }}
             />
             <div className="document-viewer">
               <SourceDocument

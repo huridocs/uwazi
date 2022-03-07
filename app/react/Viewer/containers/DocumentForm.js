@@ -14,13 +14,15 @@ function mapStateToProps({ documentViewer, templates, thesauris }) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, ownProps) {
+  const { fileID, onEntitySave = () => {} } = ownProps;
   return bindActionCreators(
     {
       changeTemplate: actions.changeTemplate,
       onSubmit: doc => (disp, state) =>
-        saveDocument(doc)(disp, state).then(() => {
+        saveDocument(doc, fileID)(disp, state).then(() => {
           disp(relationshipActions.reloadRelationships(doc.sharedId));
+          onEntitySave();
         }),
     },
     dispatch

@@ -74,6 +74,10 @@ export const EntitySuggestions = ({
     setSidePanelOpened(false);
   };
 
+  const handlePDFSidePanelSave = () => {
+    setSidePanelOpened(false);
+  };
+
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
     <div onClick={() => showPDF(row)}>{row.original.segment}</div>
   );
@@ -224,6 +228,7 @@ export const EntitySuggestions = ({
       <PDFSidePanel
         open={sidePanelOpened}
         closeSidePanel={closePDFSidePanel}
+        handleSave={handlePDFSidePanelSave}
         entitySuggestion={selectedRowData}
       />
     </>
