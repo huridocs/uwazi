@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable import/exports-last */
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
@@ -47,7 +48,7 @@ export const showByType = (prop, compact) => {
             </React.Fragment>
           );
         }
-        return p.value;
+        return Array.isArray(p.value) ? showByType(p, compact) : p.value;
       });
       break;
     case 'geolocation':
@@ -175,16 +176,14 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, group
         type = type === 'image' || type === 'media' ? 'multimedia' : type;
         const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
         const fullWidthClass = prop.fullWidth ? 'full-width' : '';
-
+        const content = showByType(prop, compact);
         return (
           <dl
             className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
             key={`${prop.name}_${index}`}
           >
             {renderLabel(prop, <dt>{t(prop.translateContext || 'System', prop.label)}</dt>)}
-            <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-              {showByType(prop, compact)}
-            </dd>
+            <dd className={prop.sortedBy ? 'item-current-sort' : ''}>{content}</dd>
           </dl>
         );
       })}

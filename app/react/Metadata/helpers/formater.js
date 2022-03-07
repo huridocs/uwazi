@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import moment from 'moment-timezone';
-import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
@@ -115,7 +114,7 @@ export default {
     return `${from} ~ ${to}`;
   },
 
-  getSelectOptions(option, thesauri) {
+  getSelectOptions(option) {
     let value = '';
     let icon;
     let parent;
@@ -126,12 +125,7 @@ export default {
       parent = option.parent?.label;
     }
 
-    let url;
-    if (option && thesauri && thesauri.get('type') === 'template') {
-      url = `/entity/${option.value}`;
-    }
-
-    return { value, url, icon, parent };
+    return { value, icon, parent };
   },
 
   multimedia(property, [{ value }], type) {
@@ -295,13 +289,15 @@ export default {
     }, []);
   },
 
-  relationship(property, thesauriValues, thesauris) {
-    const thesauri =
-      thesauris.find(thes => thes.get('_id') === property.get('content')) ||
-      Immutable.fromJS({
-        type: 'template',
-      });
-    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
+  relationship(property, thesauriValues, _thesauris) {
+    const values = thesauriValues.reduce((prev, curr) => {
+      if (curr && curr.type === 'entity' && !curr.inheritedType) {
+        const { label, value, type, icon } = curr;
+        return curr ? [...prev, { label, url: `/${type}/${value}`, icon }] : prev;
+      }
+      return curr && curr.inheritedValue ? [...prev, ...curr.inheritedValue] : prev;
+    }, []);
+    const sortedValues = this.getThesauriValues(values);
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
@@ -335,10 +331,10 @@ export default {
     return this.markdown(property, [{ value: result }], thesauris, { type: 'markdown' });
   },
 
-  getThesauriValues(thesauriValues, thesauri) {
+  getThesauriValues(thesauriValues) {
     return advancedSort(
       thesauriValues
-        .map(thesauriValue => this.getSelectOptions(thesauriValue, thesauri))
+        .map(thesauriValue => this.getSelectOptions(thesauriValue))
         .filter(v => v.value),
       { property: 'value' }
     );
