@@ -7,6 +7,10 @@ const config = require('./config')();
 const rootPath = `${__dirname}/../`;
 const RtlCssPlugin = require("rtlcss-webpack-plugin");
 
+config['infrastructureLogging'] = {
+    level: 'error',
+}
+
 config.plugins = config.plugins.filter(plugin => !(plugin instanceof RtlCssPlugin));
 config.plugins = config.plugins.concat([
   new webpack.HotModuleReplacementPlugin(),

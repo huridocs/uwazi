@@ -82,7 +82,7 @@ describe('templates routes', () => {
       const [firstTemplate] = await templates.get();
       const templateToUpdate = {
         ...firstTemplate,
-        properties: [{ label: 'Numeric', type: 'numeric', localID: 'z0x8wx8xy4' }],
+        properties: [{ label: 'Numeric', type: 'numeric' }],
         commonProperties: templateCommonProperties,
         __v: 0,
       };
@@ -91,7 +91,7 @@ describe('templates routes', () => {
 
       const [updatedTemplate] = await templates.get({ _id: templateToUpdate._id });
       expect(updatedTemplate.properties).toContainEqual(
-        expect.objectContaining({ label: 'Numeric', type: 'numeric', localID: 'z0x8wx8xy4' })
+        expect.objectContaining({ label: 'Numeric', type: 'numeric' })
       );
     });
 
@@ -145,9 +145,7 @@ describe('templates routes', () => {
           {
             label: 'Numeric',
             type: 'numeric',
-            localID: 'byhrp7qv54i',
             name: 'numeric',
-            id: 'Numeric',
           },
         ],
       });
@@ -159,9 +157,7 @@ describe('templates routes', () => {
             {
               label: 'Numeric',
               type: 'text',
-              localID: 'byhrp7qv54i',
               name: 'numeric',
-              id: 'text',
             },
           ],
           reindex: false,

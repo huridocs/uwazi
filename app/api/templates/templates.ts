@@ -12,7 +12,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import model from './templatesModel';
 import {
-  generateNamesAndIds,
+  generateNames,
   getRenamedTitle,
   getDeletedProperties,
   getUpdatedNames,
@@ -58,11 +58,20 @@ const addTemplateTranslation = async (template: TemplateSchema) =>
 const updateTranslation = async (currentTemplate: TemplateSchema, template: TemplateSchema) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties || [];
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
+    prop: 'label',
+    outKey: 'label',
+    filterBy: '_id',
+  });
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
-  const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  const deletedPropertiesByLabel = getDeletedProperties(
+    currentProperties,
+    newProperties,
+    '_id',
+    'label'
+  );
   deletedPropertiesByLabel.push(
     ...getRenamedTitle(
       ensure<PropertySchema[]>(currentTemplate.commonProperties),
@@ -92,7 +101,9 @@ const removeExcludedPropertiesValues = async (
   const templateContentProperties = (template.properties || []).filter(p => p.content);
   const toRemoveValues = currentTemplateContentProperties
     .map(prop => {
-      const sameProperty = templateContentProperties.find(p => p.id === prop.id);
+      const sameProperty = templateContentProperties.find(
+        p => p._id?.toString() === prop._id?.toString()
+      );
       if (sameProperty && sameProperty.content !== prop.content) {
         return sameProperty.name;
       }
@@ -124,29 +135,36 @@ const checkAndFillGeneratedIdProperties = async (
   return newGeneratedIdProps.length > 0;
 };
 
+const _save = async (template: TemplateSchema) => {
+  const newTemplate = await model.save(template);
+  await addTemplateTranslation(newTemplate);
+
+  return newTemplate;
+};
+
 export default {
-  async save(template: TemplateSchema, language: string, reindex = true) {
+  async save(
+    template: TemplateSchema,
+    language: string,
+    reindex = true,
+    templateSctrutureChanges = true
+  ) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
-    template.properties = await generateNamesAndIds(template.properties);
+    template.properties = await generateNames(template.properties);
     template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
-
     await this.swapNamesValidation(template);
 
     if (reindex) {
       await updateMapping([template]);
     }
 
-    if (template._id) {
-      return this._update(template, language, reindex);
-    }
-
-    return model
-      .save(template)
-      .then(async newTemplate => addTemplateTranslation(newTemplate).then(() => newTemplate));
+    return template._id
+      ? this._update(template, language, reindex, templateSctrutureChanges)
+      : _save(template);
   },
 
   async swapNamesValidation(template: TemplateSchema) {
@@ -159,7 +177,7 @@ export default {
     currentTemplate.properties = currentTemplate.properties || [];
     currentTemplate.properties.forEach(prop => {
       const swapingNameWithExistingProperty = (template.properties || []).find(
-        p => p.name === prop.name && p.id !== prop.id
+        p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
       if (swapingNameWithExistingProperty) {
         throw createError(`Properties can't swap names: ${prop.name}`, 400);
@@ -167,17 +185,28 @@ export default {
     });
   },
 
-  async _update(template: TemplateSchema, language: string, reindex = true) {
+  async _update(
+    template: TemplateSchema,
+    language: string,
+    reindex = true,
+    templateSctrutureChanges = true
+  ) {
     const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
-    await updateTranslation(currentTemplate, template);
-    await removeExcludedPropertiesValues(currentTemplate, template);
-    await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
+    if (templateSctrutureChanges) {
+      await updateTranslation(currentTemplate, template);
+      await removeExcludedPropertiesValues(currentTemplate, template);
+      await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
+    }
+
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
-    await entities.updateMetadataProperties(template, currentTemplate, language, {
-      reindex,
-      generatedIdAdded,
-    });
+    if (templateSctrutureChanges) {
+      await entities.updateMetadataProperties(template, currentTemplate, language, {
+        reindex,
+        generatedIdAdded,
+      });
+    }
+
     return savedTemplate;
   },
 

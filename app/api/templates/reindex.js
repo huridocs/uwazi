@@ -3,6 +3,7 @@ import templates from './templates';
 const SHOULD_NOT_TRIGGER_REINDEX = [
   'name',
   'color',
+  'entityViewPage',
   'properties.filter',
   'properties.defaultfilter',
   'properties.noLabel',
@@ -11,7 +12,6 @@ const SHOULD_NOT_TRIGGER_REINDEX = [
   'properties.style',
   'properties.fullWidth',
   'properties.nestedProperties',
-  'properties.localID',
   'commonProperties.filter',
   'commonProperties.defaultfilter',
   'commonProperties.noLabel',

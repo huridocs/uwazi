@@ -226,6 +226,7 @@ describe('MetadataTemplate', () => {
       const templateWithId = {
         _id: 'template1',
         properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+        commonProperties: [{ title: 'Title' }],
       };
 
       async function submitTemplate(templateToSubmit, entityCount = 100) {
@@ -251,19 +252,14 @@ describe('MetadataTemplate', () => {
         });
 
         describe('when there is a quite amount of entities from the template', () => {
-          it('should ask for a reindex but do not do it if the user cancels it', async () => {
-            await submitTemplate(templateWithId, 50000);
-            context.confirm.calls.mostRecent().args[0].cancel();
-            expect(props.saveTemplate).not.toHaveBeenCalled();
-          });
-
-          it('should ask for a reindex and do it if the user accepts it', async () => {
+          it('should alert the user of the large amount of entities', async () => {
             await submitTemplate(templateWithId, 50000);
             context.confirm.calls.mostRecent().args[0].accept();
             expect(props.saveTemplate).toHaveBeenCalledWith({
               _id: templateWithId._id,
+              commonProperties: templateWithId.commonProperties,
               properties: templateWithId.properties,
-              reindex: true,
+              reindex: false,
             });
           });
         });
