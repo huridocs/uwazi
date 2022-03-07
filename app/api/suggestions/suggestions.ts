@@ -111,6 +111,7 @@ export const Suggestions = {
             currentValue: 1,
             state: 1,
             page: 1,
+            date: 1,
           },
         },
       ],
