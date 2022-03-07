@@ -25,6 +25,7 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       state: SuggestionState.matching,
       date: 1,
       page: 5,
+      fileId: 'fildId',
     },
     {
       entityId: 'shared2',
@@ -38,6 +39,7 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       state: SuggestionState.empty,
       date: 2,
       page: 2,
+      fileId: 'fildId',
     },
   ],
   totalPages: 4,
@@ -55,6 +57,7 @@ const dateSuggestion = {
   state: SuggestionState.matching,
   date: 2,
   page: 2,
+  fileId: 'fildId',
 };
 
 const reviewedProperty: PropertySchema = {
