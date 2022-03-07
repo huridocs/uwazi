@@ -16,6 +16,7 @@ import * as Tracing from '@sentry/tracing';
 import { OcrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
 import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
+import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
@@ -189,6 +190,15 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         );
 
         segmentationRepeater.start();
+
+        const twitterIntegration = new TwitterIntegration();
+        const twitterRepeater = new DistributedLoop(
+          'twitter_repeat',
+          twitterIntegration.addTweetsRequestsToQueue,
+          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 120000 }
+        );
+
+        twitterRepeater.start();
       }
     });
 
