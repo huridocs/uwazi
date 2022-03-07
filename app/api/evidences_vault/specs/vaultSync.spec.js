@@ -1,4 +1,5 @@
 import path from 'path';
+import backend from 'fetch-mock'; // eslint-disable-line
 import moment from 'moment';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
@@ -15,6 +16,7 @@ describe('vaultSync', () => {
 
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
+    backend.restore();
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
@@ -22,6 +24,9 @@ describe('vaultSync', () => {
     await deleteFile(path.join(__dirname, '/zips/package1.zip'));
     await deleteFile(path.join(__dirname, '/zips/package2.zip'));
     await deleteFile(path.join(__dirname, '/zips/package3.zip'));
+    await deleteFile(path.join(__dirname, '/zips/package5.zip'));
+    await deleteFile(path.join(__dirname, '/zips/package6.zip'));
+    await deleteFile(path.join(__dirname, '/zips/package7.zip'));
   });
 
   afterAll(async () => db.disconnect());
@@ -51,8 +56,8 @@ describe('vaultSync', () => {
         },
       ];
 
-      await mockVault(evidences);
-      await vaultSync.sync(token, templateId);
+      await mockVault(token, evidences);
+      await vaultSync.sync({ token, template: templateId });
     });
 
     it('should create entities based on evidences returned', async () => {
@@ -156,6 +161,38 @@ describe('vaultSync', () => {
         value: '/api/files/2.mp4',
       });
     });
+
+    it('should work with multiple token/template configs', async () => {
+      const anotherToken = 'anotherToken';
+      const evidences = [
+        {
+          listItem: { status: '201', request: '5', filename: 'package5.zip' },
+          jsonInfo: { title: 'title5' },
+        },
+        {
+          listItem: { status: '203', request: '6', filename: 'package6.zip' },
+          jsonInfo: { title: 'title6' },
+        },
+        {
+          listItem: { status: '202', request: '7', filename: 'package7.zip' },
+          jsonInfo: { title: 'title7' },
+        },
+        {
+          listItem: { status: '501', request: '8', filename: null },
+          jsonInfo: { title: 'title8' },
+        },
+      ];
+
+      await mockVault(anotherToken, evidences);
+      await vaultSync.sync([
+        { token, template: templateId },
+        { token: anotherToken, template: templateId },
+      ]);
+
+      const imported = await entities.get();
+      expect(imported.map(e => e.title)).toEqual(['title1', 'title2', 'title5']);
+      expect(imported.map(e => e.template)).toEqual([templateId, templateId, templateId]);
+    });
   });
 
   it('should not fill media/image field if file does not exist', async () => {
@@ -173,8 +210,8 @@ describe('vaultSync', () => {
       },
     ];
 
-    await mockVault(evidences);
-    await vaultSync.sync(token, templateId);
+    await mockVault(token, evidences);
+    await vaultSync.sync({ token, template: templateId });
     const imported = await entities.get();
 
     expect(await getFileContent('1.mp4')).toBe('this is a fake video');
@@ -211,9 +248,9 @@ describe('vaultSync', () => {
       },
     ];
 
-    await mockVault(evidences);
-    await vaultSync.sync(token, templateId);
-    await vaultSync.sync(token, templateId);
+    await mockVault(token, evidences);
+    await vaultSync.sync({ token, template: templateId });
+    await vaultSync.sync({ token, template: templateId });
 
     const imported = await entities.get();
     expect(imported.map(e => e.title)).toEqual(['title2']);
@@ -236,8 +273,8 @@ describe('vaultSync', () => {
       { listItem: { status: '501', request: '4', filename: null }, jsonInfo: { title: 'title4' } },
     ];
 
-    await mockVault(evidences);
-    await vaultSync.sync(token, templateId);
+    await mockVault(token, evidences);
+    await vaultSync.sync({ token, template: templateId });
 
     const imported = await entities.get();
     expect(imported.map(e => e.title)).toEqual(['title1']);
