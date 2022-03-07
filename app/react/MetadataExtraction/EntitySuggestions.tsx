@@ -31,7 +31,7 @@ export const EntitySuggestions = ({
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
-  const [selectedRowData, setSelectedRowData] = useState({});
+  const [selectedRowData, setSelectedRowData] = useState<EntitySuggestionType>();
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
     if (propertyName === reviewedProperty.name) {
@@ -225,12 +225,14 @@ export const EntitySuggestions = ({
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
       </div>
-      <PDFSidePanel
-        open={sidePanelOpened}
-        closeSidePanel={closePDFSidePanel}
-        handleSave={handlePDFSidePanelSave}
-        entitySuggestion={selectedRowData}
-      />
+      {selectedRowData && (
+        <PDFSidePanel
+          open={sidePanelOpened}
+          closeSidePanel={closePDFSidePanel}
+          handleSave={handlePDFSidePanelSave}
+          entitySuggestion={selectedRowData}
+        />
+      )}
     </>
   );
 };
