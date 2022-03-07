@@ -26,7 +26,7 @@ export const EntitySuggestions = ({
   property: reviewedProperty,
   acceptIXSuggestion,
 }: EntitySuggestionsProps) => {
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
@@ -74,10 +74,6 @@ export const EntitySuggestions = ({
     setSidePanelOpened(false);
   };
 
-  const handlePDFSidePanelSave = () => {
-    setSidePanelOpened(false);
-  };
-
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
     <div onClick={() => showPDF(row)}>{row.original.segment}</div>
   );
@@ -119,6 +115,11 @@ export const EntitySuggestions = ({
       selectedFlatRows[0].toggleRowSelected();
       retrieveSuggestions();
     }
+  };
+
+  const handlePDFSidePanelSave = () => {
+    setSidePanelOpened(false);
+    retrieveSuggestions();
   };
 
   const _trainModel = async () => {

@@ -79,9 +79,7 @@ const PDFSidePanel = ({
               showSubset={[entitySuggestion.propertyName]}
               storeKey="documentViewer"
               fileID={entitySuggestion.fileId}
-              onEntitySave={() => {
-                handleSave();
-              }}
+              onEntitySave={handleSave}
             />
             <div className="document-viewer">
               <SourceDocument
