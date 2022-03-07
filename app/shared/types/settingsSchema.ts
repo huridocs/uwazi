@@ -203,6 +203,24 @@ const settingsSchema = {
             url: { type: 'string' },
           },
         },
+        twitterIntegration: {
+          type: 'object',
+          additionalProperties: false,
+          required: [
+            'searchQueries',
+            'hashtagsTemplateName',
+            'tweetsTemplateName',
+            'language',
+            'tweetsLanguages',
+          ],
+          properties: {
+            searchQueries: { type: 'array', items: { type: 'string' } },
+            hashtagsTemplateName: { type: 'string' },
+            tweetsTemplateName: { type: 'string' },
+            language: { type: 'string' },
+            tweetsLanguages: { type: 'array', items: { type: 'string' } },
+          },
+        },
         metadataExtraction: {
           type: 'object',
           additionalProperties: false,

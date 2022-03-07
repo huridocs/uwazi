@@ -31,6 +31,7 @@ export class DistributedLoop {
       delayTimeBetweenTasks?: number;
       retryDelay?: number;
       port?: number;
+      host?: string;
     }
   ) {
     const _options = {
