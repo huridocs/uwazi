@@ -6,6 +6,7 @@ import { LMap } from 'app/Map/index';
 interface MapComponentProps {
   onClick: () => {};
   tilesProvider: string;
+  mapApiKey: string;
 }
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
@@ -22,7 +23,7 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
   const startingPoint = collectionSettings?.get('mapStartingPoint')?.toJS();
   const mapProvider =
     props.tilesProvider || collectionSettings?.get('tilesProvider') || 'opengoogle';
-  const token = collectionSettings?.get('mapApiKey');
+  const token = props.mapApiKey || collectionSettings?.get('mapApiKey');
   const templatesInfo = templates.reduce(
     (info, t) => ({
       ...info,

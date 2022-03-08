@@ -41,7 +41,7 @@ const getOpenGoogleLayers: () => { [p: string]: TileLayer } = () =>
     {}
   );
 
-const getMapboxLayers: () => { [p: string]: TileLayer } = () => {
+const getMapboxLayers: (accessToken?: string) => { [p: string]: TileLayer } = accessToken => {
   const mapboxUrl =
     'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
   return Object.keys(mapBoxStyles).reduce(
@@ -51,21 +51,20 @@ const getMapboxLayers: () => { [p: string]: TileLayer } = () => {
         id: mapBoxStyles[styleId],
         tileSize: 512,
         zoomOffset: -1,
-        accessToken:
-          'pk.eyJ1IjoibWVyY3lmIiwiYSI6ImNrem9veGlpNTYxd2gyb25rc25heW8xMjEifQ.il5fhMnZYsZXK69KK9WfeQ',
+        accessToken,
       }),
     }),
     {}
   );
 };
 
-const mapFunction: { [k: string]: () => { [p: string]: TileLayer } } = {
+const mapFunction: { [k: string]: (accessToken?: string) => { [p: string]: TileLayer } } = {
   opengoogle: getOpenGoogleLayers,
   google: getGoogleLayers,
   mapbox: getMapboxLayers,
 };
-const getMapProvider = (provider: string) => {
-  const mapLayers = mapFunction[provider]();
+const getMapProvider = (provider: string, mapApiKey?: string) => {
+  const mapLayers = mapFunction[provider](mapApiKey);
   return { layers: Object.values(mapLayers), baseMaps: mapLayers };
 };
 

@@ -329,6 +329,7 @@ const CollectionSettings = ({
             <Geolocation
               value={watch('mapStartingPoint')}
               tilesProvider={watch('tilesProvider')}
+              mapApiKey={watch('mapApiKey')}
               onChange={(values: Settings['mapStartingPoint']) => {
                 setValue('mapStartingPoint', values);
               }}
