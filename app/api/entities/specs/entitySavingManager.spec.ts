@@ -325,6 +325,8 @@ describe('entitySavingManager', () => {
         });
 
         expect(savedEntity._id).not.toBeNull();
+        expect(savedEntity.metadata.text[0].value).toBe('a text');
+        expect(savedEntity.metadata.image).toEqual([]);
       });
     });
   });
