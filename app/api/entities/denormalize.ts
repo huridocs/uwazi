@@ -1,11 +1,16 @@
-import { EntitySchema } from 'shared/types/entityType';
-import { search } from 'api/search';
-import { TemplateSchema } from 'shared/types/templateType';
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+/* eslint-disable max-lines */
 import { WithId } from 'api/odm';
+import translationsModel from 'api/i18n/translations';
+import { search } from 'api/search';
+import templates from 'api/templates';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
+import { EntitySchema } from 'shared/types/entityType';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import translate, { getContext } from 'shared/translate';
+import { MetadataSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { isString } from 'util';
 
-import templates from 'api/templates';
 import model from './entitiesModel';
 
 interface DenormalizationUpdate {
@@ -247,4 +252,189 @@ const denormalizeThesauriLabelInMetadata = async (
   await reindexUpdates(valueId, language, updates);
 };
 
-export { denormalizeRelated, denormalizeThesauriLabelInMetadata };
+const denormalizeSelectProperty = async (
+  property: PropertySchema,
+  values: MetadataObjectSchema[],
+  thesauriByKey: Record<string, ThesaurusSchema>,
+  translation: unknown
+) => {
+  const thesaurus = thesauriByKey
+    ? thesauriByKey[property.content!]
+    : await dictionariesModel.getById(property.content);
+  if (!thesaurus) {
+    return undefined;
+  }
+
+  const context = getContext(translation, property.content);
+
+  const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
+  thesaurus.values?.forEach(dv => {
+    if (dv.values) {
+      dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
+    } else {
+      flattenValues.push(dv);
+    }
+  });
+
+  return values.map(value => {
+    const denormalizedValue = { ...value };
+    const thesaurusValue = flattenValues.find(v => v.id === denormalizedValue.value);
+
+    if (thesaurusValue && thesaurusValue.label) {
+      denormalizedValue.label = translate(context, thesaurusValue.label, thesaurusValue.label);
+    }
+
+    if (thesaurusValue && thesaurusValue.parent) {
+      denormalizedValue.parent = {
+        value: thesaurusValue.parent.id,
+        label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
+      };
+    }
+    return denormalizedValue;
+  });
+};
+
+const denormalizeInheritedProperty = (
+  property: PropertySchema,
+  value: MetadataObjectSchema,
+  partner: EntitySchema,
+  allTemplates: TemplateSchema[]
+) => {
+  const partnerTemplate = allTemplates.find(
+    t => t._id!.toString() === partner.template!.toString()
+  );
+
+  const inheritedProperty = partnerTemplate!.properties!.find(
+    p => p._id && p._id.toString() === property!.inherit!.property!.toString()
+  );
+
+  return {
+    ...value,
+    inheritedValue: partner!.metadata?.[inheritedProperty!.name] || [],
+    inheritedType: inheritedProperty!.type,
+  };
+};
+
+const denormalizeRelationshipProperty = async (
+  property: PropertySchema,
+  values: MetadataObjectSchema[],
+  language: string,
+  allTemplates: TemplateSchema[]
+) => {
+  const partners = await model.getUnrestricted({
+    sharedId: { $in: values.map(value => value.value as string) },
+    language,
+  });
+
+  const partnersBySharedId: Record<string, EntitySchema> = {};
+  partners.forEach(partner => {
+    partnersBySharedId[partner.sharedId!] = partner;
+  });
+
+  return values.map(value => {
+    let denormalizedValue = { ...value };
+
+    const partner = partnersBySharedId[denormalizedValue.value as string];
+
+    if (partner && partner.title) {
+      denormalizedValue.label = partner.title;
+      denormalizedValue.icon = partner.icon;
+      denormalizedValue.type = partner.file ? 'document' : 'entity';
+    }
+
+    if (property.inherit && property.inherit.property && partner) {
+      denormalizedValue = denormalizeInheritedProperty(
+        property,
+        denormalizedValue,
+        partner,
+        allTemplates
+      );
+    }
+
+    return denormalizedValue;
+  });
+};
+
+const validateValuesAreDenormalizable = (values: MetadataObjectSchema[] | undefined) => {
+  if (!Array.isArray(values)) {
+    throw new Error('denormalizeMetadata received non-array prop!');
+  }
+
+  if (values.some(value => !value.hasOwnProperty('value'))) {
+    throw new Error('denormalizeMetadata received non-value prop!');
+  }
+};
+
+const denormalizeProperty = async (
+  property: PropertySchema | undefined,
+  values: MetadataObjectSchema[] | undefined,
+  language: string,
+  {
+    thesauriByKey,
+    translation,
+    allTemplates,
+  }: {
+    thesauriByKey: Record<string, ThesaurusSchema>;
+    translation: unknown;
+    allTemplates: TemplateSchema[];
+  }
+) => {
+  validateValuesAreDenormalizable(values);
+
+  if (!property) {
+    return values;
+  }
+
+  if (property.content && ['select', 'multiselect'].includes(property.type)) {
+    return denormalizeSelectProperty(property, values!, thesauriByKey, translation);
+  }
+
+  if (property.type === 'relationship') {
+    return denormalizeRelationshipProperty(property, values!, language, allTemplates);
+  }
+
+  return values;
+};
+
+async function denormalizeMetadata(
+  metadata: MetadataSchema,
+  language: string,
+  templateId: string,
+  thesauriByKey: Record<string, ThesaurusSchema>
+) {
+  if (!metadata) {
+    return metadata;
+  }
+
+  const translation = (await translationsModel.get({ locale: language }))[0];
+  const allTemplates = await templates.get();
+
+  const template = allTemplates.find(t => t._id.toString() === templateId);
+  if (!template) {
+    return metadata;
+  }
+
+  const denormalizedProperties: {
+    propertyName: string;
+    denormalizedValue: MetadataObjectSchema[] | undefined;
+  }[] = await Promise.all(
+    Object.keys(metadata).map(async propertyName => ({
+      propertyName,
+      denormalizedValue: await denormalizeProperty(
+        template.properties?.find(p => p.name === propertyName),
+        metadata[propertyName],
+        language,
+        { thesauriByKey, translation, allTemplates }
+      ),
+    }))
+  );
+
+  const denormalizedMetadata: Record<string, MetadataObjectSchema[] | undefined> = {};
+  denormalizedProperties.forEach(({ propertyName, denormalizedValue }) => {
+    denormalizedMetadata[propertyName] = denormalizedValue;
+  });
+
+  return denormalizedMetadata;
+}
+
+export { denormalizeMetadata, denormalizeRelated, denormalizeThesauriLabelInMetadata };
