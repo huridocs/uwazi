@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import L, { latLng } from 'leaflet';
 import 'leaflet.markercluster';
-import { getMapProvider } from 'app/Map/TilesProviderFactory';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import uniqueID from 'shared/uniqueID';
-import { DataMarker, getClusterMarker, LMarker, MarkerInput } from 'app/Map/MapHelper';
+import { Loader } from '@googlemaps/js-api-loader';
+import { DataMarker, getClusterMarker, LMarker, MarkerInput } from './MapHelper';
+import { getMapProvider } from './TilesProviderFactory';
 
 interface LMapProps {
   markers: LMarker[];
@@ -28,6 +29,12 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   const [currentMarkers, setCurrentMarkers] = useState<LMarker[]>();
   const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
   const [currentMapApiKey, setCurrentMapApiKey] = useState(props.mapApiKey);
+
+  const loader = new Loader({
+    apiKey: currentMapApiKey,
+    version: 'weekly',
+    libraries: ['places'],
+  });
 
   const clickHandler = (markerPoint: any) => {
     if (!props.onClick) return;
@@ -90,6 +97,12 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       (currentTilesProvider === props.tilesProvider || currentMapApiKey === props.mapApiKey)
     ) {
       return;
+    }
+    if (currentTilesProvider === 'google') {
+      loader
+        .load()
+        .then(() => {})
+        .catch(() => {});
     }
     setCurrentMarkers(pointMarkers);
     setCurrentTilesProvider(props.tilesProvider);

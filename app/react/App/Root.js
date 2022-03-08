@@ -35,12 +35,6 @@ const googelFonts = (
   />
 );
 
-const leafletStyles = (
-  <>
-    <script src="https://maps.googleapis.com/maps/api/js" async defer />
-  </>
-);
-
 const getFaviconURL = reduxData => {
   const favicon = reduxData.settings.collection.get('favicon');
 
@@ -65,7 +59,6 @@ export const headTag = (head, CSS, reduxData) => (
       dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
     />
     {googelFonts}
-    {leafletStyles}
     <link rel="shortcut icon" href={getFaviconURL(reduxData)} />
   </head>
 );

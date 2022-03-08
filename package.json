@@ -79,6 +79,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.14.0",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
+    "@googlemaps/js-api-loader": "^1.13.8",
     "@loadable/component": "^5.13.1",
     "@sentry/node": "^6.18.1",
     "@sentry/react": "^6.18.1",
