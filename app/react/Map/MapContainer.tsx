@@ -2,11 +2,11 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
+import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
+import { Loader } from '@googlemaps/js-api-loader';
 
 interface MapComponentProps {
   onClick: () => {};
-  tilesProvider: string;
-  mapApiKey: string;
 }
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
@@ -21,9 +21,20 @@ type ComponentProps = MapComponentProps & mappedProps;
 
 const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProps) => {
   const startingPoint = collectionSettings?.get('mapStartingPoint')?.toJS();
-  const mapProvider =
-    props.tilesProvider || collectionSettings?.get('tilesProvider') || 'opengoogle';
-  const token = props.mapApiKey || collectionSettings?.get('mapApiKey');
+  const tilesProvider = collectionSettings?.get('tilesProvider') || 'opengoogle';
+  const mapApiKey = collectionSettings?.get('mapApiKey');
+
+  if (tilesProvider === 'google' && mapApiKey) {
+    const loader = new Loader({
+      apiKey: mapApiKey,
+      retries: 0,
+    });
+    loader
+      .load()
+      .then(() => {})
+      .catch(() => {});
+  }
+
   const templatesInfo = templates.reduce(
     (info, t) => ({
       ...info,
@@ -38,8 +49,12 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
     }),
     {}
   );
-  const mapProps = { ...props, startingPoint, mapProvider, token, templatesInfo };
-  return <LMap {...mapProps} />;
+  const mapProps = { ...props, startingPoint, tilesProvider, mapApiKey, templatesInfo };
+  return (
+    <ErrorBoundary>
+      <LMap {...mapProps} />
+    </ErrorBoundary>
+  );
 };
 
 const container = connector(MapComponent);

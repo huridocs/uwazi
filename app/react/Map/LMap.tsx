@@ -3,7 +3,6 @@ import L, { latLng } from 'leaflet';
 import 'leaflet.markercluster';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import uniqueID from 'shared/uniqueID';
-import { Loader } from '@googlemaps/js-api-loader';
 import { DataMarker, getClusterMarker, LMarker, MarkerInput } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
@@ -14,7 +13,6 @@ interface LMapProps {
   clickOnCluster: (cluster: DataMarker[]) => {};
   onClick: (event: {}) => {};
   showControls: boolean;
-  mapProvider: string;
   startingPoint: GeolocationSchema;
   renderPopupInfo?: (marker: MarkerInput) => any;
   templatesInfo: { [k: string]: { color: string; name: string } };
@@ -29,12 +27,6 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   const [currentMarkers, setCurrentMarkers] = useState<LMarker[]>();
   const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
   const [currentMapApiKey, setCurrentMapApiKey] = useState(props.mapApiKey);
-
-  const loader = new Loader({
-    apiKey: currentMapApiKey,
-    version: 'weekly',
-    libraries: ['places'],
-  });
 
   const clickHandler = (markerPoint: any) => {
     if (!props.onClick) return;
@@ -75,7 +67,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   };
 
   const initMap = () => {
-    const { layers, baseMaps } = getMapProvider(props.mapProvider, props.mapApiKey);
+    const { layers, baseMaps } = getMapProvider(props.tilesProvider, props.mapApiKey);
     map = L.map(containerId, {
       center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
       zoom: 6,
@@ -97,12 +89,6 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       (currentTilesProvider === props.tilesProvider || currentMapApiKey === props.mapApiKey)
     ) {
       return;
-    }
-    if (currentTilesProvider === 'google') {
-      loader
-        .load()
-        .then(() => {})
-        .catch(() => {});
     }
     setCurrentMarkers(pointMarkers);
     setCurrentTilesProvider(props.tilesProvider);
