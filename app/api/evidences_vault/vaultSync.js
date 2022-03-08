@@ -108,16 +108,28 @@ const createEntityFromEvidence = async (evidence, template) => {
   await updateMetadata(createdEntity, template, videoAttachment, imageAttachment);
 };
 
+const syncToken = async (token, templateId) => {
+  const evidences = await vault.newEvidences(token);
+  const template = await templates.getById(templateId);
+
+  return evidences.reduce(async (prev, evidence) => {
+    await prev;
+
+    await createEntityFromEvidence(evidence, template);
+    return vaultEvidencesModel.save({ request: evidence.request });
+  }, Promise.resolve());
+};
+
 const vaultSync = {
-  async sync(token, templateId) {
-    const evidences = await vault.newEvidences(token);
-    const template = await templates.getById(templateId);
+  async sync(syncConfig) {
+    let configs = syncConfig;
+    if (!Array.isArray(configs)) {
+      configs = [configs];
+    }
 
-    return evidences.reduce(async (prev, evidence) => {
-      await prev;
-
-      await createEntityFromEvidence(evidence, template);
-      return vaultEvidencesModel.save({ request: evidence.request });
+    return configs.reduce(async (previousRun, { token, template: templateId }) => {
+      await previousRun;
+      return syncToken(token, templateId);
     }, Promise.resolve());
   },
 };
