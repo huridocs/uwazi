@@ -108,21 +108,24 @@ const processAttachments = async (
   return attachments;
 };
 
-const bindAttachmentsToMetadataProperties = (
+const handleAttachmentInMetadataProperties = (
   entity: EntityWithFilesSchema,
   attachments: FileType[]
 ) => {
   const updatedEntity = entity;
-  if (attachments.length) {
-    Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
-      if (entity.metadata && _value && _value.length && _value[0].attachment !== undefined) {
-        const value = _value;
+
+  Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
+    if (_value && _value.length) {
+      const value = _value;
+      if (entity.metadata && _value[0].attachment !== undefined) {
         value[0].value = attachments[_value[0].attachment]
           ? `/api/files/${attachments[_value[0].attachment].filename}`
           : '';
       }
-    });
-  }
+      delete value[0].attachment;
+    }
+  });
+
   return updatedEntity;
 };
 
@@ -141,7 +144,7 @@ const saveEntity = async (
     filename: generateFileName(file),
   }));
 
-  const entity = bindAttachmentsToMetadataProperties(_entity, attachments);
+  const entity = handleAttachmentInMetadataProperties(_entity, attachments);
 
   const updatedEntity = await entities.save(
     entity,
