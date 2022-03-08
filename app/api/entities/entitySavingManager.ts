@@ -112,21 +112,19 @@ const handleAttachmentInMetadataProperties = (
   entity: EntityWithFilesSchema,
   attachments: FileType[]
 ) => {
-  const updatedEntity = entity;
-
-  Object.entries(entity.metadata || {}).forEach(([_property, _value]) => {
-    if (_value && _value.length) {
-      const value = _value;
-      if (entity.metadata && _value[0].attachment !== undefined) {
-        value[0].value = attachments[_value[0].attachment]
-          ? `/api/files/${attachments[_value[0].attachment].filename}`
+  Object.entries(entity.metadata || {}).forEach(([_property, _values]) => {
+    if (_values && _values.length) {
+      const values = _values;
+      if (_values[0].attachment !== undefined) {
+        values[0].value = attachments[_values[0].attachment]
+          ? `/api/files/${attachments[_values[0].attachment].filename}`
           : '';
       }
-      delete value[0].attachment;
+      delete values[0].attachment;
     }
   });
 
-  return updatedEntity;
+  return entity;
 };
 
 const saveEntity = async (
