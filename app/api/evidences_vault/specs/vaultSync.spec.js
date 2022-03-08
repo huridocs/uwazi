@@ -4,7 +4,7 @@ import moment from 'moment';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { search } from 'api/search';
-import { deleteFile, getFileContent } from 'api/files/filesystem';
+import { deleteFiles, getFileContent } from 'api/files/filesystem';
 
 import fixtures, { templateId } from './fixtures';
 import { mockVault } from './helpers.js';
@@ -21,17 +21,18 @@ describe('vaultSync', () => {
   });
 
   afterEach(async () => {
-    await deleteFile(path.join(__dirname, '/zips/package1.zip'));
-    await deleteFile(path.join(__dirname, '/zips/package2.zip'));
-    await deleteFile(path.join(__dirname, '/zips/package3.zip'));
-    await deleteFile(path.join(__dirname, '/zips/package5.zip'));
-    await deleteFile(path.join(__dirname, '/zips/package6.zip'));
-    await deleteFile(path.join(__dirname, '/zips/package7.zip'));
+    await deleteFiles([
+      path.join(__dirname, '/zips/package1.zip'),
+      path.join(__dirname, '/zips/package2.zip'),
+      path.join(__dirname, '/zips/package3.zip'),
+      path.join(__dirname, '/zips/package5.zip'),
+    ]);
   });
 
   afterAll(async () => db.disconnect());
 
   describe('sync', () => {
+    let imported;
     beforeEach(async () => {
       const evidences = [
         {
@@ -58,18 +59,15 @@ describe('vaultSync', () => {
 
       await mockVault(token, evidences);
       await vaultSync.sync({ token, template: templateId });
+      imported = await entities.get();
     });
 
     it('should create entities based on evidences returned', async () => {
-      const imported = await entities.get();
-
       expect(imported.map(e => e.title)).toEqual(['title1', 'title2']);
       expect(imported.map(e => e.template)).toEqual([templateId, templateId]);
     });
 
     it('should assign url to link field', async () => {
-      const imported = await entities.get();
-
       expect(imported.map(e => e.metadata.original_url[0].value)).toEqual([
         { label: 'url 1', url: 'url 1' },
         { label: 'url 2', url: 'url 2' },
@@ -77,8 +75,6 @@ describe('vaultSync', () => {
     });
 
     it('should assign time of request', async () => {
-      const imported = await entities.get();
-
       const dates = imported.map(e =>
         moment.utc(e.metadata.time_of_request[0].value, 'X').format('DD-MM-YYYY')
       );
@@ -86,47 +82,31 @@ describe('vaultSync', () => {
     });
 
     it('should add zip package as attachment', async () => {
-      const imported = await entities.get();
-
       expect(await getFileContent('1.png')).toBe('this is a fake image');
       expect(await getFileContent('2.png')).toBe('this is a fake image');
 
-      expect(imported[0].attachments.find(a => a.filename.match(/zip/))).toEqual(
-        expect.objectContaining({
-          filename: '1.zip',
-        })
-      );
+      expect(imported[0].attachments.find(a => a.filename.match(/zip/))).toMatchObject({
+        filename: '1.zip',
+      });
 
-      expect(imported[1].attachments.find(a => a.filename.match(/zip/))).toEqual(
-        expect.objectContaining({
-          filename: '2.zip',
-        })
-      );
+      expect(imported[1].attachments.find(a => a.filename.match(/zip/))).toMatchObject({
+        filename: '2.zip',
+      });
     });
 
     it('should set png file as an attachment, and add the link into image field', async () => {
-      const imported = await entities.get();
-
       expect(await getFileContent('1.png')).toBe('this is a fake image');
       expect(await getFileContent('2.png')).toBe('this is a fake image');
 
       const firstPngAttachment = imported[0].attachments.find(a => a.filename.match(/png/));
-      expect(firstPngAttachment).toEqual(
-        expect.objectContaining({
-          filename: '1.png',
-        })
-      );
+      expect(firstPngAttachment).toMatchObject({ filename: '1.png' });
 
       expect(imported[0].metadata.screenshot[0]).toEqual({
         value: '/api/files/1.png',
       });
 
       const secondPngAttachment = imported[1].attachments.find(a => a.filename.match(/png/));
-      expect(secondPngAttachment).toEqual(
-        expect.objectContaining({
-          filename: '2.png',
-        })
-      );
+      expect(secondPngAttachment).toMatchObject({ filename: '2.png' });
 
       expect(imported[1].metadata.screenshot[0]).toEqual({
         value: '/api/files/2.png',
@@ -134,28 +114,18 @@ describe('vaultSync', () => {
     });
 
     it('should set mp4 file as an attachment, and add the link into media field', async () => {
-      const imported = await entities.get();
-
       expect(await getFileContent('1.mp4')).toBe('this is a fake video');
       expect(await getFileContent('2.mp4')).toBe('this is a fake video');
 
       const firstMp4Attachment = imported[0].attachments.find(a => a.filename.match(/mp4/));
-      expect(firstMp4Attachment).toEqual(
-        expect.objectContaining({
-          filename: '1.mp4',
-        })
-      );
+      expect(firstMp4Attachment).toMatchObject({ filename: '1.mp4' });
 
       expect(imported[0].metadata.video[0]).toEqual({
         value: '/api/files/1.mp4',
       });
 
       const secondPngAttachment = imported[1].attachments.find(a => a.filename.match(/mp4/));
-      expect(secondPngAttachment).toEqual(
-        expect.objectContaining({
-          filename: '2.mp4',
-        })
-      );
+      expect(secondPngAttachment).toMatchObject({ filename: '2.mp4' });
 
       expect(imported[1].metadata.video[0]).toEqual({
         value: '/api/files/2.mp4',
@@ -170,14 +140,6 @@ describe('vaultSync', () => {
           jsonInfo: { title: 'title5' },
         },
         {
-          listItem: { status: '203', request: '6', filename: 'package6.zip' },
-          jsonInfo: { title: 'title6' },
-        },
-        {
-          listItem: { status: '202', request: '7', filename: 'package7.zip' },
-          jsonInfo: { title: 'title7' },
-        },
-        {
           listItem: { status: '501', request: '8', filename: null },
           jsonInfo: { title: 'title8' },
         },
@@ -189,7 +151,7 @@ describe('vaultSync', () => {
         { token: anotherToken, template: templateId },
       ]);
 
-      const imported = await entities.get();
+      imported = await entities.get();
       expect(imported.map(e => e.title)).toEqual(['title1', 'title2', 'title5']);
       expect(imported.map(e => e.template)).toEqual([templateId, templateId, templateId]);
     });
@@ -198,11 +160,7 @@ describe('vaultSync', () => {
   it('should not fill media/image field if file does not exist', async () => {
     const evidences = [
       {
-        listItem: {
-          request: '1',
-          filename: 'package1.zip',
-          status: '201',
-        },
+        listItem: { request: '1', filename: 'package1.zip', status: '201' },
         jsonInfo: { title: 'title1' },
       },
       {
@@ -220,13 +178,13 @@ describe('vaultSync', () => {
 
     expect(imported.map(e => e.metadata.screenshot[0].value)).toEqual(['/api/files/1.png', '']);
 
-    expect(imported[0].attachments).toEqual([
-      expect.objectContaining({ filename: '1.mp4' }),
-      expect.objectContaining({ filename: '1.png' }),
-      expect.objectContaining({ filename: '1.zip' }),
+    expect(imported[0].attachments).toMatchObject([
+      { filename: '1.mp4' },
+      { filename: '1.png' },
+      { filename: '1.zip' },
     ]);
 
-    expect(imported[1].attachments).toEqual([expect.objectContaining({ filename: '2.zip' })]);
+    expect(imported[1].attachments).toMatchObject([{ filename: '2.zip' }]);
   });
 
   it('should not import already imported evidences', async () => {
@@ -235,16 +193,8 @@ describe('vaultSync', () => {
       { listItem: { request: '1', filename: 'package1.zip' }, jsonInfo: { title: 'title1' } },
       { listItem: { request: '3', filename: 'package3.zip' }, jsonInfo: { title: 'title3' } },
       {
-        listItem: {
-          request: '2',
-          filename: 'package2.zip',
-          url: 'url 2',
-          status: '201',
-          time_of_request: '2019-05-30 09:31:25',
-        },
-        jsonInfo: {
-          title: 'title2',
-        },
+        listItem: { request: '2', filename: 'package2.zip', url: 'url 2', status: '201' },
+        jsonInfo: { title: 'title2' },
       },
     ];
 
