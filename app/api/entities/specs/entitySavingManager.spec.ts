@@ -242,9 +242,8 @@ describe('entitySavingManager', () => {
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe(
-          `/api/files/${sortedSavedFiles[0].filename}`
-        );
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[0].filename}`);
+        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });
 
       it('should work when updating existing entities with other existing attachments', async () => {
@@ -279,6 +278,7 @@ describe('entitySavingManager', () => {
 
         const savedImage = savedFiles.find(f => f.originalname === 'image.jpg');
         expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedImage!.filename}`);
+        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });
 
       it('should ignore references to non existing attachments', async () => {
@@ -308,6 +308,31 @@ describe('entitySavingManager', () => {
         ]);
 
         expect(savedEntity.metadata.image[0].value).toBe('');
+        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
+      });
+
+      it('should not fail on empty values', async () => {
+        const entity = {
+          title: 'newEntity',
+          template: template2Id,
+          metadata: {
+            image: [],
+            text: [
+              {
+                value: 'a text',
+              },
+            ],
+          },
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [newPdfFile],
+        });
+
+        expect(savedEntity._id).not.toBeNull();
+        expect(savedEntity.metadata.text[0].value).toBe('a text');
+        expect(savedEntity.metadata.image).toEqual([]);
       });
     });
   });
