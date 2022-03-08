@@ -309,6 +309,28 @@ describe('entitySavingManager', () => {
 
         expect(savedEntity.metadata.image[0].value).toBe('');
       });
+
+      it('should not fail on empty values', async () => {
+        const entity = {
+          title: 'newEntity',
+          template: template2Id,
+          metadata: {
+            image: [],
+            text: [
+              {
+                value: 'a text',
+              },
+            ],
+          },
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [newPdfFile],
+        });
+
+        expect(savedEntity._id).not.toBeNull();
+      });
     });
   });
 });
