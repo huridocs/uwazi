@@ -54,7 +54,7 @@ describe('entities', () => {
       };
     };
 
-    fit('should uniq the values on multiselect and relationship fields', async () => {
+    it('should uniq the values on multiselect and relationship fields', async () => {
       const entity = {
         title: 'Batman begins',
         template: templateId,
