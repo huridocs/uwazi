@@ -51,7 +51,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: projects_param_over_this_one
+          SENTRY_PROJECT: uwazi-api
         with:
           environment: production
           projects: ${{ secrets.SENTRY_PROJECTS }}
