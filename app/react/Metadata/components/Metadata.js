@@ -1,4 +1,3 @@
-/* eslint-disable import/exports-last */
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
