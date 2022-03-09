@@ -11,7 +11,6 @@ import templates from 'api/templates/templates';
 import path from 'path';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -55,9 +54,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
 
-  const thesauriIds = template.properties.map(p => p.content).filter(p => p);
-  const thesauri = await dictionariesModel.get({ _id: { $in: thesauriIds } });
-  const thesauriByKey = Object.fromEntries(thesauri.map(d => [d._id, d]));
+  const thesauriByKey = await templates.getRelatedThesauri(template);
 
   return Promise.all(
     docLanguages.map(async d => {
@@ -127,7 +124,9 @@ async function updateEntity(entity, _template, unrestricted = false) {
   );
 }
 
-async function createEntity(doc, languages, sharedId) {
+async function createEntity(doc, languages, sharedId, docTemplate) {
+  if (!docTemplate) docTemplate = await templates.getById(doc.template);
+  const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
   return Promise.all(
     languages.map(async lang => {
       const langDoc = { ...doc };
@@ -140,13 +139,15 @@ async function createEntity(doc, languages, sharedId) {
       langDoc.metadata = await denormalizeMetadata(
         langDoc.metadata,
         langDoc.language,
-        langDoc.template.toString()
+        langDoc.template.toString(),
+        thesauriByKey
       );
 
       langDoc.suggestedMetadata = await denormalizeMetadata(
         langDoc.suggestedMetadata,
         langDoc.language,
-        langDoc.template.toString()
+        langDoc.template.toString(),
+        thesauriByKey
       );
 
       return model.save(langDoc);
@@ -349,7 +350,7 @@ export default {
         docTemplate = defaultTemplate;
       }
       doc.metadata = doc.metadata || {};
-      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
+      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId, docTemplate);
     }
 
     const [entity] = includeDocuments
