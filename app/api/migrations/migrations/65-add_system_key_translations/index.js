@@ -63,6 +63,12 @@ export default {
           // eslint-disable-next-line max-len
           'An API key is required to use Mapbox. If you plan to use Google Maps for commercial use, enter your API key, otherwise it is not required.',
       },
+      {
+        key: 'Streets',
+      },
+      {
+        key: 'Hybrid',
+      },
     ];
     await insertSystemKeys(db, systemKeys);
   },

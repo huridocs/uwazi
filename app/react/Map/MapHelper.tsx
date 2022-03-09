@@ -1,12 +1,12 @@
 import L, { latLng } from 'leaflet';
 import { svgPathData as faMapMarkerPath } from '@fortawesome/free-solid-svg-icons/faMapMarker';
 
-interface MarkerProperties {
+type MarkerProperties = {
   entity?: {
     title: string;
     template: string;
   };
-  templateInfo: {
+  templateInfo?: {
     color: string;
     name: string;
   };
@@ -14,23 +14,25 @@ interface MarkerProperties {
   info?: string;
   label?: string;
   color?: string;
-}
+};
 
-interface LMarker {
+type LMarker = {
   latlng: L.LatLng;
   properties: MarkerProperties;
-}
+};
 
-interface TemplatesInfo {
+type TemplatesInfo = {
   [k: string]: { color: string; name: string };
-}
+};
 
-interface MarkerInput {
+type MarkerInput = {
   label?: string;
   latitude: number;
   longitude: number;
   properties: MarkerProperties;
-}
+};
+
+const DEFAULT_COLOR = '#d9534e';
 
 class DataMarker extends L.Marker {
   properties?: MarkerProperties;
@@ -48,7 +50,7 @@ class DataMarker extends L.Marker {
 const pointMarkerIcon = (color: string) =>
   L.divIcon({
     html: `
-<svg viewBox="0 0 384 512" fill="${color || '#d9534e'}"><path d="${faMapMarkerPath}"/></svg>`,
+<svg viewBox="0 0 384 512" fill="${color || DEFAULT_COLOR}"><path d="${faMapMarkerPath}"/></svg>`,
     className: '',
     iconSize: [24, 40],
     iconAnchor: [12, 40],
@@ -58,22 +60,22 @@ const circleIcon = (color: string) =>
   L.divIcon({
     html: `
 <svg height="100" width="100">
-  <circle cx="10" cy="10" r="10" stroke="white" stroke-width="1" fill="${color || '#d9534e'}"/>
+  <circle cx="10" cy="10" r="10" stroke="white" stroke-width="1" fill="${color || DEFAULT_COLOR}"/>
 </svg>`,
     className: '',
     iconSize: [20, 36],
     iconAnchor: [12, 12],
   });
 
-const getMarkerIcon = (pointMarker: LMarker) => {
-  const libraryMarker = pointMarker.properties.libraryMap || false;
-  const color = pointMarker.properties.templateInfo?.color || '#d9534e';
+const getMarkerIcon = ({ properties }: LMarker) => {
+  const libraryMarker = properties.libraryMap || false;
+  const color = properties.color || properties.templateInfo?.color || DEFAULT_COLOR;
   return !libraryMarker ? pointMarkerIcon(color) : circleIcon(color);
 };
 
 const getMarkerTooltip = (marker: LMarker) => `<div class="popup-container">
             <span class="btn-color btn-color-8">
-              <span class="translation">${marker.properties.templateInfo.name}</span>
+              <span class="translation">${marker.properties.templateInfo?.name}</span>
             </span>&nbsp;
             <span class="popup-name">${marker.properties.entity?.title}</span>
             &nbsp;(<span class="popup-metadata-property">${marker.properties.label}</span>)
@@ -103,7 +105,7 @@ const parseMarkerPoint = (
 ) => {
   const templateInfo = pointMarker.properties?.entity
     ? templates[pointMarker.properties.entity.template]
-    : { color: '#d9534e', name: '' };
+    : undefined;
 
   return {
     latlng: latLng(pointMarker.latitude, pointMarker.longitude),

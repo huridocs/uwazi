@@ -10,16 +10,20 @@ const newKeyValues = [
       'An API key is required to use Mapbox. If you plan to use Google Maps for commercial use, enter your API key, otherwise it is not required.',
   },
   {
-    key: 'Open Google Maps',
-    value: 'Open Google Maps',
-  },
-  {
     key: 'Google Maps',
     value: 'Google Maps',
   },
   {
     key: 'MapBox',
     value: 'MapBox',
+  },
+  {
+    key: 'Streets',
+    value: 'Streets',
+  },
+  {
+    key: 'Hybrid',
+    value: 'Hybrid',
   },
 ];
 const alreadyInAllContexts = {

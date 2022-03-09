@@ -21,7 +21,7 @@ type ComponentProps = MapComponentProps & mappedProps;
 
 const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProps) => {
   const startingPoint = collectionSettings?.get('mapStartingPoint')?.toJS();
-  const tilesProvider = collectionSettings?.get('tilesProvider') || 'opengoogle';
+  const tilesProvider = collectionSettings?.get('tilesProvider') || 'mapbox';
   const mapApiKey = collectionSettings?.get('mapApiKey');
 
   if (tilesProvider === 'google' && mapApiKey) {
