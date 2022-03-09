@@ -54,6 +54,7 @@ describe('EntitySuggestions', () => {
           'Other titleEntity title1',
           'SuggestionOlowo Kamali',
           '',
+          'Other titleEntity title1',
           'Entity title1',
           'Olowo Kamali Case',
           'English',
@@ -63,6 +64,8 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(secondRow).toEqual([
+          'SuggestionViolación caso 1',
+          '',
           'Other title-',
           'SuggestionViolación caso 1',
           ' Accept',
@@ -219,7 +222,7 @@ describe('EntitySuggestions', () => {
       await act(async () => renderComponent());
 
       const rows = screen.getAllByRole('row');
-      const acceptButton = within(rows[2]).getByText('Accept').parentElement!;
+      const acceptButton = within(rows[2]).getByLabelText('Accept suggestion');
       await act(async () => {
         fireEvent.click(acceptButton);
       });

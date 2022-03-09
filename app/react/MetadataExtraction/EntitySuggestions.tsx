@@ -48,17 +48,20 @@ export const EntitySuggestions = ({
     const suggestion = row.original;
     return (
       <div>
-        {suggestion.state !== SuggestionState.matching && (
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            onClick={async () => showConfirmationModal(row)}
-          >
-            <Icon icon="check" />
-            &nbsp;
-            <Translate>Accept</Translate>
-          </button>
-        )}
+        <button
+          type="button"
+          aria-label="Accept suggestion"
+          className={
+            suggestion.state === SuggestionState.matching
+              ? 'btn btn-success'
+              : 'btn btn-outline-primary'
+          }
+          onClick={async () =>
+            suggestion.state !== SuggestionState.matching && showConfirmationModal(row)
+          }
+        >
+          <Icon icon="arrow-right" />
+        </button>
       </div>
     );
   };

@@ -76,16 +76,6 @@ const suggestionsTable = (
   const columns: Column<EntitySuggestionType>[] = React.useMemo(
     () => [
       {
-        id: 'currentValue',
-        Header: () => (
-          <>
-            <Translate>Property</Translate>:&nbsp;<Translate>{reviewedProperty.label}</Translate>
-          </>
-        ),
-        Cell: currentValueCell,
-        className: 'current',
-      },
-      {
         id: 'suggestion',
         Header: () => <Translate>Suggestion</Translate>,
         Cell: suggestionCell,
@@ -93,9 +83,19 @@ const suggestionsTable = (
       },
       {
         id: 'action',
-        Header: () => <Translate>Action</Translate>,
+        Header: () => '',
         Cell: actionsCell,
         className: 'action',
+      },
+      {
+        id: 'currentValue',
+        Header: () => (
+          <>
+            <Translate>Property</Translate>
+          </>
+        ),
+        Cell: currentValueCell,
+        className: 'current',
       },
       {
         id: 'entityTitle',
