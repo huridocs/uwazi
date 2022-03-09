@@ -160,12 +160,17 @@ export const EntitySuggestions = ({
   return (
     <>
       <div className="panel entity-suggestions">
+        <div className="dashboard-link">
+          <I18NLink to="settings/metadata_extraction">
+            <Icon icon="arrow-left" />
+            <Translate>Back to dashboard</Translate>
+          </I18NLink>
+        </div>
         <div className="panel-subheading">
           <div>
             <span className="suggestion-header">
               <Translate>Reviewing</Translate>:&nbsp;
             </span>
-
             <span className="suggestion-property">
               <Translate>{reviewedProperty.label}</Translate>
             </span>
@@ -177,9 +182,6 @@ export const EntitySuggestions = ({
           >
             <Translate>{ixmessages[status]}</Translate>
           </button>
-          <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
-            <Translate>Dashboard</Translate>
-          </I18NLink>
         </div>
         <table {...getTableProps()}>
           <thead>

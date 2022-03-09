@@ -24,16 +24,32 @@
 }
 
 .entity-suggestions {
+  .dashboard-link {
+    a {
+      text-decoration: unset;
+      color: $c-grey-dark;
+      span {
+        padding: 0 0 0 5px;
+      }
+    }
+    margin-bottom: 10px;
+  }
+
   .panel-subheading {
-    font-size: $f-size-lg;
+    font-size: $f-size-xl;
+    justify-content: flex-start;
+    position: relative;
+    align-items: center;
+
+    button {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 
   .suggestion-header {
     color: $c-grey-dark;
-  }
-
-  .suggestion-property {
-    font-family: $f-special;
   }
 
   table {
