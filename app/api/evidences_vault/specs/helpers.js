@@ -23,15 +23,13 @@ const createPackage = (data, fileName) =>
       })
     : Promise.resolve();
 
-const mockVault = async evidences => {
+const mockVault = async (token, evidences) => {
   const response = evidences.map(e => e.listItem);
-
-  backend.restore();
 
   backend.post(
     (url, options) =>
       url === 'https://public.evidence-vault.org/list.php' &&
-      options.body.get('token') === 'auth_token' &&
+      options.body.get('token') === token &&
       options.headers['Content-Type'] === 'application/x-www-form-urlencoded',
     JSON.stringify(response)
   );
