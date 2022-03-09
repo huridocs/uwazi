@@ -11,14 +11,18 @@ interface MarkerProperties {
     name: string;
   };
   libraryMap: boolean;
+  info?: string;
+  label?: string;
+  color?: string;
 }
 
-interface MarkerInput {
+interface LMarker {
   latlng: L.LatLng;
   properties: MarkerProperties;
 }
 
-interface LMarker {
+interface MarkerInput {
+  label?: string;
   latitude: number;
   longitude: number;
   properties: MarkerProperties;
@@ -57,23 +61,23 @@ const circleIcon = (color: string) =>
     iconAnchor: [12, 12],
   });
 
-const getMarkerIcon = (pointMarker: MarkerInput) => {
+const getMarkerIcon = (pointMarker: LMarker) => {
   const libraryMarker = pointMarker.properties.libraryMap || false;
   const color = pointMarker.properties.templateInfo?.color || '#d9534e';
   return !libraryMarker ? pointMarkerIcon(color) : circleIcon(color);
 };
 
-const getInfo = (marker: MarkerInput) => `<div class="popup-container">
+const getInfo = (marker: LMarker) => `<div class="popup-container">
             <span class="btn-color btn-color-8">
               <span class="translation">${marker.properties.templateInfo.name}</span>
             </span>&nbsp;
             <span class="popup-name">${marker.properties.entity?.title}</span>
-            &nbsp;(<span class="popup-metadata-property">Geolocation</span>)
+            &nbsp;(<span class="popup-metadata-property">${marker.properties.label}</span>)
           </div>
         </div>
       `;
 
-const getClusterMarker = (markerPoint: MarkerInput) => {
+const getClusterMarker = (markerPoint: LMarker) => {
   const icon = getMarkerIcon(markerPoint);
   const marker = new DataMarker(
     [markerPoint.latlng.lat, markerPoint.latlng.lng],
@@ -82,10 +86,12 @@ const getClusterMarker = (markerPoint: MarkerInput) => {
   );
   if (markerPoint.properties.libraryMap && markerPoint.properties.templateInfo) {
     const info = getInfo(markerPoint);
-    marker.bindPopup(info);
+    marker.bindTooltip(info);
+  } else if (marker.properties?.info) {
+    marker.bindTooltip(marker.properties?.info);
   }
   return marker;
 };
 
 export { getClusterMarker, DataMarker };
-export type { MarkerInput, MarkerProperties, LMarker };
+export type { LMarker, MarkerProperties, MarkerInput };

@@ -3,18 +3,18 @@ import L, { latLng } from 'leaflet';
 import 'leaflet.markercluster';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import uniqueID from 'shared/uniqueID';
-import { DataMarker, getClusterMarker, LMarker, MarkerInput } from './MapHelper';
+import { DataMarker, getClusterMarker, MarkerInput, LMarker } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
 interface LMapProps {
-  markers: LMarker[];
+  markers: MarkerInput[];
   height: number;
   clickOnMarker: (marker: DataMarker) => {};
   clickOnCluster: (cluster: DataMarker[]) => {};
   onClick: (event: {}) => {};
   showControls: boolean;
   startingPoint: GeolocationSchema;
-  renderPopupInfo?: (marker: MarkerInput) => any;
+  renderPopupInfo?: (marker: LMarker) => any;
   templatesInfo: { [k: string]: { color: string; name: string } };
   tilesProvider: string;
   mapApiKey: string;
@@ -23,10 +23,10 @@ interface LMapProps {
 const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   let map: L.Map;
   let markerGroup: L.MarkerClusterGroup;
-  const containerId = uniqueID();
-  const [currentMarkers, setCurrentMarkers] = useState<LMarker[]>();
+  const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
   const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
   const [currentMapApiKey, setCurrentMapApiKey] = useState(props.mapApiKey);
+  const containerId = uniqueID();
 
   const clickHandler = (markerPoint: any) => {
     if (!props.onClick) return;
@@ -45,6 +45,8 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       return {
         latlng: latLng(pointMarker.latitude, pointMarker.longitude),
         properties: {
+          ...pointMarker.properties,
+          label: pointMarker.label || pointMarker.properties?.info,
           entity: pointMarker.properties?.entity,
           templateInfo,
           libraryMap: props.renderPopupInfo !== undefined,
@@ -85,7 +87,8 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   useEffect(() => {
     if (
       currentMarkers !== undefined &&
-      currentMarkers.length > 0 &&
+      currentMarkers.length === 1 &&
+      props.onClick &&
       (currentTilesProvider === props.tilesProvider || currentMapApiKey === props.mapApiKey)
     ) {
       return;
