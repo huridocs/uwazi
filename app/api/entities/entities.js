@@ -11,7 +11,6 @@ import templates from 'api/templates/templates';
 import path from 'path';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
