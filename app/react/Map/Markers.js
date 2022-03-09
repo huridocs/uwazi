@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
-import { getMarkers } from 'app/Map/helper';
+import { getMarkers } from './helper';
 
 const selectMarkers = createSelector(
   ({ entities }) => entities,

@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import L, { latLng } from 'leaflet';
+import L from 'leaflet';
 import 'leaflet.markercluster';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import uniqueID from 'shared/uniqueID';
-import { DataMarker, getClusterMarker, MarkerInput, LMarker } from './MapHelper';
+import {
+  DataMarker,
+  getClusterMarker,
+  MarkerInput,
+  LMarker,
+  parseMarkerPoint,
+  TemplatesInfo,
+  checkMapInitialization,
+} from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
 interface LMapProps {
@@ -15,7 +23,7 @@ interface LMapProps {
   showControls: boolean;
   startingPoint: GeolocationSchema;
   renderPopupInfo?: (marker: LMarker) => any;
-  templatesInfo: { [k: string]: { color: string; name: string } };
+  templatesInfo: TemplatesInfo;
   tilesProvider: string;
   mapApiKey: string;
 }
@@ -25,11 +33,9 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   let markerGroup: L.MarkerClusterGroup;
   const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
   const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
-  const [currentMapApiKey, setCurrentMapApiKey] = useState(props.mapApiKey);
   const containerId = uniqueID();
 
   const clickHandler = (markerPoint: any) => {
-    if (!props.onClick) return;
     markerGroup.clearLayers();
     getClusterMarker({ ...markerPoint, properties: {} }).addTo(markerGroup);
     const event = { lngLat: [markerPoint.latlng.lng, markerPoint.latlng.lat] };
@@ -37,22 +43,9 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   };
 
   const initMarkers = () => {
-    const markers = pointMarkers.map(pointMarker => {
-      const templateInfo = pointMarker.properties?.entity
-        ? props.templatesInfo[pointMarker.properties.entity.template]
-        : { color: '#d9534e', name: '' };
-
-      return {
-        latlng: latLng(pointMarker.latitude, pointMarker.longitude),
-        properties: {
-          ...pointMarker.properties,
-          label: pointMarker.label || pointMarker.properties?.info,
-          entity: pointMarker.properties?.entity,
-          templateInfo,
-          libraryMap: props.renderPopupInfo !== undefined,
-        },
-      };
-    });
+    const markers = pointMarkers.map(pointMarker =>
+      parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo !== undefined)
+    );
 
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
     markerGroup.on('clusterclick', cluster => {
@@ -61,7 +54,6 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
     markerGroup.on('click', marker => {
       props.clickOnMarker(marker.layer);
     });
-
     if (pointMarkers.length) {
       map.fitBounds(markerGroup.getBounds(), { maxZoom: 6 });
     }
@@ -77,33 +69,24 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       zoomControl: false,
     });
     markerGroup = L.markerClusterGroup();
-    initMarkers();
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
     L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     layers[0].addTo(map);
+    initMarkers();
     map.on('click', clickHandler);
   };
 
   useEffect(() => {
     if (
-      currentMarkers !== undefined &&
-      currentMarkers.length === 1 &&
-      props.onClick &&
-      (currentTilesProvider === props.tilesProvider || currentMapApiKey === props.mapApiKey)
+      currentTilesProvider !== props.tilesProvider ||
+      currentMarkers === undefined ||
+      !props.onClick
     ) {
-      return;
+      setCurrentMarkers(pointMarkers);
+      setCurrentTilesProvider(props.tilesProvider);
+      checkMapInitialization(map, containerId);
+      initMap();
     }
-    setCurrentMarkers(pointMarkers);
-    setCurrentTilesProvider(props.tilesProvider);
-    setCurrentMapApiKey(props.mapApiKey);
-    if (!map) {
-      const container = L.DomUtil.get(containerId);
-      if (container != null) {
-        // @ts-ignore
-        container._leaflet_id = null;
-      }
-    }
-    initMap();
   }, [pointMarkers, props.tilesProvider, props.mapApiKey]);
 
   return (

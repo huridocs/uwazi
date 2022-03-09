@@ -1,4 +1,4 @@
-import L from 'leaflet';
+import L, { latLng } from 'leaflet';
 import { svgPathData as faMapMarkerPath } from '@fortawesome/free-solid-svg-icons/faMapMarker';
 
 interface MarkerProperties {
@@ -19,6 +19,10 @@ interface MarkerProperties {
 interface LMarker {
   latlng: L.LatLng;
   properties: MarkerProperties;
+}
+
+interface TemplatesInfo {
+  [k: string]: { color: string; name: string };
 }
 
 interface MarkerInput {
@@ -67,7 +71,7 @@ const getMarkerIcon = (pointMarker: LMarker) => {
   return !libraryMarker ? pointMarkerIcon(color) : circleIcon(color);
 };
 
-const getInfo = (marker: LMarker) => `<div class="popup-container">
+const getMarkerTooltip = (marker: LMarker) => `<div class="popup-container">
             <span class="btn-color btn-color-8">
               <span class="translation">${marker.properties.templateInfo.name}</span>
             </span>&nbsp;
@@ -85,13 +89,43 @@ const getClusterMarker = (markerPoint: LMarker) => {
     { icon }
   );
   if (markerPoint.properties.libraryMap && markerPoint.properties.templateInfo) {
-    const info = getInfo(markerPoint);
-    marker.bindTooltip(info);
+    marker.bindTooltip(getMarkerTooltip(markerPoint));
   } else if (marker.properties?.info) {
     marker.bindTooltip(marker.properties?.info);
   }
   return marker;
 };
 
-export { getClusterMarker, DataMarker };
-export type { LMarker, MarkerProperties, MarkerInput };
+const parseMarkerPoint = (
+  pointMarker: MarkerInput,
+  templates: TemplatesInfo,
+  libraryMap: boolean
+) => {
+  const templateInfo = pointMarker.properties?.entity
+    ? templates[pointMarker.properties.entity.template]
+    : { color: '#d9534e', name: '' };
+
+  return {
+    latlng: latLng(pointMarker.latitude, pointMarker.longitude),
+    properties: {
+      ...pointMarker.properties,
+      label: pointMarker.label || pointMarker.properties?.info,
+      entity: pointMarker.properties?.entity,
+      templateInfo,
+      libraryMap,
+    },
+  };
+};
+
+const checkMapInitialization = (map: L.Map, containerId: string) => {
+  if (!map) {
+    const container = L.DomUtil.get(containerId);
+    if (container != null) {
+      // @ts-ignore
+      container._leaflet_id = null;
+    }
+  }
+};
+
+export { DataMarker, getClusterMarker, parseMarkerPoint, checkMapInitialization };
+export type { LMarker, MarkerProperties, MarkerInput, TemplatesInfo };
