@@ -26,6 +26,7 @@ const defaultProps = {
   optionsToShow: 5,
   showAll: false,
   hideSearch: false,
+  showSearch: false,
   sort: false,
   sortbyLabel: false,
   forceHoist: false,
@@ -400,11 +401,11 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   renderSearch() {
-    const { placeholder, options, optionsToShow, hideSearch } = this.props;
+    const { placeholder, options, optionsToShow, hideSearch, showSearch } = this.props;
 
     return (
       <li className="multiselectActions">
-        <ShowIf if={options.length > optionsToShow && !hideSearch}>
+        <ShowIf if={(options.length > optionsToShow && !hideSearch) || showSearch}>
           <div className="form-group">
             <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter} />
             <input
