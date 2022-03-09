@@ -353,28 +353,7 @@ exports[`Metadata when passing a prop with multivalue and parents should render 
             "parent": "Parent",
             "value": Array [
               Object {
-                "value": <React.Fragment>
-                  <span>
-                    Parent
-                  </span>
-                   
-                  <ValueList
-                    compact={false}
-                    property={
-                      Object {
-                        "parent": "Parent",
-                        "value": Array [
-                          Object {
-                            "value": undefined,
-                          },
-                          Object {
-                            "value": undefined,
-                          },
-                        ],
-                      }
-                    }
-                  />
-                </React.Fragment>,
+                "value": undefined,
               },
               Object {
                 "value": "three",
