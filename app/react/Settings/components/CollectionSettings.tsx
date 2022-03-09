@@ -68,12 +68,15 @@ const CollectionSettings = ({
     validate: (val: string) => validateHomePageRoute(val) || val === '',
   });
   register('tilesProvider');
-  register('mapApiKey', { required: watch('tilesProvider') === 'mapbox' });
+  register('mapApiKey', {
+    pattern: /^[a-zA-Z0-9._]+$/,
+  });
 
   const save = async (newCollectionSettings: Settings) => {
     const saveParameters = new RequestParams({
       ...collectionSettingsObject,
       ...newCollectionSettings,
+      mapApiKey: newCollectionSettings.mapApiKey?.replace(/\s+/g, ' ').trim(),
     });
     const result = await SettingsAPI.save(saveParameters);
     setSettings(result);
@@ -312,9 +315,9 @@ const CollectionSettings = ({
         </h2>
         <SettingsFormElement label="Map provider">
           <div className="col-xs-12 col-lg-3 col-no-gutters">
-            <select name="tilesProvider" className="form-control" ref={register} value="mapbox">
-              <option value="mapbox">{t('System', 'MapBox', null, false)}</option>
+            <select name="tilesProvider" className="form-control" ref={register}>
               <option value="google">{t('System', 'Google Maps', null, false)}</option>
+              <option value="mapbox">{t('System', 'MapBox', null, false)}</option>
             </select>
           </div>
         </SettingsFormElement>

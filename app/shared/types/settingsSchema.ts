@@ -155,7 +155,7 @@ const settingsSchema = {
     dateFormat: { type: 'string' },
     custom: { oneOf: [{ type: 'string' }, { type: 'object' }] },
     customCSS: { type: 'string' },
-    mapApiKey: { type: 'string' },
+    mapApiKey: { type: 'string', pattern: '^[a-zA-Z0-9._]+$' },
     newNameGeneration: { type: 'boolean', enum: [true] },
     ocrServiceEnabled: { type: 'boolean' },
 

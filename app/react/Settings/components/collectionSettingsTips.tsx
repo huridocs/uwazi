@@ -112,8 +112,7 @@ export const publicForm = [
 
 export const mapApiKey = (
   <Translate translationKey="Map api key tooltip">
-    An API key is required to use Mapbox. If you plan to use Google Maps for commercial use, enter
-    your API key, otherwise it is not required.
+    An API key is required to use Mapbox or Google Maps.
   </Translate>
 );
 
