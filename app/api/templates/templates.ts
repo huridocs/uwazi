@@ -1,5 +1,6 @@
 import entities from 'api/entities';
 import translations from 'api/i18n/translations';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
@@ -142,6 +143,16 @@ const _save = async (template: TemplateSchema) => {
   return newTemplate;
 };
 
+const getRelatedThesauri = async (template: TemplateSchema) => {
+  const thesauriIds = (template.properties || []).map(p => p.content).filter(p => p);
+  const thesauri = await dictionariesModel.get({ _id: { $in: thesauriIds } });
+  const thesauriByKey: Record<any, TemplateSchema> = {};
+  thesauri.forEach(t => {
+    thesauriByKey[t._id] = t;
+  });
+  return thesauriByKey;
+};
+
 export default {
   async save(
     template: TemplateSchema,
@@ -271,4 +282,6 @@ export default {
   async countByThesauri(thesauriId: string) {
     return model.count({ 'properties.content': thesauriId });
   },
+
+  getRelatedThesauri,
 };
