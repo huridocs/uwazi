@@ -1,5 +1,6 @@
 import uniqueID from 'shared/uniqueID';
 import { Tenant } from './tenants/tenantContext';
+import { version } from '../../package.json';
 
 const {
   ROOT_PATH,
@@ -25,6 +26,8 @@ const CLUSTER_MODE = process.env.CLUSTER_MODE || false;
 const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://localhost/');
 
 export const config = {
+  VERSION: version,
+
   PORT: process.env.PORT || 3000,
 
   DBHOST: MONGO_URI || onlyDBHOST(),
