@@ -56,3 +56,4 @@ jobs:
           environment: staging
           projects: ${{ secrets.SENTRY_PROJECTS }}
           version: ${{ steps.package-version.outputs.current-version}}
+          ignore_empty: true
