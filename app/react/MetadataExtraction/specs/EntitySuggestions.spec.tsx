@@ -51,7 +51,8 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(firstRow).toEqual([
-          'Other titleEntity title1SuggestionOlowo Kamali',
+          'Other titleEntity title1',
+          'SuggestionOlowo Kamali',
           '',
           'Entity title1',
           'Olowo Kamali Case',
@@ -62,7 +63,8 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(secondRow).toEqual([
-          'Other title-SuggestionViolación caso 1',
+          'Other title-',
+          'SuggestionViolación caso 1',
           ' Accept',
           'Título entidad',
           'Detalle Violación caso 1',
@@ -168,8 +170,11 @@ describe('EntitySuggestions', () => {
         .map(cell => cell.textContent);
       expect(firstRow).toContain(expectedSuggestionCell);
     };
-    it('should format the current value and suggestion value from a date property', async () => {
-      await renderAndCheckSuggestion(dateSuggestion, 'FechaApr 2, 2020SuggestionApr 2, 2020');
+    it('should format the current value from a date property', async () => {
+      await renderAndCheckSuggestion(dateSuggestion, 'FechaApr 2, 2020');
+    });
+    it('should format the suggestion value from a date property', async () => {
+      await renderAndCheckSuggestion(dateSuggestion, 'SuggestionApr 2, 2020');
     });
 
     it('should should not format is suggestion is a not valid date', async () => {

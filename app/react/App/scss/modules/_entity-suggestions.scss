@@ -89,8 +89,14 @@
     align-content: center;
     padding: 2px;
 
+    &.current {
+      width: 20%;
+      text-overflow: fade;
+      min-width: 150px;
+    }
+
     &.suggestion {
-      width: 30%;
+      width: 20%;
       text-overflow: fade;
       min-width: 150px;
     }
@@ -165,8 +171,11 @@
       font-size: $f-size-sm;
     }
 
-    &.suggestion {
+    &.current {
       border-left: 0;
+    }
+
+    &.suggestion {
       display: flex;
       flex-direction: column;
       position: relative;
