@@ -1,3 +1,4 @@
+/* eslint-disable import/exports-last */
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
@@ -51,16 +52,18 @@ export const showByType = (prop, compact) => {
         result = (
           <I18NLink key={prop.url} to={prop.url}>
             {prop.icon && <Icon className="item-icon" data={prop.icon} />}
-            {prop.value}
+            {prop.value || prop.label}
           </I18NLink>
         );
       }
 
       if (prop.value && prop.value.map) {
         prop.value = prop.value.map(_value => {
-          const value = showByType(_value, compact);
+          const value1 = _value.value === Object(_value.value) ? _value.value : _value;
+          const value = showByType(value1, compact);
           return value && value.value ? value : { value };
         });
+
         result = prop.parent ? (
           <>
             <span>{prop.parent}</span> <ValueList compact={compact} property={prop} />
