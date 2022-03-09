@@ -69,6 +69,7 @@ const metricsMiddleware = promBundle({
 app.use(metricsMiddleware);
 if (config.sentry.dsn) {
   Sentry.init({
+    release: config.VERSION,
     dsn: config.sentry.dsn,
     environment: config.ENVIRONMENT,
     integrations: [
@@ -145,13 +146,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   apiRoutes(app, http);
   serverRenderingRoutes(app);
   if (config.sentry.dsn) {
-    app.use(
-      Sentry.Handlers.errorHandler({
-        shouldHandleError(error) {
-          return error instanceof Error || error.code >= 500;
-        },
-      })
-    );
+    app.use(Sentry.Handlers.errorHandler());
   }
   app.use(errorHandlingMiddleware);
 
