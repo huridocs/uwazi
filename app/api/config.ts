@@ -26,13 +26,13 @@ const CLUSTER_MODE = process.env.CLUSTER_MODE || false;
 const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://localhost/');
 
 export const config = {
-  VERSION: version,
+  VERSION: ENVIRONMENT ? version : `development-${version}`,
+
+  ENVIRONMENT: ENVIRONMENT || 'development',
 
   PORT: process.env.PORT || 3000,
 
   DBHOST: MONGO_URI || onlyDBHOST(),
-
-  ENVIRONMENT: ENVIRONMENT || 'development',
 
   mongo_connection_pool_size: Number(MONGO_CONNECTION_POOL_SIZE) || 5,
 
