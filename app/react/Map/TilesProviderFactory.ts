@@ -3,7 +3,7 @@ import 'leaflet.gridlayer.googlemutant';
 import { t } from 'app/I18N';
 
 const DEFAULT_MAPBOX_TOKEN =
-  'pk.eyJ1IjoibWVyY3lmIiwiYSI6ImNrem9veGlpNTYxd2gyb25rc25heW8xMjEifQ.il5fhMnZYsZXK69KK9WfeQ';
+  'pk.eyJ1Ijoibnd5dSIsImEiOiJjazlta3liaWowMHBkM2pwaHFiaG0wcDBqIn0.47wbPKb2A4u3iCt34qrSRw';
 
 const mapBoxStyles: { [k: string]: string } = {
   Streets: 'mapbox/streets-v11',
@@ -33,6 +33,7 @@ const getGoogleLayers: () => { [p: string]: TileLayer } = () =>
 const getMapboxLayers: (accessToken?: string) => { [p: string]: TileLayer } = accessToken => {
   const mapboxUrl =
     'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
+
   return Object.keys(mapBoxStyles).reduce((layers: { [k: string]: TileLayer }, styleId: string) => {
     const styleLabel = t('System', styleId, null, false);
     return {

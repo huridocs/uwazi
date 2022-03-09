@@ -36,6 +36,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   const containerId = uniqueID();
 
   const clickHandler = (markerPoint: any) => {
+    if (!props.onClick) return;
     markerGroup.clearLayers();
     getClusterMarker({ ...markerPoint, properties: {} }).addTo(markerGroup);
     const event = { lngLat: [markerPoint.latlng.lng, markerPoint.latlng.lat] };
