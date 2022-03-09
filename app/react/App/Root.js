@@ -98,7 +98,7 @@ class Root extends Component {
           <script
             //eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
-              __html: `window.UWAZI_ENVIRONMENT = "${config.ENVIRONMENT}"`,
+              __html: `window.UWAZI_ENVIRONMENT = "${config.ENVIRONMENT}";window.UWAZI_VERSION = "${config.VERSION}"`,
             }}
           />
           {process.env.SENTRY_APP_DSN && (
