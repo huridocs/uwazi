@@ -14,19 +14,19 @@ import {
 } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
-interface LMapProps {
+type LMapProps = {
   markers: MarkerInput[];
   height: number;
-  clickOnMarker: (marker: DataMarker) => {};
-  clickOnCluster: (cluster: DataMarker[]) => {};
-  onClick: (event: {}) => {};
-  showControls: boolean;
+  clickOnMarker?: (marker: DataMarker) => {};
+  clickOnCluster?: (cluster: DataMarker[]) => {};
+  onClick?: (event: {}) => {};
+  showControls?: boolean;
   startingPoint: GeolocationSchema;
   renderPopupInfo?: (marker: LMarker) => any;
   templatesInfo: TemplatesInfo;
   tilesProvider: string;
   mapApiKey: string;
-}
+};
 
 const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   let map: L.Map;
@@ -50,10 +50,10 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
 
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
     markerGroup.on('clusterclick', cluster => {
-      props.clickOnCluster(cluster.layer.getAllChildMarkers());
+      props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
     });
     markerGroup.on('click', marker => {
-      props.clickOnMarker(marker.layer);
+      props.clickOnMarker?.(marker.layer);
     });
     if (pointMarkers.length) {
       map.fitBounds(markerGroup.getBounds(), { maxZoom: 6 });
@@ -68,6 +68,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       zoom: 6,
       maxZoom: 20,
       zoomControl: false,
+      preferCanvas: true,
     });
     markerGroup = L.markerClusterGroup();
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
@@ -91,7 +92,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
   }, [pointMarkers, props.tilesProvider, props.mapApiKey]);
 
   return (
-    <div className="map-container">
+    <div className="map-container" data-testid="map-container">
       <div
         id={containerId}
         className="leafletmap"

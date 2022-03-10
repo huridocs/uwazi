@@ -4,10 +4,17 @@ import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
 import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
 import { Loader } from '@googlemaps/js-api-loader';
+import { DataMarker, LMarker, MarkerInput } from 'app/Map/MapHelper';
 
-interface MapComponentProps {
-  onClick: () => {};
-}
+type MapComponentProps = {
+  markers: MarkerInput[];
+  height?: number;
+  clickOnMarker?: (marker: DataMarker) => {};
+  clickOnCluster?: (cluster: DataMarker[]) => {};
+  onClick?: (event: {}) => {};
+  showControls?: boolean;
+  renderPopupInfo?: (marker: LMarker) => any;
+};
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
   collectionSettings: settings.collection,

@@ -1,6 +1,6 @@
 import L, { TileLayer } from 'leaflet';
-import 'leaflet.gridlayer.googlemutant';
 import { t } from 'app/I18N';
+import { getGoogleLayer } from 'app/Map/GoogleMapLayer';
 
 const DEFAULT_MAPBOX_TOKEN =
   'pk.eyJ1Ijoibnd5dSIsImEiOiJjazlta3liaWowMHBkM2pwaHFiaG0wcDBqIn0.47wbPKb2A4u3iCt34qrSRw';
@@ -21,11 +21,7 @@ const getGoogleLayers: () => { [p: string]: TileLayer } = () =>
   Object.keys(GoogleMapStyles).reduce(
     (layers: { [k: string]: any }, styleId: string) => ({
       ...layers,
-      [styleId]: L.gridLayer.googleMutant({
-        type: GoogleMapStyles[styleId],
-        minZoom: 1,
-        maxZoom: 20,
-      }) as unknown as TileLayer,
+      [styleId]: getGoogleLayer(GoogleMapStyles[styleId]),
     }),
     {}
   );
