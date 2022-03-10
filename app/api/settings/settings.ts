@@ -182,6 +182,7 @@ export default {
 
       deletedTemplatesAndDeletedTemplateProps.forEach(template => {
         const templateId = template.template;
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         template.properties.forEach(async prop => {
           await Suggestions.deleteByProperty(prop, templateId.toString());
         });
