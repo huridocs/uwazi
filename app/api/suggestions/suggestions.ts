@@ -159,12 +159,13 @@ export const Suggestions = {
   deleteByEntityId: async (sharedId: string) => {
     await IXSuggestionsModel.delete({ entityId: sharedId });
   },
-  deleteByProperty: async (propertyName: string, templateId: string) {
-    const cursor = IXSuggestionsModel.model.db.find({ propertyName });
-    while (cursor.hasNext()) {
-      const suggestion = cursor.next();
-      const [entity] = await entities.getUnrestricted({ sharedId: suggestion.entityId });
-      if (entity && entity.template === templateId) {
+  deleteByProperty: async (propertyName: string, templateId: string) => {
+    const cursor = IXSuggestionsModel.db.find({ propertyName }).cursor();
+
+    for (let suggestion = await cursor.next(); suggestion; suggestion = await cursor.next()) {
+      const sharedId = suggestion.entityId;
+      const [entity] = await entities.getUnrestricted({ sharedId });
+      if (entity && entity.template?.toString() === templateId) {
         await IXSuggestionsModel.delete({ _id: suggestion._id });
       }
     }

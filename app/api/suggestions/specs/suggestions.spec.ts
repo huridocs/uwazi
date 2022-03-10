@@ -1,8 +1,9 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
-import suggestions from '../suggestions';
-import fixtures from './fixtures.js';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { Suggestions } from '../suggestions';
+import { fixtures } from './fixtures';
 
 describe('suggestions', () => {
   beforeEach(done => {
@@ -14,6 +15,13 @@ describe('suggestions', () => {
   });
 
   describe('deleteByProperty()', () => {
-    it('should delete all suggestions of a given property', async () => {});
+    it('should delete all suggestions of a given property', async () => {
+      const suggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
+      expect(suggestions.length).toBe(6);
+
+      await Suggestions.deleteByProperty('title', 'person');
+      const newSuggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
+      expect(newSuggestions.length).toBe(2);
+    });
   });
 });

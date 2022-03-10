@@ -2,13 +2,14 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 import { Settings } from 'shared/types/settingsType';
-
+import { Suggestions } from 'api/suggestions/suggestions';
 import settings from '../settings';
 import fixtures from './fixtures.js';
 
 describe('settings', () => {
   beforeEach(done => {
     spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
+    spyOn(Suggestions, 'deleteByProperty').and.returnValue(Promise.resolve('ok'));
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
