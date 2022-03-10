@@ -274,4 +274,12 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures, shared2enId, shared6enId, suggestionSharedId6Title, suggestionSharedId6Enemy };
+export {
+  fixtures,
+  shared2enId,
+  shared6enId,
+  suggestionSharedId6Title,
+  suggestionSharedId6Enemy,
+  personTemplateId,
+  heroTemplateId,
+};

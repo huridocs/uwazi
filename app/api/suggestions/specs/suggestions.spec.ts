@@ -3,7 +3,7 @@ import db from 'api/utils/testing_db';
 
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { Suggestions } from '../suggestions';
-import { fixtures } from './fixtures';
+import { fixtures, personTemplateId } from './fixtures';
 
 describe('suggestions', () => {
   beforeEach(done => {
@@ -19,7 +19,7 @@ describe('suggestions', () => {
       const suggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
       expect(suggestions.length).toBe(6);
 
-      await Suggestions.deleteByProperty('title', 'person');
+      await Suggestions.deleteByProperty('title', personTemplateId.toString());
       const newSuggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
       expect(newSuggestions.length).toBe(2);
     });
