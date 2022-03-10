@@ -16,6 +16,7 @@ import {
   anotherTextFile,
   pdfFile,
 } from './entitySavingManagerFixtures';
+import { advancedSort } from 'app/utils/advancedSort';
 
 describe('entitySavingManager', () => {
   beforeAll(() => {
@@ -60,17 +61,17 @@ describe('entitySavingManager', () => {
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
-        expect(savedEntity.attachments).toMatchObject([
-          {
-            mimetype: 'text/plain',
-            originalname: 'sampleFile.txt',
-            size: 12,
-            type: 'attachment',
-          },
+        expect(advancedSort(savedEntity.attachments, { property: 'originalname' })).toMatchObject([
           {
             mimetype: 'text/html',
             originalname: 'Google link',
             url: 'https://google.com',
+            type: 'attachment',
+          },
+          {
+            mimetype: 'text/plain',
+            originalname: 'sampleFile.txt',
+            size: 12,
             type: 'attachment',
           },
         ]);
@@ -235,12 +236,14 @@ describe('entitySavingManager', () => {
           entity: savedEntity.sharedId,
         });
 
-        expect(savedFiles).toEqual([
+        const sortedSavedFiles = advancedSort(savedFiles, { property: 'originalname' });
+        expect(sortedSavedFiles).toEqual([
           expect.objectContaining({ originalname: 'image.jpg' }),
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
         expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[0].filename}`);
+        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });
 
       it('should work when updating existing entities with other existing attachments', async () => {
@@ -264,13 +267,18 @@ describe('entitySavingManager', () => {
           entity: entity.sharedId,
         });
 
-        expect(savedFiles).toEqual([
-          expect.objectContaining({ originalname: 'Sample Text File.txt' }),
-          expect.objectContaining({ originalname: 'pdf.pdf' }),
-          expect.objectContaining({ originalname: 'image.jpg' }),
-        ]);
+        expect(savedFiles).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ originalname: 'Sample Text File.txt' }),
+            expect.objectContaining({ originalname: 'image.jpg' }),
+            expect.objectContaining({ originalname: 'pdf.pdf' }),
+          ])
+        );
+        expect(savedFiles.length).toBe(3);
 
-        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[2].filename}`);
+        const savedImage = savedFiles.find(f => f.originalname === 'image.jpg');
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedImage!.filename}`);
+        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });
 
       it('should ignore references to non existing attachments', async () => {
@@ -300,6 +308,31 @@ describe('entitySavingManager', () => {
         ]);
 
         expect(savedEntity.metadata.image[0].value).toBe('');
+        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
+      });
+
+      it('should not fail on empty values', async () => {
+        const entity = {
+          title: 'newEntity',
+          template: template2Id,
+          metadata: {
+            image: [],
+            text: [
+              {
+                value: 'a text',
+              },
+            ],
+          },
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [newPdfFile],
+        });
+
+        expect(savedEntity._id).not.toBeNull();
+        expect(savedEntity.metadata.text[0].value).toBe('a text');
+        expect(savedEntity.metadata.image).toEqual([]);
       });
     });
   });

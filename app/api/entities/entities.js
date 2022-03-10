@@ -8,12 +8,9 @@ import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import templates from 'api/templates/templates';
-import translationsModel from 'api/i18n/translations';
 import path from 'path';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
-import translate, { getContext } from 'shared/translate';
 import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -22,102 +19,8 @@ import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
-import { denormalizeRelated } from './denormalize';
+import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import { saveSelections } from './metadataExtraction/saveSelections';
-
-/** Repopulate metadata object .label from thesauri and relationships. */
-async function denormalizeMetadata(metadata, entity, template, thesauriByKey) {
-  if (!metadata) {
-    return metadata;
-  }
-
-  const translation = (await translationsModel.get({ locale: entity.language }))[0];
-  const allTemplates = await templates.get();
-  const resolveProp = async (key, value) => {
-    if (!Array.isArray(value)) {
-      throw new Error('denormalizeMetadata received non-array prop!');
-    }
-    const prop = template.properties.find(p => p.name === key);
-    return Promise.all(
-      value.map(async _elem => {
-        const elem = { ..._elem };
-        if (!elem.hasOwnProperty('value')) {
-          throw new Error('denormalizeMetadata received non-value prop!');
-        }
-        if (!prop) {
-          return elem;
-        }
-        if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
-          const thesaurus = thesauriByKey
-            ? thesauriByKey[prop.content]
-            : await dictionariesModel.getById(prop.content);
-          if (thesaurus) {
-            const context = getContext(translation, prop.content);
-            const flattenValues = thesaurus.values.reduce(
-              (result, dv) =>
-                dv.values
-                  ? result.concat(dv.values.map(v => ({ ...v, parent: dv })))
-                  : result.concat([dv]),
-              []
-            );
-            const thesaurusValue = flattenValues.find(v => v.id === elem.value);
-
-            if (thesaurusValue && thesaurusValue.label) {
-              elem.label = translate(context, thesaurusValue.label, thesaurusValue.label);
-            }
-
-            if (thesaurusValue && thesaurusValue.parent) {
-              elem.parent = {
-                value: thesaurusValue.parent.id,
-                label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
-              };
-            }
-          }
-        }
-
-        if (prop.type === 'relationship') {
-          const [partner] = await model.getUnrestricted({
-            sharedId: elem.value,
-            language: entity.language,
-          });
-
-          if (partner && partner.title) {
-            elem.label = partner.title;
-            elem.icon = partner.icon;
-            elem.type = partner.file ? 'document' : 'entity';
-          }
-
-          if (prop.inherit && prop.inherit.property && partner) {
-            const partnerTemplate = allTemplates.find(
-              t => t._id.toString() === partner.template.toString()
-            );
-
-            const inheritedProperty = partnerTemplate.properties.find(
-              p => p._id && p._id.toString() === prop.inherit.property.toString()
-            );
-
-            elem.inheritedValue = partner.metadata[inheritedProperty.name] || [];
-            elem.inheritedType = inheritedProperty.type;
-          }
-        }
-        return elem;
-      })
-    );
-  };
-  if (!template) {
-    template = await templates.getById(entity.template);
-    if (!template) {
-      return metadata;
-    }
-  }
-  return Object.keys(metadata).reduce(
-    async (meta, prop) => ({
-      ...(await meta),
-      [prop]: await resolveProp(prop, metadata[prop]),
-    }),
-    Promise.resolve({})
-  );
-}
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -140,7 +43,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
     docLanguages[0].template.toString() !== entity.template.toString()
   ) {
     await Promise.all([
-      this.deleteRelatedEntityFromMetadata(docLanguages[0]), // this should be okay, all queries are batch ones with a different purpose
+      this.deleteRelatedEntityFromMetadata(docLanguages[0]),
       relationships.delete({ entity: entity.sharedId }, null, false),
     ]);
   }
@@ -151,9 +54,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
 
-  const thesauriIds = template.properties.map(p => p.content).filter(p => p);
-  const thesauri = await dictionariesModel.get({ _id: { $in: thesauriIds } });
-  const thesauriByKey = Object.fromEntries(thesauri.map(d => [d._id, d]));
+  const thesauriByKey = await templates.getRelatedThesauri(template);
 
   return Promise.all(
     docLanguages.map(async d => {
@@ -165,8 +66,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(
             entity.metadata,
-            entity,
-            template,
+            d.language,
+            template._id.toString(),
             thesauriByKey
           );
         }
@@ -174,8 +75,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
         if (entity.suggestedMetadata) {
           toSave.suggestedMetadata = await denormalizeMetadata(
             entity.suggestedMetadata,
-            entity,
-            template,
+            entity.language,
+            template._id.toString(),
             thesauriByKey
           );
         }
@@ -199,8 +100,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
           });
           toSave[metadataParent] = await denormalizeMetadata(
             toSave[metadataParent],
-            toSave,
-            template,
+            toSave.language,
+            template._id.toString(),
             thesauriByKey
           );
         }
@@ -223,8 +124,9 @@ async function updateEntity(entity, _template, unrestricted = false) {
   );
 }
 
-async function createEntity(doc, languages, sharedId) {
-  const template = await templates.getById(doc.template);
+async function createEntity(doc, languages, sharedId, docTemplate) {
+  if (!docTemplate) docTemplate = await templates.getById(doc.template);
+  const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
   return Promise.all(
     languages.map(async lang => {
       const langDoc = { ...doc };
@@ -234,12 +136,18 @@ async function createEntity(doc, languages, sharedId) {
       }
       langDoc.language = lang.key;
       langDoc.sharedId = sharedId;
-      langDoc.metadata = await denormalizeMetadata(langDoc.metadata, langDoc, template);
+      langDoc.metadata = await denormalizeMetadata(
+        langDoc.metadata,
+        langDoc.language,
+        langDoc.template.toString(),
+        thesauriByKey
+      );
 
       langDoc.suggestedMetadata = await denormalizeMetadata(
         langDoc.suggestedMetadata,
-        langDoc,
-        template
+        langDoc.language,
+        langDoc.template.toString(),
+        thesauriByKey
       );
 
       return model.save(langDoc);
@@ -442,7 +350,7 @@ export default {
         docTemplate = defaultTemplate;
       }
       doc.metadata = doc.metadata || {};
-      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
+      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId, docTemplate);
     }
 
     const [entity] = includeDocuments
@@ -481,11 +389,15 @@ export default {
       docTemplate = defaultTemplate;
     }
     const entity = this.sanitize(doc, docTemplate);
-    entity.metadata = await denormalizeMetadata(entity.metadata, entity, docTemplate);
+    entity.metadata = await denormalizeMetadata(
+      entity.metadata,
+      entity.language,
+      entity.template.toString()
+    );
     entity.suggestedMetadata = await denormalizeMetadata(
       entity.suggestedMetadata,
-      entity,
-      docTemplate
+      entity.language,
+      entity.template.toString()
     );
     return entity;
   },
@@ -852,8 +764,16 @@ export default {
       entities.map(async _entity => {
         const { __v, _id, ...entity } = _entity;
         entity.language = language;
-        entity.metadata = await this.denormalizeMetadata(entity.metadata, entity);
-        entity.suggestedMetadata = await this.denormalizeMetadata(entity.suggestedMetadata, entity);
+        entity.metadata = await this.denormalizeMetadata(
+          entity.metadata,
+          language,
+          entity.template?.toString()
+        );
+        entity.suggestedMetadata = await this.denormalizeMetadata(
+          entity.suggestedMetadata,
+          language,
+          entity.template?.toString()
+        );
         return entity;
       })
     );

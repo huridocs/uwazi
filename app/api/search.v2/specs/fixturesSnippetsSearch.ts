@@ -2,6 +2,9 @@ import db, { testingDB, DBFixture } from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 
 const entity1enId = testingDB.id();
+const entity2enId = testingDB.id();
+const template1Id = testingDB.id();
+const thesaurusId = testingDB.id();
 
 const fileWithFullText = (sharedId: string, fullText: {}): FileType => ({
   _id: db.id(),
@@ -14,18 +17,50 @@ const fileWithFullText = (sharedId: string, fullText: {}): FileType => ({
 
 const fixturesSnippetsSearch: DBFixture = {
   settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+  templates: [
+    {
+      _id: template1Id,
+      properties: [
+        { name: 'text_field', type: 'text' },
+        { name: 'markdown_field', type: 'markdown' },
+        { name: 'thesaurus_property', type: 'select', content: thesaurusId.toString() },
+      ],
+    },
+  ],
+  dictionaries: [
+    {
+      _id: thesaurusId,
+      name: 'Countries',
+      values: [
+        { _id: db.id(), id: 'country_one', label: 'Republic of Gabriel' },
+        { _id: db.id(), id: 'country_two', label: 'Country Two' },
+        { _id: db.id(), id: 'country_three', label: 'Republic of Rafa' },
+        { _id: db.id(), id: 'country_four', label: 'Country Four' },
+      ],
+    },
+  ],
   entities: [
     {
       _id: entity1enId,
       sharedId: 'entity1SharedId',
       title: 'entity with a document',
       language: 'en',
+      template: template1Id,
+      metadata: {
+        text_field: [{ value: "A short string that we know it's going to come with a snippet" }],
+        markdown_field: [{ value: 'Another short string' }],
+        thesaurus_property: [{ value: 'country_two' }],
+      },
     },
     {
-      _id: testingDB.id(),
+      _id: entity2enId,
+      template: template1Id,
       sharedId: 'entity2SharedId',
       title: 'does not match fulltext search',
       language: 'en',
+      metadata: {
+        thesaurus_property: [{ value: 'country_three' }],
+      },
     },
     {
       _id: testingDB.id(),
@@ -45,6 +80,10 @@ const fixturesSnippetsSearch: DBFixture = {
       sharedId: 'entity4SharedId',
       title: 'entity:with a document',
       language: 'en',
+      template: template1Id,
+      metadata: {
+        text_field: [{ value: 'Tests are not short' }],
+      },
     },
   ],
   files: [
@@ -77,6 +116,10 @@ const fixturesSnippetsSearch: DBFixture = {
       },
     },
   ],
+  translations: [
+    { locale: 'en', contexts: [] },
+    { locale: 'es', contexts: [] },
+  ],
 };
 
-export { fixturesSnippetsSearch, entity1enId };
+export { fixturesSnippetsSearch, entity1enId, entity2enId };
