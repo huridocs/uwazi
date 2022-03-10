@@ -90,7 +90,7 @@ export const PropertyConfigurationModal = ({
       </Modal.Body>
       <Modal.Footer>
         <span className="left">
-          <Translate>*Only supported properties are shown</Translate>
+          *<Translate>Only supported properties are shown</Translate>
         </span>
         <button type="button" className="btn btn-default cancel-button" onClick={onClose}>
           <Translate>Cancel</Translate>
