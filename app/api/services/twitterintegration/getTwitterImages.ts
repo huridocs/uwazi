@@ -42,7 +42,7 @@ const getTextWithAttachedImages = (
     const twitterImageData = imagesFileNamesUrls[i];
     textWithImagesInAttachments = textWithImagesInAttachments.replace(
       twitterImageData.url,
-      `api/files/${twitterImageData.fileName}`
+      `/api/files/${twitterImageData.fileName}`
     );
   }
 

@@ -231,7 +231,7 @@ describe('TwitterIntegration', () => {
       metadata: {
         tweet_text: [
           {
-            value: 'tweet text ![image](api/files/generatedUwaziFilename)',
+            value: 'tweet text ![image](/api/files/generatedUwaziFilename)',
           },
         ],
       },
