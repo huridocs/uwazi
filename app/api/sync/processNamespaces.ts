@@ -106,12 +106,6 @@ class ProcessNamespaces {
     throw new Error(noDataFound);
   }
 
-  private async getTemplateDataAndConfig(template: string) {
-    const templateData = await getTemplate(template);
-    const templateConfig = this.templatesConfig[templateData._id.toString()];
-    return { templateData, templateConfig };
-  }
-
   private assessTranslationApproved(context: any) {
     const isSystem = context.id.toString() === 'System';
     const isApprovedRelationtype = this.whitelistedRelationtypes.includes(context.id.toString());
@@ -216,24 +210,35 @@ class ProcessNamespaces {
     return { data };
   }
 
-  private async entities() {
-    const { mongoId } = this.change;
-    const data = ensure<WithId<EntitySchema>>(await entitiesModel.getById(mongoId), noDataFound);
-
-    if (!(data.template && this.templatesConfigKeys.includes(data.template.toString()))) {
-      return { skip: true };
+  private async entityIsAllowed(entity: WithId<EntitySchema>) {
+    if (!(entity.template && this.templatesConfigKeys.includes(entity.template.toString()))) {
+      return false;
     }
 
-    const { templateData, templateConfig } = await this.getTemplateDataAndConfig(
-      data.template.toString()
-    );
+    const templateConfig = this.templatesConfig[entity.template.toString()];
 
     if (templateConfig.filter) {
-      if (!sift(JSON.parse(templateConfig.filter))(data)) {
-        return { skip: true };
+      if (!sift(JSON.parse(templateConfig.filter))(entity)) {
+        return false;
       }
     }
 
+    return true;
+  }
+
+  private async entities() {
+    const data = ensure<WithId<EntitySchema>>(
+      await entitiesModel.getById(this.change.mongoId),
+      noDataFound
+    );
+
+    if (!(await this.entityIsAllowed(data))) {
+      return { skip: true };
+    }
+
+    const templateConfig = this.templatesConfig[data.template!.toString()];
+
+    const templateData = await getTemplate(data.template!.toString());
     data.metadata = extractAllowedMetadata(data, templateData, templateConfig);
 
     return { data };
@@ -280,7 +285,7 @@ class ProcessNamespaces {
     if (data.entity) {
       const [entity] = await entitiesModel.get({ sharedId: data.entity });
 
-      if (!this.templatesConfigKeys.includes(entity.template?.toString() || '')) {
+      if (!(await this.entityIsAllowed(entity))) {
         return { skip: true };
       }
     }

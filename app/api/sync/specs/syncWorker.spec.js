@@ -374,7 +374,7 @@ describe('syncWorker', () => {
     };
 
     describe('uploadFile', () => {
-      it('should upload attachments, documents and thumbnails belonging to entities that are allowed to sync', async () => {
+      it('should upload attachments, documents and thumbnails belonging to entities that are of an allowed template', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [],
@@ -388,12 +388,26 @@ describe('syncWorker', () => {
         await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
         await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
         await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
-        expect(request.uploadFile).not.toHaveBeenCalledWith(
-          'url-slave1/api/sync/upload/custom',
-          'customUpload.gif',
-          expect.anything(),
-          expect.anything()
-        );
+      });
+
+      it('should upload files belonging to entities that are not filtered out', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: {
+              properties: [],
+              filter: JSON.stringify({
+                'metadata.t1Property1': { $elemMatch: { value: 'sync property 1' } },
+              }),
+            },
+          },
+        });
+
+        expect(request.uploadFile.calls.count()).toBe(4);
+
+        await expectUploadFile('/api/sync/upload', 'test2.txt');
+        await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
+        await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
+        await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
       });
     });
 
