@@ -13,12 +13,9 @@ async function startLegacyServicesNoMultiTenant() {
 
   syncWorker.start();
   const { evidencesVault, features } = await settings.get();
-  if (evidencesVault && evidencesVault.token && evidencesVault.template) {
+  if (evidencesVault) {
     console.info('==> 📥  evidences vault config detected, started sync ....');
-    const vaultSyncRepeater = new Repeater(
-      () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
-      10000
-    );
+    const vaultSyncRepeater = new Repeater(() => vaultSync.sync(evidencesVault), 10000);
     vaultSyncRepeater.start();
   }
   if (features && features.tocGeneration && features.tocGeneration.url) {

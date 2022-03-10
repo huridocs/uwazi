@@ -583,7 +583,7 @@ export const fontawesomeIcons = [
   'tumblr-square',
   'twitch',
   'twitter',
-  'twitter-square',
+  'twitterintegration-square',
   'umbrella',
   'underline',
   'undo',
