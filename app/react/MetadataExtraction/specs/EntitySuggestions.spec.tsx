@@ -51,7 +51,6 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(firstRow).toEqual([
-          'Other titleEntity title1',
           'SuggestionOlowo Kamali',
           '',
           'Other titleEntity title1',
@@ -67,8 +66,6 @@ describe('EntitySuggestions', () => {
           'SuggestionViolación caso 1',
           '',
           'Other title-',
-          'SuggestionViolación caso 1',
-          ' Accept',
           'Título entidad',
           'Detalle Violación caso 1',
           'Spanish',
@@ -89,7 +86,7 @@ describe('EntitySuggestions', () => {
           const suggestionHeaders = screen
             .getAllByRole('columnheader')
             .map(header => header.textContent);
-          expect(suggestionHeaders).toContain('Title / Suggestion');
+          expect(suggestionHeaders).toContain('Suggestion');
           expect(suggestionHeaders).not.toContain('Title');
         });
       });
@@ -184,7 +181,7 @@ describe('EntitySuggestions', () => {
       const invalidSuggestion = { ...dateSuggestion };
       // @ts-ignore
       invalidSuggestion.suggestedValue = 'no date';
-      await renderAndCheckSuggestion(invalidSuggestion, 'FechaApr 2, 2020Suggestionno date');
+      await renderAndCheckSuggestion(invalidSuggestion, 'Suggestionno date');
     });
   });
 
