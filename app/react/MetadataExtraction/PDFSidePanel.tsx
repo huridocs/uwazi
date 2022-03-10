@@ -38,7 +38,7 @@ const PDFSidePanel = ({
           templates?.toJS()
         ).forEach(action => store?.dispatch(action));
       })
-      .catch(() => {});
+      .catch(e => e);
   }, [entitySuggestion]);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const PDFSidePanel = ({
         .then(response => {
           setFile(response.json[0]);
         })
-        .catch(() => {});
+        .catch(e => e);
     }
   }, [entitySuggestion]);
 
