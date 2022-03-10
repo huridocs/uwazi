@@ -10,9 +10,9 @@ import Icons from 'app/Templates/components/Icons';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { PropertyConfigurationModal } from './PropertyConfigurationModal';
 import { Settings } from 'shared/types/settingsType';
 import saveSettings from 'app/Settings/actions/settingsActions';
+import { PropertyConfigurationModal } from './PropertyConfigurationModal';
 
 function mapStateToProps({ settings, templates }: any) {
   return {
@@ -38,7 +38,7 @@ class MetadataExtractionComponent extends React.Component<
     const extractionSettings =
       this.props.settings.get('features')?.get('metadataExtraction')?.get('templates') || [];
 
-    extractionSettings.forEach(setting => {
+    extractionSettings.forEach((setting: any) => {
       const template = setting.has('template')
         ? this.props.templates.find(temp => temp?.get('_id') === setting.get('template'))
         : this.props.templates.find(temp => temp?.get('name') === setting.get('name'));
