@@ -3,6 +3,9 @@ import { testingDB, DBFixture } from 'api/utils/testing_db';
 const shared2enId = testingDB.id();
 const shared6enId = testingDB.id();
 
+const personTemplateId = testingDB.id();
+const heroTemplateId = testingDB.id();
+
 const suggestionSharedId6Title = testingDB.id();
 const suggestionSharedId6Enemy = testingDB.id();
 
@@ -156,14 +159,14 @@ const fixtures: DBFixture = {
       sharedId: 'shared1',
       title: 'Robin',
       language: 'en',
-      template: 'person',
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),
       sharedId: 'shared1',
       title: 'Robin es',
       language: 'es',
-      template: 'person',
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),
@@ -171,7 +174,7 @@ const fixtures: DBFixture = {
       title: 'Batman ar',
       language: 'ar',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
-      template: 'person',
+      template: personTemplateId,
     },
     {
       _id: shared2enId,
@@ -179,7 +182,7 @@ const fixtures: DBFixture = {
       title: 'Batman en',
       language: 'en',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
-      template: 'person',
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),
@@ -187,7 +190,7 @@ const fixtures: DBFixture = {
       title: 'Batman es',
       language: 'es',
       metadata: { super_powers: [{ value: 'scientific knowledge' }] },
-      template: 'person',
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),
@@ -195,14 +198,14 @@ const fixtures: DBFixture = {
       title: 'Alfred',
       language: 'en',
       metadata: { age: [{ value: '' }] },
-      template: 'person',
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),
       sharedId: 'shared4',
       title: 'Joker',
       language: 'en',
-      template: 'person',
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),
@@ -210,7 +213,7 @@ const fixtures: DBFixture = {
       title: 'Poison Ivy',
       language: 'en',
       metadata: { age: [{ value: 34 }] },
-      template: 'hero',
+      template: heroTemplateId,
     },
     {
       _id: testingDB.id(),
@@ -218,7 +221,7 @@ const fixtures: DBFixture = {
       title: 'The Penguin',
       language: 'es',
       metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
-      template: 'hero',
+      template: heroTemplateId,
     },
     {
       _id: shared6enId,
@@ -226,7 +229,7 @@ const fixtures: DBFixture = {
       title: 'The Penguin',
       language: 'pr',
       metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
-      template: 'hero',
+      template: heroTemplateId,
     },
     {
       _id: testingDB.id(),
@@ -234,7 +237,39 @@ const fixtures: DBFixture = {
       title: 'The Penguin',
       language: 'en',
       metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
-      template: 'hero',
+      template: heroTemplateId,
+    },
+  ],
+  templates: [
+    {
+      _id: personTemplateId,
+      properties: [
+        {
+          label: 'Age',
+          type: 'numeric',
+          name: 'age',
+        },
+        {
+          label: 'Enemy',
+          type: 'text',
+          name: 'enemy',
+        },
+      ],
+    },
+    {
+      _id: heroTemplateId,
+      properties: [
+        {
+          label: 'Age',
+          type: 'numeric',
+          name: 'age',
+        },
+        {
+          label: 'Enemy',
+          type: 'text',
+          name: 'enemy',
+        },
+      ],
     },
   ],
 };
