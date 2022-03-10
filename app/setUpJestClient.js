@@ -1,6 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import './jestGlobalMocks';
-
 const { configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 
