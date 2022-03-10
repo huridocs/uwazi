@@ -273,6 +273,10 @@ class ProcessNamespaces {
     const { mongoId } = this.change;
     const data = ensure<WithId<FileType>>(await filesModel.getById(mongoId), noDataFound);
 
+    if (data.type === 'custom') {
+      return { skip: true };
+    }
+
     if (data.entity) {
       const [entity] = await entitiesModel.get({ sharedId: data.entity });
 

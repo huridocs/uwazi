@@ -381,14 +381,19 @@ describe('syncWorker', () => {
           },
         });
 
-        expect(request.uploadFile.calls.count()).toBe(6);
+        expect(request.uploadFile.calls.count()).toBe(5);
 
         await expectUploadFile('/api/sync/upload', 'test2.txt');
         await expectUploadFile('/api/sync/upload', 'test.txt');
         await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
         await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
         await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
-        await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
+        expect(request.uploadFile).not.toHaveBeenCalledWith(
+          'url-slave1/api/sync/upload/custom',
+          'customUpload.gif',
+          expect.anything(),
+          expect.anything()
+        );
       });
     });
 
@@ -576,8 +581,8 @@ describe('syncWorker', () => {
     it('should process the log records newer than the last synced entity', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(14);
-      expect(request.delete.calls.count()).toBe(27);
+      expect(request.post.calls.count()).toBe(13);
+      expect(request.delete.calls.count()).toBe(28);
 
       request.post.calls.reset();
       request.delete.calls.reset();
@@ -620,8 +625,8 @@ describe('syncWorker', () => {
       await syncAllTemplates('slave1', 5);
       [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
       expect(lastSync).toBe(9003);
-      expect(request.post.calls.count()).toBe(2);
-      expect(request.delete.calls.count()).toBe(3);
+      expect(request.post.calls.count()).toBe(1);
+      expect(request.delete.calls.count()).toBe(4);
     });
 
     it('should update lastSync on each operation', async () => {
