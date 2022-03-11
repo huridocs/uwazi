@@ -87,7 +87,7 @@ export const IXSuggestionsQuerySchema = {
       additionalProperties: false,
       properties: {
         number: { type: 'number', minimum: 1 },
-        size: { type: 'number', minimum: 1, maximum: 100 },
+        size: { type: 'number', minimum: 1, maximum: 500 },
       },
     },
   },
