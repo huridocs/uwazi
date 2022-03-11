@@ -5,6 +5,7 @@ const entityA = {
   _id: '_idA',
   sharedId: 'sharedA',
   title: 'Current title',
+  template: 'template_id',
   metadata: [],
 };
 
@@ -25,60 +26,13 @@ const suggestionForEntityA = {
   state: SuggestionState.pending,
   date: 0,
   page: 1,
-  fileId: 'entity1File',
+  fileId: '_idFileA',
 };
 
 const reduxStore = {
-  documentViewer: {
-    uiState: fromJS({
-      reference: {},
-      snippet: {},
-    }),
-    doc: fromJS({}),
-    targetDoc: fromJS({}),
-    rawText: '',
-    targetDocReferences: [],
-    references: [],
-
-    relationTypes: [],
-    tocForm: [],
-    tocBeingEdited: false,
-    metadataExtraction: {
-      selections: [],
-    },
-    sidepanel: {
-      metadata: {},
-      metadataForm: {
-        $form: {
-          initialValue: {},
-          focus: false,
-          pending: false,
-          pristine: true,
-          submitted: false,
-          submitFailed: false,
-          retouched: false,
-          touched: false,
-          valid: true,
-          validating: false,
-          validated: false,
-          validity: {},
-          errors: {},
-          intents: [],
-          model: 'documentViewer.sidepanel.metadata',
-          value: {},
-        },
-      },
-      snippets: {
-        count: 0,
-        metadata: [],
-        fullText: [],
-      },
-      tab: '',
-    },
-  },
   templates: fromJS([
     {
-      _id: 'template:_id',
+      _id: 'template_id',
       name: 'Documents',
       commonProperties: [
         {
@@ -102,11 +56,8 @@ const reduxStore = {
       default: true,
     },
   ]),
-  attachments: {
-    progress: fromJS({}),
-  },
-  settings: { collection: fromJS({}) },
-  user: fromJS({}),
 };
 
-export { entityA, entityAFile, suggestionForEntityA, reduxStore };
+const handleSave = jasmine.createSpy('handleSave');
+
+export { entityA, entityAFile, suggestionForEntityA, reduxStore, handleSave };

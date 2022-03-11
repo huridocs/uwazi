@@ -1,43 +1,73 @@
 /**
  * @jest-environment jsdom
  */
+
 import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { FileType } from 'shared/types/fileType';
+import api from 'app/utils/api';
+import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { PDFSidePanel } from '../PDFSidePanel';
-import * as actions from '../actions/actions';
-import { entityA, entityAFile, suggestionForEntityA, reduxStore } from './PDFSidepanelFixtures';
+import * as mocks from './PDFSidepanelFixtures';
+
+jest.mock('app/Viewer/containers/DocumentForm', () => ({
+  DocumentForm: ({
+    sharedId,
+    showSubset,
+    fileID,
+    onEntitySave,
+  }: {
+    sharedId: string;
+    showSubset: string[];
+    fileID: string;
+    onEntitySave: () => void;
+  }) => {
+    expect(sharedId).toBe(mocks.entityA.sharedId);
+    expect(showSubset).toEqual([mocks.suggestionForEntityA.propertyName]);
+    expect(fileID).toBe(mocks.suggestionForEntityA.fileId);
+    expect(onEntitySave).toBe(mocks.handleSave);
+    return 'mocked DocumentForm';
+  },
+}));
+
+jest.mock('app/Viewer/components/SourceDocument', () => ({ file }: { file: FileType }) => {
+  expect(file._id).toBe(mocks.entityAFile._id);
+  expect(file.filename).toBe(mocks.entityAFile.filename);
+  return 'mocked SourceDocument';
+});
 
 describe('PDFSidePanel', () => {
-  let store = reduxStore;
-
   const renderComponent = (suggestion: EntitySuggestionType) => {
-    const state = { ...defaultState, ...store };
+    const state = { ...defaultState, ...mocks.reduxStore };
     renderConnectedContainer(
       <PDFSidePanel
         open
         entitySuggestion={suggestion}
         closeSidePanel={() => {}}
-        handleSave={() => {}}
+        handleSave={mocks.handleSave}
       />,
       () => state
     );
   };
 
   beforeEach(() => {
-    spyOn(actions, 'fetchEntity').and.returnValue(Promise.resolve([entityA]));
-    spyOn(actions, 'fetchFile').and.returnValue(Promise.resolve({ json: [entityAFile] }));
+    spyOn(EntitiesAPI, 'get').and.returnValue(Promise.resolve([mocks.entityA]));
+    spyOn(api, 'get').and.returnValue(Promise.resolve({ json: [mocks.entityAFile] }));
   });
 
   it('should load the entity with the corresponding pdf', async () => {
-    await act(async () => renderComponent(suggestionForEntityA));
-    screen.debug();
+    await act(async () => renderComponent(mocks.suggestionForEntityA));
+    expect(EntitiesAPI.get).toHaveBeenCalledWith({ data: { sharedId: 'sharedA' }, headers: {} });
+    expect(api.get).toHaveBeenCalledWith('files', { data: { _id: '_idFileA' }, headers: {} });
   });
 
-  it('should open the pdf and scroll to the suggestions page', () => {});
-
   describe('on save', () => {
-    it('should save the entity', () => {});
+    it('should save the entity', async () => {
+      await act(async () => renderComponent(mocks.suggestionForEntityA));
+      const submitButton = screen.getByText('Save').parentElement;
+      expect(submitButton).toHaveAttribute('type', 'submit');
+    });
   });
 });
