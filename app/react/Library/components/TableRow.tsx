@@ -9,7 +9,6 @@ import formatter from 'app/Metadata/helpers/formater';
 import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
-import { number } from 'yargs';
 
 interface TableRowProps {
   columns: TableViewColumn[];

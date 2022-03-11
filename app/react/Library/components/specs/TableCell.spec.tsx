@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 
-import { I18NLink } from 'app/I18N';
 import { TableCell, TableCellProps } from 'app/Library/components/TableCell';
 import { shallow } from 'enzyme';
 import React from 'react';
