@@ -112,12 +112,12 @@ describe('EntitySuggestions', () => {
 
     it('should retrieve suggestions data when pageSize changed', async () => {
       await act(async () => {
-        fireEvent.change(screen.getAllByText('5 per page')[0].parentElement!, {
-          target: { value: 10 },
+        fireEvent.change(screen.getAllByText('100 per page')[0].parentElement!, {
+          target: { value: 300 },
         });
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: { filter: { propertyName: 'other_title' }, page: { size: 10, number: 1 } },
+        data: { filter: { propertyName: 'other_title' }, page: { size: 300, number: 1 } },
         headers: {},
       });
     });
