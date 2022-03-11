@@ -104,7 +104,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { propertyName: 'other_title' },
-          page: { size: 5, number: 4 },
+          page: { size: 100, number: 4 },
         },
         headers: {},
       });
@@ -138,7 +138,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { state: 'Empty', propertyName: 'other_title' },
-          page: { size: 5, number: 1 },
+          page: { size: 100, number: 1 },
         },
         headers: {},
       });
@@ -200,7 +200,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { propertyName: 'other_title' },
-          page: { size: 5, number: 1 },
+          page: { size: 100, number: 1 },
         },
         headers: {},
       });
