@@ -10,7 +10,7 @@ type MarkerProperties = {
     color: string;
     name: string;
   };
-  libraryMap: boolean;
+  libraryMap?: boolean;
   info?: string;
   label?: string;
   color?: string;

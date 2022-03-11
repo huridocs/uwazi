@@ -3,9 +3,10 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
 import { Map } from 'app/Map';
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { MarkerInput } from 'app/Map/MapHelper';
 
 jest.mock('app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),
@@ -14,16 +15,13 @@ jest.mock('app/Map/GoogleMapLayer', () => ({
 jest.mock('shared/uniqueID', () => jest.fn(() => 'containerid'));
 
 describe('Map', () => {
+  let renderResult: RenderResult;
   const storeState = {
     templates: Immutable.fromJS([
       {
         _id: 't1',
-        commonProperties: [{ name: 'title', label: 'Title' }],
-        properties: [
-          { name: 'description', type: 'text' },
-          { name: 'date', type: 'date' },
-          { name: 'main_image', label: 'Main Image', type: 'image' },
-        ],
+        name: 'template1',
+        color: 'blue',
       },
     ]),
     translations: Immutable.fromJS([
@@ -39,7 +37,7 @@ describe('Map', () => {
     ]),
     settings: {
       collection: Immutable.fromJS({
-        mapStartingPoint: [{ lat: 46, lon: 6 }],
+        mapStartingPoint: [{ lat: 40, lon: 15 }],
         tilesProvider: 'mapbox',
         mapApiKey: 'abd',
       }),
@@ -47,32 +45,60 @@ describe('Map', () => {
     locale: 'en',
   };
 
-  const render = () => {
-    renderConnectedContainer(
+  const clickOnCluster = jest.fn();
+  const onClick = jest.fn();
+
+  const clusterMarkers: MarkerInput[] = [
+    {
+      latitude: 60,
+      longitude: 24,
+      properties: { entity: { title: 'entity2', template: 't1' } },
+      label: 'geolocation1',
+    },
+    {
+      latitude: 40,
+      longitude: 15,
+      properties: { entity: { title: 'entity2', template: 't1' } },
+      label: 'geolocation2',
+    },
+    {
+      latitude: -0.5,
+      longitude: 40,
+      properties: { entity: { title: 'entity2', template: 't1' } },
+      label: 'geolocation2',
+    },
+  ];
+
+  const render = (markers: MarkerInput[], renderPopupInfo?: () => void) => {
+    ({ renderResult } = renderConnectedContainer(
       <Map
-        onClick={() => ({})}
-        markers={[{ latitude: 65, longitude: 34, properties: { libraryMap: false } }]}
+        markers={markers}
+        onClick={onClick}
+        clickOnCluster={clickOnCluster}
+        renderPopupInfo={renderPopupInfo}
       />,
       () => storeState
-    );
+    ));
   };
 
   describe('render', () => {
     beforeEach(async () => {
       await waitFor(() => {
-        render();
+        const renderPopupInfo = () => {};
+        render(clusterMarkers, renderPopupInfo);
       });
     });
+
     it('should set the streets mapbox tile by default', async () => {
       const presentation = await screen.getByRole('presentation');
       // @ts-ignore
       expect(presentation.src).toEqual(
-        'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/5/19/8?access_token=abd'
+        'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/-1/0/0?access_token=abd'
       );
       // @ts-ignore
       expect(presentation._leaflet_pos).toEqual({
-        x: -11,
-        y: -168,
+        x: -148,
+        y: -101,
       });
     });
 
@@ -89,6 +115,18 @@ describe('Map', () => {
       expect(zoomButtons[0].text).toEqual('+');
       // @ts-ignore
       expect(zoomButtons[1].text).toEqual('−');
+    });
+
+    it('should call clickOnCluster when clicking on a cluster', async () => {
+      const cluster = await screen.getByText('3');
+      fireEvent.click(cluster);
+      expect(clickOnCluster).toHaveBeenCalled();
+    });
+
+    it('should call onClick when clicking somewhere on the map', async () => {
+      const data = renderResult.container.getElementsByClassName('leaflet-pane')[0];
+      fireEvent.click(data);
+      expect(onClick).toHaveBeenCalled();
     });
   });
 });

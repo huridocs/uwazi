@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Loader } from '@googlemaps/js-api-loader';
 import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
 import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
-import { Loader } from '@googlemaps/js-api-loader';
 import { DataMarker, LMarker, MarkerInput } from 'app/Map/MapHelper';
 
 type MapComponentProps = {
