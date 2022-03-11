@@ -84,7 +84,6 @@ export class OdmModel<T> {
     );
     // update existing - check valid save - error if one missing
     const existingData = dataArray.filter(d => d._id && existingIds.has(d._id.toString()));
-    // existingData[0]._id = new ObjectId();
     const updateResult = await this.db.bulkWrite(
       existingData.map(data => ({
         updateOne: {
@@ -102,12 +101,9 @@ export class OdmModel<T> {
       throw Error('A document was not updated!');
     }
 
-    //collate both
+    //collate both, log, return
     const saved = updated.concat(created);
-
-    // log - upsertLogMany expects a query?
     await Promise.all(saved.map(async s => this.logHelper.upsertLogOne(s)));
-
     return saved.map(s => s.toObject<WithId<T>>());
   }
 
