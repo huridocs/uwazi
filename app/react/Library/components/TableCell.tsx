@@ -1,9 +1,5 @@
 import React from 'react';
-
-import { I18NLink } from 'app/I18N';
-import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
-import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import MarkdownViewer from 'app/Markdown';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { showByType } from 'app/Metadata/components/Metadata';
 
 interface TableCellProps {
@@ -17,6 +13,7 @@ type FormattedMetadataValue = Omit<PropertySchema, 'type'> & {
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
   type: 'inherit' | PropertySchema['type'];
   inheritedType?: PropertySchema['type'];
+  onlyForCards?: boolean;
 };
 
 const formatProperty = (prop: FormattedMetadataValue | undefined) => {
@@ -24,11 +21,12 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
     return undefined;
   }
 
-  if (
-    prop.type === 'inherit' &&
-    (prop.inheritedType === 'image' || prop.inheritedType === 'media')
-  ) {
-    return (prop.value as MetadataObjectSchema[]).map((p: MetadataObjectSchema) => <>{p.value}</>);
+  const inheritedMedia =
+    prop.type === 'inherit' && (prop.inheritedType === 'image' || prop.inheritedType === 'media');
+  const typeMedia = prop.type === 'image' || prop.type === 'media';
+
+  if (inheritedMedia || typeMedia) {
+    return undefined;
   }
   return showByType(prop, true);
 };

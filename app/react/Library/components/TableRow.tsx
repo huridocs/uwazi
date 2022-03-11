@@ -9,6 +9,7 @@ import formatter from 'app/Metadata/helpers/formater';
 import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
+import { number } from 'yargs';
 
 interface TableRowProps {
   columns: TableViewColumn[];
@@ -82,7 +83,6 @@ class TableRowComponent extends Component<TableRowProps> {
     const { entity, templates, thesauris, columns, selected } = this.props;
     const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
       sortedProperties: ['editDate', 'creationDate'],
-      onlyForCards: true,
     });
     const columnValues = new Map();
     formattedEntity.metadata.forEach((prop: FormattedMetadataValue) => {
