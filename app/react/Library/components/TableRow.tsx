@@ -82,12 +82,12 @@ class TableRowComponent extends Component<TableRowProps> {
     const { entity, templates, thesauris, columns, selected } = this.props;
     const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
       sortedProperties: ['editDate', 'creationDate'],
+      onlyForCards: true,
     });
     const columnValues = new Map();
     formattedEntity.metadata.forEach((prop: FormattedMetadataValue) => {
       columnValues.set(prop.name, prop);
     });
-
     return (
       <tr className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}>
         {columns.map((column: TableViewColumn, index: number) => {
