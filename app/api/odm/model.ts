@@ -1,4 +1,4 @@
-import { ObjectId, WithId as _WithId } from 'mongodb';
+import { WithId as _WithId } from 'mongodb';
 import mongoose, {
   Schema,
   UpdateQuery,
