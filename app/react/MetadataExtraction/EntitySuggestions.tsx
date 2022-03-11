@@ -56,17 +56,14 @@ export const EntitySuggestions = ({
               ? 'btn btn-success'
               : 'btn btn-outline-primary'
           }
-          onClick={async () =>
-            suggestion.state !== SuggestionState.matching && showConfirmationModal(row)
-          }
+          disabled={suggestion.state === SuggestionState.matching}
+          onClick={async () => showConfirmationModal(row)}
         >
           <Icon icon="arrow-right" />
         </button>
       </div>
     );
   };
-
-  // TEST!!!!
 
   const showPDF = (row: Row<EntitySuggestionType>) => {
     setSelectedRowData(row.original);
@@ -78,7 +75,16 @@ export const EntitySuggestions = ({
   };
 
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
-    <div onClick={() => showPDF(row)}>{row.original.segment}</div>
+    <div onClick={() => showPDF(row)}>
+      {row.original.segment && (
+        <>
+          <span className="segment-pdf">
+            <Translate>PDF</Translate>
+          </span>
+          {row.original.segment}
+        </>
+      )}
+    </div>
   );
 
   const {

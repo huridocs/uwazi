@@ -122,6 +122,13 @@
     }
   }
 
+  .segment-pdf {
+    margin-right: 5px;
+    border: 1px solid $c-grey-light;
+    border-radius: 5px;
+    padding: 0 3px;
+  }
+
   th {
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
     height: 30px;

@@ -55,7 +55,7 @@ describe('EntitySuggestions', () => {
           '',
           'Other titleEntity title1',
           'Entity title1',
-          'Olowo Kamali Case',
+          'PDFOlowo Kamali Case',
           'English',
           'Matching',
         ]);
@@ -67,7 +67,7 @@ describe('EntitySuggestions', () => {
           '',
           'Other title-',
           'Título entidad',
-          'Detalle Violación caso 1',
+          'PDFDetalle Violación caso 1',
           'Spanish',
           'Empty',
         ]);
