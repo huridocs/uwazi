@@ -97,7 +97,7 @@ export class OdmModel<T> {
     const newData = dataArray.filter(d => !d._id || !existingIds.has(d._id.toString()));
     const created = (await this.db.createMany(newData)) || [];
 
-    if (updateResult.result.nModified !== existingData.length) {
+    if (updateResult.result.nMatched !== existingData.length) {
       throw Error('A document was not updated!');
     }
 
