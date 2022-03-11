@@ -105,8 +105,8 @@ describe('Pagination', () => {
   describe('when the page size changes', () => {
     it('should call the onPageSizeChange parameter', () => {
       renderComponent(3);
-      fireEvent.change(screen.getByText('5 per page').parentElement!, { target: { value: 10 } });
-      expect(props.onPageSizeChange).toBeCalledWith(10);
+      fireEvent.change(screen.getByText('100 per page').parentElement!, { target: { value: 500 } });
+      expect(props.onPageSizeChange).toBeCalledWith(500);
     });
   });
 });

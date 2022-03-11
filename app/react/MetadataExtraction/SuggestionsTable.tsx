@@ -127,7 +127,7 @@ const suggestionsTable = (
       initialState: {
         hiddenColumns,
         pageIndex: 0,
-        pageSize: 5,
+        pageSize: 100,
       },
 
       pageCount: totalPages,
