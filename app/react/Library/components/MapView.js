@@ -85,4 +85,4 @@ const MapView = connect(mapStateToProps, mapDispatchToProps, null, { withRef: tr
   MapViewComponent
 );
 
-export { MapView };
+export { MapViewComponent, MapView };
