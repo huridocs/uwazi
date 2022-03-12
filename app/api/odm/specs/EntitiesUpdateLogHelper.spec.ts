@@ -4,7 +4,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { model as updatelogsModel } from 'api/updatelogs';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
-import { UpdateLogHelper } from '../logHelper';
 
 const fixtureFactory = getFixturesFactory();
 
