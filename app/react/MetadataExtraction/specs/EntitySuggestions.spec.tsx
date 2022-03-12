@@ -104,7 +104,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { propertyName: 'other_title' },
-          page: { size: 5, number: 4 },
+          page: { size: 100, number: 4 },
         },
         headers: {},
       });
@@ -112,12 +112,12 @@ describe('EntitySuggestions', () => {
 
     it('should retrieve suggestions data when pageSize changed', async () => {
       await act(async () => {
-        fireEvent.change(screen.getAllByText('5 per page')[0].parentElement!, {
-          target: { value: 10 },
+        fireEvent.change(screen.getAllByText('100 per page')[0].parentElement!, {
+          target: { value: 300 },
         });
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: { filter: { propertyName: 'other_title' }, page: { size: 10, number: 1 } },
+        data: { filter: { propertyName: 'other_title' }, page: { size: 300, number: 1 } },
         headers: {},
       });
     });
@@ -138,7 +138,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { state: 'Empty', propertyName: 'other_title' },
-          page: { size: 5, number: 1 },
+          page: { size: 100, number: 1 },
         },
         headers: {},
       });
@@ -200,7 +200,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { propertyName: 'other_title' },
-          page: { size: 5, number: 1 },
+          page: { size: 100, number: 1 },
         },
         headers: {},
       });

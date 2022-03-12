@@ -106,7 +106,7 @@ const Pagination = ({ totalPages, onPageChange, onPageSizeChange }: PaginationPr
                 onPageSizeChange(newSize);
               }}
             >
-              {[5, 10, 20].map(size => (
+              {[100, 300, 500].map(size => (
                 <option key={size} value={size}>
                   {`${size} ${t('System', 'per page', null, false)}`}
                 </option>
