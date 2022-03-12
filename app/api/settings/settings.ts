@@ -9,7 +9,6 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { validateSettings } from 'shared/types/settingsSchema';
 import { settingsModel } from './settingsModel';
 
-const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
 const getUpdatesAndDeletes = (
@@ -127,7 +126,6 @@ function setDefaults(storedSettings: Settings[]) {
   const [settings] = storedSettings;
   if (!settings) return {};
 
-  settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
   settings.mapStartingPoint =
     settings.mapStartingPoint && settings.mapStartingPoint.length
       ? settings.mapStartingPoint

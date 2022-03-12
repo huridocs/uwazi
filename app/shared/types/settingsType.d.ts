@@ -53,7 +53,7 @@ export interface Settings {
         [k: string]: unknown | undefined;
       };
   customCSS?: string;
-  mapTilerKey?: string;
+  mapApiKey?: string;
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema;
@@ -94,6 +94,7 @@ export interface Settings {
     lat: number;
     lon: number;
   }[];
+  tilesProvider?: string;
 }
 
 export type SettingsSyncRelationtypesSchema = string[];
