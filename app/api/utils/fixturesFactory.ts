@@ -75,7 +75,7 @@ function getFixturesFactory() {
 
     file: (
       id: string,
-      entity: string,
+      entity: string | undefined,
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
       filename: string,
       language: string = 'en',

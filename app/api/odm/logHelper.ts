@@ -3,6 +3,8 @@
 import PromisePool from '@supercharge/promise-pool';
 import mongoose from 'mongoose';
 import { model as updatelogsModel } from 'api/updatelogs';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
 import { OdmModel, models, UwaziFilterQuery, EnforcedWithId, DataType } from './model';
 
 const getBatchSteps = async <T>(
@@ -83,9 +85,28 @@ export class NoLogger<T> implements UpdateLogger<T> {
   }
 }
 
+export class EntitiesUpdateLogHelper<T> extends UpdateLogHelper<T> {
+  private filesHelper: UpdateLogger<FileType>;
+
+  constructor(collectionName: string, filesHelper: UpdateLogger<FileType>) {
+    super(collectionName);
+    this.filesHelper = filesHelper;
+  }
+
+  async upsertLogOne(entity: mongoose.Document): Promise<void> {
+    await super.upsertLogOne(entity);
+    const typedEntity = entity as unknown as EntitySchema;
+    const files = await models.files.get({ entity: typedEntity.sharedId });
+    await Promise.all(files.map(async f => this.filesHelper.upsertLogOne(f)));
+  }
+}
+
 export function createUpdateLogHelper<T>(collectionName: string): UpdateLogger<T> {
-  if (collectionName !== 'activitylog') return new UpdateLogHelper<T>(collectionName);
-  return new NoLogger<T>();
+  if (collectionName === 'activitylog') return new NoLogger<T>();
+  if (collectionName === 'entities') {
+    return new EntitiesUpdateLogHelper<T>(collectionName, createUpdateLogHelper<FileType>('files'));
+  }
+  return new UpdateLogHelper<T>(collectionName);
 }
 
 export interface UpdateLogger<T> {
