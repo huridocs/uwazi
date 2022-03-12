@@ -1,8 +1,10 @@
 import L, { latLng } from 'leaflet';
 import { svgPathData as faMapMarkerPath } from '@fortawesome/free-solid-svg-icons/faMapMarker';
+import { t } from 'app/I18N';
 
 type MarkerProperties = {
   entity?: {
+    sharedId: string;
     title: string;
     template: string;
   };
@@ -14,6 +16,7 @@ type MarkerProperties = {
   info?: string;
   label?: string;
   color?: string;
+  inherited?: boolean;
 };
 
 type LMarker = {
@@ -73,15 +76,33 @@ const getMarkerIcon = ({ properties }: LMarker) => {
   return !libraryMarker ? pointMarkerIcon(color) : circleIcon(color);
 };
 
-const getMarkerTooltip = (marker: LMarker) => `<div class="popup-container">
-            <span class="btn-color btn-color-8">
-              <span class="translation">${marker.properties.templateInfo?.name}</span>
+const getMarkerTooltip = (marker: LMarker) => {
+  const templateColor = marker.properties.templateInfo?.color || DEFAULT_COLOR;
+  const label = t(marker.properties.entity?.template, marker.properties.label, null, false);
+  const title = t(marker.properties.entity?.sharedId, marker.properties.entity?.title, null, false);
+  const templateName = t(
+    marker.properties.entity?.template,
+    marker.properties.templateInfo?.name,
+    null,
+    false
+  );
+
+  const markerLabel = marker.properties.inherited ? label : marker.properties.info;
+
+  return `<div class="popup-container">
+            <span class="btn-color" style="background-color: ${templateColor}">
+              <span class="translation">${templateName}</span>
             </span>&nbsp;
-            <span class="popup-name">${marker.properties.entity?.title}</span>
-            &nbsp;(<span class="popup-metadata-property">${marker.properties.label}</span>)
+            <span class="popup-name">${title}</span>
+            &nbsp;(<span class="popup-metadata-property">${label}</span>)
+            <div class="marker-info">
+                <Icon className="tag-icon" icon="tag" />
+                ${markerLabel}
+            </div>
           </div>
         </div>
       `;
+};
 
 const getClusterMarker = (markerPoint: LMarker) => {
   const icon = getMarkerIcon(markerPoint);
@@ -93,7 +114,8 @@ const getClusterMarker = (markerPoint: LMarker) => {
   if (markerPoint.properties.libraryMap && markerPoint.properties.templateInfo) {
     marker.bindTooltip(getMarkerTooltip(markerPoint));
   } else if (marker.properties?.info) {
-    marker.bindTooltip(marker.properties?.info);
+    const tooltip = t(marker.properties.entity?.template, marker.properties?.info, null, false);
+    marker.bindTooltip(tooltip);
   }
   return marker;
 };
@@ -101,7 +123,7 @@ const getClusterMarker = (markerPoint: LMarker) => {
 const parseMarkerPoint = (
   pointMarker: MarkerInput,
   templates: TemplatesInfo,
-  libraryMap: boolean
+  libraryMap: boolean = false
 ) => {
   const templateInfo = pointMarker.properties?.entity
     ? templates[pointMarker.properties.entity.template]

@@ -7,7 +7,6 @@ import {
   DataMarker,
   getClusterMarker,
   MarkerInput,
-  LMarker,
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
@@ -22,13 +21,13 @@ type LMapProps = {
   onClick?: (event: {}) => {};
   showControls?: boolean;
   startingPoint: GeolocationSchema;
-  renderPopupInfo?: (marker: LMarker) => any;
+  renderPopupInfo?: boolean;
   templatesInfo: TemplatesInfo;
   tilesProvider: string;
   mapApiKey: string;
 };
 
-const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
+const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMapProps) => {
   let map: L.Map;
   let markerGroup: L.MarkerClusterGroup;
   const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
@@ -45,7 +44,7 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
 
   const initMarkers = () => {
     const markers = pointMarkers.map(pointMarker =>
-      parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo !== undefined)
+      parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo)
     );
 
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
@@ -71,8 +70,11 @@ const LMap = ({ markers: pointMarkers = [], ...props }: LMapProps) => {
       preferCanvas: true,
     });
     markerGroup = L.markerClusterGroup();
-    L.control.zoom({ position: 'bottomleft' }).addTo(map);
-    L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
+
+    if (showControls) {
+      L.control.zoom({ position: 'bottomleft' }).addTo(map);
+      L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
+    }
     layers[0].addTo(map);
     initMarkers();
     map.on('click', clickHandler);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { requestState } from 'app/Library/helpers/requestState';
-import MapView from 'app/Library/components/MapView';
+import { MapView } from 'app/Library/components/MapView';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import Library from 'app/Library/Library';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';

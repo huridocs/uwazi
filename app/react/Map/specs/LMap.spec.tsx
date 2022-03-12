@@ -12,27 +12,14 @@ jest.mock('app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),
 }));
 
-jest.mock('shared/uniqueID', () => jest.fn(() => 'containerid'));
-
 describe('Map', () => {
   let renderResult: RenderResult;
   const storeState = {
-    templates: Immutable.fromJS([
-      {
-        _id: 't1',
-        name: 'template1',
-        color: 'blue',
-      },
-    ]),
+    templates: Immutable.fromJS([{ _id: 't1', name: 'template1', color: 'blue' }]),
     translations: Immutable.fromJS([
       {
         locale: 'en',
-        contexts: [
-          {
-            id: 't1',
-            values: { Title: 'Title translated', 'Main Image': 'Main Image translated' },
-          },
-        ],
+        contexts: [{ id: 't1', values: { Title: 'Title translated' } }],
       },
     ]),
     settings: {
@@ -48,43 +35,52 @@ describe('Map', () => {
   const clickOnCluster = jest.fn();
   const onClick = jest.fn();
 
+  const entity1 = { title: 'Entity 1', template: 't1', sharedId: 'entity1' };
   const clusterMarkers: MarkerInput[] = [
     {
       latitude: 60,
       longitude: 24,
-      properties: { entity: { title: 'entity2', template: 't1' } },
-      label: 'geolocation1',
+      properties: { entity: entity1 },
+      label: 'property1',
     },
     {
       latitude: 40,
       longitude: 15,
-      properties: { entity: { title: 'entity2', template: 't1' } },
-      label: 'geolocation2',
+      properties: { entity: entity1 },
+      label: 'property1',
     },
     {
       latitude: -0.5,
       longitude: 40,
-      properties: { entity: { title: 'entity2', template: 't1' } },
-      label: 'geolocation2',
+      properties: { entity: entity1 },
+      label: 'property1',
     },
   ];
 
-  const render = (markers: MarkerInput[], renderPopupInfo?: () => void) => {
+  const singleMarker = {
+    latitude: 60,
+    longitude: 24,
+    label: 'geolocation1',
+    properties: {},
+  };
+
+  const render = (markers: MarkerInput[], renderPopupInfo?: boolean, showControls = true) => {
     ({ renderResult } = renderConnectedContainer(
       <Map
         markers={markers}
         onClick={onClick}
         clickOnCluster={clickOnCluster}
         renderPopupInfo={renderPopupInfo}
+        showControls={showControls}
       />,
       () => storeState
     ));
   };
 
-  describe('render', () => {
+  describe('default values map library', () => {
     beforeEach(async () => {
       await waitFor(() => {
-        const renderPopupInfo = () => {};
+        const renderPopupInfo = true;
         render(clusterMarkers, renderPopupInfo);
       });
     });
@@ -127,6 +123,16 @@ describe('Map', () => {
       const data = renderResult.container.getElementsByClassName('leaflet-pane')[0];
       fireEvent.click(data);
       expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('render options', () => {
+    it('should render controls if showControls is false', async () => {
+      await waitFor(() => {
+        render([singleMarker], undefined, false);
+      });
+      expect((await screen.queryAllByRole('radio')).length).toBe(0);
+      expect((await screen.queryAllByRole('button')).length).toBe(0);
     });
   });
 });

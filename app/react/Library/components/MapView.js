@@ -11,37 +11,9 @@ import {
   unselectAllDocuments,
 } from 'app/Library/actions/libraryActions';
 import SearchBar from 'app/Library/components/SearchBar';
-import { TemplateLabel } from 'app/Layout';
 import { t } from 'app/I18N';
-import { Icon } from 'app/UI';
 
-const markerInfo = info => (
-  <div className="marker-info">
-    <Icon className="tag-icon" icon="tag" />
-    {info}
-  </div>
-);
-
-export const renderInfo = marker => (
-  <div className="popup-container">
-    <div className="template-label">
-      <TemplateLabel template={marker.properties.entity.template} />
-    </div>
-    <div className="entity-data">
-      <div>
-        <span className="popup-name">{marker.properties.entity.title}</span>
-        <span className="popup-metadata-property">
-          ({t(marker.properties.entity.template, marker.label)})
-        </span>
-      </div>
-      {marker.properties.inherited &&
-        markerInfo(<span className="entity-title">{marker.properties.label}</span>)}
-      {marker.properties.info && !marker.properties.inherited && markerInfo(marker.properties.info)}
-    </div>
-  </div>
-);
-
-export class MapView extends Component {
+class MapViewComponent extends Component {
   constructor(props) {
     super(props);
     this.clickOnMarker = this.clickOnMarker.bind(this);
@@ -78,7 +50,7 @@ export class MapView extends Component {
               markers={processedMarkers}
               clickOnMarker={this.clickOnMarker}
               clickOnCluster={this.clickOnCluster}
-              renderPopupInfo={renderInfo}
+              renderPopupInfo
               cluster
             />
           )}
@@ -88,7 +60,7 @@ export class MapView extends Component {
   }
 }
 
-MapView.propTypes = {
+MapViewComponent.propTypes = {
   markers: PropTypes.instanceOf(Immutable.Map).isRequired,
   storeKey: PropTypes.string.isRequired,
   getAndSelectDocument: PropTypes.func.isRequired,
@@ -96,7 +68,7 @@ MapView.propTypes = {
   unselectAllDocuments: PropTypes.func.isRequired,
 };
 
-export function mapStateToProps(state, props) {
+function mapStateToProps(state, props) {
   return {
     markers: state[props.storeKey].markers,
   };
@@ -109,4 +81,8 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(MapView);
+const MapView = connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(
+  MapViewComponent
+);
+
+export { MapView };

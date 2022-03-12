@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import LibraryMap from 'app/Library/LibraryMap';
 import RouteHandler from 'app/App/RouteHandler';
-import MapView from 'app/Library/components/MapView';
+import { MapView } from 'app/Library/components/MapView';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 
 describe('LibraryMap', () => {

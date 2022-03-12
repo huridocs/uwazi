@@ -4,7 +4,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
 import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
-import { DataMarker, LMarker, MarkerInput } from 'app/Map/MapHelper';
+import { DataMarker, MarkerInput } from 'app/Map/MapHelper';
 
 type MapComponentProps = {
   markers: MarkerInput[];
@@ -13,7 +13,7 @@ type MapComponentProps = {
   clickOnCluster?: (cluster: DataMarker[]) => {};
   onClick?: (event: {}) => {};
   showControls?: boolean;
-  renderPopupInfo?: (marker: LMarker) => any;
+  renderPopupInfo?: boolean;
 };
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
