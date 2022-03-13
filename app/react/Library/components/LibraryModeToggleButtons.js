@@ -11,23 +11,6 @@ import { createSelector } from 'reselect';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
-  constructor(props) {
-    super(props);
-    this.switchMapToStreet = this.switchMapToStreet.bind(this);
-    this.switchMapToSatellite = this.switchMapToSatellite.bind(this);
-    this.state = { mapStyle: 'street' };
-  }
-
-  switchMapToStreet() {
-    this.props.setMapStyle('street');
-    this.setState({ mapStyle: 'street' });
-  }
-
-  switchMapToSatellite() {
-    this.props.setMapStyle('satellite');
-    this.setState({ mapStyle: 'satellite' });
-  }
-
   render() {
     const {
       zoomLevel,
@@ -41,63 +24,35 @@ export class LibraryModeToggleButtons extends Component {
     } = this.props;
     return (
       <div className="list-view-mode">
-        {mapViewMode && showGeolocation && (
-          <div className={`map-type-buttons buttons-group ${mapViewMode ? 'unpinned-mode' : ''}`}>
-            <button
-              className={`street btn btn-default ${
-                this.state.mapStyle === 'street' ? 'is-active' : ''
-              }`}
-              onClick={this.switchMapToStreet}
-              type="button"
-              aria-label={t('System', 'Street View', null, false)}
-            >
-              <Icon icon="map-marker-alt" />
-              <span className="tab-link-tooltip">
-                <Translate>Street</Translate>
-              </span>
-            </button>
-            <button
-              className={`satellite btn btn-default ${
-                this.state.mapStyle === 'satellite' ? 'is-active' : ''
-              }`}
-              onClick={this.switchMapToSatellite}
-              type="button"
-              aria-label={t('System', 'Satellite View', null, false)}
-            >
-              <Icon icon="map" />
-              <span className="tab-link-tooltip">
-                <Translate>Satellite</Translate>
-              </span>
-            </button>
-          </div>
-        )}
         {tableViewMode && (
           <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
-        <div
-          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
-            tableViewMode ? 'unpinned-mode' : ''
-          }`}
-        >
-          <button
-            className="btn btn-default zoom-out"
-            onClick={zoomOut}
-            type="button"
-            aria-label={t('System', 'Zoom out library view', null, false)}
+        {!mapViewMode && (
+          <div
+            className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
+              tableViewMode ? 'unpinned-mode' : ''
+            }`}
           >
-            <Icon icon="search-minus" />
-            <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
-          </button>
-          <button
-            className="btn btn-default zoom-in"
-            onClick={zoomIn}
-            type="button"
-            aria-label={t('System', 'Zoom in library view', null, false)}
-          >
-            <Icon icon="search-plus" />
-            <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
-          </button>
-        </div>
+            <button
+              className="btn btn-default zoom-out"
+              onClick={zoomOut}
+              type="button"
+              aria-label={t('System', 'Zoom out library view', null, false)}
+            >
+              <Icon icon="search-minus" />
+              <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
+            </button>
+            <button
+              className="btn btn-default zoom-in"
+              onClick={zoomIn}
+              type="button"
+              aria-label={t('System', 'Zoom in library view', null, false)}
+            >
+              <Icon icon="search-plus" />
+              <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
+            </button>
+          </div>
+        )}
 
         <div className="list-view-mode-map buttons-group">
           <I18NLink
@@ -156,7 +111,6 @@ LibraryModeToggleButtons.propTypes = {
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
-  setMapStyle: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -165,7 +119,6 @@ LibraryModeToggleButtons.defaultProps = {
   zoomIn: null,
   zoomOut: null,
   showFilters: () => {},
-  setMapStyle: () => {},
 };
 
 export const encodedSearch = createSelector(

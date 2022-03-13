@@ -67,11 +67,16 @@ const CollectionSettings = ({
   register('home_page', {
     validate: (val: string) => validateHomePageRoute(val) || val === '',
   });
+  register('tilesProvider');
+  register('mapApiKey', {
+    pattern: /^[a-zA-Z0-9._]+$/,
+  });
 
   const save = async (newCollectionSettings: Settings) => {
     const saveParameters = new RequestParams({
       ...collectionSettingsObject,
       ...newCollectionSettings,
+      mapApiKey: newCollectionSettings.mapApiKey?.replace(/\s+/g, ' ').trim(),
     });
     const result = await SettingsAPI.save(saveParameters);
     setSettings(result);
@@ -308,7 +313,19 @@ const CollectionSettings = ({
         <h2>
           <Translate>Maps</Translate>
         </h2>
-
+        <SettingsFormElement label="Map provider">
+          <div className="col-xs-12 col-lg-3 col-no-gutters">
+            <select name="tilesProvider" className="form-control" ref={register}>
+              <option value="mapbox">{t('System', 'MapBox', null, false)}</option>
+              <option value="google">{t('System', 'Google Maps', null, false)}</option>
+            </select>
+          </div>
+        </SettingsFormElement>
+        <div className={`${errors.mapApiKey ? 'has-error' : ''}`}>
+          <SettingsFormElement label="Map api key" tip={tips.mapApiKey}>
+            <input type="text" name="mapApiKey" ref={register} className="form-control" />
+          </SettingsFormElement>
+        </div>
         <SettingsFormElement label="Custom starting location" tip={tips.mapAxis}>
           <div className="settings-map">
             <Geolocation
@@ -318,10 +335,6 @@ const CollectionSettings = ({
               }}
             />
           </div>
-        </SettingsFormElement>
-
-        <SettingsFormElement label="MapTiler key" tip={tips.mapTiler}>
-          <input type="text" name="mapTilerKey" ref={register} className="form-control" />
         </SettingsFormElement>
       </form>
 
