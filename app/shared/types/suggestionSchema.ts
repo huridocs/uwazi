@@ -17,6 +17,7 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
     segment: { type: 'string', minLength: 1 },
@@ -38,6 +39,7 @@ export const EntitySuggestionSchema = {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
     sharedId: { type: 'string', minLength: 1 },
+    fileId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
@@ -54,6 +56,7 @@ export const EntitySuggestionSchema = {
     'entityTitle',
     'entityId',
     'sharedId',
+    'fileId',
     'suggestedValue',
     'segment',
     'language',

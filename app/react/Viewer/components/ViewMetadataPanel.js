@@ -17,7 +17,7 @@ import {
   removeFromToc,
   indentTocElement,
 } from '../actions/documentActions';
-import DocumentForm from '../containers/DocumentForm';
+import { DocumentForm } from '../containers/DocumentForm';
 
 export const mapStateToProps = state => {
   const { documentViewer } = state;

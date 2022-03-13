@@ -7,6 +7,7 @@ export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
   sharedId: string;
+  fileId: string;
   entityTitle: string;
   propertyName: string;
   suggestedValue: PropertyValueSchema;
@@ -22,6 +23,7 @@ export interface EntitySuggestionType {
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
+  fileId?: ObjectIdSchema;
   propertyName: string;
   suggestedValue: PropertyValueSchema;
   segment: string;

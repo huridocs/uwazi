@@ -19,7 +19,8 @@ const suggestionsTable = (
   reviewedProperty: PropertySchema,
   suggestions: EntitySuggestionType[],
   totalPages: number,
-  actionsCell: Function
+  actionsCell: Function,
+  segmentCell: Function
 ) => {
   const stateFilter = ({
     column: { filterValue, setFilter },
@@ -46,25 +47,29 @@ const suggestionsTable = (
     return value;
   };
 
-  const suggestionCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
+  const currentValueCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
     const currentValue = formatValue(suggestion.currentValue);
+    return (
+      <div>
+        <span className="suggestion-label">
+          <Translate>{reviewedProperty.label}</Translate>
+        </span>
+        <p className="current-value">{currentValue}</p>
+      </div>
+    );
+  };
+
+  const suggestionCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
+    const suggestion = row.original;
     const suggestedValue = formatValue(suggestion.suggestedValue);
     return (
-      <>
-        <div>
-          <span className="suggestion-label">
-            <Translate>{reviewedProperty.label}</Translate>
-          </span>
-          <p className="current-value">{currentValue}</p>
-        </div>
-        <div>
-          <span className="suggestion-label">
-            <Translate>Suggestion</Translate>
-          </span>
-          <p className="suggested-value">{suggestedValue}</p>
-        </div>
-      </>
+      <div>
+        <span className="suggestion-label">
+          <Translate>Suggestion</Translate>
+        </span>
+        <p className="suggested-value">{suggestedValue}</p>
+      </div>
     );
   };
 
@@ -72,19 +77,25 @@ const suggestionsTable = (
     () => [
       {
         id: 'suggestion',
-        Header: () => (
-          <>
-            <Translate>{reviewedProperty.label}</Translate> / <Translate>Suggestion</Translate>
-          </>
-        ),
+        Header: () => <Translate>Suggestion</Translate>,
         Cell: suggestionCell,
         className: 'suggestion',
       },
       {
         id: 'action',
-        Header: () => <Translate>Action</Translate>,
+        Header: () => '',
         Cell: actionsCell,
         className: 'action',
+      },
+      {
+        id: 'currentValue',
+        Header: () => (
+          <>
+            <Translate>Property</Translate>
+          </>
+        ),
+        Cell: currentValueCell,
+        className: 'current',
       },
       {
         id: 'entityTitle',
@@ -94,8 +105,9 @@ const suggestionsTable = (
       },
       {
         accessor: 'segment' as const,
-        Header: () => <Translate>Segment</Translate>,
+        Header: () => <Translate>Context</Translate>,
         className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
+        Cell: segmentCell,
       },
       {
         accessor: 'language' as const,
