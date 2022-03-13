@@ -4,6 +4,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 
 const props = {
   status: { type: String, enum: ['processing', 'failed', 'ready'], default: 'processing' },
+  entityId: { type: String },
 };
 
 const mongoSchema = new mongoose.Schema(props, {
