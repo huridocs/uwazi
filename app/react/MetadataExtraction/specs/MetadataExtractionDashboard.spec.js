@@ -52,48 +52,46 @@ const settings = {
   }),
 };
 const expectedFormattedData = {
-  formattedData: {
-    aonlytext: {
-      properties: [{ label: 'AonlyText', name: 'aonlytext', type: 'text' }],
-      templates: [{ name: 'templateA' }],
-    },
-    abshareddate: {
-      properties: [
-        { label: 'ABsharedDate', name: 'abshareddate', type: 'date' },
-        { label: 'ABsharedDate', name: 'abshareddate', type: 'date' },
-      ],
-      templates: [{ name: 'templateA' }, { name: 'templateB' }],
-    },
-    acsharedmarkdown: {
-      properties: [
-        { label: 'ACsharedMarkdown', name: 'acsharedmarkdown', type: 'markdown' },
-        { label: 'ACsharedMarkdown', name: 'acsharedmarkdown', type: 'markdown' },
-      ],
-      templates: [{ name: 'templateA' }, { name: 'templateC' }],
-    },
-    abc_shared_number: {
-      properties: [
-        { label: 'ABC shared Number', name: 'abc_shared_number', type: 'numeric' },
-        { label: 'ABC shared number', name: 'abc_shared_number', type: 'numeric' },
-        { label: 'abc shared number', name: 'abc_shared_number', type: 'numeric' },
-      ],
-      templates: [{ name: 'templateA' }, { name: 'templateB' }, { name: 'templateC' }],
-    },
-    bonlytext: {
-      properties: [{ label: 'BonlyText', name: 'bonlytext', type: 'text' }],
-      templates: [{ name: 'templateB' }],
-    },
-    bcsharedmarkdown: {
-      properties: [
-        { label: 'BCsharedMarkdown', name: 'bcsharedmarkdown', type: 'markdown' },
-        { label: 'BCsharedMarkdown', name: 'bcsharedmarkdown', type: 'markdown' },
-      ],
-      templates: [{ name: 'templateB' }, { name: 'templateC' }],
-    },
-    conlytext: {
-      properties: [{ label: 'ConlyText', name: 'conlytext', type: 'text' }],
-      templates: [{ name: 'templateC' }],
-    },
+  aonlytext: {
+    properties: [{ label: 'AonlyText', name: 'aonlytext', type: 'text' }],
+    templates: [{ name: 'templateA' }],
+  },
+  abshareddate: {
+    properties: [
+      { label: 'ABsharedDate', name: 'abshareddate', type: 'date' },
+      { label: 'ABsharedDate', name: 'abshareddate', type: 'date' },
+    ],
+    templates: [{ name: 'templateA' }, { name: 'templateB' }],
+  },
+  acsharedmarkdown: {
+    properties: [
+      { label: 'ACsharedMarkdown', name: 'acsharedmarkdown', type: 'markdown' },
+      { label: 'ACsharedMarkdown', name: 'acsharedmarkdown', type: 'markdown' },
+    ],
+    templates: [{ name: 'templateA' }, { name: 'templateC' }],
+  },
+  abc_shared_number: {
+    properties: [
+      { label: 'ABC shared Number', name: 'abc_shared_number', type: 'numeric' },
+      { label: 'ABC shared number', name: 'abc_shared_number', type: 'numeric' },
+      { label: 'abc shared number', name: 'abc_shared_number', type: 'numeric' },
+    ],
+    templates: [{ name: 'templateA' }, { name: 'templateB' }, { name: 'templateC' }],
+  },
+  bonlytext: {
+    properties: [{ label: 'BonlyText', name: 'bonlytext', type: 'text' }],
+    templates: [{ name: 'templateB' }],
+  },
+  bcsharedmarkdown: {
+    properties: [
+      { label: 'BCsharedMarkdown', name: 'bcsharedmarkdown', type: 'markdown' },
+      { label: 'BCsharedMarkdown', name: 'bcsharedmarkdown', type: 'markdown' },
+    ],
+    templates: [{ name: 'templateB' }, { name: 'templateC' }],
+  },
+  conlytext: {
+    properties: [{ label: 'ConlyText', name: 'conlytext', type: 'text' }],
+    templates: [{ name: 'templateC' }],
   },
 };
 
@@ -116,7 +114,8 @@ describe('MetadataExtractionDashboard', () => {
   describe('componentDidMount', () => {
     it('should fetch template and properties into expected format.', () => {
       render();
-      expect(component.state()).toMatchObject(expectedFormattedData);
+      const instance = component.instance();
+      expect(instance.arrangeTemplatesAndProperties()).toMatchObject(expectedFormattedData);
     });
   });
 
