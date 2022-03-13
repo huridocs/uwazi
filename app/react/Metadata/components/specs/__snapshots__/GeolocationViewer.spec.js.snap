@@ -2,7 +2,7 @@
 
 exports[`GeolocationViewer should not fail if points is just an empty array 1`] = `
 <Fragment>
-  <ForwardRef
+  <Connect(MapComponent)
     height={370}
     mapStyleSwitcher={true}
     markers={Array []}
@@ -29,7 +29,7 @@ exports[`GeolocationViewer should not fail if points is just an empty array 1`] 
 
 exports[`GeolocationViewer should render a map with markers when onlyForCards is false, not failing on nulls 1`] = `
 <Fragment>
-  <ForwardRef
+  <Connect(MapComponent)
     height={370}
     latitude={13}
     longitude={7}

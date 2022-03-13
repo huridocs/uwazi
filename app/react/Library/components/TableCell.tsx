@@ -1,9 +1,5 @@
 import React from 'react';
-
-import { I18NLink } from 'app/I18N';
-import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
-import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import MarkdownViewer from 'app/Markdown';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { showByType } from 'app/Metadata/components/Metadata';
 
 interface TableCellProps {
@@ -16,62 +12,23 @@ type FormattedMetadataValue = Omit<PropertySchema, 'type'> & {
   parent?: string;
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
   type: 'inherit' | PropertySchema['type'];
+  inheritedType?: PropertySchema['type'];
+  onlyForCards?: boolean;
 };
 
 const formatProperty = (prop: FormattedMetadataValue | undefined) => {
-  let result;
   if (!prop?.value) {
     return undefined;
   }
-  if (
-    ['date', 'daterange', 'numeric', 'select', 'text', 'generatedid', undefined].includes(prop.type)
-  ) {
-    return prop.value;
-  }
 
-  switch (prop.type) {
-    case 'multiselect':
-      result = showByType(prop, true);
-      break;
-    case 'multidaterange':
-    case 'multidate':
-      result = (prop.value as MetadataObjectSchema[])
-        .map((p: MetadataObjectSchema) => p.value)
-        .join(', ');
-      break;
-    case 'link':
-      result = (
-        <a href={(prop.value as LinkSchema).url || ''} target="_blank" rel="noopener noreferrer">
-          {(prop.value as MetadataObjectSchema).label}
-        </a>
-      );
-      break;
-    case 'relationship':
-      result = (prop.value as MetadataObjectSchema[]).map(
-        (p: MetadataObjectSchema, index: number) => (
-          <React.Fragment key={p.value as string}>
-            {index > 0 && ', '}
-            <I18NLink to={p.url}>{p.value}</I18NLink>
-          </React.Fragment>
-        )
-      );
-      break;
-    case 'inherit':
-      result = (prop.value as MetadataObjectSchema[]).find(
-        (p: MetadataObjectSchema) => p.name === prop.inheritedName
-      )?.value;
-      break;
-    case 'geolocation':
-      result = <GeolocationViewer points={prop.value as MetadataObjectSchema[]} onlyForCards />;
-      break;
-    case 'markdown':
-      result = <MarkdownViewer markdown={prop.value} />;
-      break;
-    default:
-      result = undefined;
-      break;
+  const inheritedMedia =
+    prop.type === 'inherit' && (prop.inheritedType === 'image' || prop.inheritedType === 'media');
+  const typeMedia = prop.type === 'image' || prop.type === 'media';
+
+  if (inheritedMedia || typeMedia) {
+    return undefined;
   }
-  return result;
+  return showByType(prop, true);
 };
 
 export const TableCellComponent = (props: TableCellProps) => {
