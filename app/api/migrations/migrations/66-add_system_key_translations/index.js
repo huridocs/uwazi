@@ -46,7 +46,7 @@ async function readCsvToSystemKeys(db, filename) {
 }
 
 export default {
-  delta: 64,
+  delta: 66,
 
   reindex: false,
 
@@ -59,7 +59,7 @@ export default {
 
     await readCsvToSystemKeys(
       db,
-      'app/api/migrations/migrations/64-add_system_key_translations/system_keys.csv'
+      'app/api/migrations/migrations/66-add_system_key_translations/system_keys.csv'
     );
   },
 };
