@@ -29,7 +29,7 @@ describe('sockets', () => {
       jasmine.clock().install();
       socket._callbacks.$disconnect[0]('transport close');
       jasmine.clock().tick(8000);
-      socket._callbacks.$reconnect[0]();
+      socket.io._callbacks.$reconnect[0]();
       jasmine.clock().tick(8000);
       expect(store.dispatch).toHaveBeenCalled();
       expect(store.dispatch.calls.allArgs()[5][0].notification.message).toEqual(
@@ -43,7 +43,7 @@ describe('sockets', () => {
         jasmine.clock().install();
 
         socket._callbacks.$disconnect[0]('transport close');
-        socket._callbacks.$reconnect[0]();
+        socket.io._callbacks.$reconnect[0]();
         jasmine.clock().tick(8000);
 
         expect(store.dispatch).toHaveBeenCalledTimes(0);
