@@ -23,7 +23,7 @@ socket.on('disconnect', reason => {
   }
 });
 
-socket.on('reconnect', () => {
+socket.io.on('reconnect', () => {
   clearTimeout(disconnectTimeoutMessage);
   if (disconnectNotifyId) {
     store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
