@@ -2,13 +2,23 @@ import { model } from 'api/entities';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { model as updatelogsModel } from 'api/updatelogs';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
 
 const fixtureFactory = getFixturesFactory();
 
 const fixtures = {
-  entities: [fixtureFactory.entity('entity1'), fixtureFactory.entity('entity2')],
+  updatelogs: [
+    fixtureFactory.updatelog('entities', 'entity1-en'),
+    fixtureFactory.updatelog('files', 'document1'),
+    fixtureFactory.updatelog('files', 'attachment1'),
+    fixtureFactory.updatelog('files', 'thumbnail1'),
+    fixtureFactory.updatelog('files', 'custom1'),
+    fixtureFactory.updatelog('files', 'document2'),
+    fixtureFactory.updatelog('files', 'attachment2'),
+  ],
+  entities: [
+    fixtureFactory.entity('entity1', 'template1'),
+    fixtureFactory.entity('entity2', 'template1'),
+  ],
   files: [
     fixtureFactory.file('document1', 'entity1', 'document', 'document1_filename'),
     fixtureFactory.file('attachment1', 'entity1', 'attachment', 'attachment1_filename'),
@@ -18,16 +28,6 @@ const fixtures = {
     fixtureFactory.file('attachment2', 'entity2', 'attachment', 'attachment2_filename'),
   ],
 };
-
-const logForEntity = (elem: EntitySchema) => ({
-  mongoId: elem._id,
-  namespace: 'entities',
-});
-
-const logForFile = (elem: FileType) => ({
-  mongoId: elem._id,
-  namespace: 'files',
-});
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
@@ -44,15 +44,18 @@ describe('EntitiesUpdateLogHelper', () => {
       await model.save(entity);
 
       const logs = await updatelogsModel.find({}, '', { sort: { _id: 1 } });
-      expect(logs.length).toBe(4);
-      expect(logs).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining(logForEntity(entity)),
-          expect.objectContaining(logForFile(fixtures.files[0])),
-          expect.objectContaining(logForFile(fixtures.files[1])),
-          expect.objectContaining(logForFile(fixtures.files[2])),
-        ])
-      );
+
+      [
+        fixtureFactory.id('entities-entity1-en'),
+        fixtureFactory.id('files-attachment1'),
+        fixtureFactory.id('files-thumbnail1'),
+        fixtureFactory.id('files-document1'),
+      ].forEach(id => {
+        const original = fixtures.updatelogs.find(log => log._id.toString() === id.toString());
+        const current = logs.find(log => log._id.toString() === id.toString());
+
+        expect(current!.timestamp).toBeGreaterThan(original!.timestamp!);
+      });
     });
   });
 });

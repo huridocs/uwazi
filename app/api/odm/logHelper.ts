@@ -96,8 +96,7 @@ export class EntitiesUpdateLogHelper<T> extends UpdateLogHelper<T> {
   async upsertLogOne(entity: mongoose.Document): Promise<void> {
     await super.upsertLogOne(entity);
     const typedEntity = entity as unknown as EntitySchema;
-    const files = await models.files.get({ entity: typedEntity.sharedId });
-    await Promise.all(files.map(async f => this.filesHelper.upsertLogOne(f)));
+    await this.filesHelper.upsertLogMany({ entity: typedEntity.sharedId });
   }
 }
 
