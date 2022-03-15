@@ -19,7 +19,7 @@
     align-items: center;
 
     .round-icon {
-      background: #418B32;
+      background: #418b32;
       color: white;
       height: 40px;
       width: 40px;
@@ -39,8 +39,8 @@
       bottom: 15px;
       font-size: 14px;
       width: calc(100% - 30px);
-      background: #FEDC93;
-      border: 1px solid #FFAE00;
+      background: #fedc93;
+      border: 1px solid #ffae00;
       box-sizing: border-box;
       border-radius: 4px;
       padding: 8px;
@@ -63,7 +63,7 @@
     }
 
     .btn.pristine {
-      background: #3358BA;
+      background: #3358ba;
       opacity: 1;
       color: white;
 
@@ -80,19 +80,18 @@
   input {
     width: 100%;
     height: 51px;
-    background: #FFFFFF;
-    border: 1px solid #BBBBBB;
+    background: #ffffff;
+    border: 1px solid #bbbbbb;
     border-radius: 5px;
     padding: 16px;
   }
-
 
   ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: #FFFFFF;
-    border: 1px solid #E0E0E0;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
     width: 100%;
@@ -119,7 +118,7 @@
       }
 
       .round-icon {
-        border: 1px solid #CCCCCC;
+        border: 1px solid #cccccc;
         height: 32px;
         width: 32px;
       }
@@ -136,11 +135,11 @@
 
         height: 30px;
         border: 1px solid rgba(0, 0, 0, 0.2);
-        background: #FFFFFF;
+        background: #ffffff;
         border-radius: 4px;
         font-size: 12px;
 
-        svg { 
+        svg {
           margin-left: 6px;
         }
       }
@@ -154,25 +153,24 @@
   overflow: auto;
 }
 .members-list {
-  border-collapse:separate; 
+  border-collapse: separate;
   border-spacing: 8px 12px;
   margin: 0 16px;
 
   tr {
     td {
-
       &:first-child {
         width: 100%;
       }
 
       .round-icon {
-        border: 1px solid #CCCCCC;
+        border: 1px solid #cccccc;
         height: 32px;
         width: 32px;
       }
 
       select {
-        border: 1px solid #CCCCCC;
+        border: 1px solid #cccccc;
         border-radius: 2px;
         height: 32px;
       }
@@ -180,9 +178,9 @@
   }
 
   tr.validationError td select {
-    border-color: #EB5757;
+    border-color: #eb5757;
   }
-} 
+}
 
 .member-list-item {
   display: flex;

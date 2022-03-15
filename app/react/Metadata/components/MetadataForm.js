@@ -20,13 +20,12 @@ import { MetadataExtractor } from './MetadataExtractor';
 import { SupportingFiles } from './SupportingFiles';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
-
 const selectTemplateOptions = createSelector(
   s => s.templates,
   templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
-export class MetadataForm extends Component {
+class MetadataForm extends Component {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
@@ -174,7 +173,7 @@ export class MetadataForm extends Component {
             highlightedProps={highlightedProps}
             storeKey={storeKey}
           />
-          {!multipleEdition && (
+          {!multipleEdition && !showSubset && (
             <SupportingFiles
               supportingFiles={attachments}
               entitySharedID={sharedId}
@@ -203,7 +202,6 @@ MetadataForm.defaultProps = {
   sharedId: '',
   progress: undefined,
 };
-
 MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
@@ -229,7 +227,6 @@ MetadataForm.propTypes = {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify: notificationActions.notify }, dispatch);
 }
-
 export const mapStateToProps = (state, ownProps) => {
   const entityModel = ownProps.model.split('.').reduce((o, i) => o[i], state);
   const { attachments, sharedId } = entityModel;
@@ -248,4 +245,5 @@ export const mapStateToProps = (state, ownProps) => {
   };
 };
 
+export { MetadataForm };
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

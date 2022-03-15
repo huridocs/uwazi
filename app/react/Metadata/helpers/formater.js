@@ -181,6 +181,10 @@ export default {
     return this.multimedia(property, value, 'image');
   },
 
+  link(_property, [value]) {
+    return { ...value, type: 'link' };
+  },
+
   preview(property, _value, _thesauris, { doc }) {
     const defaultDoc = doc.defaultDoc || {};
     return this.multimedia(
@@ -231,7 +235,6 @@ export default {
 
     const type = inheritedProperty.get('type');
     const methodType = this[type] ? type : 'default';
-
     let value = propValue
       .map(v => {
         if (v && v.inheritedValue) {
@@ -273,6 +276,7 @@ export default {
       value,
       label: property.get('label'),
       type: propType,
+      inheritedType: type,
       onlyForCards: Boolean(options.onlyForCards),
       indexInTemplate: property.get('indexInTemplate'),
     };

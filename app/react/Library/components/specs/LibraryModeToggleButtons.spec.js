@@ -38,11 +38,9 @@ describe('LibraryModeToggleButtons', () => {
       expect(component.find(I18NLink).at(2).props().to).toBe('library/map?q="asd"');
     });
 
-    it('should show map type buttons', () => {
-      expect(component.find('div.map-type-buttons').length).toBe(1);
-    });
-
     it('should hold zoom buttons', () => {
+      props.mapViewMode = false;
+      render();
       let zoomButtons = component.find('div.list-view-mode-zoom');
       expect(zoomButtons.props().className).toContain('list-view-buttons-zoom-3');
 
@@ -69,26 +67,6 @@ describe('LibraryModeToggleButtons', () => {
         expect(linksCount).toBe(2);
         expect(component.find({ to: 'library/map?q="asd"' }).length).toBe(0);
       });
-    });
-  });
-
-  describe('map styles', () => {
-    beforeEach(() => {
-      props = defaultProps;
-      props.mapViewMode = true;
-      props.showGeolocation = true;
-      props.setMapStyle = jasmine.createSpy('setMapStyle');
-      render();
-    });
-    it('should respond to street button click', () => {
-      const streetButton = component.find('div.map-type-buttons > button.street');
-      streetButton.simulate('click');
-      expect(props.setMapStyle).toHaveBeenCalledWith('street');
-    });
-    it('should respond to satellite button click', () => {
-      const streetButton = component.find('div.map-type-buttons > button.satellite');
-      streetButton.simulate('click');
-      expect(props.setMapStyle).toHaveBeenCalledWith('satellite');
     });
   });
 

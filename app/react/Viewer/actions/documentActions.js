@@ -46,7 +46,7 @@ export function loadDefaultViewerMenu() {
   };
 }
 
-export function saveDocument(doc) {
+export function saveDocument(doc, fileID) {
   const updateDoc = {};
   Object.keys(doc).forEach(key => {
     if (key !== 'fullText') {
@@ -56,8 +56,8 @@ export function saveDocument(doc) {
 
   return (dispatch, getState) => {
     const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
-    const fileID = getState().documentViewer.doc.toJS().defaultDoc._id;
-    updateDoc.__extractedMetadata = { fileID, ...extractredMetadata };
+    const entityFileId = fileID || getState().documentViewer.doc.toJS().defaultDoc._id;
+    updateDoc.__extractedMetadata = { fileID: entityFileId, ...extractredMetadata };
     return saveEntityWithFiles(updateDoc, dispatch).then(updatedDoc => {
       dispatch(notificationActions.notify('Document updated', 'success'));
       dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });

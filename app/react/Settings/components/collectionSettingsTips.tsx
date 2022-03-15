@@ -110,8 +110,10 @@ export const publicForm = [
   </Translate>,
 ];
 
-export const mapTiler = (
-  <Translate>We provide a default key, you can set your own MapTiler API key</Translate>
+export const mapApiKey = (
+  <Translate translationKey="Map api key tooltip">
+    An API key is required to use Mapbox or Google Maps.
+  </Translate>
 );
 
 export const ocrTrigger = (

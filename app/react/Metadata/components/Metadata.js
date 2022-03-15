@@ -38,7 +38,12 @@ export const showByType = (prop, compact) => {
       break;
     }
     case 'geolocation':
-      result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
+      result = (
+        <GeolocationViewer
+          points={prop.value}
+          onlyForCards={Boolean(prop.onlyForCards || compact)}
+        />
+      );
       break;
     case 'select':
       result = prop.parent ? `${prop.parent}: ${prop.value}` : result;
