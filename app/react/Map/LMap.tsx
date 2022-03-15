@@ -10,6 +10,7 @@ import {
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
+  preventDefaultEvent,
 } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
@@ -50,8 +51,7 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
     markerGroup.on('clusterclick', cluster => {
       props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
-      // @ts-ignore
-      cluster.preventDefault();
+      preventDefaultEvent(cluster);
     });
     markerGroup.on('click', marker => {
       props.clickOnMarker?.(marker.layer);
