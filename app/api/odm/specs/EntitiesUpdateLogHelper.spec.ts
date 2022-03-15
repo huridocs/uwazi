@@ -54,7 +54,7 @@ describe('EntitiesUpdateLogHelper', () => {
         const original = fixtures.updatelogs.find(log => log._id.toString() === id.toString());
         const current = logs.find(log => log._id.toString() === id.toString());
 
-        expect(current!.timestamp).toBeGreaterThan(original!.timestamp!);
+        expect(current!.timestamp).toBeGreaterThan(original!.timestamp! as number);
       });
     });
   });
