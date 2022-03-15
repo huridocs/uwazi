@@ -1,25 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-
-import { ClientTemplateSchema, IStore } from 'app/istore';
+import { IStore } from 'app/istore';
 import formatter from 'app/Metadata/helpers/formater';
-import { safeName } from 'shared/propertyNames';
-import { showByType } from 'app/Metadata/components/Metadata';
-import { Translate } from 'app/I18N';
-import { IImmutable } from 'shared/types/Immutable';
-import { ensure } from 'shared/tsUtils';
-
-export interface EntityDataProps {
+import { getProperty, getMethod, logError } from '../utils.tsx';
+interface EntityDataProps {
   'value-of'?: string;
   'label-of'?: string;
-}
-
-interface Options {
-  formattedEntity: any;
-  propertyName: string;
-  newNameGeneration: boolean;
-  template?: IImmutable<ClientTemplateSchema>;
 }
 
 const mapStateToProps = ({ entityView, templates, thesauris, settings }: IStore) => ({
@@ -33,73 +20,6 @@ const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = EntityDataProps & MappedProps;
-
-const rootProperties = ['title', 'creationDate', 'editDate'];
-
-const getPropertyData = ({ formattedEntity, propertyName, newNameGeneration }: Options) =>
-  formattedEntity.metadata.find((p: any) => p.name === safeName(propertyName, newNameGeneration));
-
-const extractRootProperty = ({ formattedEntity, propertyName }: Options) =>
-  formattedEntity[propertyName];
-
-const extractMetadataProperty = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
-  const propertyData = formattedEntity.metadata.find(
-    (p: any) => p.name === safeName(propertyName, newNameGeneration)
-  );
-  return showByType(propertyData, false);
-};
-
-const extractRootLabel = ({ propertyName, template: _template }: Options) => {
-  const template = ensure<IImmutable<ClientTemplateSchema>>(_template);
-  const term =
-    template
-      .get('commonProperties')
-      ?.find(p => p?.get('name') === propertyName)
-      .get('label') || '';
-
-  const context = propertyName === 'title' ? template.get('_id') : 'System';
-  return <Translate context={context}>{term}</Translate>;
-};
-
-const extractMetadataLabel = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
-  const propertyData = getPropertyData({ formattedEntity, propertyName, newNameGeneration });
-  return <Translate context={propertyData.translateContext}>{propertyData.label}</Translate>;
-};
-
-const logError = (err: any, propValueOf?: string, propLabelOf?: string) => {
-  /* eslint-disable no-console */
-  console.error('Error on EntityData: ');
-  console.error('value-of: ', propValueOf, '; label-of: ', propLabelOf);
-  console.error(err);
-  /* eslint-enable no-console */
-};
-
-const getProperty = (
-  propValueOf?: EntityDataProps['value-of'],
-  propLabelOf?: EntityDataProps['label-of']
-) => {
-  if (propValueOf && propLabelOf) {
-    throw new Error('Can\'t provide both "value-of" and "label-of".');
-  }
-
-  const property = propValueOf || propLabelOf;
-
-  if (!property) {
-    throw new Error('"value-of" or "label-of" must be provided.');
-  }
-
-  return property;
-};
-
-const getMethod = (propValueOf: string | undefined, propertyName: string) => {
-  const isRootProperty = rootProperties.includes(propertyName);
-
-  if (propValueOf) {
-    return isRootProperty ? extractRootProperty : extractMetadataProperty;
-  }
-
-  return isRootProperty ? extractRootLabel : extractMetadataLabel;
-};
 
 const EntityData = ({
   entity,
@@ -126,3 +46,4 @@ const EntityData = ({
 
 const container = connector(EntityData);
 export { container as EntityData };
+export type { EntityDataProps };

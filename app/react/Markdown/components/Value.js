@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import markdownDatasets from '../markdownDatasets';
 import PagesContext from './Context';
-import { objectPath } from '../utils';
+import { objectPath } from '../utils.tsx';
 
 export class ValueComponent extends Component {
   renderChildren(_value) {
