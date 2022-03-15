@@ -78,7 +78,7 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
 
     if (showControls) {
       L.control.zoom({ position: 'bottomright' }).addTo(map);
-      L.control.layers(baseMaps, {}, { position: 'bottomleft', autoZIndex: false }).addTo(map);
+      L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     }
     layers[0].addTo(map);
     initMarkers();
