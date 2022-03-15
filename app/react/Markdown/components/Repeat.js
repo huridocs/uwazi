@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PagesContext from './Context';
-import { objectPath } from '../utils.tsx';
+import { objectPath } from '../utils';
 
 class Repeat extends Component {
   render() {
