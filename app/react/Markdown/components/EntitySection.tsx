@@ -41,7 +41,7 @@ export { container as EntitySection };
 ### EntitySection component
 Sometimes you want to display a section of the entity based on whether a given condition is met.
 
-Examples:   
+Examples:
 
 You want to display the name of a person if they are older than 18 years old.
 A simple implementation would look like this:
