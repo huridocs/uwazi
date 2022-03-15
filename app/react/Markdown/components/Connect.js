@@ -2,7 +2,7 @@ import { connectAdvanced } from 'react-redux';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PagesContext from './Context';
-import { objectPath } from '../utils';
+import { objectPath } from '../utils.tsx';
 
 class Connect extends Component {
   static objectPath(path, object) {
