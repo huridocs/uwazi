@@ -5,6 +5,7 @@ import { Icon } from 'UI';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
 import { EntityData } from './EntityData';
+import { Section } from './Section';
 import EntityLink from './EntityLink';
 import ItemList from './ItemList';
 import Repeat from './Repeat';
@@ -66,4 +67,5 @@ export {
   Map,
   Link,
   EntityInfo,
+  Section,
 };
