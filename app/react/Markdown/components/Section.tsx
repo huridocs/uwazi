@@ -4,12 +4,12 @@ import sift from 'sift';
 interface EntitySectionProps {
   showIf: any;
   children: JSX.Element;
-  entities: any[];
+  data: any[];
 }
 
 // eslint-disable-next-line max-statements
-const Section = ({ entities, children, showIf: condition }: EntitySectionProps) => {
-  const filtered = entities.filter(sift(condition));
+const Section = ({ data, children, showIf: condition }: EntitySectionProps) => {
+  const filtered = data.filter(sift(condition));
   return filtered.length > 0 ? children : null;
 };
 
