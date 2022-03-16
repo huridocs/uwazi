@@ -67,7 +67,7 @@ const EntitySection = ({ entity, templates, children, 'show-if': showIf }: Compo
   try {
     const condition = JSON.parse(showIf as string);
     return (
-      <Section entities={[jsEntity]} showIf={condition}>
+      <Section data={[jsEntity]} showIf={condition}>
         {children}
       </Section>
     );
