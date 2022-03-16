@@ -96,6 +96,11 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
       checkMapInitialization(map, containerId);
       initMap();
     }
+    return () => {
+      if (map) {
+        map.remove();
+      }
+    };
   }, [pointMarkers, props.tilesProvider, props.mapApiKey]);
 
   return (
