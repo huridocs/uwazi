@@ -331,6 +331,10 @@ describe('ModelWithPermissions', () => {
             },
           ]);
         });
+
+        it('should perform on mixed input correctly', async () => {
+          fail('TODO');
+        });
       });
 
       describe('delete', () => {
