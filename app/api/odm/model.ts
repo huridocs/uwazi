@@ -64,27 +64,43 @@ export class OdmModel<T> {
     return saved.toObject<WithId<T>>();
   }
 
-  // async saveMultiple(data: Partial<DataType<T>>[]) {
-  //   return Promise.all(data.map(async d => this.save(d)));
-  // }
-
-  // eslint-disable-next-line max-statements
   async saveMultiple(dataArray: Partial<DataType<T>>[]) {
-    // separate existing and non-existing
+    const { existingIds, existingData, updated } = await this.saveExisting(dataArray);
+    const created = await this.saveNew(existingIds, dataArray);
+
+    if (updated.length !== existingData.length) {
+      throw Error('A document was not updated!');
+    }
+
+    const saved = updated.concat(created);
+    await Promise.all(saved.map(async s => this.logHelper.upsertLogOne(s)));
+    return saved.map(s => s.toObject<WithId<T>>());
+  }
+
+  private async saveNew(existingIds: Set<string>, dataArray: Partial<DataType<T>>[]) {
+    const newData = dataArray.filter(d => !d._id || !existingIds.has(d._id.toString()));
+    return (await this.db.createMany(newData)) || [];
+  }
+
+  private async saveExisting(dataArray: Partial<DataType<T>>[]) {
     const ids: DataType<T>['_id'][] = [];
     dataArray.forEach(d => {
       if (d._id) {
         ids.push(d._id);
       }
     });
-    const existingIds = new Set(
-      (await this.db.find({ _id: { $in: ids } }, { _id: 1 }, { lean: true })).map(d =>
-        d._id.toString()
-      )
+    const existingIds = new Set<string>(
+      (
+        await this.db.find(
+          { _id: { $in: ids } } as UwaziFilterQuery<DataType<T>>,
+          { _id: 1 },
+          { lean: true }
+        )
+      ).map(d => d._id.toString())
     );
-    // update existing - check valid save - error if one missing
+
     const existingData = dataArray.filter(d => d._id && existingIds.has(d._id.toString()));
-    const updateResult = await this.db.bulkWrite(
+    await this.db.bulkWrite(
       existingData.map(data => ({
         updateOne: {
           filter: { _id: data._id },
@@ -92,19 +108,12 @@ export class OdmModel<T> {
         },
       }))
     );
-    const updated = await this.db.find({ _id: { $in: Array.from(existingIds) } });
-    // create non-existing
-    const newData = dataArray.filter(d => !d._id || !existingIds.has(d._id.toString()));
-    const created = (await this.db.createMany(newData)) || [];
 
-    if (updateResult.result.nMatched !== existingData.length) {
-      throw Error('A document was not updated!');
-    }
+    const updated = await this.db.find({
+      _id: { $in: Array.from(existingIds) },
+    } as UwaziFilterQuery<DataType<T>>);
 
-    //collate both, log, return
-    const saved = updated.concat(created);
-    await Promise.all(saved.map(async s => this.logHelper.upsertLogOne(s)));
-    return saved.map(s => s.toObject<WithId<T>>());
+    return { existingIds, existingData, updated };
   }
 
   async updateMany(
