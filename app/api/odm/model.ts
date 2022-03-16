@@ -91,11 +91,9 @@ export class OdmModel<T> {
     });
     const existingIds = new Set<string>(
       (
-        await this.db.find(
-          { _id: { $in: ids } } as UwaziFilterQuery<DataType<T>>,
-          { _id: 1 },
-          { lean: true }
-        )
+        await this.db.find({ _id: { $in: ids } } as UwaziFilterQuery<DataType<T>>, '_id', {
+          lean: true,
+        })
       ).map(d => d._id.toString())
     );
 
