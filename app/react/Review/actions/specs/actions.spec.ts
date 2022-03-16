@@ -72,7 +72,7 @@ describe('reviewActions', () => {
         template: 't1',
         title: 'Doc1',
         metadata: {
-          opts: ['v1', 'v2'],
+          opts: ['V1', 'V2'],
         },
       });
       await store!.dispatch(reviewActions.switchOneUpEntity(2, true));
