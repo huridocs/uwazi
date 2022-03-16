@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
@@ -251,6 +252,7 @@ export default {
     return saves.concat(deletions);
   },
 
+  // eslint-disable-next-line max-statements
   async save(_relationships, language, updateEntities = true) {
     if (!language) {
       throw createError('Language cant be undefined');
@@ -260,14 +262,16 @@ export default {
 
     await validateConnectionSchema(rel);
 
-    const existingEntities = (
-      await entities.get({
-        sharedId: { $in: rel.map(r => r.entity) },
-        language,
-      })
-    ).map(r => r.sharedId);
+    const existingEntities = new Set(
+      (
+        await entities.get({
+          sharedId: { $in: rel.map(r => r.entity) },
+          language,
+        })
+      ).map(r => r.sharedId)
+    );
 
-    const relationships = rel.filter(r => existingEntities.includes(r.entity));
+    const relationships = rel.filter(r => existingEntities.has(r.entity));
 
     if (relationships.length === 0) {
       return [];
