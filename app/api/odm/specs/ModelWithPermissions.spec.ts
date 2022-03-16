@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { PermissionSchema } from 'shared/types/permissionType';
 import { AccessLevels, permissionSchema, PermissionType } from 'shared/types/permissionSchema';
 import { instanceModelWithPermissions, ModelWithPermissions } from 'api/odm/ModelWithPermissions';
@@ -24,6 +25,7 @@ describe('ModelWithPermissions', () => {
   });
   const readDocId = testingDB.id();
   const writeDocId = testingDB.id();
+  const writeDoc2Id = testingDB.id();
   const deleteDocId = testingDB.id();
   const otherOwnerId = testingDB.id();
   const public1Id = testingDB.id();
@@ -38,6 +40,12 @@ describe('ModelWithPermissions', () => {
     {
       _id: writeDocId,
       name: 'writeDoc',
+      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      fixed: true,
+    },
+    {
+      _id: writeDoc2Id,
+      name: 'writeDoc2',
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
       fixed: true,
     },
@@ -110,13 +118,14 @@ describe('ModelWithPermissions', () => {
           });
 
           it('should return entities shared with the user or his groups and public entities', () => {
-            expect(results.length).toBe(6);
+            expect(results.length).toBe(7);
             expect(results[0].name).toBe('docToDelete');
             expect(results[1].name).toBe('public 1');
             expect(results[2].name).toBe('public 2');
             expect(results[3].name).toBe('readDoc');
             expect(results[4].name).toBe('shared with group');
             expect(results[5].name).toBe('writeDoc');
+            expect(results[6].name).toBe('writeDoc2');
           });
 
           it('should exclude the permissions property from the non write allowed documents', () => {
@@ -132,7 +141,7 @@ describe('ModelWithPermissions', () => {
         it('should filter permissions when they was asked with select', async () => {
           const results = await model.get({}, { permissions: 1 }, {});
           const docsWithPermissions = results.filter(doc => doc.permissions !== undefined);
-          expect(docsWithPermissions.length).toBe(2);
+          expect(docsWithPermissions.length).toBe(3);
         });
 
         it('should not include the permissions by default', async () => {
@@ -237,6 +246,93 @@ describe('ModelWithPermissions', () => {
         });
       });
 
+      describe('saveMultiple', () => {
+        it('should save the data if user has permissions on the document', async () => {
+          const saved = await model.saveMultiple([
+            {
+              _id: writeDocId.toString(),
+              name: 'writeDocMultiUpdated',
+            },
+            {
+              _id: writeDoc2Id.toString(),
+              name: 'writeDoc2MultiUpdated',
+            },
+          ]);
+          expect(saved[0].name).toEqual('writeDocMultiUpdated');
+          expect(saved[1].name).toEqual('writeDoc2MultiUpdated');
+        });
+
+        it('should not save the data if user has not permissions on a private document', async () => {
+          try {
+            await model.saveMultiple([
+              {
+                _id: readDocId.toString(),
+                name: 'readDocMultiUpdated',
+              },
+            ]);
+            fail('Should throw error');
+          } catch (e) {
+            expect(e.message).toContain('not updated');
+          }
+        });
+
+        it('should not save the data if user has not permissions on a public document', async () => {
+          try {
+            await model.saveMultiple([
+              {
+                _id: public1Id,
+                name: 'update multiple public',
+              },
+            ]);
+            fail('Should throw error');
+          } catch (e) {
+            expect(e.message).toContain('not updated');
+          }
+        });
+
+        it('should save unrestricted even if user has not permissions on the document', async () => {
+          const saved = await model.saveMultipleUnrestricted([
+            {
+              _id: readDocId.toString(),
+              name: 'readDocMultiUpdated',
+            },
+          ]);
+          expect(saved.name).toEqual('readDocMultiUpdated');
+        });
+
+        it('should add the user in the permissions property of the new doc', async () => {
+          const saved = await model.saveMultiple([{ name: 'newDoc' }, { name: 'newDoc2' }]);
+          expect(saved).toMatchObject([
+            {
+              name: 'newDoc',
+              permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
+            },
+            {
+              name: 'newDoc2',
+              permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
+            },
+          ]);
+        });
+
+        it('should keep the existing permissions for a cloned entity with permissions ', async () => {
+          const permissions = [
+            { _id: 'user3', refId: 'refId', type: PermissionType.USER, level: AccessLevels.READ },
+          ];
+          const saved = await model.saveMultiple([
+            {
+              name: 'clonedMultipleDoc',
+              permissions,
+            },
+          ]);
+          expect(saved).toMatchObject([
+            {
+              name: 'clonedMultipleDoc',
+              permissions,
+            },
+          ]);
+        });
+      });
+
       describe('delete', () => {
         it('should delete document if user has permissions on it', async () => {
           const result = await model.delete({ _id: deleteDocId.toString() });
@@ -251,14 +347,14 @@ describe('ModelWithPermissions', () => {
       describe('getUnrestricted', () => {
         it('should return the matched documents no matter their permissions', async () => {
           const results = await model.getUnrestricted({ fixed: true });
-          expect(results.length).toBe(7);
+          expect(results.length).toBe(8);
         });
       });
 
       describe('count', () => {
         it('should return the count of entities shared with the user or his groups and public entities', async () => {
           const result = await model.count({ fixed: true });
-          expect(result).toBe(5);
+          expect(result).toBe(6);
         });
       });
     });
@@ -277,7 +373,7 @@ describe('ModelWithPermissions', () => {
       describe('get', () => {
         it('should return all matched documents with their permissions', async () => {
           const results = await model.get({ fixed: true }, '+permissions', {});
-          expect(results.length).toBe(7);
+          expect(results.length).toBe(8);
           expect(results[0].permissions.length).toBe(1);
         });
       });
@@ -293,7 +389,7 @@ describe('ModelWithPermissions', () => {
       describe('count', () => {
         it('should return the count of all entities', async () => {
           const result = await model.count({ fixed: true });
-          expect(result).toBe(7);
+          expect(result).toBe(8);
         });
       });
     });
@@ -314,14 +410,26 @@ describe('ModelWithPermissions', () => {
         }
       });
 
-      it('should create a new doc without permissions', async () => {
-        const saved = await model.save({ name: 'newDoc' });
-        expect(saved).toEqual(
-          expect.objectContaining({
+      it('should not save multiple existing docs', async () => {
+        try {
+          await model.saveMultiple([
+            { _id: writeDocId.toString(), name: 'writeDocUpdated' },
+            { _id: writeDoc2Id.toString(), name: 'writeDoc2Updated' },
+          ]);
+          fail('Should throw error');
+        } catch (e) {
+          expect(e.message).toContain('not updated');
+        }
+      });
+
+      it('should create multiple new docs without permissions', async () => {
+        const saved = await model.save([{ name: 'newDoc' }, { name: 'newDoc2' }]);
+        expect(saved).toMatchObject([
+          {
             name: 'newDoc',
             permissions: [],
-          })
-        );
+          },
+        ]);
       });
     });
 
