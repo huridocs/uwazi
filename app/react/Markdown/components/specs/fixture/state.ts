@@ -10,6 +10,20 @@ const state = {
         description: [{ value: 'A long description' }],
         date: [{ value: 237600000 }],
         main_image: [{ value: 'https://www.google.com' }],
+        inherited_text: [
+          {
+            value: '7ycel666l65vobt9',
+            label: 'Corte Interamericana de Derechos Humanos',
+            icon: null,
+            type: 'relationship',
+            inheritedValue: [
+              {
+                value: 'something',
+              },
+            ],
+            inheritedType: 'text',
+          },
+        ],
       },
     }),
   },
@@ -21,6 +35,7 @@ const state = {
         { name: 'description', type: 'text' },
         { name: 'date', type: 'date' },
         { name: 'main_image', label: 'Main Image', type: 'image' },
+        { name: 'inherited_text', label: 'Inherited Text', type: 'relationship' },
       ],
     },
   ]),
