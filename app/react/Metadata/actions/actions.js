@@ -67,31 +67,17 @@ const getPropertyValue = (property, metadataProperty) => {
     case 'multiselect':
     case 'multidaterange':
     case 'nested':
+    case 'relationship':
     case 'multidate':
     case 'geolocation':
-      return metadataProperty.map(v => v.label || v.value);
-    case 'relationship': {
-      // console.log('property', property);
-      // console.log('metadataProperty', metadataProperty);
-      let value = [];
-      metadataProperty.forEach(v => {
-        if (v.inheritedType && v.inheritedValue) {
-          const properties = getPropertyValue({ type: v.inheritedType }, v.inheritedValue);
-          value = Array.isArray(properties) ? [...value, ...properties] : [...value, properties];
-        } else {
-          value.push(v.label || v.value);
-        }
-      });
-      return value;
-    }
+      return metadataProperty.map(v => v.value);
     case 'generatedid':
       return typeof metadataProperty === 'string' ? metadataProperty : metadataProperty[0].value;
     default:
-      return metadataProperty[0].label || metadataProperty[0].value;
+      return metadataProperty[0].value;
   }
 };
 
-// eslint-disable-next-line import/exports-last
 export const UnwrapMetadataObject = (MetadataObject, Template) =>
   Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
     if (!MetadataObject[key].length) {
