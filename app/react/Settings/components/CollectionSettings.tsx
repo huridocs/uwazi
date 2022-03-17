@@ -311,7 +311,7 @@ const CollectionSettings = ({
           </ToggleChildren>
         </SettingsFormElement>
 
-        <SettingsFormElement label="Allow public forms with no captcha" tip={tips.publicSharing}>
+        <SettingsFormElement label="Allow captcha bypass" tip={tips.openPublicForm}>
           <ToggleButton
             checked={Boolean(watch('openPublicEndpoint'))}
             onClick={() => {

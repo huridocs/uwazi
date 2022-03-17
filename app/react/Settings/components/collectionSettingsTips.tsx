@@ -113,7 +113,10 @@ export const publicForm = [
 export const openPublicForm = (
   <Translate>
     By toggling this on you can allow users to submit to your whitelisted templates without having
-    to fill a CAPTCHA. [SOME WARNING ABOUT SECURITY]
+    to fill a CAPTCHA. The form will still present the captcha to end users, but API end-point will
+    allow submissions without CAPTCHA validation if a header `&ldquo;bypass-captcha: true`&ldquo; is
+    sent along. This option is insecure and can be leveraged to flood your instance with spam or
+    malicious content.
   </Translate>
 );
 
