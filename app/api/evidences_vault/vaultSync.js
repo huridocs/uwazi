@@ -9,6 +9,7 @@ import templates from 'api/templates';
 import dateHelper from 'api/utils/date';
 import { tenants } from 'api/tenants';
 import settings from 'api/settings/settings';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 import vault from './vault';
 import vaultEvidencesModel from './vaultEvidencesModel';
@@ -127,6 +128,7 @@ const vaultSync = {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
       return tenants.run(async () => {
+        permissionsContext.setCommandContext();
         const { evidencesVault } = await settings.get({}, 'evidencesVault');
         if (evidencesVault) {
           return this.sync(evidencesVault);
