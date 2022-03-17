@@ -29,6 +29,10 @@ describe('ModelWithPermissions', () => {
   const deleteDocId = testingDB.id();
   const otherOwnerId = testingDB.id();
   const public1Id = testingDB.id();
+  const public2Id = testingDB.id();
+  const noSharedId = testingDB.id();
+  const sharedWithGroupIdRead = testingDB.id();
+  const sharedWithGroupIdWrite = testingDB.id();
   const testdocs = [
     {
       _id: readDocId,
@@ -62,14 +66,20 @@ describe('ModelWithPermissions', () => {
       fixed: true,
     },
     {
-      _id: testingDB.id(),
+      _id: noSharedId,
       name: 'no shared',
       fixed: true,
     },
     {
-      _id: testingDB.id(),
+      _id: sharedWithGroupIdRead,
       name: 'shared with group',
       permissions: [{ refId: 'group2', type: PermissionType.GROUP, level: AccessLevels.READ }],
+      fixed: true,
+    },
+    {
+      _id: sharedWithGroupIdWrite,
+      name: 'shared with group write',
+      permissions: [{ refId: 'group2', type: PermissionType.GROUP, level: AccessLevels.WRITE }],
       fixed: true,
     },
     {
@@ -78,7 +88,7 @@ describe('ModelWithPermissions', () => {
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
     },
     {
-      _id: testingDB.id(),
+      _id: public2Id,
       name: 'public 2',
       published: true,
       fixed: true,
@@ -118,14 +128,15 @@ describe('ModelWithPermissions', () => {
           });
 
           it('should return entities shared with the user or his groups and public entities', () => {
-            expect(results.length).toBe(7);
+            expect(results.length).toBe(8);
             expect(results[0].name).toBe('docToDelete');
             expect(results[1].name).toBe('public 1');
             expect(results[2].name).toBe('public 2');
             expect(results[3].name).toBe('readDoc');
             expect(results[4].name).toBe('shared with group');
-            expect(results[5].name).toBe('writeDoc');
-            expect(results[6].name).toBe('writeDoc2');
+            expect(results[5].name).toBe('shared with group write');
+            expect(results[6].name).toBe('writeDoc');
+            expect(results[7].name).toBe('writeDoc2');
           });
 
           it('should exclude the permissions property from the non write allowed documents', () => {
@@ -141,7 +152,7 @@ describe('ModelWithPermissions', () => {
         it('should filter permissions when they was asked with select', async () => {
           const results = await model.get({}, { permissions: 1 }, {});
           const docsWithPermissions = results.filter(doc => doc.permissions !== undefined);
-          expect(docsWithPermissions.length).toBe(3);
+          expect(docsWithPermissions.length).toBe(4);
         });
 
         it('should not include the permissions by default', async () => {
@@ -313,17 +324,126 @@ describe('ModelWithPermissions', () => {
               name: 'clonedMultipleDoc',
               permissions,
             },
+            {
+              name: 'clonedMultipleDoc2',
+              permissions,
+            },
           ]);
           expect(saved).toMatchObject([
             {
               name: 'clonedMultipleDoc',
               permissions,
             },
+            {
+              name: 'clonedMultipleDoc2',
+              permissions,
+            },
           ]);
         });
 
         it('should perform on mixed input correctly', async () => {
-          fail('TODO');
+          const docsToSave = [
+            {
+              _id: readDocId,
+              name: 'readDocMixedUpdate',
+            },
+            {
+              _id: writeDocId,
+              name: 'writeDocMixedUpdate',
+            },
+            {
+              _id: public1Id,
+              name: 'public 1 mixed update',
+            },
+            {
+              _id: otherOwnerId,
+              name: 'no shared with user mixed update',
+            },
+            {
+              _id: noSharedId,
+              name: 'no shared mixed update',
+            },
+            {
+              _id: sharedWithGroupIdRead,
+              name: 'shared with group mixed update',
+            },
+            {
+              _id: sharedWithGroupIdWrite,
+              name: 'shared with group write mixed update',
+            },
+            { name: 'new doc mixed' },
+            {
+              name: 'cloned doc mixed',
+              permissions: [
+                {
+                  _id: 'user3',
+                  refId: 'refId',
+                  type: PermissionType.USER,
+                  level: AccessLevels.READ,
+                },
+              ],
+            },
+          ];
+          const expectedDocs = [
+            {
+              _id: readDocId,
+              name: 'readDocUpdated',
+              published: false,
+            },
+            {
+              _id: writeDocId,
+              name: 'writeDocMixedUpdate',
+            },
+            {
+              _id: writeDoc2Id,
+              name: 'writeDoc2MultiUpdated',
+            },
+            {
+              _id: public1Id,
+              name: 'public 1',
+              published: true,
+            },
+            {
+              _id: otherOwnerId,
+              name: 'no shared with user',
+            },
+            {
+              _id: noSharedId,
+              name: 'no shared',
+            },
+            {
+              _id: sharedWithGroupIdRead,
+              name: 'shared with group',
+            },
+            {
+              _id: sharedWithGroupIdWrite,
+              name: 'shared with group write mixed update',
+            },
+            { name: 'docToDelete' },
+            {
+              _id: public2Id,
+              name: 'public 2',
+            },
+            { name: 'newDoc' },
+            { name: 'clonedDoc' },
+            { name: 'newDoc' },
+            { name: 'newDoc2' },
+            { name: 'clonedMultipleDoc' },
+            { name: 'clonedMultipleDoc2' },
+            { name: 'new doc mixed' },
+            {
+              name: 'cloned doc mixed',
+            },
+          ];
+          try {
+            await model.saveMultiple(docsToSave);
+            fail('Should throw error');
+          } catch (e) {
+            expect(e.message).toContain('not updated');
+          }
+          const allDocs = await model.getUnrestricted({});
+          console.log(allDocs)
+          expect(allDocs).toMatchObject(expectedDocs);
         });
       });
 
@@ -341,14 +461,14 @@ describe('ModelWithPermissions', () => {
       describe('getUnrestricted', () => {
         it('should return the matched documents no matter their permissions', async () => {
           const results = await model.getUnrestricted({ fixed: true });
-          expect(results.length).toBe(8);
+          expect(results.length).toBe(9);
         });
       });
 
       describe('count', () => {
         it('should return the count of entities shared with the user or his groups and public entities', async () => {
           const result = await model.count({ fixed: true });
-          expect(result).toBe(6);
+          expect(result).toBe(7);
         });
       });
     });
@@ -367,7 +487,7 @@ describe('ModelWithPermissions', () => {
       describe('get', () => {
         it('should return all matched documents with their permissions', async () => {
           const results = await model.get({ fixed: true }, '+permissions', {});
-          expect(results.length).toBe(8);
+          expect(results.length).toBe(9);
           expect(results[0].permissions.length).toBe(1);
         });
       });
@@ -383,7 +503,7 @@ describe('ModelWithPermissions', () => {
       describe('count', () => {
         it('should return the count of all entities', async () => {
           const result = await model.count({ fixed: true });
-          expect(result).toBe(8);
+          expect(result).toBe(9);
         });
       });
     });
