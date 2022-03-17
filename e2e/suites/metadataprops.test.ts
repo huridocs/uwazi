@@ -112,6 +112,10 @@ describe('Metadata Properties', () => {
     await expect(page).toMatchElement('.metadata-type-multiselect', { text: 'Activo' });
     await expect(page).toMatchElement('.metadata-type-relationship', { text: '19 Comerciantes' });
     await expect(page).toMatchElement('.metadata-type-date', { text: 'Sep 8, 1966' });
+    await scrollTo('.leaflet-container');
+    const marker = await page.$$('.leaflet-marker-icon');
+    expect(marker.length).toBe(1);
+
     await expect(page).toMatchElement('.metadata-type-daterange', {
       text: 'Nov 23, 1963 ~ Sep 12, 1964',
     });
