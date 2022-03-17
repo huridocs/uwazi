@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
 import { Map } from 'app/Map';
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { MarkerInput } from 'app/Map/MapHelper';
+import * as MapHelper from 'app/Map/MapHelper';
 
 jest.mock('app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),
@@ -36,22 +36,22 @@ describe('Map', () => {
   const onClick = jest.fn();
 
   const entity1 = { title: 'Entity 1', template: 't1', sharedId: 'entity1' };
-  const clusterMarkers: MarkerInput[] = [
+  const clusterMarkers: MapHelper.MarkerInput[] = [
     {
       latitude: 60,
-      longitude: 24,
+      longitude: 27,
       properties: { entity: entity1 },
       label: 'property1',
     },
     {
-      latitude: 40,
-      longitude: 15,
+      latitude: 59,
+      longitude: 29,
       properties: { entity: entity1 },
       label: 'property1',
     },
     {
-      latitude: -0.5,
-      longitude: 40,
+      latitude: 58,
+      longitude: 30,
       properties: { entity: entity1 },
       label: 'property1',
     },
@@ -64,7 +64,11 @@ describe('Map', () => {
     properties: {},
   };
 
-  const render = (markers: MarkerInput[], renderPopupInfo?: boolean, showControls = true) => {
+  const render = (
+    markers: MapHelper.MarkerInput[],
+    renderPopupInfo?: boolean,
+    showControls = true
+  ) => {
     ({ renderResult } = renderConnectedContainer(
       <Map
         markers={markers}
@@ -89,12 +93,12 @@ describe('Map', () => {
       const presentation = await screen.getByRole('presentation');
       // @ts-ignore
       expect(presentation.src).toEqual(
-        'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/-1/0/0?access_token=abd'
+        'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/1/1/0?access_token=abd'
       );
       // @ts-ignore
       expect(presentation._leaflet_pos).toEqual({
-        x: -148,
-        y: -101,
+        x: -81,
+        y: -303,
       });
     });
 
@@ -115,6 +119,7 @@ describe('Map', () => {
 
     it('should call clickOnCluster when clicking on a cluster', async () => {
       const cluster = await screen.getByText('3');
+      jest.spyOn(MapHelper, 'preventDefaultEvent').mockImplementation();
       fireEvent.click(cluster);
       expect(clickOnCluster).toHaveBeenCalled();
     });
