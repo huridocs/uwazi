@@ -59,6 +59,7 @@ const CollectionSettings = ({
   });
 
   register('private');
+  register('openPublicEndpoint');
   register('allowedPublicTemplates');
   register('mapStartingPoint');
   register('cookiepolicy');
@@ -308,6 +309,15 @@ const CollectionSettings = ({
               />
             </SettingsFormElement>
           </ToggleChildren>
+        </SettingsFormElement>
+
+        <SettingsFormElement label="Allow public forms with no captcha" tip={tips.publicSharing}>
+          <ToggleButton
+            checked={Boolean(watch('openPublicEndpoint'))}
+            onClick={() => {
+              setValue('openPublicEndpoint', !getValues('openPublicEndpoint'));
+            }}
+          />
         </SettingsFormElement>
 
         <h2>

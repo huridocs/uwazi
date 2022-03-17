@@ -110,6 +110,13 @@ export const publicForm = [
   </Translate>,
 ];
 
+export const openPublicForm = (
+  <Translate>
+    By toggling this on you can allow users to submit to your whitelisted templates without having
+    to fill a CAPTCHA. [SOME WARNING ABOUT SECURITY]
+  </Translate>
+);
+
 export const mapApiKey = (
   <Translate translationKey="Map api key tooltip">
     An API key is required to use Mapbox or Google Maps.
