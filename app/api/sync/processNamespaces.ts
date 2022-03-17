@@ -279,7 +279,7 @@ class ProcessNamespaces {
     const data = ensure<WithId<FileType>>(await filesModel.getById(mongoId), noDataFound);
 
     if (data.type === 'custom') {
-      return { skip: true };
+      return { data };
     }
 
     if (data.entity) {

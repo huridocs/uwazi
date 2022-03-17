@@ -374,23 +374,24 @@ describe('syncWorker', () => {
     };
 
     describe('uploadFile', () => {
-      it('should upload attachments, documents and thumbnails belonging to entities that are of an allowed template', async () => {
+      it('should upload attachments, documents and thumbnails belonging to entities that are of an allowed template, and customs', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [],
           },
         });
 
-        expect(request.uploadFile.calls.count()).toBe(5);
+        expect(request.uploadFile.calls.count()).toBe(6);
 
         await expectUploadFile('/api/sync/upload', 'test2.txt');
         await expectUploadFile('/api/sync/upload', 'test.txt');
         await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
         await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
         await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
+        await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
       });
 
-      it('should upload files belonging to entities that are not filtered out', async () => {
+      it('should upload files belonging to entities that are not filtered out, and customs', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: {
@@ -402,12 +403,13 @@ describe('syncWorker', () => {
           },
         });
 
-        expect(request.uploadFile.calls.count()).toBe(4);
+        expect(request.uploadFile.calls.count()).toBe(5);
 
         await expectUploadFile('/api/sync/upload', 'test2.txt');
         await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
         await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
         await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
+        await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
       });
     });
 
@@ -595,8 +597,8 @@ describe('syncWorker', () => {
     it('should process the log records newer than the last synced entity', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(13);
-      expect(request.delete.calls.count()).toBe(28);
+      expect(request.post.calls.count()).toBe(14);
+      expect(request.delete.calls.count()).toBe(27);
 
       request.post.calls.reset();
       request.delete.calls.reset();
@@ -639,8 +641,8 @@ describe('syncWorker', () => {
       await syncAllTemplates('slave1', 5);
       [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
       expect(lastSync).toBe(9003);
-      expect(request.post.calls.count()).toBe(1);
-      expect(request.delete.calls.count()).toBe(4);
+      expect(request.post.calls.count()).toBe(2);
+      expect(request.delete.calls.count()).toBe(3);
     });
 
     it('should update lastSync on each operation', async () => {
