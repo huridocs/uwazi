@@ -1,12 +1,15 @@
 import { testingDB } from 'api/utils/testing_db';
 import { publicAPIMiddleware } from '../publicAPIMiddleware';
-import { captchaAuthorization } from '../index';
+import * as auth from '../index';
 
 jest.mock('../index', () => ({
-  captchaAuthorization: jest.fn().mockImplementation(() => () => {}),
+  captchaAuthorization: jest.fn(),
 }));
 
 describe('publicAPIMiddleware', () => {
+  const captchaMock = jest.fn();
+  (<jest.Mock>auth.captchaAuthorization).mockImplementation(() => captchaMock);
+
   const setUpSettings = async (open: boolean) =>
     testingDB.clearAllAndLoad({
       settings: [
@@ -15,6 +18,10 @@ describe('publicAPIMiddleware', () => {
         },
       ],
     });
+
+  beforeEach(() => {
+    captchaMock.mockReset();
+  });
 
   afterAll(async () => testingDB.disconnect());
 
@@ -33,7 +40,7 @@ describe('publicAPIMiddleware', () => {
     await publicAPIMiddleware(req as any, res as any, next);
 
     expect(next).toHaveBeenCalled();
-    expect(captchaAuthorization).not.toHaveBeenCalled();
+    expect(captchaMock).not.toHaveBeenCalled();
   });
 
   it('should requiere captcha validation if bypass is not enabled', async () => {
@@ -51,7 +58,7 @@ describe('publicAPIMiddleware', () => {
     await publicAPIMiddleware(req as any, res as any, next);
 
     expect(next).not.toHaveBeenCalled();
-    expect(captchaAuthorization).toHaveBeenCalled();
+    expect(captchaMock).toHaveBeenCalledWith(req, res, next);
   });
 
   it('should requiere captcha validation if header is not present', async () => {
@@ -67,6 +74,6 @@ describe('publicAPIMiddleware', () => {
     await publicAPIMiddleware(req as any, res as any, next);
 
     expect(next).not.toHaveBeenCalled();
-    expect(captchaAuthorization).toHaveBeenCalled();
+    expect(captchaMock).toHaveBeenCalledWith(req, res, next);
   });
 });
