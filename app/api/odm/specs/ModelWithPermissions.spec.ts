@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { PermissionSchema } from 'shared/types/permissionType';
 import { AccessLevels, permissionSchema, PermissionType } from 'shared/types/permissionSchema';
 import { instanceModelWithPermissions, ModelWithPermissions } from 'api/odm/ModelWithPermissions';
@@ -442,7 +441,6 @@ describe('ModelWithPermissions', () => {
             expect(e.message).toContain('not updated');
           }
           const allDocs = await model.getUnrestricted({});
-          console.log(allDocs)
           expect(allDocs).toMatchObject(expectedDocs);
         });
       });
