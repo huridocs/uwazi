@@ -86,18 +86,16 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
   };
 
   useEffect(() => {
-    if (
-      currentTilesProvider !== props.tilesProvider ||
-      currentMarkers === undefined ||
-      !props.onClick
-    ) {
+    const reRender = currentTilesProvider !== props.tilesProvider || !props.onClick;
+
+    if (reRender || currentMarkers === undefined) {
       setCurrentMarkers(pointMarkers);
       setCurrentTilesProvider(props.tilesProvider);
       checkMapInitialization(map, containerId);
       initMap();
     }
     return () => {
-      if (map) {
+      if (map && reRender) {
         map.remove();
       }
     };
