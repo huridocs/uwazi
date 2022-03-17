@@ -136,6 +136,11 @@ export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
       : super.save(appendPermissionData(data, user));
   }
 
+  // quick fix calling to the single save, if necessary
+  async saveMultiple(dataArray: WithPermissionsDataType<T>[]) {
+    return Promise.all(dataArray.map(async data => this.save(data)));
+  }
+
   async saveUnrestricted(data: WithPermissionsDataType<T>) {
     return data._id || data.permissions ? super.save(data, { _id: data._id }) : super.save(data);
   }

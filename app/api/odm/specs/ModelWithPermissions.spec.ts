@@ -290,16 +290,6 @@ describe('ModelWithPermissions', () => {
           }
         });
 
-        it('should save unrestricted even if user has not permissions on the document', async () => {
-          const saved = await model.saveMultipleUnrestricted([
-            {
-              _id: readDocId.toString(),
-              name: 'readDocMultiUpdated',
-            },
-          ]);
-          expect(saved.name).toEqual('readDocMultiUpdated');
-        });
-
         it('should add the user in the permissions property of the new doc', async () => {
           const saved = await model.saveMultiple([{ name: 'newDoc' }, { name: 'newDoc2' }]);
           expect(saved).toMatchObject([
@@ -427,10 +417,14 @@ describe('ModelWithPermissions', () => {
       });
 
       it('should create multiple new docs without permissions', async () => {
-        const saved = await model.save([{ name: 'newDoc' }, { name: 'newDoc2' }]);
+        const saved = await model.saveMultiple([{ name: 'newDoc' }, { name: 'newDoc2' }]);
         expect(saved).toMatchObject([
           {
             name: 'newDoc',
+            permissions: [],
+          },
+          {
+            name: 'newDoc2',
             permissions: [],
           },
         ]);
