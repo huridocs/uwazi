@@ -290,6 +290,7 @@ export default {
     };
   },
 
+  // eslint-disable-next-line max-params
   flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris, { doc }) {
     return relationshipValues.reduce((result, relationshipValue, index) => {
       if (relationshipValue.value) {
