@@ -7,6 +7,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import MarkdownViewer from 'app/Markdown';
 import ValueList from 'app/Metadata/components/ValueList';
+import { RelationshipLink } from 'app/Metadata/components/RelationshipLink';
 
 describe('TableCell', () => {
   let component: any;
@@ -98,10 +99,10 @@ describe('TableCell', () => {
     };
     const cellContent = renderContent();
 
-    const firstLink = cellContent.find(ValueList).props().property.value[0].value;
-    const secondLink = cellContent.find(ValueList).props().property.value[1].value;
-    expect(firstLink.props.to).toEqual('/entity/Entity1');
-    expect(secondLink.props.to).toEqual('/entity/Entity2');
+    const firstLink = cellContent.props().children.props.prop.value[0].url;
+    const secondLink = cellContent.props().children.props.prop.value[1].url;
+    expect(firstLink).toEqual('/entity/Entity1');
+    expect(secondLink).toEqual('/entity/Entity2');
   });
 
   it('should render inherited properties', () => {
