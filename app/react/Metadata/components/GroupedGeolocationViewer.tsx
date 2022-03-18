@@ -109,6 +109,7 @@ const getMultiMemberInfo =
         <dd>
           {member.value.map(value => (
             <div
+              key={`${value.lat}_${value.lon}`}
               onClick={() => value.relatedEntity && selectConnection(value.relatedEntity)}
               style={{ cursor: value.relatedEntity ? 'pointer' : 'default' }}
             >
