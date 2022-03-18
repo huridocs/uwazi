@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { Component } from 'react';
+import React, { Component, ReactElement } from 'react';
 
 interface NoticeState {
   isHidden: boolean;
@@ -8,9 +8,16 @@ interface NoticeState {
 type NoticeProps = {
   title: String;
   allowClose?: boolean;
+  children?: ReactElement | Element | string;
+};
+
+const defaultProps = {
+  allowClose: true,
 };
 
 export class Notice extends Component<NoticeProps, NoticeState> {
+  static defaultProps = defaultProps;
+
   static learnIconSvg() {
     return (
       <svg

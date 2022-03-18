@@ -116,7 +116,9 @@
     "react/jsx-wrap-multilines": ["off"], // handled by prettier,
     "react/jsx-curly-brace-presence": ["warn"],
     "react/jsx-curly-newline": "off",
-    "react/require-default-props": ["warn"],
+    "react/require-default-props": ["warn", { "forbidDefaultForRequired": false,
+      "ignoreFunctionalComponents": true
+    }],
     "react/forbid-prop-types": ["warn"],
     "react/jsx-no-bind": ["warn"],
     "react/sort-comp": ["warn"],
@@ -133,6 +135,7 @@
     "react/button-has-type": ["warn"],
     "react/no-access-state-in-setstate": ["warn"],
     "react/jsx-pascal-case": ["warn"],
+    "react/default-props-match-prop-types": ["error", { "allowRequiredDefaults": true }],
 
     //jsx-a11y
     "jsx-a11y/anchor-is-valid": ["warn"],

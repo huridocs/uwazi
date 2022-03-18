@@ -1,5 +1,5 @@
 import I18NMenu from './components/I18NMenu';
-import I18NLink from './components/I18NLink';
+import { I18NLink } from './components/I18NLink';
 import I18N from './components/I18N';
 import Translate from './components/Translate';
 import TranslateForm from './components/TranslateForm';
