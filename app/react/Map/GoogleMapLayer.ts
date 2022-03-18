@@ -6,6 +6,7 @@ const getGoogleLayer = (type: any) =>
     type,
     minZoom: 1,
     maxZoom: 20,
+    zIndex: 0,
   }) as unknown as TileLayer;
 
 export { getGoogleLayer };
