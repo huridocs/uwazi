@@ -7,7 +7,6 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import MarkdownViewer from 'app/Markdown';
 import ValueList from 'app/Metadata/components/ValueList';
-import { RelationshipLink } from 'app/Metadata/components/RelationshipLink';
 
 describe('TableCell', () => {
   let component: any;
