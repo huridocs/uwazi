@@ -74,12 +74,15 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
       preferCanvas: true,
       scrollWheelZoom: shouldScroll,
     });
+
+    map.getPanes().mapPane.style.zIndex = '0';
     markerGroup = L.markerClusterGroup();
 
     if (showControls) {
       L.control.zoom({ position: 'bottomright' }).addTo(map);
       L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     }
+    layers[0].options.zIndex = 0;
     layers[0].addTo(map);
     initMarkers();
     map.on('click', clickHandler);
