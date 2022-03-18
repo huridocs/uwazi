@@ -112,6 +112,7 @@ module.exports = production => {
           { from: 'node_modules/flag-icon-css/flags/4x3/', to: 'flags/4x3/' },
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
           { from: 'node_modules/leaflet/dist/images/', to: 'CSS/images' },
+          { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
