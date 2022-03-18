@@ -44,7 +44,7 @@ export function acceptSuggestion(
   propertyType: string,
   selectModel: string,
   selectValue: string[]
-): (dispatch: Dispatch<{}>) => void {
+) {
   return (dispatch: Dispatch<{}>) => {
     switch (propertyType) {
       case propertyTypes.multiselect:
