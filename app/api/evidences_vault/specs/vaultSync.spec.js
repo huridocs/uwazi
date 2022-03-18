@@ -4,7 +4,8 @@ import moment from 'moment';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { search } from 'api/search';
-import { deleteFiles, getFileContent } from 'api/files/filesystem';
+import { deleteFiles, getFileContent, testingUploadPaths } from 'api/files/filesystem';
+import { tenants } from 'api/tenants';
 
 import fixtures, { templateId } from './fixtures';
 import { mockVault } from './helpers.js';
@@ -13,10 +14,22 @@ import vaultEvidencesModel from '../vaultEvidencesModel';
 
 describe('vaultSync', () => {
   const token = 'auth_token';
+  const tenantName = 'evidenceVaultTenant';
 
   beforeEach(async () => {
+    await db.connect({ defaultTenant: false });
     await db.clearAllAndLoad(fixtures);
     backend.restore();
+
+    const tenant1 = {
+      name: tenantName,
+      dbName: db.dbName,
+      indexName: db.dbName,
+      ...(await testingUploadPaths()),
+    };
+
+    tenants.add(tenant1);
+
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
@@ -50,19 +63,30 @@ describe('vaultSync', () => {
             request: '2',
             filename: 'package2.zip',
             url: 'url 2',
-            status: '201',
+            status: '418',
             time_of_request: '2018-05-25 09:31:25',
           },
           jsonInfo: { title: 'title2' },
         },
+        {
+          listItem: { status: '203', request: '3', filename: 'package3.zip' },
+          jsonInfo: { title: 'title2' },
+        },
+        {
+          listItem: { status: '501', request: '4', filename: null },
+          jsonInfo: { title: 'title4' },
+        },
       ];
 
       await mockVault(token, evidences);
-      await vaultSync.sync({ token, template: templateId });
-      imported = await entities.get();
+      await vaultSync.syncAllTenants();
+
+      await tenants.run(async () => {
+        imported = await entities.get();
+      }, tenantName);
     });
 
-    it('should create entities based on evidences returned', async () => {
+    it('should create entities based on evidences with 201 or 418 status', async () => {
       expect(imported.map(e => e.title)).toEqual(['title1', 'title2']);
       expect(imported.map(e => e.template)).toEqual([templateId, templateId]);
     });
@@ -82,8 +106,10 @@ describe('vaultSync', () => {
     });
 
     it('should add zip package as attachment', async () => {
-      expect(await getFileContent('1.png')).toBe('this is a fake image');
-      expect(await getFileContent('2.png')).toBe('this is a fake image');
+      await tenants.run(async () => {
+        expect(await getFileContent('1.png')).toBe('this is a fake image');
+        expect(await getFileContent('2.png')).toBe('this is a fake image');
+      }, tenantName);
 
       expect(imported[0].attachments.find(a => a.filename.match(/zip/))).toMatchObject({
         filename: '1.zip',
@@ -95,9 +121,6 @@ describe('vaultSync', () => {
     });
 
     it('should set png file as an attachment, and add the link into image field', async () => {
-      expect(await getFileContent('1.png')).toBe('this is a fake image');
-      expect(await getFileContent('2.png')).toBe('this is a fake image');
-
       const firstPngAttachment = imported[0].attachments.find(a => a.filename.match(/png/));
       expect(firstPngAttachment).toMatchObject({ filename: '1.png' });
 
@@ -114,8 +137,10 @@ describe('vaultSync', () => {
     });
 
     it('should set mp4 file as an attachment, and add the link into media field', async () => {
-      expect(await getFileContent('1.mp4')).toBe('this is a fake video');
-      expect(await getFileContent('2.mp4')).toBe('this is a fake video');
+      await tenants.run(async () => {
+        expect(await getFileContent('1.mp4')).toBe('this is a fake video');
+        expect(await getFileContent('2.mp4')).toBe('this is a fake video');
+      }, tenantName);
 
       const firstMp4Attachment = imported[0].attachments.find(a => a.filename.match(/mp4/));
       expect(firstMp4Attachment).toMatchObject({ filename: '1.mp4' });
@@ -146,12 +171,15 @@ describe('vaultSync', () => {
       ];
 
       await mockVault(anotherToken, evidences);
-      await vaultSync.sync([
-        { token, template: templateId },
-        { token: anotherToken, template: templateId },
-      ]);
 
-      imported = await entities.get();
+      await tenants.run(async () => {
+        await vaultSync.sync([
+          { token, template: templateId },
+          { token: anotherToken, template: templateId },
+        ]);
+        imported = await entities.get();
+      }, tenantName);
+
       expect(imported.map(e => e.title)).toEqual(['title1', 'title2', 'title5']);
       expect(imported.map(e => e.template)).toEqual([templateId, templateId, templateId]);
     });
@@ -169,10 +197,13 @@ describe('vaultSync', () => {
     ];
 
     await mockVault(token, evidences);
-    await vaultSync.sync({ token, template: templateId });
-    const imported = await entities.get();
 
-    expect(await getFileContent('1.mp4')).toBe('this is a fake video');
+    let imported;
+    await tenants.run(async () => {
+      await vaultSync.sync({ token, template: templateId });
+      imported = await entities.get();
+      expect(await getFileContent('1.mp4')).toBe('this is a fake video');
+    }, tenantName);
 
     expect(imported.map(e => e.metadata.video[0].value)).toEqual(['/api/files/1.mp4', '']);
 
@@ -188,7 +219,10 @@ describe('vaultSync', () => {
   });
 
   it('should not import already imported evidences', async () => {
-    await vaultEvidencesModel.saveMultiple([{ request: '1' }, { request: '3' }]);
+    await tenants.run(async () => {
+      await vaultEvidencesModel.saveMultiple([{ request: '1' }, { request: '3' }]);
+    }, tenantName);
+
     const evidences = [
       { listItem: { request: '1', filename: 'package1.zip' }, jsonInfo: { title: 'title1' } },
       { listItem: { request: '3', filename: 'package3.zip' }, jsonInfo: { title: 'title3' } },
@@ -199,34 +233,14 @@ describe('vaultSync', () => {
     ];
 
     await mockVault(token, evidences);
-    await vaultSync.sync({ token, template: templateId });
-    await vaultSync.sync({ token, template: templateId });
 
-    const imported = await entities.get();
+    let imported;
+    await tenants.run(async () => {
+      await vaultSync.sync({ token, template: templateId });
+      await vaultSync.sync({ token, template: templateId });
+      imported = await entities.get();
+    }, tenantName);
+
     expect(imported.map(e => e.title)).toEqual(['title2']);
-  });
-
-  it('should not import evidences with 202, 203 or 501 status', async () => {
-    const evidences = [
-      {
-        listItem: { status: '201', request: '1', filename: 'package1.zip' },
-        jsonInfo: { title: 'title1' },
-      },
-      {
-        listItem: { status: '203', request: '2', filename: 'package2.zip' },
-        jsonInfo: { title: 'title2' },
-      },
-      {
-        listItem: { status: '202', request: '3', filename: 'package3.zip' },
-        jsonInfo: { title: 'title3' },
-      },
-      { listItem: { status: '501', request: '4', filename: null }, jsonInfo: { title: 'title4' } },
-    ];
-
-    await mockVault(token, evidences);
-    await vaultSync.sync({ token, template: templateId });
-
-    const imported = await entities.get();
-    expect(imported.map(e => e.title)).toEqual(['title1']);
   });
 });
