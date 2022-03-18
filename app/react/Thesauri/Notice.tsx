@@ -8,11 +8,12 @@ interface NoticeState {
 type NoticeProps = {
   title: String;
   allowClose?: boolean;
-  children?: ReactElement | Element | string;
+  children?: string | ReactElement | JSX.Element | Element | JSX.Element[];
 };
 
 const defaultProps = {
   allowClose: true,
+  children: '',
 };
 
 export class Notice extends Component<NoticeProps, NoticeState> {

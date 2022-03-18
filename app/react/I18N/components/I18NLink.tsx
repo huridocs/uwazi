@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -11,7 +13,7 @@ const defaultProps = {
   confirmMessage: '',
 };
 
-export type I18NLinkProps = {
+export type I18NLinkProps = typeof defaultProps & {
   to: string;
   disabled: boolean;
   onClick: (_e: any) => void;
@@ -19,7 +21,7 @@ export type I18NLinkProps = {
   confirmMessage: string;
 };
 
-export class I18NLinkComponent extends Component<I18NLinkProps> {
+export class I18NLink extends Component<I18NLinkProps> {
   static defaultProps = defaultProps;
 
   static contextTypes = {
@@ -47,14 +49,14 @@ export class I18NLinkComponent extends Component<I18NLinkProps> {
         this.context.confirm({
           accept: () => {
             onClick(e);
-            I18NLinkComponent.navigate(to);
+            I18NLink.navigate(to);
           },
           title: confirmTitle,
           message: confirmMessage,
         });
       } else {
         onClick(e);
-        I18NLinkComponent.navigate(to);
+        I18NLink.navigate(to);
       }
     }
   }
@@ -74,4 +76,4 @@ export function mapStateToProps({ locale }: { locale?: string }, ownProps: any) 
   return { to: `/${locale || ''}/${ownProps.to}`.replace(/\/+/g, '/') };
 }
 
-export const I18NLink = connect(mapStateToProps)(I18NLinkComponent);
+export default connect(mapStateToProps)(I18NLink);

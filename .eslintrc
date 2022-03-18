@@ -116,9 +116,7 @@
     "react/jsx-wrap-multilines": ["off"], // handled by prettier,
     "react/jsx-curly-brace-presence": ["warn"],
     "react/jsx-curly-newline": "off",
-    "react/require-default-props": ["warn", { "forbidDefaultForRequired": false,
-      "ignoreFunctionalComponents": true
-    }],
+    "react/require-default-props": ["warn", { "forbidDefaultForRequired": false }],
     "react/forbid-prop-types": ["warn"],
     "react/jsx-no-bind": ["warn"],
     "react/sort-comp": ["warn"],

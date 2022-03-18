@@ -32,8 +32,8 @@ type MultiSelectProps<ValueType> = {
   sortbyLabel: boolean;
   forceHoist: boolean;
   placeholder: string;
-  onChange: (_v: any) => {};
-  onFilter: (_searchTerm: string) => {};
+  onChange: (_v: any) => void;
+  onFilter: (_searchTerm: string) => void;
   totalPossibleOptions: number;
   allowSelectGroup: boolean;
 };
