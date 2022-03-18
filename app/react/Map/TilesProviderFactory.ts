@@ -39,6 +39,7 @@ const getMapboxLayers: (accessToken?: string) => { [p: string]: TileLayer } = ac
         tileSize: 512,
         zoomOffset: -1,
         accessToken: accessToken || DEFAULT_MAPBOX_TOKEN,
+        zIndex: 0,
       }),
     };
   }, {});
