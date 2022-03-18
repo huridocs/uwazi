@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { Component } from 'react';
-import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
+import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 

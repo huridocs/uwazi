@@ -15,6 +15,10 @@ const defaultProps = {
 
 export type I18NLinkProps = typeof defaultProps & {
   to: string;
+  disabled: boolean;
+  onClick: (_e: any) => void;
+  confirmTitle: string;
+  confirmMessage: string;
 };
 
 export class I18NLink extends Component<I18NLinkProps> {
