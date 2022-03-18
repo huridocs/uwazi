@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import filesize from 'filesize';
@@ -9,7 +9,7 @@ import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 
-export enum MediaModalType {
+enum MediaModalType {
   Image,
   Media,
 }
@@ -18,7 +18,8 @@ enum MediaModalTab {
   SelectFromFile = 'SelectFromFile',
   AddFromUrl = 'AddFromUrl',
 }
-export interface MediaModalProps {
+
+interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
@@ -27,7 +28,7 @@ export interface MediaModalProps {
   type?: MediaModalType;
 }
 
-export const MediaModal = ({
+const MediaModal = ({
   isOpen,
   onClose,
   attachments = [],
@@ -63,6 +64,8 @@ export const MediaModal = ({
     return selectedAttachmentIndex === -1 ? MediaModalTab.AddFromUrl : MediaModalTab.SelectFromFile;
   }, [selectedUrl, attachments]);
 
+  const inputFileRef = useRef<HTMLInputElement | null>(null);
+
   const handleAttachmentClick = (url: string) => () => {
     onChange(url);
     onClose();
@@ -71,6 +74,20 @@ export const MediaModal = ({
   const handleSubmitFromUrl = (formData: { url: string }) => {
     onChange(formData.url);
     onClose();
+  };
+
+  const handleUploadButtonClicked = () => {
+    if (inputFileRef.current) {
+      inputFileRef.current.click();
+    }
+  };
+
+  const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      console.log(event.target.files);
+      //handleFileUpload
+      onClose();
+    }
   };
 
   return (
@@ -118,6 +135,23 @@ export const MediaModal = ({
                 !filteredAttachments.length ? 'centered' : ''
               }`}
             >
+              <div className="upload-button">
+                <button
+                  type="button"
+                  onClick={handleUploadButtonClicked}
+                  className="btn btn-success"
+                >
+                  <Icon icon="link" />
+                  &nbsp; <Translate>Upload and select file</Translate>
+                </button>
+                <input
+                  aria-label="fileInput"
+                  type="file"
+                  onChange={handleInputFileChange}
+                  style={{ display: 'none' }}
+                  ref={inputFileRef}
+                />
+              </div>
               {filteredAttachments.length > 0 ? (
                 <div className="media-grid container">
                   <div className="row">
@@ -172,3 +206,6 @@ export const MediaModal = ({
     </ReactModal>
   );
 };
+
+export type { MediaModalProps };
+export { MediaModalType, MediaModal };

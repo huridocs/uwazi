@@ -128,4 +128,11 @@ describe('Media Modal', () => {
     expect(props.onChange).toHaveBeenCalledWith(testAttachment);
     expect(props.onClose).toHaveBeenCalled();
   });
+
+  describe('Upload file', () => {
+    it('Should upload and select a new file', () => {
+      render();
+      component.find('.btn-success').simulate('click');
+    });
+  });
 });
