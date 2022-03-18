@@ -27,9 +27,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & RelationshipLinkProps;
 
-const RelationshipLink = ({ prop: propVal, selectConnection }: mappedProps) => {
-  return propVal.value.map((prop: any) => {
-    if (document.location.pathname.includes('/entity/')) {
+const RelationshipLink = ({ prop: propVal, selectConnection }: mappedProps) =>
+  propVal.value.map((prop: any) => {
+    if (prop.relatedEntity) {
       return (
         <a
           onClick={() => selectConnection(prop.relatedEntity)}
@@ -47,7 +47,6 @@ const RelationshipLink = ({ prop: propVal, selectConnection }: mappedProps) => {
       </I18NLink>
     );
   });
-};
 
 const container = connector(RelationshipLink);
 export { container as RelationshipLink };

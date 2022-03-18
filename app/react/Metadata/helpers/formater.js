@@ -271,7 +271,9 @@ export default {
         _thesauri => _thesauri.get('_id') === template.get('_id')
       );
       propType = type;
-      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris);
+      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris, {
+        doc: options.doc,
+      });
     }
     value = value.filter(v => v);
     return {
@@ -288,14 +290,16 @@ export default {
     };
   },
 
-  flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris) {
+  flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris, { doc }) {
     return relationshipValues.reduce((result, relationshipValue, index) => {
       if (relationshipValue.value) {
         let { value } = relationshipValue;
         if (type === 'geolocation') {
-          const entityLabel = this.getSelectOptions(thesauriValues[index], templateThesauris).value;
+          const options = this.getSelectOptions(thesauriValues[index], templateThesauris, doc);
+          const entityLabel = options.value;
           value = value.map(v => ({
             ...v,
+            relatedEntity: options.relatedEntity ? options.relatedEntity : undefined,
             label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
           }));
         }
