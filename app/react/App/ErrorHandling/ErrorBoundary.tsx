@@ -1,12 +1,20 @@
-import React, { ErrorInfo } from 'react';
+import React, { ErrorInfo, ReactElement } from 'react';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 
 interface ErrorBoundaryProps {
   error?: Error;
   errorInfo?: ErrorInfo;
+  children?: ReactElement | Element | string;
 }
 
+const defaultProps = {
+  error: {},
+  errorInfo: '',
+  children: '',
+};
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryProps> {
+  static defaultProps = defaultProps;
+
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { error: props.error, errorInfo: props.errorInfo };
@@ -27,4 +35,4 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryPro
   }
 }
 
-export default ErrorBoundary;
+export { ErrorBoundary };
