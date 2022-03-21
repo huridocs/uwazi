@@ -3,9 +3,9 @@ name: check-emitted-types
 on:
   push:
     branches:
-      - master
+      - production
       - development
-      - release
+      - staging
   pull_request:
 
 concurrency:

@@ -3,9 +3,9 @@ name: App unit tests
 on:
   push:
     branches:
-      - master
+      - production
       - development
-      - release
+      - staging
   pull_request:
 
 concurrency:
