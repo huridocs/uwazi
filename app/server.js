@@ -25,7 +25,6 @@ import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
-import vaultSync from './api/evidences_vault';
 
 import { migrator } from './api/migrations/migrator';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';

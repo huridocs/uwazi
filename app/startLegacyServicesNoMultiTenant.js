@@ -4,6 +4,7 @@ import settings from 'api/settings/settings';
 import { Repeater } from 'api/utils/Repeater';
 import { tocService } from 'api/toc_generation/tocService';
 import { TaskProvider } from 'shared/tasks/tasks';
+import vaultSync from './api/evidences_vault';
 
 async function startLegacyServicesNoMultiTenant() {
   if (config.multiTenant || config.clusterMode) {
