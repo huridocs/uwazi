@@ -98,6 +98,10 @@
       padding: 24px 0 0 0;
       height: 100%;
 
+      .upload-button {
+        padding-bottom: 10px;
+      }
+
       &.centered {
         display: flex;
         align-items: center;
@@ -132,10 +136,6 @@
         width: calc(100% + 20px);
         max-width: calc(100% + 20px);
         margin-left: -10px;
-
-        .upload-button {
-          padding-bottom: 10px;
-        }
 
         .row {
           display: flex;
