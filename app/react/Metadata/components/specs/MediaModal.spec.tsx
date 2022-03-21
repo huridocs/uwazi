@@ -141,7 +141,7 @@ describe('Media Modal', () => {
           files: [supportingFile],
         },
       });
-      expect(props.onChange).toHaveBeenCalledWith(supportingFile);
+      expect(props.onChange).toHaveBeenCalledWith({ value: '', attachment: 0 });
       expect(props.onClose).toHaveBeenCalled();
     });
   });

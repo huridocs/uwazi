@@ -23,7 +23,7 @@ interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
-  onChange: (id: string | File) => void;
+  onChange: (id: string) => void;
   selectedUrl: string | null;
   type?: MediaModalType;
 }
@@ -84,7 +84,7 @@ const MediaModal = ({
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      onChange(event.target.files[0]);
+      onChange(event.target.files[0]); //not correct, should be something like {value: '', attachment: '[index of the file]'}
       onClose();
     }
   };
