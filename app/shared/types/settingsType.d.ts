@@ -40,6 +40,7 @@ export interface Settings {
   home_page?: string;
   defaultLibraryView?: string;
   private?: boolean;
+  openPublicEndpoint?: boolean;
   cookiepolicy?: boolean;
   mailerConfig?: string;
   publicFormDestination?: string;
