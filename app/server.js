@@ -198,14 +198,6 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
       }
     });
 
-    if (config.externalServices) {
-      new DistributedLoop('evidences_vault', vaultSync.syncAllTenants.bind(vaultSync), {
-        port: config.redis.port,
-        host: config.redis.host,
-        delayTimeBetweenTasks: 10000,
-      }).start();
-    }
-
     console.info(
       '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
       port,
