@@ -23,7 +23,7 @@ interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
-  onChange: (id: string) => void;
+  onChange: (id: string | File) => void;
   selectedUrl: string | null;
   type?: MediaModalType;
 }
@@ -84,8 +84,7 @@ const MediaModal = ({
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      console.log(event.target.files);
-      //handleFileUpload
+      onChange(event.target.files[0]);
       onClose();
     }
   };

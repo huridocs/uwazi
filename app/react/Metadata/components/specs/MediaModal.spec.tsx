@@ -131,8 +131,18 @@ describe('Media Modal', () => {
 
   describe('Upload file', () => {
     it('Should upload and select a new file', () => {
+      const supportingFile: Partial<File>[] = [
+        { name: 'image.jpeg', size: 5287, type: 'image/jpeg', lastModified: 1633374386437 },
+      ];
       render();
       component.find('.btn-success').simulate('click');
+      component.find('input[type="file"]').simulate('change', {
+        target: {
+          files: [supportingFile],
+        },
+      });
+      expect(props.onChange).toHaveBeenCalledWith(supportingFile);
+      expect(props.onClose).toHaveBeenCalled();
     });
   });
 });
