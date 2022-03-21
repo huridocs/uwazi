@@ -17,6 +17,27 @@ enum SelectStates {
   GROUP,
 }
 
+type MultiSelectProps<ValueType> = {
+  value: ValueType;
+  optionsLabel: string;
+  optionsValue: string;
+  prefix: string;
+  options: Option[];
+  filter: string;
+  optionsToShow: number;
+  showAll: boolean;
+  hideSearch: boolean;
+  showSearch: boolean;
+  sort: boolean;
+  sortbyLabel: boolean;
+  forceHoist: boolean;
+  placeholder: string;
+  onChange: (_v: any) => void;
+  onFilter: (_searchTerm: string) => void;
+  totalPossibleOptions: number;
+  allowSelectGroup: boolean;
+};
+
 const defaultProps = {
   optionsLabel: 'label',
   optionsValue: 'value',
@@ -35,10 +56,6 @@ const defaultProps = {
   onFilter: async (_searchTerm: string) => {},
   totalPossibleOptions: 0,
   allowSelectGroup: false,
-};
-
-type MultiSelectProps<ValueType> = typeof defaultProps & {
-  value: ValueType;
 };
 
 interface MultiSelectState {

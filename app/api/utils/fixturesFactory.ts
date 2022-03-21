@@ -12,6 +12,7 @@ import {
   MetadataObjectSchema,
   ExtractedMetadataSchema,
 } from 'shared/types/commonTypes';
+import { UpdateLog } from 'api/updatelogs';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -75,7 +76,7 @@ function getFixturesFactory() {
 
     file: (
       id: string,
-      entity: string,
+      entity: string | undefined,
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
       filename: string,
       language: string = 'en',
@@ -156,6 +157,19 @@ function getFixturesFactory() {
       role,
       email: email || `${username}@provider.tld`,
       password,
+    }),
+
+    updatelog: (
+      namespace: string,
+      mongoId: string,
+      deleted = false,
+      timestamp = Date.now()
+    ): Partial<UpdateLog> => ({
+      _id: idMapper(`${namespace}-${mongoId}`),
+      namespace,
+      mongoId: idMapper(mongoId),
+      timestamp,
+      deleted,
     }),
   });
 }

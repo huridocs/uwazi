@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
 import { Context } from 'app/Markdown/components';
-import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
+import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';

@@ -10,6 +10,7 @@ import {
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
+  preventDefaultEvent,
 } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
@@ -50,6 +51,7 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
     markerGroup.on('clusterclick', cluster => {
       props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
+      preventDefaultEvent(cluster);
     });
     markerGroup.on('click', marker => {
       props.clickOnMarker?.(marker.layer);
@@ -62,35 +64,44 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
 
   const initMap = () => {
     const { layers, baseMaps } = getMapProvider(props.tilesProvider, props.mapApiKey);
+    const shouldScroll: boolean = props.renderPopupInfo || props.onClick !== undefined;
     map = L.map(containerId, {
       center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
       zoom: 6,
       maxZoom: 20,
+      minZoom: 2,
       zoomControl: false,
       preferCanvas: true,
+      scrollWheelZoom: shouldScroll,
     });
+
+    map.getPanes().mapPane.style.zIndex = '0';
     markerGroup = L.markerClusterGroup();
 
     if (showControls) {
-      L.control.zoom({ position: 'bottomleft' }).addTo(map);
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
       L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     }
+    layers[0].options.zIndex = 0;
     layers[0].addTo(map);
     initMarkers();
     map.on('click', clickHandler);
   };
 
   useEffect(() => {
-    if (
-      currentTilesProvider !== props.tilesProvider ||
-      currentMarkers === undefined ||
-      !props.onClick
-    ) {
+    const reRender = currentTilesProvider !== props.tilesProvider || !props.onClick;
+
+    if (reRender || currentMarkers === undefined) {
       setCurrentMarkers(pointMarkers);
       setCurrentTilesProvider(props.tilesProvider);
       checkMapInitialization(map, containerId);
       initMap();
     }
+    return () => {
+      if (map && reRender) {
+        map.remove();
+      }
+    };
   }, [pointMarkers, props.tilesProvider, props.mapApiKey]);
 
   return (

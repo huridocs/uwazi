@@ -324,7 +324,7 @@ export default {
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
-    await saveSelections(_doc); // change related main file (1)
+    await saveSelections(_doc);
     const doc = _doc;
 
     if (!doc.sharedId) {

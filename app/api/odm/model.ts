@@ -64,8 +64,71 @@ export class OdmModel<T> {
     return saved.toObject<WithId<T>>();
   }
 
-  async saveMultiple(data: Partial<DataType<T>>[]) {
-    return Promise.all(data.map(async d => this.save(d)));
+  async saveMultiple(
+    dataArray: Partial<DataType<T>>[],
+    query?: any,
+    updateExisting: boolean = true
+  ) {
+    const { existingIds, existingData, updated } = await this.saveExisting(
+      dataArray,
+      query,
+      updateExisting
+    );
+    const created = await this.saveNew(existingIds, dataArray);
+
+    if (updated.length !== existingData.length) {
+      throw Error('A document was not updated!');
+    }
+
+    const saved = updated.concat(created);
+    await Promise.all(saved.map(async s => this.logHelper.upsertLogOne(s)));
+    return saved.map(s => s.toObject<WithId<T>>());
+  }
+
+  private async saveNew(existingIds: Set<string>, dataArray: Partial<DataType<T>>[]) {
+    const newData = dataArray.filter(d => !d._id || !existingIds.has(d._id.toString()));
+    return (await this.db.createMany(newData)) || [];
+  }
+
+  private async saveExisting(
+    dataArray: Partial<DataType<T>>[],
+    query?: any,
+    updateExisting: boolean = true
+  ) {
+    const ids: DataType<T>['_id'][] = [];
+    dataArray.forEach(d => {
+      if (d._id) {
+        ids.push(d._id);
+      }
+    });
+    const existingIds = new Set<string>(
+      (
+        await this.db.find({ _id: { $in: ids } } as UwaziFilterQuery<DataType<T>>, '_id', {
+          lean: true,
+        })
+      ).map(d => d._id.toString())
+    );
+
+    const existingData = dataArray.filter(d => d._id && existingIds.has(d._id.toString()));
+    if (updateExisting) {
+      await this.db.bulkWrite(
+        existingData.map(data => ({
+          updateOne: {
+            filter: { ...query, _id: data._id },
+            update: data,
+          },
+        }))
+      );
+
+      const updated = await this.db.find({
+        ...query,
+        _id: { $in: Array.from(existingIds) },
+      } as UwaziFilterQuery<DataType<T>>);
+
+      return { existingIds, existingData, updated };
+    }
+
+    return { existingIds, existingData, updated: [] };
   }
 
   async updateMany(

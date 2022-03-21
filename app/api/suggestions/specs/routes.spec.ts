@@ -239,7 +239,10 @@ describe('suggestions routes', () => {
         },
       ]);
       const entityIds = actualEntities.map((e: WithId<EntitySchema>) => e._id);
-      expect(search.indexEntities).toHaveBeenCalledWith({ _id: { $in: entityIds } }, '+fullText');
+      expect(search.indexEntities).toHaveBeenCalledWith(
+        { _id: { $in: expect.arrayContaining(entityIds) } },
+        '+fullText'
+      );
     });
     it('should reject with unauthorized when user has not admin role', async () => {
       user = { username: 'user 1', role: 'editor' };

@@ -7,6 +7,7 @@ import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 import { clearInput, selectDate, scrollTo, waitForNavigation } from '../helpers/formActions';
 import { goToRestrictedEntities } from '../helpers/publishedFilter';
+import { mouseClick } from '../helpers/selectorUtils';
 
 describe('Metadata Properties', () => {
   beforeAll(async () => {
@@ -35,7 +36,7 @@ describe('Metadata Properties', () => {
 
     const propertyAddButtons = await page.$$('.property-options-list li button');
     //intentionaly leaving the last fields out of the test: geolocation, violated articles (nested), generated id.
-    for (let propIndex = 0; propIndex < 14; propIndex += 1) {
+    for (let propIndex = 0; propIndex < 15; propIndex += 1) {
       // eslint-disable-next-line no-await-in-loop
       await propertyAddButtons[propIndex].click();
     }
@@ -66,6 +67,12 @@ describe('Metadata Properties', () => {
     await expect(page).toClick('.form-group.relationship li.multiselectItem', {
       text: '19 Comerciantes',
     });
+
+    await mouseClick('.leaflet-container', 200, 100);
+    const marker = await page.$$('.leaflet-marker-icon');
+    expect(marker.length).toBe(1);
+
+    await scrollTo('.form-group.date');
     await selectDate('.form-group.date input', '08/09/1966');
     await selectDate('.form-group.daterange div.DatePicker__From input', '23/11/1963');
     await selectDate('.form-group.daterange div.DatePicker__To input', '12/09/1964');
@@ -105,6 +112,10 @@ describe('Metadata Properties', () => {
     await expect(page).toMatchElement('.metadata-type-multiselect', { text: 'Activo' });
     await expect(page).toMatchElement('.metadata-type-relationship', { text: '19 Comerciantes' });
     await expect(page).toMatchElement('.metadata-type-date', { text: 'Sep 8, 1966' });
+    await scrollTo('.leaflet-container');
+    const marker = await page.$$('.leaflet-marker-icon');
+    expect(marker.length).toBe(1);
+
     await expect(page).toMatchElement('.metadata-type-daterange', {
       text: 'Nov 23, 1963 ~ Sep 12, 1964',
     });
@@ -135,6 +146,10 @@ describe('Metadata Properties', () => {
     await expect(page).toClick('.form-group.relationship li.multiselectItem', {
       text: '19 Comerciantes',
     });
+    await scrollTo('.leaflet-container');
+    await clearInput('.form-group #lat');
+    await clearInput('.form-group #lon');
+
     await scrollTo('.form-group.date input');
     await expect(page).toClick('.form-group.date button');
     await expect(page).toClick('.form-group.daterange div.DatePicker__From button');
