@@ -12,7 +12,6 @@ import { Icon } from 'UI';
 import { createSelector } from 'reselect';
 import { Pill } from 'app/Metadata/components/Pill';
 
-// eslint-disable-next-line import/exports-last
 export class AccountSettings extends Component {
   constructor(props, context) {
     super(props, context);
@@ -94,7 +93,7 @@ export class AccountSettings extends Component {
 
   render() {
     const { email, password, repeatPassword, passwordError, using2fa } = this.state;
-    const { username, groups, role } = this.props.user;
+    const { username, groups = [], role } = this.props.user;
     return (
       <div className="account-settings">
         <div className="panel panel-default">
