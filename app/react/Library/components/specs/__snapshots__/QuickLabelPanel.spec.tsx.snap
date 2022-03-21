@@ -51,6 +51,7 @@ exports[`QuickLabelPanel should render correctly 1`] = `
   >
     <div>
       <Notice
+        allowClose={true}
         title="Label your collection"
       >
         <div>

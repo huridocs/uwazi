@@ -7,7 +7,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 
-import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
+import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { PageViewer } from './components/PageViewer';
 import { getPageAssets } from './utils/getPageAssets';
 

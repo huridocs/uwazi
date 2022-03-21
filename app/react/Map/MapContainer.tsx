@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
 import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
-import ErrorBoundary from 'app/App/ErrorHandling/ErrorBoundary';
+import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { DataMarker, MarkerInput } from 'app/Map/MapHelper';
 
 type MapComponentProps = {
