@@ -25,7 +25,6 @@ import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
-import vaultSync from './api/evidences_vault';
 
 import { migrator } from './api/migrations/migrator';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
@@ -197,14 +196,6 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         twitterRepeater.start();
       }
     });
-
-    if (config.externalServices) {
-      new DistributedLoop('evidences_vault', vaultSync.syncAllTenants.bind(vaultSync), {
-        port: config.redis.port,
-        host: config.redis.host,
-        delayTimeBetweenTasks: 10000,
-      }).start();
-    }
 
     console.info(
       '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
