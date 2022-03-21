@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
 
 import { Translate, I18NLink } from 'app/I18N';
@@ -9,13 +10,13 @@ import Icons from 'app/Templates/components/Icons';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { Settings } from 'shared/types/settingsType';
+import saveSettings from 'app/Settings/actions/settingsActions';
+import { PropertyConfigurationModal } from './PropertyConfigurationModal';
 
 function mapStateToProps({ settings, templates }: any) {
   return {
-    extractionSettings: settings.collection
-      .get('features')
-      ?.get('metadataExtraction')
-      .get('templates'),
+    settings: settings.collection,
     templates,
   };
 }
@@ -27,18 +28,17 @@ class MetadataExtractionComponent extends React.Component<
   constructor(props: MetadataExtractionDashboardPropTypes) {
     super(props);
     this.state = {
-      formattedData: {},
+      configurationModalIsOpen: false,
     };
-  }
-
-  componentDidMount() {
-    this.arrangeTemplatesAndProperties();
   }
 
   arrangeTemplatesAndProperties() {
     const formatted: FormattedSettingsData = {};
 
-    this.props.extractionSettings.forEach(setting => {
+    const extractionSettings =
+      this.props.settings.get('features')?.get('metadataExtraction')?.get('templates') || [];
+
+    extractionSettings.forEach((setting: any) => {
       const template = setting.has('template')
         ? this.props.templates.find(temp => temp?.get('_id') === setting.get('template'))
         : this.props.templates.find(temp => temp?.get('name') === setting.get('name'));
@@ -82,10 +82,15 @@ class MetadataExtractionComponent extends React.Component<
         }
       });
     });
-    this.setState({ formattedData: formatted });
+
+    return formatted;
   }
 
   render() {
+    const formattedData: FormattedSettingsData = this.arrangeTemplatesAndProperties();
+    const extractionSettings =
+      this.props.settings.toJS().features!.metadataExtraction!.templates || [];
+
     return (
       <>
         <div className="panel panel-default">
@@ -95,6 +100,28 @@ class MetadataExtractionComponent extends React.Component<
           <div className="panel-subheading">
             <Translate>Extract information from your documents</Translate>
           </div>
+          <button
+            className="btn btn-default"
+            type="button"
+            onClick={() => {
+              this.setState({ configurationModalIsOpen: true });
+            }}
+          >
+            <Translate>Configure properties</Translate>
+          </button>
+          <PropertyConfigurationModal
+            isOpen={this.state.configurationModalIsOpen}
+            onClose={() => this.setState({ configurationModalIsOpen: false })}
+            onAccept={newSettings => {
+              this.setState({ configurationModalIsOpen: false });
+              const settings = this.props.settings.toJS();
+
+              settings.features!.metadataExtraction!.templates = newSettings;
+              this.props.saveSettings(settings);
+            }}
+            templates={this.props.templates.toJS()}
+            currentProperties={extractionSettings}
+          />
           <div className="metadata-extraction-table">
             <table className="table">
               <thead>
@@ -108,7 +135,7 @@ class MetadataExtractionComponent extends React.Component<
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(this.state.formattedData).map(([propIndex, data]) => (
+                {Object.entries(formattedData).map(([propIndex, data]) => (
                   <tr key={propIndex}>
                     <td>
                       <Icon icon={Icons[data.properties[0].type]} fixedWidth />
@@ -145,7 +172,8 @@ class MetadataExtractionComponent extends React.Component<
 
 export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
-  extractionSettings: Map<string, string | Array<string>>[];
+  settings: IImmutable<Settings>;
+  saveSettings: (settings: Settings) => void;
 }
 
 export interface FormattedSettingsData {
@@ -156,7 +184,13 @@ export interface FormattedSettingsData {
 }
 
 export interface MetadataExtractionDashboardStateTypes {
-  formattedData: FormattedSettingsData;
+  configurationModalIsOpen: boolean;
 }
 
-export const MetadataExtractionDashboard = connect(mapStateToProps)(MetadataExtractionComponent);
+export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators({ saveSettings: saveSettings }, dispatch);
+
+export const MetadataExtractionDashboard = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MetadataExtractionComponent);

@@ -7,6 +7,7 @@ import { prettifyError } from 'api/utils/handleError';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 type FileAttachments = {
   originalname: string;
@@ -108,18 +109,26 @@ const processAttachments = async (
   return attachments;
 };
 
+const bindAttachmentToMetadataProperty = (
+  _values: MetadataObjectSchema[],
+  attachments: FileType[]
+) => {
+  const values = _values;
+  if (_values[0].attachment !== undefined) {
+    values[0].value = attachments[_values[0].attachment]
+      ? `/api/files/${attachments[_values[0].attachment].filename}`
+      : '';
+  }
+  return values;
+};
+
 const handleAttachmentInMetadataProperties = (
   entity: EntityWithFilesSchema,
   attachments: FileType[]
 ) => {
   Object.entries(entity.metadata || {}).forEach(([_property, _values]) => {
     if (_values && _values.length) {
-      const values = _values;
-      if (_values[0].attachment !== undefined) {
-        values[0].value = attachments[_values[0].attachment]
-          ? `/api/files/${attachments[_values[0].attachment].filename}`
-          : '';
-      }
+      const values = bindAttachmentToMetadataProperty(_values, attachments);
       delete values[0].attachment;
     }
   });

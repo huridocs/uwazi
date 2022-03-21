@@ -2,8 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Markers } from 'app/Map';
 import Immutable from 'immutable';
-
-import { MapView, renderInfo } from '../MapView';
+import { MapViewComponent } from 'app/Library/components/MapView';
 
 describe('MapView', () => {
   let component;
@@ -58,7 +57,7 @@ describe('MapView', () => {
       selectDocuments: jasmine.createSpy('selectDocuments'),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
     };
-    component = shallow(<MapView {...props} />);
+    component = shallow(<MapViewComponent {...props} />);
     instance = component.instance();
   };
 
@@ -95,59 +94,6 @@ describe('MapView', () => {
       instance.clickOnCluster(cluster);
       expect(props.unselectAllDocuments).toHaveBeenCalled();
       expect(props.selectDocuments).toHaveBeenCalledWith([documents.rows[2], documents.rows[3]]);
-    });
-  });
-
-  describe('renderPopupInfo', () => {
-    it('should render the popup for simple geolocations', () => {
-      const marker = {
-        properties: {
-          entity: {
-            template: '5e0fdf2ad6ecbf60be14f094',
-            title: 'Uruguay',
-          },
-          info: '',
-        },
-        label: 'Geolocation',
-      };
-
-      const popup = renderInfo(marker);
-      expect(popup).toMatchSnapshot();
-    });
-
-    it('should render the popup for inherited geolocations', () => {
-      const marker = {
-        properties: {
-          entity: {
-            template: '5e0fde90d6ecbf60be14eca2',
-            title: 'Secure investigation and documentation',
-          },
-          info: 'should not show',
-          inherited: true,
-          label: 'Bolivia',
-        },
-        label: 'Country',
-      };
-
-      const popup = renderInfo(marker);
-      expect(popup).toMatchSnapshot();
-    });
-
-    it('should render the popup for non inherited geolocations with info', () => {
-      const marker = {
-        properties: {
-          entity: {
-            template: '5e0fde90d6ecbf60be14eca2',
-            title: 'Entity with info',
-          },
-          info: 'Info to Show',
-          inherited: false,
-        },
-        label: 'Entity',
-      };
-
-      const popup = renderInfo(marker);
-      expect(popup).toMatchSnapshot();
     });
   });
 });

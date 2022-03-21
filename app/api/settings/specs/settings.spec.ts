@@ -2,13 +2,14 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 import { Settings } from 'shared/types/settingsType';
-
+import { Suggestions } from 'api/suggestions/suggestions';
 import settings from '../settings';
 import fixtures from './fixtures.js';
 
 describe('settings', () => {
   beforeEach(done => {
     spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
+    spyOn(Suggestions, 'deleteByProperty').and.returnValue(Promise.resolve('ok'));
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -223,21 +224,6 @@ describe('settings', () => {
     it('should not return private values', async () => {
       const values = await settings.get();
       expect(values.publicFormDestination).not.toBeDefined();
-    });
-
-    it('should return default values', async () => {
-      const values = await settings.get();
-      expect(values.mapTilerKey).toEqual('QiI1BlAJNMmZagsX5qp7');
-    });
-
-    describe('if there is settings with no default mapTilerKey on the DB', () => {
-      it('should return the stored mapTilerKey', async () => {
-        const expectedKey = 'anotherKey';
-        const config = { mapTilerKey: expectedKey };
-        await settings.save(config);
-        const savedSettings = await settings.get();
-        expect(savedSettings.mapTilerKey).toBe(expectedKey);
-      });
     });
 
     describe('if there is settings with no map starting point on the DB', () => {

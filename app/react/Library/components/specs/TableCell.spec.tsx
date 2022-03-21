@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 
-import { I18NLink } from 'app/I18N';
 import { TableCell, TableCellProps } from 'app/Library/components/TableCell';
 import { shallow } from 'enzyme';
 import React from 'react';
 import MarkdownViewer from 'app/Markdown';
+import ValueList from 'app/Metadata/components/ValueList';
 
 describe('TableCell', () => {
   let component: any;
@@ -97,21 +97,24 @@ describe('TableCell', () => {
       ],
     };
     const cellContent = renderContent();
-    const links = cellContent.find(I18NLink);
-    expect(cellContent.text()).toBe('<Connect(I18NLink) />, <Connect(I18NLink) />');
-    expect(links.at(0).props().to).toBe('/entity/Entity1');
+
+    const firstLink = cellContent.find(ValueList).props().property.value[0].value;
+    const secondLink = cellContent.find(ValueList).props().property.value[1].value;
+    expect(firstLink.props.to).toEqual('/entity/Entity1');
+    expect(secondLink.props.to).toEqual('/entity/Entity2');
   });
 
   it('should render inherited properties', () => {
     props.content = {
       inheritedName: 'sexo',
+      inheritedType: 'select',
       label: 'Relationship',
       type: 'inherit',
       name: 'relationship',
       value: [{ label: 'Sexo', name: 'sexo', value: 'Mujer' }],
     };
     const cellContent = renderContent();
-    expect(cellContent.props().children).toEqual('Mujer');
+    expect(cellContent.find(ValueList).props().property.value).toEqual(props.content.value);
   });
 
   it('should render a geolocation as a compact view', () => {
@@ -120,9 +123,12 @@ describe('TableCell', () => {
       type: 'geolocation',
       name: 'geolocation',
       value: [{ lon: 2, lat: 46, value: null }],
+      onlyForCards: true,
     };
+
     const cellContent = renderContent();
     const geolocationProps = cellContent.props().children.props;
+
     expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46, value: null }]);
     expect(geolocationProps.onlyForCards).toBe(true);
   });

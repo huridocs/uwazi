@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXSuggestionsFilter } from 'shared/types/suggestionType';
@@ -103,6 +104,7 @@ export const Suggestions = {
             entityId: '$entity._id',
             sharedId: '$entity.sharedId',
             entityTitle: '$entity.title',
+            fileId: 1,
             language: 1,
             propertyName: 1,
             suggestedValue: 1,
@@ -110,6 +112,7 @@ export const Suggestions = {
             currentValue: 1,
             state: 1,
             page: 1,
+            date: 1,
           },
         },
       ],
@@ -158,5 +161,18 @@ export const Suggestions = {
   },
   deleteByEntityId: async (sharedId: string) => {
     await IXSuggestionsModel.delete({ entityId: sharedId });
+  },
+  deleteByProperty: async (propertyName: string, templateId: string) => {
+    const cursor = IXSuggestionsModel.db.find({ propertyName }).cursor();
+
+    for (let suggestion = await cursor.next(); suggestion; suggestion = await cursor.next()) {
+      const sharedId = suggestion.entityId;
+      // eslint-disable-next-line no-await-in-loop
+      const [entity] = await entities.getUnrestricted({ sharedId });
+      if (entity && entity.template?.toString() === templateId) {
+        // eslint-disable-next-line no-await-in-loop
+        await IXSuggestionsModel.delete({ _id: suggestion._id });
+      }
+    }
   },
 };

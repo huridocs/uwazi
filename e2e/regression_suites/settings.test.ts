@@ -37,7 +37,7 @@ describe('Settings', () => {
 
   it('should display Collection', async () => {
     await selectSettingsPage('Collection');
-    await page.waitForSelector('.mapboxgl-map');
+    await page.waitForSelector('.leafletmap');
     await testSelectorShot('div.collection-settings');
   });
 

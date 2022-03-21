@@ -50,7 +50,7 @@ const createDirIfNotExists = async (dirPath: string) => {
   }
 };
 
-const generateUploadsPath = async (subPath: string) => {
+const testingUploadPaths = async (subPath: string = '') => {
   if (subPath) {
     await createDirIfNotExists(`${__dirname}/specs/uploads/${subPath}`);
     await createDirIfNotExists(`${__dirname}/specs/customUploads/${subPath}`);
@@ -65,7 +65,7 @@ const generateUploadsPath = async (subPath: string) => {
 };
 
 const setupTestUploadedPaths = async (subFolder: string = '') => {
-  testingTenants.changeCurrentTenant(await generateUploadsPath(subFolder));
+  testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
 const deleteUploadedFiles = async (files: FileType[]) =>
@@ -159,6 +159,7 @@ export {
   activityLogPath,
   readFile,
   storeFile,
+  testingUploadPaths,
 };
 
 export type { FilePath, pathFunction };

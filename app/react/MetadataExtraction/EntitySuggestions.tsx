@@ -15,6 +15,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
+import { PDFSidePanel } from './PDFSidePanel';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -25,10 +26,12 @@ export const EntitySuggestions = ({
   property: reviewedProperty,
   acceptIXSuggestion,
 }: EntitySuggestionsProps) => {
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
+  const [sidePanelOpened, setSidePanelOpened] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState<EntitySuggestionType>();
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
     if (propertyName === reviewedProperty.name) {
@@ -45,20 +48,44 @@ export const EntitySuggestions = ({
     const suggestion = row.original;
     return (
       <div>
-        {suggestion.state !== SuggestionState.matching && (
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            onClick={async () => showConfirmationModal(row)}
-          >
-            <Icon icon="check" />
-            &nbsp;
-            <Translate>Accept</Translate>
-          </button>
-        )}
+        <button
+          type="button"
+          aria-label="Accept suggestion"
+          className={
+            suggestion.state === SuggestionState.matching
+              ? 'btn btn-success'
+              : 'btn btn-outline-primary'
+          }
+          disabled={suggestion.state === SuggestionState.matching}
+          onClick={async () => showConfirmationModal(row)}
+        >
+          <Icon icon="arrow-right" />
+        </button>
       </div>
     );
   };
+
+  const showPDF = (row: Row<EntitySuggestionType>) => {
+    setSelectedRowData(row.original);
+    setSidePanelOpened(true);
+  };
+
+  const closePDFSidePanel = () => {
+    setSidePanelOpened(false);
+  };
+
+  const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
+    <div onClick={() => showPDF(row)}>
+      {row.original.segment && (
+        <>
+          <span className="segment-pdf">
+            <Translate>PDF</Translate>
+          </span>
+          {row.original.segment}
+        </>
+      )}
+    </div>
+  );
 
   const {
     getTableProps,
@@ -70,7 +97,7 @@ export const EntitySuggestions = ({
     setPageSize,
     selectedFlatRows,
     state: { pageIndex, pageSize, filters },
-  } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell);
+  } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
   const retrieveSuggestions = () => {
     const queryFilter = filters.reduce(
@@ -97,6 +124,11 @@ export const EntitySuggestions = ({
       selectedFlatRows[0].toggleRowSelected();
       retrieveSuggestions();
     }
+  };
+
+  const handlePDFSidePanelSave = () => {
+    setSidePanelOpened(false);
+    retrieveSuggestions();
   };
 
   const _trainModel = async () => {
@@ -135,68 +167,84 @@ export const EntitySuggestions = ({
   };
 
   return (
-    <div className="panel entity-suggestions">
-      <div className="panel-subheading">
-        <div>
-          <span className="suggestion-header">
-            <Translate>Reviewing</Translate>:&nbsp;
-          </span>
-
-          <span className="suggestion-property">
-            <Translate>{reviewedProperty.label}</Translate>
-          </span>
+    <>
+      <div className="panel entity-suggestions">
+        <div className="dashboard-link">
+          <I18NLink to="settings/metadata_extraction">
+            <Icon icon="arrow-left" />
+            <Translate>Back to dashboard</Translate>
+          </I18NLink>
         </div>
-        <button
-          type="button"
-          className={`btn service-request-button ${status}`}
-          onClick={_trainModel}
-        >
-          <Translate>{ixmessages[status]}</Translate>
-        </button>
-        <I18NLink to="settings/metadata_extraction" className="btn btn-outline-primary">
-          <Translate>Dashboard</Translate>
-        </I18NLink>
-      </div>
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => {
-                const className =
-                  column.className + (filters.find(f => f.id === column.id) ? ' filtered' : '');
-                return (
-                  <th {...column.getHeaderProps({ className })}>
-                    <>
-                      {column.render('Header')}
-                      {column.canFilter && column.Filter && column.render('Filter')}
-                    </>
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map((row: Row<EntitySuggestionType>) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
-                  <td {...cell.getCellProps({ className: cell.column.className })}>
-                    {cell.render('Cell')}
-                  </td>
-                ))}
+        <div className="panel-subheading">
+          <div>
+            <span className="suggestion-header">
+              <Translate>Reviewing</Translate>:&nbsp;
+            </span>
+            <span className="suggestion-property">
+              <Translate>{reviewedProperty.label}</Translate>
+            </span>
+          </div>
+          <button
+            type="button"
+            className={`btn service-request-button ${status}`}
+            onClick={_trainModel}
+          >
+            <Translate>{ixmessages[status]}</Translate>
+          </button>
+        </div>
+        <table {...getTableProps()}>
+          <thead>
+            {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => {
+                  const className =
+                    column.className + (filters.find(f => f.id === column.id) ? ' filtered' : '');
+                  return (
+                    <th {...column.getHeaderProps({ className })}>
+                      <>
+                        {column.render('Header')}
+                        {column.canFilter && column.Filter && column.render('Filter')}
+                      </>
+                    </th>
+                  );
+                })}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <Pagination onPageChange={gotoPage} onPageSizeChange={setPageSize} totalPages={totalPages} />
-      <SuggestionAcceptanceModal
-        isOpen={acceptingSuggestion}
-        onClose={() => setAcceptingSuggestion(false)}
-        onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
-      />
-    </div>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {page.map((row: Row<EntitySuggestionType>) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map(cell => (
+                    <td {...cell.getCellProps({ className: cell.column.className })}>
+                      {cell.render('Cell')}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <Pagination
+          onPageChange={gotoPage}
+          onPageSizeChange={setPageSize}
+          totalPages={totalPages}
+        />
+        <SuggestionAcceptanceModal
+          isOpen={acceptingSuggestion}
+          onClose={() => setAcceptingSuggestion(false)}
+          onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
+        />
+      </div>
+      {selectedRowData && (
+        <PDFSidePanel
+          open={sidePanelOpened}
+          closeSidePanel={closePDFSidePanel}
+          handleSave={handlePDFSidePanelSave}
+          entitySuggestion={selectedRowData}
+        />
+      )}
+    </>
   );
 };

@@ -48,6 +48,12 @@ export default {
     {
       _id: db.id(),
       site_name: 'Uwazi',
+      evidencesVault: [
+        {
+          token: 'auth_token',
+          template: templateId.toString(),
+        },
+      ],
       languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],

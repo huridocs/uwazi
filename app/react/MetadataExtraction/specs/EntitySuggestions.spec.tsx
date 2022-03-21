@@ -51,10 +51,11 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(firstRow).toEqual([
-          'Other titleEntity title1SuggestionOlowo Kamali',
+          'SuggestionOlowo Kamali',
           '',
+          'Other titleEntity title1',
           'Entity title1',
-          'Olowo Kamali Case',
+          'PDFOlowo Kamali Case',
           'English',
           'Matching',
         ]);
@@ -62,10 +63,11 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(secondRow).toEqual([
-          'Other title-SuggestionViolación caso 1',
-          ' Accept',
+          'SuggestionViolación caso 1',
+          '',
+          'Other title-',
           'Título entidad',
-          'Detalle Violación caso 1',
+          'PDFDetalle Violación caso 1',
           'Spanish',
           'Empty',
         ]);
@@ -84,7 +86,7 @@ describe('EntitySuggestions', () => {
           const suggestionHeaders = screen
             .getAllByRole('columnheader')
             .map(header => header.textContent);
-          expect(suggestionHeaders).toContain('Title / Suggestion');
+          expect(suggestionHeaders).toContain('Suggestion');
           expect(suggestionHeaders).not.toContain('Title');
         });
       });
@@ -104,7 +106,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { propertyName: 'other_title' },
-          page: { size: 5, number: 4 },
+          page: { size: 100, number: 4 },
         },
         headers: {},
       });
@@ -112,12 +114,12 @@ describe('EntitySuggestions', () => {
 
     it('should retrieve suggestions data when pageSize changed', async () => {
       await act(async () => {
-        fireEvent.change(screen.getAllByText('5 per page')[0].parentElement!, {
-          target: { value: 10 },
+        fireEvent.change(screen.getAllByText('100 per page')[0].parentElement!, {
+          target: { value: 300 },
         });
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: { filter: { propertyName: 'other_title' }, page: { size: 10, number: 1 } },
+        data: { filter: { propertyName: 'other_title' }, page: { size: 300, number: 1 } },
         headers: {},
       });
     });
@@ -138,7 +140,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { state: 'Empty', propertyName: 'other_title' },
-          page: { size: 5, number: 1 },
+          page: { size: 100, number: 1 },
         },
         headers: {},
       });
@@ -168,15 +170,18 @@ describe('EntitySuggestions', () => {
         .map(cell => cell.textContent);
       expect(firstRow).toContain(expectedSuggestionCell);
     };
-    it('should format the current value and suggestion value from a date property', async () => {
-      await renderAndCheckSuggestion(dateSuggestion, 'FechaApr 2, 2020SuggestionApr 2, 2020');
+    it('should format the current value from a date property', async () => {
+      await renderAndCheckSuggestion(dateSuggestion, 'FechaApr 2, 2020');
+    });
+    it('should format the suggestion value from a date property', async () => {
+      await renderAndCheckSuggestion(dateSuggestion, 'SuggestionApr 2, 2020');
     });
 
     it('should should not format is suggestion is a not valid date', async () => {
       const invalidSuggestion = { ...dateSuggestion };
       // @ts-ignore
       invalidSuggestion.suggestedValue = 'no date';
-      await renderAndCheckSuggestion(invalidSuggestion, 'FechaApr 2, 2020Suggestionno date');
+      await renderAndCheckSuggestion(invalidSuggestion, 'Suggestionno date');
     });
   });
 
@@ -200,7 +205,7 @@ describe('EntitySuggestions', () => {
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
           filter: { propertyName: 'other_title' },
-          page: { size: 5, number: 1 },
+          page: { size: 100, number: 1 },
         },
         headers: {},
       });
@@ -214,7 +219,7 @@ describe('EntitySuggestions', () => {
       await act(async () => renderComponent());
 
       const rows = screen.getAllByRole('row');
-      const acceptButton = within(rows[2]).getByText('Accept').parentElement!;
+      const acceptButton = within(rows[2]).getByLabelText('Accept suggestion');
       await act(async () => {
         fireEvent.click(acceptButton);
       });
@@ -241,7 +246,7 @@ describe('EntitySuggestions', () => {
       expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], false);
     });
     it('should not accept a suggestion in confirmation is cancelled', async () => {
-      const cancelButton = screen.getByText('Cancel').parentElement!;
+      const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
       await act(async () => {
         fireEvent.click(cancelButton);
       });

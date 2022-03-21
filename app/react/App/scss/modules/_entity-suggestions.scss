@@ -24,16 +24,32 @@
 }
 
 .entity-suggestions {
+  .dashboard-link {
+    a {
+      text-decoration: unset;
+      color: $c-grey-dark;
+      span {
+        padding: 0 0 0 5px;
+      }
+    }
+    margin-bottom: 10px;
+  }
+
   .panel-subheading {
-    font-size: $f-size-lg;
+    font-size: $f-size-xl;
+    justify-content: flex-start;
+    position: relative;
+    align-items: center;
+
+    button {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 
   .suggestion-header {
     color: $c-grey-dark;
-  }
-
-  .suggestion-property {
-    font-family: $f-special;
   }
 
   table {
@@ -50,38 +66,36 @@
 
   tr {
     display: flex;
-
-    &:nth-child(even) > td {
-      background-color: #f5f5f5;
-    }
-
-    &:nth-child(odd) > td {
-      background-color: $c-white;
-    }
   }
 
   th {
     display: flex;
     align-items: center;
+    background-color: #f5f5f5;
   }
 
   th,
   td {
-    width: 6%;
     min-width: 70px;
     display: flex;
     align-content: center;
     padding: 2px;
 
+    &.current {
+      width: 20%;
+      text-overflow: fade;
+      min-width: 150px;
+    }
+
     &.suggestion {
-      width: 30%;
+      width: 20%;
       text-overflow: fade;
       min-width: 150px;
     }
 
     &.action {
-      min-width: 90px;
       padding-left: 5px;
+      align-items: center;
     }
 
     &.title {
@@ -94,11 +108,13 @@
       width: 40%;
       min-width: 100px;
       max-width: 375px;
+      cursor: pointer;
     }
 
     &.long-segment {
       width: 55%;
       max-width: 475px;
+      cursor: pointer;
     }
 
     &.state {
@@ -106,11 +122,18 @@
     }
   }
 
+  .segment-pdf {
+    margin-right: 5px;
+    border: 1px solid $c-grey-light;
+    border-radius: 5px;
+    padding: 0 3px;
+  }
+
   th {
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
     height: 30px;
     padding: 8px;
-    border-bottom: 2px solid $c-grey;
+    border-bottom: 1px solid $c-grey;
 
     &.state {
       width: 7%;
@@ -145,12 +168,16 @@
     border-left: 2px solid #e0e0e0;
 
     button {
-      background: $c-white;
       font-size: $f-size-sm;
     }
 
+    &.current,
+    &.action,
     &.suggestion {
       border-left: 0;
+    }
+
+    &.suggestion {
       display: flex;
       flex-direction: column;
       position: relative;

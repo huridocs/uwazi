@@ -1,9 +1,29 @@
 import { Dispatch } from 'redux';
 import { IStore } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
-import { acceptEntitySuggestion } from 'app/MetadataExtraction/SuggestionsAPI';
-import { RequestParams } from 'app/utils/RequestParams';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { RequestParams } from 'app/utils/RequestParams';
+import api from 'app/utils/api';
+import { acceptEntitySuggestion } from 'app/MetadataExtraction/SuggestionsAPI';
+import EntitiesAPI from 'app/Entities/EntitiesAPI';
+import scroller from 'app/Viewer/utils/Scroller';
+
+const fetchEntity = async (entitySharedId: string) => {
+  const entityRequest = new RequestParams({ sharedId: entitySharedId });
+  return EntitiesAPI.get(entityRequest);
+};
+
+const fetchFile = async (fileId: string) => {
+  const fileRequest = new RequestParams({ _id: fileId });
+  return api.get('files', fileRequest);
+};
+
+const scrollToPage = async (pageNumber: number) =>
+  scroller.to(`.document-viewer div#page-${pageNumber}`, '.document-viewer', {
+    duration: 0,
+    dividerOffset: 1,
+    offset: 50,
+  });
 
 const acceptSuggestion =
   (suggestion: EntitySuggestionType, allLanguages: boolean) =>
@@ -22,4 +42,4 @@ const acceptSuggestion =
     }
   };
 
-export { acceptSuggestion };
+export { acceptSuggestion, fetchEntity, fetchFile, scrollToPage };
