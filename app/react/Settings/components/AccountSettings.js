@@ -92,7 +92,7 @@ export class AccountSettings extends Component {
 
   render() {
     const { email, password, repeatPassword, passwordError, using2fa } = this.state;
-
+    const { username, groups, role } = this.props.user;
     return (
       <div className="account-settings">
         <div className="panel panel-default">
@@ -100,6 +100,19 @@ export class AccountSettings extends Component {
             <Translate>Account</Translate>
           </div>
           <div className="panel-body">
+            <h5>
+              <Translate>Username:</Translate>
+            </h5>
+            {username}
+            <h5>
+              <Translate>Role:</Translate>
+            </h5>
+            {role}
+            <h5>
+              <Translate>Groups:</Translate>
+            </h5>
+            {groups.map(g => g.name).join(', ')}
+            <hr />
             <h5>
               <Translate>Email address</Translate>
             </h5>
