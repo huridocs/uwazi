@@ -10,7 +10,9 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { t, I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { createSelector } from 'reselect';
+import { Pill } from 'app/Metadata/components/Pill';
 
+// eslint-disable-next-line import/exports-last
 export class AccountSettings extends Component {
   constructor(props, context) {
     super(props, context);
@@ -100,18 +102,22 @@ export class AccountSettings extends Component {
             <Translate>Account</Translate>
           </div>
           <div className="panel-body">
-            <h5>
-              <Translate>Username:</Translate>
-            </h5>
-            {username}
-            <h5>
-              <Translate>Role:</Translate>
-            </h5>
-            {role}
-            <h5>
-              <Translate>Groups:</Translate>
-            </h5>
-            {groups.map(g => g.name).join(', ')}
+            <div className="user-details">
+              <div>
+                <Translate>Username:</Translate>&nbsp;&nbsp;
+                <strong>{username}</strong>
+              </div>
+              <div className="user-details-role">
+                <Translate>Role:</Translate>&nbsp;&nbsp;
+                <Pill>{role}</Pill>
+              </div>
+              <div>
+                <Translate>Groups:</Translate>&nbsp;&nbsp;
+                {groups.map(g => (
+                  <Pill>{g.name}</Pill>
+                ))}
+              </div>
+            </div>
             <hr />
             <h5>
               <Translate>Email address</Translate>
