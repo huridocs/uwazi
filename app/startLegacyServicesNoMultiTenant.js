@@ -11,7 +11,12 @@ async function startLegacyServicesNoMultiTenant() {
   }
 
   syncWorker.start();
-  const { features } = await settings.get();
+  const { evidencesVault, features } = await settings.get();
+  if (evidencesVault) {
+    console.info('==> 📥  evidences vault config detected, started sync ....');
+    const vaultSyncRepeater = new Repeater(() => vaultSync.sync(evidencesVault), 10000);
+    vaultSyncRepeater.start();
+  }
   if (features && features.tocGeneration && features.tocGeneration.url) {
     console.info('==> 🗂️ automatically generating TOCs using external service');
     const service = tocService(features.tocGeneration.url);
