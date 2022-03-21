@@ -104,15 +104,15 @@ export class AccountSettings extends Component {
           <div className="panel-body">
             <div className="user-details">
               <div>
-                <Translate>Username:</Translate>&nbsp;&nbsp;
+                <Translate>Username</Translate>:&nbsp;&nbsp;
                 <strong>{username}</strong>
               </div>
               <div className="user-details-role">
-                <Translate>Role:</Translate>&nbsp;&nbsp;
+                <Translate>Role</Translate>:&nbsp;&nbsp;
                 <Pill>{role}</Pill>
               </div>
               <div>
-                <Translate>Groups:</Translate>&nbsp;&nbsp;
+                <Translate>Groups</Translate>:&nbsp;&nbsp;
                 {groups.map(g => (
                   <Pill>{g.name}</Pill>
                 ))}
