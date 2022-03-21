@@ -1,4 +1,4 @@
-const objectPath = (path, object) =>
+export const objectPath = (path, object) =>
   path.split('.').reduce((o, key) => {
     if (!o || !key) {
       return o;
@@ -6,12 +6,10 @@ const objectPath = (path, object) =>
     return o.toJS ? o.get(key) : o[key];
   }, object);
 
-const logError = (err, propValueOf, propLabelOf) => {
+export const logError = (err, propValueOf, propLabelOf) => {
   /* eslint-disable no-console */
   console.error('Error on EntityData: ');
   console.error('value-of: ', propValueOf, '; label-of: ', propLabelOf);
   console.error(err);
   /* eslint-enable no-console */
 };
-
-export { logError, objectPath };
