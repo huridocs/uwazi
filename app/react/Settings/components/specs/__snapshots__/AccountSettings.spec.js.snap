@@ -17,6 +17,33 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
     <div
       className="panel-body"
     >
+      <div
+        className="user-details"
+      >
+        <div>
+          <Connect(Translate)>
+            Username
+          </Connect(Translate)>
+          :  
+          <strong />
+        </div>
+        <div
+          className="user-details-role"
+        >
+          <Connect(Translate)>
+            Role
+          </Connect(Translate)>
+          :  
+          <Pill />
+        </div>
+        <div>
+          <Connect(Translate)>
+            Groups
+          </Connect(Translate)>
+          :  
+        </div>
+      </div>
+      <hr />
       <h5>
         <Connect(Translate)>
           Email address
@@ -170,6 +197,33 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
     <div
       className="panel-body"
     >
+      <div
+        className="user-details"
+      >
+        <div>
+          <Connect(Translate)>
+            Username
+          </Connect(Translate)>
+          :  
+          <strong />
+        </div>
+        <div
+          className="user-details-role"
+        >
+          <Connect(Translate)>
+            Role
+          </Connect(Translate)>
+          :  
+          <Pill />
+        </div>
+        <div>
+          <Connect(Translate)>
+            Groups
+          </Connect(Translate)>
+          :  
+        </div>
+      </div>
+      <hr />
       <h5>
         <Connect(Translate)>
           Email address
