@@ -10,7 +10,7 @@ import { uploadsPath, attachmentsPath, storeFile } from 'api/files/filesystem';
 import cors from 'cors';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
-import { captchaAuthorization } from '../auth';
+import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 
 import { uploadMiddleware } from './uploadMiddleware';
 
@@ -27,7 +27,7 @@ const routes = app => {
     '/api/public',
     cors(corsOptions),
     uploadMiddleware.multiple(),
-    captchaAuthorization(),
+    publicAPIMiddleware,
     activitylogMiddleware,
     (req, _res, next) => {
       try {
