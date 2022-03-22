@@ -5,14 +5,13 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions, ModelAction } from 'react-redux-form';
 import { get } from 'lodash';
-import filesize from 'filesize';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { RenderAttachment } from 'app/Attachments';
-import { ClientEntitySchema, ClientFile, IStore } from 'app/istore';
+import { ClientEntitySchema, IStore } from 'app/istore';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
+import { MediaModalFilelist } from './MediaModalFilelist';
 
 enum MediaModalType {
   Image,
@@ -33,7 +32,6 @@ interface MediaModalProps {
   entity: ClientEntitySchema;
   formModel: string;
   formField: string;
-  localAttachments?: ClientFile[];
   type?: MediaModalType;
   localAttachmentAction?: (
     entitySharedId: string,
@@ -48,7 +46,6 @@ interface MediaModalProps {
 const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
   const model = ownProps.formModel;
   return {
-    localAttachments: get(state, `${model}.attachments`),
     entity: get(state, model),
   };
 };
@@ -73,7 +70,6 @@ const MediaModalComponent = ({
   entity,
   formModel,
   formField,
-  localAttachments = [],
   type,
   localAttachmentAction,
   rrfChange,
@@ -127,7 +123,7 @@ const MediaModalComponent = ({
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && localAttachmentAction) {
       localAttachmentAction(entity.id || 'NEW_ENTITY', event.target.files[0], 'library', formModel);
-      rrfChange(formField, localAttachments?.length);
+      rrfChange(formField, entity.attachments?.length);
       onClose();
     }
   };
@@ -177,42 +173,11 @@ const MediaModalComponent = ({
                 !filteredAttachments.length ? 'centered' : ''
               }`}
             >
-              {filteredAttachments.length > 0 ? (
-                <div className="media-grid container">
-                  <div className="row">
-                    {filteredAttachments.map(attachment => {
-                      const attachmentUrl = attachment.url || `/api/files/${attachment.filename}`;
-                      return (
-                        <div
-                          className="media-grid-item"
-                          key={`attachment_${attachment._id}`}
-                          onClick={handleAttachmentClick(attachmentUrl)}
-                        >
-                          <div
-                            className={`${'media-grid-card'} ${
-                              attachmentUrl === selectedUrl ? 'active' : ''
-                            }`}
-                          >
-                            <div className="media-grid-card-header">
-                              <h5>{attachment.originalname}</h5>
-                              {!!attachment.size && <span>{filesize(attachment.size)}</span>}
-                            </div>
-                            <div className="media-grid-card-content">
-                              <div className="media">
-                                <RenderAttachment attachment={attachment} />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <h4 className="empty-attachments-message">
-                  <Translate>No attachments</Translate>
-                </h4>
-              )}
+              <MediaModalFilelist
+                filteredAttachments={filteredAttachments}
+                handleAttachmentClick={handleAttachmentClick}
+                selectedUrl={selectedUrl || ''}
+              />
             </TabContent>
             <TabContent
               for={MediaModalTab.AddNewFile}
