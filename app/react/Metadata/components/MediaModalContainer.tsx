@@ -12,6 +12,7 @@ type MediaModalContainerProps = MediaModalProps & {
 
 const mapStateToProps = (state: IStore) => ({
   localAttachments: state.library.sidepanel.metadata.attachments,
+  entity: state.library.sidepanel.metadata,
 });
 
 const mapDispatchToProps = (dispatch: any) =>

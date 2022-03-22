@@ -7,7 +7,7 @@ import filesize from 'filesize';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments';
-import { ClientFile } from 'app/istore';
+import { ClientEntitySchema, ClientFile } from 'app/istore';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 
@@ -25,9 +25,10 @@ interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
-  localAttachments?: ClientFile[];
   onChange: (id: any) => void;
   selectedUrl: string | null;
+  entity: ClientEntitySchema;
+  localAttachments?: ClientFile[];
   type?: MediaModalType;
   uploadLocalAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
   change?: any;
@@ -39,6 +40,7 @@ const MediaModalComponent = ({
   attachments = [],
   onChange,
   selectedUrl,
+  entity,
   type,
   localAttachments = [],
   uploadLocalAttachment,
@@ -93,7 +95,7 @@ const MediaModalComponent = ({
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && uploadLocalAttachment) {
       uploadLocalAttachment(
-        '60m1d9wm8t7',
+        entity.id || 'NEW_ENTITY',
         event.target.files[0],
         'library',
         'library.sidepanel.metadata'
