@@ -34,7 +34,7 @@ import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
 
-export const translateOptions = thesauri =>
+const translateOptions = thesauri =>
   thesauri
     .get('values')
     .map(optionIm => {
@@ -75,7 +75,7 @@ const groupSameRelationshipFields = fields =>
     })
     .filter(f => f);
 
-export class MetadataFormFields extends Component {
+class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
@@ -175,12 +175,18 @@ export class MetadataFormFields extends Component {
         return <LinkField model={_model} />;
       case 'media':
         return (
-          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Media} />
+          <MediaField
+            model={_model}
+            formModel={formModel}
+            attachments={plainAttachments}
+            type={MediaModalType.Media}
+          />
         );
       case 'image':
         return (
           <MediaField
             model={_model}
+            formModel={formModel}
             attachments={plainAttachments}
             localAttachments={plainLocalAttachments}
             type={MediaModalType.Image}
@@ -389,4 +395,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({ change: formActions.change }, dispatch);
 };
 
+export { MetadataFormFields, translateOptions };
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);

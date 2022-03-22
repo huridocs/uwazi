@@ -12,10 +12,20 @@ import { MediaModal } from 'app/Metadata/components/MediaModalContainer';
 type MediaFieldProps = MediaModalProps & {
   value: string | null;
   localAttachments: ClientFile[];
+  formModel: string;
+  name: string;
 };
 
 const MediaField = (props: MediaFieldProps) => {
-  const { attachments = [], value, onChange, type, localAttachments = [] } = props;
+  const {
+    attachments = [],
+    value,
+    onChange,
+    type,
+    localAttachments = [],
+    formModel,
+    name: formField,
+  } = props;
   const [openModal, setOpenModal] = useState(false);
 
   const handleCloseMediaModal = () => {
@@ -59,6 +69,8 @@ const MediaField = (props: MediaFieldProps) => {
         selectedUrl={value}
         attachments={attachments}
         type={type}
+        formModel={formModel}
+        formField={formField}
       />
     </div>
   );

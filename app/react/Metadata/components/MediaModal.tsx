@@ -28,6 +28,8 @@ interface MediaModalProps {
   onChange: (id: any) => void;
   selectedUrl: string | null;
   entity: ClientEntitySchema;
+  formModel: string;
+  formField: string;
   localAttachments?: ClientFile[];
   type?: MediaModalType;
   uploadLocalAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
@@ -41,8 +43,10 @@ const MediaModalComponent = ({
   onChange,
   selectedUrl,
   entity,
-  type,
+  formModel,
+  formField,
   localAttachments = [],
+  type,
   uploadLocalAttachment,
   change,
 }: MediaModalProps) => {
@@ -94,13 +98,8 @@ const MediaModalComponent = ({
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && uploadLocalAttachment) {
-      uploadLocalAttachment(
-        entity.id || 'NEW_ENTITY',
-        event.target.files[0],
-        'library',
-        'library.sidepanel.metadata'
-      );
-      change('library.sidepanel.metadata.metadata.image', localAttachments?.length);
+      uploadLocalAttachment(entity.id || 'NEW_ENTITY', event.target.files[0], 'library', formModel);
+      change(formField, localAttachments?.length);
       onClose();
     }
   };
