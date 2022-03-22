@@ -43,7 +43,7 @@ export const AttachmentsModalCmp = ({
     if (event.target.files) {
       await Promise.all(
         [...event.target.files].map(file =>
-          uploadAttachmentProp(entitySharedId, file, storeKey, model)
+          uploadAttachmentProp(entitySharedId, file, { __reducerKey: storeKey, model })
         )
       );
     }
@@ -51,12 +51,14 @@ export const AttachmentsModalCmp = ({
 
   const handleDropFiles = async (accepted: File[]) => {
     await Promise.all(
-      accepted.map(file => uploadAttachmentProp(entitySharedId, file, storeKey, model))
+      accepted.map(file =>
+        uploadAttachmentProp(entitySharedId, file, { __reducerKey: storeKey, model })
+      )
     );
   };
 
   const handleSubmitUrlForm = (formModelData: { url: string; name: string }) => {
-    uploadAttachmentFromUrlProp(entitySharedId, formModelData, storeKey, model);
+    uploadAttachmentFromUrlProp(entitySharedId, formModelData, { __reducerKey: storeKey, model });
     formDispatch(formActions.reset('urlForm'));
   };
 

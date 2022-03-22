@@ -343,6 +343,7 @@ MetadataFormFields.defaultProps = {
   entityThesauris: Immutable.fromJS({}),
   attachments: Immutable.fromJS([]),
   highlightedProps: [],
+  localAttachments: [],
 };
 
 MetadataFormFields.propTypes = {
@@ -357,6 +358,7 @@ MetadataFormFields.propTypes = {
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   attachments: PropTypes.instanceOf(Immutable.List),
+  localAttachments: PropTypes.arrayOf(PropTypes.instanceOf(Object)),
   change: PropTypes.func.isRequired,
 };
 

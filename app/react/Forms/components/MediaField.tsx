@@ -8,7 +8,7 @@ import { constructFile } from 'app/Library/actions/saveEntityWithFiles';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | null;
-  localAttachments: ClientFile[];
+  localAttachments: (ClientFile & { fileLocalID: string })[];
   formModel: string;
   name: string;
 };
@@ -33,10 +33,14 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(null);
   };
 
-  const supportingFile = localAttachments.find(file => file.supportingFileId === value);
-  const imageUrl =
-    value && supportingFile ? URL.createObjectURL(constructFile(supportingFile)) : value;
-
+  let imageUrl;
+  const isUploadId = value && /^[a-zA-Z\d_]*$/.test(value);
+  if (isUploadId) {
+    const supportingFile = localAttachments.find(file => file.fileLocalID === value);
+    imageUrl = supportingFile ? URL.createObjectURL(constructFile(supportingFile)) : null;
+  } else {
+    imageUrl = value;
+  }
   return (
     <div className="search__filter--selected__media">
       {imageUrl &&

@@ -33,12 +33,6 @@ interface MediaModalProps {
   formModel: string;
   formField: string;
   type?: MediaModalType;
-  localAttachmentAction?: (
-    entitySharedId: string,
-    file: File,
-    __reducerKey: string,
-    model: string
-  ) => (dispatch: Dispatch<{}>) => Promise<any>;
   value?: string | null;
 }
 
@@ -122,13 +116,12 @@ const MediaModalComponent = ({
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && localAttachmentAction) {
       const fileLocalID = uniqueID();
-      localAttachmentAction(
-        entity.sharedId || 'NEW_ENTITY',
-        event.target.files[0],
-        'library',
-        formModel,
-        fileLocalID
-      );
+
+      localAttachmentAction(entity.sharedId || 'NEW_ENTITY', event.target.files[0], {
+        __reducerKey: 'library',
+        model: formModel,
+        fileLocalID,
+      });
       rrfChange(formField, fileLocalID);
       onClose();
     }

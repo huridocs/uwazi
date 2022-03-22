@@ -22,8 +22,7 @@ describe('upload supporting files', () => {
       const action = uploadLocalAttachmentFromUrl(
         'entitySharedId',
         { url: 'https://test.com', name: 'myURL' },
-        'reducerKey',
-        'metadata.model'
+        { __reducerKey: 'reducerKey', model: 'metadata.model' }
       );
       action(dispatch);
       expect(formActions.push).toHaveBeenCalledWith('metadata.model.attachments', {
@@ -36,7 +35,10 @@ describe('upload supporting files', () => {
 
   describe('uploadLocalAttachment', () => {
     it('should dispatch the action to update the form', async () => {
-      const action = uploadLocalAttachment('entitySharedId', file, 'reducerKey', 'metadata.model');
+      const action = uploadLocalAttachment('entitySharedId', file, {
+        __reducerKey: 'reducerKey',
+        model: 'metadata.model',
+      });
       await action(dispatch);
       expect(formActions.push).toHaveBeenCalledWith('metadata.model.attachments', {
         entity: 'entitySharedId',
