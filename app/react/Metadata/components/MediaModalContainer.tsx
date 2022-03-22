@@ -1,6 +1,7 @@
 import { IStore } from 'app/istore';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { get } from 'lodash';
 import { MediaModalComponent, MediaModalProps } from 'app/Metadata/components/MediaModal';
 import React from 'react';
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
@@ -10,10 +11,13 @@ type MediaModalContainerProps = MediaModalProps & {
   value?: string | null;
 };
 
-const mapStateToProps = (state: IStore) => ({
-  localAttachments: state.library.sidepanel.metadata.attachments,
-  entity: state.library.sidepanel.metadata,
-});
+const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
+  const model = ownProps.formModel;
+  return {
+    localAttachments: get(state, `${model}.attachments`),
+    entity: get(state, model),
+  };
+};
 
 const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators({ uploadLocalAttachment, change: formActions.change }, dispatch);
