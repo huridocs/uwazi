@@ -7,7 +7,7 @@ import { actions as formActions, ModelAction } from 'react-redux-form';
 import { get } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { ClientEntitySchema, IStore } from 'app/istore';
+import { IStore } from 'app/istore';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
@@ -29,7 +29,6 @@ interface MediaModalProps {
   attachments: AttachmentSchema[];
   onChange: (id: any) => void;
   selectedUrl: string | null;
-  entity: ClientEntitySchema;
   formModel: string;
   formField: string;
   type?: MediaModalType;
@@ -122,7 +121,12 @@ const MediaModalComponent = ({
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && localAttachmentAction) {
-      localAttachmentAction(entity.id || 'NEW_ENTITY', event.target.files[0], 'library', formModel);
+      localAttachmentAction(
+        entity.sharedId || 'NEW_ENTITY',
+        event.target.files[0],
+        'library',
+        formModel
+      );
       rrfChange(formField, entity.attachments?.length);
       onClose();
     }
