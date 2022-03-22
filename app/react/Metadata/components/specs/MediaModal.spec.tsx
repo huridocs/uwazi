@@ -1,38 +1,44 @@
-import React from 'react';
-import thunk from 'redux-thunk';
-import { shallow, ShallowWrapper } from 'enzyme';
+/**
+ * @jest-environment jsdom
+ */
+import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
-import configureMockStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
-
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
-
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
-import { MediaModalComponent as MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
+import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({});
+const store = {
+  library: {
+    sidepanel: {
+      metadata: {
+        _id: '1',
+        sharedId: 'entity1',
+        attachments: [],
+      },
+    },
+  },
+};
 
 describe('Media Modal', () => {
-  let component: ShallowWrapper;
+  let component: ReactWrapper;
   let props: MediaModalProps;
 
   beforeEach(() => {
     props = {
       onClose: jasmine.createSpy('onClose'),
       onChange: jasmine.createSpy('onChange'),
+      rrfChange: jasmine.createSpy('rrfChange'),
       isOpen: true,
-      attachments: [],
       selectedUrl: null,
+      attachments: [],
+      formModel: 'library.sidepanel.metadata',
+      formField: 'library.sidepanel.metadata.metadata.image',
     };
   });
 
   const render = (otherProps = {}) => {
-    component = shallow(
-      <Provider store={store}>
-        <MediaModal {...props} {...otherProps} />
-      </Provider>
-    ).dive();
+    component = renderConnectedMount(MediaModal, store, { ...props, ...otherProps }, true);
   };
 
   it('Should pass isOpen props to Media modal.', () => {
@@ -120,7 +126,7 @@ describe('Media Modal', () => {
     render();
 
     const testAttachment = 'http://test.test/test.jpg';
-    component.find('.modal-tab-2').simulate('click');
+    component.find('.modal-tab-2').at(0).simulate('click');
 
     const form = component.find(WebMediaResourceForm).at(0);
     const formData = { url: testAttachment };
@@ -131,17 +137,18 @@ describe('Media Modal', () => {
 
   describe('Upload file', () => {
     it('Should upload and select a new file', () => {
-      const supportingFile: Partial<File>[] = [
-        { name: 'image.jpeg', size: 5287, type: 'image/jpeg', lastModified: 1633374386437 },
-      ];
+      const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
+        type: 'image/jpg',
+      });
       render();
-      component.find('.btn-success').simulate('click');
+      component.find('.modal-tab-2').at(0).simulate('click');
       component.find('input[type="file"]').simulate('change', {
         target: {
-          files: [supportingFile],
+          files: [newFile],
         },
       });
-      expect(props.onChange).toHaveBeenCalledWith({ value: '', attachment: 0 });
+      // expect(localAttachmentAction).toHaveBeenCalledWith('');
+      expect(props.rrfChange).toHaveBeenCalledWith({ value: '', attachment: 0 });
       expect(props.onClose).toHaveBeenCalled();
     });
   });
