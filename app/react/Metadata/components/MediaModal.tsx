@@ -8,6 +8,7 @@ import { get } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
+import uniqueID from 'shared/uniqueID';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
@@ -120,13 +121,15 @@ const MediaModalComponent = ({
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && localAttachmentAction) {
+      const fileLocalID = uniqueID();
       localAttachmentAction(
         entity.sharedId || 'NEW_ENTITY',
         event.target.files[0],
         'library',
-        formModel
+        formModel,
+        fileLocalID
       );
-      rrfChange(formField, entity.attachments?.length);
+      rrfChange(formField, fileLocalID);
       onClose();
     }
   };

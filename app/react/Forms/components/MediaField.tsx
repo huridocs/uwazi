@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import _ from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { ClientFile } from 'app/istore';
@@ -34,10 +33,9 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(null);
   };
 
+  const supportingFile = localAttachments.find(file => file.supportingFileId === value);
   const imageUrl =
-    _.isNumber(value) && localAttachments.length > value
-      ? URL.createObjectURL(constructFile(localAttachments[value]))
-      : value;
+    value && supportingFile ? URL.createObjectURL(constructFile(supportingFile)) : value;
 
   return (
     <div className="search__filter--selected__media">
