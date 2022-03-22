@@ -19,11 +19,6 @@ import {
 } from './relationshipsHelpers';
 import { validateConnectionSchema } from './validateConnectionSchema';
 
-const normalizeConnectedDocumentData = (relationship, connectedDocument) => {
-  relationship.entityData = connectedDocument;
-  return relationship;
-};
-
 function excludeRefs(template) {
   delete template.refs;
   return template;
@@ -42,15 +37,6 @@ function getPropertiesToBeConnections(template) {
   });
   return props;
 }
-
-const createRelationship = async relationship => model.save(relationship);
-
-const updateRelationship = async relationship =>
-  model.save({
-    ...relationship,
-    template:
-      relationship.template && relationship.template._id !== null ? relationship.template : null,
-  });
 
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
 const conformRelationships = (rows, parentEntitySharedId) => {
@@ -252,12 +238,7 @@ export default {
     return saves.concat(deletions);
   },
 
-  // eslint-disable-next-line max-statements
-  async save(_relationships, language, updateEntities = true) {
-    if (!language) {
-      throw createError('Language cant be undefined');
-    }
-
+  async prepareRelationshipsToSave(_relationships, language) {
     const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
 
     await validateConnectionSchema(rel);
@@ -273,29 +254,58 @@ export default {
 
     const relationships = rel.filter(r => existingEntities.has(r.entity));
 
-    if (relationships.length === 0) {
-      return [];
-    }
-
     if (relationships.length === 1 && !relationships[0].hub) {
       throw createError('Single relationships must have a hub');
     }
 
-    const hub = relationships[0].hub || generateID();
+    const hub = relationships[0]?.hub || generateID();
 
-    const result = await Promise.all(
-      relationships.map(relationship => {
-        const action = relationship._id ? updateRelationship : createRelationship;
+    return { relationships, hub };
+  },
 
-        return action({ ...relationship, hub }, language)
-          .then(savedRelationship =>
-            Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)])
-          )
-          .then(([savedRelationship, connectedEntity]) =>
-            normalizeConnectedDocumentData(savedRelationship, connectedEntity)
-          );
-      })
+  async appendRelatedEntityData(savedRelationships, language) {
+    const relatedEntities = {};
+    (
+      await entities.get(
+        {
+          sharedId: { $in: savedRelationships.map(r => r.entity) },
+          language,
+        },
+        {},
+        { withoutDocuments: true }
+      )
+    ).forEach(e => {
+      relatedEntities[e.sharedId] = e;
+    });
+
+    return savedRelationships.map(r => ({ ...r, entityData: relatedEntities[r.entity] }));
+  },
+
+  async save(_relationships, language, updateEntities = true) {
+    if (!language) {
+      throw createError('Language cant be undefined');
+    }
+
+    const { relationships, hub } = await this.prepareRelationshipsToSave(_relationships, language);
+
+    if (relationships.length === 0) {
+      return [];
+    }
+
+    const savedRelationships = await model.saveMultiple(
+      relationships
+        .map(r =>
+          r._id
+            ? {
+                ...r,
+                template: r.template && r.template._id !== null ? r.template : null,
+              }
+            : r
+        )
+        .map(r => ({ ...r, hub }))
     );
+
+    const result = this.appendRelatedEntityData(savedRelationships, language);
 
     if (updateEntities) {
       await this.updateEntitiesMetadataByHub(hub, language);
