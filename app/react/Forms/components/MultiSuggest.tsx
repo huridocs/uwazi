@@ -8,22 +8,7 @@ import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
 import { Translate } from 'app/I18N';
 
-const defaultProps = {
-  // The suggestions value, provided by redux Component.
-  value: [] as MetadataObject<string>[],
-  // The 'main' value, provided by mapStateToProps.
-  selectValue: [] as string[],
-  acceptSuggestion: (
-    _suggestion: string,
-    _propertyType: string,
-    _selectModel: string,
-    _selectValue: string[]
-  ) => {},
-  onChange: (_event: any) => {},
-  notify: (_msg: string, _type: string, _delay?: number) => {},
-};
-
-export type MultiSuggestProps = typeof defaultProps & {
+type MultiSuggestProps = {
   // The template property type.
   propertyType: string;
 
@@ -34,6 +19,24 @@ export type MultiSuggestProps = typeof defaultProps & {
   // The state model path of the 'main' multi-select.
   // Accepted suggestions will be added there.
   selectModel: string;
+
+  value: MetadataObject<string>[];
+  selectValue: string[];
+  acceptSuggestion: (
+    suggestion: string,
+    propertyType: string,
+    selectModel: string,
+    selectValue: string[]
+  ) => void;
+  onChange: (_event: any) => {};
+  notify: (_msg: string, _type: string, _delay?: number) => {};
+};
+
+const defaultProps = {
+  // The suggestions value, provided by redux Component.
+  value: [],
+  // The 'main' value, provided by mapStateToProps.
+  selectValue: [],
 };
 
 export function acceptSuggestion(
@@ -149,6 +152,7 @@ export function mapStateToProps(state: any, props: Pick<MultiSuggestProps, 'sele
   return { selectModel, selectValue: Array.isArray(rawValue) ? rawValue : [rawValue] };
 }
 
+export type { MultiSuggestProps };
 export const MultiSuggest = connect(mapStateToProps, { acceptSuggestion, notify })(
   MultiSuggestBase
 );

@@ -35,6 +35,7 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
     className="cockpit"
   >
     <Notice
+      allowClose={true}
       title="Suggestion Status"
     >
       <div
