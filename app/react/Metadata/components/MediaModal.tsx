@@ -3,7 +3,7 @@ import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { actions as formActions, ModelAction } from 'react-redux-form';
+import { actions as formActions } from 'react-redux-form';
 import { get } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -38,7 +38,6 @@ interface MediaModalProps {
     __reducerKey: string,
     model: string
   ) => (dispatch: Dispatch<{}>) => Promise<any>;
-  rrfChange?: (model: string, value: any) => ModelAction;
   value?: string | null;
 }
 
@@ -49,7 +48,7 @@ const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: any) =>
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
     { localAttachmentAction: uploadLocalAttachment, rrfChange: formActions.change },
     dispatch

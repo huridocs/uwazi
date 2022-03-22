@@ -3,9 +3,11 @@
  */
 import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
+import { actions as formActions } from 'react-redux-form';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
+import * as supportingFileActions from 'app/Metadata/actions/supportingFilesActions';
 import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
 const store = {
@@ -15,6 +17,7 @@ const store = {
         _id: '1',
         sharedId: 'entity1',
         attachments: [],
+        metadata: { image: '' },
       },
     },
   },
@@ -25,10 +28,13 @@ describe('Media Modal', () => {
   let props: MediaModalProps;
 
   beforeEach(() => {
+    spyOn(formActions, 'change').and.returnValue({ type: 'rrf/change' });
+    spyOn(supportingFileActions, 'uploadLocalAttachment').and.returnValue({
+      type: 'ATTACHMENT_PROGRESSe',
+    });
     props = {
       onClose: jasmine.createSpy('onClose'),
       onChange: jasmine.createSpy('onChange'),
-      rrfChange: jasmine.createSpy('rrfChange'),
       isOpen: true,
       selectedUrl: null,
       attachments: [],
@@ -147,8 +153,16 @@ describe('Media Modal', () => {
           files: [newFile],
         },
       });
-      // expect(localAttachmentAction).toHaveBeenCalledWith('');
-      expect(props.rrfChange).toHaveBeenCalledWith({ value: '', attachment: 0 });
+      expect(supportingFileActions.uploadLocalAttachment).toHaveBeenCalledWith(
+        'entity1',
+        newFile,
+        'library',
+        'library.sidepanel.metadata'
+      );
+      expect(formActions.change).toHaveBeenCalledWith(
+        'library.sidepanel.metadata.metadata.image',
+        0
+      );
       expect(props.onClose).toHaveBeenCalled();
     });
   });
