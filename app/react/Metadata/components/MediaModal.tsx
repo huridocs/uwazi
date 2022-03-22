@@ -1,12 +1,14 @@
 import React, { useMemo, useRef } from 'react';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import filesize from 'filesize';
+import { Dispatch } from 'redux';
 
-import { AttachmentSchema } from 'shared/types/commonTypes';
+import filesize from 'filesize';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments';
+import { ClientFile } from 'app/istore';
+import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 
 enum MediaModalType {
@@ -23,18 +25,24 @@ interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
-  onChange: (id: string) => void;
+  localAttachments?: ClientFile[];
+  onChange: (id: any) => void;
   selectedUrl: string | null;
   type?: MediaModalType;
+  uploadLocalAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
+  change?: any;
 }
 
-const MediaModal = ({
+const MediaModalComponent = ({
   isOpen,
   onClose,
   attachments = [],
   onChange,
   selectedUrl,
   type,
+  localAttachments = [],
+  uploadLocalAttachment,
+  change,
 }: MediaModalProps) => {
   const filteredAttachments = useMemo(() => {
     switch (type) {
@@ -83,8 +91,14 @@ const MediaModal = ({
   };
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      onChange(event.target.files[0]); //not correct, should be something like {value: '', attachment: '[index of the file]'}
+    if (event.target.files && uploadLocalAttachment) {
+      uploadLocalAttachment(
+        '60m1d9wm8t7',
+        event.target.files[0],
+        'library',
+        'library.sidepanel.metadata'
+      );
+      change('library.sidepanel.metadata.metadata.image', localAttachments?.length);
       onClose();
     }
   };
@@ -207,4 +221,4 @@ const MediaModal = ({
 };
 
 export type { MediaModalProps };
-export { MediaModalType, MediaModal };
+export { MediaModalType, MediaModalComponent };

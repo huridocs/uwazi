@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 
-import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { MediaModal, MediaModalType } from 'app/Metadata/components/MediaModal';
+import { MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
+import { constructFile } from 'app/Library/actions/saveEntityWithFiles';
+import _ from 'lodash';
+import { ClientFile } from 'app/istore';
+import { MediaModal } from 'app/Metadata/components/MediaModalContainer';
 
-interface MediaFieldProps {
-  attachments: AttachmentSchema[];
+type MediaFieldProps = MediaModalProps & {
   value: string | null;
-  type?: MediaModalType;
-  onChange: (val: string | null) => void;
-}
+  localAttachments: ClientFile[];
+};
 
-const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps) => {
+const MediaField = (props: MediaFieldProps) => {
+  const { attachments = [], value, onChange, type, localAttachments = [] } = props;
   const [openModal, setOpenModal] = useState(false);
 
   const handleCloseMediaModal = () => {
@@ -24,11 +26,16 @@ const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps
     onChange(null);
   };
 
+  const imageUrl =
+    _.isNumber(value) && localAttachments.length > value
+      ? URL.createObjectURL(constructFile(localAttachments[value]))
+      : value;
+
   return (
     <div className="search__filter--selected__media">
-      {value &&
+      {imageUrl &&
         (type === MediaModalType.Image ? (
-          <img src={value} alt="" />
+          <img src={imageUrl} alt="" />
         ) : (
           <MarkdownMedia config={value} />
         ))}

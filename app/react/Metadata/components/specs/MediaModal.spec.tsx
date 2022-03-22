@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
-import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
+import { MediaModalComponent as MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});

@@ -79,9 +79,10 @@ export class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris, attachments } = this.props;
+    const { dateFormat, version, entityThesauris, attachments, localAttachments } = this.props;
     const propertyType = property.type;
     const plainAttachments = attachments.toJS();
+    const plainLocalAttachments = localAttachments;
 
     switch (propertyType) {
       case 'select':
@@ -178,7 +179,12 @@ export class MetadataFormFields extends Component {
         );
       case 'image':
         return (
-          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Image} />
+          <MediaField
+            model={_model}
+            attachments={plainAttachments}
+            localAttachments={plainLocalAttachments}
+            type={MediaModalType.Image}
+          />
         );
       case 'preview':
         return (
@@ -372,6 +378,7 @@ export const mapStateToProps = (state, ownProps) => {
     dateFormat: state.settings.collection.get('dateFormat'),
     entityThesauris: state.entityThesauris,
     attachments,
+    localAttachments: state.library.sidepanel.metadata.attachments,
   };
 };
 
