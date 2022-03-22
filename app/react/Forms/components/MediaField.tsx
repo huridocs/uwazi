@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-
+import _ from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
+import { ClientFile } from 'app/istore';
+import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 import { constructFile } from 'app/Library/actions/saveEntityWithFiles';
-import _ from 'lodash';
-import { ClientFile } from 'app/istore';
-import { MediaModal } from 'app/Metadata/components/MediaModalContainer';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | null;

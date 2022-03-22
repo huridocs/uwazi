@@ -1,15 +1,18 @@
 import React, { useMemo, useRef } from 'react';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import { Dispatch } from 'redux';
-
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
+import { actions as formActions, ModelAction } from 'react-redux-form';
+import { get } from 'lodash';
 import filesize from 'filesize';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments';
-import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { ClientEntitySchema, ClientFile, IStore } from 'app/istore';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
+import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
 
 enum MediaModalType {
   Image,
@@ -18,7 +21,7 @@ enum MediaModalType {
 
 enum MediaModalTab {
   SelectFromFile = 'SelectFromFile',
-  AddFromUrl = 'AddFromUrl',
+  AddNewFile = 'AddNewFile',
 }
 
 interface MediaModalProps {
@@ -32,9 +35,34 @@ interface MediaModalProps {
   formField: string;
   localAttachments?: ClientFile[];
   type?: MediaModalType;
-  uploadLocalAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
-  change?: any;
+  localAttachmentAction?: (
+    entitySharedId: string,
+    file: File,
+    __reducerKey: string,
+    model: string
+  ) => (dispatch: Dispatch<{}>) => Promise<any>;
+  rrfChange?: (model: string, value: any) => ModelAction;
+  value?: string | null;
 }
+
+const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
+  const model = ownProps.formModel;
+  return {
+    localAttachments: get(state, `${model}.attachments`),
+    entity: get(state, model),
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) =>
+  bindActionCreators(
+    { localAttachmentAction: uploadLocalAttachment, rrfChange: formActions.change },
+    dispatch
+  );
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type mappedProps = ConnectedProps<typeof connector>;
+type ComponentProps = MediaModalProps & mappedProps;
 
 const MediaModalComponent = ({
   isOpen,
@@ -47,9 +75,9 @@ const MediaModalComponent = ({
   formField,
   localAttachments = [],
   type,
-  uploadLocalAttachment,
-  change,
-}: MediaModalProps) => {
+  localAttachmentAction,
+  rrfChange,
+}: ComponentProps) => {
   const filteredAttachments = useMemo(() => {
     switch (type) {
       case MediaModalType.Image:
@@ -75,7 +103,7 @@ const MediaModalComponent = ({
 
     const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedUrl);
 
-    return selectedAttachmentIndex === -1 ? MediaModalTab.AddFromUrl : MediaModalTab.SelectFromFile;
+    return selectedAttachmentIndex === -1 ? MediaModalTab.AddNewFile : MediaModalTab.SelectFromFile;
   }, [selectedUrl, attachments]);
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
@@ -97,9 +125,9 @@ const MediaModalComponent = ({
   };
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && uploadLocalAttachment) {
-      uploadLocalAttachment(entity.id || 'NEW_ENTITY', event.target.files[0], 'library', formModel);
-      change(formField, localAttachments?.length);
+    if (event.target.files && localAttachmentAction) {
+      localAttachmentAction(entity.id || 'NEW_ENTITY', event.target.files[0], 'library', formModel);
+      rrfChange(formField, localAttachments?.length);
       onClose();
     }
   };
@@ -134,11 +162,11 @@ const MediaModalComponent = ({
               <Translate>Select from files</Translate>
             </TabLink>
             <TabLink
-              to={MediaModalTab.AddFromUrl}
+              to={MediaModalTab.AddNewFile}
               className="tab-link modal-tab-2"
-              default={defaultTab === MediaModalTab.AddFromUrl}
+              default={defaultTab === MediaModalTab.AddNewFile}
             >
-              <Translate>Add from url</Translate>
+              <Translate>Add new file</Translate>
             </TabLink>
           </div>
 
@@ -149,23 +177,6 @@ const MediaModalComponent = ({
                 !filteredAttachments.length ? 'centered' : ''
               }`}
             >
-              <div className="upload-button">
-                <button
-                  type="button"
-                  onClick={handleUploadButtonClicked}
-                  className="btn btn-success"
-                >
-                  <Icon icon="link" />
-                  &nbsp; <Translate>Upload and select file</Translate>
-                </button>
-                <input
-                  aria-label="fileInput"
-                  type="file"
-                  onChange={handleInputFileChange}
-                  style={{ display: 'none' }}
-                  ref={inputFileRef}
-                />
-              </div>
               {filteredAttachments.length > 0 ? (
                 <div className="media-grid container">
                   <div className="row">
@@ -204,13 +215,30 @@ const MediaModalComponent = ({
               )}
             </TabContent>
             <TabContent
-              for={MediaModalTab.AddFromUrl}
+              for={MediaModalTab.AddNewFile}
               className="tab-content attachments-modal__tabs-content centered"
             >
+              <div className="upload-button">
+                <button
+                  type="button"
+                  onClick={handleUploadButtonClicked}
+                  className="btn btn-success"
+                >
+                  <Icon icon="link" />
+                  &nbsp; <Translate>Upload and select file</Translate>
+                </button>
+                <input
+                  aria-label="fileInput"
+                  type="file"
+                  onChange={handleInputFileChange}
+                  style={{ display: 'none' }}
+                  ref={inputFileRef}
+                />
+              </div>
               <div className="wrapper-web">
                 <WebMediaResourceForm
                   handleSubmit={handleSubmitFromUrl}
-                  url={defaultTab === MediaModalTab.AddFromUrl ? selectedUrl : ''}
+                  url={defaultTab === MediaModalTab.AddNewFile ? selectedUrl : ''}
                 />
               </div>
             </TabContent>
@@ -221,5 +249,7 @@ const MediaModalComponent = ({
   );
 };
 
+const container = connector(MediaModalComponent);
+
 export type { MediaModalProps };
-export { MediaModalType, MediaModalComponent };
+export { MediaModalType, container as MediaModal };
