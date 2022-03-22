@@ -3,7 +3,7 @@ import { config } from 'api/config';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
 import migration from '../index';
-import fixtures from './fixtures';
+import { fixtures } from './fixtures';
 
 describe('migration Clean up orphan files', () => {
   beforeEach(async () => {

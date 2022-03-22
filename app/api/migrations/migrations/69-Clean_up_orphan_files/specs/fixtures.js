@@ -1,4 +1,4 @@
-export default {
+export const fixtures = {
   entities: [{ sharedId: 'test_doc', title: 'test_doc' }],
   files: [
     { type: 'custom', filename: 'custom1.jpg' },
