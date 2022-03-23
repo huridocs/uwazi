@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { ClientFile } from 'app/istore';
+import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
 import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 import { constructFile } from 'app/Library/actions/saveEntityWithFiles';
@@ -43,7 +44,7 @@ const MediaField = (props: MediaFieldProps) => {
   const supportingFile = localAttachments.find(file => file.fileLocalID === value);
 
   if (isUploadId && supportingFile) {
-    fileURL = prepareMediaView(supportingFile);
+    fileURL = prepareHTMLMediaView(supportingFile);
   }
 
   return (
