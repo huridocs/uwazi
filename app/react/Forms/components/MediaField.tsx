@@ -39,7 +39,7 @@ const MediaField = (props: MediaFieldProps) => {
     if (value && !supportingFile) {
       handleImageRemove();
     }
-  }, [supportingFile]);
+  }, [localAttachments]);
 
   return (
     <div className="search__filter--selected__media">
