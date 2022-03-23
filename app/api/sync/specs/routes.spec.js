@@ -2,6 +2,7 @@ import 'api/utils/jasmineHelpers';
 
 import { models } from 'api/odm';
 import { search } from 'api/search';
+import * as filesystem from 'api/files/filesystem';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import syncRoutes from '../routes';
@@ -34,6 +35,7 @@ describe('sync', () => {
     };
     spyOn(search, 'delete');
     spyOn(search, 'indexEntities');
+    spyOn(filesystem, 'deleteUploadedFiles');
   });
 
   describe('POST', () => {
@@ -211,6 +213,11 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'entityId' });
+      });
+
+      it('should delete it from the file system', async () => {
+        await routes.delete('/api/sync', req);
+        expect(filesystem.deleteUploadedFiles).toHaveBeenCalledWith([{ entity: 'entityId' }]);
       });
     });
 
