@@ -117,11 +117,15 @@ const MediaModalComponent = ({
     if (event.target.files && localAttachmentAction) {
       const fileLocalID = uniqueID();
 
-      localAttachmentAction(entity.sharedId || 'NEW_ENTITY', event.target.files[0], {
-        __reducerKey: 'library',
-        model: formModel,
-        fileLocalID,
-      });
+      localAttachmentAction(
+        entity.sharedId || 'NEW_ENTITY',
+        event.target.files[0],
+        {
+          __reducerKey: 'library',
+          model: formModel,
+        },
+        fileLocalID
+      );
       rrfChange(formField, fileLocalID);
       onClose();
     }

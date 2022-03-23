@@ -7,7 +7,8 @@ const uploadLocalAttachment =
   (
     entitySharedId: string,
     file: File,
-    storeKeys: { __reducerKey: string; model: string; fileLocalID?: string }
+    storeKeys: { __reducerKey: string; model: string },
+    fileLocalID?: string
   ) =>
   async (dispatch: Dispatch<{}>): Promise<any> =>
     readFileAsBase64(file, info => {
@@ -18,7 +19,7 @@ const uploadLocalAttachment =
         type: 'attachment',
         mimetype: file.type,
         entity: entitySharedId,
-        fileLocalID: storeKeys.fileLocalID,
+        fileLocalID,
       };
       dispatch(actions.push(`${storeKeys.model}.attachments`, newFile));
       dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });

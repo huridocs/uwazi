@@ -153,11 +153,15 @@ describe('Media Modal', () => {
           files: [newFile],
         },
       });
-      expect(supportingFileActions.uploadLocalAttachment).toHaveBeenCalledWith('entity1', newFile, {
-        __reducerKey: 'library',
-        model: 'library.sidepanel.metadata',
-        fileLocalID: expect.stringMatching(/^[a-zA-Z\d_]*$/),
-      });
+      expect(supportingFileActions.uploadLocalAttachment).toHaveBeenCalledWith(
+        'entity1',
+        newFile,
+        {
+          __reducerKey: 'library',
+          model: 'library.sidepanel.metadata',
+        },
+        expect.stringMatching(/^[a-zA-Z\d_]*$/)
+      );
       expect(formActions.change).toHaveBeenCalledWith(
         'library.sidepanel.metadata.metadata.image',
         expect.stringMatching(/^[a-zA-Z\d_]*$/)
