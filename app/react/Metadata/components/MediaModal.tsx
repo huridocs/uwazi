@@ -7,7 +7,7 @@ import { actions as formActions } from 'react-redux-form';
 import { get } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { IStore } from 'app/istore';
+import { ClientFile, IStore } from 'app/istore';
 import uniqueID from 'shared/uniqueID';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
@@ -27,7 +27,7 @@ enum MediaModalTab {
 interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  attachments: AttachmentSchema[];
+  attachments: (AttachmentSchema | ClientFile)[];
   onChange: (id: any) => void;
   selectedUrl: string | null;
   formModel: string;

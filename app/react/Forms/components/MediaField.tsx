@@ -5,30 +5,16 @@ import { ClientFile } from 'app/istore';
 import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
 import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
-import { constructFile } from 'app/Library/actions/saveEntityWithFiles';
-
-const prepareMediaView = (supportingFile: ClientFile & { fileLocalID: string }) => {
-  const file = constructFile(supportingFile);
-  return URL.createObjectURL(file);
-};
 
 type MediaFieldProps = MediaModalProps & {
   value: string | null;
-  localAttachments: (ClientFile & { fileLocalID: string })[];
+  localAttachments: ClientFile[];
   formModel: string;
   name: string;
 };
 
 const MediaField = (props: MediaFieldProps) => {
-  const {
-    attachments = [],
-    value,
-    onChange,
-    type,
-    localAttachments = [],
-    formModel,
-    name: formField,
-  } = props;
+  const { value, onChange, type, localAttachments = [], formModel, name: formField } = props;
   const [openModal, setOpenModal] = useState(false);
 
   const handleCloseMediaModal = () => {
@@ -39,7 +25,7 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(null);
   };
 
-  let fileURL = value || null;
+  let fileURL = value;
   const isUploadId = value && /^[a-zA-Z\d_]*$/.test(value);
   const supportingFile = localAttachments.find(file => file.fileLocalID === value);
 
@@ -73,7 +59,7 @@ const MediaField = (props: MediaFieldProps) => {
         onClose={handleCloseMediaModal}
         onChange={onChange}
         selectedUrl={value}
-        attachments={attachments}
+        attachments={localAttachments}
         type={type}
         formModel={formModel}
         formField={formField}
