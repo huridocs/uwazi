@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { ClientFile } from 'app/istore';
@@ -27,11 +27,19 @@ const MediaField = (props: MediaFieldProps) => {
 
   let fileURL = value;
   const isUploadId = value && /^[a-zA-Z\d_]*$/.test(value);
-  const supportingFile = localAttachments.find(file => file.fileLocalID === value);
+  const supportingFile = localAttachments.find(
+    file => value === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
+  );
 
   if (isUploadId && supportingFile) {
     fileURL = prepareHTMLMediaView(supportingFile);
   }
+
+  useEffect(() => {
+    if (value && !supportingFile) {
+      handleImageRemove();
+    }
+  }, [supportingFile]);
 
   return (
     <div className="search__filter--selected__media">

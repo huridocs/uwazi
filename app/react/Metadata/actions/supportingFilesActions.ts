@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { readFileAsBase64 } from 'app/Library/actions/saveEntityWithFiles';
+import uniqueID from 'shared/uniqueID';
 import * as types from '../../Attachments/actions/actionTypes';
 
 const uploadLocalAttachment =
@@ -19,7 +20,7 @@ const uploadLocalAttachment =
         type: 'attachment',
         mimetype: file.type,
         entity: entitySharedId,
-        fileLocalID,
+        fileLocalID: fileLocalID || uniqueID(),
       };
       dispatch(actions.push(`${storeKeys.model}.attachments`, newFile));
       dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entitySharedId, progress: 100 });
