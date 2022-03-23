@@ -179,6 +179,7 @@ class MetadataFormFields extends Component {
             model={_model}
             formModel={formModel}
             attachments={plainAttachments}
+            localAttachments={plainLocalAttachments}
             type={MediaModalType.Media}
           />
         );
@@ -366,27 +367,31 @@ export const mapStateToProps = (state, ownProps) => {
   const { storeKey } = ownProps;
 
   let attachments = Immutable.fromJS([]);
+  let localAttachments;
 
-  if (storeKey === 'library' || storeKey === 'uploads') {
-    const selectedDocuments = state[storeKey].ui.get('selectedDocuments');
+  if (storeKey === 'library') {
+    const selectedDocuments = state.library.ui.get('selectedDocuments');
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
+    localAttachments = state.library.sidepanel.metadata.attachments;
   }
 
   if (storeKey === 'documentViewer') {
     const entity = state[storeKey].doc;
     attachments = entity.get('attachments');
+    localAttachments = state[storeKey].sidepanel.metadata.attachments;
   }
 
   if (!storeKey) {
     const { entity } = state.entityView;
     attachments = entity.get('attachments');
+    localAttachments = state.entityView.entityForm.attachments;
   }
 
   return {
     dateFormat: state.settings.collection.get('dateFormat'),
     entityThesauris: state.entityThesauris,
     attachments,
-    localAttachments: state.library.sidepanel.metadata.attachments,
+    localAttachments,
   };
 };
 
@@ -397,5 +402,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({ change: formActions.change }, dispatch);
 };
 
-export { MetadataFormFields, translateOptions };
+export { translateOptions };
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);
