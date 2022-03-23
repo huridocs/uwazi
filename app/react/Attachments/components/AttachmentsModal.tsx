@@ -9,7 +9,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 
-export interface AttachmentsModalProps {
+interface AttachmentsModalProps {
   isOpen: boolean;
   entitySharedId: string;
   storeKey: string;
@@ -20,7 +20,7 @@ export interface AttachmentsModalProps {
   getPercentage?: number;
 }
 
-export const AttachmentsModalCmp = ({
+const AttachmentsModalCmp = ({
   isOpen,
   entitySharedId,
   storeKey,
@@ -164,4 +164,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: AttachmentsModalPr
     dispatch
   );
 
-export const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);
+const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);
+
+export type { AttachmentsModalProps };
+export { AttachmentsModalCmp, AttachmentsModal };
