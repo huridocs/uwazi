@@ -402,5 +402,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({ change: formActions.change }, dispatch);
 };
 
-export { translateOptions };
+export { MetadataFormFields, translateOptions };
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);
