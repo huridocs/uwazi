@@ -323,6 +323,7 @@ export default {
     return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
+  // eslint-disable-next-line max-statements
   async saveEntityBasedReferences(entity, language, _template) {
     if (!language) throw createError('Language cant be undefined');
     if (!entity.template) return [];
@@ -337,6 +338,51 @@ export default {
       relationshipProperties.map(p => generateID(p.relationType))
     );
 
+    const existingReferencesByRefTypeByRightSideEntity = Object.fromEntries(
+      existingReferences.map(group => [
+        group._id,
+        Object.fromEntries(group.references.map(r => [r.rightSide.entity, r])),
+      ])
+    );
+
+    const relationshipsToCreate = [];
+
+    for (let i = 0; i < relationshipProperties.length; i += 1) {
+      const property = relationshipProperties[i];
+      const newValues = determinePropertyValues(entity, property.name);
+
+      const { relationType: propertyRelationType, content: propertyEntityType } = property;
+
+      const toCreate = newValues.filter(
+        v =>
+          !(
+            existingReferencesByRefTypeByRightSideEntity[propertyRelationType] &&
+            existingReferencesByRefTypeByRightSideEntity[propertyRelationType][v]
+          )
+      );
+      if (toCreate.length) {
+        // eslint-disable-next-line no-await-in-loop
+        const candidateHub = await guessRelationshipPropertyHub(
+          entity.sharedId,
+          generateID(propertyRelationType)
+        );
+
+        const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
+        const newReferencesBase = candidateHub[0] ? [] : [{ entity: entity.sharedId, hub: hubId }];
+
+        const newReferences = toCreate.map(value => ({
+          entity: value,
+          hub: hubId,
+          template: generateID(propertyRelationType),
+        }));
+
+        relationshipsToCreate.push(...newReferencesBase, ...newReferences);
+      }
+    }
+
+    console.log(relationshipsToCreate);
+    await this.save(relationshipsToCreate, language, false);
+
     return Promise.all(
       // eslint-disable-next-line max-statements
       relationshipProperties.map(async property => {
@@ -346,31 +392,7 @@ export default {
         let referencesOfThisType = existingReferences.find(
           g => g._id.toString() === propertyRelationType.toString()
         );
-        referencesOfThisType = (referencesOfThisType && referencesOfThisType.references) || [];
-
-        const toCreate = newValues.filter(
-          value => !referencesOfThisType.find(r => r.rightSide.entity === value)
-        );
-
-        if (toCreate.length) {
-          const candidateHub = await guessRelationshipPropertyHub(
-            entity.sharedId,
-            generateID(propertyRelationType)
-          );
-
-          const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
-          const newReferencesBase = candidateHub[0]
-            ? []
-            : [{ entity: entity.sharedId, hub: hubId }];
-
-          const newReferences = toCreate.map(value => ({
-            entity: value,
-            hub: hubId,
-            template: generateID(propertyRelationType),
-          }));
-
-          await this.save([...newReferencesBase, ...newReferences], language, false);
-        }
+        referencesOfThisType = (referencesOfThisType && referencesOfThisType.references) || []; //don't forget dedault []
 
         const matchingRefsNotInNewSet = r =>
           r.rightSide.entity !== entity.sharedId &&

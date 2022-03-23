@@ -388,7 +388,7 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    it('should saveEntityBasedReferences', async () => {
+    fit('should saveEntityBasedReferences', async () => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       const entity = {
         title: 'Batman begins',
@@ -396,19 +396,27 @@ describe('entities', () => {
         language: 'es',
         metadata: {
           friends: [{ value: 'id1' }, { value: 'id2' }, { value: 'id3' }],
+          enemies: [{ value: 'shared1' }],
         },
       };
       const user = { _id: db.id() };
 
       const createdEntity = await entities.save(entity, { user, language: 'es' });
+
       const createdRelationships = await relationships.getByDocument(createdEntity.sharedId, 'es');
-      expect(createdRelationships.length).toBe(4);
+
+      expect(createdRelationships.length).toBe(6);
       expect(createdRelationships.map(r => r.entityData.title).sort()).toEqual([
         'Batman begins',
+        'Batman begins',
+        'ES',
         'entity one',
         'entity three',
         'entity two',
       ]);
+
+      const second = await entities.save(createdEntity, { user, language: 'es' });
+
     });
 
     it('should not cirlce back to updateMetdataFromRelationships', async () => {
