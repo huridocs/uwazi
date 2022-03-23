@@ -323,11 +323,11 @@ export default {
     return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
-  async saveEntityBasedReferences(entity, language) {
+  async saveEntityBasedReferences(entity, language, _template) {
     if (!language) throw createError('Language cant be undefined');
     if (!entity.template) return [];
 
-    const template = await templatesAPI.getById(entity.template);
+    const template = _template || (await templatesAPI.getById(entity.template));
     const relationshipProperties = getPropertiesToBeConnections(template);
 
     if (!relationshipProperties.length) return [];
