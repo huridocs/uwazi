@@ -97,6 +97,8 @@ const MediaModalComponent = ({
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
+  const acceptedFileTypes = type === MediaModalType.Image ? 'image/*' : 'video/*';
+
   const handleAttachmentClick = (url: string) => () => {
     onChange(url);
     onClose();
@@ -114,12 +116,14 @@ const MediaModalComponent = ({
   };
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && localAttachmentAction) {
+    const [file] = event.target.files || [];
+
+    if (file) {
       const fileLocalID = uniqueID();
 
       localAttachmentAction(
         entity.sharedId || 'NEW_ENTITY',
-        event.target.files[0],
+        file,
         {
           __reducerKey: 'library',
           model: formModel,
@@ -201,6 +205,7 @@ const MediaModalComponent = ({
                   onChange={handleInputFileChange}
                   style={{ display: 'none' }}
                   ref={inputFileRef}
+                  accept={acceptedFileTypes}
                 />
               </div>
               <div className="wrapper-web">
