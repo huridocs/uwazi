@@ -1,10 +1,8 @@
-/** @format */
-
 export function wrapEntityMetadata(entity) {
   if (!entity.metadata) {
     return { ...entity };
   }
-  const newUploads = entity.attachments
+  const newUploads = (entity.attachments || [])
     .filter(attachment => attachment.fileLocalID)
     .reduce(
       (indices, attachment) => ({
