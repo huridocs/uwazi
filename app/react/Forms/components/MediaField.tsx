@@ -33,14 +33,14 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(null);
   };
 
-  let imageUrl;
+  let imageUrl = value || null;
   const isUploadId = value && /^[a-zA-Z\d_]*$/.test(value);
-  if (isUploadId) {
-    const supportingFile = localAttachments.find(file => file.fileLocalID === value);
-    imageUrl = supportingFile ? URL.createObjectURL(constructFile(supportingFile)) : null;
-  } else {
-    imageUrl = value;
+  const supportingFile = localAttachments.find(file => file.fileLocalID === value);
+
+  if (isUploadId && supportingFile) {
+    imageUrl = URL.createObjectURL(constructFile(supportingFile));
   }
+
   return (
     <div className="search__filter--selected__media">
       {imageUrl &&
