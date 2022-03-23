@@ -6,6 +6,11 @@ import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/compon
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 import { constructFile } from 'app/Library/actions/saveEntityWithFiles';
 
+const prepareMediaView = (supportingFile: ClientFile & { fileLocalID: string }) => {
+  const file = constructFile(supportingFile);
+  return URL.createObjectURL(file);
+};
+
 type MediaFieldProps = MediaModalProps & {
   value: string | null;
   localAttachments: (ClientFile & { fileLocalID: string })[];
@@ -33,21 +38,21 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(null);
   };
 
-  let imageUrl = value || null;
+  let fileURL = value || null;
   const isUploadId = value && /^[a-zA-Z\d_]*$/.test(value);
   const supportingFile = localAttachments.find(file => file.fileLocalID === value);
 
   if (isUploadId && supportingFile) {
-    imageUrl = URL.createObjectURL(constructFile(supportingFile));
+    fileURL = prepareMediaView(supportingFile);
   }
 
   return (
     <div className="search__filter--selected__media">
-      {imageUrl &&
+      {fileURL &&
         (type === MediaModalType.Image ? (
-          <img src={imageUrl} alt="" />
+          <img src={fileURL} alt="" />
         ) : (
-          <MarkdownMedia config={value} />
+          <MarkdownMedia config={fileURL} />
         ))}
 
       <div className="search__filter--selected__media-toolbar">
