@@ -1,11 +1,13 @@
 import React, { MouseEventHandler } from 'react';
 import filesize from 'filesize';
 import { Translate } from 'app/I18N';
+import { ClientFile } from 'app/istore';
 import { RenderAttachment } from 'app/Attachments';
 import { AttachmentSchema } from 'shared/types/commonTypes';
+import { isSerializedFile } from 'shared/fileUploadUtils';
 
 type MediaModalFilelistProps = {
-  filteredAttachments: AttachmentSchema[];
+  filteredAttachments: (AttachmentSchema | ClientFile)[];
   handleAttachmentClick: (fileURL: string) => MouseEventHandler;
   selectedUrl: string;
 };
@@ -19,19 +21,26 @@ export const MediaModalFilelist = ({
     <div className="media-grid container">
       <div className="row">
         {filteredAttachments.map(attachment => {
-          const attachmentUrl = attachment.url || `/api/files/${attachment.filename}`;
+          const attachmentUrl =
+            attachment.url || attachment.fileLocalID || `/api/files/${attachment.filename}`;
+
+          const fileSize =
+            isSerializedFile(attachment) && attachment.serializedFile
+              ? attachment.serializedFile.length
+              : attachment.size;
+
           return (
             <div
               className="media-grid-item"
               key={`attachment_${attachment._id}`}
-              onClick={handleAttachmentClick(attachmentUrl)}
+              onClick={handleAttachmentClick(attachmentUrl as string)}
             >
               <div
                 className={`${'media-grid-card'} ${attachmentUrl === selectedUrl ? 'active' : ''}`}
               >
                 <div className="media-grid-card-header">
                   <h5>{attachment.originalname}</h5>
-                  {!!attachment.size && <span>{filesize(attachment.size)}</span>}
+                  {!!fileSize && <span>{filesize(fileSize)}</span>}
                 </div>
                 <div className="media-grid-card-content">
                   <div className="media">
