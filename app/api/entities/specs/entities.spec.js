@@ -18,7 +18,6 @@ import entities from '../entities.js';
 import fixtures, {
   adminId,
   batmanFinishesId,
-  batmanStillNotDoneId,
   templateId,
   templateChangingNames,
   templateChangingNamesProps,

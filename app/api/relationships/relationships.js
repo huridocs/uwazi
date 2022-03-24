@@ -323,77 +323,97 @@ export default {
     return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
-  // eslint-disable-next-line max-statements
-  async saveEntityBasedReferences(entity, language, _template) {
+  async generateCreatedReferences(property, newValues, entity, existingReferences) {
+    const { relationType: propertyRelationType } = property;
+
+    const toCreate = newValues.filter(
+      v =>
+        !(existingReferences[propertyRelationType] && existingReferences[propertyRelationType][v])
+    );
+
+    let newReferencesBase = [];
+    let newReferences = [];
+    if (toCreate.length) {
+      const candidateHub = await guessRelationshipPropertyHub(
+        entity.sharedId,
+        generateID(propertyRelationType)
+      );
+
+      const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
+      newReferencesBase = candidateHub[0] ? [] : [{ entity: entity.sharedId, hub: hubId }];
+
+      newReferences = toCreate.map(value => ({
+        entity: value,
+        hub: hubId,
+        template: generateID(propertyRelationType),
+      }));
+    }
+
+    return { newReferencesBase, newReferences };
+  },
+
+  async separateCreatedDeletedReferences(property, entity, existingReferences) {
+    const newValues = determinePropertyValues(entity, property.name);
+    const newValueSet = new Set(newValues);
+
+    const { relationType: propertyRelationType, content: propertyEntityType } = property;
+
+    const { newReferencesBase, newReferences } = await this.generateCreatedReferences(
+      property,
+      newValues,
+      entity,
+      existingReferences
+    );
+
+    const toDelete = Object.entries(existingReferences[propertyRelationType] || {})
+      .map(entry => entry[1])
+      .filter(
+        r =>
+          r.rightSide.entity !== entity.sharedId &&
+          (!propertyEntityType ||
+            r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
+          !newValueSet.has(r.rightSide.entity)
+      )
+      .map(r => r.rightSide._id);
+
+    return { newReferencesBase, newReferences, toDelete };
+  },
+
+  async prepareSaveEntityBasedReferences(entity, language, _template) {
     if (!language) throw createError('Language cant be undefined');
-    if (!entity.template) return [];
+    if (!entity.template) return { relationshipProperties: [], existingReferences: {} };
 
     const template = _template || (await templatesAPI.getById(entity.template));
     const relationshipProperties = getPropertiesToBeConnections(template);
 
-    if (!relationshipProperties.length) return [];
+    if (!relationshipProperties.length) {
+      return { relationshipProperties, existingReferences: {} };
+    }
 
     const existingReferences = await getEntityReferencesByRelationshipTypes(
       entity.sharedId,
       relationshipProperties.map(p => generateID(p.relationType))
     );
 
-    const existingReferencesByRefTypeByRightSideEntity = Object.fromEntries(
-      existingReferences.map(group => [
-        group._id,
-        Object.fromEntries(group.references.map(r => [r.rightSide.entity, r])),
-      ])
-    );
+    return { relationshipProperties, existingReferences };
+  },
+
+  async saveEntityBasedReferences(entity, language, _template) {
+    const { relationshipProperties, existingReferences } =
+      await this.prepareSaveEntityBasedReferences(entity, language, _template);
 
     const relationshipsToCreate = [];
     const relationshipsToDelete = [];
 
     for (let i = 0; i < relationshipProperties.length; i += 1) {
-      const property = relationshipProperties[i];
-      const newValues = determinePropertyValues(entity, property.name);
-      const newValueSet = new Set(newValues);
-
-      const { relationType: propertyRelationType, content: propertyEntityType } = property;
-
-      const toCreate = newValues.filter(
-        v =>
-          !(
-            existingReferencesByRefTypeByRightSideEntity[propertyRelationType] &&
-            existingReferencesByRefTypeByRightSideEntity[propertyRelationType][v]
-          )
-      );
-      if (toCreate.length) {
+      const { newReferencesBase, newReferences, toDelete } =
         // eslint-disable-next-line no-await-in-loop
-        const candidateHub = await guessRelationshipPropertyHub(
-          entity.sharedId,
-          generateID(propertyRelationType)
+        await this.separateCreatedDeletedReferences(
+          relationshipProperties[i],
+          entity,
+          existingReferences
         );
-
-        const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
-        const newReferencesBase = candidateHub[0] ? [] : [{ entity: entity.sharedId, hub: hubId }];
-
-        const newReferences = toCreate.map(value => ({
-          entity: value,
-          hub: hubId,
-          template: generateID(propertyRelationType),
-        }));
-
-        relationshipsToCreate.push(...newReferencesBase, ...newReferences);
-      }
-
-      const toDelete = Object.entries(
-        existingReferencesByRefTypeByRightSideEntity[propertyRelationType] || {}
-      )
-        .map(entry => entry[1])
-        .filter(
-          r =>
-            r.rightSide.entity !== entity.sharedId &&
-            (!propertyEntityType ||
-              r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
-            !newValueSet.has(r.rightSide.entity)
-        )
-        .map(r => r.rightSide._id);
-
+      relationshipsToCreate.push(...newReferencesBase, ...newReferences);
       relationshipsToDelete.push(...toDelete);
     }
 
