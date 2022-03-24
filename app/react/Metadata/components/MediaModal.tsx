@@ -94,7 +94,12 @@ const MediaModalComponent = ({
   );
 
   const defaultTab = useMemo(() => {
+    if (!selectedUrl) {
+      return MediaModalTab.SelectFromFile;
+    }
+
     const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedUrl);
+
     return selectedAttachmentIndex === -1 ? MediaModalTab.AddNewFile : MediaModalTab.SelectFromFile;
   }, [selectedUrl, attachments]);
 
