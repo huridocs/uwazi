@@ -251,15 +251,16 @@ export default {
       ).map(r => r.sharedId)
     );
 
-    const relationships = rel.filter(r => existingEntities.has(r.entity));
+    let relationships = rel.filter(r => existingEntities.has(r.entity));
 
     if (relationships.length === 1 && !relationships[0].hub) {
       throw createError('Single relationships must have a hub');
     }
 
-    const hub = relationships[0]?.hub || generateID();
+    const newHub = generateID();
+    relationships = relationships.map(r => ({ ...r, hub: r.hub || newHub }));
 
-    return { relationships, hub };
+    return { relationships };
   },
 
   async appendRelatedEntityData(savedRelationships, language) {
@@ -285,29 +286,31 @@ export default {
       throw createError('Language cant be undefined');
     }
 
-    const { relationships, hub } = await this.prepareRelationshipsToSave(_relationships, language);
+    const { relationships } = await this.prepareRelationshipsToSave(_relationships, language);
 
     if (relationships.length === 0) {
       return [];
     }
 
     const savedRelationships = await model.saveMultiple(
-      relationships
-        .map(r =>
-          r._id
-            ? {
-                ...r,
-                template: r.template && r.template._id !== null ? r.template : null,
-              }
-            : r
-        )
-        .map(r => ({ ...r, hub }))
+      relationships.map(r =>
+        r._id
+          ? {
+              ...r,
+              template: r.template && r.template._id !== null ? r.template : null,
+            }
+          : r
+      )
     );
 
     const result = this.appendRelatedEntityData(savedRelationships, language);
 
     if (updateEntities) {
-      await this.updateEntitiesMetadataByHub(hub, language);
+      const touchedHubs = Array.from(new Set(relationships.map(r => r.hub)));
+      for (let i = 0; i < touchedHubs.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.updateEntitiesMetadataByHub(touchedHubs[i], language);
+      }
     }
     return result;
   },
