@@ -256,10 +256,13 @@ export default {
     if (relationships.length === 1 && !relationships[0].hub) {
       throw createError('Single relationships must have a hub');
     }
-
-    const newHub = generateID();
-    relationships = relationships.map(r => ({ ...r, hub: r.hub || newHub }));
-
+    if (!(relationships.every(r => !r.hub) || relationships.every(r => !!r.hub))) {
+      throw createError('Either all relationships must have a hub or none of them.');
+    }
+    if (relationships.length && !relationships[0].hub) {
+      const newHub = generateID();
+      relationships = relationships.map(r => ({ ...r, hub: r.hub || newHub }));
+    }
     return { relationships };
   },
 
