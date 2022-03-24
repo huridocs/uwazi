@@ -27,7 +27,7 @@ describe('migration add_system_key_translations', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(69);
+    expect(migration.delta).toBe(70);
   });
 
   it('should append new keys, leave existing keys intact.', async () => {

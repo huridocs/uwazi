@@ -13,7 +13,7 @@ import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { MediaModalFileList } from './MediaModalFileList';
+import { MediaModalFileList } from 'app/Metadata/components/MediaModalFileList';
 
 enum MediaModalType {
   Image,
