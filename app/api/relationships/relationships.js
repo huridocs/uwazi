@@ -346,6 +346,7 @@ export default {
     );
 
     const relationshipsToCreate = [];
+    const relationshipsToDelete = [];
 
     for (let i = 0; i < relationshipProperties.length; i += 1) {
       const property = relationshipProperties[i];
@@ -403,6 +404,8 @@ export default {
         const toDelete = referencesOfThisType
           .filter(matchingRefsNotInNewSet)
           .map(r => r.rightSide._id);
+
+        console.log(toDelete);
 
         if (toDelete.length) {
           await this.delete(

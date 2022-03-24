@@ -16,7 +16,9 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities.js';
 import fixtures, {
+  adminId,
   batmanFinishesId,
+  batmanStillNotDoneId,
   templateId,
   templateChangingNames,
   templateChangingNamesProps,
@@ -388,38 +390,71 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    fit('should saveEntityBasedReferences', async () => {
-      spyOn(date, 'currentUTC').and.returnValue(1);
-      const entity = {
-        title: 'Batman begins',
-        template: templateId,
-        language: 'es',
-        metadata: {
-          friends: [{ value: 'id1' }, { value: 'id2' }, { value: 'id3' }],
-          enemies: [{ value: 'shared1' }],
-        },
-      };
-      const user = { _id: db.id() };
+    // eslint-disable-next-line jest/no-focused-tests
+    fdescribe('saveEntityBasedReferences', () => {
+      it('should save references on creation', async () => {
+        spyOn(date, 'currentUTC').and.returnValue(1);
+        const entity = {
+          title: 'Batman begins',
+          template: templateId,
+          language: 'es',
+          metadata: {
+            friends: [{ value: 'id1' }, { value: 'id2' }, { value: 'id3' }],
+            enemies: [{ value: 'shared1' }],
+          },
+        };
+        const user = { _id: db.id() };
 
-      const createdEntity = await entities.save(entity, { user, language: 'es' });
+        const createdEntity = await entities.save(entity, { user, language: 'es' });
 
-      const createdRelationships = await relationships.getByDocument(createdEntity.sharedId, 'es');
+        const createdRelationships = await relationships.getByDocument(
+          createdEntity.sharedId,
+          'es'
+        );
 
-      expect(createdRelationships.length).toBe(6);
-      expect(createdRelationships.map(r => r.entityData.title).sort()).toEqual([
-        'Batman begins',
-        'Batman begins',
-        'ES',
-        'entity one',
-        'entity three',
-        'entity two',
-      ]);
+        expect(createdRelationships.length).toBe(6);
+        expect(createdRelationships.map(r => r.entityData.title).sort()).toEqual([
+          'Batman begins',
+          'Batman begins',
+          'ES',
+          'entity one',
+          'entity three',
+          'entity two',
+        ]);
+      });
 
-      const second = await entities.save(createdEntity, { user, language: 'es' });
+      it('should add references on update', async () => {
+        const user = { _id: adminId };
 
+        const existing = await entities.getById('relSaveTest', 'en');
+        const existingRelationships = await relationships.getByDocument('relSaveTest', 'en');
+        expect(existingRelationships.length).toBe(4);
+        expect(existingRelationships.map(r => r.entityData.title).sort()).toEqual([
+          'Batman still not done',
+          'Batman still not done',
+          'shared2title',
+          'shared2title',
+        ]);
+
+        existing.metadata.friends.push({ value: 'id1' }, { value: 'id2' });
+        existing.metadata.enemies.push({ value: 'shared1' });
+        await entities.save(existing, { user, language: 'en' });
+
+        const updatedRelationships = await relationships.getByDocument('relSaveTest', 'en');
+        expect(updatedRelationships.length).toBe(7);
+        expect(updatedRelationships.map(r => r.entityData.title).sort()).toEqual([
+          'Batman still not done',
+          'Batman still not done',
+          'EN',
+          'entity one',
+          'entity two',
+          'shared2title',
+          'shared2title',
+        ]);
+      });
     });
 
-    it('should not cirlce back to updateMetdataFromRelationships', async () => {
+    it('should not circle back to updateMetdataFromRelationships', async () => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       spyOn(entities, 'updateMetdataFromRelationships');
       const doc = {
