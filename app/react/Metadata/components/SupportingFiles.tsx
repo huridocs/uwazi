@@ -97,7 +97,7 @@ const SupportingFiles = ({
           <div className={attachmentClass} key={file._id || uniqueID()}>
             <div className="attachment-thumbnail">{getFileIcon(file)}</div>
             <div className="attachment-name">
-              <Field model={`.attachments.${index}.originalname`}>
+              <Field model={`.attachments.${index}.originalname`} updateOn="blur">
                 <input className="form-control" />
               </Field>
             </div>
