@@ -27,6 +27,7 @@ const MediaField = (props: MediaFieldProps) => {
 
   let fileURL = value;
   const isUploadId = value && /^[a-zA-Z\d_]*$/.test(value);
+  const isWebURL = value && /^https?:\/\//.test(value);
   const supportingFile = localAttachments.find(
     file => value === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
   );
@@ -36,7 +37,7 @@ const MediaField = (props: MediaFieldProps) => {
   }
 
   useEffect(() => {
-    if (value && !supportingFile) {
+    if (value && !supportingFile && !isWebURL) {
       handleImageRemove();
     }
   }, [localAttachments]);

@@ -54,6 +54,22 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = MediaModalProps & mappedProps;
 
+function filterAttachments(
+  type: MediaModalType | undefined,
+  attachments: (AttachmentSchema | ClientFile)[]
+) {
+  switch (type) {
+    case MediaModalType.Image:
+      return attachments.filter(a => a.mimetype && a.mimetype.includes('image'));
+    case MediaModalType.Media:
+      return attachments.filter(
+        a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
+      );
+    default:
+      return attachments;
+  }
+}
+
 const MediaModalComponent = ({
   isOpen,
   onClose,
@@ -67,18 +83,10 @@ const MediaModalComponent = ({
   localAttachmentAction,
   rrfChange,
 }: ComponentProps) => {
-  const filteredAttachments = useMemo(() => {
-    switch (type) {
-      case MediaModalType.Image:
-        return attachments.filter(a => a.mimetype && a.mimetype.includes('image'));
-      case MediaModalType.Media:
-        return attachments.filter(
-          a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
-        );
-      default:
-        return attachments;
-    }
-  }, [attachments, type]);
+  const filteredAttachments = useMemo(
+    () => filterAttachments(type, attachments),
+    [attachments, type]
+  );
 
   const attachmentsUrls = useMemo(
     () => attachments.map(a => a.url || `/api/files/${a.filename}`),
@@ -86,12 +94,7 @@ const MediaModalComponent = ({
   );
 
   const defaultTab = useMemo(() => {
-    if (!selectedUrl) {
-      return MediaModalTab.SelectFromFile;
-    }
-
     const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedUrl);
-
     return selectedAttachmentIndex === -1 ? MediaModalTab.AddNewFile : MediaModalTab.SelectFromFile;
   }, [selectedUrl, attachments]);
 
@@ -110,9 +113,7 @@ const MediaModalComponent = ({
   };
 
   const handleUploadButtonClicked = () => {
-    if (inputFileRef.current) {
-      inputFileRef.current.click();
-    }
+    inputFileRef.current?.click();
   };
 
   const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {

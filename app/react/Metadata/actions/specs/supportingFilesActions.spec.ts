@@ -42,6 +42,7 @@ describe('upload supporting files', () => {
       await action(dispatch);
       expect(formActions.push).toHaveBeenCalledWith('metadata.model.attachments', {
         entity: 'entitySharedId',
+        fileLocalID: expect.stringMatching(/^[a-zA-Z\d_]*$/),
         filename: 'testFile.txt',
         mimetype: 'text/plain',
         originalname: 'testFile.txt',
