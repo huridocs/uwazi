@@ -12,7 +12,8 @@ import uniqueID from 'shared/uniqueID';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
-import { MediaModalFilelist } from './MediaModalFilelist';
+import { mimeTypeFromUrl } from 'api/files/extensionHelper';
+import { MediaModalFileList } from './MediaModalFileList';
 
 enum MediaModalType {
   Image,
@@ -33,7 +34,6 @@ interface MediaModalProps {
   formModel: string;
   formField: string;
   type?: MediaModalType;
-  value?: string | null;
 }
 
 const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
@@ -58,11 +58,15 @@ function filterAttachments(
   type: MediaModalType | undefined,
   attachments: (AttachmentSchema | ClientFile)[]
 ) {
+  const filteredAttachments = attachments.map(a => {
+    const mimetype = !a._id && a.url && !a.mimetype ? mimeTypeFromUrl(a.url) : a.mimetype;
+    return { ...a, mimetype };
+  });
   switch (type) {
     case MediaModalType.Image:
-      return attachments.filter(a => a.mimetype && a.mimetype.includes('image'));
+      return filteredAttachments.filter(a => a.mimetype && a.mimetype.includes('image'));
     case MediaModalType.Media:
-      return attachments.filter(
+      return filteredAttachments.filter(
         a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
       );
     default:
@@ -186,7 +190,7 @@ const MediaModalComponent = ({
                 !filteredAttachments.length ? 'centered' : ''
               }`}
             >
-              <MediaModalFilelist
+              <MediaModalFileList
                 filteredAttachments={filteredAttachments}
                 handleAttachmentClick={handleAttachmentClick}
                 selectedUrl={selectedUrl || ''}

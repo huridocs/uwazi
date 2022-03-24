@@ -6,17 +6,17 @@ import { RenderAttachment } from 'app/Attachments';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { isSerializedFile } from 'shared/fileUploadUtils';
 
-type MediaModalFilelistProps = {
+type MediaModalFileListProps = {
   filteredAttachments: (AttachmentSchema | ClientFile)[];
   handleAttachmentClick: (fileURL: string) => MouseEventHandler;
   selectedUrl: string;
 };
 
-export const MediaModalFilelist = ({
+export const MediaModalFileList = ({
   filteredAttachments,
   handleAttachmentClick,
   selectedUrl,
-}: MediaModalFilelistProps) =>
+}: MediaModalFileListProps) =>
   filteredAttachments.length > 0 ? (
     <div className="media-grid container">
       <div className="row">
@@ -29,6 +29,8 @@ export const MediaModalFilelist = ({
               ? attachment.serializedFile.length
               : attachment.size;
 
+          const sizeLabel = fileSize ? filesize(fileSize) : '_';
+
           return (
             <div
               className="media-grid-item"
@@ -40,7 +42,7 @@ export const MediaModalFilelist = ({
               >
                 <div className="media-grid-card-header">
                   <h5>{attachment.originalname}</h5>
-                  {!!fileSize && <span>{filesize(fileSize)}</span>}
+                  <span style={!fileSize ? { color: '#FFFFFF' } : {}}>{sizeLabel}</span>
                 </div>
                 <div className="media-grid-card-content">
                   <div className="media">
