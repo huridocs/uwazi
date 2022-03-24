@@ -76,7 +76,7 @@ class App extends Component {
       return memo;
     }, '');
 
-    const pageId = location.pathname.match('page/') && params.sharedId ? params.sharedId : '';
+    const pageId = location.pathname.match('page/') && params.sharedId ? `_${params.sharedId}` : '';
 
     const appClassName = customHomePageId || pageId ? `pageId_${customHomePageId || pageId}` : '';
 
