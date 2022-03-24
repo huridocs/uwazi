@@ -351,6 +351,7 @@ export default {
     for (let i = 0; i < relationshipProperties.length; i += 1) {
       const property = relationshipProperties[i];
       const newValues = determinePropertyValues(entity, property.name);
+      const newValueSet = new Set(newValues);
 
       const { relationType: propertyRelationType, content: propertyEntityType } = property;
 
@@ -379,47 +380,33 @@ export default {
 
         relationshipsToCreate.push(...newReferencesBase, ...newReferences);
       }
+
+      const toDelete = Object.entries(
+        existingReferencesByRefTypeByRightSideEntity[propertyRelationType] || {}
+      )
+        .map(entry => entry[1])
+        .filter(
+          r =>
+            r.rightSide.entity !== entity.sharedId &&
+            (!propertyEntityType ||
+              r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
+            !newValueSet.has(r.rightSide.entity)
+        )
+        .map(r => r.rightSide._id);
+
+      relationshipsToDelete.push(...toDelete);
     }
 
-    console.log(relationshipsToCreate);
-    await this.save(relationshipsToCreate, language, false);
-
-    return Promise.all(
-      // eslint-disable-next-line max-statements
-      relationshipProperties.map(async property => {
-        const newValues = determinePropertyValues(entity, property.name);
-        const { relationType: propertyRelationType, content: propertyEntityType } = property;
-
-        let referencesOfThisType = existingReferences.find(
-          g => g._id.toString() === propertyRelationType.toString()
-        );
-        referencesOfThisType = (referencesOfThisType && referencesOfThisType.references) || []; //don't forget dedault []
-
-        const matchingRefsNotInNewSet = r =>
-          r.rightSide.entity !== entity.sharedId &&
-          (!propertyEntityType ||
-            r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
-          !newValues.includes(r.rightSide.entity);
-
-        const toDelete = referencesOfThisType
-          .filter(matchingRefsNotInNewSet)
-          .map(r => r.rightSide._id);
-
-        console.log(toDelete);
-
-        if (toDelete.length) {
-          await this.delete(
-            {
-              _id: { $in: toDelete },
-            },
-            language,
-            false
-          );
-        }
-
-        return [];
-      })
-    );
+    if (relationshipsToCreate.length) await this.save(relationshipsToCreate, language, false);
+    if (relationshipsToDelete.length) {
+      await this.delete(
+        {
+          _id: { $in: relationshipsToDelete },
+        },
+        language,
+        false
+      );
+    }
   },
 
   search(entitySharedId, query, language, user) {

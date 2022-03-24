@@ -390,8 +390,7 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fdescribe('saveEntityBasedReferences', () => {
+    describe('saveEntityBasedReferences', () => {
       it('should save references on creation', async () => {
         spyOn(date, 'currentUTC').and.returnValue(1);
         const entity = {
@@ -451,6 +450,27 @@ describe('entities', () => {
           'shared2title',
           'shared2title',
         ]);
+      });
+
+      it('should delete references on update', async () => {
+        const user = { _id: adminId };
+
+        const existing = await entities.getById('relSaveTest', 'en');
+        const existingRelationships = await relationships.getByDocument('relSaveTest', 'en');
+        expect(existingRelationships.length).toBe(4);
+        expect(existingRelationships.map(r => r.entityData.title).sort()).toEqual([
+          'Batman still not done',
+          'Batman still not done',
+          'shared2title',
+          'shared2title',
+        ]);
+
+        existing.metadata.friends = [];
+        existing.metadata.enemies = [];
+        await entities.save(existing, { user, language: 'en' });
+
+        const updatedRelationships = await relationships.getByDocument('relSaveTest', 'en');
+        expect(updatedRelationships.length).toBe(0);
       });
     });
 
@@ -832,7 +852,7 @@ describe('entities', () => {
   describe('countByTemplate', () => {
     it('should return how many entities using the template passed', async () => {
       const count = await entities.countByTemplate(templateId);
-      expect(count).toBe(9);
+      expect(count).toBe(10);
     });
 
     it('should return 0 when no count found', done => {
@@ -851,9 +871,10 @@ describe('entities', () => {
       entities
         .getByTemplate(templateId, 'en')
         .then(docs => {
-          expect(docs.length).toBe(2);
+          expect(docs.length).toBe(3);
           expect(docs[0].title).toBe('Batman finishes');
-          expect(docs[1].title).toBe('EN');
+          expect(docs[1].title).toBe('Batman still not done');
+          expect(docs[2].title).toBe('EN');
           done();
         })
         .catch(done.fail);
@@ -861,13 +882,16 @@ describe('entities', () => {
 
     it('should return all entities (including unpublished) if required', async () => {
       const docs = await entities.getByTemplate(templateId, 'en', false);
-      expect(docs.length).toBe(6);
-      expect(docs[0].title).toBe('Batman finishes');
-      expect(docs[1].title).toBe('Unpublished entity');
-      expect(docs[2].title).toBe('EN');
-      expect(docs[3].title).toBe('shared2title');
-      expect(docs[4].title).toBe('value2');
-      expect(docs[5].title).toBe('value0');
+      expect(docs.length).toBe(7);
+      expect(docs.map(d => d.title)).toEqual([
+        'Batman finishes',
+        'Batman still not done',
+        'Unpublished entity',
+        'EN',
+        'shared2title',
+        'value2',
+        'value0',
+      ]);
     });
 
     it('should return all entities (including unpublished) if required and user is a collaborator', async () => {
@@ -877,10 +901,11 @@ describe('entities', () => {
         groups: [],
       });
       const docs = await entities.getByTemplate(templateId, 'en', false);
-      expect(docs.length).toBe(3);
+      expect(docs.length).toBe(4);
       expect(docs[0].title).toBe('Batman finishes');
-      expect(docs[1].title).toBe('Unpublished entity');
-      expect(docs[2].title).toBe('EN');
+      expect(docs[1].title).toBe('Batman still not done');
+      expect(docs[2].title).toBe('Unpublished entity');
+      expect(docs[3].title).toBe('EN');
     });
   });
 
