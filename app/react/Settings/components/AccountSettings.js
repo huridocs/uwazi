@@ -110,12 +110,14 @@ export class AccountSettings extends Component {
                 <Translate>Role</Translate>:&nbsp;&nbsp;
                 <Pill>{role}</Pill>
               </div>
-              <div>
-                <Translate>Groups</Translate>:&nbsp;&nbsp;
-                {groups.map(g => (
-                  <Pill>{g.name}</Pill>
-                ))}
-              </div>
+              {groups.length > 0 && (
+                <div>
+                  <Translate>Groups</Translate>:&nbsp;&nbsp;
+                  {groups.map(g => (
+                    <Pill>{g.name}</Pill>
+                  ))}
+                </div>
+              )}
             </div>
             <hr />
             <h5>
