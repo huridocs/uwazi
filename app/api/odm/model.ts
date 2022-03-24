@@ -64,8 +64,16 @@ export class OdmModel<T> {
     return saved.toObject<WithId<T>>();
   }
 
-  async saveMultiple(dataArray: Partial<DataType<T>>[]) {
-    const { existingIds, existingData, updated } = await this.saveExisting(dataArray);
+  async saveMultiple(
+    dataArray: Partial<DataType<T>>[],
+    query?: any,
+    updateExisting: boolean = true
+  ) {
+    const { existingIds, existingData, updated } = await this.saveExisting(
+      dataArray,
+      query,
+      updateExisting
+    );
     const created = await this.saveNew(existingIds, dataArray);
 
     if (updated.length !== existingData.length) {
@@ -82,7 +90,11 @@ export class OdmModel<T> {
     return (await this.db.createMany(newData)) || [];
   }
 
-  private async saveExisting(dataArray: Partial<DataType<T>>[]) {
+  private async saveExisting(
+    dataArray: Partial<DataType<T>>[],
+    query?: any,
+    updateExisting: boolean = true
+  ) {
     const ids: DataType<T>['_id'][] = [];
     dataArray.forEach(d => {
       if (d._id) {
@@ -98,20 +110,25 @@ export class OdmModel<T> {
     );
 
     const existingData = dataArray.filter(d => d._id && existingIds.has(d._id.toString()));
-    await this.db.bulkWrite(
-      existingData.map(data => ({
-        updateOne: {
-          filter: { _id: data._id },
-          update: data,
-        },
-      }))
-    );
+    if (updateExisting) {
+      await this.db.bulkWrite(
+        existingData.map(data => ({
+          updateOne: {
+            filter: { ...query, _id: data._id },
+            update: data,
+          },
+        }))
+      );
 
-    const updated = await this.db.find({
-      _id: { $in: Array.from(existingIds) },
-    } as UwaziFilterQuery<DataType<T>>);
+      const updated = await this.db.find({
+        ...query,
+        _id: { $in: Array.from(existingIds) },
+      } as UwaziFilterQuery<DataType<T>>);
 
-    return { existingIds, existingData, updated };
+      return { existingIds, existingData, updated };
+    }
+
+    return { existingIds, existingData, updated: [] };
   }
 
   async updateMany(

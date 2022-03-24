@@ -136,6 +136,15 @@ export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
       : super.save(appendPermissionData(data, user));
   }
 
+  async saveMultiple(dataArray: WithPermissionsDataType<T>[]) {
+    const user = permissionsContext.getUserInContext();
+    const dataArrayWithPermissions = dataArray.map(data =>
+      data._id || data.permissions ? data : appendPermissionData(data, user)
+    );
+    const query = appendPermissionQuery({}, AccessLevels.WRITE, user);
+    return super.saveMultiple(dataArrayWithPermissions, query, !!user);
+  }
+
   async saveUnrestricted(data: WithPermissionsDataType<T>) {
     return data._id || data.permissions ? super.save(data, { _id: data._id }) : super.save(data);
   }
