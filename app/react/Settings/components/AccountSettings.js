@@ -10,6 +10,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { t, I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { createSelector } from 'reselect';
+import { Pill } from 'app/Metadata/components/Pill';
 
 export class AccountSettings extends Component {
   constructor(props, context) {
@@ -92,7 +93,7 @@ export class AccountSettings extends Component {
 
   render() {
     const { email, password, repeatPassword, passwordError, using2fa } = this.state;
-
+    const { username, groups = [], role } = this.props.user;
     return (
       <div className="account-settings">
         <div className="panel panel-default">
@@ -100,6 +101,25 @@ export class AccountSettings extends Component {
             <Translate>Account</Translate>
           </div>
           <div className="panel-body">
+            <div className="user-details">
+              <div>
+                <Translate>Username</Translate>:&nbsp;&nbsp;
+                <strong>{username}</strong>
+              </div>
+              <div className="user-details-role">
+                <Translate>Role</Translate>:&nbsp;&nbsp;
+                <Pill>{role}</Pill>
+              </div>
+              {groups.length > 0 && (
+                <div>
+                  <Translate>Groups</Translate>:&nbsp;&nbsp;
+                  {groups.map(g => (
+                    <Pill>{g.name}</Pill>
+                  ))}
+                </div>
+              )}
+            </div>
+            <hr />
             <h5>
               <Translate>Email address</Translate>
             </h5>
