@@ -165,6 +165,7 @@ export class DocumentSidePanel extends Component {
                       role="button"
                       tabIndex="0"
                       aria-label={t('System', 'Semantic search results', null, false)}
+                      component="div"
                     >
                       <Icon icon="flask" />
                       <span className="tab-link-tooltip">
@@ -184,6 +185,7 @@ export class DocumentSidePanel extends Component {
                       role="button"
                       tabIndex="0"
                       aria-label={t('System', 'Search text', null, false)}
+                      component="div"
                     >
                       <SnippetsTab storeKey={this.props.storeKey} />
                     </TabLink>
@@ -200,6 +202,7 @@ export class DocumentSidePanel extends Component {
                       role="button"
                       tabIndex="0"
                       aria-label={t('System', 'Table of Contents', null, false)}
+                      component="div"
                     >
                       <Icon icon="font" />
                       <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
@@ -218,6 +221,7 @@ export class DocumentSidePanel extends Component {
                       role="button"
                       tabIndex="0"
                       aria-label={t('System', 'References', null, false)}
+                      component="div"
                     >
                       <Icon icon="sitemap" />
                       <span className="connectionsNumber">{references.size}</span>
@@ -241,6 +245,7 @@ export class DocumentSidePanel extends Component {
                 role="button"
                 tabIndex="0"
                 aria-label={t('System', 'Info', null, false)}
+                component="div"
               >
                 <Icon icon="info-circle" />
                 <span className="tab-link-tooltip">{t('System', 'Info')}</span>
@@ -255,6 +260,7 @@ export class DocumentSidePanel extends Component {
                       role="button"
                       tabIndex="0"
                       aria-label={t('System', 'Connections', null, false)}
+                      component="div"
                     >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
