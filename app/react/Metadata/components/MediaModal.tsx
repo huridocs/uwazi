@@ -14,6 +14,7 @@ import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourc
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { MediaModalFileList } from 'app/Metadata/components/MediaModalFileList';
+import { PublicFormMediaField } from 'app/Forms/components/PublicFormMediaField';
 
 enum MediaModalType {
   Image,
@@ -121,6 +122,11 @@ const MediaModalComponent = ({
     onClose();
   };
 
+  const handleFileInPublicForm = (formData: { file: string }) => {
+    onChange(formData.file);
+    onClose();
+  };
+
   const handleUploadButtonClicked = () => {
     inputFileRef.current?.click();
   };
@@ -204,24 +210,29 @@ const MediaModalComponent = ({
               for={MediaModalTab.AddNewFile}
               className="tab-content attachments-modal__tabs-content centered"
             >
-              <div className="upload-button">
-                <button
-                  type="button"
-                  onClick={handleUploadButtonClicked}
-                  className="btn btn-success"
-                >
-                  <Icon icon="link" />
-                  &nbsp; <Translate>Upload and select file</Translate>
-                </button>
-                <input
-                  aria-label="fileInput"
-                  type="file"
-                  onChange={handleInputFileChange}
-                  style={{ display: 'none' }}
-                  ref={inputFileRef}
-                  accept={acceptedFileTypes}
-                />
-              </div>
+              {formModel === 'publicform' ? (
+                <PublicFormMediaField handleSubmit={handleFileInPublicForm} file={selectedUrl} />
+              ) : (
+                <div className="upload-button">
+                  <button
+                    type="button"
+                    onClick={handleUploadButtonClicked}
+                    className="btn btn-success"
+                  >
+                    <Icon icon="link" />
+                    &nbsp; <Translate>Upload and select file</Translate>
+                  </button>
+                  <input
+                    aria-label="fileInput"
+                    type="file"
+                    onChange={handleInputFileChange}
+                    style={{ display: 'none' }}
+                    ref={inputFileRef}
+                    accept={acceptedFileTypes}
+                  />
+                </div>
+              )}
+
               <div className="wrapper-web">
                 <WebMediaResourceForm
                   handleSubmit={handleSubmitFromUrl}
