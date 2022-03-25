@@ -171,6 +171,7 @@ const MediaModalComponent = ({
               to={MediaModalTab.SelectFromFile}
               className="tab-link modal-tab-1"
               default={defaultTab === MediaModalTab.SelectFromFile}
+              component="div"
             >
               <Translate>Select from files</Translate>
             </TabLink>
@@ -178,6 +179,7 @@ const MediaModalComponent = ({
               to={MediaModalTab.AddNewFile}
               className="tab-link modal-tab-2"
               default={defaultTab === MediaModalTab.AddNewFile}
+              component="div"
             >
               <Translate>Add new file</Translate>
             </TabLink>
