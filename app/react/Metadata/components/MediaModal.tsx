@@ -167,14 +167,16 @@ const MediaModalComponent = ({
       <div className="attachments-modal__content">
         <Tabs renderActiveTabContentOnly>
           <div className="attachments-modal__tabs">
-            <TabLink
-              to={MediaModalTab.SelectFromFile}
-              className="tab-link modal-tab-1"
-              default={defaultTab === MediaModalTab.SelectFromFile}
-              component="div"
-            >
-              <Translate>Select from files</Translate>
-            </TabLink>
+            {formModel !== 'publicform' && (
+              <TabLink
+                to={MediaModalTab.SelectFromFile}
+                className="tab-link modal-tab-1"
+                default={defaultTab === MediaModalTab.SelectFromFile}
+                component="div"
+              >
+                <Translate>Select from files</Translate>
+              </TabLink>
+            )}
             <TabLink
               to={MediaModalTab.AddNewFile}
               className="tab-link modal-tab-2"

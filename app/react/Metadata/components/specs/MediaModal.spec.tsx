@@ -4,6 +4,7 @@
 import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
 import { actions as formActions } from 'react-redux-form';
+import { TabLink } from 'react-tabs-redux';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
@@ -167,6 +168,15 @@ describe('Media Modal', () => {
         expect.stringMatching(/^[a-zA-Z\d_]*$/)
       );
       expect(props.onClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Public forms', () => {
+    it('should only display the tab to add new files', () => {
+      render({ formModel: 'publicform' });
+      const tab = component.find(TabLink);
+      expect(tab.length).toBe(1);
+      expect(tab.props().to).toEqual('AddNewFile');
     });
   });
 });
