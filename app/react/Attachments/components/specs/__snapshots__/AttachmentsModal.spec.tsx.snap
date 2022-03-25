@@ -47,6 +47,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
     className="attachments-modal__content"
   >
     <Tabs
+      onChange={[Function]}
       renderActiveTabContentOnly={true}
     >
       <div
@@ -186,6 +187,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
     className="attachments-modal__content"
   >
     <Tabs
+      onChange={[Function]}
       renderActiveTabContentOnly={true}
     >
       <div
