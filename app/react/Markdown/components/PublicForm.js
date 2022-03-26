@@ -99,27 +99,32 @@ class PublicForm extends Component {
 
   async handleSubmit(_values) {
     const templateJS = this.props.template.toJS();
-    const imageProperties = templateJS.properties.filter(p => p.type === 'image');
+    const mediaProperties = templateJS.properties.filter(
+      p => p.type === 'image' || p.type === 'media'
+    );
     const metadataFiles = {};
     const entityAttachments = [];
     const files = [];
     await Promise.all(
-      imageProperties.map(async p => {
+      mediaProperties.map(async p => {
+        if (!_values.metadata[p.name] || /^https?:\/\//.test(_values.metadata[p.name])) {
+          return Promise.resolve();
+        }
         const blob = await fetch(_values.metadata[p.name]).then(r => r.blob());
-        const file = new File([blob], p.name, { type: 'image/png' });
+        const file = new File([blob], p.name, { type: blob.type });
         const fileID = uniqueID();
         const newFile = {
           originalname: file.name,
           filename: file.name,
-          serializedFile: blob,
           type: 'attachment',
-          mimetype: file.type,
+          mimetype: blob.type,
           fileLocalID: fileID,
         };
         metadataFiles[p.name] = fileID;
         entityAttachments.push(newFile);
         files.push(file);
         URL.revokeObjectURL(_values.metadata[p.name]);
+        return blob;
       })
     );
     const fields = { ..._values.metadata, ...metadataFiles };

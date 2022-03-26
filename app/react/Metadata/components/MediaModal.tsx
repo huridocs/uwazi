@@ -215,10 +215,12 @@ const MediaModalComponent = ({
             >
               {formModel === 'publicform' ? (
                 <Field
+                  aria-label="fileInput"
                   model=".file"
                   component="input"
                   type="file"
                   onChange={handleFileInPublicForm}
+                  accept={acceptedFileTypes}
                 />
               ) : (
                 <div className="upload-button">
