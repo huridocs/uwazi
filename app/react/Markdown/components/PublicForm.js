@@ -98,7 +98,6 @@ class PublicForm extends Component {
   }
 
   async handleSubmit(_values) {
-    const blob = await fetch(_values.metadata.image).then(r => r.blob());
     const templateJS = this.props.template.toJS();
     const imageProperties = templateJS.properties.filter(p => p.type === 'image');
     const metadataFiles = {};
@@ -106,6 +105,7 @@ class PublicForm extends Component {
     const files = [];
     await Promise.all(
       imageProperties.map(async p => {
+        const blob = await fetch(_values.metadata[p.name]).then(r => r.blob());
         const file = new File([blob], p.name, { type: 'image/png' });
         const fileID = uniqueID();
         const newFile = {
