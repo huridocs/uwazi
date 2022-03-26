@@ -16,6 +16,7 @@ import './scss/public-form.scss';
 import Dropzone from 'react-dropzone';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { generateID } from 'shared/IDGenerator';
+import uniqueID from 'shared/uniqueID';
 
 class PublicForm extends Component {
   static renderTitle(template) {
@@ -96,12 +97,40 @@ class PublicForm extends Component {
     }
   }
 
-  handleSubmit(_values) {
-    const values = wrapEntityMetadata(_values);
+  async handleSubmit(_values) {
+    const blob = await fetch(_values.metadata.image).then(r => r.blob());
+    const templateJS = this.props.template.toJS();
+    const imageProperties = templateJS.properties.filter(p => p.type === 'image');
+    const metadataFiles = {};
+    const entityAttachments = [];
+    const files = [];
+    await Promise.all(
+      imageProperties.map(async p => {
+        const file = new File([blob], p.name, { type: 'image/png' });
+        const fileID = uniqueID();
+        const newFile = {
+          originalname: file.name,
+          filename: file.name,
+          serializedFile: blob,
+          type: 'attachment',
+          mimetype: file.type,
+          fileLocalID: fileID,
+        };
+        metadataFiles[p.name] = fileID;
+        entityAttachments.push(newFile);
+        files.push(file);
+        URL.revokeObjectURL(_values.metadata[p.name]);
+      })
+    );
+    const fields = { ..._values.metadata, ...metadataFiles };
+    const entity = { ..._values, metadata: fields, attachments: entityAttachments };
+    const values = wrapEntityMetadata(entity);
     const { submit, template, remote } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
-    values.attachments = this.state.files.length ? this.state.files : undefined;
+    values.attachments = [];
+    values.attachments.push(...this.state.files);
+    values.attachments.push(...files);
     submit(values, remote)
       .then(uploadCompletePromise => {
         this.setState({ submiting: true });

@@ -3,7 +3,7 @@ import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { actions as formActions } from 'react-redux-form';
+import { actions as formActions, Field } from 'react-redux-form';
 import { get } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -14,7 +14,6 @@ import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourc
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { MediaModalFileList } from 'app/Metadata/components/MediaModalFileList';
-import { PublicFormMediaField } from 'app/Forms/components/PublicFormMediaField';
 
 enum MediaModalType {
   Image,
@@ -122,9 +121,13 @@ const MediaModalComponent = ({
     onClose();
   };
 
-  const handleFileInPublicForm = (formData: { file: string }) => {
-    onChange(formData.file);
-    onClose();
+  const handleFileInPublicForm = (ev: React.FormEvent<HTMLInputElement>) => {
+    const { files } = ev.target as HTMLInputElement;
+    if (files && files.length > 0) {
+      const data = URL.createObjectURL(files[0]);
+      onChange(data);
+      onClose();
+    }
   };
 
   const handleUploadButtonClicked = () => {
@@ -211,7 +214,12 @@ const MediaModalComponent = ({
               className="tab-content attachments-modal__tabs-content centered"
             >
               {formModel === 'publicform' ? (
-                <PublicFormMediaField handleSubmit={handleFileInPublicForm} file={selectedUrl} />
+                <Field
+                  model=".file"
+                  component="input"
+                  type="file"
+                  onChange={handleFileInPublicForm}
+                />
               ) : (
                 <div className="upload-button">
                   <button
