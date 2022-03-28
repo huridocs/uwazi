@@ -41,6 +41,8 @@ describe('Media Modal', () => {
       attachments: [],
       formModel: 'library.sidepanel.metadata',
       formField: 'library.sidepanel.metadata.metadata.image',
+      type: MediaModalType.Image,
+      multipleEdition: false,
     };
   });
 
@@ -65,7 +67,7 @@ describe('Media Modal', () => {
   });
 
   it('Should select attachment with filename', () => {
-    const jpgAttachment = { _id: 123, filename: 'test.jpg', size: 1234 };
+    const jpgAttachment = { _id: 123, filename: 'test.jpg', size: 1234, mimetype: 'image/jpg' };
     render({ attachments: [jpgAttachment] });
 
     const firstAttachment = component.find('.media-grid-item');
@@ -168,6 +170,13 @@ describe('Media Modal', () => {
         expect.stringMatching(/^[a-zA-Z\d_]*$/)
       );
       expect(props.onClose).toHaveBeenCalled();
+    });
+
+    it('should not display the button to upload from local files in multiedit forms', () => {
+      props.multipleEdition = true;
+      render();
+      component.find('.modal-tab-2').at(0).simulate('click');
+      expect(component.find('input[type="file"]').length).toBe(0);
     });
   });
 
