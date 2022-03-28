@@ -12,6 +12,17 @@ import { validation, createError } from '../utils';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 import { uploadMiddleware } from './uploadMiddleware';
 
+const processEntityDocument = async (req, entitySharedId) => {
+  const file = req.files.find(_file => _file.fieldname.includes('file'));
+  if (file) {
+    storeFile(uploadsPath, file).then(async _file => {
+      await processDocument(entitySharedId, _file);
+      await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
+      req.emitToSessionSocket('documentProcessed', entitySharedId);
+    });
+  }
+};
+
 const routes = app => {
   const corsOptions = {
     origin: true,
@@ -72,14 +83,7 @@ const routes = app => {
         files: req.files,
       });
 
-      const file = req.files.find(_file => _file.fieldname.includes('file'));
-      if (file) {
-        storeFile(uploadsPath, file).then(async _file => {
-          await processDocument(savedEntity.sharedId, _file);
-          await search.indexEntities({ sharedId: savedEntity.sharedId }, '+fullText');
-          req.emitToSessionSocket('documentProcessed', savedEntity.sharedId);
-        });
-      }
+      await processEntityDocument(req, savedEntity.sharedId);
 
       if (email) {
         await mailer.send(email);
