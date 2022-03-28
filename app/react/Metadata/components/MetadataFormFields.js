@@ -79,7 +79,8 @@ class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris, attachments, localAttachments } = this.props;
+    const { dateFormat, version, entityThesauris, attachments, localAttachments, multipleEdition } =
+      this.props;
     const propertyType = property.type;
     const plainAttachments = attachments.toJS();
     const plainLocalAttachments = localAttachments;
@@ -181,6 +182,7 @@ class MetadataFormFields extends Component {
             attachments={plainAttachments}
             localAttachments={plainLocalAttachments}
             type={MediaModalType.Media}
+            multipleEdition={multipleEdition}
           />
         );
       case 'image':
@@ -191,6 +193,7 @@ class MetadataFormFields extends Component {
             attachments={plainAttachments}
             localAttachments={plainLocalAttachments}
             type={MediaModalType.Image}
+            multipleEdition={multipleEdition}
           />
         );
       case 'preview':

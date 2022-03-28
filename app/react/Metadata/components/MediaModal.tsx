@@ -3,7 +3,7 @@ import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { actions as formActions, Field } from 'react-redux-form';
+import { actions as formActions } from 'react-redux-form';
 import { get } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -14,6 +14,7 @@ import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourc
 import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { MediaModalFileList } from 'app/Metadata/components/MediaModalFileList';
+import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 
 enum MediaModalType {
   Image,
@@ -25,6 +26,9 @@ enum MediaModalTab {
   AddNewFile = 'AddNewFile',
 }
 
+const getAcceptedFileTypes = (type: MediaModalType) =>
+  type === MediaModalType.Image ? 'image/*' : 'video/*';
+
 interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -33,7 +37,8 @@ interface MediaModalProps {
   selectedUrl: string | null;
   formModel: string;
   formField: string;
-  type?: MediaModalType;
+  type: MediaModalType;
+  multipleEdition: boolean;
 }
 
 const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
@@ -76,14 +81,15 @@ function filterAttachments(
 
 const MediaModalComponent = ({
   isOpen,
-  onClose,
   attachments = [],
-  onChange,
   selectedUrl,
   entity,
   formModel,
   formField,
   type,
+  multipleEdition,
+  onClose,
+  onChange,
   localAttachmentAction,
   rrfChange,
 }: ComponentProps) => {
@@ -109,8 +115,6 @@ const MediaModalComponent = ({
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
-  const acceptedFileTypes = type === MediaModalType.Image ? 'image/*' : 'video/*';
-
   const handleAttachmentClick = (url: string) => () => {
     onChange(url);
     onClose();
@@ -121,8 +125,8 @@ const MediaModalComponent = ({
     onClose();
   };
 
-  const handleFileInPublicForm = (ev: React.FormEvent<HTMLInputElement>) => {
-    const { files } = ev.target as HTMLInputElement;
+  const handleFileInPublicForm = (event: React.FormEvent<HTMLInputElement>) => {
+    const { files } = event.target as HTMLInputElement;
     if (files && files.length > 0) {
       const data = URL.createObjectURL(files[0]);
       onChange(data);
@@ -213,35 +217,15 @@ const MediaModalComponent = ({
               for={MediaModalTab.AddNewFile}
               className="tab-content attachments-modal__tabs-content centered"
             >
-              {formModel === 'publicform' ? (
-                <Field
-                  aria-label="fileInput"
-                  model=".file"
-                  component="input"
-                  type="file"
-                  onChange={handleFileInPublicForm}
-                  accept={acceptedFileTypes}
-                />
-              ) : (
-                <div className="upload-button">
-                  <button
-                    type="button"
-                    onClick={handleUploadButtonClicked}
-                    className="btn btn-success"
-                  >
-                    <Icon icon="link" />
-                    &nbsp; <Translate>Upload and select file</Translate>
-                  </button>
-                  <input
-                    aria-label="fileInput"
-                    type="file"
-                    onChange={handleInputFileChange}
-                    style={{ display: 'none' }}
-                    ref={inputFileRef}
-                    accept={acceptedFileTypes}
-                  />
-                </div>
-              )}
+              <MediaModalUploadFileButton
+                multipleEdition={multipleEdition}
+                formModel={formModel}
+                acceptedFileTypes={getAcceptedFileTypes(type)}
+                inputFileRef={inputFileRef}
+                handleUploadButtonClicked={handleUploadButtonClicked}
+                handleFileInPublicForm={handleFileInPublicForm}
+                handleInputFileChange={handleInputFileChange}
+              />
 
               <div className="wrapper-web">
                 <WebMediaResourceForm

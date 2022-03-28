@@ -11,10 +11,19 @@ type MediaFieldProps = MediaModalProps & {
   localAttachments: ClientFile[];
   formModel: string;
   name: string;
+  multipleEdition: boolean;
 };
 
 const MediaField = (props: MediaFieldProps) => {
-  const { value, onChange, type, localAttachments = [], formModel, name: formField } = props;
+  const {
+    value,
+    onChange,
+    type,
+    localAttachments = [],
+    formModel,
+    name: formField,
+    multipleEdition,
+  } = props;
   const [openModal, setOpenModal] = useState(false);
 
   const handleCloseMediaModal = () => {
@@ -72,6 +81,7 @@ const MediaField = (props: MediaFieldProps) => {
         type={type}
         formModel={formModel}
         formField={formField}
+        multipleEdition={multipleEdition}
       />
     </div>
   );
