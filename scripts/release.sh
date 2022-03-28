@@ -12,7 +12,7 @@ tar -czf uwazi.tgz ./prod
 
 GITHUB_TOKEN="$gh_token" gh release create "$release_version"\
   --title "$release_version"\
-  --notes "## What's changed\n\n$release_notes\n\n**Full Changelog**: https://github.com/huridocs/uwazi/compare/$previous_tag...$release_version"\
+  --notes "## What's changed\r\n\r\n$release_notes\r\n\r\n**Full Changelog**: https://github.com/huridocs/uwazi/compare/$previous_tag...$release_version"\
   --target production\
   uwazi.tgz
 
