@@ -99,6 +99,7 @@ export const MediaModal = ({
               to={MediaModalTab.SelectFromFile}
               className="tab-link modal-tab-1"
               default={defaultTab === MediaModalTab.SelectFromFile}
+              component="div"
             >
               <Translate>Select from files</Translate>
             </TabLink>
@@ -106,6 +107,7 @@ export const MediaModal = ({
               to={MediaModalTab.AddFromUrl}
               className="tab-link modal-tab-2"
               default={defaultTab === MediaModalTab.AddFromUrl}
+              component="div"
             >
               <Translate>Add from url</Translate>
             </TabLink>

@@ -110,6 +110,16 @@ export const publicForm = [
   </Translate>,
 ];
 
+export const openPublicForm = (
+  <Translate translationKey="Captcha bypass">
+    By toggling this on you can allow users to submit to your whitelisted templates without having
+    to fill a CAPTCHA. The form will still present the captcha to end users, but API end-point will
+    allow submissions without CAPTCHA validation if a header `&ldquo;Bypass-Captcha: true`&ldquo; is
+    sent along. This option is insecure and can be leveraged to flood your instance with spam or
+    malicious content.
+  </Translate>
+);
+
 export const mapApiKey = (
   <Translate translationKey="Map api key tooltip">
     An API key is required to use Mapbox or Google Maps.

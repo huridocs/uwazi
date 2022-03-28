@@ -5,7 +5,7 @@ import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { uploadsPath, customUploadsPath, uploadMiddleware } from 'api/files';
+import { uploadsPath, customUploadsPath, uploadMiddleware, deleteUploadedFiles } from 'api/files';
 import { needsAuthorization } from '../auth';
 import { TranslationType } from 'shared/translationType';
 
@@ -111,6 +111,7 @@ export default (app: Application) => {
       let file;
       if (req.query.namespace === 'files') {
         file = await models[req.query.namespace].getById(JSON.parse(req.query.data)._id);
+        await deleteUploadedFiles([file]);
       }
 
       await models[req.query.namespace].delete(JSON.parse(req.query.data));

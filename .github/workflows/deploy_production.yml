@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'production'
+          fetch-depth: 0
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v1
         with:
