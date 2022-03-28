@@ -64,7 +64,7 @@ function filterAttachments(
   attachments: (AttachmentSchema | ClientFile)[]
 ) {
   const filteredAttachments = attachments.map(a => {
-    const mimetype = !a._id && a.url && !a.mimetype ? mimeTypeFromUrl(a.url) : a.mimetype;
+    const mimetype = a.url && !a.mimetype ? mimeTypeFromUrl(a.url) : a.mimetype;
     return { ...a, mimetype };
   });
   switch (type) {
