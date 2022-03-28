@@ -66,7 +66,7 @@ const routes = app => {
         return;
       }
 
-      const newEntity = await saveEntity(entity, {
+      const { entity: savedEntity } = await saveEntity(entity, {
         user: {},
         language: req.language,
         files: req.files,
@@ -75,9 +75,9 @@ const routes = app => {
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
         storeFile(uploadsPath, file).then(async _file => {
-          await processDocument(newEntity.sharedId, _file);
-          await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
-          req.emitToSessionSocket('documentProcessed', newEntity.sharedId);
+          await processDocument(savedEntity.sharedId, _file);
+          await search.indexEntities({ sharedId: savedEntity.sharedId }, '+fullText');
+          req.emitToSessionSocket('documentProcessed', savedEntity.sharedId);
         });
       }
 
@@ -85,7 +85,7 @@ const routes = app => {
         await mailer.send(email);
       }
 
-      res.json(newEntity);
+      res.json(savedEntity);
     }
   );
 
