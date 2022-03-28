@@ -7,7 +7,7 @@ import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/compon
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 
 type MediaFieldProps = MediaModalProps & {
-  value: string | null;
+  value: string | { url: string; originalFile: File } | null;
   localAttachments: ClientFile[];
   formModel: string;
   name: string;
