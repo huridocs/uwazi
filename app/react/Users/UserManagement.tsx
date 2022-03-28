@@ -12,12 +12,12 @@ export const UserManagement = () => {
         <div>
           <ul className="nav">
             <li>
-              <TabLink to="users">
+              <TabLink to="users" component="div">
                 <Translate>Users</Translate>
               </TabLink>
             </li>
             <li>
-              <TabLink to="usergroups">
+              <TabLink to="usergroups" component="div">
                 <Translate>Groups</Translate>
               </TabLink>
             </li>
