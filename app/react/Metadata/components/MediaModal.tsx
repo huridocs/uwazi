@@ -168,7 +168,9 @@ const MediaModalComponent = ({
               handleFileInPublicForm={handleFileInPublicForm}
               handleInputFileChange={handleInputFileChange}
             />
-            <p>or</p>
+
+            <Translate>or</Translate>
+
             <div className="wrapper-web">
               <WebMediaResourceForm handleSubmit={handleSubmitFromUrl} />
             </div>
