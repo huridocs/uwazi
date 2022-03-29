@@ -1,5 +1,4 @@
 import { Field, LocalForm } from 'react-redux-form';
-import Tip from 'app/Layout/Tip';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import React from 'react';
@@ -30,6 +29,7 @@ const WebMediaResourceForm = ({
       model="urlForm"
       validators={validators}
       initialState={{ url }}
+      className={!hasName ? 'select-from-link' : ''}
     >
       <FormGroup className="has-feedback" model=".url">
         <Field model=".url">
@@ -39,24 +39,7 @@ const WebMediaResourceForm = ({
             placeholder="Paste URL here"
           />
         </Field>
-        <Tip icon="info-circle" position="right">
-          <p>
-            <Translate>To get resource from web:</Translate>
-          </p>
-          <p>
-            <Translate>
-              1. Right-click an image or video on the web and copy the image's URL. Altenatively
-              websites offers share button whereyou can get URL.
-            </Translate>
-          </p>
-          <p>
-            <Translate>
-              2. Return here and paste the URL in this field (Ctrl+V or Command+V)
-            </Translate>
-          </p>
-        </Tip>
       </FormGroup>
-
       {hasName && (
         <FormGroup className="form-group" model=".name">
           <Field model=".name" className="field">
@@ -64,7 +47,6 @@ const WebMediaResourceForm = ({
           </Field>
         </FormGroup>
       )}
-
       <button type="submit" className="btn">
         <Icon icon="link" />
         &nbsp; <Translate>Add from URL</Translate>
