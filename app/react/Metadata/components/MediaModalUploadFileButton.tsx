@@ -4,7 +4,6 @@ import { Field } from 'react-redux-form';
 import { Translate } from 'app/I18N';
 
 type componentProps = {
-  multipleEdition: boolean;
   formModel: string;
   acceptedFileTypes: 'image/*' | 'video/*';
   inputFileRef: React.MutableRefObject<HTMLInputElement | null>;
@@ -14,7 +13,6 @@ type componentProps = {
 };
 
 export const MediaModalUploadFileButton = ({
-  multipleEdition,
   formModel,
   acceptedFileTypes,
   inputFileRef,
@@ -22,7 +20,7 @@ export const MediaModalUploadFileButton = ({
   handleUploadButtonClicked,
   handleInputFileChange,
 }: componentProps) => {
-  if (!multipleEdition && formModel === 'publicform') {
+  if (formModel === 'publicform') {
     return (
       <Field
         aria-label="fileInput"
@@ -35,24 +33,20 @@ export const MediaModalUploadFileButton = ({
     );
   }
 
-  if (!multipleEdition) {
-    return (
-      <div className="upload-button">
-        <button type="button" onClick={handleUploadButtonClicked} className="btn">
-          <Icon icon="cloud-upload-alt" />
-          &nbsp; <Translate>Select from computer</Translate>
-        </button>
-        <input
-          aria-label="fileInput"
-          type="file"
-          onChange={handleInputFileChange}
-          style={{ display: 'none' }}
-          ref={inputFileRef}
-          accept={acceptedFileTypes}
-        />
-      </div>
-    );
-  }
-
-  return <></>;
+  return (
+    <div className="upload-button">
+      <button type="button" onClick={handleUploadButtonClicked} className="btn">
+        <Icon icon="cloud-upload-alt" />
+        &nbsp; <Translate>Select from computer</Translate>
+      </button>
+      <input
+        aria-label="fileInput"
+        type="file"
+        onChange={handleInputFileChange}
+        style={{ display: 'none' }}
+        ref={inputFileRef}
+        accept={acceptedFileTypes}
+      />
+    </div>
+  );
 };

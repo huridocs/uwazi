@@ -159,18 +159,17 @@ const MediaModalComponent = ({
       <div className="attachments-modal__content">
         <div className="attachments-modal__tabs-content">
           <div className="upload-options">
-            <MediaModalUploadFileButton
-              multipleEdition={multipleEdition}
-              formModel={formModel}
-              acceptedFileTypes={getAcceptedFileTypes(type)}
-              inputFileRef={inputFileRef}
-              handleUploadButtonClicked={handleUploadButtonClicked}
-              handleFileInPublicForm={handleFileInPublicForm}
-              handleInputFileChange={handleInputFileChange}
-            />
-
-            <Translate>or</Translate>
-
+            {!multipleEdition && (
+              <MediaModalUploadFileButton
+                formModel={formModel}
+                acceptedFileTypes={getAcceptedFileTypes(type)}
+                inputFileRef={inputFileRef}
+                handleUploadButtonClicked={handleUploadButtonClicked}
+                handleFileInPublicForm={handleFileInPublicForm}
+                handleInputFileChange={handleInputFileChange}
+              />
+            )}
+            {!multipleEdition && <Translate>or</Translate>}
             <div className="wrapper-web">
               <WebMediaResourceForm handleSubmit={handleSubmitFromUrl} />
             </div>

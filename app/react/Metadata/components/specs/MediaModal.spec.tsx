@@ -4,7 +4,6 @@
 import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
 import { actions as formActions } from 'react-redux-form';
-import { TabLink } from 'react-tabs-redux';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
@@ -131,26 +130,23 @@ describe('Media Modal', () => {
     expect(selectedAttachment.length).toBe(1);
   });
 
-  it('Should upload file from url', () => {
-    render();
-
-    const testAttachment = 'http://test.test/test.jpg';
-    component.find('.modal-tab-2').at(0).simulate('click');
-
-    const form = component.find(WebMediaResourceForm).at(0);
-    const formData = { url: testAttachment };
-    form.props().handleSubmit(formData);
-    expect(props.onChange).toHaveBeenCalledWith(testAttachment);
-    expect(props.onClose).toHaveBeenCalled();
-  });
-
   describe('Upload file', () => {
+    it('Should upload file from url', () => {
+      render();
+
+      const testAttachment = 'http://test.test/test.jpg';
+      const form = component.find(WebMediaResourceForm).at(0);
+      const formData = { url: testAttachment };
+      form.props().handleSubmit(formData);
+      expect(props.onChange).toHaveBeenCalledWith(testAttachment);
+      expect(props.onClose).toHaveBeenCalled();
+    });
+
     it('Should upload and select a new file', () => {
       const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
         type: 'image/jpg',
       });
       render();
-      component.find('.modal-tab-2').at(0).simulate('click');
       component.find('input[type="file"]').simulate('change', {
         target: {
           files: [newFile],
@@ -175,17 +171,7 @@ describe('Media Modal', () => {
     it('should not display the button to upload from local files in multiedit forms', () => {
       props.multipleEdition = true;
       render();
-      component.find('.modal-tab-2').at(0).simulate('click');
       expect(component.find('input[type="file"]').length).toBe(0);
-    });
-  });
-
-  describe('Public forms', () => {
-    it('should only display the tab to add new files', () => {
-      render({ formModel: 'publicform' });
-      const tab = component.find(TabLink);
-      expect(tab.length).toBe(1);
-      expect(tab.props().to).toEqual('AddNewFile');
     });
   });
 });
