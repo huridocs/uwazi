@@ -1,6 +1,5 @@
 import React, { useMemo, useRef } from 'react';
 import ReactModal from 'react-modal';
-import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
@@ -19,11 +18,6 @@ import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 enum MediaModalType {
   Image,
   Media,
-}
-
-enum MediaModalTab {
-  SelectFromFile = 'SelectFromFile',
-  AddNewFile = 'AddNewFile',
 }
 
 const getAcceptedFileTypes = (type: MediaModalType) =>
@@ -98,21 +92,6 @@ const MediaModalComponent = ({
     [attachments, type]
   );
 
-  const attachmentsUrls = useMemo(
-    () => attachments.map(a => a.url || `/api/files/${a.filename}`),
-    [attachments]
-  );
-
-  const defaultTab = useMemo(() => {
-    if (!selectedUrl) {
-      return MediaModalTab.SelectFromFile;
-    }
-
-    const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedUrl);
-
-    return selectedAttachmentIndex === -1 ? MediaModalTab.AddNewFile : MediaModalTab.SelectFromFile;
-  }, [selectedUrl, attachments]);
-
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleAttachmentClick = (url: string) => () => {
@@ -178,64 +157,34 @@ const MediaModalComponent = ({
         </button>
       </div>
       <div className="attachments-modal__content">
-        <Tabs renderActiveTabContentOnly>
-          <div className="attachments-modal__tabs">
-            {formModel !== 'publicform' && (
-              <TabLink
-                to={MediaModalTab.SelectFromFile}
-                className="tab-link modal-tab-1"
-                default={defaultTab === MediaModalTab.SelectFromFile}
-                component="div"
-              >
-                <Translate>Select from files</Translate>
-              </TabLink>
-            )}
-            <TabLink
-              to={MediaModalTab.AddNewFile}
-              className="tab-link modal-tab-2"
-              default={defaultTab === MediaModalTab.AddNewFile}
-              component="div"
-            >
-              <Translate>Add new file</Translate>
-            </TabLink>
+        <div className="attachments-modal__tabs-content">
+          <div className="upload-options">
+            <MediaModalUploadFileButton
+              multipleEdition={multipleEdition}
+              formModel={formModel}
+              acceptedFileTypes={getAcceptedFileTypes(type)}
+              inputFileRef={inputFileRef}
+              handleUploadButtonClicked={handleUploadButtonClicked}
+              handleFileInPublicForm={handleFileInPublicForm}
+              handleInputFileChange={handleInputFileChange}
+            />
+            <p>or</p>
+            <div className="wrapper-web">
+              <WebMediaResourceForm handleSubmit={handleSubmitFromUrl} />
+            </div>
           </div>
-
-          <div className="attachments-modal__tabs-content">
-            <TabContent
-              for={MediaModalTab.SelectFromFile}
-              className={`tab-content attachments-modal__tabs-content ${
-                !filteredAttachments.length ? 'centered' : ''
-              }`}
-            >
-              <MediaModalFileList
-                filteredAttachments={filteredAttachments}
-                handleAttachmentClick={handleAttachmentClick}
-                selectedUrl={selectedUrl || ''}
-              />
-            </TabContent>
-            <TabContent
-              for={MediaModalTab.AddNewFile}
-              className="tab-content attachments-modal__tabs-content centered"
-            >
-              <MediaModalUploadFileButton
-                multipleEdition={multipleEdition}
-                formModel={formModel}
-                acceptedFileTypes={getAcceptedFileTypes(type)}
-                inputFileRef={inputFileRef}
-                handleUploadButtonClicked={handleUploadButtonClicked}
-                handleFileInPublicForm={handleFileInPublicForm}
-                handleInputFileChange={handleInputFileChange}
-              />
-
-              <div className="wrapper-web">
-                <WebMediaResourceForm
-                  handleSubmit={handleSubmitFromUrl}
-                  url={defaultTab === MediaModalTab.AddNewFile ? selectedUrl : ''}
-                />
-              </div>
-            </TabContent>
+          <div
+            className={`tab-content attachments-modal__tabs-content ${
+              !filteredAttachments.length ? 'centered' : ''
+            }`}
+          >
+            <MediaModalFileList
+              filteredAttachments={filteredAttachments}
+              handleAttachmentClick={handleAttachmentClick}
+              selectedUrl={selectedUrl || ''}
+            />
           </div>
-        </Tabs>
+        </div>
       </div>
     </ReactModal>
   );

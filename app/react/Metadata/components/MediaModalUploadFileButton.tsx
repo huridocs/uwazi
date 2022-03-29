@@ -38,9 +38,9 @@ export const MediaModalUploadFileButton = ({
   if (!multipleEdition) {
     return (
       <div className="upload-button">
-        <button type="button" onClick={handleUploadButtonClicked} className="btn btn-success">
-          <Icon icon="link" />
-          &nbsp; <Translate>Upload and select file</Translate>
+        <button type="button" onClick={handleUploadButtonClicked} className="btn">
+          <Icon icon="cloud-upload-alt" />
+          &nbsp; <Translate>Select from computer</Translate>
         </button>
         <input
           aria-label="fileInput"

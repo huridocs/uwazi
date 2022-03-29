@@ -65,9 +65,9 @@ const WebMediaResourceForm = ({
         </FormGroup>
       )}
 
-      <button type="submit" className="btn btn-success">
+      <button type="submit" className="btn">
         <Icon icon="link" />
-        &nbsp; <Translate>Add resource</Translate>
+        &nbsp; <Translate>Add from URL</Translate>
       </button>
     </LocalForm>
   );
