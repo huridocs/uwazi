@@ -15,31 +15,37 @@ type MediaFieldProps = MediaModalProps & {
   multipleEdition: boolean;
 };
 
+const getValue = (value: MediaFieldProps['value']) =>
+  isObject(value) && value.data ? value.data : (value as string);
+
 const prepareValue = (
   value: MediaFieldProps['value'],
   localAttachments: MediaFieldProps['localAttachments']
 ) => {
-  const originalValue = isObject(value) && value.data ? value.data : (value as string);
-  let fileURL = originalValue;
-  let type: 'uploadId' | 'webUrl' | undefined;
+  const valueString = getValue(value);
+  const values = {
+    originalValue: valueString,
+    fileURL: valueString,
+    type: '',
+  };
 
-  if (/^[a-zA-Z\d_]*$/.test(originalValue)) {
-    type = 'uploadId';
+  if (/^[a-zA-Z\d_]*$/.test(values.originalValue)) {
+    values.type = 'uploadId';
   }
 
-  if (/^https?:\/\//.test(originalValue)) {
-    type = 'webUrl';
+  if (/^https?:\/\//.test(values.originalValue)) {
+    values.type = 'webUrl';
   }
 
   const supportingFile = localAttachments.find(
-    file => originalValue === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
+    file => values.originalValue === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
   );
 
-  if (type === 'uploadId' && supportingFile) {
-    fileURL = prepareHTMLMediaView(supportingFile);
+  if (values.type === 'uploadId' && supportingFile) {
+    values.fileURL = prepareHTMLMediaView(supportingFile);
   }
 
-  return { originalValue, type, supportingFile, fileURL };
+  return { ...values, supportingFile };
 };
 
 const MediaField = (props: MediaFieldProps) => {
