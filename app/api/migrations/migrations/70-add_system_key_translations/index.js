@@ -49,7 +49,10 @@ export default {
     process.stdout.write(`${this.name}...\r\n`);
     const systemKeys = [
       {
-        key: 'Add new file',
+        key: 'Select from computer',
+      },
+      {
+        key: 'Add from URL',
       },
     ];
     await insertSystemKeys(db, systemKeys);

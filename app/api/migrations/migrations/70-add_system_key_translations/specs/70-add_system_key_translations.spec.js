@@ -5,8 +5,12 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Add new file',
-    value: 'Add new file',
+    key: 'Select from computer',
+    value: 'Select from computer',
+  },
+  {
+    key: 'Add from URL',
+    value: 'Add from URL',
   },
 ];
 const alreadyInAllContexts = {
