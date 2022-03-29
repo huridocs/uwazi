@@ -110,8 +110,8 @@ class PublicForm extends Component {
         if (!_values.metadata[p.name] || /^https?:\/\//.test(_values.metadata[p.name])) {
           return Promise.resolve();
         }
-        const { url, originalFile } = _values.metadata[p.name];
-        const blob = await fetch(url).then(r => r.blob());
+        const { data, originalFile } = _values.metadata[p.name];
+        const blob = await fetch(data).then(r => r.blob());
         const file = new File([blob], originalFile.name, { type: blob.type });
         const fileID = uniqueID();
         const newFile = {
