@@ -9,7 +9,7 @@ import { showByType } from 'app/Metadata/components/Metadata';
 import { Translate } from 'app/I18N';
 import { IImmutable } from 'shared/types/Immutable';
 import { ensure } from 'shared/tsUtils';
-
+import { logError } from '../utils';
 export interface EntityDataProps {
   'value-of'?: string;
   'label-of'?: string;
@@ -64,14 +64,6 @@ const extractRootLabel = ({ propertyName, template: _template }: Options) => {
 const extractMetadataLabel = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
   const propertyData = getPropertyData({ formattedEntity, propertyName, newNameGeneration });
   return <Translate context={propertyData.translateContext}>{propertyData.label}</Translate>;
-};
-
-const logError = (err: any, propValueOf?: string, propLabelOf?: string) => {
-  /* eslint-disable no-console */
-  console.error('Error on EntityData: ');
-  console.error('value-of: ', propValueOf, '; label-of: ', propLabelOf);
-  console.error(err);
-  /* eslint-enable no-console */
 };
 
 const getProperty = (
