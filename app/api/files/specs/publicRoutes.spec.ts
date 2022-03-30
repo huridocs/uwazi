@@ -62,9 +62,10 @@ describe('public routes', () => {
         title: 'public submit',
       })) as EntityWithFilesSchema[];
 
-      const [attachment] = newEntity.attachments!;
-      expect(attachment).toEqual(expect.objectContaining({ originalname: 'attachment.txt' }));
-      expect(await fileExists(attachmentsPath(attachment.filename))).toBe(true);
+      const { attachments = [] } = newEntity;
+      expect(attachments.length).toBe(2);
+      expect(attachments[0]).toEqual(expect.objectContaining({ originalname: 'attachment.txt' }));
+      expect(await fileExists(attachmentsPath(attachments[0].filename))).toBe(true);
 
       const [document] = newEntity.documents!;
       expect(document).toEqual(
