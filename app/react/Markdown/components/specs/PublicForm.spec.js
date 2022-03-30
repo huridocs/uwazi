@@ -14,7 +14,7 @@ describe('PublicForm', () => {
 
   beforeEach(() => {
     request = Promise.resolve({ promise: Promise.resolve('ok') });
-    submit = jasmine.createSpy('submit').and.returnValue(request);
+    submit = jasmine.createSpy('submit').and.callFake(async () => request);
   });
 
   const render = (customProps, generatedId = false) => {
@@ -64,19 +64,17 @@ describe('PublicForm', () => {
     expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
   });
 
-  it('should load a generated Id as title if the option is marked after submit', done => {
+  it('should load a generated Id as title after submit if the option is marked', async () => {
     render({}, true);
     const title = component.find('#title').at(0);
     expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
-    component.find(LocalForm).simulate('submit', { title: 'test' });
-    request.then(uploadCompletePromise => {
-      uploadCompletePromise.promise.then(() => {
-        const title1 = component.find('#title').at(0);
-        expect(title1.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
-        expect(title1).not.toEqual(title);
-        done();
-      });
-    });
+
+    const formSubmit = component.find(LocalForm).props().onSubmit;
+    await formSubmit({ title: 'test' });
+
+    const title1 = component.find('#title').at(0);
+    expect(title1.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
+    expect(title1).not.toEqual(title);
   });
 
   it('should enable remote captcha', () => {
