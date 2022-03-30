@@ -87,10 +87,10 @@ export const AttachmentsModalCmp = ({
       <div className="attachments-modal__content">
         <Tabs renderActiveTabContentOnly>
           <div className="attachments-modal__tabs">
-            <TabLink to="uploadComputer" className="tab-link modal-tab-1">
+            <TabLink to="uploadComputer" className="tab-link modal-tab-1" component="div">
               <Translate>Upload from computer</Translate>
             </TabLink>
-            <TabLink to="uploadWeb" className="tab-link modal-tab-2">
+            <TabLink to="uploadWeb" className="tab-link modal-tab-2" component="div">
               <Translate>Add from web</Translate>
             </TabLink>
           </div>

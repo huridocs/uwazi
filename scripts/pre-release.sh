@@ -1,16 +1,20 @@
 #!/bin/bash
 
-server=${1}
-ssh_user=${2}
+# server=${1}
+# ssh_user=${2}
 gh_token=${3}
 
 release_version="$(yarn version | grep version: | cut -d" " -f4)"
+previous_tag="$(git tag -l --sort=committerdate | grep "\-rc" | tail -n1)"
+release_notes="$(git log --oneline "$previous_tag".. | grep -v Merge | grep "(.*)" | cut -d" " -f2- |  awk '{print "* " $0}')"
+
+echo -e "## What's changed\n\n$release_notes\n\n**Full Changelog**: https://github.com/huridocs/uwazi/compare/$previous_tag...$release_version" > release_notes.txt
 
 tar -czf uwazi_pre_release.tgz ./prod
 
 GITHUB_TOKEN="$gh_token" gh release create "$release_version"\
   --title "$release_version"\
-  --notes "Release notes"\
+  --notes-file release_notes.txt\
   --prerelease\
   --target staging\
   uwazi_pre_release.tgz

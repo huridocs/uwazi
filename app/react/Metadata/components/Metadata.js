@@ -1,10 +1,10 @@
-import { I18NLink, t } from 'app/I18N';
-import { Icon } from 'app/Layout';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { t } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
-import PropTypes from 'prop-types';
-import React from 'react';
 import GeolocationViewer from './GeolocationViewer';
+import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
 
 export const showByType = (prop, compact) => {
@@ -51,16 +51,10 @@ export const showByType = (prop, compact) => {
     case 'geolocation_group':
       result = <GroupedGeolocationViewer members={prop.members} />;
       break;
+    case 'relationship':
+      result = <RelationshipLink prop={prop} />;
+      break;
     default:
-      if (prop.url) {
-        result = (
-          <I18NLink key={prop.url} to={prop.url}>
-            {prop.icon && <Icon className="item-icon" data={prop.icon} />}
-            {prop.value}
-          </I18NLink>
-        );
-      }
-
       if (prop.value && prop.value.map) {
         prop.value = prop.value.map(_value => {
           const value = showByType(_value, compact);
