@@ -24,4 +24,27 @@ describe('suggestions', () => {
       expect(newSuggestions.length).toBe(2);
     });
   });
+
+  describe('get()', () => {
+    it('should return all suggestions', async () => {
+      const { suggestions } = await Suggestions.get({}, { page: { size: 50, number: 1 } });
+      expect(suggestions.length).toBe(12);
+    });
+
+    it('should be able to filter', async () => {
+      const { suggestions } = await Suggestions.get(
+        { propertyName: 'super_powers' },
+        { page: { size: 50, number: 1 } }
+      );
+      expect(suggestions.length).toBe(2);
+    });
+
+    it('should return the status', async () => {
+      const { suggestions } = await Suggestions.get(
+        { propertyName: 'super_powers' },
+        { page: { size: 2, number: 1 } }
+      );
+      expect(suggestions[0].state).toBe('Matching');
+    });
+  });
 });
