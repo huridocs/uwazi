@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
-import { MetadataFormFields, validator, wrapEntityMetadata } from 'app/Metadata';
+import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
@@ -16,7 +16,6 @@ import './scss/public-form.scss';
 import Dropzone from 'react-dropzone';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { generateID } from 'shared/IDGenerator';
-import uniqueID from 'shared/uniqueID';
 
 class PublicForm extends Component {
   static renderTitle(template) {
@@ -102,41 +101,13 @@ class PublicForm extends Component {
     const mediaProperties = templateJS.properties.filter(
       p => p.type === 'image' || p.type === 'media'
     );
-    const metadataFiles = {};
-    const entityAttachments = [];
-    const files = [];
-    await Promise.all(
-      mediaProperties.map(async p => {
-        if (!_values.metadata[p.name] || /^https?:\/\//.test(_values.metadata[p.name])) {
-          return Promise.resolve();
-        }
-        const { data, originalFile } = _values.metadata[p.name];
-        const blob = await fetch(data).then(r => r.blob());
-        const file = new File([blob], originalFile.name, { type: blob.type });
-        const fileID = uniqueID();
-        const newFile = {
-          originalname: file.name,
-          filename: file.name,
-          type: 'attachment',
-          mimetype: blob.type,
-          fileLocalID: fileID,
-        };
-        metadataFiles[p.name] = fileID;
-        entityAttachments.push(newFile);
-        files.push(file);
-        URL.revokeObjectURL(_values.metadata[p.name]);
-        return blob;
-      })
+    const { submit, remote } = this.props;
+    const values = await prepareMetadataAndFiles(
+      _values,
+      mediaProperties,
+      this.state.files,
+      templateJS._id
     );
-    const fields = { ..._values.metadata, ...metadataFiles };
-    const entity = { ..._values, metadata: fields, attachments: entityAttachments };
-    const values = wrapEntityMetadata(entity);
-    const { submit, template, remote } = this.props;
-    values.file = _values.file ? _values.file[0] : undefined;
-    values.template = template.get('_id');
-    values.attachments = [];
-    values.attachments.push(...this.state.files);
-    values.attachments.push(...files);
     submit(values, remote)
       .then(uploadCompletePromise => {
         this.setState({ submiting: true });

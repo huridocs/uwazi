@@ -1,4 +1,38 @@
-export function wrapEntityMetadata(entity) {
+import uniqueID from 'shared/uniqueID';
+
+const prepareFiles = async (mediaProperties, values) => {
+  const metadataFiles = {};
+  const entityAttachments = [];
+  const files = [];
+  await Promise.all(
+    mediaProperties.map(async p => {
+      if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
+        return Promise.resolve();
+      }
+      const { data, originalFile } = values.metadata[p.name];
+      const blob = await fetch(data).then(r => r.blob());
+      const file = new File([blob], originalFile.name, { type: blob.type });
+      const fileID = uniqueID();
+
+      metadataFiles[p.name] = fileID;
+
+      entityAttachments.push({
+        originalname: file.name,
+        filename: file.name,
+        type: 'attachment',
+        mimetype: blob.type,
+        fileLocalID: fileID,
+      });
+
+      files.push(file);
+
+      return URL.revokeObjectURL(values.metadata[p.name]);
+    })
+  );
+  return { metadataFiles, entityAttachments, files };
+};
+
+function wrapEntityMetadata(entity) {
   if (!entity.metadata) {
     return { ...entity };
   }
@@ -24,3 +58,18 @@ export function wrapEntityMetadata(entity) {
   // suggestedMetadata is always in metadata-object form.
   return { ...entity, metadata };
 }
+
+const prepareMetadataAndFiles = async (values, mediaProperties, attachedFiles, templateId) => {
+  const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
+  const fields = { ...values.metadata, ...metadataFiles };
+  const entity = { ...values, metadata: fields, attachments: entityAttachments };
+  const wrappedEntity = wrapEntityMetadata(entity);
+  wrappedEntity.file = values.file ? values.file[0] : undefined;
+  wrappedEntity.template = templateId;
+  wrappedEntity.attachments = [];
+  wrappedEntity.attachments.push(...files);
+  wrappedEntity.attachments.push(...attachedFiles);
+  return wrappedEntity;
+};
+
+export { prepareMetadataAndFiles, wrapEntityMetadata };
