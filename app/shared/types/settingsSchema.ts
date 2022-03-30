@@ -143,6 +143,7 @@ const settingsSchema = {
     home_page: { type: 'string' },
     defaultLibraryView: { type: 'string' },
     private: { type: 'boolean' },
+    syncTarget: { type: 'boolean' },
     openPublicEndpoint: { type: 'boolean' },
     cookiepolicy: { type: 'boolean' },
     mailerConfig: { type: 'string' },
