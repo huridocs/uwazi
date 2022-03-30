@@ -207,6 +207,8 @@ class ProcessNamespaces {
       );
     }
 
+    delete data.entityViewPage;
+
     return { data };
   }
 

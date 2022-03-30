@@ -221,6 +221,23 @@ describe('syncWorker', () => {
 
         expectCallToEqual(template2Call, 'templates', expect.objectContaining({ _id: template2 }));
       });
+
+      it('should not sync the entity view page foreign key', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
+          },
+        });
+
+        const {
+          calls: [templateCall],
+          callsCount,
+        } = getCallsToIds('templates', [template1]);
+
+        expect(callsCount).toBe(1);
+
+        expect(templateCall[0][1].data.entityViewPage).toBeUndefined();
+      });
     });
 
     describe('thesauris (dictionaries collection)', () => {
