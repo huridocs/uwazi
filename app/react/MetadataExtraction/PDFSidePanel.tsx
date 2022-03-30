@@ -84,7 +84,9 @@ const PDFSidePanel = ({
             <div className="document-viewer">
               <SourceDocument
                 file={file}
-                onPDFLoaded={async () => scrollToPage(entitySuggestion.page || 1)}
+                onPageLoaded={async () => {
+                  await scrollToPage(entitySuggestion.page || 1);
+                }}
               />
             </div>
           </>
