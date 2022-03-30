@@ -8,6 +8,7 @@ import {
   checkTemplateCanBeDeleted,
   setAsDefault,
 } from 'app/Templates/actions/templatesActions';
+import HideWhenSyncTarget from 'app/Sync/HideWhenSyncTarget';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
@@ -16,12 +17,14 @@ import Tip from '../../Layout/Tip';
 export class EntityTypesList extends Component {
   setAsDefaultButton(template) {
     return (
-      <button
-        onClick={this.props.setAsDefault.bind(null, template)}
-        className="btn btn-success btn-xs"
-      >
-        <Translate>Set as default</Translate>
-      </button>
+      <HideWhenSyncTarget>
+        <button
+          onClick={this.props.setAsDefault.bind(null, template)}
+          className="btn btn-success btn-xs"
+        >
+          <Translate>Set as default</Translate>
+        </button>
+      </HideWhenSyncTarget>
     );
   }
 
