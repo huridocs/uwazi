@@ -12,7 +12,7 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-mongoSchema.index({ propertyName: 'text' });
+mongoSchema.index({ propertyName: 'text' }, { language_override: '_text' });
 
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 

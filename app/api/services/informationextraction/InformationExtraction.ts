@@ -186,9 +186,19 @@ class InformationExtraction {
         if (!entity) {
           return Promise.resolve();
         }
+
+        const [segmentation] = await SegmentationModel.get({
+          xmlname: rawSuggestion.xml_file_name,
+        });
+
+        if (!segmentation) {
+          return Promise.resolve();
+        }
+
         const [currentSuggestion] = await IXSuggestionsModel.get({
           entityId: entity.sharedId,
           propertyName: rawSuggestion.property_name,
+          fileId: segmentation.fileID,
         });
 
         let status: 'ready' | 'failed' = 'ready';
@@ -207,9 +217,6 @@ class InformationExtraction {
 
         const suggestion: IXSuggestionType = {
           ...currentSuggestion,
-          entityId: entity.sharedId!,
-          language: entity.language!,
-          propertyName: rawSuggestion.property_name,
           suggestedValue,
           segment: rawSuggestion.segment_text,
           status,
@@ -234,7 +241,7 @@ class InformationExtraction {
       ...existingSuggestions,
       entityId: entity.sharedId!,
       fileId: file._id,
-      language: entity.language!,
+      language: languages.get(file.language, 'ISO639_1') || 'other',
       propertyName,
       status: 'processing',
       date: new Date().getTime(),
