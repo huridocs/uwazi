@@ -115,7 +115,7 @@ export default {
     return `${from} ~ ${to}`;
   },
 
-  getSelectOptions(option, thesauri) {
+  getSelectOptions(option, thesauri, doc) {
     let value = '';
     let icon;
     let parent;
@@ -131,7 +131,13 @@ export default {
       url = `/entity/${option.value}`;
     }
 
-    return { value, url, icon, parent };
+    let relatedEntity;
+    if (doc && doc.relations) {
+      const relation = doc.relations.find(e => e.entity === option.value);
+      relatedEntity = relation.entityData;
+    }
+
+    return { value, url, icon, parent, relatedEntity };
   },
 
   multimedia(property, [{ value }], type) {
@@ -265,7 +271,9 @@ export default {
         _thesauri => _thesauri.get('_id') === template.get('_id')
       );
       propType = type;
-      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris);
+      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris, {
+        doc: options.doc,
+      });
     }
     value = value.filter(v => v);
     return {
@@ -282,14 +290,17 @@ export default {
     };
   },
 
-  flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris) {
+  // eslint-disable-next-line max-params
+  flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris, { doc }) {
     return relationshipValues.reduce((result, relationshipValue, index) => {
       if (relationshipValue.value) {
         let { value } = relationshipValue;
         if (type === 'geolocation') {
-          const entityLabel = this.getSelectOptions(thesauriValues[index], templateThesauris).value;
+          const options = this.getSelectOptions(thesauriValues[index], templateThesauris, doc);
+          const entityLabel = options.value;
           value = value.map(v => ({
             ...v,
+            relatedEntity: options.relatedEntity ? options.relatedEntity : undefined,
             label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
           }));
         }
@@ -299,13 +310,13 @@ export default {
     }, []);
   },
 
-  relationship(property, thesauriValues, thesauris) {
+  relationship(property, thesauriValues, thesauris, { doc }) {
     const thesauri =
       thesauris.find(thes => thes.get('_id') === property.get('content')) ||
       Immutable.fromJS({
         type: 'template',
       });
-    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
+    const sortedValues = this.getThesauriValues(thesauriValues, thesauri, doc);
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
@@ -339,10 +350,10 @@ export default {
     return this.markdown(property, [{ value: result }], thesauris, { type: 'markdown' });
   },
 
-  getThesauriValues(thesauriValues, thesauri) {
+  getThesauriValues(thesauriValues, thesauri, doc) {
     return advancedSort(
       thesauriValues
-        .map(thesauriValue => this.getSelectOptions(thesauriValue, thesauri))
+        .map(thesauriValue => this.getSelectOptions(thesauriValue, thesauri, doc))
         .filter(v => v.value),
       { property: 'value' }
     );

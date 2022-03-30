@@ -85,13 +85,13 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
           >
             <ul className="nav nav-tabs">
               <li>
-                <TabLink to="info">
+                <TabLink to="info" component="div">
                   <Icon icon="info-circle" />
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
               <li>
-                <TabLink to="connections">
+                <TabLink to="connections" component="div">
                   <Icon icon="exchange-alt" />
                   <span className="connectionsNumber">{summary.totalConnections}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>

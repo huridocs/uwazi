@@ -21,7 +21,7 @@ export class MarkDown extends Component<MarkDownType> {
               <Translate>Edit</Translate>
             </TabLink>
             {showPreview && (
-              <TabLink to="preview">
+              <TabLink to="preview" component="div">
                 <Translate>Preview</Translate>
               </TabLink>
             )}

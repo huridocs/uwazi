@@ -22,6 +22,7 @@ describe('Metadata', () => {
       translateContext: 'oneTranslateContext',
       name: 'label_array',
       label: 'label array',
+      type: 'relationship',
       value: [
         { value: 'first_value', url: 'url1' },
         { value: 'second_value', url: 'url2' },
@@ -201,6 +202,7 @@ describe('Metadata', () => {
         label: 'withUrl',
         value: 'string value',
         url: 'url',
+        type: 'relationship',
       },
     ]);
   });
@@ -212,6 +214,7 @@ describe('Metadata', () => {
         name: 'withurl',
         label: 'withUrl',
         value: 'string value',
+        type: 'relationship',
         url: 'url',
         icon: { _id: 'icon', type: 'Icons' },
       },

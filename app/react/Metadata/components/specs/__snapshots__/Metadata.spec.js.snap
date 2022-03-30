@@ -179,7 +179,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
 exports[`Metadata should render links when multiple properties have url 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default metadata-name-label_array  "
+    className="metadata-type-relationship metadata-name-label_array  "
     key="label_array_0"
   >
     <dt>
@@ -188,27 +188,21 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
     <dd
       className=""
     >
-      <ValueList
-        compact={false}
-        property={
+      <Connect(RelationshipLink)
+        prop={
           Object {
             "label": "label array",
             "name": "label_array",
             "translateContext": "oneTranslateContext",
+            "type": "relationship",
             "value": Array [
               Object {
-                "value": <Connect(I18NLink)
-                  to="url1"
-                >
-                  first_value
-                </Connect(I18NLink)>,
+                "url": "url1",
+                "value": "first_value",
               },
               Object {
-                "value": <Connect(I18NLink)
-                  to="url2"
-                >
-                  second_value
-                </Connect(I18NLink)>,
+                "url": "url2",
+                "value": "second_value",
               },
             ],
           }
@@ -222,7 +216,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
 exports[`Metadata should render links when the property has url 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default metadata-name-withurl  "
+    className="metadata-type-relationship metadata-name-withurl  "
     key="withurl_0"
   >
     <dt>
@@ -231,12 +225,18 @@ exports[`Metadata should render links when the property has url 1`] = `
     <dd
       className=""
     >
-      <Connect(I18NLink)
-        key="url"
-        to="url"
-      >
-        string value
-      </Connect(I18NLink)>
+      <Connect(RelationshipLink)
+        prop={
+          Object {
+            "label": "withUrl",
+            "name": "withurl",
+            "translateContext": "oneTranslateContext",
+            "type": "relationship",
+            "url": "url",
+            "value": "string value",
+          }
+        }
+      />
     </dd>
   </dl>
 </Fragment>
@@ -245,7 +245,7 @@ exports[`Metadata should render links when the property has url 1`] = `
 exports[`Metadata should render links with icons if propery has url and icon 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default metadata-name-withurl  "
+    className="metadata-type-relationship metadata-name-withurl  "
     key="withurl_0"
   >
     <dt>
@@ -254,21 +254,22 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
     <dd
       className=""
     >
-      <Connect(I18NLink)
-        key="url"
-        to="url"
-      >
-        <Connect(Icon)
-          className="item-icon"
-          data={
-            Object {
+      <Connect(RelationshipLink)
+        prop={
+          Object {
+            "icon": Object {
               "_id": "icon",
               "type": "Icons",
-            }
+            },
+            "label": "withUrl",
+            "name": "withurl",
+            "translateContext": "oneTranslateContext",
+            "type": "relationship",
+            "url": "url",
+            "value": "string value",
           }
-        />
-        string value
-      </Connect(I18NLink)>
+        }
+      />
     </dd>
   </dl>
 </Fragment>
@@ -409,7 +410,7 @@ exports[`Metadata when passing a prop with parent should render the parent too 1
 exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default metadata-name-label_array  "
+    className="metadata-type-relationship metadata-name-label_array  "
     key="label_array_0"
   >
     <dt>
@@ -418,27 +419,21 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
     <dd
       className=""
     >
-      <ValueList
-        compact={true}
-        property={
+      <Connect(RelationshipLink)
+        prop={
           Object {
             "label": "label array",
             "name": "label_array",
             "translateContext": "oneTranslateContext",
+            "type": "relationship",
             "value": Array [
               Object {
-                "value": <Connect(I18NLink)
-                  to="url1"
-                >
-                  first_value
-                </Connect(I18NLink)>,
+                "url": "url1",
+                "value": "first_value",
               },
               Object {
-                "value": <Connect(I18NLink)
-                  to="url2"
-                >
-                  second_value
-                </Connect(I18NLink)>,
+                "url": "url2",
+                "value": "second_value",
               },
             ],
           }
