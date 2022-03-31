@@ -221,6 +221,16 @@ input[type='number'].form-control {
   div.alert {
     border: 0;
   }
+
+  &.image,
+  &.media {
+    img,
+    .video-container {
+      max-width: 50%;
+      margin: auto;
+      display: block;
+    }
+  }
 }
 
 .form-group-label {

@@ -154,7 +154,6 @@
 .video-container iframe,
 .video-container object,
 .video-container embed {
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -211,10 +210,6 @@
   max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
-}
-
-.page-viewer .video-container {
-  padding-bottom: 36%;
 }
 
 .page-viewer .item .video-container {
