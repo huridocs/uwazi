@@ -30,7 +30,13 @@ export default {
         const [entity] = await db.collection('entities').find({ sharedId: file.entity }).toArray();
         if (!entity) {
           await db.collection('files').deleteOne({ _id: file._id });
-          await unlink(path.join(paths[file.type], file.filename));
+          try {
+            await unlink(path.join(paths[file.type], file.filename));
+          } catch (e) {
+            if (e.code !== 'ENOENT') {
+              throw e;
+            }
+          }
         }
       }
     }
