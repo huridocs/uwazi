@@ -5,7 +5,7 @@ const prepareFiles = async (mediaProperties, values) => {
   const entityAttachments = [];
   const files = [];
 
-  if (values.metadata) {
+  if (values.metadata || mediaProperties.length === 0) {
     await Promise.all(
       mediaProperties.map(async p => {
         if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
