@@ -339,7 +339,7 @@ describe('InformationExtraction', () => {
         status: 'ready',
         propertyName: 'property1',
       });
-      expect(suggestionsText.length).toBe(2);
+      expect(suggestionsText.length).toBe(1);
 
       const suggestionsMarkdown = await IXSuggestionsModel.get({
         status: 'ready',
