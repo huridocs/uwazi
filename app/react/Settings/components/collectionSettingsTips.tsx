@@ -40,13 +40,6 @@ export const publicSharing = (
   </Translate>
 );
 
-export const syncTarget = (
-  <Translate>
-    Check to mark this instance as a target of a sync process. This may disable certain features on
-    the interface.
-  </Translate>
-);
-
 export const cookiePolicy = (
   <>
     <Translate>

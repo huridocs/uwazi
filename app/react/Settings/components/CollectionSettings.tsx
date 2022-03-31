@@ -59,7 +59,6 @@ const CollectionSettings = ({
   });
 
   register('private');
-  register('syncTarget');
   register('openPublicEndpoint');
   register('allowedPublicTemplates');
   register('mapStartingPoint');
@@ -175,15 +174,6 @@ const CollectionSettings = ({
             checked={Boolean(watch('private'))}
             onClick={() => {
               setValue('private', !getValues('private'));
-            }}
-          />
-        </SettingsFormElement>
-
-        <SettingsFormElement label="Target of sync" tip={tips.syncTarget}>
-          <ToggleButton
-            checked={Boolean(watch('syncTarget'))}
-            onClick={() => {
-              setValue('syncTarget', !getValues('syncTarget'));
             }}
           />
         </SettingsFormElement>
