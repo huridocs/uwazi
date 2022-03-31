@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { Suggestions } from '../suggestions';
 import { fixtures, personTemplateId } from './fixtures';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
 
 describe('suggestions', () => {
   beforeEach(done => {
@@ -44,7 +45,12 @@ describe('suggestions', () => {
         { propertyName: 'super_powers' },
         { page: { size: 2, number: 1 } }
       );
-      expect(suggestions[0].state).toBe('Matching');
+      expect(suggestions.find((s: EntitySuggestionType) => s.language === 'es').state).toBe(
+        'Pending'
+      );
+      expect(suggestions.find((s: EntitySuggestionType) => s.language === 'en').state).toBe(
+        'Matching'
+      );
     });
   });
 });

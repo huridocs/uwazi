@@ -20,15 +20,16 @@ export const Suggestions = {
           $lookup: {
             from: 'entities',
             let: {
-              localField: '$entityId',
+              localFieldEntityId: '$entityId',
+              localFieldLanguage: '$language',
             },
             pipeline: [
               {
                 $match: {
                   $expr: {
                     $and: [
-                      { $eq: ['$sharedId', '$$localField'] },
-                      { $eq: ['$language', language] },
+                      { $eq: ['$sharedId', '$$localFieldEntityId'] },
+                      { $eq: ['$language', '$$localFieldLanguage'] },
                     ],
                   },
                 },
