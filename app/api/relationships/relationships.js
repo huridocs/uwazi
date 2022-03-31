@@ -18,11 +18,6 @@ import {
 } from './relationshipsHelpers';
 import { validateConnectionSchema } from './validateConnectionSchema';
 
-const normalizeConnectedDocumentData = (relationship, connectedDocument) => {
-  relationship.entityData = connectedDocument;
-  return relationship;
-};
-
 function excludeRefs(template) {
   delete template.refs;
   return template;
@@ -41,15 +36,6 @@ function getPropertiesToBeConnections(template) {
   });
   return props;
 }
-
-const createRelationship = async relationship => model.save(relationship);
-
-const updateRelationship = async relationship =>
-  model.save({
-    ...relationship,
-    template:
-      relationship.template && relationship.template._id !== null ? relationship.template : null,
-  });
 
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
 const conformRelationships = (rows, parentEntitySharedId) => {
@@ -251,50 +237,83 @@ export default {
     return saves.concat(deletions);
   },
 
+  async prepareRelationshipsToSave(_relationships, language) {
+    const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
+
+    await validateConnectionSchema(rel);
+
+    const existingEntities = new Set(
+      (
+        await entities.get({
+          sharedId: { $in: rel.map(r => r.entity) },
+          language,
+        })
+      ).map(r => r.sharedId)
+    );
+
+    let relationships = rel.filter(r => existingEntities.has(r.entity));
+
+    if (relationships.length === 1 && !relationships[0].hub) {
+      throw createError('Single relationships must have a hub');
+    }
+    if (!(relationships.every(r => !r.hub) || relationships.every(r => !!r.hub))) {
+      throw createError('Either all relationships must have a hub or none of them.');
+    }
+    if (relationships.length && !relationships[0].hub) {
+      const newHub = generateID();
+      relationships = relationships.map(r => ({ ...r, hub: r.hub || newHub }));
+    }
+    return { relationships };
+  },
+
+  async appendRelatedEntityData(savedRelationships, language) {
+    const relatedEntities = {};
+    (
+      await entities.get(
+        {
+          sharedId: { $in: savedRelationships.map(r => r.entity) },
+          language,
+        },
+        {},
+        { withoutDocuments: true }
+      )
+    ).forEach(e => {
+      relatedEntities[e.sharedId] = e;
+    });
+
+    return savedRelationships.map(r => ({ ...r, entityData: relatedEntities[r.entity] }));
+  },
+
   async save(_relationships, language, updateEntities = true) {
     if (!language) {
       throw createError('Language cant be undefined');
     }
 
-    const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
-
-    await validateConnectionSchema(rel);
-
-    const existingEntities = (
-      await entities.get({
-        sharedId: { $in: rel.map(r => r.entity) },
-        language,
-      })
-    ).map(r => r.sharedId);
-
-    const relationships = rel.filter(r => existingEntities.includes(r.entity));
+    const { relationships } = await this.prepareRelationshipsToSave(_relationships, language);
 
     if (relationships.length === 0) {
       return [];
     }
 
-    if (relationships.length === 1 && !relationships[0].hub) {
-      throw createError('Single relationships must have a hub');
-    }
-
-    const hub = relationships[0].hub || generateID();
-
-    const result = await Promise.all(
-      relationships.map(relationship => {
-        const action = relationship._id ? updateRelationship : createRelationship;
-
-        return action({ ...relationship, hub }, language)
-          .then(savedRelationship =>
-            Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)])
-          )
-          .then(([savedRelationship, connectedEntity]) =>
-            normalizeConnectedDocumentData(savedRelationship, connectedEntity)
-          );
-      })
+    const savedRelationships = await model.saveMultiple(
+      relationships.map(r =>
+        r._id
+          ? {
+              ...r,
+              template: r.template && r.template._id !== null ? r.template : null,
+            }
+          : r
+      )
     );
 
+    const result = this.appendRelatedEntityData(savedRelationships, language);
+
     if (updateEntities) {
-      await this.updateEntitiesMetadataByHub(hub, language);
+      const touchedHubs = Array.from(new Set(relationships.map(r => r.hub)));
+      for (let i = 0; i < touchedHubs.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.updateEntitiesMetadataByHub(touchedHubs[i], language);
+      }
     }
     return result;
   },
@@ -309,78 +328,110 @@ export default {
     return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
-  async saveEntityBasedReferences(entity, language) {
-    if (!language) throw createError('Language cant be undefined');
-    if (!entity.template) return [];
+  async generateCreatedReferences(property, newValues, entity, existingReferences) {
+    const { relationType: propertyRelationType } = property;
 
-    const template = await templatesAPI.getById(entity.template);
+    const toCreate = newValues.filter(
+      v =>
+        !(existingReferences[propertyRelationType] && existingReferences[propertyRelationType][v])
+    );
+
+    let newReferencesBase = [];
+    let newReferences = [];
+    if (toCreate.length) {
+      const candidateHub = await guessRelationshipPropertyHub(
+        entity.sharedId,
+        generateID(propertyRelationType)
+      );
+
+      const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
+      newReferencesBase = candidateHub[0] ? [] : [{ entity: entity.sharedId, hub: hubId }];
+
+      newReferences = toCreate.map(value => ({
+        entity: value,
+        hub: hubId,
+        template: generateID(propertyRelationType),
+      }));
+    }
+
+    return { newReferencesBase, newReferences };
+  },
+
+  async separateCreatedDeletedReferences(property, entity, existingReferences) {
+    const newValues = determinePropertyValues(entity, property.name);
+    const newValueSet = new Set(newValues);
+
+    const { relationType: propertyRelationType, content: propertyEntityType } = property;
+
+    const { newReferencesBase, newReferences } = await this.generateCreatedReferences(
+      property,
+      newValues,
+      entity,
+      existingReferences
+    );
+
+    const toDelete = Object.entries(existingReferences[propertyRelationType] || {})
+      .map(entry => entry[1])
+      .filter(
+        r =>
+          r.rightSide.entity !== entity.sharedId &&
+          (!propertyEntityType ||
+            r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
+          !newValueSet.has(r.rightSide.entity)
+      )
+      .map(r => r.rightSide._id);
+
+    return { newReferencesBase, newReferences, toDelete };
+  },
+
+  async prepareSaveEntityBasedReferences(entity, language, _template) {
+    if (!language) throw createError('Language cant be undefined');
+    if (!entity.template) return { relationshipProperties: [], existingReferences: {} };
+
+    const template = _template || (await templatesAPI.getById(entity.template));
     const relationshipProperties = getPropertiesToBeConnections(template);
 
-    if (!relationshipProperties.length) return [];
+    if (!relationshipProperties.length) {
+      return { relationshipProperties, existingReferences: {} };
+    }
 
     const existingReferences = await getEntityReferencesByRelationshipTypes(
       entity.sharedId,
       relationshipProperties.map(p => generateID(p.relationType))
     );
 
-    return Promise.all(
-      // eslint-disable-next-line max-statements
-      relationshipProperties.map(async property => {
-        const newValues = determinePropertyValues(entity, property.name);
-        const { relationType: propertyRelationType, content: propertyEntityType } = property;
+    return { relationshipProperties, existingReferences };
+  },
 
-        let referencesOfThisType = existingReferences.find(
-          g => g._id.toString() === propertyRelationType.toString()
+  async saveEntityBasedReferences(entity, language, _template) {
+    const { relationshipProperties, existingReferences } =
+      await this.prepareSaveEntityBasedReferences(entity, language, _template);
+
+    const relationshipsToCreate = [];
+    const relationshipsToDelete = [];
+
+    for (let i = 0; i < relationshipProperties.length; i += 1) {
+      const { newReferencesBase, newReferences, toDelete } =
+        // eslint-disable-next-line no-await-in-loop
+        await this.separateCreatedDeletedReferences(
+          relationshipProperties[i],
+          entity,
+          existingReferences
         );
-        referencesOfThisType = (referencesOfThisType && referencesOfThisType.references) || [];
+      relationshipsToCreate.push(...newReferencesBase, ...newReferences);
+      relationshipsToDelete.push(...toDelete);
+    }
 
-        const toCreate = newValues.filter(
-          value => !referencesOfThisType.find(r => r.rightSide.entity === value)
-        );
-
-        if (toCreate.length) {
-          const candidateHub = await guessRelationshipPropertyHub(
-            entity.sharedId,
-            generateID(propertyRelationType)
-          );
-
-          const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
-          const newReferencesBase = candidateHub[0]
-            ? []
-            : [{ entity: entity.sharedId, hub: hubId }];
-
-          const newReferences = toCreate.map(value => ({
-            entity: value,
-            hub: hubId,
-            template: generateID(propertyRelationType),
-          }));
-
-          await this.save([...newReferencesBase, ...newReferences], language, false);
-        }
-
-        const matchingRefsNotInNewSet = r =>
-          r.rightSide.entity !== entity.sharedId &&
-          (!propertyEntityType ||
-            r.rightSide.entityData[0].template.toString() === propertyEntityType) &&
-          !newValues.includes(r.rightSide.entity);
-
-        const toDelete = referencesOfThisType
-          .filter(matchingRefsNotInNewSet)
-          .map(r => r.rightSide._id);
-
-        if (toDelete.length) {
-          await this.delete(
-            {
-              _id: { $in: toDelete },
-            },
-            language,
-            false
-          );
-        }
-
-        return [];
-      })
-    );
+    if (relationshipsToCreate.length) await this.save(relationshipsToCreate, language, false);
+    if (relationshipsToDelete.length) {
+      await this.delete(
+        {
+          _id: { $in: relationshipsToDelete },
+        },
+        language,
+        false
+      );
+    }
   },
 
   search(entitySharedId, query, language, user) {
