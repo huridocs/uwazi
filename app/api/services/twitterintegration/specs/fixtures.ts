@@ -60,17 +60,4 @@ const fixturesOtherTenant: DBFixture = {
   settings: otherSettings,
 };
 
-const fixturesWithTweets: DBFixture = {
-  entities: [
-    factory.entity('A1', 'Tweets', {
-      tweet_date: [{ value: 12344 }],
-    }),
-    factory.entity('A2', 'Tweets', {
-      tweet_date: [{ value: 12345 }],
-    }),
-  ],
-  templates: [factory.template('Tweets', [factory.property('tweet_date', 'date')])],
-  settings,
-};
-
-export { fixturesOneTenant, fixturesOtherTenant, fixturesTenantWithoutTwitter, fixturesWithTweets };
+export { fixturesOneTenant, fixturesOtherTenant, fixturesTenantWithoutTwitter };
