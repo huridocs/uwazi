@@ -20,20 +20,7 @@ export const MediaModalUploadFileButton = ({
   handleUploadButtonClicked,
   handleInputFileChange,
 }: componentProps) => {
-  if (formModel === 'publicform') {
-    return (
-      <Field
-        aria-label="fileInput"
-        model=".file"
-        component="input"
-        type="file"
-        onChange={handleFileInPublicForm}
-        accept={acceptedFileTypes}
-      />
-    );
-  }
-
-  return (
+  const inputComponent = (fileFieldAction: (arg: any) => any) => (
     <div className="upload-button">
       <button type="button" onClick={handleUploadButtonClicked} className="btn">
         <Icon icon="cloud-upload-alt" />
@@ -42,11 +29,24 @@ export const MediaModalUploadFileButton = ({
       <input
         aria-label="fileInput"
         type="file"
-        onChange={handleInputFileChange}
+        onChange={fileFieldAction}
         style={{ display: 'none' }}
         ref={inputFileRef}
         accept={acceptedFileTypes}
       />
     </div>
   );
+
+  if (formModel === 'publicform') {
+    return (
+      <Field
+        aria-label="fileInput"
+        model=".file"
+        component={() => inputComponent(handleFileInPublicForm)}
+        type="file"
+      />
+    );
+  }
+
+  return inputComponent(handleInputFileChange);
 };
