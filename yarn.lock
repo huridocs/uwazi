@@ -9197,9 +9197,10 @@ jest@27.5.1:
     import-local "^3.0.2"
     jest-cli "^27.5.1"
 
-joi-objectid@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/joi-objectid/-/joi-objectid-2.0.0.tgz"
+joi-objectid@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/joi-objectid/-/joi-objectid-4.0.2.tgz#a4065aa91431bbc6959a57f7b4d1dd10bd95a4b7"
+  integrity sha512-OjYM+wK/JGo2bSb9ADEyzxxROJPZYtrqIwBbywpJ2a98oKlbLtWTKvpzmrnXzou69Ey9EsjHsFvZYzpjeCdKuA==
 
 joi@^13.6.0:
   version "13.6.0"
