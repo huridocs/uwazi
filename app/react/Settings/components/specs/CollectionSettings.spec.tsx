@@ -93,21 +93,6 @@ describe('Collection settings', () => {
     });
   });
 
-  describe('allow to set an instance as a sync target', () => {
-    const syncTargetStatus = () =>
-      component.find('SettingsFormElement[label="Target of sync"]').children().props().checked;
-
-    it('should be toggled if instance is private', () => {
-      render({ syncTarget: true });
-      expect(syncTargetStatus()).toBe(true);
-    });
-
-    it('should be untoggled if instance is publicly shared', () => {
-      render({ syncTarget: false });
-      expect(syncTargetStatus()).toBe(false);
-    });
-  });
-
   describe('Public Endpoints', () => {
     const getPublicEndpointsStatus = () =>
       component.find('SettingsFormElement[label="Public Endpoints"]').children().props().toggled;
