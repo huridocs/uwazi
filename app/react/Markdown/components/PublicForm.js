@@ -97,35 +97,22 @@ class PublicForm extends Component {
   }
 
   async handleSubmit(_values) {
-    const templateJS = this.props.template.toJS();
-    const mediaProperties = templateJS.properties.filter(
-      p => p.type === 'image' || p.type === 'media'
-    );
     const { submit, remote } = this.props;
     const values = await prepareMetadataAndFiles(
       _values,
-      mediaProperties,
       this.state.files,
-      templateJS._id
+      this.props.template.toJS()
     );
-    submit(values, remote)
-      .then(uploadCompletePromise => {
-        this.setState({ submiting: true });
-        return uploadCompletePromise.promise
-          .then(() => {
-            this.setState({ submiting: false, files: [] });
-            this.resetForm();
-            this.refreshCaptcha();
-          })
-          .catch(() => {
-            this.setState({ submiting: false, files: [] });
-            this.refreshCaptcha();
-          });
-      })
-      .catch(() => {
-        this.setState({ submiting: false, files: [] });
-        this.refreshCaptcha();
-      });
+    try {
+      const submitResult = await submit(values, remote);
+      this.setState({ submiting: true });
+      await submitResult.promise;
+      this.resetForm();
+    } catch (e) {
+      this.setState({ submiting: false, files: [] });
+    }
+    this.setState({ submiting: false, files: [] });
+    this.refreshCaptcha();
   }
 
   renderFileField(id, options) {

@@ -4,6 +4,7 @@ const prepareFiles = async (mediaProperties, values) => {
   const metadataFiles = {};
   const entityAttachments = [];
   const files = [];
+
   if (values.metadata && values.metadata.length > 0) {
     await Promise.all(
       mediaProperties.map(async p => {
@@ -31,6 +32,7 @@ const prepareFiles = async (mediaProperties, values) => {
       })
     );
   }
+
   return { metadataFiles, entityAttachments, files };
 };
 
@@ -61,17 +63,17 @@ function wrapEntityMetadata(entity) {
   return { ...entity, metadata };
 }
 
-const prepareMetadataAndFiles = async (values, mediaProperties, attachedFiles, templateId) => {
+const prepareMetadataAndFiles = async (values, attachedFiles, template) => {
+  const mediaProperties = template.properties.filter(p => p.type === 'image' || p.type === 'media');
   const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
   const fields = { ...values.metadata, ...metadataFiles };
   const entity = { ...values, metadata: fields, attachments: entityAttachments };
   const wrappedEntity = wrapEntityMetadata(entity);
   wrappedEntity.file = values.file ? values.file[0] : undefined;
-  wrappedEntity.template = templateId;
   wrappedEntity.attachments = [];
   wrappedEntity.attachments.push(...files);
   wrappedEntity.attachments.push(...attachedFiles);
-  return wrappedEntity;
+  return { ...wrappedEntity, template: template._id };
 };
 
 export { prepareMetadataAndFiles, wrapEntityMetadata };
