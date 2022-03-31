@@ -11,14 +11,14 @@ export class Repeater {
   }
 
   async start() {
-    if (this.stopped) {
-      this.stopped();
-      return;
+    while (!this.stopped) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.cb();
+      // eslint-disable-next-line no-await-in-loop
+      await timeout(this.interval);
     }
 
-    await this.cb();
-    await timeout(this.interval);
-    await this.start();
+    this.stopped();
   }
 
   async stop() {

@@ -7,7 +7,6 @@ describe('Repeater', () => {
   let repeaterOne;
   let repeaterTwo;
 
-  // one does not simply test timeouts
   function advanceTime(time) {
     jest.advanceTimersByTime(time);
     return new Promise(resolve => setImmediate(resolve));
@@ -39,5 +38,14 @@ describe('Repeater', () => {
 
     expect(callbackOne).toHaveBeenCalledTimes(1);
     expect(callbackTwo).toHaveBeenCalledTimes(2);
+  });
+
+  it('should resolve stopped promise', async () => {
+    jest.useRealTimers();
+    repeaterOne = new Repeater(callbackOne, 1);
+
+    repeaterOne.start();
+
+    await expect(repeaterOne.stop()).resolves.toBeUndefined();
   });
 });
