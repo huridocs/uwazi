@@ -1,17 +1,20 @@
 import React from 'react';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Translate } from 'app/I18N';
+import { bindActionCreators, Dispatch } from 'redux';
 import { IStore } from '../../istore';
 import { ensure } from '../../../shared/tsUtils';
 import { Pill } from './Pill';
+import * as actions from '../../Relationships/actions/actions';
 
 interface GeolocationMarker {
   lat: string;
   lon: string;
   label?: string;
   color?: string;
+  relatedEntity?: any;
 }
 
 interface GroupMember {
@@ -31,7 +34,39 @@ interface TemplatesInfo {
 export interface GroupedGeolocationViewerProps {
   members: GroupMember[];
   templatesInfo: TemplatesInfo;
+  selectConnection: Function;
 }
+
+const templatesMap = createSelector(
+  (s: IStore) => s.templates,
+  templates =>
+    templates.reduce(
+      (map, template) => ({
+        ...map,
+        [ensure<string>(template?.get('_id'))]: {
+          name: template?.get('name'),
+          color: template?.get('color'),
+        },
+      }),
+      {}
+    )
+);
+
+function mapDispatchToProps(dispatch: Dispatch<{}>) {
+  return bindActionCreators(
+    {
+      selectConnection: actions.selectConnection,
+    },
+    dispatch
+  );
+}
+
+const mapStateToProps = (state: IStore) => ({
+  templatesInfo: templatesMap(state),
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type mappedProps = ConnectedProps<typeof connector> & GroupedGeolocationViewerProps;
 
 const notLabeledOrMultiple = (member: GroupMember) =>
   member.value.length === 1 && !member.value[0].label;
@@ -55,34 +90,46 @@ const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo)
   </dl>
 );
 
-const getMultiMemberInfo = (templatesInfo: TemplatesInfo) => (member: GroupMember) =>
-  (
-    <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
-      <dt>
-        <span>
-          <Translate context={member.translateContext}>{member.label}</Translate>
-          {' ('}
-          <Translate>linked</Translate>{' '}
-          <Translate context={member.translateContext}>
-            {templatesInfo[member.translateContext].name}
-          </Translate>
-          {') '}
-        </span>
-      </dt>
-      <dd>
-        {member.value.map(value => (
-          <Pill
-            key={`${value.lat}_${value.lon}`}
-            color={templatesInfo[member.translateContext].color}
-          >
-            <Translate context={member.translateContext}>{value.label || ''}</Translate>
-          </Pill>
-        ))}
-      </dd>
-    </dl>
-  );
+const getMultiMemberInfo =
+  (templatesInfo: TemplatesInfo, selectConnection: mappedProps['selectConnection']) =>
+  (member: GroupMember) =>
+    (
+      <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
+        <dt>
+          <span>
+            <Translate context={member.translateContext}>{member.label}</Translate>
+            {' ('}
+            <Translate>linked</Translate>{' '}
+            <Translate context={member.translateContext}>
+              {templatesInfo[member.translateContext].name}
+            </Translate>
+            {') '}
+          </span>
+        </dt>
+        <dd>
+          {member.value.map(value => (
+            <div
+              key={`${value.lat}_${value.lon}`}
+              onClick={() => value.relatedEntity && selectConnection(value.relatedEntity)}
+              style={{ cursor: value.relatedEntity ? 'pointer' : 'default' }}
+            >
+              <Pill
+                key={`${value.lat}_${value.lon}`}
+                color={templatesInfo[member.translateContext].color}
+              >
+                <Translate context={member.translateContext}>{value.label || ''}</Translate>
+              </Pill>
+            </div>
+          ))}
+        </dd>
+      </dl>
+    );
 
-const computeRenderMemberGroups = (members: GroupMember[], templatesInfo: TemplatesInfo) => {
+const computeRenderMemberGroups = (
+  members: GroupMember[],
+  templatesInfo: TemplatesInfo,
+  selectConnection: mappedProps['selectConnection']
+) => {
   const firstGroup: GroupMember[] = [];
   const restOfGroups: GroupMember[] = [];
 
@@ -95,12 +142,12 @@ const computeRenderMemberGroups = (members: GroupMember[], templatesInfo: Templa
   });
 
   return [firstGroup.length ? getFirstGroupInfo(firstGroup, templatesInfo) : null].concat(
-    restOfGroups.map(getMultiMemberInfo(templatesInfo))
+    restOfGroups.map(getMultiMemberInfo(templatesInfo, selectConnection))
   );
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const GroupedGeolocationViewerComponent = (props: GroupedGeolocationViewerProps) => {
+const GroupedGeolocationViewerComponent = (props: mappedProps) => {
   const markers = props.members.reduce<GeolocationMarker[]>((flat: GeolocationMarker[], member) => {
     if (notLabeledOrMultiple(member)) {
       return flat.concat([
@@ -120,28 +167,9 @@ const GroupedGeolocationViewerComponent = (props: GroupedGeolocationViewerProps)
   return (
     <>
       <GeolocationViewer points={markers} onlyForCards={false} />
-      {computeRenderMemberGroups(props.members, props.templatesInfo)}
+      {computeRenderMemberGroups(props.members, props.templatesInfo, props.selectConnection)}
     </>
   );
 };
 
-const templatesMap = createSelector(
-  (s: IStore) => s.templates,
-  templates =>
-    templates.reduce(
-      (map, template) => ({
-        ...map,
-        [ensure<string>(template?.get('_id'))]: {
-          name: template?.get('name'),
-          color: template?.get('color'),
-        },
-      }),
-      {}
-    )
-);
-
-const mapStateToProps = (state: IStore) => ({
-  templatesInfo: templatesMap(state),
-});
-
-export const GroupedGeolocationViewer = connect(mapStateToProps)(GroupedGeolocationViewerComponent);
+export const GroupedGeolocationViewer = connector(GroupedGeolocationViewerComponent);

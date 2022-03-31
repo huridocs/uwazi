@@ -217,6 +217,7 @@ class EntityViewer extends Component {
                       role="button"
                       tabIndex="0"
                       aria-label={t('System', 'Page', null, false)}
+                      component="div"
                     >
                       <Icon icon="file-image" />
                       <span className="tab-link-tooltip">{t('System', 'Page')}</span>
@@ -229,6 +230,7 @@ class EntityViewer extends Component {
                     role="button"
                     tabIndex="0"
                     aria-label={t('System', 'Info', null, false)}
+                    component="div"
                   >
                     <Icon icon="info-circle" />
                     <span className="tab-link-tooltip">{t('System', 'Info')}</span>
@@ -240,6 +242,7 @@ class EntityViewer extends Component {
                     role="button"
                     tabIndex="0"
                     aria-label={t('System', 'Connections', null, false)}
+                    component="div"
                   >
                     <Icon icon="exchange-alt" />
                     <span className="connectionsNumber">{summary.totalConnections}</span>

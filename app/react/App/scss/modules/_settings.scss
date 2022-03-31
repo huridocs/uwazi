@@ -234,6 +234,17 @@
   // height: calc(100% - 51px);
   padding-bottom: 85px;
   // overflow-y: scroll;
+  div {
+    @include pillItem;
+  }
+  .user-details {
+    div {
+      margin-bottom: 7px;
+    }
+    div.user-details-role {
+      text-transform: capitalize;
+    }
+  }
 }
 
 .settings-content .page-creator .tab-content-visible {

@@ -90,6 +90,7 @@ export class Document extends Component {
       <PDF
         onPageChange={this.props.onPageChange}
         onPDFReady={this.onDocumentReady}
+        onPageLoaded={this.props.onPageLoaded}
         onLoad={this.pdfLoaded}
         file={`${APIURL}files/${file.filename}`}
         filename={file.filename}
@@ -129,6 +130,7 @@ export class Document extends Component {
 }
 
 Document.defaultProps = {
+  onPageLoaded: () => {},
   onDocumentReady: () => {},
   onPageChange: () => {},
   onClick: () => {},
@@ -151,6 +153,7 @@ Document.propTypes = {
   onPageChange: PropTypes.func,
   onDocumentReady: PropTypes.func,
   onPDFLoaded: PropTypes.func,
+  onPageLoaded: PropTypes.func,
   doc: PropTypes.object,
   file: PropTypes.object,
   selectedSnippet: PropTypes.instanceOf(Immutable.Map),
