@@ -204,12 +204,14 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                       syncedTemplate={syncedTemplate}
                     />
                   ))}
-                  <div className="no-properties">
-                    <span className="no-properties-wrap">
-                      <Icon icon="clone" />
-                      <Translate>Drag properties here</Translate>
-                    </span>
-                  </div>
+                  {!syncedTemplate && (
+                    <div className="no-properties">
+                      <span className="no-properties-wrap">
+                        <Icon icon="clone" />
+                        <Translate>Drag properties here</Translate>
+                      </span>
+                    </div>
+                  )}
                 </ul>
               )}
             </>
