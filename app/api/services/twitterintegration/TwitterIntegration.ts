@@ -3,7 +3,6 @@ import { tenants } from 'api/tenants';
 import settings from 'api/settings/settings';
 import entities from 'api/entities/entities';
 import templates from 'api/templates';
-import EntitiesModel from 'api/entities/entitiesModel';
 import relationtypes from 'api/relationtypes';
 import {
   getTextWithAttachedImages,
@@ -11,6 +10,7 @@ import {
   getTwitterImagesData,
   TwitterImageData,
 } from 'api/services/twitterintegration/getTwitterImages';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 interface TweetParamsType {
   title: string;
@@ -75,17 +75,7 @@ class TwitterIntegration {
             return;
           }
 
-          const templateTweet = await this.getTemplateTweets(twitterIntegration);
-          const newestEntity = await EntitiesModel.getUnrestricted(
-            { template: templateTweet._id },
-            'metadata.tweet_date',
-            { limit: 1, sort: { 'metadata.tweet_date': -1 } }
-          );
-
-          const utcTimestampEntities =
-            newestEntity.length && newestEntity[0].metadata?.tweet_date
-              ? newestEntity[0].metadata.tweet_date[0].value
-              : 0;
+          await this.getTemplateTweets(twitterIntegration);
 
           // eslint-disable-next-line @typescript-eslint/no-misused-promises,no-restricted-syntax
           for (const hashtag of twitterIntegration.searchQueries) {
@@ -95,7 +85,6 @@ class TwitterIntegration {
               tenant,
               params: {
                 query: hashtag,
-                from_UTC_timestamp: utcTimestampEntities,
                 tweets_languages:
                   twitterIntegration && twitterIntegration.tweetsLanguages
                     ? twitterIntegration.tweetsLanguages
@@ -110,6 +99,7 @@ class TwitterIntegration {
 
   processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
+      permissionsContext.setCommandContext();
       const twitterIntegration = await this.getTwitterIntegrationSettings();
 
       if (!twitterIntegration.hashtagsTemplateName) {
