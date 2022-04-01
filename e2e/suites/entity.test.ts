@@ -36,7 +36,7 @@ const createEntityWithSupportingFiles = async (
   await expect(page).toClick('.tab-link', { text: 'Add from web' });
   await expect(page).toFill('.web-attachment-url', webAttachment.url);
   await expect(page).toFill('.web-attachment-name', webAttachment.name);
-  await expect(page).toClick('button', { text: 'Add resource' });
+  await expect(page).toClick('button', { text: 'Add from URL' });
 
   await saveEntityAndClosePanel();
 };
