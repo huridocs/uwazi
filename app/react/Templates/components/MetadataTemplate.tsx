@@ -161,7 +161,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             <>
               <Icon icon="exclamation-triangle" />
               <Translate key="syncedTemplateEditorMessage">
-                This template is synced. Only entity view page and color assignment is enabled.
+                This template is synced. Only entity view page assignment is enabled.
               </Translate>
             </>
           )}
@@ -180,6 +180,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                 mapProps={{
                   defaultValue: (props: any) => props.defaultValue,
                 }}
+                disabled={syncedTemplate}
               />
             )}
           </div>
