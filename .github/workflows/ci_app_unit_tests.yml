@@ -32,7 +32,12 @@ jobs:
       - run: chmod +x ./cc-test-reporter
       - run: ./cc-test-reporter before-build
       - name: Run tests
-        run: yarn test app/react --coverage --maxWorkers=2
-      - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
+        run: yarn test app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
+      - run: cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: react-coverage-report
+          path: tmp/codeclimate.react.json
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
