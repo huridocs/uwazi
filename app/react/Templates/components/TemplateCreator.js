@@ -44,7 +44,7 @@ export class TemplateCreator extends Component {
                   relationType={this.props.relationType}
                 />
               </main>
-              {environment !== 'relationship' && (
+              {environment !== 'relationship' && !this.props.syncedTemplate && (
                 <aside className="col-xs-12 col-sm-3">
                   <div className="metadataTemplate-constructor">
                     <div>
@@ -113,6 +113,7 @@ TemplateCreator.defaultProps = {
   noRelationtypes: true,
   noDictionaries: true,
   project: '',
+  syncedTemplate: false,
 };
 
 TemplateCreator.propTypes = {
@@ -120,6 +121,7 @@ TemplateCreator.propTypes = {
   saveTemplate: PropTypes.func.isRequired,
   saveRelationType: PropTypes.func.isRequired,
   relationType: PropTypes.bool,
+  syncedTemplate: PropTypes.bool,
   noRelationtypes: PropTypes.bool,
   noDictionaries: PropTypes.bool,
   project: PropTypes.string,
@@ -133,10 +135,11 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ resetTemplate, saveTemplate, saveRelationType }, dispatch);
 }
 
-const mapStateToProps = ({ settings, relationTypes, thesauris }) => ({
+const mapStateToProps = ({ settings, relationTypes, thesauris, template }, props) => ({
   project: settings.collection.toJS().project,
   noRelationtypes: !relationTypes.size,
   noDictionaries: !thesauris.size,
+  syncedTemplate: !props.relationType && template.data.synced,
 });
 
 export default DragDropContext(HTML5Backend)(
