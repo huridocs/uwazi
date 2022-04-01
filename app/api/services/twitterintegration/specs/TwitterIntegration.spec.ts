@@ -16,7 +16,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';
 import fetchMock from 'fetch-mock';
 import { files } from 'api/files';
-import Relationships from "api/relationships";
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');

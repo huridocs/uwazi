@@ -1,5 +1,4 @@
 import db, { DBFixture } from 'api/utils/testing_db';
-import { factory } from 'api/services/informationextraction/specs/fixtures';
 
 const settings = [
   {
