@@ -157,6 +157,15 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             this.props._id
           )}
         >
+          {environment === 'template' && syncedTemplate && (
+            <>
+              <Icon icon="exclamation-triangle" />
+              <Translate key="syncedTemplateEditorMessage">
+                This template is synced. Only entity view page and color assignment is enabled.
+              </Translate>
+            </>
+          )}
+
           <div className="metadataTemplate-heading">
             <FormGroup model=".name">
               <Field model=".name">
