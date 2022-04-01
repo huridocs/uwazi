@@ -238,6 +238,23 @@ describe('syncWorker', () => {
 
         expect(templateCall[0][1].data.entityViewPage).toBeUndefined();
       });
+
+      it('should mark the template as synced', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
+          },
+        });
+
+        const {
+          calls: [templateCall],
+          callsCount,
+        } = getCallsToIds('templates', [template1]);
+
+        expect(callsCount).toBe(1);
+
+        expect(templateCall[0][1].data.synced).toBe(true);
+      });
     });
 
     describe('thesauris (dictionaries collection)', () => {
