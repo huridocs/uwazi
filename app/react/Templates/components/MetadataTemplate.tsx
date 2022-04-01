@@ -43,6 +43,7 @@ interface MetadataTemplateProps {
   savingTemplate: boolean;
   templates?: any;
   entityViewPage?: string;
+  syncedTemplate?: boolean;
   _id?: string;
 }
 
@@ -139,7 +140,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
   }
 
   render() {
-    const { connectDropTarget, defaultColor, environment } = this.props;
+    const { connectDropTarget, defaultColor, environment, syncedTemplate } = this.props;
     const commonProperties = this.props.commonProperties || [];
     return (
       <div>
@@ -189,6 +190,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                       key={property.localID}
                       localID={property.localID}
                       index={index - commonProperties.length}
+                      syncedTemplate={syncedTemplate}
                     />
                   ))}
                   {this.props.properties.map((property: ClientPropertySchema, index: number) => (
@@ -199,6 +201,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                       key={property.localID}
                       localID={property.localID}
                       index={index}
+                      syncedTemplate={syncedTemplate}
                     />
                   ))}
                   <div className="no-properties">
@@ -286,7 +289,13 @@ const mapStateToProps = (
     relationTypes,
   }: {
     template: {
-      data: { _id: string; commonProperties: any; properties: any; entityViewPage: string };
+      data: {
+        _id: string;
+        commonProperties: any;
+        properties: any;
+        entityViewPage: string;
+        synced?: boolean;
+      };
       uiState: any;
     };
     templates: any;
@@ -302,6 +311,7 @@ const mapStateToProps = (
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
     entityViewPage: template.data.entityViewPage,
+    syncedTemplate: template.data.synced,
     templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate'),
     defaultColor: getTemplateDefaultColor(templates, template),
