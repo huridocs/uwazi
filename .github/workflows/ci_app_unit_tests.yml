@@ -33,7 +33,7 @@ jobs:
       - run: ./cc-test-reporter before-build
       - name: Run tests
         run: yarn test app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
-      - run: cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
+      - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
