@@ -13,7 +13,6 @@ import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
 import Tip from '../../Layout/Tip';
 
-// eslint-disable-next-line import/exports-last
 export class EntityTypesList extends Component {
   setAsDefaultButton(template) {
     return (
