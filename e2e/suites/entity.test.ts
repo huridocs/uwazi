@@ -4,6 +4,7 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
+import { uploadFileInMetadataField } from '../helpers/formActions';
 import { uploadSupportingFileToEntity } from '../helpers/createEntity';
 import { goToRestrictedEntities } from '../helpers/publishedFilter';
 import { refreshIndex } from '../helpers/elastichelpers';
@@ -106,6 +107,51 @@ describe('Entities', () => {
     await page.waitForSelector('.attachment-name');
     const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
     expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
+  });
+
+  describe('entity with files in metadata fields', () => {
+    it('should create and entity with and image in a metadata field', async () => {
+      await goToRestrictedEntities();
+      await expect(page).toClick('button', { text: 'Create entity' });
+      await expect(page).toSelect('select', 'Reporte');
+      await expect(page).toFill(
+        'textarea[name="library.sidepanel.metadata.title"]',
+        'Entity with media files'
+      );
+      await expect(page).toFill('#tabpanel-edit > textarea', 'A description of the report');
+      await expect(page).toClick(
+        '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > div > div > div > button'
+      );
+      await uploadFileInMetadataField(
+        `${__dirname}/test_files/batman.jpg`,
+        'input[aria-label=fileInput]'
+      );
+      await saveEntityAndClosePanel();
+    });
+
+    it('should edit the entity to add a video on a metadata field', async () => {
+      await expect(page).toClick('.item-document', {
+        text: 'Entity with media files',
+      });
+      await expect(page).toClick('button', { text: 'Edit' });
+      await expect(page).toClick(
+        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > div > button'
+      );
+      await uploadFileInMetadataField(
+        `${__dirname}/test_files/short-video.mp4`,
+        'input[aria-label=fileInput]'
+      );
+      await saveEntityAndClosePanel();
+    });
+
+    it('should check the entity', async () => {
+      await expect(page).toClick('.item-name span', {
+        text: 'Entity with media files',
+      });
+      await expect(page).toMatchElement('.metadata-name-descripci_n > dd > div > p', {
+        text: 'A description of the report',
+      });
+    });
   });
 
   afterAll(async () => {
