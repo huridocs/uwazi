@@ -8,7 +8,6 @@ import {
   fixturesOneTenant,
   fixturesOtherTenant,
   fixturesTenantWithoutTwitter,
-  fixturesWithTweets,
 } from 'api/services/twitterintegration/specs/fixtures';
 import EntitiesModel from 'api/entities/entitiesModel';
 import templates from 'api/templates/templates';
@@ -79,19 +78,7 @@ describe('TwitterIntegration', () => {
     await twitterIntegration.addTweetsRequestsToQueue();
 
     expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { query: '#hashtag-example', from_UTC_timestamp: 0, tweets_languages: ['en'] },
-      tenant: tenantName,
-      task: 'get-hashtag',
-    });
-  });
-
-  it('should send a twitter request with the timestamp of last tweet', async () => {
-    await testingDB.setupFixturesAndContext(fixturesWithTweets, tenantName);
-
-    await twitterIntegration.addTweetsRequestsToQueue();
-
-    expect(twitterIntegration.twitterTaskManager.startTask).toHaveBeenCalledWith({
-      params: { query: '#hashtag-example', from_UTC_timestamp: 12345, tweets_languages: ['en'] },
+      params: { query: '#hashtag-example', tweets_languages: ['en'] },
       tenant: tenantName,
       task: 'get-hashtag',
     });
