@@ -3,7 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { fs } from 'api/files';
-import { fixtures } from './fixtures';
+import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 
@@ -42,6 +42,24 @@ describe('InformationExtraction', () => {
     await IXExternalService.stop();
     await testingEnvironment.tearDown();
   });
+
+  const saveSuggestionProcess = async (
+    id: string,
+    entity: string,
+    language: string,
+    property: string
+  ) => {
+    await informationExtraction.saveSuggestionProcess(
+      {
+        _id: factory.id(id),
+        entity,
+        language,
+        segmentation: {},
+        extractedMetadata: [],
+      },
+      property
+    );
+  };
 
   describe('trainModel', () => {
     it('should send xmls', async () => {
@@ -203,6 +221,8 @@ describe('InformationExtraction', () => {
         },
       ]);
 
+      await saveSuggestionProcess('F3', 'A3', 'eng', 'property1');
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'property1');
       await informationExtraction.processResults({
         params: { property_name: 'property1' },
         tenant: 'tenant1',
@@ -225,6 +245,61 @@ describe('InformationExtraction', () => {
           suggestedValue: 'suggestion_text_1',
           segment: 'segment_text_1',
           status: 'ready',
+        })
+      );
+    });
+
+    it('should save different language suggestions for the same entity', async () => {
+      IXExternalService.setResults([
+        {
+          tenant: 'tenant1',
+          property_name: 'property1',
+          xml_file_name: 'documentA.xml',
+          text: 'text_in_other_language',
+          segment_text: 'segmented_text_in_other_language',
+        },
+        {
+          tenant: 'tenant1',
+          property_name: 'property1',
+          xml_file_name: 'documentD.xml',
+          text: 'text_in_eng_language',
+          segment_text: 'segmented_text_in_eng_language',
+        },
+      ]);
+
+      await saveSuggestionProcess('F1', 'A1', 'other', 'property1');
+      await saveSuggestionProcess('F4', 'A1', 'eng', 'property1');
+
+      await informationExtraction.processResults({
+        params: { property_name: 'property1' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'ready',
+        propertyName: 'property1',
+      });
+
+      expect(suggestions.length).toBe(2);
+
+      expect(suggestions.find(s => s.language === 'other')).toEqual(
+        expect.objectContaining({
+          language: 'other',
+          propertyName: 'property1',
+          status: 'ready',
+          suggestedValue: 'text_in_other_language',
+        })
+      );
+
+      expect(suggestions.find(s => s.language === 'en')).toEqual(
+        expect.objectContaining({
+          language: 'en',
+          propertyName: 'property1',
+          status: 'ready',
+          suggestedValue: 'text_in_eng_language',
         })
       );
     });
@@ -319,6 +394,8 @@ describe('InformationExtraction', () => {
         },
       ]);
 
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'property4');
+
       await informationExtraction.processResults({
         params: { property_name: 'property1' },
         tenant: 'tenant1',
@@ -358,6 +435,8 @@ describe('InformationExtraction', () => {
           segment_text: 'segment_text_1',
         },
       ]);
+
+      await saveSuggestionProcess('F5', 'A5', 'eng', 'property1');
 
       await informationExtraction.processResults({
         params: { property_name: 'property1' },
