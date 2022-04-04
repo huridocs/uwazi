@@ -1,13 +1,14 @@
 import multer from 'multer';
 
-import { models } from 'api/odm';
+import { models, WithId } from 'api/odm';
 import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
 import { uploadsPath, customUploadsPath, uploadMiddleware, deleteUploadedFiles } from 'api/files';
-import { needsAuthorization } from '../auth';
 import { TranslationType } from 'shared/translationType';
+
+import { needsAuthorization } from '../auth';
 
 const storage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -38,14 +39,19 @@ const deleteEntityFromIndex = async (entityId: string) => {
   }
 };
 
-const deleteFromIndex = async (req: Request, file: FileType) => {
+const deleteFromIndex = async (req: Request) => {
   if (req.query.namespace === 'entities') {
     await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
   }
+};
 
+const deleteFile = async (fileId: string) => {
+  const file: WithId<FileType> | undefined = await models.files.getById(fileId);
   if (file) {
+    await deleteUploadedFiles([file]);
     await deleteFileFromIndex(file);
   }
+  return file;
 };
 
 const preserveTranslations = async (syncData: TranslationType): Promise<TranslationType> => {
@@ -106,23 +112,17 @@ export default (app: Application) => {
     }
   );
 
-  app.delete('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
-    try {
-      let file;
-      if (req.query.namespace === 'files') {
-        file = await models[req.query.namespace].getById(JSON.parse(req.query.data)._id);
-        await deleteUploadedFiles([file]);
-      }
+  app.delete('/api/sync', needsAuthorization(['admin']), async (req, res) => {
+    await models[req.query.namespace].delete(JSON.parse(req.query.data));
 
-      await models[req.query.namespace].delete(JSON.parse(req.query.data));
-
-      if (req.query.namespace === 'entities' || file) {
-        await deleteFromIndex(req, file);
-      }
-
-      res.json('ok');
-    } catch (e) {
-      next(e);
+    if (req.query.namespace === 'files') {
+      await deleteFile(JSON.parse(req.query.data)._id);
     }
+
+    if (req.query.namespace === 'entities') {
+      await deleteFromIndex(req);
+    }
+
+    res.json('ok');
   });
 };
