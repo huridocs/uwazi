@@ -235,7 +235,7 @@ class InformationExtraction {
     const [existingSuggestions] = await IXSuggestionsModel.get({
       entityId: entity.sharedId,
       propertyName,
-      language: entity.language,
+      fileId: file._id,
     });
     const suggestion: IXSuggestionType = {
       ...existingSuggestions,
