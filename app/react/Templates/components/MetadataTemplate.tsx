@@ -160,7 +160,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
           {environment === 'template' && syncedTemplate && (
             <div className="metadataTemplate-sync">
               <Icon icon="exclamation-triangle" /> &nbsp;
-              <Translate key="syncedTemplateEditorMessage">
+              <Translate translationKey="syncedTemplateEditorMessage">
                 This template is synced. Only entity view page assignment is enabled.
               </Translate>
             </div>
