@@ -174,7 +174,7 @@ describe('InformationExtraction', () => {
     it('should create the suggestions placeholder with status processing', async () => {
       await informationExtraction.getSuggestions('property1');
       const suggestions = await IXSuggestionsModel.get();
-      expect(suggestions.length).toBe(6);
+      expect(suggestions.length).toBe(4);
       expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',
