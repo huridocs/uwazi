@@ -348,13 +348,14 @@ MetadataFormFields.defaultProps = {
   attachments: Immutable.fromJS([]),
   highlightedProps: [],
   localAttachments: [],
+  storeKey: '',
 };
 
 MetadataFormFields.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
-  storeKey: PropTypes.string.isRequired,
+  storeKey: PropTypes.string,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
