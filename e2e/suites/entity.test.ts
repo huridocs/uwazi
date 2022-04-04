@@ -4,11 +4,11 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
-import { uploadFileInMetadataField } from '../helpers/formActions';
+import { uploadFileInMetadataField, scrollTo } from '../helpers/formActions';
 import { uploadSupportingFileToEntity } from '../helpers/createEntity';
 import { goToRestrictedEntities } from '../helpers/publishedFilter';
 import { refreshIndex } from '../helpers/elastichelpers';
-import { getContentBySelector } from '../helpers/selectorUtils';
+import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
 
 async function addSupportingFile(filePath: string) {
   await expect(page).toClick('button', { text: 'Add supporting file' });
@@ -119,6 +119,9 @@ describe('Entities', () => {
         'Entity with media files'
       );
       await expect(page).toFill('#tabpanel-edit > textarea', 'A description of the report');
+      await scrollTo(
+        '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > div > div > div > button'
+      );
       await expect(page).toClick(
         '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > div > div > div > button'
       );
@@ -135,7 +138,7 @@ describe('Entities', () => {
       });
       await expect(page).toClick('button', { text: 'Edit' });
       await expect(page).toClick(
-        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > div > button'
+        '#metadataForm > div:nth-child(3) > div.form-group.media > ul > li.wide > div > div > div > button'
       );
       await uploadFileInMetadataField(
         `${__dirname}/test_files/short-video.mp4`,
@@ -151,6 +154,23 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.metadata-name-descripci_n > dd > div > p', {
         text: 'A description of the report',
       });
+
+      const [fotografiaFieldSource] = await page.$$eval(
+        '.metadata-name-fotograf_a > dd > img',
+        el => el.map(x => x.getAttribute('src'))
+      );
+      const [videoFieldSource] = await page.$$eval(
+        '.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video',
+        el => el.map(x => x.getAttribute('src'))
+      );
+
+      await checkStringValuesInSelectors([
+        { selector: fotografiaFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
+        { selector: videoFieldSource, expected: /^\/api\/files\/\w+\.mp4$/ },
+      ]);
+
+      const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+      expect(fileList).toEqual(['batman.jpg', 'short-video.mp4']);
     });
   });
 
