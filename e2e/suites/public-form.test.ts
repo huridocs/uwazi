@@ -7,6 +7,7 @@ import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
 import { refreshIndex } from '../helpers/elastichelpers';
 import { goToRestrictedEntities } from '../helpers/publishedFilter';
+import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
 
 const buttonForFotografia =
   'div.content > div > div > main > div > div > form > div > div:nth-child(2) > div:nth-child(4) > ul > li.wide > div > div > div > button';
@@ -168,6 +169,28 @@ describe('Public forms', () => {
       await expect(page).toMatchElement('.metadata-name-descripci_n', {
         text: 'A description for the report',
       });
+
+      const [fotografiaFieldSource] = await page.$$eval(
+        '.metadata-name-fotograf_a > dd > img',
+        el => el.map(x => x.getAttribute('src'))
+      );
+      const [videoFieldSource] = await page.$$eval(
+        '.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video',
+        el => el.map(x => x.getAttribute('src'))
+      );
+      const [ImagenAdicionalFieldSource] = await page.$$eval(
+        '.metadata-name-imagen_adicional > dd > img',
+        el => el.map(x => x.getAttribute('src'))
+      );
+
+      await checkStringValuesInSelectors([
+        { selector: fotografiaFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
+        { selector: videoFieldSource, expected: /^\/api\/files\/\w+\.mp4$/ },
+        { selector: ImagenAdicionalFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
+      ]);
+
+      const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+      expect(fileList).toEqual(['batman.jpg', 'batman.jpg', 'short-video.mp4']);
     });
   });
 });
