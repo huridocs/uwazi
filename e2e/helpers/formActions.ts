@@ -25,6 +25,7 @@ export const uploadFileInMetadataField = async (filepath: string, fileInputSelec
   if (button) {
     const [fileChooser] = await Promise.all([
       page.waitForFileChooser(),
+      // @ts-ignore:next-line
       button.evaluate(b => b.click()),
     ]);
     await fileChooser.accept([filepath]);
