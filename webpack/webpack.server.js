@@ -19,7 +19,8 @@ const compiler = webpack(webpackConfig);
 
 app.use(require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
-  headers: { 'Access-Control-Allow-Origin': '*' }
+  headers: { 'Access-Control-Allow-Origin': '*' },
+  stats: 'errors-warnings'
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
