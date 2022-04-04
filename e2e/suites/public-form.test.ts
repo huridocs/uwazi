@@ -91,7 +91,7 @@ describe('Public forms', () => {
       await expect(page).toClick('a', { text: 'Public Form Page' });
       await expect(page).toFill(
         '.markdownEditor textarea',
-        '<PublicForm template="6246f226274bb43d9fa37b72" />'
+        '<PublicForm template="624b29b432bdcda07b3854b9" />'
       );
 
       await expect(page).toClick('button', { text: 'Save' });
@@ -108,7 +108,7 @@ describe('Public forms', () => {
       await expect(page).toSelect('select', 'Amnistía');
       await selectDate(
         '.form-group.date > ul > li.wide > div > div.react-datepicker-wrapper > div > input',
-        '20/04/2022'
+        '2022/02/10'
       );
       await expect(page).toFill('textarea', 'A description for the report');
     });
@@ -163,8 +163,8 @@ describe('Public forms', () => {
       await expect(page).toMatchElement('.metadata-name-descriptor', {
         text: 'Amnistía',
       });
-      await expect(page).toMatchElement('.metadata-name-fecha', {
-        text: 'Jan 1, 2020',
+      await expect(page).toMatchElement('.metadata-name-date', {
+        text: 'Feb 10, 2022',
       });
       await expect(page).toMatchElement('.metadata-name-descripci_n', {
         text: 'A description for the report',
