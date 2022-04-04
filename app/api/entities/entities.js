@@ -358,7 +358,7 @@ export default {
       : await this.getUnrestricted({ sharedId, language }, '+permissions');
 
     if (updateRelationships) {
-      await relationships.saveEntityBasedReferences(entity, language);
+      await relationships.saveEntityBasedReferences(entity, language, docTemplate);
     }
 
     if (index) {

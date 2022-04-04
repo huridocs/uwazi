@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 const batmanFinishesId = db.id();
+const batmanStillNotDoneId = db.id();
 const syncPropertiesEntityId = db.id();
 const templateId = db.id();
 const templateChangingNames = db.id();
@@ -17,6 +18,7 @@ const templateChangingNamesProps = {
   prop2id: db.id(),
   prop3id: db.id(),
 };
+const adminId = db.id();
 
 const dictionary = db.id();
 const c1 = db.id();
@@ -27,6 +29,8 @@ const hub2 = db.id();
 const hub3 = db.id();
 const hub4 = db.id();
 const hub5 = db.id();
+const hub6 = db.id();
+const hub7 = db.id();
 
 const docId1 = db.id();
 const docId2 = db.id();
@@ -51,6 +55,15 @@ const entityGetTestFileId3 = db.id();
 const permissions = [{ refId: 'userId', level: AccessLevels.WRITE, type: PermissionType.USER }];
 
 export default {
+  users: [
+    {
+      _id: adminId,
+      password: 'hashedpass',
+      username: 'admin',
+      email: 'admin@uwazi.com',
+      role: 'admin',
+    },
+  ],
   files: [
     {
       _id: db.id(),
@@ -161,6 +174,20 @@ export default {
       template: templateId,
       language: 'en',
       title: 'Batman finishes',
+      published: true,
+      metadata: {
+        property1: [{ value: 'value1' }],
+        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+        enemies: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+      },
+    },
+    {
+      _id: batmanStillNotDoneId,
+      sharedId: 'relSaveTest',
+      type: 'entity',
+      template: templateId,
+      language: 'en',
+      title: 'Batman still not done',
       published: true,
       metadata: {
         property1: [{ value: 'value1' }],
@@ -398,6 +425,21 @@ export default {
       language: 'es',
     },
     {
+      title: 'entity one',
+      sharedId: 'id1',
+      language: 'en',
+    },
+    {
+      title: 'entity two',
+      sharedId: 'id2',
+      language: 'en',
+    },
+    {
+      title: 'entity three',
+      sharedId: 'id3',
+      language: 'en',
+    },
+    {
       title: 'value2',
       template: templateId,
       language: 'en',
@@ -422,7 +464,6 @@ export default {
       language: 'es',
       permissions,
     },
-    // docs for testing entities.get
     {
       _id: entityGetTestEntityIdA,
       sharedId: 'entityGetTestEntityIdA',
@@ -577,6 +618,10 @@ export default {
     { _id: db.id(), entity: 'shared1', template: relationType2, hub: hub4, entityData: {} },
     { _id: db.id(), entity: 'shared1', template: relationType2, hub: hub5, entityData: {} },
     { _id: db.id(), entity: 'shared', template: relationType2, hub: hub5, entityData: {} },
+    { _id: db.id(), entity: 'relSaveTest', template: null, hub: hub6 },
+    { _id: db.id(), entity: 'shared2', template: relationType1, hub: hub6 },
+    { _id: db.id(), entity: 'relSaveTest', template: null, hub: hub7 },
+    { _id: db.id(), entity: 'shared2', template: relationType4, hub: hub7 },
   ],
   dictionaries: [
     {
@@ -665,7 +710,9 @@ export default {
 };
 
 export {
+  adminId,
   batmanFinishesId,
+  batmanStillNotDoneId,
   syncPropertiesEntityId,
   templateId,
   templateChangingNames,
