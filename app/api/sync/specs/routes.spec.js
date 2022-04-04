@@ -185,17 +185,6 @@ describe('sync', () => {
       expect(search.delete).not.toHaveBeenCalled();
     });
 
-    describe('on error', () => {
-      it('should call next if model fails', async () => {
-        models.model1.delete.and.returnValue(Promise.reject(new Error('error')));
-        try {
-          await routes.delete('/api/sync', req);
-        } catch (error) {
-          expect(error).toEqual(new Error('error'));
-        }
-      });
-    });
-
     describe('when namespace is files', () => {
       beforeEach(() => {
         models.files = {
@@ -237,15 +226,6 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.delete).toHaveBeenCalledWith({ _id: 'id' });
-      });
-
-      it('should call next if elastic fails', async () => {
-        search.delete.and.returnValue(Promise.reject(new Error('error')));
-        try {
-          await routes.delete('/api/sync', req);
-        } catch (error) {
-          expect(error).toEqual(new Error('error'));
-        }
       });
 
       it('should not fail if elastic path has already been deleted (statusCode 404)', async () => {
