@@ -92,7 +92,7 @@ jobs:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
   codeclimate:
     runs-on: ubuntu-latest
-    needs: [api_unit_tests, api_unit_tests]
+    needs: [api_unit_tests, app_unit_tests]
     steps:
       - name: Download tests results
         uses: actions/download-artifact@v3
