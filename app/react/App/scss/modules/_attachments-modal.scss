@@ -272,14 +272,15 @@
   .select-from-link {
     display: flex;
     align-items: baseline;
+    gap: 10px;
+    .form-group {
+      margin: unset;
+    }
   }
 
   .upload-options {
     display: flex;
     align-items: baseline;
-
-    .translation {
-      margin: 0 2% 0 2%;
-    }
+    gap: 16px;
   }
 }
