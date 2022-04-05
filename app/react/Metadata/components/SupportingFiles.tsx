@@ -107,7 +107,7 @@ const SupportingFiles = ({
               onClick={() => removeSupportingFile(index)}
             >
               <Icon icon="trash-alt" />
-              &nbsp; Delete file
+              &nbsp; <Translate>Delete file</Translate>
             </button>
           </div>
         );

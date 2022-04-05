@@ -102,7 +102,7 @@ const MediaField = (props: MediaFieldProps) => {
         {file.originalValue && (
           <button type="button" onClick={handleImageRemove} className="btn">
             <Icon icon="unlink" />
-            &nbsp; Unlink
+            &nbsp; <Translate>Unlink</Translate>
           </button>
         )}
       </div>
