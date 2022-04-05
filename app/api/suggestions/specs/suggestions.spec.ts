@@ -2,9 +2,9 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from '../suggestions';
 import { fixtures, personTemplateId } from './fixtures';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
 
 describe('suggestions', () => {
   beforeEach(done => {
@@ -45,21 +45,28 @@ describe('suggestions', () => {
         { propertyName: 'super_powers' },
         { page: { size: 2, number: 1 } }
       );
-      expect(
-        superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'es').state
-      ).toBe('Label Mismatch');
+
       expect(
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
       ).toBe('Label Match');
 
+      expect(
+        superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'es').state
+      ).toBe('Label Mismatch');
+
       const { suggestions: enemySuggestions } = await Suggestions.get(
         { propertyName: 'enemy' },
-        { page: { size: 2, number: 1 } }
+        { page: { size: 3, number: 1 } }
       );
 
       expect(
         enemySuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared1').state
       ).toBe('Value Match');
+      expect(
+        enemySuggestions.find(
+          (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
+        ).state
+      ).toBe('Value Mismatch');
       expect(
         enemySuggestions.find(
           (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'es'

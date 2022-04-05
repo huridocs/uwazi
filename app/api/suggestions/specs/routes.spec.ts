@@ -10,6 +10,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import {
   fixtures,
   shared2enId,
+  shared2esId,
   shared6enId,
   suggestionSharedId6Enemy,
   suggestionSharedId6Title,
@@ -64,13 +65,13 @@ describe('suggestions routes', () => {
         .expect(200);
       expect(response.body.suggestions).toMatchObject([
         {
-          entityId: shared2enId.toString(),
+          entityId: shared2esId.toString(),
           sharedId: 'shared2',
-          entityTitle: 'Batman en',
+          entityTitle: 'Batman es',
           propertyName: 'super_powers',
-          suggestedValue: 'conocimiento científico',
+          suggestedValue: 'scientific knowledge es',
           segment: 'el confía en su propio conocimiento científico',
-          state: 'Pending',
+          state: 'Label Mismatch',
           language: 'es',
           page: 5,
         },
@@ -81,7 +82,7 @@ describe('suggestions routes', () => {
           propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge',
           segment: 'he relies on his own scientific knowledge',
-          state: 'Matching',
+          state: 'Label Match',
           language: 'en',
           page: 5,
         },
@@ -118,11 +119,10 @@ describe('suggestions routes', () => {
       it('should filter by state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'age', state: SuggestionState.empty } })
+          .query({ filter: { propertyName: 'enemy', state: SuggestionState.empty } })
           .expect(200);
         expect(response.body.suggestions).toMatchObject([
-          { entityTitle: 'Alfred' },
-          { entityTitle: 'Joker' },
+          { entityTitle: 'The Penguin', state: 'Empty', suggestedValue: '', currentValue: '' },
         ]);
       });
     });

@@ -4,6 +4,7 @@ import { testingDB, DBFixture } from 'api/utils/testing_db';
 
 const factory = getFixturesFactory();
 
+const shared2esId = testingDB.id();
 const shared2enId = testingDB.id();
 const shared6enId = testingDB.id();
 
@@ -66,6 +67,7 @@ const fixtures: DBFixture = {
       status: 'processing',
     },
     {
+      fileId: factory.id('F2'),
       entityId: 'shared2',
       propertyName: 'super_powers',
       suggestedValue: 'scientific knowledge',
@@ -76,9 +78,10 @@ const fixtures: DBFixture = {
       status: 'ready',
     },
     {
+      fileId: factory.id('F3'),
       entityId: 'shared2',
       propertyName: 'super_powers',
-      suggestedValue: 'conocimiento científico',
+      suggestedValue: 'scientific knowledge es',
       segment: 'el confía en su propio conocimiento científico',
       language: 'es',
       date: 1,
@@ -212,11 +215,11 @@ const fixtures: DBFixture = {
       template: personTemplateId,
     },
     {
-      _id: testingDB.id(),
+      _id: shared2esId,
       sharedId: 'shared2',
       title: 'Batman es',
       language: 'es',
-      metadata: { super_powers: [{ value: 'scientific knowledge' }] },
+      metadata: { super_powers: [{ value: 'conocimiento científico' }] },
       template: personTemplateId,
     },
     {
@@ -323,6 +326,7 @@ const fixtures: DBFixture = {
 
 export {
   fixtures,
+  shared2esId,
   shared2enId,
   shared6enId,
   suggestionSharedId6Title,

@@ -39,7 +39,51 @@ export const Suggestions = {
           },
         },
         {
+          $lookup: {
+            from: 'files',
+            let: {
+              localFieldFileId: '$fileId',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$_id', '$$localFieldFileId'],
+                  },
+                },
+              },
+            ],
+            as: 'file',
+          },
+        },
+        {
+          $addFields: { file: { $arrayElemAt: ['$file', 0] } },
+        },
+        {
+          $addFields: {
+            labeledValue: {
+              $arrayElemAt: [
+                {
+                  $filter: {
+                    input: '$file.extractedMetadata',
+                    as: 'label',
+                    cond: {
+                      $eq: ['$propertyName', '$$label.name'],
+                    },
+                  },
+                },
+                0,
+              ],
+            },
+          },
+        },
+        {
           $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
+        },
+        {
+          $addFields: {
+            labeledValue: '$labeledValue.selection.text',
+          },
         },
         {
           $addFields: {
@@ -83,17 +127,40 @@ export const Suggestions = {
               $switch: {
                 branches: [
                   {
-                    case: { $eq: ['$suggestedValue', '$currentValue'] },
-                    then: 'Matching',
+                    case: {
+                      $and: [
+                        { $eq: ['$suggestedValue', '$currentValue'] },
+                        { $eq: ['$suggestedValue', '$labeledValue'] },
+                      ],
+                    },
+                    then: 'Label Match',
                   },
                   {
                     case: {
-                      $eq: ['$currentValue', ''],
+                      $and: [{ $eq: ['$currentValue', ''] }, { $eq: ['$suggestedValue', ''] }],
                     },
                     then: 'Empty',
                   },
+                  {
+                    case: {
+                      $and: [
+                        { $eq: ['$labeledValue', '$currentValue'] },
+                        { $ne: ['$labeledValue', '$suggestedValue'] },
+                      ],
+                    },
+                    then: 'Label Mismatch',
+                  },
+                  {
+                    case: {
+                      $and: [
+                        { $eq: ['$suggestedValue', '$currentValue'] },
+                        { $lte: ['$labeledValue', null] },
+                      ],
+                    },
+                    then: 'Value Match',
+                  },
                 ],
-                default: 'Pending',
+                default: 'Value Mismatch',
               },
             },
           },
@@ -114,6 +181,7 @@ export const Suggestions = {
             state: 1,
             page: 1,
             date: 1,
+            labeledValue: 1,
           },
         },
       ],
