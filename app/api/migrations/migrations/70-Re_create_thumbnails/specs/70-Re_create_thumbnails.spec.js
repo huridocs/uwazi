@@ -54,6 +54,8 @@ describe('migration Re create thumbnails', () => {
     expect(await exists(`${__dirname}/${thumbnail1.filename}`)).toBe(true);
     expect(await exists(`${__dirname}/${thumbnail2.filename}`)).toBe(true);
 
+    expect(files.length).toBe(9);
+
     await clearFiles([thumbnail1, thumbnail2]);
   });
 });
