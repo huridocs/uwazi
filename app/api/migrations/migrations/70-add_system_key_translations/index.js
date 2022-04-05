@@ -54,6 +54,12 @@ export default {
       {
         key: 'Add from URL',
       },
+      {
+        key: 'Unlink',
+      },
+      {
+        key: 'Delete file',
+      },
     ];
     await insertSystemKeys(db, systemKeys);
   },
