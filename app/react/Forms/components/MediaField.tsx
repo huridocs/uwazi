@@ -96,7 +96,7 @@ const MediaField = (props: MediaFieldProps) => {
 
       <div className="search__filter--selected__media-toolbar">
         <button type="button" onClick={() => setOpenModal(true)} className="btn">
-          <Icon icon="plus" /> <Translate>Add file</Translate>
+          <Icon icon="plus" /> <Translate>{value ? 'Update' : 'Add file'}</Translate>
         </button>
 
         {file.originalValue && (
