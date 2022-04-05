@@ -107,11 +107,7 @@ const AttachmentsModalCmp = ({
               >
                 {getPercentage === undefined ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={handleUploadButtonClicked}
-                      className="btn btn-success"
-                    >
+                    <button type="button" onClick={handleUploadButtonClicked} className="btn">
                       <Icon icon="link" />
                       &nbsp; <Translate>Upload and select file</Translate>
                     </button>

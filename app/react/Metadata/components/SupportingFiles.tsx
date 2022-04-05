@@ -103,10 +103,11 @@ const SupportingFiles = ({
             </div>
             <button
               type="button"
-              className="btn btn-danger delete-supporting-file"
+              className="btn delete-supporting-file"
               onClick={() => removeSupportingFile(index)}
             >
               <Icon icon="trash-alt" />
+              &nbsp; Delete file
             </button>
           </div>
         );

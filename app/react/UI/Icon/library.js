@@ -51,6 +51,7 @@ import { faKey } from '@fortawesome/free-solid-svg-icons/faKey';
 import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons/faLevelDownAlt';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb';
 import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
+import { faUnlink } from '@fortawesome/free-solid-svg-icons/faUnlink';
 import { faList } from '@fortawesome/free-solid-svg-icons/faList';
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock';
 import { faMapMarker } from '@fortawesome/free-solid-svg-icons/faMapMarker';
@@ -168,6 +169,7 @@ const icons = {
   faLevelDownAlt,
   faLightbulb,
   faLink,
+  faUnlink,
   faList,
   faLock,
   faMapMarker,

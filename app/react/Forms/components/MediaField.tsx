@@ -95,13 +95,14 @@ const MediaField = (props: MediaFieldProps) => {
         ))}
 
       <div className="search__filter--selected__media-toolbar">
-        <button type="button" onClick={() => setOpenModal(true)} className="btn btn-success">
-          <Icon icon="plus" /> <Translate>Select supporting file</Translate>
+        <button type="button" onClick={() => setOpenModal(true)} className="btn">
+          <Icon icon="plus" /> <Translate>Add file</Translate>
         </button>
 
         {file.originalValue && (
-          <button type="button" onClick={handleImageRemove} className="btn btn-danger ">
-            <Icon icon="trash-alt" />
+          <button type="button" onClick={handleImageRemove} className="btn">
+            <Icon icon="unlink" />
+            &nbsp; Unlink
           </button>
         )}
       </div>
