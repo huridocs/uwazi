@@ -86,7 +86,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F4', 'A4', 'document', fixturesPdfNameD, 'eng', '', [
+    factory.file('F4', 'A1', 'document', fixturesPdfNameD, 'eng', '', [
       {
         name: 'property2',
         selection: {
@@ -162,6 +162,7 @@ const fixtures: DBFixture = {
   ],
   ixsuggestions: [
     {
+      fileId: factory.id('F1'),
       entityId: 'A1',
       language: 'en',
       propertyName: 'property1',
