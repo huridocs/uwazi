@@ -76,6 +76,15 @@ const MediaField = (props: MediaFieldProps) => {
     }
   }, [localAttachments]);
 
+  useEffect(
+    () => () => {
+      if (file.supportingFile?.serializedFile && file.fileURL) {
+        URL.revokeObjectURL(file.fileURL);
+      }
+    },
+    []
+  );
+
   return (
     <div className="search__filter--selected__media">
       {file.fileURL &&
