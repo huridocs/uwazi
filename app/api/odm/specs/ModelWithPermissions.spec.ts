@@ -383,56 +383,25 @@ describe('ModelWithPermissions', () => {
               ],
             },
           ];
-          const expectedDocs = [
-            {
-              _id: readDocId,
-              name: 'readDocUpdated',
-              published: false,
-            },
-            {
-              _id: writeDocId,
-              name: 'writeDocMixedUpdate',
-            },
-            {
-              _id: writeDoc2Id,
-              name: 'writeDoc2MultiUpdated',
-            },
-            {
-              _id: public1Id,
-              name: 'public 1',
-              published: true,
-            },
-            {
-              _id: otherOwnerId,
-              name: 'no shared with user',
-            },
-            {
-              _id: noSharedId,
-              name: 'no shared',
-            },
-            {
-              _id: sharedWithGroupIdRead,
-              name: 'shared with group',
-            },
-            {
-              _id: sharedWithGroupIdWrite,
-              name: 'shared with group write mixed update',
-            },
-            { name: 'docToDelete' },
-            {
-              _id: public2Id,
-              name: 'public 2',
-            },
-            { name: 'newDoc' },
-            { name: 'clonedDoc' },
-            { name: 'newDoc' },
-            { name: 'newDoc2' },
-            { name: 'clonedMultipleDoc' },
-            { name: 'clonedMultipleDoc2' },
-            { name: 'new doc mixed' },
-            {
-              name: 'cloned doc mixed',
-            },
+          const expectedNames = [
+            'readDocUpdated',
+            'writeDocMixedUpdate',
+            'writeDoc2MultiUpdated',
+            'public 1',
+            'no shared with user',
+            'no shared',
+            'shared with group',
+            'shared with group write mixed update',
+            'docToDelete',
+            'public 2',
+            'newDoc',
+            'clonedDoc',
+            'newDoc',
+            'newDoc2',
+            'clonedMultipleDoc',
+            'clonedMultipleDoc2',
+            'new doc mixed',
+            'cloned doc mixed',
           ];
           try {
             await model.saveMultiple(docsToSave);
@@ -440,8 +409,8 @@ describe('ModelWithPermissions', () => {
           } catch (e) {
             expect(e.message).toContain('not updated');
           }
-          const allDocs = await model.getUnrestricted({});
-          expect(allDocs).toMatchObject(expectedDocs);
+          const allNames = new Set((await model.getUnrestricted({})).map(d => d.name));
+          expectedNames.forEach(name => expect(allNames).toContain(name));
         });
       });
 
