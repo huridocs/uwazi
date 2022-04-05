@@ -97,6 +97,7 @@ jobs:
       - name: Download tests results
         uses: actions/download-artifact@v3
       - run: ls ${{ github.workspace }}
+      - run: file api-coverage-report
       - name: Download codeclimate binay
         run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
