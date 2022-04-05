@@ -60,6 +60,7 @@ jobs:
         with:
           name: api-coverage-report
           path: tmp/codeclimate.api.json
+          retention-days: 1
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
   app_unit_tests:
@@ -88,6 +89,7 @@ jobs:
         with:
           name: react-coverage-report
           path: tmp/codeclimate.react.json
+          retention-days: 1
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
   codeclimate:
