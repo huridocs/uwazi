@@ -169,7 +169,11 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
           <div className="metadataTemplate-heading">
             <FormGroup model=".name">
               <Field model=".name">
-                <input placeholder="Template name" className="form-control" />
+                <input
+                  placeholder="Template name"
+                  className="form-control"
+                  disabled={syncedTemplate}
+                />
               </Field>
             </FormGroup>
             {defaultColor && (
