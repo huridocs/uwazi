@@ -11,7 +11,7 @@ import { refreshIndex } from '../helpers/elastichelpers';
 import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
 
 async function addSupportingFile(filePath: string) {
-  await expect(page).toClick('button', { text: 'Add supporting file' });
+  await expect(page).toClick('button', { text: 'Add file' });
   await uploadSupportingFileToEntity(filePath);
 }
 
@@ -33,7 +33,7 @@ const createEntityWithSupportingFiles = async (
   await addSupportingFile(files[0]);
   await addSupportingFile(files[1]);
 
-  await expect(page).toClick('button', { text: 'Add supporting file' });
+  await expect(page).toClick('button', { text: 'Add file' });
   await expect(page).toClick('.tab-link', { text: 'Add from web' });
   await expect(page).toFill('.web-attachment-url', webAttachment.url);
   await expect(page).toFill('.web-attachment-name', webAttachment.name);

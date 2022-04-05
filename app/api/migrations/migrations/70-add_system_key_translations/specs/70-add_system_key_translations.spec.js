@@ -12,6 +12,14 @@ const newKeyValues = [
     key: 'Add from URL',
     value: 'Add from URL',
   },
+  {
+    key: 'Unlink',
+    value: 'Unlink',
+  },
+  {
+    key: 'Delete file',
+    value: 'Delete file',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
