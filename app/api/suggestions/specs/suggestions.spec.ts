@@ -29,7 +29,7 @@ describe('suggestions', () => {
   describe('get()', () => {
     it('should return all suggestions', async () => {
       const { suggestions } = await Suggestions.get({}, { page: { size: 50, number: 1 } });
-      expect(suggestions.length).toBe(12);
+      expect(suggestions.length).toBe(14);
     });
 
     it('should be able to filter', async () => {
@@ -41,16 +41,30 @@ describe('suggestions', () => {
     });
 
     it('should return the status', async () => {
-      const { suggestions } = await Suggestions.get(
+      const { suggestions: superPowersSuggestions } = await Suggestions.get(
         { propertyName: 'super_powers' },
         { page: { size: 2, number: 1 } }
       );
-      expect(suggestions.find((s: EntitySuggestionType) => s.language === 'es').state).toBe(
-        'Pending'
+      expect(
+        superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'es').state
+      ).toBe('Label Mismatch');
+      expect(
+        superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
+      ).toBe('Label Match');
+
+      const { suggestions: enemySuggestions } = await Suggestions.get(
+        { propertyName: 'enemy' },
+        { page: { size: 2, number: 1 } }
       );
-      expect(suggestions.find((s: EntitySuggestionType) => s.language === 'en').state).toBe(
-        'Matching'
-      );
+
+      expect(
+        enemySuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared1').state
+      ).toBe('Value Match');
+      expect(
+        enemySuggestions.find(
+          (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'es'
+        ).state
+      ).toBe('Empty');
     });
   });
 });
