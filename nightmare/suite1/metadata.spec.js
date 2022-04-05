@@ -18,8 +18,8 @@ describe('metadata path', () => {
     });
   });
 
-  describe('Dictionaries tests', () => {
-    it('should click dictionaries button and then click on add new dictionary button', done => {
+  describe('Thesauri tests', () => {
+    it('should click thesauri button and then click on add new add thesaurus button', done => {
       nightmare
         .waitToClick(selectors.settingsView.dictionariesButton)
         .waitToClick(selectors.settingsView.addNewDictionary)
@@ -32,7 +32,7 @@ describe('metadata path', () => {
         .catch(catchErrors(done));
     });
 
-    it('should create a new dictionary with two values', done => {
+    it('should create a new thesaurus with two values', done => {
       nightmare
         .write(selectors.settingsView.dictionaryNameForm, 'test dictionary 2')
         .write(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
@@ -45,7 +45,7 @@ describe('metadata path', () => {
         .catch(catchErrors(done));
     });
 
-    it('should go back to dictionaries then edit the created dictionary', done => {
+    it('should go back to thesauri then edit the created thesaurus', done => {
       nightmare
         .waitToClick(selectors.settingsView.dictionariesBackButton)
         .wait(selectors.settingsView.tableElementsOfSection)
@@ -70,7 +70,7 @@ describe('metadata path', () => {
         .catch(catchErrors(done));
     });
 
-    it('should go back to dictionaries then delete the created dictionary', done => {
+    it('should go back to thesauri then delete the created thesaurus', done => {
       nightmare
         .waitToClick(selectors.settingsView.dictionariesBackButton)
         .deleteItemFromList(selectors.settingsView.tableElementsOfSection, 'edited')
@@ -83,7 +83,7 @@ describe('metadata path', () => {
   });
 
   describe('Templates tests', () => {
-    it('should click Documents button and then click on add new document button', done => {
+    it('should click Template button and then click on add new template button', done => {
       nightmare
         .waitToClick(selectors.settingsView.templatesButton)
         .waitToClick(selectors.settingsView.addNewDocument)
@@ -122,7 +122,7 @@ describe('metadata path', () => {
         .catch(catchErrors(done));
     });
 
-    it('should go back to Documents then delete the created document template', done => {
+    it('should go back to Template then delete the created template', done => {
       nightmare
         .waitToClick(selectors.settingsView.documentsBackButton)
         .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
