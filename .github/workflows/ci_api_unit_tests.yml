@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit_test:
+  api_unit_tests:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
@@ -55,10 +55,43 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
         run: yarn test app/api --coverage --coverageDirectory  coverage/api --maxWorkers=2
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+    env:
+      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+  app_unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Node.js 14.18.3
+        uses: actions/setup-node@v1
         with:
-          name: api-coverage-report
-          path: tmp/codeclimate.api.json
+          node-version: '14.18.3'
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - run: ./cc-test-reporter before-build
+      - name: Run tests
+        run: yarn test app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
+      - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
+    env:
+      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+  codeclimate:
+    runs-on: ubuntu-latest
+    needs: [api_unit_tests, app_unit_tests]
+    steps:
+      - name: Download tests results
+        uses: actions/download-artifact@v3
+      - name: Download codeclimate binay
+        run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - name: Sum coverage reports
+        run: ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.total.json
+      - name: Upload coverage reports
+        run: ./cc-test-reporter upload-coverage -i codeclimate.total.json
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
