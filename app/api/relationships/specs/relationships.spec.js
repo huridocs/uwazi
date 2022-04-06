@@ -386,6 +386,18 @@ describe('relationships', () => {
           });
       });
     });
+
+    it('should not allow mixing references with and without hubs', done => {
+      relationships
+        .save([{ entity: 'entity3' }, { entity: 'entity1', hub: 'somehub' }], 'en')
+        .then(() => {
+          done.fail('Should throw an error');
+        })
+        .catch(error => {
+          expect(error.code).toBe(500);
+          done();
+        });
+    });
   });
 
   describe('saveEntityBasedReferences()', () => {

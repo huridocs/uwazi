@@ -40,6 +40,7 @@ class PDF extends Component {
       document.addEventListener('textlayerrendered', e => {
         this.pageLoaded(e.detail.pageNumber);
       });
+      document.addEventListener('textlayerrendered', this.props.onPageLoaded, { once: true });
     }
   }
 
@@ -189,6 +190,7 @@ class PDF extends Component {
 }
 
 PDF.defaultProps = {
+  onPageLoaded: () => {},
   filename: null,
   onPageChange: () => {},
   onPDFReady: () => {},
@@ -202,6 +204,7 @@ PDF.propTypes = {
   onPageChange: PropTypes.func,
   onTextSelection: PropTypes.func,
   onTextDeselection: PropTypes.func,
+  onPageLoaded: PropTypes.func,
   onPDFReady: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
