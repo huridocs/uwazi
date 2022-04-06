@@ -63,12 +63,10 @@ describe('Attachments Modal', () => {
     const form = component.find(WebMediaResourceForm).at(0);
     const formData = { url: 'http://test.test', name: 'testName' };
     form.props().handleSubmit(formData);
-    expect(props.uploadAttachmentFromUrl).toHaveBeenCalledWith(
-      props.entitySharedId,
-      formData,
-      props.storeKey,
-      ''
-    );
+    expect(props.uploadAttachmentFromUrl).toHaveBeenCalledWith(props.entitySharedId, formData, {
+      __reducerKey: props.storeKey,
+      model: '',
+    });
   });
 
   it('Should call onClose', () => {

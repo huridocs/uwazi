@@ -1,19 +1,63 @@
-import React, { useState } from 'react';
-
-import { AttachmentSchema } from 'shared/types/commonTypes';
+import React, { useEffect, useState } from 'react';
+import { isObject } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { MediaModal, MediaModalType } from 'app/Metadata/components/MediaModal';
+import { ClientFile } from 'app/istore';
+import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
+import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 
-interface MediaFieldProps {
-  attachments: AttachmentSchema[];
-  value: string | null;
-  type?: MediaModalType;
-  onChange: (val: string | null) => void;
-}
+type MediaFieldProps = MediaModalProps & {
+  value: string | { data: string; originalFile: File } | null;
+  localAttachments: ClientFile[];
+  formModel: string;
+  name: string;
+  multipleEdition: boolean;
+};
 
-const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps) => {
+const getValue = (value: MediaFieldProps['value']) =>
+  isObject(value) && value.data ? value.data : (value as string);
+
+const prepareValue = (
+  value: MediaFieldProps['value'],
+  localAttachments: MediaFieldProps['localAttachments']
+) => {
+  const valueString = getValue(value);
+  const values = {
+    originalValue: valueString,
+    fileURL: valueString,
+    type: '',
+  };
+
+  if (/^[a-zA-Z\d_]*$/.test(values.originalValue)) {
+    values.type = 'uploadId';
+  }
+
+  if (/^https?:\/\//.test(values.originalValue)) {
+    values.type = 'webUrl';
+  }
+
+  const supportingFile = localAttachments.find(
+    file => values.originalValue === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
+  );
+
+  if (values.type === 'uploadId' && supportingFile) {
+    values.fileURL = prepareHTMLMediaView(supportingFile);
+  }
+
+  return { ...values, supportingFile };
+};
+
+const MediaField = (props: MediaFieldProps) => {
+  const {
+    value,
+    onChange,
+    type,
+    localAttachments = [],
+    formModel,
+    name: formField,
+    multipleEdition,
+  } = props;
   const [openModal, setOpenModal] = useState(false);
 
   const handleCloseMediaModal = () => {
@@ -24,23 +68,41 @@ const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps
     onChange(null);
   };
 
+  const file = prepareValue(value, localAttachments);
+
+  useEffect(() => {
+    if (file.originalValue && !file.supportingFile && file.type === 'uploadId') {
+      handleImageRemove();
+    }
+  }, [localAttachments]);
+
+  useEffect(
+    () => () => {
+      if (file.supportingFile?.serializedFile && file.fileURL) {
+        URL.revokeObjectURL(file.fileURL);
+      }
+    },
+    []
+  );
+
   return (
     <div className="search__filter--selected__media">
-      {value &&
+      {file.fileURL &&
         (type === MediaModalType.Image ? (
-          <img src={value} alt="" />
+          <img src={file.fileURL} alt="" />
         ) : (
-          <MarkdownMedia config={value} />
+          <MarkdownMedia config={file.fileURL} />
         ))}
 
       <div className="search__filter--selected__media-toolbar">
-        <button type="button" onClick={() => setOpenModal(true)} className="btn btn-success">
-          <Icon icon="plus" /> <Translate>Select supporting file</Translate>
+        <button type="button" onClick={() => setOpenModal(true)} className="btn">
+          <Icon icon="plus" /> <Translate>{value ? 'Update' : 'Add file'}</Translate>
         </button>
 
-        {value && (
-          <button type="button" onClick={handleImageRemove} className="btn btn-danger ">
-            <Icon icon="trash-alt" />
+        {file.originalValue && (
+          <button type="button" onClick={handleImageRemove} className="btn">
+            <Icon icon="unlink" />
+            &nbsp; <Translate>Unlink</Translate>
           </button>
         )}
       </div>
@@ -49,9 +111,12 @@ const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps
         isOpen={openModal}
         onClose={handleCloseMediaModal}
         onChange={onChange}
-        selectedUrl={value}
-        attachments={attachments}
+        selectedUrl={file.originalValue}
+        attachments={localAttachments}
         type={type}
+        formModel={formModel}
+        formField={formField}
+        multipleEdition={multipleEdition}
       />
     </div>
   );

@@ -93,6 +93,7 @@ export interface ClientTemplateSchema extends TemplateSchema {
 export interface ClientFile extends FileType {
   _id: string;
   serializedFile?: string;
+  fileLocalID?: string;
 }
 
 export interface ClientEntitySchema extends EntitySchema {

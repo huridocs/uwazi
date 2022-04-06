@@ -34,7 +34,7 @@ import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
 
-export const translateOptions = thesauri =>
+const translateOptions = thesauri =>
   thesauri
     .get('values')
     .map(optionIm => {
@@ -75,13 +75,15 @@ const groupSameRelationshipFields = fields =>
     })
     .filter(f => f);
 
-export class MetadataFormFields extends Component {
+class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris, attachments } = this.props;
+    const { dateFormat, version, entityThesauris, attachments, localAttachments, multipleEdition } =
+      this.props;
     const propertyType = property.type;
     const plainAttachments = attachments.toJS();
+    const plainLocalAttachments = localAttachments;
 
     switch (propertyType) {
       case 'select':
@@ -174,11 +176,25 @@ export class MetadataFormFields extends Component {
         return <LinkField model={_model} />;
       case 'media':
         return (
-          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Media} />
+          <MediaField
+            model={_model}
+            formModel={formModel}
+            attachments={plainAttachments}
+            localAttachments={plainLocalAttachments}
+            type={MediaModalType.Media}
+            multipleEdition={multipleEdition}
+          />
         );
       case 'image':
         return (
-          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Image} />
+          <MediaField
+            model={_model}
+            formModel={formModel}
+            attachments={plainAttachments}
+            localAttachments={plainLocalAttachments}
+            type={MediaModalType.Image}
+            multipleEdition={multipleEdition}
+          />
         );
       case 'preview':
         return (
@@ -331,13 +347,15 @@ MetadataFormFields.defaultProps = {
   entityThesauris: Immutable.fromJS({}),
   attachments: Immutable.fromJS([]),
   highlightedProps: [],
+  localAttachments: [],
+  storeKey: '',
 };
 
 MetadataFormFields.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
-  storeKey: PropTypes.string.isRequired,
+  storeKey: PropTypes.string,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
@@ -345,6 +363,7 @@ MetadataFormFields.propTypes = {
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
   attachments: PropTypes.instanceOf(Immutable.List),
+  localAttachments: PropTypes.arrayOf(PropTypes.instanceOf(Object)),
   change: PropTypes.func.isRequired,
 };
 
@@ -352,26 +371,31 @@ export const mapStateToProps = (state, ownProps) => {
   const { storeKey } = ownProps;
 
   let attachments = Immutable.fromJS([]);
+  let localAttachments;
 
-  if (storeKey === 'library' || storeKey === 'uploads') {
-    const selectedDocuments = state[storeKey].ui.get('selectedDocuments');
+  if (storeKey === 'library') {
+    const selectedDocuments = state.library.ui.get('selectedDocuments');
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
+    localAttachments = state.library.sidepanel.metadata.attachments;
   }
 
   if (storeKey === 'documentViewer') {
     const entity = state[storeKey].doc;
     attachments = entity.get('attachments');
+    localAttachments = state[storeKey].sidepanel.metadata.attachments;
   }
 
   if (!storeKey) {
     const { entity } = state.entityView;
     attachments = entity.get('attachments');
+    localAttachments = state.entityView.entityForm.attachments;
   }
 
   return {
     dateFormat: state.settings.collection.get('dateFormat'),
     entityThesauris: state.entityThesauris,
     attachments,
+    localAttachments,
   };
 };
 
@@ -382,4 +406,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({ change: formActions.change }, dispatch);
 };
 
+export { MetadataFormFields, translateOptions };
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);

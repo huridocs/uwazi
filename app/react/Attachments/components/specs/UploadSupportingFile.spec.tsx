@@ -32,9 +32,9 @@ describe('UploadSupportingFile', () => {
       expect(uploadFromComputerTab).toBe(null);
     });
 
-    it('Should be opened after "Add supporting file" is clicked', () => {
+    it('Should be opened after "Add file" is clicked', () => {
       renderComponent();
-      const addFileBtn: Element = screen.getByText('Add supporting file').parentElement!;
+      const addFileBtn: Element = screen.getByText('Add file').parentElement!;
       fireEvent.click(addFileBtn);
       const uploadFromComputerTab = screen.getByText('Upload from computer');
       expect(uploadFromComputerTab).not.toBeUndefined();
@@ -42,7 +42,7 @@ describe('UploadSupportingFile', () => {
 
     it('Should be closed when progress is equal to 100', () => {
       renderComponent();
-      const addFileBtn: Element = screen.getByText('Add supporting file').parentElement!;
+      const addFileBtn: Element = screen.getByText('Add file').parentElement!;
       fireEvent.click(addFileBtn);
       let uploadFromComputerTab = screen.queryByText('Upload from computer');
       expect(uploadFromComputerTab).not.toBe(null);
