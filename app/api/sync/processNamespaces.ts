@@ -207,6 +207,10 @@ class ProcessNamespaces {
       );
     }
 
+    delete data.entityViewPage;
+
+    data.synced = true;
+
     return { data };
   }
 

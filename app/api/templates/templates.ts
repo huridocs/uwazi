@@ -158,7 +158,7 @@ export default {
     template: TemplateSchema,
     language: string,
     reindex = true,
-    templateSctrutureChanges = true
+    templateStructureChanges = true
   ) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
@@ -174,7 +174,7 @@ export default {
     }
 
     return template._id
-      ? this._update(template, language, reindex, templateSctrutureChanges)
+      ? this._update(template, language, reindex, templateStructureChanges)
       : _save(template);
   },
 
@@ -200,10 +200,10 @@ export default {
     template: TemplateSchema,
     language: string,
     reindex = true,
-    templateSctrutureChanges = true
+    templateStructureChanges = true
   ) {
     const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
-    if (templateSctrutureChanges) {
+    if (templateStructureChanges) {
       await updateTranslation(currentTemplate, template);
       await removeExcludedPropertiesValues(currentTemplate, template);
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
@@ -211,7 +211,7 @@ export default {
 
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = model.save(template);
-    if (templateSctrutureChanges) {
+    if (templateStructureChanges) {
       await entities.updateMetadataProperties(template, currentTemplate, language, {
         reindex,
         generatedIdAdded,
