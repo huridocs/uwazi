@@ -13,10 +13,13 @@ describe('Metadata', () => {
     await disableTransitions();
   });
 
+  beforeEach(async () => {
+    await waitForNavigation(expect(page).toClick('a', { text: 'Account settings' }));
+    expect(page.url()).toBe(`${host}/en/settings/account`);
+  });
+
   describe('Thesauri tests', () => {
     it('should create a new thesaurus with two values', async () => {
-      await waitForNavigation(expect(page).toClick('a', { text: 'Account settings' }));
-      expect(page.url()).toBe(`${host}/en/settings/account`);
       await expect(page).toClick('a', { text: 'Thesauri' });
       await expect(page).toClick('a', { text: 'Add thesaurus' });
       await expect(page).toFill('input[name="thesauri.data.name"', 'New thesaurus');
@@ -47,6 +50,9 @@ describe('Metadata', () => {
 
     it('should go back to thesauri then delete the created thesaurus', async () => {
       await expect(page).toClick('a', { text: 'Thesauri' });
+      await page.waitForSelector(
+        '.thesauri-list > table > tbody > tr:nth-child(4) > td:nth-child(3) > div > button'
+      );
       await expect(page).toClick(
         '.thesauri-list > table > tbody > tr:nth-child(4) > td:nth-child(3) > div > button'
       );
@@ -63,8 +69,6 @@ describe('Metadata', () => {
 
   describe('Templates tests', () => {
     it('should create a new template with no properties added', async () => {
-      await waitForNavigation(expect(page).toClick('a', { text: 'Account settings' }));
-      expect(page.url()).toBe(`${host}/en/settings/account`);
       await expect(page).toClick('a', { text: 'Templates' });
       await expect(page).toClick('a', { text: 'Add template' });
       await expect(page).toFill('input[name="template.data.name"', 'My template');
@@ -83,6 +87,9 @@ describe('Metadata', () => {
 
     it('should go back to Template then delete the created template', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
+      await page.waitForSelector(
+        '.settings-content > div > ul > li:nth-child(6) > div > button.btn.btn-danger.btn-xs.template-remove'
+      );
       await expect(page).toClick(
         '.settings-content > div > ul > li:nth-child(6) > div > button.btn.btn-danger.btn-xs.template-remove'
       );
