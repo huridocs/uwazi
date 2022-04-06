@@ -1,3 +1,11 @@
+.metadataTemplate-sync {
+  margin-bottom: 10px;
+
+  svg:first-child {
+    color: $c-warning;
+  }
+}
+
 .metadataTemplate-heading {
   display: -webkit-flex;
   display: flex;

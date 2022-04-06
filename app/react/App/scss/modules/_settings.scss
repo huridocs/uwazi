@@ -147,6 +147,18 @@
   .list-group-item:last-of-type {
     border-bottom: 0;
   }
+
+  .document-types {
+    .list-group-item {
+      a {
+        flex: 1;
+      }
+
+      span {
+        flex: 1;
+      }
+    }
+  }
 }
 
 .settings-footer {
