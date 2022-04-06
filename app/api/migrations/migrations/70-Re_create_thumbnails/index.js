@@ -39,9 +39,9 @@ export default {
 
   reindex: false,
 
+  // eslint-disable-next-line max-statements
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-
     const cursor = await db.collection('files').find({ type: 'document' });
     while (await cursor.hasNext()) {
       const file = await cursor.next();
@@ -54,13 +54,20 @@ export default {
       if (!thumbnail) {
         const pdfPath = path.join(config.defaultTenant.uploadedDocuments, file.filename);
         if (await exists(pdfPath)) {
-          await createThumbnail(pdfPath, file._id.toString());
-          await db.collection('files').insertOne({
-            type: 'thumbnail',
-            entity: file.entity,
-            language: file.language,
-            filename: `${file._id.toString()}.jpg`,
-          });
+          try {
+            await createThumbnail(pdfPath, file._id.toString());
+            await db.collection('files').insertOne({
+              type: 'thumbnail',
+              entity: file.entity,
+              language: file.language,
+              filename: `${file._id.toString()}.jpg`,
+            });
+          } catch (e) {
+            // eslint-disable-next-line
+            console.warn(`ERROR creating thumbnail for: ${pdfPath}`);
+            // eslint-disable-next-line
+            console.warn(e);
+          }
         }
       }
     }
