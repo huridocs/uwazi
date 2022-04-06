@@ -4,6 +4,8 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
@@ -12,6 +14,11 @@ export const Suggestions = {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
+    const [model] = await IXModelsModel.get({
+      propertyName: filter.propertyName,
+      status: 'ready',
+    });
+
     const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
       [
@@ -36,6 +43,45 @@ export const Suggestions = {
               },
             ],
             as: 'entity',
+          },
+        },
+        {
+          $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
+        },
+        {
+          $addFields: {
+            currentValue: {
+              $cond: [
+                { $eq: ['$propertyName', 'title'] },
+                { v: [{ value: '$entity.title' }] },
+                {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: {
+                          $objectToArray: '$entity.metadata',
+                        },
+                        as: 'property',
+                        cond: {
+                          $eq: ['$$property.k', '$propertyName'],
+                        },
+                      },
+                    },
+                    0,
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        {
+          $addFields: {
+            currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
+          },
+        },
+        {
+          $addFields: {
+            currentValue: { $ifNull: ['$currentValue.value', ''] },
           },
         },
         {
@@ -78,47 +124,8 @@ export const Suggestions = {
           },
         },
         {
-          $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
-        },
-        {
           $addFields: {
             labeledValue: '$labeledValue.selection.text',
-          },
-        },
-        {
-          $addFields: {
-            currentValue: {
-              $cond: [
-                { $eq: ['$propertyName', 'title'] },
-                { v: [{ value: '$entity.title' }] },
-                {
-                  $arrayElemAt: [
-                    {
-                      $filter: {
-                        input: {
-                          $objectToArray: '$entity.metadata',
-                        },
-                        as: 'property',
-                        cond: {
-                          $eq: ['$$property.k', '$propertyName'],
-                        },
-                      },
-                    },
-                    0,
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
-          },
-        },
-        {
-          $addFields: {
-            currentValue: { $ifNull: ['$currentValue.value', ''] },
           },
         },
         {
@@ -128,18 +135,44 @@ export const Suggestions = {
                 branches: [
                   {
                     case: {
+                      $lte: ['$date', model.creationDate],
+                    },
+                    then: SuggestionState.obsolete,
+                  },
+                  {
+                    case: {
+                      $and: [
+                        { $lte: ['$labeledValue', null] },
+                        { $eq: ['$suggestedValue', ''] },
+                        { $ne: ['$currentValue', ''] },
+                      ],
+                    },
+                    then: SuggestionState.valueEmpty,
+                  },
+                  {
+                    case: {
                       $and: [
                         { $eq: ['$suggestedValue', '$currentValue'] },
                         { $eq: ['$suggestedValue', '$labeledValue'] },
                       ],
                     },
-                    then: 'Label Match',
+                    then: SuggestionState.labelMatch,
                   },
                   {
                     case: {
                       $and: [{ $eq: ['$currentValue', ''] }, { $eq: ['$suggestedValue', ''] }],
                     },
-                    then: 'Empty',
+                    then: SuggestionState.empty,
+                  },
+                  {
+                    case: {
+                      $and: [
+                        { $eq: ['$labeledValue', '$currentValue'] },
+                        { $ne: ['$labeledValue', '$suggestedValue'] },
+                        { $eq: ['$suggestedValue', ''] },
+                      ],
+                    },
+                    then: SuggestionState.labelEmpty,
                   },
                   {
                     case: {
@@ -148,7 +181,7 @@ export const Suggestions = {
                         { $ne: ['$labeledValue', '$suggestedValue'] },
                       ],
                     },
-                    then: 'Label Mismatch',
+                    then: SuggestionState.labelMismatch,
                   },
                   {
                     case: {
@@ -157,10 +190,10 @@ export const Suggestions = {
                         { $lte: ['$labeledValue', null] },
                       ],
                     },
-                    then: 'Value Match',
+                    then: SuggestionState.valueMatch,
                   },
                 ],
-                default: 'Value Mismatch',
+                default: SuggestionState.valueMismatch,
               },
             },
           },

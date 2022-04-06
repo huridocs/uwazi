@@ -25,6 +25,32 @@ const fixtures: DBFixture = {
       },
     },
   ],
+  ixmodels: [
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1000,
+      propertyName: 'age',
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      propertyName: 'title',
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      propertyName: 'super_powers',
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      propertyName: 'enemy',
+    },
+  ],
   ixsuggestions: [
     {
       entityId: 'shared1',
@@ -73,7 +99,7 @@ const fixtures: DBFixture = {
       suggestedValue: 'scientific knowledge',
       segment: 'he relies on his own scientific knowledge',
       language: 'en',
-      date: 1,
+      date: 4,
       page: 5,
       status: 'ready',
     },
@@ -84,7 +110,7 @@ const fixtures: DBFixture = {
       suggestedValue: 'scientific knowledge es',
       segment: 'el confía en su propio conocimiento científico',
       language: 'es',
-      date: 1,
+      date: 4,
       page: 5,
       status: 'ready',
     },
@@ -101,10 +127,10 @@ const fixtures: DBFixture = {
     {
       entityId: 'shared3',
       propertyName: 'age',
-      suggestedValue: 67,
+      suggestedValue: '',
       segment: 'Alfred 67 years old',
       language: 'en',
-      date: 4,
+      date: 4000,
       page: 3,
       status: 'ready',
     },
@@ -181,6 +207,18 @@ const fixtures: DBFixture = {
       page: 3,
       status: 'ready',
     },
+    {
+      fileId: factory.id('F4'),
+      _id: testingDB.id(),
+      entityId: 'shared6',
+      propertyName: 'enemy',
+      suggestedValue: '',
+      segment: 'Enemy: Batman',
+      language: 'en',
+      date: 5,
+      page: 3,
+      status: 'ready',
+    },
   ],
   entities: [
     {
@@ -227,7 +265,7 @@ const fixtures: DBFixture = {
       sharedId: 'shared3',
       title: 'Alfred',
       language: 'en',
-      metadata: { age: [{ value: '' }] },
+      metadata: { age: [{ value: 23 }] },
       template: personTemplateId,
     },
     {
@@ -266,7 +304,7 @@ const fixtures: DBFixture = {
       sharedId: 'shared6',
       title: 'The Penguin',
       language: 'en',
-      metadata: { enemy: [{ value: '' }], age: [{ value: 40 }] },
+      metadata: { enemy: [{ value: 'Penguin Enemy' }], age: [{ value: 40 }] },
       template: heroTemplateId,
     },
   ],
@@ -285,6 +323,15 @@ const fixtures: DBFixture = {
         name: 'super_powers',
         selection: {
           text: 'conocimiento científico',
+          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        },
+      },
+    ]),
+    factory.file('F4', 'shared6', 'document', 'documentD.pdf', 'eng', '', [
+      {
+        name: 'enemy',
+        selection: {
+          text: 'Penguin Enemy',
           selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
         },
       },

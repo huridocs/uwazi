@@ -4,9 +4,14 @@ import { propertyTypes } from 'shared/propertyTypes';
 export const emitSchemaTypes = true;
 
 export enum SuggestionState {
+  labelMatch = 'Label Match',
+  labelMismatch = 'Label Mismatch',
+  valueMatch = 'Value Match',
+  valueMismatch = 'Value Mismatch',
   empty = 'Empty',
-  matching = 'Matching',
-  pending = 'Pending',
+  obsolete = 'Obsolete',
+  labelEmpty = 'Label Empty',
+  valueEmpty = 'Value Empty',
 }
 
 export const IXSuggestionSchema = {
@@ -74,6 +79,7 @@ export const SuggestionsQueryFilterSchema = {
     propertyName: { type: 'string' },
     state: { type: 'string', enum: Object.values(SuggestionState) },
   },
+  required: ['propertyName'],
 };
 
 export const IXSuggestionsQuerySchema = {

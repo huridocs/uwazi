@@ -44,6 +44,6 @@ export interface IXSuggestionsQuery {
 
 export interface IXSuggestionsFilter {
   language?: string;
-  propertyName?: string;
+  propertyName: string;
   state?: 'Empty' | 'Matching' | 'Pending';
 }

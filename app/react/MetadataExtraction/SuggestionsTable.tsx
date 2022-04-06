@@ -33,9 +33,16 @@ const suggestionsTable = (
       }}
     >
       <option value="">{t('System', 'All', 'All', false)}</option>
-      <option value="Matching">{t('System', 'Matching', 'Matching', false)}</option>
+      <option value="Label Match">{t('System', 'Label Match', 'Label Match', false)}</option>
+      <option value="Label Mismatch">
+        {t('System', 'Label Mismatch', 'Label Mismatch', false)}
+      </option>
+      <option value="Value Match">{t('System', 'Value Match', 'Value Match', false)}</option>
+      <option value="Value Mismatch">
+        {t('System', 'Value Mismatch', 'Value Mismatch', false)}
+      </option>
       <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
-      <option value="Pending">{t('System', 'Pending', 'Pending', false)}</option>
+      <option value="Obsolete">{t('System', 'Obsolete', 'Obsolete', false)}</option>
     </select>
   );
 
