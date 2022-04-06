@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.61.0-rc2",
+  "version": "1.61.0-rc4",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -315,7 +315,7 @@
     "plop": "^2.7.6",
     "prettier": "2.5.1",
     "puppeteer": "^13.5.2",
-    "react-dnd-test-backend": "15.1.1",
+    "react-dnd-test-backend": "16.0.0",
     "redux-mock-store": "^1.5.4",
     "rtlcss-webpack-plugin": "4.0.6",
     "sass-loader": "10.0.2",
