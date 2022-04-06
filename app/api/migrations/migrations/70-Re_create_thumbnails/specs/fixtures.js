@@ -47,5 +47,12 @@ export const fixtures = {
       filename: `${id('document3.pdf').toString()}.jpg`,
       language: 'es',
     },
+    {
+      _id: id('document_does_not_exists.pdf'),
+      type: 'document',
+      entity: 'test_doc3',
+      filename: 'document_does_not_exists.pdf',
+      language: 'es',
+    },
   ],
 };

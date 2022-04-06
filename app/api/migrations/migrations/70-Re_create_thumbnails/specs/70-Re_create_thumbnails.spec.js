@@ -13,8 +13,9 @@ async function exists(path) {
   }
 }
 
-async function clearFiles(files) {
-  return Promise.all(files.map(f => fs.unlink(`${__dirname}/${f.filename}`)));
+async function clearFiles() {
+  const thumbnails = (await fs.readdir(__dirname)).filter(f => f.match(/\.jpg/));
+  return Promise.all(thumbnails.map(f => fs.unlink(`${__dirname}/${f}`)));
 }
 
 describe('migration Re create thumbnails', () => {
@@ -25,6 +26,7 @@ describe('migration Re create thumbnails', () => {
   });
 
   afterAll(async () => {
+    await clearFiles();
     await testingDB.disconnect();
   });
 
@@ -54,8 +56,6 @@ describe('migration Re create thumbnails', () => {
     expect(await exists(`${__dirname}/${thumbnail1.filename}`)).toBe(true);
     expect(await exists(`${__dirname}/${thumbnail2.filename}`)).toBe(true);
 
-    expect(files.length).toBe(9);
-
-    await clearFiles([thumbnail1, thumbnail2]);
+    expect(files.length).toBe(10);
   });
 });

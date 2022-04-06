@@ -1,6 +1,16 @@
 import path from 'path';
 import { config } from 'api/config';
 import { spawn } from 'child-process-promise';
+import fs from 'fs/promises';
+
+async function exists(pdfPath) {
+  try {
+    await fs.access(pdfPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 async function createThumbnail(filePath, thumbnailName) {
   await spawn(
@@ -19,7 +29,7 @@ async function createThumbnail(filePath, thumbnailName) {
   );
 }
 
-/* eslint-disable no-await-in-loop */
+/* eslint-disable no-await-in-loop, import/no-default-export */
 export default {
   delta: 70,
 
@@ -43,14 +53,15 @@ export default {
 
       if (!thumbnail) {
         const pdfPath = path.join(config.defaultTenant.uploadedDocuments, file.filename);
-
-        await createThumbnail(pdfPath, file._id.toString());
-        await db.collection('files').insertOne({
-          type: 'thumbnail',
-          entity: file.entity,
-          language: file.language,
-          filename: `${file._id.toString()}.jpg`,
-        });
+        if (await exists(pdfPath)) {
+          await createThumbnail(pdfPath, file._id.toString());
+          await db.collection('files').insertOne({
+            type: 'thumbnail',
+            entity: file.entity,
+            language: file.language,
+            filename: `${file._id.toString()}.jpg`,
+          });
+        }
       }
     }
   },
