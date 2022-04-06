@@ -31,14 +31,27 @@ describe('I18NMenu', () => {
     spyOn(I18NMenu, 'reload');
   };
 
-  it('should not render searchQuery when on documents path', () => {
-    props.location.pathname = '/es/documents';
-    props.location.search = '?search';
-    render();
-    const links = component.find('a');
-    expect(links.length).toBe(2);
-    expect(links.first().props().href).toBe('/en/documents');
-    expect(links.last().props().href).toBe('/es/documents');
+  describe('Document paths', () => {
+    it('should not render searchQuery when on documents path', () => {
+      props.location.pathname = '/es/documents';
+      props.location.search = '?search';
+      render();
+      const links = component.find('a');
+      expect(links.length).toBe(2);
+      expect(links.first().props().href).toBe('/en/documents');
+      expect(links.last().props().href).toBe('/es/documents');
+    });
+
+    it('Should not add the document page to the URL when viewing entities', () => {
+      props.locale = 'en';
+      props.location.pathname = '/en/entity/r2dzptt7ts';
+      props.location.search = '?page=2';
+      render();
+      const links = component.find('a');
+      expect(links.length).toBe(2);
+      expect(links.first().props().href).toBe('/en/entity/r2dzptt7ts');
+      expect(links.last().props().href).toBe('/es/entity/r2dzptt7ts');
+    });
   });
 
   describe('when there is NO locale', () => {
