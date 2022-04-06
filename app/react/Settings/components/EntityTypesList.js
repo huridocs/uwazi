@@ -70,7 +70,7 @@ export class EntityTypesList extends Component {
         <Translate>Synced template</Translate>
         <Tip>
           <Translate translationKey="syncedTemplateListMessage">
-            The source of this template is a sync. Most editing options will be disabled.
+            The source of this template is a sync. All editing options will be disabled.
           </Translate>
         </Tip>
       </span>

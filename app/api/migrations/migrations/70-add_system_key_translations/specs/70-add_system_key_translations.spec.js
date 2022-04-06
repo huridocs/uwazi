@@ -6,7 +6,7 @@ const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
     key: 'syncedTemplateListMessage',
-    value: 'The source of this template is a sync. Most editing options will be disabled.',
+    value: 'The source of this template is a sync. All editing options will be disabled.',
   },
 ];
 const alreadyInAllContexts = {
