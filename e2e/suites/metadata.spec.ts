@@ -56,13 +56,10 @@ describe('Metadata', () => {
       await expect(page).toClick(
         '.thesauri-list > table > tbody > tr:nth-child(4) > td:nth-child(3) > div > button'
       );
-      await page.waitForSelector('body > div:nth-child(9) > div > div > div > div.modal-body');
-      await expect(page).toMatchElement(
-        'body > div:nth-child(9) > div > div > div > div.modal-body > h4',
-        {
-          text: 'Confirm delete thesaurus: New thesaurus',
-        }
-      );
+      await page.waitForSelector('div.modal-content');
+      await expect(page).toMatchElement('div.modal-body > h4', {
+        text: 'Confirm delete thesaurus: New thesaurus',
+      });
       await expect(page).toClick('button', { text: 'Accept' });
     });
   });
@@ -93,13 +90,10 @@ describe('Metadata', () => {
       await expect(page).toClick(
         '.settings-content > div > ul > li:nth-child(6) > div > button.btn.btn-danger.btn-xs.template-remove'
       );
-      await page.waitForSelector('body > div:nth-child(9) > div > div > div > div.modal-body');
-      await expect(page).toMatchElement(
-        'body > div:nth-child(9) > div > div > div > div.modal-body > h4',
-        {
-          text: 'Confirm delete of template: My edited template',
-        }
-      );
+      await page.waitForSelector('div.modal-content');
+      await expect(page).toMatchElement('div.modal-body > h4', {
+        text: 'Confirm delete of template: My edited template',
+      });
       await expect(page).toClick('button', { text: 'Accept' });
     });
   });
