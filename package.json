@@ -184,7 +184,7 @@
     "redlock": "^4.2.0",
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.2",
-    "redux-thunk": "^2.0.1",
+    "redux-thunk": "^2.3.0",
     "reselect": "^4.1.5",
     "rison-node": "^2.1.1",
     "rsmq": "^0.12.4",
