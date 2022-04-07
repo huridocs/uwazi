@@ -39,7 +39,7 @@ export const createEntity = async (templateName: string, files: FilesOptions) =>
   if (files) {
     if (files.pdf) await uploadPDFToEntity(files.pdf);
     if (files.supportingFile) {
-      await expect(page).toClick('button', { text: 'Add supporting file' });
+      await expect(page).toClick('button', { text: 'Add file' });
       await uploadSupportingFileToEntity(files.supportingFile);
     }
     await expect(page).toClick('span', { text: 'Attachment uploaded' });

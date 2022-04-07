@@ -97,16 +97,17 @@ const SupportingFiles = ({
           <div className={attachmentClass} key={file._id || uniqueID()}>
             <div className="attachment-thumbnail">{getFileIcon(file)}</div>
             <div className="attachment-name">
-              <Field model={`.attachments.${index}.originalname`}>
+              <Field model={`.attachments.${index}.originalname`} updateOn="blur">
                 <input className="form-control" />
               </Field>
             </div>
             <button
               type="button"
-              className="btn btn-danger delete-supporting-file"
+              className="btn delete-supporting-file"
               onClick={() => removeSupportingFile(index)}
             >
               <Icon icon="trash-alt" />
+              &nbsp; <Translate>Delete file</Translate>
             </button>
           </div>
         );

@@ -1,5 +1,16 @@
 import { scrollTo } from './formActions';
 
+const checkStringValuesInSelectors = async (
+  values: {
+    selector: string | null;
+    expected: any;
+  }[]
+) => {
+  values.map(async ({ selector, expected }) => {
+    await expect(selector).toMatch(expected);
+  });
+};
+
 const getContentBySelector = async (selector: string) =>
   page.$$eval(selector, items => items.map(item => item.textContent));
 
@@ -12,4 +23,4 @@ async function mouseClick(selector: string, x: number, y: number) {
   await page.mouse.click(rect.left + x, rect.top + y);
 }
 
-export { getContentBySelector, mouseClick };
+export { getContentBySelector, mouseClick, checkStringValuesInSelectors };
