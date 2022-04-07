@@ -21,7 +21,7 @@ import FormConfigSelect from '../FormConfigSelect';
 import FormConfigNested from '../FormConfigNested';
 import FormConfigRelationship from '../FormConfigRelationship';
 
-const { TestBackend } = require('react-dnd-test-backend');
+const { TestBackend } = require('react-dnd-test-backend/dist/cjs');
 
 const mockStoreCreator = configureStore([]);
 

@@ -10,7 +10,7 @@ import PropertyOption, {
   dragSource as dragSourceOption,
 } from 'app/Templates/components/PropertyOption';
 
-const { TestBackend } = require('react-dnd-test-backend');
+const { TestBackend } = require('react-dnd-test-backend/dist/cjs');
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(DecoratedComponent);

@@ -23,7 +23,7 @@ import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
 import * as templateActions from '../../actions/templateActions';
 
-const { TestBackend } = require('react-dnd-test-backend');
+const { TestBackend } = require('react-dnd-test-backend/dist/cjs');
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
