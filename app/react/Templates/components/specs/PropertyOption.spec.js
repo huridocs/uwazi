@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import TestUtils from 'react-dom/test-utils';
-import { TestBackend } from 'react-dnd-test-backend';
+import * as DND from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
@@ -12,7 +12,7 @@ import PropertyOption, {
 } from 'app/Templates/components/PropertyOption';
 
 function wrapInTestContext(DecoratedComponent) {
-  return DragDropContext(TestBackend)(DecoratedComponent);
+  return DragDropContext(DND.TestBackend)(DecoratedComponent);
 }
 
 describe('PropertyOption', () => {
