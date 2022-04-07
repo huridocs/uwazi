@@ -31,17 +31,17 @@ describe('I18NMenu', () => {
     spyOn(I18NMenu, 'reload');
   };
 
-  describe('Document paths', () => {
-    it('should not render searchQuery when on documents path', () => {
-      props.location.pathname = '/es/documents';
-      props.location.search = '?search';
-      render();
-      const links = component.find('a');
-      expect(links.length).toBe(2);
-      expect(links.first().props().href).toBe('/en/documents');
-      expect(links.last().props().href).toBe('/es/documents');
-    });
+  it('should not render searchQuery when on documents path', () => {
+    props.location.pathname = '/es/documents';
+    props.location.search = '?search';
+    render();
+    const links = component.find('a');
+    expect(links.length).toBe(2);
+    expect(links.first().props().href).toBe('/en/documents');
+    expect(links.last().props().href).toBe('/es/documents');
+  });
 
+  describe('Page query', () => {
     it('Should not add the document page to the URL when viewing entities', () => {
       props.locale = 'en';
       props.location.pathname = '/en/entity/r2dzptt7ts';
@@ -51,6 +51,16 @@ describe('I18NMenu', () => {
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/entity/r2dzptt7ts');
       expect(links.last().props().href).toBe('/es/entity/r2dzptt7ts');
+    });
+
+    it('should remove the page query from the url without affecting other parameters', () => {
+      props.location.pathname = '/es/entity/r2dzptt7ts';
+      props.location.search = '?searchTerm=title&page=2';
+      render();
+      const links = component.find('a');
+      expect(links.length).toBe(2);
+      expect(links.last().props().href).toBe('/es/entity/r2dzptt7ts?searchTerm=title');
+      expect(links.first().props().href).toBe('/en/entity/r2dzptt7ts?searchTerm=title');
     });
   });
 
