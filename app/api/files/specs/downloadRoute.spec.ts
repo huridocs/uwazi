@@ -5,22 +5,30 @@ import { setUpApp } from 'api/utils/testingRoutes';
 
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures, fileName1, uploadId } from './fixtures';
+import {
+  fixtures,
+  fileName1,
+  restrictedFileName,
+  uploadId,
+  collabUser,
+  writerUser,
+  adminUser,
+} from './fixtures';
 
 import uploadRoutes from '../routes';
 import { files } from '../files';
 
-jest.mock(
-  '../../auth/authMiddleware.ts',
-  () => () => (_req: Request, _res: Response, next: NextFunction) => {
+const setAppWithUser = (routes: any, user: any) =>
+  setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+    (req as any).user = user;
     next();
-  }
-);
+  });
 
 describe('files routes download', () => {
-  const app: Application = setUpApp(uploadRoutes);
+  let app: Application;
 
   beforeEach(async () => {
+    app = setUpApp(uploadRoutes);
     await testingEnvironment.setUp(fixtures);
   });
 
@@ -80,6 +88,31 @@ describe('files routes download', () => {
           .query({ _id: testingDB.id().toString() });
 
         expect(response.status).toBe(404);
+      });
+    });
+
+    describe('when the related entity is restricted by permissions', () => {
+      it('should return a 404 if the user does not have permission', async () => {
+        app = setAppWithUser(uploadRoutes, collabUser);
+        await request(app).get(`/api/files/${restrictedFileName}`).expect(404);
+      });
+
+      it('should return the file if the user has permission', async () => {
+        app = setAppWithUser(uploadRoutes, writerUser);
+        const response: SuperTestResponse = await request(app)
+          .get(`/api/files/${restrictedFileName}`)
+          .expect(200);
+
+        expect(response.body instanceof Buffer).toBe(true);
+      });
+
+      it('should allow an admin to access regardless of permissions', async () => {
+        app = setAppWithUser(uploadRoutes, adminUser);
+        const response: SuperTestResponse = await request(app)
+          .get(`/api/files/${restrictedFileName}`)
+          .expect(200);
+
+        expect(response.body instanceof Buffer).toBe(true);
       });
     });
   });
