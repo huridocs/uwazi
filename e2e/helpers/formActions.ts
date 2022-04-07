@@ -18,3 +18,16 @@ export const clearInput = async (selector: string): Promise<void> => {
 export const waitForNavigation = async (
   action: Promise<void>
 ): Promise<[void, HTTPResponse | null]> => Promise.all([action, page.waitForNavigation()]);
+
+export const uploadFileInMetadataField = async (filepath: string, fileInputSelector: string) => {
+  const button = await page.$(fileInputSelector);
+
+  if (button) {
+    const [fileChooser] = await Promise.all([
+      page.waitForFileChooser(),
+      // @ts-ignore:next-line
+      button.evaluate(b => b.click()),
+    ]);
+    await fileChooser.accept([filepath]);
+  }
+};

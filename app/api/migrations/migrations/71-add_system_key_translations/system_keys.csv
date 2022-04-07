@@ -1,0 +1,4 @@
+key, optionalValue
+"Synced template", "Synced template"
+"syncedTemplateEditorMessage", "This template is synced from another instance. Only entity view page can be enabled."
+"syncedTemplateListMessage", "The source of this template is a sync. All editing options will be disabled."

@@ -1,38 +1,52 @@
-import React from 'react';
-import thunk from 'redux-thunk';
-import { shallow, ShallowWrapper } from 'enzyme';
+/**
+ * @jest-environment jsdom
+ */
+import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
-import configureMockStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
-
+import { actions as formActions } from 'react-redux-form';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
-
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
+import * as supportingFileActions from 'app/Metadata/actions/supportingFilesActions';
 import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({});
+const store = {
+  library: {
+    sidepanel: {
+      metadata: {
+        _id: '1',
+        sharedId: 'entity1',
+        attachments: [],
+        metadata: { image: '' },
+      },
+    },
+  },
+};
 
 describe('Media Modal', () => {
-  let component: ShallowWrapper;
+  let component: ReactWrapper;
   let props: MediaModalProps;
 
   beforeEach(() => {
+    spyOn(formActions, 'change').and.returnValue({ type: 'rrf/change' });
+    spyOn(supportingFileActions, 'uploadLocalAttachment').and.returnValue({
+      type: 'ATTACHMENT_PROGRESSe',
+    });
     props = {
       onClose: jasmine.createSpy('onClose'),
       onChange: jasmine.createSpy('onChange'),
       isOpen: true,
-      attachments: [],
       selectedUrl: null,
+      attachments: [],
+      formModel: 'library.sidepanel.metadata',
+      formField: 'library.sidepanel.metadata.metadata.image',
+      type: MediaModalType.Image,
+      multipleEdition: false,
     };
   });
 
   const render = (otherProps = {}) => {
-    component = shallow(
-      <Provider store={store}>
-        <MediaModal {...props} {...otherProps} />
-      </Provider>
-    ).dive();
+    component = renderConnectedMount(MediaModal, store, { ...props, ...otherProps }, true);
   };
 
   it('Should pass isOpen props to Media modal.', () => {
@@ -52,7 +66,7 @@ describe('Media Modal', () => {
   });
 
   it('Should select attachment with filename', () => {
-    const jpgAttachment = { _id: 123, filename: 'test.jpg', size: 1234 };
+    const jpgAttachment = { _id: 123, filename: 'test.jpg', size: 1234, mimetype: 'image/jpg' };
     render({ attachments: [jpgAttachment] });
 
     const firstAttachment = component.find('.media-grid-item');
@@ -116,16 +130,48 @@ describe('Media Modal', () => {
     expect(selectedAttachment.length).toBe(1);
   });
 
-  it('Should upload file from url', () => {
-    render();
+  describe('Upload file', () => {
+    it('Should upload file from url', () => {
+      render();
 
-    const testAttachment = 'http://test.test/test.jpg';
-    component.find('.modal-tab-2').simulate('click');
+      const testAttachment = 'http://test.test/test.jpg';
+      const form = component.find(WebMediaResourceForm).at(0);
+      const formData = { url: testAttachment };
+      form.props().handleSubmit(formData);
+      expect(props.onChange).toHaveBeenCalledWith(testAttachment);
+      expect(props.onClose).toHaveBeenCalled();
+    });
 
-    const form = component.find(WebMediaResourceForm).at(0);
-    const formData = { url: testAttachment };
-    form.props().handleSubmit(formData);
-    expect(props.onChange).toHaveBeenCalledWith(testAttachment);
-    expect(props.onClose).toHaveBeenCalled();
+    it('Should upload and select a new file', () => {
+      const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
+        type: 'image/jpg',
+      });
+      render();
+      component.find('input[type="file"]').simulate('change', {
+        target: {
+          files: [newFile],
+        },
+      });
+      expect(supportingFileActions.uploadLocalAttachment).toHaveBeenCalledWith(
+        'entity1',
+        newFile,
+        {
+          __reducerKey: 'library',
+          model: 'library.sidepanel.metadata',
+        },
+        expect.stringMatching(/^[a-zA-Z\d_]*$/)
+      );
+      expect(formActions.change).toHaveBeenCalledWith(
+        'library.sidepanel.metadata.metadata.image',
+        expect.stringMatching(/^[a-zA-Z\d_]*$/)
+      );
+      expect(props.onClose).toHaveBeenCalled();
+    });
+
+    it('should not display the button to upload from local files in multiedit forms', () => {
+      props.multipleEdition = true;
+      render();
+      expect(component.find('input[type="file"]').length).toBe(0);
+    });
   });
 });

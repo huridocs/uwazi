@@ -91,7 +91,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
             preventDropOnDocument={true}
           >
             <button
-              className="btn btn-success"
+              className="btn"
               onClick={[Function]}
               type="button"
             >
@@ -233,7 +233,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
             preventDropOnDocument={true}
           >
             <button
-              className="btn btn-success"
+              className="btn"
               onClick={[Function]}
               type="button"
             >

@@ -7,6 +7,10 @@ module.exports = {
   testRunner: 'jasmine2',
   testMatch: ['**/react/**/specs/*spec.(j|t)s?(x)'],
   testPathIgnorePatterns: [],
+  transformIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/node_modules/react-dnd-test-backend',
+  ],
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/setUpJestClient.js'],
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'd.ts'],

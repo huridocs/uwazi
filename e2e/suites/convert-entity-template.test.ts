@@ -32,7 +32,7 @@ describe('Image is rendered when editing an entity in document view', () => {
     await expect(page).toClick('.metadata-sidepanel button.edit-metadata', {
       text: 'Edit',
     });
-    await expect(page).toClick('span', { text: 'Select supporting file' });
+    await expect(page).toClick('span', { text: 'Add file' });
     await expect(page).toMatchElement('div.media-grid-card-header > h5', { text: 'batman.jpg' });
   });
 
