@@ -10,7 +10,6 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import Immutable from 'immutable';
 import thunk from 'redux-thunk';
 import { shallow } from 'enzyme';
-import * as DND from 'react-dnd-test-backend';
 
 import entitiesApi from 'app/Entities/EntitiesAPI';
 import pagesApi from 'app/Pages/PagesAPI';
@@ -24,8 +23,10 @@ import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
 import * as templateActions from '../../actions/templateActions';
 
+const { TestBackend } = require('react-dnd-test-backend');
+
 function sourceTargetTestContext(Target, Source, actions) {
-  return DragDropContext(DND.TestBackend)(
+  return DragDropContext(TestBackend)(
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;

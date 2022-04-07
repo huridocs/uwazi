@@ -7,7 +7,6 @@
 
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
-import * as DND from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
@@ -22,10 +21,12 @@ import FormConfigSelect from '../FormConfigSelect';
 import FormConfigNested from '../FormConfigNested';
 import FormConfigRelationship from '../FormConfigRelationship';
 
+const { TestBackend } = require('react-dnd-test-backend');
+
 const mockStoreCreator = configureStore([]);
 
 function wrapInTestContext(DecoratedComponent) {
-  return DragDropContext(DND.TestBackend)(
+  return DragDropContext(TestBackend)(
     class TestContextContainer extends Component {
       render() {
         return <DecoratedComponent {...this.props} errors={{}} />;
@@ -35,7 +36,7 @@ function wrapInTestContext(DecoratedComponent) {
 }
 
 function sourceTargetTestContext(Target, Source, actions) {
-  return DragDropContext(DND.TestBackend)(
+  return DragDropContext(TestBackend)(
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
@@ -81,7 +82,7 @@ describe('MetadataProperty', () => {
   let component;
 
   const render = (_store, props) => {
-    const DNDComponent = DragDropContext(DND.TestBackend)(Connected);
+    const DNDComponent = DragDropContext(TestBackend)(Connected);
     const store = {
       ..._store,
       translations: () => Immutable.fromJS([]),
