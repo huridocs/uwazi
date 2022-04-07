@@ -7,6 +7,7 @@
 
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
+import { TestBackend } from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
@@ -20,8 +21,6 @@ import FormConfigInput from '../FormConfigInput';
 import FormConfigSelect from '../FormConfigSelect';
 import FormConfigNested from '../FormConfigNested';
 import FormConfigRelationship from '../FormConfigRelationship';
-
-const { TestBackend } = require('react-dnd-test-backend/dist/cjs');
 
 const mockStoreCreator = configureStore([]);
 

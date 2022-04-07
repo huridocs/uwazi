@@ -3,14 +3,13 @@
  */
 import React from 'react';
 import TestUtils from 'react-dom/test-utils';
+import { TestBackend } from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import PropertyOption, {
   dragSource as dragSourceOption,
 } from 'app/Templates/components/PropertyOption';
-
-const { TestBackend } = require('react-dnd-test-backend/dist/cjs');
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(DecoratedComponent);
