@@ -60,7 +60,10 @@
     "projects": [
       "app/jest.client.config.js",
       "app/jest.server.config.js"
-    ]
+    ],
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
   },
   "resolutions": {
     "lodash": "^4.17.21",
