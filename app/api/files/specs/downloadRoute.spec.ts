@@ -1,8 +1,8 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { setUpApp } from 'api/utils/testingRoutes';
-
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import {
@@ -18,17 +18,23 @@ import {
 import uploadRoutes from '../routes';
 import { files } from '../files';
 
-const setAppWithUser = (routes: any, user: any) =>
-  setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+let userContextMock: jasmine.Spy | null = null;
+
+const setAppWithUser = (routes: any, user: any) => {
+  userContextMock = spyOn(permissionsContext, 'getUserInContext');
+  userContextMock.and.returnValue(user);
+  return setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
     (req as any).user = user;
     next();
   });
+};
 
 describe('files routes download', () => {
   let app: Application;
 
   beforeEach(async () => {
     app = setUpApp(uploadRoutes);
+    if (userContextMock) userContextMock.and.callThrough();
     await testingEnvironment.setUp(fixtures);
   });
 

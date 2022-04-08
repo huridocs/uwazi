@@ -1,14 +1,25 @@
 import { Application } from 'express';
-import { debugLog, errorLog } from 'api/log';
-import { processDocument } from 'api/files/processDocument';
-import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
-import needsAuthorization from 'api/auth/authMiddleware';
-import { uploadMiddleware } from 'api/files/uploadMiddleware';
+
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
+import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
+import entities from 'api/entities';
+import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
+import { processDocument } from 'api/files/processDocument';
+import { uploadMiddleware } from 'api/files/uploadMiddleware';
+import { debugLog, errorLog } from 'api/log';
+import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
+
+const checkEntityPermission = async (file: FileType): Promise<boolean> => {
+  if (!file.entity) return true;
+  const relatedEntities = await entities.get({ sharedId: file.entity }, '_id', {
+    withoutDocuments: true,
+  });
+  return !!relatedEntities.length;
+};
 
 export default (app: Application) => {
   app.post(
@@ -123,7 +134,11 @@ export default (app: Application) => {
 
         const filename = file.filename || '';
 
-        if (!filename || !(await fileExists(uploadsPath(filename)))) {
+        if (
+          !filename ||
+          !(await fileExists(uploadsPath(filename))) ||
+          !(await checkEntityPermission(file))
+        ) {
           throw createError('file not found', 404);
         }
 
