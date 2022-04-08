@@ -117,7 +117,7 @@
     "express-http-proxy": "^1.6.2",
     "express-prom-bundle": "^6.4.1",
     "express-query-boolean": "^2.0.0",
-    "express-session": "^1.17.1",
+    "express-session": "^1.17.2",
     "filesize": "^6.1.0",
     "flag-icon-css": "^3.5.0",
     "formatcoords": "^1.1.3",
