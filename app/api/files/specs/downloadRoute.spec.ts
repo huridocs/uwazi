@@ -18,11 +18,8 @@ import {
 import uploadRoutes from '../routes';
 import { files } from '../files';
 
-let userContextMock: jasmine.Spy | null = null;
-
 const setAppWithUser = (routes: any, user: any) => {
-  userContextMock = spyOn(permissionsContext, 'getUserInContext');
-  userContextMock.and.returnValue(user);
+  testingEnvironment.setPermissions(user);
   return setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
     (req as any).user = user;
     next();
@@ -34,7 +31,6 @@ describe('files routes download', () => {
 
   beforeEach(async () => {
     app = setUpApp(uploadRoutes);
-    if (userContextMock) userContextMock.and.callThrough();
     await testingEnvironment.setUp(fixtures);
   });
 
