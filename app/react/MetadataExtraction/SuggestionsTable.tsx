@@ -49,8 +49,8 @@ const suggestionsTable = (
   };
 
   const currentValueCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
-    const suggestion = row.original;
-    const currentValue = formatValue(suggestion.currentValue);
+    const propertyValue = row.values.currentValue || row.original.currentValue;
+    const currentValue = formatValue(propertyValue);
     return (
       <div>
         <span className="suggestion-label">

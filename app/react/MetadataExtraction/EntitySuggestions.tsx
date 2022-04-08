@@ -123,6 +123,7 @@ export const EntitySuggestions = ({
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
       selectedFlatRows[0].values.state = 'Matching';
+      selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
   };
