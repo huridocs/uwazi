@@ -44,6 +44,32 @@ export const EntitySuggestions = ({
     setAcceptingSuggestion(true);
   };
 
+  const actionsCellButtonClassNames = (suggestion: EntitySuggestionType) => {
+    let className = 'btn ';
+    if (
+      suggestion.state === SuggestionState.labelMatch ||
+      suggestion.state === SuggestionState.valueMatch
+    ) {
+      className += 'btn-outline-success';
+    }
+    if (
+      suggestion.state === SuggestionState.labelMismatch ||
+      suggestion.state === SuggestionState.valueMismatch
+    ) {
+      className += 'btn-success';
+    }
+    if (
+      suggestion.state === SuggestionState.labelEmpty ||
+      suggestion.state === SuggestionState.valueEmpty ||
+      suggestion.state === SuggestionState.obsolete ||
+      suggestion.state === SuggestionState.empty
+    ) {
+      className += 'btn-outline-secondary';
+    }
+
+    return className;
+  };
+
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
     return (
@@ -51,12 +77,14 @@ export const EntitySuggestions = ({
         <button
           type="button"
           aria-label="Accept suggestion"
-          className={
-            suggestion.state === SuggestionState.matching
-              ? 'btn btn-success'
-              : 'btn btn-outline-primary'
+          className={actionsCellButtonClassNames(suggestion)}
+          disabled={
+            !suggestion.suggestedValue ||
+            suggestion.suggestedValue === '' ||
+            suggestion.state === SuggestionState.obsolete ||
+            suggestion.state === SuggestionState.labelMatch ||
+            suggestion.state === SuggestionState.valueMatch
           }
-          disabled={suggestion.state === SuggestionState.matching}
           onClick={async () => showConfirmationModal(row)}
         >
           <Icon icon="arrow-right" />

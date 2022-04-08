@@ -2,6 +2,7 @@
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { SuggestionState } from './suggestionSchema';
 
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
@@ -14,7 +15,7 @@ export interface EntitySuggestionType {
   currentValue?: PropertyValueSchema;
   segment: string;
   language: string;
-  state: 'Empty' | 'Matching' | 'Pending';
+  state: SuggestionState;
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
