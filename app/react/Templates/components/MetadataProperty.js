@@ -132,21 +132,25 @@ class MetadataProperty extends Component {
               </Translate>
             </span>
           )}
-          <button
-            type="button"
-            className="btn btn-default btn-xs property-edit"
-            onClick={() => this.props.editProperty(beingEdited ? null : localID)}
-          >
-            <Icon icon="pencil-alt" /> <Translate>Edit</Translate>
-          </button>
-          {!this.props.isCommonProperty && (
-            <button
-              type="button"
-              className="btn btn-danger btn-xs property-remove"
-              onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
-            >
-              <Icon icon="trash-alt" /> <Translate>Delete</Translate>
-            </button>
+          {!this.props.syncedTemplate && (
+            <>
+              <button
+                type="button"
+                className="btn btn-default btn-xs property-edit"
+                onClick={() => this.props.editProperty(beingEdited ? null : localID)}
+              >
+                <Icon icon="pencil-alt" /> <Translate>Edit</Translate>
+              </button>
+              {!this.props.isCommonProperty && (
+                <button
+                  type="button"
+                  className="btn btn-danger btn-xs property-remove"
+                  onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
+                >
+                  <Icon icon="trash-alt" /> <Translate>Delete</Translate>
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -184,6 +188,7 @@ MetadataProperty.defaultProps = {
   hasErrors: false,
   isLabelDuplicated: false,
   isRelationDuplicated: false,
+  syncedTemplate: false,
 };
 
 MetadataProperty.propTypes = {
@@ -203,6 +208,7 @@ MetadataProperty.propTypes = {
   removeProperty: PropTypes.func,
   uiState: PropTypes.object,
   editProperty: PropTypes.func,
+  syncedTemplate: PropTypes.bool,
 };
 
 const target = {

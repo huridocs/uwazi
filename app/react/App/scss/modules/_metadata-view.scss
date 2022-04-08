@@ -74,6 +74,11 @@
   .attachments-list {
     .delete-supporting-file {
       margin-left: 15px;
+      &:hover {
+        color: #fff;
+        background-color: #d9534f;
+        border-color: #d43f3a;
+      }
     }
 
     .new {

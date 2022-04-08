@@ -68,7 +68,7 @@ describe('Attachments actions', () => {
         },
       ];
 
-      store.dispatch(actions.uploadAttachment('sharedId', file, 'storeKey'));
+      store.dispatch(actions.uploadAttachment('sharedId', file, { __reducerKey: 'storeKey' }));
       expect(mockUpload.field).toHaveBeenCalledWith('entity', 'sharedId');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
@@ -103,7 +103,9 @@ describe('Attachments actions', () => {
           },
         },
       ];
-      store.dispatch(actions.uploadAttachmentFromUrl('sharedId', formData, 'storeKey'));
+      store.dispatch(
+        actions.uploadAttachmentFromUrl('sharedId', formData, { __reducerKey: 'storeKey' })
+      );
       expect(store.getActions()).toMatchObject(expectedActions);
     });
   });

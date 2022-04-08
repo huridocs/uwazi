@@ -268,4 +268,19 @@
     text-align: center;
     justify-content: center;
   }
+
+  .select-from-link {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    .form-group {
+      margin: unset;
+    }
+  }
+
+  .upload-options {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
 }

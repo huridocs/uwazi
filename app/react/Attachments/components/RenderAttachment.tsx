@@ -1,14 +1,18 @@
 import React from 'react';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import ReactPlayer from 'react-player';
+import { ClientFile } from 'app/istore';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
+import { isSerializedFile, prepareHTMLMediaView } from 'shared/fileUploadUtils';
 
-export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema }) => {
+export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema | ClientFile }) => {
   const { mimetype = '' } = attachment;
 
+  const fileURL = isSerializedFile(attachment) ? prepareHTMLMediaView(attachment) : attachment.url;
+
   if (mimetype.includes('image')) {
-    return attachment.url ? (
-      <img src={attachment.url} alt={attachment.originalname} />
+    return fileURL ? (
+      <img src={fileURL} alt={attachment.originalname} />
     ) : (
       <img src={`/api/files/${attachment.filename}`} alt={attachment.originalname} />
     );
@@ -19,8 +23,8 @@ export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema 
   const isFromSupportedSite = attachment.url && ReactPlayer.canPlay(attachment.url);
 
   if (isVideoAudio || isFromSupportedSite) {
-    return attachment.url ? (
-      <MarkdownMedia config={`(${attachment.url})`} />
+    return fileURL ? (
+      <MarkdownMedia config={`(${fileURL})`} />
     ) : (
       <MarkdownMedia config={`(/api/files/${attachment.filename})`} />
     );

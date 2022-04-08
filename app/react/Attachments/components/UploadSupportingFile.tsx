@@ -49,14 +49,10 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
   return (
     <>
       {getPercentage === undefined ? (
-        <button
-          type="button"
-          onClick={openModal}
-          className="upload-button btn btn-success attachments-modal-trigger"
-        >
+        <button type="button" onClick={openModal} className="btn attachments-modal-trigger">
           <Icon icon="plus" />
           &nbsp;&nbsp;
-          <Translate>Add supporting file</Translate>
+          <Translate>Add file</Translate>
         </button>
       ) : (
         <div className="btn btn-default btn-disabled">

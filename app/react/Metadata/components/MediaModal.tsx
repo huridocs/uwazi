@@ -1,67 +1,98 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import ReactModal from 'react-modal';
-import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import filesize from 'filesize';
-
-import { AttachmentSchema } from 'shared/types/commonTypes';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
+import { actions as formActions } from 'react-redux-form';
+import { get } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { RenderAttachment } from 'app/Attachments';
+import { ClientFile, IStore } from 'app/istore';
+import uniqueID from 'shared/uniqueID';
+import { AttachmentSchema } from 'shared/types/commonTypes';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
+import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
+import { mimeTypeFromUrl } from 'api/files/extensionHelper';
+import { MediaModalFileList } from 'app/Metadata/components/MediaModalFileList';
+import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 
-export enum MediaModalType {
+enum MediaModalType {
   Image,
   Media,
 }
 
-enum MediaModalTab {
-  SelectFromFile = 'SelectFromFile',
-  AddFromUrl = 'AddFromUrl',
-}
-export interface MediaModalProps {
+const getAcceptedFileTypes = (type: MediaModalType) =>
+  type === MediaModalType.Image ? 'image/*' : 'video/*';
+
+interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  attachments: AttachmentSchema[];
-  onChange: (id: string) => void;
+  attachments: (AttachmentSchema | ClientFile)[];
+  onChange: (id: any) => void;
   selectedUrl: string | null;
-  type?: MediaModalType;
+  formModel: string;
+  formField: string;
+  type: MediaModalType;
+  multipleEdition: boolean;
 }
 
-export const MediaModal = ({
-  isOpen,
-  onClose,
-  attachments = [],
-  onChange,
-  selectedUrl,
-  type,
-}: MediaModalProps) => {
-  const filteredAttachments = useMemo(() => {
-    switch (type) {
-      case MediaModalType.Image:
-        return attachments.filter(a => a.mimetype && a.mimetype.includes('image'));
-      case MediaModalType.Media:
-        return attachments.filter(
-          a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
-        );
-      default:
-        return attachments;
-    }
-  }, [attachments, type]);
+const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
+  const model = ownProps.formModel;
+  return {
+    entity: get(state, model),
+  };
+};
 
-  const attachmentsUrls = useMemo(
-    () => attachments.map(a => a.url || `/api/files/${a.filename}`),
-    [attachments]
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators(
+    { localAttachmentAction: uploadLocalAttachment, rrfChange: formActions.change },
+    dispatch
   );
 
-  const defaultTab = useMemo(() => {
-    if (!selectedUrl) {
-      return MediaModalTab.SelectFromFile;
-    }
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
-    const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedUrl);
+type mappedProps = ConnectedProps<typeof connector>;
+type ComponentProps = MediaModalProps & mappedProps;
 
-    return selectedAttachmentIndex === -1 ? MediaModalTab.AddFromUrl : MediaModalTab.SelectFromFile;
-  }, [selectedUrl, attachments]);
+function filterAttachments(
+  type: MediaModalType | undefined,
+  attachments: (AttachmentSchema | ClientFile)[]
+) {
+  const filteredAttachments = attachments.map(a => {
+    const mimetype = a.url && !a.mimetype ? mimeTypeFromUrl(a.url) : a.mimetype;
+    return { ...a, mimetype };
+  });
+  switch (type) {
+    case MediaModalType.Image:
+      return filteredAttachments.filter(a => a.mimetype && a.mimetype.includes('image'));
+    case MediaModalType.Media:
+      return filteredAttachments.filter(
+        a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
+      );
+    default:
+      return attachments;
+  }
+}
+
+const MediaModalComponent = ({
+  isOpen,
+  attachments = [],
+  selectedUrl,
+  entity,
+  formModel,
+  formField,
+  type,
+  multipleEdition,
+  onClose,
+  onChange,
+  localAttachmentAction,
+  rrfChange,
+}: ComponentProps) => {
+  const filteredAttachments = useMemo(
+    () => filterAttachments(type, attachments),
+    [attachments, type]
+  );
+
+  const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleAttachmentClick = (url: string) => () => {
     onChange(url);
@@ -71,6 +102,39 @@ export const MediaModal = ({
   const handleSubmitFromUrl = (formData: { url: string }) => {
     onChange(formData.url);
     onClose();
+  };
+
+  const handleFileInPublicForm = (event: React.FormEvent<HTMLInputElement>) => {
+    const { files } = event.target as HTMLInputElement;
+    if (files && files.length > 0) {
+      const data = { data: URL.createObjectURL(files[0]), originalFile: files[0] };
+      onChange(data);
+      onClose();
+    }
+  };
+
+  const handleUploadButtonClicked = () => {
+    inputFileRef.current?.click();
+  };
+
+  const handleInputFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const [file] = event.target.files || [];
+
+    if (file) {
+      const fileLocalID = uniqueID();
+
+      localAttachmentAction(
+        entity.sharedId || 'NEW_ENTITY',
+        file,
+        {
+          __reducerKey: 'library',
+          model: formModel,
+        },
+        fileLocalID
+      );
+      rrfChange(formField, fileLocalID);
+      onClose();
+    }
   };
 
   return (
@@ -93,84 +157,41 @@ export const MediaModal = ({
         </button>
       </div>
       <div className="attachments-modal__content">
-        <Tabs renderActiveTabContentOnly>
-          <div className="attachments-modal__tabs">
-            <TabLink
-              to={MediaModalTab.SelectFromFile}
-              className="tab-link modal-tab-1"
-              default={defaultTab === MediaModalTab.SelectFromFile}
-              component="div"
-            >
-              <Translate>Select from files</Translate>
-            </TabLink>
-            <TabLink
-              to={MediaModalTab.AddFromUrl}
-              className="tab-link modal-tab-2"
-              default={defaultTab === MediaModalTab.AddFromUrl}
-              component="div"
-            >
-              <Translate>Add from url</Translate>
-            </TabLink>
+        <div className="attachments-modal__tabs-content">
+          <div className="upload-options">
+            {!multipleEdition && (
+              <MediaModalUploadFileButton
+                formModel={formModel}
+                acceptedFileTypes={getAcceptedFileTypes(type)}
+                inputFileRef={inputFileRef}
+                handleUploadButtonClicked={handleUploadButtonClicked}
+                handleFileInPublicForm={handleFileInPublicForm}
+                handleInputFileChange={handleInputFileChange}
+              />
+            )}
+            {!multipleEdition && <Translate>or</Translate>}
+            <div className="wrapper-web">
+              <WebMediaResourceForm handleSubmit={handleSubmitFromUrl} />
+            </div>
           </div>
-
-          <div className="attachments-modal__tabs-content">
-            <TabContent
-              for={MediaModalTab.SelectFromFile}
-              className={`tab-content attachments-modal__tabs-content ${
-                !filteredAttachments.length ? 'centered' : ''
-              }`}
-            >
-              {filteredAttachments.length > 0 ? (
-                <div className="media-grid container">
-                  <div className="row">
-                    {filteredAttachments.map(attachment => {
-                      const attachmentUrl = attachment.url || `/api/files/${attachment.filename}`;
-                      return (
-                        <div
-                          className="media-grid-item"
-                          key={`attachment_${attachment._id}`}
-                          onClick={handleAttachmentClick(attachmentUrl)}
-                        >
-                          <div
-                            className={`${'media-grid-card'} ${
-                              attachmentUrl === selectedUrl ? 'active' : ''
-                            }`}
-                          >
-                            <div className="media-grid-card-header">
-                              <h5>{attachment.originalname}</h5>
-                              {!!attachment.size && <span>{filesize(attachment.size)}</span>}
-                            </div>
-                            <div className="media-grid-card-content">
-                              <div className="media">
-                                <RenderAttachment attachment={attachment} />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <h4 className="empty-attachments-message">
-                  <Translate>No attachments</Translate>
-                </h4>
-              )}
-            </TabContent>
-            <TabContent
-              for={MediaModalTab.AddFromUrl}
-              className="tab-content attachments-modal__tabs-content centered"
-            >
-              <div className="wrapper-web">
-                <WebMediaResourceForm
-                  handleSubmit={handleSubmitFromUrl}
-                  url={defaultTab === MediaModalTab.AddFromUrl ? selectedUrl : ''}
-                />
-              </div>
-            </TabContent>
+          <div
+            className={`tab-content attachments-modal__tabs-content ${
+              !filteredAttachments.length ? 'centered' : ''
+            }`}
+          >
+            <MediaModalFileList
+              filteredAttachments={filteredAttachments}
+              handleAttachmentClick={handleAttachmentClick}
+              selectedUrl={selectedUrl || ''}
+            />
           </div>
-        </Tabs>
+        </div>
       </div>
     </ReactModal>
   );
 };
+
+const container = connector(MediaModalComponent);
+
+export type { MediaModalProps };
+export { MediaModalType, container as MediaModal };
