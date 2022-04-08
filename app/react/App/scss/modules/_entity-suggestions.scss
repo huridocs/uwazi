@@ -204,6 +204,12 @@
         padding-top: 30px;
       }
     }
+
+    &.state {
+      .new-state {
+        color: $c-success;
+      }
+    }
   }
 }
 

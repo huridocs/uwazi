@@ -45,7 +45,7 @@ export const EntitySuggestions = ({
   };
 
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
-    const suggestion = row.original;
+    const suggestion = row.values;
     return (
       <div>
         <button
@@ -122,13 +122,15 @@ export const EntitySuggestions = ({
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
-      retrieveSuggestions();
+      selectedFlatRows[0].values.state = 'Matching';
+      selectedFlatRows[0].setState({});
     }
   };
 
   const handlePDFSidePanelSave = () => {
     setSidePanelOpened(false);
-    retrieveSuggestions();
+    selectedFlatRows[0].values.state = 'Matching';
+    selectedFlatRows[0].setState({});
   };
 
   const _trainModel = async () => {

@@ -232,9 +232,13 @@ describe('EntitySuggestions', () => {
         fireEvent.click(confirmButton);
       });
       expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], true);
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
     });
     it('should accept a suggestion for only the current language of an entity', async () => {
+      const pendingRow = within(screen.getAllByRole('row')[2])
+        .getAllByRole('cell')
+        .map(cell => cell.textContent);
+      expect(pendingRow[6]).toEqual('Empty');
       const languageCheck = screen.getByRole('checkbox');
       await act(async () => {
         fireEvent.click(languageCheck);
@@ -244,6 +248,11 @@ describe('EntitySuggestions', () => {
         fireEvent.click(confirmButton);
       });
       expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], false);
+
+      const selectedRow = within(screen.getAllByRole('row')[2])
+        .getAllByRole('cell')
+        .map(cell => cell.textContent);
+      expect(selectedRow[6]).toEqual('Matching');
     });
     it('should not accept a suggestion in confirmation is cancelled', async () => {
       const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;

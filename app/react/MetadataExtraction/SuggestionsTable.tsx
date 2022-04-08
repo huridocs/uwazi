@@ -8,6 +8,7 @@ import {
   useFilters,
   usePagination,
   useRowSelect,
+  useRowState,
   useTable,
 } from 'react-table';
 import { t, Translate } from 'app/I18N';
@@ -119,9 +120,14 @@ const suggestionsTable = (
       {
         accessor: 'state' as const,
         Header: () => <Translate>State</Translate>,
-        Cell: ({ row }: { row: Row<EntitySuggestionType> }) => (
-          <Translate>{row.original.state}</Translate>
-        ),
+        Cell: ({ row }: { row: Row<EntitySuggestionType> }) => {
+          const dirtyState = row.original.state !== row.values.state;
+          return (
+            <div className={dirtyState ? 'new-state' : ''}>
+              <Translate>{row.values.state}</Translate>
+            </div>
+          );
+        },
         Filter: stateFilter,
         className: 'state',
       },
@@ -149,7 +155,8 @@ const suggestionsTable = (
 
     useFilters,
     usePagination,
-    useRowSelect
+    useRowSelect,
+    useRowState
   );
 };
 
