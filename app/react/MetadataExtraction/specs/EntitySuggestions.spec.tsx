@@ -18,15 +18,29 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
 
+const mockedPDFSidePanelContent = 'Mocked Side Panel';
+const filledPropertyValue = 'new value for reviewed property';
+
+jest.mock('app/MetadataExtraction/PDFSidePanel', () => ({
+  PDFSidePanel: (props: any) => (
+    <button
+      type="button"
+      onClick={() => props.handleSave({ title: 'abc', other_title: filledPropertyValue })}
+    >
+      {mockedPDFSidePanelContent}
+    </button>
+  ),
+}));
+
 describe('EntitySuggestions', () => {
   const acceptIXSuggestion = jest.fn();
 
-  function renderComponent(property = reviewedProperty) {
+  const renderComponent = (property = reviewedProperty) => {
     renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
       () => defaultState
     );
-  }
+  };
 
   describe('Render table', () => {
     beforeEach(async () => {
@@ -260,6 +274,29 @@ describe('EntitySuggestions', () => {
         fireEvent.click(cancelButton);
       });
       expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
+    });
+  });
+
+  describe('Saving entity', () => {
+    it('should update the state in the entity table', async () => {
+      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      await act(async () => renderComponent());
+      const rows = screen.getAllByRole('row');
+      const originalRow = within(rows[2])
+        .getAllByRole('cell')
+        .map(cell => cell.textContent);
+      expect(originalRow[2]).toEqual('Other title-');
+      const openPDFButton = within(rows[2]).getByText('PDF').parentElement!;
+      await act(async () => {
+        fireEvent.click(openPDFButton);
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByText(mockedPDFSidePanelContent));
+      });
+      const updatedRow = within(screen.getAllByRole('row')[2])
+        .getAllByRole('cell')
+        .map(cell => cell.textContent);
+      expect(updatedRow[2]).toEqual(`Other title${filledPropertyValue}`);
     });
   });
 });
