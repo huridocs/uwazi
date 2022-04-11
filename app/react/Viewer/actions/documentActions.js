@@ -114,7 +114,7 @@ export function loadTargetDocument(sharedId) {
   return (dispatch, getState) =>
     Promise.all([
       getDocument(new RequestParams({ sharedId }), getState().locale),
-      referencesAPI.get(new RequestParams({ sharedId })),
+      referencesAPI.get(new RequestParams({ sharedId, onlyTextReferences: true })),
     ]).then(([targetDoc, references]) => {
       dispatch(actions.set('viewer/targetDoc', targetDoc));
       dispatch(actions.set('viewer/targetDocReferences', references));
