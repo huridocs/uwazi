@@ -22,7 +22,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       onSubmit: doc => (disp, state) =>
         saveDocument(doc, fileID)(disp, state).then(() => {
           disp(relationshipActions.reloadRelationships(doc.sharedId));
-          onEntitySave();
+          onEntitySave(doc);
         }),
     },
     dispatch
