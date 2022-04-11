@@ -11,10 +11,12 @@ import {
   useTable,
 } from 'react-table';
 import { t, Translate } from 'app/I18N';
+import { Icon } from 'app/UI';
 import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { PropertySchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import ModalTips from 'app/App/ModalTips';
 
 const suggestionsTable = (
   reviewedProperty: PropertySchema,
@@ -134,7 +136,86 @@ const suggestionsTable = (
       },
       {
         accessor: 'state' as const,
-        Header: () => <Translate>State</Translate>,
+        Header: () => (
+          <>
+            <ModalTips
+              label={<Icon icon="question-circle" />}
+              title={t('System', 'State Legend', 'State Legend', false)}
+            >
+              <h5>{t('System', SuggestionState.labelMatch, SuggestionState.labelMatch, false)}</h5>
+              <div>
+                <Translate translationKey="labelMatchDesc">
+                  It has a current value and a text selection matching with the modelsuggested value
+                  and selection. It will be used as a training sample.
+                </Translate>
+              </div>
+              <h5>
+                {t('System', SuggestionState.labelMismatch, SuggestionState.labelMismatch, false)}
+              </h5>
+              <div>
+                <Translate translationKey="labelMismatchDesc">
+                  It has a current value and text selection but they do not match the model
+                  prediction. Accepting the suggestion will replace the current value and text
+                  selection with the suggested ones becoming a "match / labeled". If the labeled
+                  data is correct and the suggestion is wrong no action is needed. It will be used
+                  as a training sample.
+                </Translate>
+              </div>
+              <h5>{t('System', SuggestionState.labelEmpty, SuggestionState.labelEmpty, false)}</h5>
+              <div>
+                <Translate translationKey="labelEmptyDesc">
+                  Accepting is not available since there is no suggestion.If the value is correct
+                  and the suggestion is wrong no action is needed. It will be used as a training
+                  sample.
+                </Translate>
+              </div>
+              <h5>{t('System', SuggestionState.valueMatch, SuggestionState.valueMatch, false)}</h5>
+              <div>
+                <Translate translationKey="valueMatchDesc">
+                  It has a current value that matches the suggestion, but it doesn't have a text
+                  selection. Accepting will keep the value as it is and enrich it with the suggested
+                  text selection becoming a "match / label" that can be used as a training sample.
+                </Translate>
+              </div>
+              <h5>
+                {t('System', SuggestionState.valueMismatch, SuggestionState.valueMismatch, false)}
+              </h5>
+              <div>
+                <Translate translationKey="valueMismatchDesc">
+                  Accepting the suggestion will replace the current value and text selection with
+                  the suggested ones becoming a "match / label" that will be used as a training
+                  sample. If the current value is correct, you can still click to fill the text
+                  selection so it becomes a "mismatch / label" that will be used as a training
+                  sample.
+                </Translate>
+              </div>
+              <h5>{t('System', SuggestionState.valueEmpty, SuggestionState.valueEmpty, false)}</h5>
+              <div>
+                <Translate translationKey="valueEmptyDesc">
+                  Accepting is not available since there is no suggestion. If the current value is
+                  correct, you can click to fill the text selection so it becomes a "empty / label"
+                  that will be used as a training sample.
+                </Translate>
+              </div>
+              <h5>{t('System', SuggestionState.empty, SuggestionState.empty, false)}</h5>
+              <div>
+                <Translate translationKey="emptyDesc">
+                  Both the current value and the suggestion are empty. You can click to fill the
+                  value and text selection so it becomes a "empty / label" that will be used as a
+                  training sample.
+                </Translate>
+              </div>
+              <h5>{t('System', SuggestionState.obsolete, SuggestionState.obsolete, false)}</h5>
+              <div>
+                <Translate translationKey="obsoleteDesc">
+                  A new model is training and processing suggestions. This suggestion was created by
+                  a previous model so no actions are possible until the new suggestion is received.
+                </Translate>
+              </div>
+            </ModalTips>
+            <Translate>State</Translate>
+          </>
+        ),
         Cell: ({ row }: { row: Row<EntitySuggestionType> }) => (
           <Translate>{row.original.state}</Translate>
         ),

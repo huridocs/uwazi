@@ -46,17 +46,18 @@ export const EntitySuggestions = ({
 
   const actionsCellButtonClassNames = (suggestion: EntitySuggestionType) => {
     let className = 'btn ';
-    if (
-      suggestion.state === SuggestionState.labelMatch ||
-      suggestion.state === SuggestionState.valueMatch
-    ) {
+    if (suggestion.state === SuggestionState.labelMatch) {
       className += 'btn-outline-success';
     }
     if (
       suggestion.state === SuggestionState.labelMismatch ||
       suggestion.state === SuggestionState.valueMismatch
     ) {
-      className += 'btn-success';
+      className += 'btn-outline-warning';
+    }
+
+    if (suggestion.state === SuggestionState.valueMatch) {
+      className += 'btn-outline-primary';
     }
     if (
       suggestion.state === SuggestionState.labelEmpty ||
