@@ -8,8 +8,9 @@ import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { browserHistory } from 'react-router';
 import { Icon } from 'UI';
-import SearchTips from 'app/Library/components/SearchTips';
+import ModalTips from 'app/App/ModalTips';
 import { toUrlParams } from 'shared/JSONRequest';
+import { SearchTipsContent } from 'app/App/SearchTipsContent';
 import SnippetList from './SnippetList';
 
 export class SearchText extends Component {
@@ -91,7 +92,12 @@ export class SearchText extends Component {
                   <Icon icon="times" onClick={this.resetSearch} />
                 </Field>
               </div>
-              <SearchTips />
+              <ModalTips
+                label={t('System', 'Search Tips', null, false)}
+                title={t('System', 'Narrow down your searches', null, false)}
+              >
+                <SearchTipsContent />
+              </ModalTips>
             </div>
           )}
         </LocalForm>
