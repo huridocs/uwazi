@@ -114,7 +114,7 @@ export function loadTargetDocument(sharedId) {
   return (dispatch, getState) =>
     getDocument(new RequestParams({ sharedId }), getState().locale).then(entity => {
       dispatch(actions.set('viewer/targetDoc', entity));
-      referencesAPI
+      return referencesAPI
         .get(new RequestParams({ sharedId, file: entity.defaultDoc._id, onlyTextReferences: true }))
         .then(references => {
           dispatch(actions.set('viewer/targetDocReferences', references));

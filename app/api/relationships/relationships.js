@@ -131,7 +131,7 @@ export default {
 
   async getDocumentHubs(entity, file, onlyTextReferences) {
     let ownRelations;
-    if (onlyTextReferences === 'true') {
+    if (onlyTextReferences) {
       ownRelations = await model.get(
         {
           entity,
