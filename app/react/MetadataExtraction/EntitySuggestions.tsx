@@ -44,26 +44,23 @@ export const EntitySuggestions = ({
     setAcceptingSuggestion(true);
   };
 
-  const actionsCellButtonClassNames = (suggestion: EntitySuggestionType) => {
+  const actionsCellButtonClassNames = (state: string) => {
     let className = 'btn ';
-    if (suggestion.state === SuggestionState.labelMatch) {
+    if (state === SuggestionState.labelMatch) {
       className += 'btn-outline-success label-match';
     }
-    if (
-      suggestion.state === SuggestionState.labelMismatch ||
-      suggestion.state === SuggestionState.valueMismatch
-    ) {
+    if (state === SuggestionState.labelMismatch || state === SuggestionState.valueMismatch) {
       className += 'btn-outline-warning label-value-mismatch';
     }
 
-    if (suggestion.state === SuggestionState.valueMatch) {
+    if (state === SuggestionState.valueMatch) {
       className += 'btn-outline-primary value-match';
     }
     if (
-      suggestion.state === SuggestionState.labelEmpty ||
-      suggestion.state === SuggestionState.valueEmpty ||
-      suggestion.state === SuggestionState.obsolete ||
-      suggestion.state === SuggestionState.empty
+      state === SuggestionState.labelEmpty ||
+      state === SuggestionState.valueEmpty ||
+      state === SuggestionState.obsolete ||
+      state === SuggestionState.empty
     ) {
       className += 'btn-outline-secondary disabled';
     }
@@ -73,18 +70,20 @@ export const EntitySuggestions = ({
 
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.values;
+    const { state } = suggestion;
+    console.log(suggestion);
     return (
       <div>
         <button
           type="button"
           aria-label="Accept suggestion"
-          className={actionsCellButtonClassNames(suggestion)}
+          className={actionsCellButtonClassNames(state)}
           disabled={
-            !suggestion.suggestedValue ||
-            suggestion.suggestedValue === '' ||
-            suggestion.state === SuggestionState.obsolete ||
-            suggestion.state === SuggestionState.labelMatch ||
-            suggestion.state === SuggestionState.valueMatch
+            state === SuggestionState.labelEmpty ||
+            state === SuggestionState.valueEmpty ||
+            state === SuggestionState.obsolete ||
+            state === SuggestionState.labelMatch ||
+            state === SuggestionState.valueMatch
           }
           onClick={async () => showConfirmationModal(row)}
         >
@@ -151,7 +150,13 @@ export const EntitySuggestions = ({
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
-      selectedFlatRows[0].values.state = 'Matching';
+      const { state } = selectedFlatRows[0].values;
+      if (state === SuggestionState.valueMismatch) {
+        selectedFlatRows[0].values.state = SuggestionState.valueMatch;
+      }
+      if (state === SuggestionState.labelMismatch) {
+        selectedFlatRows[0].values.state = SuggestionState.labelMatch;
+      }
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }

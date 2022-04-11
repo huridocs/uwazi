@@ -185,10 +185,7 @@ export const Suggestions = {
                   },
                   {
                     case: {
-                      $and: [
-                        { $eq: ['$suggestedValue', '$currentValue'] },
-                        { $lte: ['$labeledValue', null] },
-                      ],
+                      $and: [{ $eq: ['$suggestedValue', '$currentValue'] }],
                     },
                     then: SuggestionState.valueMatch,
                   },
