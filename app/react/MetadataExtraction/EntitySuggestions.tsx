@@ -47,17 +47,17 @@ export const EntitySuggestions = ({
   const actionsCellButtonClassNames = (suggestion: EntitySuggestionType) => {
     let className = 'btn ';
     if (suggestion.state === SuggestionState.labelMatch) {
-      className += 'btn-outline-success';
+      className += 'btn-outline-success label-match';
     }
     if (
       suggestion.state === SuggestionState.labelMismatch ||
       suggestion.state === SuggestionState.valueMismatch
     ) {
-      className += 'btn-outline-warning';
+      className += 'btn-outline-warning label-value-mismatch';
     }
 
     if (suggestion.state === SuggestionState.valueMatch) {
-      className += 'btn-outline-primary';
+      className += 'btn-outline-primary value-match';
     }
     if (
       suggestion.state === SuggestionState.labelEmpty ||
@@ -65,7 +65,7 @@ export const EntitySuggestions = ({
       suggestion.state === SuggestionState.obsolete ||
       suggestion.state === SuggestionState.empty
     ) {
-      className += 'btn-outline-secondary';
+      className += 'btn-outline-secondary disabled';
     }
 
     return className;

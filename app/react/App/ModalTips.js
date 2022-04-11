@@ -17,11 +17,7 @@ export default class ModalTips extends Component {
         <div className="modal-tip-label" onClick={() => this.setState({ isOpen: true })}>
           {this.props.label}
         </div>
-        <Modal
-          isOpen={this.state.isOpen}
-          type={this.props.type}
-          style={{ width: '900px !important' }}
-        >
+        <Modal isOpen={this.state.isOpen} type={this.props.type} className="modal-tip-dim">
           <Modal.Body>
             <h4>{this.props.title}</h4>
             {this.props.children}
