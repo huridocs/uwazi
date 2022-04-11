@@ -131,7 +131,7 @@ export default {
 
   async getDocumentHubs(entity, file, onlyTextReferences) {
     let ownRelations;
-    if (onlyTextReferences) {
+    if (onlyTextReferences === 'true') {
       ownRelations = await model.get(
         {
           entity,
@@ -149,7 +149,6 @@ export default {
         ],
       });
     }
-
     const hubsIds = ownRelations.map(relationship => relationship.hub);
     return model.get({ hub: { $in: hubsIds } });
   },

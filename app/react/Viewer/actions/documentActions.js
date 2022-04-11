@@ -112,12 +112,13 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
 
 export function loadTargetDocument(sharedId) {
   return (dispatch, getState) =>
-    Promise.all([
-      getDocument(new RequestParams({ sharedId }), getState().locale),
-      referencesAPI.get(new RequestParams({ sharedId, onlyTextReferences: true })),
-    ]).then(([targetDoc, references]) => {
-      dispatch(actions.set('viewer/targetDoc', targetDoc));
-      dispatch(actions.set('viewer/targetDocReferences', references));
+    getDocument(new RequestParams({ sharedId }), getState().locale).then(entity => {
+      dispatch(actions.set('viewer/targetDoc', entity));
+      referencesAPI
+        .get(new RequestParams({ sharedId, file: entity.defaultDoc._id, onlyTextReferences: true }))
+        .then(references => {
+          dispatch(actions.set('viewer/targetDocReferences', references));
+        });
     });
 }
 
