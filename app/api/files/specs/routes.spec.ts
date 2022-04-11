@@ -12,7 +12,7 @@ import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures, uploadId, uploadId2 } from './fixtures';
+import { fixtures, uploadId, uploadId2, adminUser, writerUser } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -78,15 +78,49 @@ describe('files routes', () => {
   });
 
   describe('GET/files', () => {
-    it('should return all uploads based on the filter', async () => {
+    it('should return entity related files only if the user has permission for the entity', async () => {
+      testingEnvironment.setPermissions(writerUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ type: 'custom' });
+        .query({ type: 'custom' })
+        .expect(200);
+
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        'restrictedUpload',
+        'upload2',
+      ]);
+    });
+
+    it('should return all uploads for an admin', async () => {
+      testingEnvironment.setPermissions(adminUser);
+      const response: SuperTestResponse = await request(app)
+        .get('/api/files')
+        .query({ type: 'custom' })
+        .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'upload1',
+        'restrictedUpload',
         'upload2',
       ]);
+    });
+
+    it('should only allow properly typed id and type parameters in the query', async () => {
+      testingEnvironment.setPermissions(adminUser);
+
+      await request(app).get('/api/files').query({ $where: '1===1' }).expect(400);
+
+      await request(app)
+        .get('/api/files')
+        .query({ type: { $exists: 1 } })
+        .expect(400);
+
+      const response: SuperTestResponse = await request(app)
+        .get('/api/files')
+        .query({ _id: uploadId.toString(), type: 'custom' })
+        .expect(200);
+
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual(['upload1']);
     });
   });
 

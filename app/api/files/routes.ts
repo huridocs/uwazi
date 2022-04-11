@@ -21,6 +21,16 @@ const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   return !!relatedEntities.length;
 };
 
+const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
+  const sharedIds = fileList.map(f => f.entity).filter(f => f);
+  const allowedSharedIds = await entities
+    .get({ sharedId: { $in: sharedIds } }, 'sharedId', {
+      withoutDocuments: true,
+    })
+    .then((arr: { sharedId: string }[]) => new Set(arr.map(e => e.sharedId)));
+  return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
+};
+
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
@@ -186,9 +196,21 @@ export default (app: Application) => {
   app.get(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    validation.validateRequest({
+      properties: {
+        query: {
+          additionalProperties: false,
+          properties: {
+            _id: { type: 'string' },
+            type: { type: 'string' },
+          },
+        },
+      },
+    }),
     (req, res, next) => {
       files
         .get(req.query)
+        .then(async result => filterByEntityPermissions(result))
         .then(result => {
           res.json(result);
         })
