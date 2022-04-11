@@ -4,14 +4,14 @@ import { propertyTypes } from 'shared/propertyTypes';
 export const emitSchemaTypes = true;
 
 export enum SuggestionState {
-  labelMatch = 'Label Match',
-  labelMismatch = 'Label Mismatch',
-  valueMatch = 'Value Match',
-  valueMismatch = 'Value Mismatch',
-  empty = 'Empty',
+  labelMatch = 'Match / Label',
+  labelMismatch = 'Mismatch / Label',
+  valueMatch = 'Match / Value',
+  valueMismatch = 'Mismatch / Value',
+  empty = 'Empty / Empty',
   obsolete = 'Obsolete',
-  labelEmpty = 'Label Empty',
-  valueEmpty = 'Value Empty',
+  labelEmpty = 'Empty / Label',
+  valueEmpty = 'Empty / Value',
 }
 
 export const IXSuggestionSchema = {

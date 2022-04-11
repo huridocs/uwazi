@@ -14,6 +14,7 @@ import { t, Translate } from 'app/I18N';
 import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { PropertySchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 
 const suggestionsTable = (
   reviewedProperty: PropertySchema,
@@ -33,16 +34,24 @@ const suggestionsTable = (
       }}
     >
       <option value="">{t('System', 'All', 'All', false)}</option>
-      <option value="Label Match">{t('System', 'Label Match', 'Label Match', false)}</option>
-      <option value="Label Mismatch">
-        {t('System', 'Label Mismatch', 'Label Mismatch', false)}
+      <option value={SuggestionState.labelMatch}>
+        {t('System', SuggestionState.labelMatch, SuggestionState.labelMatch, false)}
       </option>
-      <option value="Value Match">{t('System', 'Value Match', 'Value Match', false)}</option>
-      <option value="Value Mismatch">
-        {t('System', 'Value Mismatch', 'Value Mismatch', false)}
+      <option value={SuggestionState.labelMismatch}>
+        {t('System', SuggestionState.labelMismatch, SuggestionState.labelMismatch, false)}
       </option>
-      <option value="Empty">{t('System', 'Empty', 'Empty', false)}</option>
-      <option value="Obsolete">{t('System', 'Obsolete', 'Obsolete', false)}</option>
+      <option value={SuggestionState.valueMatch}>
+        {t('System', SuggestionState.valueMatch, SuggestionState.valueMatch, false)}
+      </option>
+      <option value={SuggestionState.valueMismatch}>
+        {t('System', SuggestionState.valueMismatch, SuggestionState.valueMismatch, false)}
+      </option>
+      <option value={SuggestionState.empty}>
+        {t('System', SuggestionState.empty, SuggestionState.empty, false)}
+      </option>
+      <option value={SuggestionState.obsolete}>
+        {t('System', SuggestionState.obsolete, SuggestionState.obsolete, false)}
+      </option>
     </select>
   );
 

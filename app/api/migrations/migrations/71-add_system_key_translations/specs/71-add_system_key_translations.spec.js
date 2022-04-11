@@ -5,32 +5,32 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Label Match',
-    value: 'Label Match',
+    key: 'Match / Label',
+    value: 'Match / Label',
   },
   {
-    key: 'Label Mismatch',
-    value: 'Label Mismatch',
+    key: 'Mismatch / Label',
+    value: 'Mismatch / Label',
   },
   {
-    key: 'Value Match',
-    value: 'Value Match',
+    key: 'Match / Value',
+    value: 'Match / Value',
   },
   {
-    key: 'Value Mismatch',
-    value: 'Value Mismatch',
+    key: 'Mismatch / Value',
+    value: 'Mismatch / Value',
   },
   {
     key: 'Obsolete',
     value: 'Obsolete',
   },
   {
-    key: 'Label Empty',
-    value: 'Label Empty',
+    key: 'Empty / Label',
+    value: 'Empty / Label',
   },
   {
-    key: 'Value Empty',
-    value: 'Value Empty',
+    key: 'Empty / Value',
+    value: 'Empty / Value',
   },
 ];
 const alreadyInAllContexts = {
