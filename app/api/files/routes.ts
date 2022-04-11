@@ -174,6 +174,7 @@ export default (app: Application) => {
       properties: {
         query: {
           required: ['_id'],
+          additionalProperties: false,
           properties: {
             _id: { type: 'string' },
           },
@@ -183,7 +184,12 @@ export default (app: Application) => {
 
     async (req, res, next) => {
       try {
-        const [deletedFile] = await files.delete(req.query);
+        const [fileToDelete] = await files.get({ _id: req.query._id });
+        if (!fileToDelete || !(await checkEntityPermission(fileToDelete))) {
+          throw createError('file not found', 404);
+        }
+
+        const [deletedFile] = await files.delete({ _id: req.query._id });
         const thumbnailFileName = `${deletedFile._id}.jpg`;
         await files.delete({ filename: thumbnailFileName });
         res.json([deletedFile]);

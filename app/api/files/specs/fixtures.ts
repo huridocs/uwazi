@@ -7,6 +7,7 @@ const restrictedEntityId = db.id();
 const uploadId = db.id();
 const uploadId2 = db.id();
 const restrictedUploadId = db.id();
+const restrictedUploadId2 = db.id();
 const templateId = db.id();
 const importTemplate = db.id();
 const writerUserId = db.id();
@@ -55,6 +56,15 @@ const fixtures: DBFixture = {
       generatedToc: true,
       originalname: 'restrictedUpload',
       filename: restrictedFileName,
+      type: 'custom',
+      language: 'eng',
+    },
+    {
+      _id: restrictedUploadId2,
+      entity: 'restrictedSharedId',
+      generatedToc: true,
+      originalname: 'restrictedUpload2',
+      filename: 'restricted file 2 not on disk',
       type: 'custom',
       language: 'eng',
     },
@@ -127,6 +137,7 @@ export {
   restrictedFileName,
   uploadId,
   uploadId2,
+  restrictedUploadId2,
   templateId,
   importTemplate,
   collabUser,

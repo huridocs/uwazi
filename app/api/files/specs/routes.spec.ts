@@ -12,7 +12,14 @@ import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures, uploadId, uploadId2, adminUser, writerUser } from './fixtures';
+import {
+  fixtures,
+  uploadId,
+  uploadId2,
+  restrictedUploadId2,
+  adminUser,
+  writerUser,
+} from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -87,6 +94,7 @@ describe('files routes', () => {
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'restrictedUpload',
+        'restrictedUpload2',
         'upload2',
       ]);
     });
@@ -101,6 +109,7 @@ describe('files routes', () => {
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'upload1',
         'restrictedUpload',
+        'restrictedUpload2',
         'upload2',
       ]);
     });
@@ -125,6 +134,22 @@ describe('files routes', () => {
   });
 
   describe('DELETE/api/files', () => {
+    beforeEach(() => {
+      testingEnvironment.setPermissions(adminUser);
+    });
+
+    it('should not allow any extra parameters aside from a properly typed id', async () => {
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: 'someid', __property__: 'should_not_be_here' })
+        .expect(400);
+
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: { $eq: 1234 } })
+        .expect(400);
+    });
+
     it('should delete upload and return the response', async () => {
       await request(app)
         .post('/api/files/upload/custom')
@@ -137,8 +162,22 @@ describe('files routes', () => {
       expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
     });
 
+    it('should allow deletion if and only if user has permission for the entity', async () => {
+      testingEnvironment.setPermissions(collabUser);
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: restrictedUploadId2.toString() })
+        .expect(404);
+
+      testingEnvironment.setPermissions(writerUser);
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: restrictedUploadId2.toString() })
+        .expect(200);
+    });
+
     it('should reindex all entities that are related to the files deleted', async () => {
-      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+      await request(app).delete('/api/files').query({ _id: uploadId2.toString() }).expect(200);
 
       expect(search.indexEntities).toHaveBeenCalledWith(
         { sharedId: { $in: ['sharedId1'] } },
