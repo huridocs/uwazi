@@ -6,6 +6,7 @@ import { HeaderGroup, Row } from 'react-table';
 import { I18NLink, Translate } from 'app/I18N';
 import { socket } from 'app/socket';
 import { store } from 'app/store';
+import { ClientEntitySchema } from 'app/istore';
 import { Pagination } from 'app/UI/BasicTable/Pagination';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
@@ -31,7 +32,6 @@ export const EntitySuggestions = ({
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
-  const [selectedRowData, setSelectedRowData] = useState<EntitySuggestionType>();
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
     if (propertyName === reviewedProperty.name) {
@@ -72,7 +72,7 @@ export const EntitySuggestions = ({
   };
 
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
-    const suggestion = row.original;
+    const suggestion = row.values;
     return (
       <div>
         <button
@@ -95,7 +95,7 @@ export const EntitySuggestions = ({
   };
 
   const showPDF = (row: Row<EntitySuggestionType>) => {
-    setSelectedRowData(row.original);
+    row.toggleRowSelected();
     setSidePanelOpened(true);
   };
 
@@ -151,13 +151,19 @@ export const EntitySuggestions = ({
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
-      retrieveSuggestions();
+      selectedFlatRows[0].values.state = 'Matching';
+      selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
+      selectedFlatRows[0].setState({});
     }
   };
 
-  const handlePDFSidePanelSave = () => {
+  const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
-    retrieveSuggestions();
+    const changedPropertyValue =
+      entity[reviewedProperty.name] || entity.metadata?.[reviewedProperty.name];
+    selectedFlatRows[0].values.currentValue = changedPropertyValue;
+    selectedFlatRows[0].setState({});
+    selectedFlatRows[0].toggleRowSelected();
   };
 
   const _trainModel = async () => {
@@ -266,12 +272,12 @@ export const EntitySuggestions = ({
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
       </div>
-      {selectedRowData && (
+      {selectedFlatRows.length && (
         <PDFSidePanel
           open={sidePanelOpened}
           closeSidePanel={closePDFSidePanel}
           handleSave={handlePDFSidePanelSave}
-          entitySuggestion={selectedRowData}
+          entitySuggestion={selectedFlatRows[0].original}
         />
       )}
     </>

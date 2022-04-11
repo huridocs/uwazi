@@ -10,14 +10,19 @@ import { uploadAttachment } from '../actions/actions';
 export class UploadAttachment extends Component {
   onChangeSingle(e) {
     const file = e.target.files[0];
-    this.props.uploadAttachment(this.props.entity, file, this.props.storeKey);
+    this.props.uploadAttachment(this.props.entity, file, { __reducerKey: this.props.storeKey });
   }
 
   onChangeAll(e) {
     const file = e.target.files[0];
-    this.props.uploadAttachment(this.props.entity, file, this.props.storeKey, {
-      allLanguages: true,
-    });
+    this.props.uploadAttachment(
+      this.props.entity,
+      file,
+      { __reducerKey: this.props.storeKey },
+      {
+        allLanguages: true,
+      }
+    );
   }
 
   renderUploadButton() {

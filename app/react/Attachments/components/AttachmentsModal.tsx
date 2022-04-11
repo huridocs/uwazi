@@ -9,7 +9,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
 
-export interface AttachmentsModalProps {
+interface AttachmentsModalProps {
   isOpen: boolean;
   entitySharedId: string;
   storeKey: string;
@@ -20,7 +20,7 @@ export interface AttachmentsModalProps {
   getPercentage?: number;
 }
 
-export const AttachmentsModalCmp = ({
+const AttachmentsModalCmp = ({
   isOpen,
   entitySharedId,
   storeKey,
@@ -43,7 +43,7 @@ export const AttachmentsModalCmp = ({
     if (event.target.files) {
       await Promise.all(
         [...event.target.files].map(file =>
-          uploadAttachmentProp(entitySharedId, file, storeKey, model)
+          uploadAttachmentProp(entitySharedId, file, { __reducerKey: storeKey, model })
         )
       );
     }
@@ -51,12 +51,14 @@ export const AttachmentsModalCmp = ({
 
   const handleDropFiles = async (accepted: File[]) => {
     await Promise.all(
-      accepted.map(file => uploadAttachmentProp(entitySharedId, file, storeKey, model))
+      accepted.map(file =>
+        uploadAttachmentProp(entitySharedId, file, { __reducerKey: storeKey, model })
+      )
     );
   };
 
   const handleSubmitUrlForm = (formModelData: { url: string; name: string }) => {
-    uploadAttachmentFromUrlProp(entitySharedId, formModelData, storeKey, model);
+    uploadAttachmentFromUrlProp(entitySharedId, formModelData, { __reducerKey: storeKey, model });
     formDispatch(formActions.reset('urlForm'));
   };
 
@@ -105,11 +107,7 @@ export const AttachmentsModalCmp = ({
               >
                 {getPercentage === undefined ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={handleUploadButtonClicked}
-                      className="btn btn-success"
-                    >
+                    <button type="button" onClick={handleUploadButtonClicked} className="btn">
                       <Icon icon="link" />
                       &nbsp; <Translate>Upload and select file</Translate>
                     </button>
@@ -162,4 +160,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: AttachmentsModalPr
     dispatch
   );
 
-export const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);
+const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);
+
+export type { AttachmentsModalProps };
+export { AttachmentsModalCmp, AttachmentsModal };

@@ -40,7 +40,7 @@ export function deleteFile(file, entity) {
   };
 }
 
-export function uploadAttachment(entity, file, __reducerKey) {
+export function uploadAttachment(entity, file, storeKeys) {
   return async dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     superagent
@@ -58,7 +58,7 @@ export function uploadAttachment(entity, file, __reducerKey) {
           type: types.ATTACHMENT_COMPLETE,
           entity,
           file: JSON.parse(result.text),
-          __reducerKey,
+          __reducerKey: storeKeys.__reducerKey,
         });
         dispatch(notify('Attachment uploaded', 'success'));
       })
@@ -66,7 +66,7 @@ export function uploadAttachment(entity, file, __reducerKey) {
   };
 }
 
-export function uploadAttachmentFromUrl(entity, formData, __reducerKey) {
+export function uploadAttachmentFromUrl(entity, formData, storeKeys) {
   const { name, url } = formData;
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
@@ -74,7 +74,12 @@ export function uploadAttachmentFromUrl(entity, formData, __reducerKey) {
       .post('files', new RequestParams({ originalname: name, url, entity, type: 'attachment' }))
       .then(newFile => {
         dispatch({ type: types.ATTACHMENT_PROGRESS, entity, progress: 100 });
-        dispatch({ type: types.ATTACHMENT_COMPLETE, entity, file: newFile.json, __reducerKey });
+        dispatch({
+          type: types.ATTACHMENT_COMPLETE,
+          entity,
+          file: newFile.json,
+          __reducerKey: storeKeys.__reducerKey,
+        });
         dispatch(notify('Attachment uploaded', 'success'));
       });
   };

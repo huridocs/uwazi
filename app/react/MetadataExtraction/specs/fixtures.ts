@@ -26,7 +26,7 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       state: SuggestionState.labelMismatch,
       date: 1,
       page: 5,
-      fileId: 'fildId',
+      fileId: 'fileId1',
     },
     {
       entityId: 'shared2',
@@ -40,7 +40,7 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       state: SuggestionState.valueEmpty,
       date: 2,
       page: 2,
-      fileId: 'fildId',
+      fileId: 'fileId1',
     },
   ],
   totalPages: 4,

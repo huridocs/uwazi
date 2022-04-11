@@ -27,6 +27,13 @@ const templateToSave = {
   commonProperties: templateCommonProperties,
 };
 
+const syncedTemplateToSave = {
+  name: 'template5',
+  properties: [],
+  commonProperties: templateCommonProperties,
+  synced: true,
+};
+
 const emitToCurrentTenantSpy = jasmine.createSpy('emitToCurrentTenant');
 
 describe('templates routes', () => {
@@ -99,6 +106,17 @@ describe('templates routes', () => {
       await postToEnpoint('/api/templates', templateToSave);
 
       expect(emitToCurrentTenantSpy).not.toHaveBeenCalledWith('updateSettings');
+    });
+
+    it('should not reindex when saving a synced template', async () => {
+      const templateSaveSpy = spyOn(templates, 'save').and.returnValue({
+        _id: 'savedid',
+        name: 'template5',
+      });
+
+      await postToEnpoint('/api/templates', syncedTemplateToSave);
+
+      expect(templateSaveSpy).toHaveBeenCalledWith(syncedTemplateToSave, undefined, false, false);
     });
   });
 

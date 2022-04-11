@@ -132,7 +132,7 @@ describe('Supporting files', () => {
 
     it('should allow adding new supporting files', () => {
       render();
-      const addSupportingFileButton = screen.getByText('Add supporting file').parentElement!;
+      const addSupportingFileButton = screen.getByText('Add file').parentElement!;
       fireEvent.click(addSupportingFileButton);
       const selectFileButton = screen.getByText('Upload and select file');
       fireEvent.click(selectFileButton);
