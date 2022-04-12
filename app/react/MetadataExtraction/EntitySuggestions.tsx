@@ -71,7 +71,6 @@ export const EntitySuggestions = ({
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.values;
     const { state } = suggestion;
-    console.log(suggestion);
     return (
       <div>
         <button
@@ -277,7 +276,7 @@ export const EntitySuggestions = ({
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
       </div>
-      {selectedFlatRows.length && (
+      {Boolean(selectedFlatRows.length) && (
         <PDFSidePanel
           open={sidePanelOpened}
           closeSidePanel={closePDFSidePanel}

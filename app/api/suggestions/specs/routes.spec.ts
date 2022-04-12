@@ -71,7 +71,7 @@ describe('suggestions routes', () => {
           propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge es',
           segment: 'el confía en su propio conocimiento científico',
-          state: 'Label Mismatch',
+          state: SuggestionState.labelMismatch,
           language: 'es',
           page: 5,
         },
@@ -82,7 +82,7 @@ describe('suggestions routes', () => {
           propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge',
           segment: 'he relies on his own scientific knowledge',
-          state: 'Label Match',
+          state: SuggestionState.labelMatch,
           language: 'en',
           page: 5,
         },
@@ -122,7 +122,12 @@ describe('suggestions routes', () => {
           .query({ filter: { propertyName: 'enemy', state: SuggestionState.empty } })
           .expect(200);
         expect(response.body.suggestions).toMatchObject([
-          { entityTitle: 'The Penguin', state: 'Empty', suggestedValue: '', currentValue: '' },
+          {
+            entityTitle: 'The Penguin',
+            state: SuggestionState.empty,
+            suggestedValue: '',
+            currentValue: '',
+          },
         ]);
       });
     });

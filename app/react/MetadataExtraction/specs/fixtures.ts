@@ -9,7 +9,7 @@ const defaultHeaders = [
   'Title',
   'Context',
   'Language',
-  'StateAllMatchingEmptyPending',
+  'StateAllMatch / LabelMismatch / LabelMatch / ValueMismatch / ValueEmpty / EmptyObsolete',
 ];
 
 const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {

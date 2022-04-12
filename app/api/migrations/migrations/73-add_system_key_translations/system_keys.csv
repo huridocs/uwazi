@@ -7,6 +7,7 @@ key, optionalValue
 "Empty / Label"
 "Empty / Value"
 "State Legend"
+"Search Tips"
 labelMatchDesc,"It has a current value and a text selection matching with the modelsuggested value and selection. It will be used as a training sample."
 labelMismatchDesc, "It has a current value and text selection but they do not match the model prediction. Accepting the suggestion will replace the current value and text selection with the suggested ones becoming a "match / labeled". If the labeled data is correct and the suggestion is wrong no action is needed. It will be used as a training sample."
 labelEmptyDesc,"Accepting is not available since there is no suggestion.If the value is correct and the suggestion is wrong no action is needed. It will be used as a training sample."

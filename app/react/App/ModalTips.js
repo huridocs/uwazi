@@ -45,5 +45,5 @@ ModalTips.propTypes = {
   type: PropTypes.string,
   children: PropTypes.node.isRequired,
   title: PropTypes.string.isRequired,
-  label: PropTypes.oneOf([PropTypes.string, PropTypes.node]).isRequired,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
 };
