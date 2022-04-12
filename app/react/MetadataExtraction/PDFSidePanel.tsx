@@ -15,7 +15,7 @@ interface PDFSidePanelProps {
   open: boolean;
   entitySuggestion: EntitySuggestionType;
   closeSidePanel: () => void;
-  handleSave: () => void;
+  handleSave: (entity: ClientEntitySchema) => void;
 }
 
 const PDFSidePanel = ({
