@@ -3,11 +3,35 @@ import { UserRole } from 'shared/types/userSchema';
 
 const entityId = db.id();
 const entityEnId = db.id();
+const restrictedEntityId = db.id();
 const uploadId = db.id();
 const uploadId2 = db.id();
+const restrictedUploadId = db.id();
+const restrictedUploadId2 = db.id();
 const templateId = db.id();
 const importTemplate = db.id();
+const writerUserId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const restrictedFileName = 'f2082bf51b6ef839690485d7153e847b.pdf';
+
+const collabUser = {
+  _id: db.id(),
+  username: 'collab',
+  role: UserRole.COLLABORATOR,
+  email: 'collab@tenant.xy',
+};
+const writerUser = {
+  _id: writerUserId,
+  username: 'writer',
+  role: UserRole.COLLABORATOR,
+  email: 'writer@tenant.xy',
+};
+const adminUser = {
+  _id: db.id(),
+  username: 'admin',
+  role: UserRole.ADMIN,
+  email: 'admin@tenant.xy',
+};
 
 const fixtures: DBFixture = {
   files: [
@@ -25,6 +49,24 @@ const fixtures: DBFixture = {
       generatedToc: true,
       entity: 'sharedId1',
       filename: 'fileNotInDisk',
+    },
+    {
+      _id: restrictedUploadId,
+      entity: 'restrictedSharedId',
+      generatedToc: true,
+      originalname: 'restrictedUpload',
+      filename: restrictedFileName,
+      type: 'custom',
+      language: 'eng',
+    },
+    {
+      _id: restrictedUploadId2,
+      entity: 'restrictedSharedId',
+      generatedToc: true,
+      originalname: 'restrictedUpload2',
+      filename: 'restricted file 2 not on disk',
+      type: 'custom',
+      language: 'eng',
     },
     {
       entity: 'sharedId1',
@@ -56,6 +98,21 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Gadgets 01 EN',
     },
+    {
+      _id: restrictedEntityId,
+      template: templateId,
+      sharedId: 'restrictedSharedId',
+      language: 'en',
+      title: 'Restricted Entity',
+      public: false,
+      permissions: [
+        {
+          refId: writerUserId.toString(),
+          type: 'user',
+          level: 'write',
+        },
+      ],
+    },
   ],
   templates: [
     { _id: templateId, default: true, name: 'mydoc', properties: [] },
@@ -69,20 +126,7 @@ const fixtures: DBFixture = {
       allowedPublicTemplates: [templateId.toString()],
     },
   ],
-  users: [
-    {
-      _id: db.id(),
-      username: 'collab',
-      role: UserRole.COLLABORATOR,
-      email: 'collab@tenant.xy',
-    },
-    {
-      _id: db.id(),
-      username: 'admin',
-      role: UserRole.ADMIN,
-      email: 'admin@tenant.xy',
-    },
-  ],
+  users: [collabUser, writerUser, adminUser],
 };
 
 export {
@@ -90,8 +134,13 @@ export {
   entityId,
   entityEnId,
   fileName1,
+  restrictedFileName,
   uploadId,
   uploadId2,
+  restrictedUploadId2,
   templateId,
   importTemplate,
+  collabUser,
+  adminUser,
+  writerUser,
 };
