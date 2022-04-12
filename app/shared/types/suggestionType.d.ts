@@ -2,7 +2,6 @@
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
-import { SuggestionState } from './suggestionSchema';
 
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
@@ -15,7 +14,15 @@ export interface EntitySuggestionType {
   currentValue?: PropertyValueSchema;
   segment: string;
   language: string;
-  state: SuggestionState;
+  state:
+    | 'Match / Label'
+    | 'Mismatch / Label'
+    | 'Match / Value'
+    | 'Mismatch / Value'
+    | 'Empty / Empty'
+    | 'Obsolete'
+    | 'Empty / Label'
+    | 'Empty / Value';
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
@@ -46,5 +53,13 @@ export interface IXSuggestionsQuery {
 export interface IXSuggestionsFilter {
   language?: string;
   propertyName: string;
-  state?: 'Empty' | 'Matching' | 'Pending';
+  state?:
+    | 'Match / Label'
+    | 'Mismatch / Label'
+    | 'Match / Value'
+    | 'Mismatch / Value'
+    | 'Empty / Empty'
+    | 'Obsolete'
+    | 'Empty / Label'
+    | 'Empty / Value';
 }
