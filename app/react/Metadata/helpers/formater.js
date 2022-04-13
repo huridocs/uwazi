@@ -133,6 +133,7 @@ export default {
 
     let relatedEntity;
     if (doc && doc.relations) {
+      console.log('doc in getSelectOptions', doc)
       const relation = doc.relations.find(e => e.entity === option.value);
       relatedEntity = relation.entityData;
     }
@@ -231,7 +232,6 @@ export default {
 
   // eslint-disable-next-line max-params, max-statements
   inherit(property, propValue = [], thesauri, options, templates) {
-    // const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const propertyInfo = Immutable.fromJS({
       label: property.get('label'),
       name: property.get('name'),
@@ -240,7 +240,6 @@ export default {
     });
 
     const type = propertyInfo.get('type');
-    console.log(type)
     const methodType = this[type] ? type : 'default';
     let value = propValue
       .map(v => {
@@ -274,7 +273,6 @@ export default {
     value = value.filter(v => v);
     return {
       translateContext: property.get('content'),
-      // ...inheritedProperty.toJS(), --- the entire inherited property returned, then things overwritten
       ...propertyInfo.toJS(),
       //inheritedName: inheritedProperty.get('name'), --- can't find any usage for this, but the tests expect it
       name: property.get('name'),
@@ -295,11 +293,10 @@ export default {
     templateThesaurus,
     { doc }
   ) {
-    console.log(`hit flatten with type: ${type}`);
     const result = relationshipValues.map((relationshipValue, index) => {
       let { value } = relationshipValue;
+      if (!value) return [];
       if (type === 'geolocation') {
-        console.log('hit geolocation')
         const options = this.getSelectOptions(thesaurusValues[index], templateThesaurus, doc);
         const entityLabel = options.value;
         value = value.map(v => ({
@@ -307,7 +304,6 @@ export default {
           relatedEntity: options.relatedEntity ? options.relatedEntity : undefined,
           label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
         }));
-        console.log(value)
       }
       return value;
     });

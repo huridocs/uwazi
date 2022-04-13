@@ -41,6 +41,7 @@ describe('metadata formater', () => {
     let relationship2;
     let relationship3;
     let relationship4;
+    let relationship5;
     let image;
     let preview;
     let media;
@@ -73,6 +74,7 @@ describe('metadata formater', () => {
         relationship2,
         relationship3,
         relationship4,
+        relationship5,
         geolocation,
         nested,
         link,
@@ -91,7 +93,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toEqual(19);
+      expect(data.metadata.length).toEqual(20);
     });
 
     it('should process text type', () => {
@@ -201,9 +203,28 @@ describe('metadata formater', () => {
     describe('Inherit ', () => {
       it('should process inherit types', () => {
         assessBasicProperties(relationship3, ['Relationship 3', 'relationship3', 'template2']);
-        expect(relationship3.inheritedName).toBe('text');
+        // expect(relationship3.inheritedName).toBe('text');
         expect(relationship3.value.length).toBe(3);
         assessMultiValues(relationship3, [{ value: 'how' }, { value: 'are' }, { value: 'you?' }]);
+
+        assessBasicProperties(relationship5, ['Relationship 5', 'relationship5', 'template2']);
+        expect(relationship5.value.length).toBe(5);
+        assessMultiValues(relationship5, [
+          expect.objectContaining({ value: 'Value 1' }),
+          {
+            parent: 'Parent 1',
+            value: [expect.objectContaining({ value: 'Value 5' })],
+          },
+          expect.objectContaining({ value: 'Value 2' }),
+          {
+            parent: 'Parent 1',
+            value: [expect.objectContaining({ value: 'Value 6' })],
+          },
+          {
+            parent: 'Parent 2',
+            value: [expect.objectContaining({ value: 'Value 7' })],
+          },
+        ]);
       });
 
       it('should not fail when inherited property is undefined', () => {
@@ -293,7 +314,7 @@ describe('metadata formater', () => {
 
       it('should append the translated entity title to certain values', () => {
         assessBasicProperties(relationship4, ['Relationship 4', 'relationship4', 'template2']);
-        expect(relationship4.inheritedName).toBe('home_geolocation');
+        // expect(relationship4.inheritedName).toBe('home_geolocation');
         expect(relationship4.value.length).toBe(3);
         assessMultiValues(relationship4, [
           { lat: 13, lon: 7, label: 'Entity 1 Title' },
