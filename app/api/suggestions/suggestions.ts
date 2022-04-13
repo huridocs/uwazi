@@ -6,10 +6,12 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import settings from 'api/settings/settings';
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
+  // eslint-disable-next-line max-statements
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
@@ -18,6 +20,8 @@ export const Suggestions = {
       propertyName: filter.propertyName,
       status: 'ready',
     });
+    const { languages } = await settings.get();
+    const defaultLanguage = languages.find(l => l.default).key;
 
     const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
@@ -28,7 +32,9 @@ export const Suggestions = {
             from: 'entities',
             let: {
               localFieldEntityId: '$entityId',
-              localFieldLanguage: '$language',
+              localFieldLanguage: {
+                $cond: [{ $eq: ['$language', 'other'] }, defaultLanguage, '$language'],
+              },
             },
             pipeline: [
               {

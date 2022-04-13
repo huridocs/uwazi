@@ -21,12 +21,12 @@ import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
-import { IXModelsModel } from './IXModelsModel';
 import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
+import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
   tenant: string;
