@@ -115,7 +115,7 @@ export default {
     return `${from} ~ ${to}`;
   },
 
-  getSelectOptions(option, thesauri, doc) {
+  getSelectOptions(option, thesaurus, doc) {
     let value = '';
     let icon;
     let parent;
@@ -127,7 +127,7 @@ export default {
     }
 
     let url;
-    if (option && thesauri && thesauri.get('type') === 'template') {
+    if (option && thesaurus && thesaurus.get('type') === 'template') {
       url = `/entity/${option.value}`;
     }
 
@@ -191,7 +191,7 @@ export default {
     return { ...value, type: 'link' };
   },
 
-  preview(property, _value, _thesauris, { doc }) {
+  preview(property, _value, _thesauri, { doc }) {
     const defaultDoc = doc.defaultDoc || {};
     return this.multimedia(
       property,
@@ -208,7 +208,7 @@ export default {
     return value;
   },
 
-  geolocation(property, value, _thesauris, { onlyForCards }) {
+  geolocation(property, value, _thesauri, { onlyForCards }) {
     return {
       label: property.get('label'),
       name: property.get('name'),
@@ -218,28 +218,28 @@ export default {
     };
   },
 
-  select(property, [metadataValue], thesauris) {
-    const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-    const { value, url, icon, parent } = this.getSelectOptions(metadataValue, thesauri);
+  select(property, [metadataValue]) {
+    const { value, url, icon, parent } = this.getSelectOptions(metadataValue);
     return { label: property.get('label'), name: property.get('name'), value, icon, url, parent };
   },
 
-  multiselect(property, thesauriValues, thesauris) {
-    const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
-
+  multiselect(property, thesauriValues) {
+    const sortedValues = this.getThesauriValues(thesauriValues);
     const groupsOptions = groupByParent(sortedValues);
     return { label: property.get('label'), name: property.get('name'), value: groupsOptions };
   },
 
   // eslint-disable-next-line max-params, max-statements
-  inherit(property, propValue = [], thesauris, options, templates) {
-    const template = templates.find(templ => templ.get('_id') === property.get('content'));
-    const inheritedProperty = template
-      .get('properties')
-      .find(p => p.get('_id') === property.getIn(['inherit', 'property']));
+  inherit(property, propValue = [], thesauri, options, templates) {
+    // const template = templates.find(templ => templ.get('_id') === property.get('content'));
+    const propertyInfo = Immutable.fromJS({
+      label: property.get('label'),
+      name: property.get('name'),
+      type: property.get('inherit').type,
+      noLabel: property.get('noLabel'),
+    });
 
-    const type = inheritedProperty.get('type');
+    const { type } = propertyInfo;
     const methodType = this[type] ? type : 'default';
     let value = propValue
       .map(v => {
@@ -253,13 +253,7 @@ export default {
             return null;
           }
 
-          return this[methodType](
-            inheritedProperty,
-            v.inheritedValue,
-            thesauris,
-            options,
-            templates
-          );
+          return this[methodType](propertyInfo, v.inheritedValue, thesauri, options, templates);
         }
 
         return {};
@@ -267,20 +261,22 @@ export default {
       .filter(v => v);
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
-      const templateThesauris = thesauris.find(
-        _thesauri => _thesauri.get('_id') === template.get('_id')
-      );
+      // const templateThesaurus = thesauri.find(
+      //   _thesauri => _thesauri.get('_id') === template.get('_id') // always undefined? a template and a thesauri can't have the same _id
+      // );
+      const templateThesaurus = undefined;
       propType = type;
-      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris, {
+      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesaurus, {
         doc: options.doc,
       });
     }
     value = value.filter(v => v);
     return {
-      translateContext: template.get('_id'),
-      ...inheritedProperty.toJS(),
+      translateContext: property.get('content'),
+      // ...inheritedProperty.toJS(), --- the entire inherited property returned, then things overwritten
+      ...propertyInfo.toJS(),
+      //inheritedName: inheritedProperty.get('name'), --- can't find any usage for this, but the tests expect it
       name: property.get('name'),
-      inheritedName: inheritedProperty.get('name'),
       value,
       label: property.get('label'),
       type: propType,
@@ -291,32 +287,34 @@ export default {
   },
 
   // eslint-disable-next-line max-params
-  flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris, { doc }) {
-    return relationshipValues.reduce((result, relationshipValue, index) => {
-      if (relationshipValue.value) {
-        let { value } = relationshipValue;
-        if (type === 'geolocation') {
-          const options = this.getSelectOptions(thesauriValues[index], templateThesauris, doc);
-          const entityLabel = options.value;
-          value = value.map(v => ({
-            ...v,
-            relatedEntity: options.relatedEntity ? options.relatedEntity : undefined,
-            label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
-          }));
-        }
-        return result.concat(value);
+  flattenInheritedMultiValue(
+    relationshipValues,
+    type,
+    thesaurusValues,
+    templateThesaurus,
+    { doc }
+  ) {
+    const result = relationshipValues.map((relationshipValue, index) => {
+      let { value } = relationshipValue;
+      if (type === 'geolocation') {
+        const options = this.getSelectOptions(thesaurusValues[index], templateThesaurus, doc);
+        const entityLabel = options.value;
+        value = value.map(v => ({
+          ...v,
+          relatedEntity: options.relatedEntity ? options.relatedEntity : undefined,
+          label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
+        }));
       }
-      return result;
-    }, []);
+      return value;
+    });
+    return result.flat();
   },
 
-  relationship(property, thesauriValues, thesauris, { doc }) {
-    const thesauri =
-      thesauris.find(thes => thes.get('_id') === property.get('content')) ||
-      Immutable.fromJS({
-        type: 'template',
-      });
-    const sortedValues = this.getThesauriValues(thesauriValues, thesauri, doc);
+  relationship(property, thesaurusValues, _thesauri, { doc }) {
+    const thesaurus = Immutable.fromJS({
+      type: 'template',
+    });
+    const sortedValues = this.getThesauriValues(thesaurusValues, thesaurus, doc);
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
@@ -329,7 +327,8 @@ export default {
     };
   },
 
-  nested(property, rows, thesauris) {
+  nested(property, rows, thesauri) {
+    // what is this?
     if (!rows[0]) {
       return { label: property.get('label'), name: property.get('name'), value: '' };
     }
@@ -337,7 +336,7 @@ export default {
     const { locale } = store.getState();
     const keys = Object.keys(rows[0].value).sort();
     const translatedKeys = keys.map(key =>
-      nestedProperties[key.toLowerCase()]
+      nestedProperties[key.toLowerCase()] //what is nestedProperties?
         ? nestedProperties[key.toLowerCase()][`key_${locale}`]
         : key
     );
@@ -347,31 +346,31 @@ export default {
       .map(row => `| ${keys.map(key => (row.value[key] || []).join(', ')).join(' | ')}`)
       .join('|\n')}|`;
 
-    return this.markdown(property, [{ value: result }], thesauris, { type: 'markdown' });
+    return this.markdown(property, [{ value: result }], thesauri, { type: 'markdown' });
   },
 
-  getThesauriValues(thesauriValues, thesauri, doc) {
+  getThesauriValues(thesaurusValues, thesaurus, doc) {
     return advancedSort(
-      thesauriValues
-        .map(thesauriValue => this.getSelectOptions(thesauriValue, thesauri, doc))
+      thesaurusValues
+        .map(thesaurusValue => this.getSelectOptions(thesaurusValue, thesaurus, doc))
         .filter(v => v.value),
       { property: 'value' }
     );
   },
 
-  prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {
-    return this.prepareMetadata(doc, templates, thesauris, null, {
+  prepareMetadataForCard(doc, templates, thesauri, sortedProperty) {
+    return this.prepareMetadata(doc, templates, thesauri, null, {
       onlyForCards: true,
       sortedProperties: [sortedProperty],
     });
   },
 
-  prepareMetadata(_doc, templates, thesauris, relationships, _options = {}) {
+  prepareMetadata(_doc, templates, thesauri, relationships, _options = {}) {
     const doc = { metadata: {}, ..._doc };
     const options = { sortedProperties: [], ..._options };
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
-    if (!template || !thesauris.size) {
+    if (!template || !thesauri.size) {
       return { ...doc, metadata: [], documentType: '' };
     }
 
@@ -386,7 +385,7 @@ export default {
       .map(property =>
         this.applyTransformation(property, {
           doc,
-          thesauris,
+          thesauri,
           options,
           template,
           templates,
@@ -399,12 +398,12 @@ export default {
     return { ...doc, metadata: metadata.toJS(), documentType: template.get('name') };
   },
 
-  applyTransformation(property, { doc, thesauris, options, template, templates }) {
+  applyTransformation(property, { doc, thesauri, options, template, templates }) {
     const value = doc.metadata[property.get('name')];
     const showInCard = property.get('showInCard');
 
     if (property.get('inherit')) {
-      return this.inherit(property, value, thesauris, { ...options, doc }, templates);
+      return this.inherit(property, value, thesauri, { ...options, doc }, templates);
     }
 
     const methodType = this[property.get('type')] ? property.get('type') : 'default';
@@ -413,7 +412,7 @@ export default {
       return {
         translateContext: template.get('_id'),
         ...property.toJS(),
-        ...this[methodType](property, value, thesauris, { ...options, doc }),
+        ...this[methodType](property, value, thesauri, { ...options, doc }),
       };
     }
 
