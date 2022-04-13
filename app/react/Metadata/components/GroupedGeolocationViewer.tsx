@@ -101,7 +101,7 @@ const getMultiMemberInfo =
             {' ('}
             <Translate>linked</Translate>{' '}
             <Translate context={member.translateContext}>
-              {templatesInfo[member.translateContext].name}
+              {templatesInfo[member.translateContext]?.name}
             </Translate>
             {') '}
           </span>
@@ -115,7 +115,7 @@ const getMultiMemberInfo =
             >
               <Pill
                 key={`${value.lat}_${value.lon}`}
-                color={templatesInfo[member.translateContext].color}
+                color={templatesInfo[member.translateContext]?.color}
               >
                 <Translate context={member.translateContext}>{value.label || ''}</Translate>
               </Pill>
@@ -148,7 +148,9 @@ const computeRenderMemberGroups = (
 
 // eslint-disable-next-line react/no-multi-comp
 const GroupedGeolocationViewerComponent = (props: mappedProps) => {
+  console.log("GroupedGeolocationViewerComponent")
   const markers = props.members.reduce<GeolocationMarker[]>((flat: GeolocationMarker[], member) => {
+    console.log(member)
     if (notLabeledOrMultiple(member)) {
       return flat.concat([
         {
@@ -160,7 +162,10 @@ const GroupedGeolocationViewerComponent = (props: mappedProps) => {
     }
 
     return flat.concat(
-      member.value.map(v => ({ ...v, color: props.templatesInfo[member.translateContext].color }))
+      member.value.map(v => ({
+        ...v,
+        color: props.templatesInfo[member.translateContext]?.color || '#ffffff',
+      }))
     );
   }, []);
 

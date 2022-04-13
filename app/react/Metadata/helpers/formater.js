@@ -235,11 +235,12 @@ export default {
     const propertyInfo = Immutable.fromJS({
       label: property.get('label'),
       name: property.get('name'),
-      type: property.get('inherit').type,
+      type: property.get('inherit').get('type'),
       noLabel: property.get('noLabel'),
     });
 
-    const { type } = propertyInfo;
+    const type = propertyInfo.get('type');
+    console.log(type)
     const methodType = this[type] ? type : 'default';
     let value = propValue
       .map(v => {
@@ -294,9 +295,11 @@ export default {
     templateThesaurus,
     { doc }
   ) {
+    console.log(`hit flatten with type: ${type}`);
     const result = relationshipValues.map((relationshipValue, index) => {
       let { value } = relationshipValue;
       if (type === 'geolocation') {
+        console.log('hit geolocation')
         const options = this.getSelectOptions(thesaurusValues[index], templateThesaurus, doc);
         const entityLabel = options.value;
         value = value.map(v => ({
@@ -304,6 +307,7 @@ export default {
           relatedEntity: options.relatedEntity ? options.relatedEntity : undefined,
           label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
         }));
+        console.log(value)
       }
       return value;
     });
