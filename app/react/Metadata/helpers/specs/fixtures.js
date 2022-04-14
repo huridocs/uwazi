@@ -72,6 +72,25 @@ export const doc = {
         inheritedValue: [{ value: { lat: 23, lon: 8, label: 'another label' } }],
       },
     ],
+    relationship5: [
+      {
+        value: 'linkedEntity_multiselect_1',
+        label: 'Linked Entity With Multiselect 1 Title',
+        inheritedValue: [
+          { value: 'value1', label: 'Value 1' },
+          { value: 'value5', label: 'Value 5', parent: { value: 'parent1', label: 'Parent 1' } },
+        ],
+      },
+      {
+        value: 'linkedEntity_multiselect_2',
+        label: 'Linked Entity With Multiselect 2 Title',
+        inheritedValue: [
+          { value: 'value2', label: 'Value 2' },
+          { value: 'value6', label: 'Value 6', parent: { value: 'parent1', label: 'Parent 1' } },
+          { value: 'value7', label: 'Value 7', parent: { value: 'parent2', label: 'Parent 2' } },
+        ],
+      },
+    ],
     geolocation: [{ value: { lat: 2, lon: 3 } }, { value: { lat: 13, lon: 7, label: 'home' } }],
     nested: [{ value: { nestedKey: [1, 2] } }, { value: { nestedKey: [3, 4] } }],
     select2: [],
@@ -98,6 +117,29 @@ export const relationships = Immutable.fromJS([
       },
     },
   },
+  {
+    entity: 'linkedEntity_multiselect_1',
+    entityData: {
+      metadata: {
+        multiselect_source: [
+          { value: 'value1', label: 'Value 1' },
+          { value: 'value5', label: 'Value 5', parent: { value: 'parent1', label: 'Parent 1' } },
+        ],
+      },
+    },
+  },
+  {
+    entity: 'linkedEntity_multiselect_2',
+    entityData: {
+      metadata: {
+        multiselect_source: [
+          { value: 'value2', label: 'Value 2' },
+          { value: 'value6', label: 'Value 6', parent: { value: 'parent1', label: 'Parent 1' } },
+          { value: 'value7', label: 'Value 7', parent: { value: 'parent2', label: 'Parent 2' } },
+        ],
+      },
+    },
+  },
   { entity: 'linkedEntityWithoutMetadata', entityData: {} },
 ]);
 
@@ -108,6 +150,7 @@ export const templates = Immutable.fromJS([
     properties: [
       { _id: '123', name: 'text', type: 'text' },
       { _id: '456', name: 'home_geolocation', type: 'geolocation' },
+      { _id: '789', name: 'multiselect_source', type: 'multiselect' },
     ],
   },
   {
@@ -179,6 +222,14 @@ export const templates = Immutable.fromJS([
         label: 'Relationship 4',
         content: 'template2',
         relationType: 'relationType2',
+      },
+      {
+        name: 'relationship5',
+        inherit: { property: '789', type: 'multiselect' },
+        type: 'relationship',
+        label: 'Relationship 5',
+        content: 'template2',
+        relationType: 'relationType3',
       },
       { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
       { name: 'nested', type: 'nested', label: 'Nested' },
