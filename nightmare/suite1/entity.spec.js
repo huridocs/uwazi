@@ -51,7 +51,8 @@ describe('Entity zone', () => {
         .catch(catchErrors(done));
     });
 
-    it("should allow changing the different template's properties", async () => {
+    // eslint-disable-next-line jest/no-focused-tests
+    fit("should allow changing the different template's properties", async () => {
       selectors.manBatEntity = {
         form: {
           realName:
@@ -80,7 +81,7 @@ describe('Entity zone', () => {
             '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
           age: '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl.metadata-type-numeric > dd',
           knownAccomplices:
-            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl.metadata-name-known_accomplices > dd > a',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl.metadata-name-known_accomplices > dd > button',
           mainSuperpower:
             '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(4) > dd',
           superpowers:
