@@ -80,7 +80,8 @@ describe('TableCell', () => {
     expect(cellContent.find('a').props().href).toBe('www.google.com');
   });
 
-  it('should render a relationship as a list of links', () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fit('should render a relationship as a list of links', () => {
     props.content = {
       label: 'Relationship',
       type: 'relationship',
@@ -97,9 +98,8 @@ describe('TableCell', () => {
       ],
     };
     const cellContent = renderContent();
-
-    const firstLink = cellContent.props().children.props.prop.value[0].url;
-    const secondLink = cellContent.props().children.props.prop.value[1].url;
+    const firstLink = cellContent.props().children.props.property.value[0].url;
+    const secondLink = cellContent.props().children.props.property.value[1].url;
     expect(firstLink).toEqual('/entity/Entity1');
     expect(secondLink).toEqual('/entity/Entity2');
   });
