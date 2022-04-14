@@ -30,13 +30,14 @@ type mappedProps = ConnectedProps<typeof connector> & RelationshipLinkProps;
 const RelationshipLink = ({ propValue: propVal, selectConnection }: mappedProps) => {
   if (propVal.relatedEntity) {
     return (
-      <a
+      <button
+        type="button"
+        className="link-button"
         onClick={() => selectConnection(propVal.relatedEntity)}
         key={propVal.url}
-        style={{ cursor: 'pointer' }}
       >
         {propVal.value}
-      </a>
+      </button>
     );
   }
   return (

@@ -11,7 +11,6 @@ import ValueList from './ValueList';
 const renderRelationshipLinks = linksProp => {
   const formattedLinkValues = Array.isArray(linksProp.value) ? linksProp.value : [linksProp.value];
   const hydratedValues = formattedLinkValues.map(linkValue => ({
-    ...linkValue,
     value: <RelationshipLink propValue={linkValue} />,
   }));
   const hydratedProp = { ...linksProp, value: hydratedValues };

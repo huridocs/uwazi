@@ -50,6 +50,19 @@
           content: ',';
         }
       }
+
+      button.link-button {
+        background: none !important;
+        border: none;
+        padding: 0 !important;
+        color: #2b56c1;
+        cursor: pointer;
+        background-color: transparent;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
     a {
       color: $c-primary;

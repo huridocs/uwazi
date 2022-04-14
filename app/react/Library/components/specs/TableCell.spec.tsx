@@ -97,8 +97,10 @@ describe('TableCell', () => {
       ],
     };
     const cellContent = renderContent();
-    const firstLink = cellContent.props().children.props.property.value[0].url;
-    const secondLink = cellContent.props().children.props.property.value[1].url;
+    const firstLink =
+      cellContent.props().children.props.property.value[0].value.props.propValue.url;
+    const secondLink =
+      cellContent.props().children.props.property.value[1].value.props.propValue.url;
     expect(firstLink).toEqual('/entity/Entity1');
     expect(secondLink).toEqual('/entity/Entity2');
   });
