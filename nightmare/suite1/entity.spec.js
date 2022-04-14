@@ -51,8 +51,7 @@ describe('Entity zone', () => {
         .catch(catchErrors(done));
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fit("should allow changing the different template's properties", async () => {
+    it("should allow changing the different template's properties", async () => {
       selectors.manBatEntity = {
         form: {
           realName:
