@@ -203,7 +203,6 @@ describe('metadata formater', () => {
     describe('Inherit ', () => {
       it('should process inherit types', () => {
         assessBasicProperties(relationship3, ['Relationship 3', 'relationship3', 'template2']);
-        // expect(relationship3.inheritedName).toBe('text');
         expect(relationship3.value.length).toBe(3);
         assessMultiValues(relationship3, [{ value: 'how' }, { value: 'are' }, { value: 'you?' }]);
 
@@ -314,7 +313,6 @@ describe('metadata formater', () => {
 
       it('should append the translated entity title to certain values', () => {
         assessBasicProperties(relationship4, ['Relationship 4', 'relationship4', 'template2']);
-        // expect(relationship4.inheritedName).toBe('home_geolocation');
         expect(relationship4.value.length).toBe(3);
         assessMultiValues(relationship4, [
           { lat: 13, lon: 7, label: 'Entity 1 Title' },

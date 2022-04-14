@@ -49,7 +49,7 @@ export const showByType = (prop, compact, templateId) => {
       result = prop.parent ? `${prop.parent}: ${prop.value}` : result;
       break;
     case 'geolocation_group':
-      result = <GroupedGeolocationViewer members={prop.members} templateId={templateId}/>;
+      result = <GroupedGeolocationViewer members={prop.members} templateId={templateId} />;
       break;
     case 'relationship':
       result = <RelationshipLink prop={prop} />;

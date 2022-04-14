@@ -133,7 +133,6 @@ export default {
 
     let relatedEntity;
     if (doc && doc.relations && doc.relations.length > 0) {
-      console.log('doc in getSelectOptions', doc)
       const relation = doc.relations.find(e => e.entity === option.value);
       relatedEntity = relation.entityData;
     }
@@ -230,7 +229,6 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: groupsOptions };
   },
 
-  // eslint-disable-next-line max-params, max-statements
   inherit(property, propValue = [], thesauri, options, templates) {
     const propertyInfo = Immutable.fromJS({
       label: property.get('label'),
@@ -261,12 +259,8 @@ export default {
       .filter(v => v);
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
-      // const templateThesaurus = thesauri.find(
-      //   _thesauri => _thesauri.get('_id') === template.get('_id') // always undefined? a template and a thesauri can't have the same _id
-      // );
-      const templateThesaurus = undefined;
       propType = type;
-      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesaurus, {
+      value = this.flattenInheritedMultiValue(value, type, propValue, undefined, {
         doc: options.doc,
       });
     }
@@ -274,7 +268,6 @@ export default {
     return {
       translateContext: property.get('content'),
       ...propertyInfo.toJS(),
-      //inheritedName: inheritedProperty.get('name'), --- can't find any usage for this, but the tests expect it
       name: property.get('name'),
       value,
       label: property.get('label'),
@@ -285,7 +278,6 @@ export default {
     };
   },
 
-  // eslint-disable-next-line max-params
   flattenInheritedMultiValue(
     relationshipValues,
     type,
@@ -328,7 +320,6 @@ export default {
   },
 
   nested(property, rows, thesauri) {
-    // what is this?
     if (!rows[0]) {
       return { label: property.get('label'), name: property.get('name'), value: '' };
     }
@@ -336,7 +327,7 @@ export default {
     const { locale } = store.getState();
     const keys = Object.keys(rows[0].value).sort();
     const translatedKeys = keys.map(key =>
-      nestedProperties[key.toLowerCase()] //what is nestedProperties?
+      nestedProperties[key.toLowerCase()]
         ? nestedProperties[key.toLowerCase()][`key_${locale}`]
         : key
     );
