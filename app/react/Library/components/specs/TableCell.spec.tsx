@@ -80,8 +80,7 @@ describe('TableCell', () => {
     expect(cellContent.find('a').props().href).toBe('www.google.com');
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fit('should render a relationship as a list of links', () => {
+  it('should render a relationship as a list of links', () => {
     props.content = {
       label: 'Relationship',
       type: 'relationship',
