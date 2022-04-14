@@ -7,7 +7,7 @@ import { IStore } from 'app/istore';
 import * as actions from '../../Relationships/actions/actions';
 
 interface RelationshipLinkProps {
-  prop: any;
+  propValue: any;
 }
 
 const mapStateToProps = ({ entityView }: IStore) => ({
@@ -27,26 +27,25 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & RelationshipLinkProps;
 
-const RelationshipLink = ({ prop: propVal, selectConnection }: mappedProps) =>
-  propVal.value.map((prop: any) => {
-    if (prop.relatedEntity) {
-      return (
-        <a
-          onClick={() => selectConnection(prop.relatedEntity)}
-          key={prop.url}
-          style={{ cursor: 'pointer' }}
-        >
-          {prop.value}
-        </a>
-      );
-    }
+const RelationshipLink = ({ propValue: propVal, selectConnection }: mappedProps) => {
+  if (propVal.relatedEntity) {
     return (
-      <I18NLink key={prop.url} to={prop.url}>
-        {prop.icon && <Icon className="item-icon" data={prop.icon} />}
-        {prop.value}
-      </I18NLink>
+      <a
+        onClick={() => selectConnection(propVal.relatedEntity)}
+        key={propVal.url}
+        style={{ cursor: 'pointer' }}
+      >
+        {propVal.value}
+      </a>
     );
-  });
+  }
+  return (
+    <I18NLink key={propVal.url} to={propVal.url}>
+      {propVal.icon && <Icon className="item-icon" data={propVal.icon} />}
+      {propVal.value}
+    </I18NLink>
+  );
+};
 
 const container = connector(RelationshipLink);
 export { container as RelationshipLink };

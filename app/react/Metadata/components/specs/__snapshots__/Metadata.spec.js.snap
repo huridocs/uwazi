@@ -188,8 +188,9 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
     <dd
       className=""
     >
-      <Connect(RelationshipLink)
-        prop={
+      <ValueList
+        compact={true}
+        property={
           Object {
             "label": "label array",
             "name": "label_array",
@@ -198,11 +199,25 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
             "value": Array [
               Object {
                 "url": "url1",
-                "value": "first_value",
+                "value": <Connect(RelationshipLink)
+                  propValue={
+                    Object {
+                      "url": "url1",
+                      "value": "first_value",
+                    }
+                  }
+                />,
               },
               Object {
                 "url": "url2",
-                "value": "second_value",
+                "value": <Connect(RelationshipLink)
+                  propValue={
+                    Object {
+                      "url": "url2",
+                      "value": "second_value",
+                    }
+                  }
+                />,
               },
             ],
           }
@@ -225,15 +240,34 @@ exports[`Metadata should render links when the property has url 1`] = `
     <dd
       className=""
     >
-      <Connect(RelationshipLink)
-        prop={
+      <ValueList
+        compact={true}
+        property={
           Object {
             "label": "withUrl",
             "name": "withurl",
             "translateContext": "oneTranslateContext",
             "type": "relationship",
             "url": "url",
-            "value": "string value",
+            "value": Array [
+              Object {
+                "0": "s",
+                "1": "t",
+                "10": "u",
+                "11": "e",
+                "2": "r",
+                "3": "i",
+                "4": "n",
+                "5": "g",
+                "6": " ",
+                "7": "v",
+                "8": "a",
+                "9": "l",
+                "value": <Connect(RelationshipLink)
+                  propValue="string value"
+                />,
+              },
+            ],
           }
         }
       />
@@ -254,8 +288,9 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
     <dd
       className=""
     >
-      <Connect(RelationshipLink)
-        prop={
+      <ValueList
+        compact={true}
+        property={
           Object {
             "icon": Object {
               "_id": "icon",
@@ -266,7 +301,25 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
             "translateContext": "oneTranslateContext",
             "type": "relationship",
             "url": "url",
-            "value": "string value",
+            "value": Array [
+              Object {
+                "0": "s",
+                "1": "t",
+                "10": "u",
+                "11": "e",
+                "2": "r",
+                "3": "i",
+                "4": "n",
+                "5": "g",
+                "6": " ",
+                "7": "v",
+                "8": "a",
+                "9": "l",
+                "value": <Connect(RelationshipLink)
+                  propValue="string value"
+                />,
+              },
+            ],
           }
         }
       />
@@ -419,8 +472,9 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
     <dd
       className=""
     >
-      <Connect(RelationshipLink)
-        prop={
+      <ValueList
+        compact={true}
+        property={
           Object {
             "label": "label array",
             "name": "label_array",
@@ -429,11 +483,25 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
             "value": Array [
               Object {
                 "url": "url1",
-                "value": "first_value",
+                "value": <Connect(RelationshipLink)
+                  propValue={
+                    Object {
+                      "url": "url1",
+                      "value": "first_value",
+                    }
+                  }
+                />,
               },
               Object {
                 "url": "url2",
-                "value": "second_value",
+                "value": <Connect(RelationshipLink)
+                  propValue={
+                    Object {
+                      "url": "url2",
+                      "value": "second_value",
+                    }
+                  }
+                />,
               },
             ],
           }
