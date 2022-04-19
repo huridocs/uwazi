@@ -35,6 +35,7 @@ export interface GroupedGeolocationViewerProps {
   members: GroupMember[];
   templatesInfo: TemplatesInfo;
   selectConnection: Function;
+  templateId: string;
 }
 
 const templatesMap = createSelector(
@@ -71,7 +72,14 @@ type mappedProps = ConnectedProps<typeof connector> & GroupedGeolocationViewerPr
 const notLabeledOrMultiple = (member: GroupMember) =>
   member.value.length === 1 && !member.value[0].label;
 
-const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo) => (
+const pillColor = (member: GroupMember, templatesInfo: TemplatesInfo, templateId: string) =>
+  templatesInfo[member.translateContext]?.color || templatesInfo[templateId].color;
+
+const getFirstGroupInfo = (
+  members: GroupMember[],
+  templatesInfo: TemplatesInfo,
+  templateId: string
+) => (
   <dl
     className="pills-container"
     key={members.map(member => `${member.translateContext}_${member.name}`).join(',')}
@@ -81,9 +89,9 @@ const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo)
       {members.map(member => (
         <Pill
           key={`${member.value[0].lat}_${member.value[0].lon}`}
-          color={templatesInfo[member.translateContext].color}
+          color={pillColor(member, templatesInfo, templateId)}
         >
-          <Translate context={member.translateContext}>{member.label}</Translate>
+          <Translate context={templateId}>{member.label}</Translate>
         </Pill>
       ))}
     </dd>
@@ -91,19 +99,27 @@ const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo)
 );
 
 const getMultiMemberInfo =
-  (templatesInfo: TemplatesInfo, selectConnection: mappedProps['selectConnection']) =>
+  (
+    templatesInfo: TemplatesInfo,
+    selectConnection: mappedProps['selectConnection'],
+    templateId: string
+  ) =>
   (member: GroupMember) =>
     (
       <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
         <dt>
           <span>
-            <Translate context={member.translateContext}>{member.label}</Translate>
-            {' ('}
-            <Translate>linked</Translate>{' '}
-            <Translate context={member.translateContext}>
-              {templatesInfo[member.translateContext].name}
-            </Translate>
-            {') '}
+            <Translate context={templateId}>{member.label}</Translate>
+            {templatesInfo[member.translateContext]?.name && (
+              <>
+                {' ('}
+                <Translate>linked</Translate>{' '}
+                <Translate context={templateId}>
+                  {templatesInfo[member.translateContext].name}
+                </Translate>
+                {') '}
+              </>
+            )}
           </span>
         </dt>
         <dd>
@@ -115,7 +131,7 @@ const getMultiMemberInfo =
             >
               <Pill
                 key={`${value.lat}_${value.lon}`}
-                color={templatesInfo[member.translateContext].color}
+                color={pillColor(member, templatesInfo, templateId)}
               >
                 <Translate context={member.translateContext}>{value.label || ''}</Translate>
               </Pill>
@@ -128,7 +144,8 @@ const getMultiMemberInfo =
 const computeRenderMemberGroups = (
   members: GroupMember[],
   templatesInfo: TemplatesInfo,
-  selectConnection: mappedProps['selectConnection']
+  selectConnection: mappedProps['selectConnection'],
+  templateId: string
 ) => {
   const firstGroup: GroupMember[] = [];
   const restOfGroups: GroupMember[] = [];
@@ -141,9 +158,9 @@ const computeRenderMemberGroups = (
     }
   });
 
-  return [firstGroup.length ? getFirstGroupInfo(firstGroup, templatesInfo) : null].concat(
-    restOfGroups.map(getMultiMemberInfo(templatesInfo, selectConnection))
-  );
+  return [
+    firstGroup.length ? getFirstGroupInfo(firstGroup, templatesInfo, templateId) : null,
+  ].concat(restOfGroups.map(getMultiMemberInfo(templatesInfo, selectConnection, templateId)));
 };
 
 // eslint-disable-next-line react/no-multi-comp
@@ -154,20 +171,28 @@ const GroupedGeolocationViewerComponent = (props: mappedProps) => {
         {
           ...member.value[0],
           label: member.label,
-          color: props.templatesInfo[member.translateContext].color,
+          color: pillColor(member, props.templatesInfo, props.templateId),
         },
       ]);
     }
 
     return flat.concat(
-      member.value.map(v => ({ ...v, color: props.templatesInfo[member.translateContext].color }))
+      member.value.map(v => ({
+        ...v,
+        color: pillColor(member, props.templatesInfo, props.templateId),
+      }))
     );
   }, []);
 
   return (
     <>
       <GeolocationViewer points={markers} onlyForCards={false} />
-      {computeRenderMemberGroups(props.members, props.templatesInfo, props.selectConnection)}
+      {computeRenderMemberGroups(
+        props.members,
+        props.templatesInfo,
+        props.selectConnection,
+        props.templateId
+      )}
     </>
   );
 };

@@ -20,6 +20,7 @@ const BaseFormatMetadata = ({
         excludePreview: props.excludePreview,
       })
     )}
+    templateId={entity.template}
     compact={!!sortedProperty}
     {...removeUneededProps(props)}
   />
@@ -35,6 +36,7 @@ BaseFormatMetadata.defaultProps = {
 BaseFormatMetadata.propTypes = {
   entity: PropTypes.shape({
     metadata: PropTypes.object,
+    template: PropTypes.string,
   }).isRequired,
   relationships: PropTypes.object,
   additionalMetadata: PropTypes.arrayOf(
