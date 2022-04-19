@@ -8,6 +8,7 @@ const propsWithDBSpecifics = {
   languages: [new mongoose.Schema({}, { strict: false })],
   links: [new mongoose.Schema({}, { strict: false })],
   filters: [new mongoose.Schema({ id: String }, { strict: false })],
+  evidencesVault: { type: mongoose.Schema.Types.Mixed, select: false },
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {

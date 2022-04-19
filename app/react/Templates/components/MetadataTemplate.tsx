@@ -43,6 +43,7 @@ interface MetadataTemplateProps {
   savingTemplate: boolean;
   templates?: any;
   entityViewPage?: string;
+  syncedTemplate?: boolean;
   _id?: string;
 }
 
@@ -139,7 +140,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
   }
 
   render() {
-    const { connectDropTarget, defaultColor, environment } = this.props;
+    const { connectDropTarget, defaultColor, environment, syncedTemplate } = this.props;
     const commonProperties = this.props.commonProperties || [];
     return (
       <div>
@@ -156,10 +157,23 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             this.props._id
           )}
         >
+          {environment === 'template' && syncedTemplate && (
+            <div className="metadataTemplate-sync">
+              <Icon icon="exclamation-triangle" /> &nbsp;
+              <Translate translationKey="syncedTemplateEditorMessage">
+                This template is synced from another instance. Only entity view page can be enabled.
+              </Translate>
+            </div>
+          )}
+
           <div className="metadataTemplate-heading">
             <FormGroup model=".name">
               <Field model=".name">
-                <input placeholder="Template name" className="form-control" />
+                <input
+                  placeholder="Template name"
+                  className="form-control"
+                  disabled={syncedTemplate}
+                />
               </Field>
             </FormGroup>
             {defaultColor && (
@@ -170,6 +184,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                 mapProps={{
                   defaultValue: (props: any) => props.defaultValue,
                 }}
+                disabled={syncedTemplate}
               />
             )}
           </div>
@@ -189,6 +204,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                       key={property.localID}
                       localID={property.localID}
                       index={index - commonProperties.length}
+                      syncedTemplate={syncedTemplate}
                     />
                   ))}
                   {this.props.properties.map((property: ClientPropertySchema, index: number) => (
@@ -199,14 +215,17 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                       key={property.localID}
                       localID={property.localID}
                       index={index}
+                      syncedTemplate={syncedTemplate}
                     />
                   ))}
-                  <div className="no-properties">
-                    <span className="no-properties-wrap">
-                      <Icon icon="clone" />
-                      <Translate>Drag properties here</Translate>
-                    </span>
-                  </div>
+                  {!syncedTemplate && (
+                    <div className="no-properties">
+                      <span className="no-properties-wrap">
+                        <Icon icon="clone" />
+                        <Translate>Drag properties here</Translate>
+                      </span>
+                    </div>
+                  )}
                 </ul>
               )}
             </>
@@ -286,7 +305,13 @@ const mapStateToProps = (
     relationTypes,
   }: {
     template: {
-      data: { _id: string; commonProperties: any; properties: any; entityViewPage: string };
+      data: {
+        _id: string;
+        commonProperties: any;
+        properties: any;
+        entityViewPage: string;
+        synced?: boolean;
+      };
       uiState: any;
     };
     templates: any;
@@ -302,6 +327,7 @@ const mapStateToProps = (
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
     entityViewPage: template.data.entityViewPage,
+    syncedTemplate: template.data.synced,
     templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate'),
     defaultColor: getTemplateDefaultColor(templates, template),

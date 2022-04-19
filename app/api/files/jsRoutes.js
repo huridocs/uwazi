@@ -1,18 +1,27 @@
 import proxy from 'express-http-proxy';
 
-import entities from 'api/entities';
+import cors from 'cors';
 import mailer from 'api/utils/mailer';
 import { search } from 'api/search';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
-import { files } from 'api/files/files';
-import { uploadsPath, attachmentsPath, storeFile } from 'api/files/filesystem';
-import cors from 'cors';
+import { uploadsPath, storeFile } from 'api/files/filesystem';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
+import { saveEntity } from 'api/entities/entitySavingManager';
 import { validation, createError } from '../utils';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
-
 import { uploadMiddleware } from './uploadMiddleware';
+
+const processEntityDocument = async (req, entitySharedId) => {
+  const file = req.files.find(_file => _file.fieldname.includes('file'));
+  if (file) {
+    storeFile(uploadsPath, file).then(async _file => {
+      await processDocument(entitySharedId, _file);
+      await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
+      req.emitToSessionSocket('documentProcessed', entitySharedId);
+    });
+  }
+};
 
 const routes = app => {
   const corsOptions = {
@@ -68,41 +77,19 @@ const routes = app => {
         return;
       }
 
-      const newEntity = await entities.save(entity, { user: {}, language: req.language });
+      const { entity: savedEntity } = await saveEntity(entity, {
+        user: {},
+        language: req.language,
+        files: req.files,
+      });
 
-      const attachments = [];
-      if (req.files.length) {
-        await Promise.all(
-          req.files
-            .filter(file => file.fieldname.includes('attachment'))
-            .map(file =>
-              storeFile(attachmentsPath, file).then(_file =>
-                attachments.push({
-                  ..._file,
-                  entity: newEntity.sharedId,
-                  type: 'attachment',
-                })
-              )
-            )
-        );
-      }
-
-      await Promise.all(attachments.map(attachment => files.save(attachment)));
-
-      const file = req.files.find(_file => _file.fieldname.includes('file'));
-      if (file) {
-        storeFile(uploadsPath, file).then(async _file => {
-          await processDocument(newEntity.sharedId, _file);
-          await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
-          req.emitToSessionSocket('documentProcessed', newEntity.sharedId);
-        });
-      }
+      await processEntityDocument(req, savedEntity.sharedId);
 
       if (email) {
         await mailer.send(email);
       }
 
-      res.json(newEntity);
+      res.json(savedEntity);
     }
   );
 

@@ -34,7 +34,7 @@ class ColorPicker extends Component {
         <div
           className="ColorPicker__button"
           style={{ backgroundColor: value || defaultValue }}
-          onClick={this.onButtonClick}
+          onClick={this.props.disabled ? () => {} : this.onButtonClick}
         />
         {active && (
           <div className="ColorPicker__popover">
@@ -54,12 +54,14 @@ class ColorPicker extends Component {
 ColorPicker.defaultProps = {
   value: '',
   defaultValue: '',
+  disabled: false,
 };
 
 ColorPicker.propTypes = {
   value: PropTypes.string,
   defaultValue: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
 };
 
 export default ColorPicker;
