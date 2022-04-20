@@ -6,7 +6,6 @@
   align-items: center;
   z-index: 3;
   margin-top: -6px;
-  border: 1px solid transparent;
 
   &:hover {
     background: $c-grey-lighten;
@@ -22,18 +21,8 @@
 }
 
 .Dropdown {
-  .fa {
-    position: relative;
-    left: 4px;
-    color: $c-primary;
-  }
-
-  .fa-caret-down {
-    top: 4px;
-  }
   .fa-caret-up {
     display: none;
-    top: 3px;
   }
 }
 
@@ -58,6 +47,8 @@
   list-style-type: none;
   overflow-y: auto;
   max-height: 50vh;
+  border: 1px solid $c-grey-light;
+  border-radius: 5px;
 }
 .Dropdown-option,
 .Dropdown-option__item {
@@ -69,14 +60,14 @@
   cursor: pointer;
   order: 1;
   font-weight: normal;
-  color: $c-primary !important;
+  color: unset;
   z-index: 1;
+  align-items: baseline;
 
   &.is-active {
     order: 0;
     display: -webkit-flex;
     display: flex;
-    font-weight: bold;
     text-decoration: none;
   }
 }
