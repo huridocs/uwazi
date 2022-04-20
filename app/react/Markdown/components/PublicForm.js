@@ -108,10 +108,10 @@ class PublicForm extends Component {
       this.setState({ submiting: true });
       await submitResult.promise;
       this.resetForm();
-    } catch (e) {
       this.setState({ submiting: false, files: [] });
+    } catch (e) {
+      this.setState({ submiting: false });
     }
-    this.setState({ submiting: false, files: [] });
     this.refreshCaptcha();
   }
 
