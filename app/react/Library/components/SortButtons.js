@@ -8,7 +8,7 @@ import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
-export class SortButtons extends Component {
+class SortButtons extends Component {
   static orderDirectionLabel(propertyType, order = 'asc') {
     let label = order === 'asc' ? 'A-Z' : 'Z-A';
     if (propertyType === 'date') {
@@ -221,7 +221,7 @@ SortButtons.propTypes = {
   storeKey: PropTypes.string,
 };
 
-export function mapStateToProps(state, ownProps) {
+function mapStateToProps(state, ownProps) {
   let { templates } = state;
   const stateProperty = ownProps.stateProperty
     ? ownProps.stateProperty
@@ -232,7 +232,7 @@ export function mapStateToProps(state, ownProps) {
   }
 
   const search = stateProperty
-    .split(/[.,\/]/)
+    .split(/[.,/]/)
     .reduce(
       (memo, property) => (Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null),
       state
@@ -244,4 +244,5 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({ merge: actions.merge }, wrapDispatch(dispatch, props.storeKey));
 }
 
+export { SortButtons, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(SortButtons);
