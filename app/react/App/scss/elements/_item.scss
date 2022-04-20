@@ -618,7 +618,7 @@ $item-padding: 15px;
   display: flex;
   width: 100%;
   margin: 80px auto 15px;
-  padding: 0 0 0 15px;
+  padding: 0;
   font-size: $f-size-sm;
 
   @media (min-width: 768px) {
