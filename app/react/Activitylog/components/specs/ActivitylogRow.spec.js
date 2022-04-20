@@ -3,6 +3,8 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import ActivitylogRow from '../ActivitylogRow';
 
+jest.mock('moment-timezone', () => {});
+
 jest.mock('moment', () => {
   function format(formatString) {
     return `formatted: ${this.initialDate}, with: ${formatString} (locale: ${this.locale});`;
