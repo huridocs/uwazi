@@ -98,6 +98,7 @@ class SortButtons extends Component {
     return (
       <div className="sort-buttons">
         <DropdownList
+          className="sort-dropdown"
           value={search.sort}
           data={sortOptions}
           valueField="value"

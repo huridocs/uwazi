@@ -62,14 +62,6 @@
   z-index: 1;
   align-items: baseline;
 
-  .translation {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 250px;
-  }
-
   &.is-active {
     order: 0;
     display: -webkit-flex;
@@ -114,6 +106,18 @@
   gap: 15px;
   border-right: 1px solid #d7d7dc;
   padding-right: 15px;
+
+  .sort-dropdown {
+    width: 20vw;
+    max-width: 250px;
+
+    li {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 250px;
+    }
+  }
 }
 
 .sort-by .sort-buttons .Dropdown {
