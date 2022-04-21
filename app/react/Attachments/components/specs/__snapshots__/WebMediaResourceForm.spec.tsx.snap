@@ -2,6 +2,7 @@
 
 exports[`Should match render of wem media form 1`] = `
 <LocalForm
+  className="select-from-link"
   initialState={
     Object {
       "url": undefined,
@@ -30,29 +31,9 @@ exports[`Should match render of wem media form 1`] = `
         type="text"
       />
     </Modeled(Connect(Field))>
-    <Tip
-      icon="info-circle"
-      position="right"
-    >
-      <p>
-        <Connect(Translate)>
-          To get resource from web:
-        </Connect(Translate)>
-      </p>
-      <p>
-        <Connect(Translate)>
-          1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
-        </Connect(Translate)>
-      </p>
-      <p>
-        <Connect(Translate)>
-          2. Return here and paste the URL in this field (Ctrl+V or Command+V)
-        </Connect(Translate)>
-      </p>
-    </Tip>
   </Connect(FormGroup)>
   <button
-    className="btn btn-success"
+    className="btn"
     type="submit"
   >
     <Connect(Icon)
@@ -60,7 +41,7 @@ exports[`Should match render of wem media form 1`] = `
     />
       
     <Connect(Translate)>
-      Add resource
+      Add from URL
     </Connect(Translate)>
   </button>
 </LocalForm>
@@ -68,6 +49,7 @@ exports[`Should match render of wem media form 1`] = `
 
 exports[`should also display a name field when hasName is true 1`] = `
 <LocalForm
+  className=""
   initialState={
     Object {
       "url": undefined,
@@ -99,26 +81,6 @@ exports[`should also display a name field when hasName is true 1`] = `
         type="text"
       />
     </Modeled(Connect(Field))>
-    <Tip
-      icon="info-circle"
-      position="right"
-    >
-      <p>
-        <Connect(Translate)>
-          To get resource from web:
-        </Connect(Translate)>
-      </p>
-      <p>
-        <Connect(Translate)>
-          1. Right-click an image or video on the web and copy the image's URL. Altenatively websites offers share button whereyou can get URL.
-        </Connect(Translate)>
-      </p>
-      <p>
-        <Connect(Translate)>
-          2. Return here and paste the URL in this field (Ctrl+V or Command+V)
-        </Connect(Translate)>
-      </p>
-    </Tip>
   </Connect(FormGroup)>
   <Connect(FormGroup)
     className="form-group"
@@ -136,7 +98,7 @@ exports[`should also display a name field when hasName is true 1`] = `
     </Modeled(Connect(Field))>
   </Connect(FormGroup)>
   <button
-    className="btn btn-success"
+    className="btn"
     type="submit"
   >
     <Connect(Icon)
@@ -144,7 +106,7 @@ exports[`should also display a name field when hasName is true 1`] = `
     />
       
     <Connect(Translate)>
-      Add resource
+      Add from URL
     </Connect(Translate)>
   </button>
 </LocalForm>

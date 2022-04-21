@@ -4,6 +4,7 @@ import { models } from 'api/odm';
 import { search } from 'api/search';
 import * as filesystem from 'api/files/filesystem';
 
+import * as index from 'api/search/entitiesIndex';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import syncRoutes from '../routes';
 
@@ -66,6 +67,44 @@ describe('sync', () => {
         } catch (error) {
           expect(error).toEqual(new Error('error'));
         }
+      });
+    });
+
+    describe('when namespace is templates', () => {
+      it('should update the mappings', async () => {
+        spyOn(index, 'updateMapping');
+        models.templates = {
+          save: jasmine.createSpy('templates.save'),
+        };
+
+        req.body = {
+          namespace: 'templates',
+          data: { _id: 'id' },
+        };
+
+        await routes.post('/api/sync', req);
+        expect(models.templates.save).toHaveBeenCalledWith({ _id: 'id' });
+        expect(index.updateMapping).toHaveBeenCalledWith([req.body.data]);
+      });
+
+      it('should update the mappings if many templates are provided', async () => {
+        spyOn(index, 'updateMapping');
+        models.templates = {
+          save: jasmine.createSpy('templates.save'),
+          saveMultiple: jasmine.createSpy('templates.saveMultiple'),
+        };
+
+        req.body = {
+          namespace: 'templates',
+          data: [{ _id: 'id1' }, { _id: 'id2' }],
+        };
+
+        await routes.post('/api/sync', req);
+        expect(models.templates.saveMultiple).toHaveBeenCalledWith([
+          { _id: 'id1' },
+          { _id: 'id2' },
+        ]);
+        expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
       });
     });
 

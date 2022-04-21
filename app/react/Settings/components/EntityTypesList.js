@@ -16,12 +16,17 @@ import Tip from '../../Layout/Tip';
 export class EntityTypesList extends Component {
   setAsDefaultButton(template) {
     return (
-      <button
-        onClick={this.props.setAsDefault.bind(null, template)}
-        className="btn btn-success btn-xs"
-      >
-        <Translate>Set as default</Translate>
-      </button>
+      <>
+        {!template.synced && (
+          <button
+            type="button"
+            onClick={this.props.setAsDefault.bind(null, template)}
+            className="btn btn-success btn-xs"
+          >
+            <Translate>Set as default</Translate>
+          </button>
+        )}
+      </>
     );
   }
 
@@ -59,16 +64,34 @@ export class EntityTypesList extends Component {
     );
   }
 
+  syncedTemplateMessage() {
+    return (
+      <span>
+        <Translate>Synced template</Translate>
+        <Tip>
+          <Translate translationKey="syncedTemplateListMessage">
+            The source of this template is a sync. All editing options will be disabled.
+          </Translate>
+        </Tip>
+      </span>
+    );
+  }
+
   deleteTemplateButton(template) {
     return (
-      <button
-        onClick={this.deleteTemplate.bind(this, template)}
-        className="btn btn-danger btn-xs template-remove"
-      >
-        <Icon icon="trash-alt" />
-        &nbsp;
-        <Translate>Delete</Translate>
-      </button>
+      <>
+        {!template.synced && (
+          <button
+            type="button"
+            onClick={this.deleteTemplate.bind(this, template)}
+            className="btn btn-danger btn-xs template-remove"
+          >
+            <Icon icon="trash-alt" />
+            &nbsp;
+            <Translate>Delete</Translate>
+          </button>
+        )}
+      </>
     );
   }
 
@@ -87,6 +110,7 @@ export class EntityTypesList extends Component {
             <li key={index} className="list-group-item">
               <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
               {template.default ? this.defaultTemplateMessage() : ''}
+              {template.synced ? this.syncedTemplateMessage() : ''}
               <div className="list-group-item-actions">
                 {!template.default ? this.setAsDefaultButton(template) : ''}
                 <Link

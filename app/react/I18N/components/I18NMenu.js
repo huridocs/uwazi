@@ -15,8 +15,12 @@ class I18NMenu extends Component {
 
   render() {
     const { languages, locale, location, i18nmode, toggleInlineEdit } = this.props;
-
     let path = location.pathname;
+
+    if (location.search.match(/page=/)) {
+      const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
+      location.search = cleanSearch === '?' ? '' : cleanSearch;
+    }
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
     path = path.replace(regexp, '/');
 

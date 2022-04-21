@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
-import { MetadataFormFields, validator, wrapEntityMetadata } from 'app/Metadata';
+import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
@@ -96,30 +96,23 @@ class PublicForm extends Component {
     }
   }
 
-  handleSubmit(_values) {
-    const values = wrapEntityMetadata(_values);
-    const { submit, template, remote } = this.props;
-    values.file = _values.file ? _values.file[0] : undefined;
-    values.template = template.get('_id');
-    values.attachments = this.state.files.length ? this.state.files : undefined;
-    submit(values, remote)
-      .then(uploadCompletePromise => {
-        this.setState({ submiting: true });
-        return uploadCompletePromise.promise
-          .then(() => {
-            this.setState({ submiting: false, files: [] });
-            this.resetForm();
-            this.refreshCaptcha();
-          })
-          .catch(() => {
-            this.setState({ submiting: false, files: [] });
-            this.refreshCaptcha();
-          });
-      })
-      .catch(() => {
-        this.setState({ submiting: false, files: [] });
-        this.refreshCaptcha();
-      });
+  async handleSubmit(_values) {
+    const { submit, remote } = this.props;
+    const values = await prepareMetadataAndFiles(
+      _values,
+      this.state.files,
+      this.props.template.toJS()
+    );
+    try {
+      const submitResult = await submit(values, remote);
+      this.setState({ submiting: true });
+      await submitResult.promise;
+      this.resetForm();
+      this.setState({ submiting: false, files: [] });
+    } catch (e) {
+      this.setState({ submiting: false });
+    }
+    this.refreshCaptcha();
   }
 
   renderFileField(id, options) {

@@ -7,6 +7,7 @@ import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
 import { uploadsPath, customUploadsPath, uploadMiddleware, deleteUploadedFiles } from 'api/files';
 import { TranslationType } from 'shared/translationType';
+import { updateMapping } from 'api/search/entitiesIndex';
 
 import { needsAuthorization } from '../auth';
 
@@ -23,6 +24,12 @@ const indexEntities = async (req: Request) => {
 
   if (req.body.namespace === 'files') {
     await search.indexEntities({ sharedId: req.body.data.entity }, '+fullText');
+  }
+};
+
+const updateMappings = async (req: Request) => {
+  if (req.body.namespace === 'templates') {
+    await updateMapping(Array.isArray(req.body.data) ? req.body.data : [req.body.data]);
   }
 };
 
@@ -86,6 +93,7 @@ export default (app: Application) => {
         ? models[req.body.namespace].saveMultiple(req.body.data)
         : models[req.body.namespace].save(req.body.data));
 
+      await updateMappings(req);
       await indexEntities(req);
 
       res.json('ok');

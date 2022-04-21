@@ -1,14 +1,35 @@
 import { Application } from 'express';
-import { debugLog, errorLog } from 'api/log';
-import { processDocument } from 'api/files/processDocument';
-import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
-import needsAuthorization from 'api/auth/authMiddleware';
-import { uploadMiddleware } from 'api/files/uploadMiddleware';
+
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
+import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
+import entities from 'api/entities';
+import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
+import { processDocument } from 'api/files/processDocument';
+import { uploadMiddleware } from 'api/files/uploadMiddleware';
+import { debugLog, errorLog } from 'api/log';
+import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
+
+const checkEntityPermission = async (file: FileType): Promise<boolean> => {
+  if (!file.entity) return true;
+  const relatedEntities = await entities.get({ sharedId: file.entity }, '_id', {
+    withoutDocuments: true,
+  });
+  return !!relatedEntities.length;
+};
+
+const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
+  const sharedIds = fileList.map(f => f.entity).filter(f => f);
+  const allowedSharedIds = await entities
+    .get({ sharedId: { $in: sharedIds } }, 'sharedId', {
+      withoutDocuments: true,
+    })
+    .then((arr: { sharedId: string }[]) => new Set(arr.map(e => e.sharedId)));
+  return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
+};
 
 export default (app: Application) => {
   app.post(
@@ -123,7 +144,11 @@ export default (app: Application) => {
 
         const filename = file.filename || '';
 
-        if (!filename || !(await fileExists(uploadsPath(filename)))) {
+        if (
+          !filename ||
+          !(await fileExists(uploadsPath(filename))) ||
+          !(await checkEntityPermission(file))
+        ) {
           throw createError('file not found', 404);
         }
 
@@ -149,6 +174,7 @@ export default (app: Application) => {
       properties: {
         query: {
           required: ['_id'],
+          additionalProperties: false,
           properties: {
             _id: { type: 'string' },
           },
@@ -158,7 +184,12 @@ export default (app: Application) => {
 
     async (req, res, next) => {
       try {
-        const [deletedFile] = await files.delete(req.query);
+        const [fileToDelete] = await files.get({ _id: req.query._id });
+        if (!fileToDelete || !(await checkEntityPermission(fileToDelete))) {
+          throw createError('file not found', 404);
+        }
+
+        const [deletedFile] = await files.delete({ _id: req.query._id });
         const thumbnailFileName = `${deletedFile._id}.jpg`;
         await files.delete({ filename: thumbnailFileName });
         res.json([deletedFile]);
@@ -171,9 +202,21 @@ export default (app: Application) => {
   app.get(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    validation.validateRequest({
+      properties: {
+        query: {
+          additionalProperties: false,
+          properties: {
+            _id: { type: 'string' },
+            type: { type: 'string' },
+          },
+        },
+      },
+    }),
     (req, res, next) => {
       files
         .get(req.query)
+        .then(async result => filterByEntityPermissions(result))
         .then(result => {
           res.json(result);
         })

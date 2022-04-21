@@ -569,6 +569,7 @@ export default {
     {
       _id: template1,
       name: 'template1',
+      entityViewPage: 'id_of_a_page',
       commonProperties: [{ label: 'Template Title', name: 'title' }],
       properties: [
         {
