@@ -1,7 +1,11 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { LocalForm } from 'react-redux-form';
+import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
 import PublicForm from '../PublicForm.js';
 
@@ -135,6 +139,34 @@ describe('PublicForm', () => {
         .catch(() => {
           expect(instance.formDispatch).not.toHaveBeenCalledWith();
           expect(instance.refreshCaptcha).toHaveBeenCalled();
+        });
+    });
+  });
+
+  it('should keep attachments after a submission error', async done => {
+    request = new Promise(resolve => {
+      resolve({ promise: Promise.reject() });
+    });
+    render({ attachments: true });
+    const formSubmit = component.find(LocalForm).props().onSubmit;
+    const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
+      type: 'image/jpg',
+    });
+    const attachments = component.find('.preview-title');
+    expect(attachments.length).toEqual(0);
+
+    component.find(Dropzone).simulate('drop', [newFile]);
+    await formSubmit({ title: 'test' });
+    request.then(uploadCompletePromise => {
+      uploadCompletePromise.promise
+        .then(() => fail('should throw error'))
+        .catch(() => {
+          const actualAttachments = component.find('.preview-title');
+          expect(actualAttachments.length).toBe(1);
+          expect(actualAttachments.get(0).props.children).toEqual('image.jpg');
+          expect(instance.formDispatch).not.toHaveBeenCalledWith();
+          expect(instance.refreshCaptcha).toHaveBeenCalled();
+          done();
         });
     });
   });
