@@ -4,28 +4,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { actions } from 'react-redux-form';
-import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
 class SortButtons extends Component {
-  static orderDirectionLabel(propertyType, order = 'asc') {
-    let label = order === 'asc' ? 'A-Z' : 'Z-A';
-    if (propertyType === 'date') {
-      label = order === 'asc' ? t('System', 'Oldest') : t('System', 'Newest');
-    }
-
-    if (propertyType === 'numeric') {
-      label = order === 'asc' ? '0-9' : '9-0';
-    }
-
-    return label;
-  }
-
   constructor(props) {
     super(props);
-    this.state = { active: false };
+    this.state = { active: false, order: props.search.order };
     this.toggle = this.toggle.bind(this);
+    this.changeOrder = this.changeOrder.bind(this);
   }
 
   getAdditionalSorts(templates, search) {
@@ -61,64 +48,35 @@ class SortButtons extends Component {
   }
 
   createSortItem(key, sortString, context, label, options) {
-    const { isActive, search, type } = options;
+    const { isActive, type } = options;
     const treatAs = type === 'text' || type === 'select' ? 'string' : 'number';
-    const firstOrder = treatAs !== 'number' ? 'asc' : 'desc';
-    const secondOrder = treatAs !== 'number' ? 'desc' : 'asc';
 
     return (
       <li key={key} className={`Dropdown-option ${isActive ? 'is-active' : ''}`}>
         <a
-          className={`Dropdown-option__item ${
-            isActive && search.order === firstOrder ? 'is-active' : ''
-          }`}
-          onClick={() => this.handleClick(sortString, firstOrder, treatAs)}
+          className={`Dropdown-option__item ${isActive ? 'is-active' : ''}`}
+          onClick={() => this.handleClick(sortString, treatAs)}
         >
-          <span>
-            {t(context, label)} ({SortButtons.orderDirectionLabel(type, firstOrder)})
-          </span>
-          <ShowIf if={isActive && search.order === firstOrder}>
-            <Icon icon="caret-down" />
-          </ShowIf>
-          <ShowIf if={isActive && search.order === firstOrder}>
-            <Icon icon="caret-up" />
-          </ShowIf>
-        </a>
-        <a
-          className={`Dropdown-option__item ${
-            isActive && search.order === secondOrder ? 'is-active' : ''
-          }`}
-          onClick={() => this.handleClick(sortString, secondOrder, treatAs)}
-        >
-          <span>
-            {t(context, label)} ({SortButtons.orderDirectionLabel(type, secondOrder)})
-          </span>
-          <ShowIf if={isActive && search.order === secondOrder}>
-            <Icon icon="caret-down" />
-          </ShowIf>
-          <ShowIf if={isActive && search.order === secondOrder}>
-            <Icon icon="caret-up" />
-          </ShowIf>
+          <span>{t(context, label)}</span>
         </a>
       </li>
     );
   }
 
   changeOrder() {
-    const { sort, order } = this.props.search;
-    this.sort(sort, order === 'desc' ? 'asc' : 'desc');
+    const { sort } = this.props.search;
+    this.sort(sort);
   }
 
-  sort(property, defaultOrder, defaultTreatAs) {
+  sort(property, defaultTreatAs) {
     const { search } = this.props;
-    const order = defaultOrder || 'asc';
     let treatAs = defaultTreatAs;
 
     if (search.sort === property) {
       treatAs = search.treatAs;
     }
 
-    const sort = { sort: property, order, treatAs };
+    const sort = { sort: property, order: search.order === 'asc' ? 'desc' : 'asc', treatAs };
 
     this.props.merge(this.props.stateProperty, sort);
 
@@ -132,12 +90,12 @@ class SortButtons extends Component {
     }
   }
 
-  handleClick(property, defaultOrder, treatAs) {
+  handleClick(property, treatAs) {
     if (!this.state.active) {
       return;
     }
 
-    this.sort(property, defaultOrder, treatAs);
+    this.sort(property, treatAs);
   }
 
   toggle() {
@@ -200,12 +158,14 @@ class SortButtons extends Component {
   render() {
     const { templates } = this.props;
     const search = this.validateSearch();
-    const order = search.order === 'asc' ? 'up' : 'down';
-    const additionalSorts = this.getAdditionalSorts(templates, search, order);
+    const additionalSorts = this.getAdditionalSorts(templates, search);
     return (
       <div className="sort-buttons">
         {this.renderDropdown(search, additionalSorts, { includeEvents: false })}
         {this.renderDropdown(search, additionalSorts)}
+        <button type="button" onClick={this.changeOrder}>
+          <Icon icon={search.order === 'asc' ? 'arrow-circle-up' : 'arrow-circle-down'} />
+        </button>
       </div>
     );
   }
