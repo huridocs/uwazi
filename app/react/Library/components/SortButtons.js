@@ -6,61 +6,35 @@ import { wrapDispatch } from 'app/Multireducer';
 import { actions } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
+import { DropdownList } from 'app/Forms';
+
+const getMetadataSorts = templates =>
+  templates.toJS().reduce((sorts, template) => {
+    template.properties.forEach(property => {
+      const sortable =
+        property.filter &&
+        (property.type === 'text' ||
+          property.type === 'date' ||
+          property.type === 'numeric' ||
+          property.type === 'select');
+
+      if (sortable && !sorts.find(s => s.property === property.name)) {
+        const sortString = `metadata.${property.name}`;
+        sorts.push({
+          label: property.label,
+          value: sortString,
+          type: property.type,
+          context: template._id,
+        });
+      }
+    });
+    return sorts;
+  }, []);
 
 class SortButtons extends Component {
   constructor(props) {
     super(props);
-    this.state = { active: false, order: props.search.order };
-    this.toggle = this.toggle.bind(this);
     this.changeOrder = this.changeOrder.bind(this);
-  }
-
-  getAdditionalSorts(templates, search) {
-    const additionalSorts = templates.toJS().reduce((sorts, template) => {
-      template.properties.forEach(property => {
-        const sortable =
-          property.filter &&
-          (property.type === 'text' ||
-            property.type === 'date' ||
-            property.type === 'numeric' ||
-            property.type === 'select');
-
-        if (sortable && !sorts.find(s => s.property === property.name)) {
-          const sortString = `metadata.${property.name}`;
-          const sortOptions = { isActive: search.sort === sortString, search, type: property.type };
-
-          sorts.push({
-            property: property.name,
-            html: this.createSortItem(
-              sortString,
-              sortString,
-              template._id,
-              property.label,
-              sortOptions
-            ),
-          });
-        }
-      });
-      return sorts;
-    }, []);
-
-    return additionalSorts.map(s => s.html);
-  }
-
-  createSortItem(key, sortString, context, label, options) {
-    const { isActive, type } = options;
-    const treatAs = type === 'text' || type === 'select' ? 'string' : 'number';
-
-    return (
-      <li key={key} className={`Dropdown-option ${isActive ? 'is-active' : ''}`}>
-        <a
-          className={`Dropdown-option__item ${isActive ? 'is-active' : ''}`}
-          onClick={() => this.handleClick(sortString, treatAs)}
-        >
-          <span>{t(context, label)}</span>
-        </a>
-      </li>
-    );
   }
 
   changeOrder() {
@@ -90,18 +64,6 @@ class SortButtons extends Component {
     }
   }
 
-  handleClick(property, treatAs) {
-    if (!this.state.active) {
-      return;
-    }
-
-    this.sort(property, treatAs);
-  }
-
-  toggle() {
-    this.setState(prevState => ({ active: !prevState.active }));
-  }
-
   validateSearch() {
     const { search } = this.props;
     const _search = { ...search };
@@ -112,57 +74,41 @@ class SortButtons extends Component {
     return _search;
   }
 
-  renderDropdown(search, additionalSorts, { includeEvents = true } = {}) {
-    const { active } = this.state;
-    return (
-      <div
-        className={`Dropdown ${!includeEvents ? 'width-placeholder' : ''} order-by ${
-          active && includeEvents ? 'is-active' : ''
-        }`}
-      >
-        <ul className="Dropdown-list" onClick={includeEvents ? this.toggle : () => {}}>
-          {this.createSortItem('title', 'title', 'System', 'Title', {
-            isActive: search.sort === 'title',
-            search,
-            type: 'string',
-          })}
-          {this.createSortItem('creationDate', 'creationDate', 'System', 'Date added', {
-            isActive: search.sort === 'creationDate',
-            search,
-            type: 'date',
-          })}
-          {this.createSortItem('editDate', 'editDate', 'System', 'Date modified', {
-            isActive: search.sort === 'editDate',
-            search,
-            type: 'date',
-          })}
-          {search.searchTerm && (
-            <li
-              key="relevance"
-              className={`Dropdown-option ${search.sort === '_score' ? 'is-active' : ''}`}
-            >
-              <a
-                className={`Dropdown-option__item ${search.sort === '_score' ? 'is-active' : ''}`}
-                onClick={() => (includeEvents ? this.handleClick('_score') : null)}
-              >
-                <span>{t('System', 'Search relevance')}</span>
-              </a>
-            </li>
-          )}
-          {additionalSorts}
-        </ul>
-      </div>
-    );
-  }
-
   render() {
     const { templates } = this.props;
     const search = this.validateSearch();
-    const additionalSorts = this.getAdditionalSorts(templates, search);
+    const metadataSorts = getMetadataSorts(templates);
+    const commonSorts = [
+      { label: 'Title', value: 'title', type: 'string', context: 'System' },
+      { label: 'Date added', value: 'creationDate', type: 'number', context: 'System' },
+      { label: 'Date modified', value: 'editDate', type: 'number', context: 'System' },
+    ];
+    if (search.searchTerm) {
+      commonSorts.push({
+        label: 'Search relevance',
+        value: '_score',
+        type: 'number',
+        context: 'System',
+      });
+    }
+    const sortOptions = [...commonSorts, ...metadataSorts].map(option => ({
+      ...option,
+      label: t(option.context, option.label, undefined, false),
+    }));
     return (
       <div className="sort-buttons">
-        {this.renderDropdown(search, additionalSorts, { includeEvents: false })}
-        {this.renderDropdown(search, additionalSorts)}
+        <DropdownList
+          value={search.sort}
+          data={sortOptions}
+          valueField="value"
+          textField="label"
+          onChange={selected =>
+            this.sort(
+              selected.value,
+              selected.type === 'text' || selected.type === 'select' ? 'string' : 'number'
+            )
+          }
+        />
         <button type="button" onClick={this.changeOrder}>
           <Icon icon={search.order === 'asc' ? 'arrow-circle-up' : 'arrow-circle-down'} />
         </button>
