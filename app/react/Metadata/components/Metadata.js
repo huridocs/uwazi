@@ -1,3 +1,4 @@
+/* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { t } from 'app/I18N';
@@ -6,6 +7,15 @@ import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeoloca
 import GeolocationViewer from './GeolocationViewer';
 import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
+
+const renderRelationshipLinks = linksProp => {
+  const formattedLinkValues = Array.isArray(linksProp.value) ? linksProp.value : [linksProp.value];
+  const hydratedValues = formattedLinkValues.map(linkValue => ({
+    value: <RelationshipLink propValue={linkValue} />,
+  }));
+  const hydratedProp = { ...linksProp, value: hydratedValues };
+  return <ValueList compact property={hydratedProp} />;
+};
 
 export const showByType = (prop, compact, templateId) => {
   let result = prop.value;
@@ -52,7 +62,7 @@ export const showByType = (prop, compact, templateId) => {
       result = <GroupedGeolocationViewer members={prop.members} templateId={templateId} />;
       break;
     case 'relationship':
-      result = <RelationshipLink prop={prop} />;
+      result = renderRelationshipLinks(prop);
       break;
     default:
       if (prop.value && prop.value.map) {
