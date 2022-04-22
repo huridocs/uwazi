@@ -62,11 +62,12 @@ exports[`SortButtons Sort options should use templates sortable properties as op
     valueField="value"
   />
   <button
+    className="sorting-toggle"
     onClick={[Function]}
     type="button"
   >
     <Connect(Icon)
-      icon="arrow-circle-down"
+      icon="arrow-down"
     />
   </button>
 </div>
@@ -134,11 +135,12 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
     valueField="value"
   />
   <button
+    className="sorting-toggle"
     onClick={[Function]}
     type="button"
   >
     <Connect(Icon)
-      icon="arrow-circle-down"
+      icon="arrow-down"
     />
   </button>
 </div>
