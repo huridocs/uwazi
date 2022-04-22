@@ -19,7 +19,7 @@ export class Thumbnail extends Component {
 
     if (extension === 'pdf') {
       thumbnail = (
-        <span no-translate>
+        <span no-translate="true">
           <Icon icon="file-pdf" /> pdf
         </span>
       );

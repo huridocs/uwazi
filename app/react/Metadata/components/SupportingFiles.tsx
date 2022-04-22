@@ -38,14 +38,14 @@ type ComponentProps = SupportingFilesProps & mappedProps;
 const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
   let thumbnail = (
-    <span no-translate>
+    <span no-translate="true">
       <Icon icon="file" /> file
     </span>
   );
 
   if (file.filename && getFileExtension(file.filename) === 'pdf') {
     thumbnail = (
-      <span no-translate>
+      <span no-translate="true">
         <Icon icon="file-pdf" /> pdf
       </span>
     );

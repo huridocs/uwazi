@@ -12,7 +12,12 @@ const withIcon = v =>
     v.value
   );
 
-const interpose = (array, separator) => [].concat(...array.map(e => [separator, e])).slice(1);
+const interpose = (array, separator) =>
+  []
+    .concat(...array.map(e => [separator, e]))
+    .slice(1)
+    // eslint-disable-next-line react/no-array-index-key
+    .map((e, i) => <span key={i}>{e}</span>);
 
 const renderList = prop => (
   <ul className="multiline">

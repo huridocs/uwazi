@@ -138,7 +138,7 @@ export class SemanticSearchResults extends Component {
                   type="button"
                   className="btn btn-default btn-load-more"
                 >
-                  <span no-translate>30</span> <Translate>x more</Translate>
+                  <span no-translate="true">30</span> <Translate>x more</Translate>
                 </button>
               </div>
             </main>

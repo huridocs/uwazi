@@ -8,13 +8,13 @@ export const landingPageTip = (
     <Translate>Examples</Translate>:
     <br />
     <Translate>- Site page:</Translate>
-    <i no-translate>/page/dicxg0oagy3xgr7ixef80k9</i>
+    <i no-translate="true">/page/dicxg0oagy3xgr7ixef80k9</i>
     <br />
     <Translate>- Library search:</Translate>
-    <i no-translate>/library/?searchTerm=testAn </i>
+    <i no-translate="true">/library/?searchTerm=testAn </i>
     <br />
     <Translate>- Entity:</Translate>
-    <i no-translate>/entity/9htbkgpkyy7j5rk9A</i>
+    <i no-translate="true">/entity/9htbkgpkyy7j5rk9A</i>
     <br />
     <Translate>
       Always use URLs relative to your site, starting with / and skipping the domain name. Example:

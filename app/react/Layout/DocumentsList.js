@@ -202,11 +202,11 @@ class DocumentsList extends Component {
                 </b>
                 <span>
                   <Translate>Use</Translate>&nbsp;
-                  <span className="protip-key" no-translate>
+                  <span className="protip-key" no-translate="true">
                     cmd
                   </span>
                   &nbsp; <Translate>or</Translate>{' '}
-                  <span className="protip-key" no-translate>
+                  <span className="protip-key" no-translate="true">
                     shift
                   </span>
                   &nbsp; <Translate>+ click to select multiple cards.</Translate>
