@@ -112,6 +112,12 @@
     background-color: white;
     border: #ccc 1px solid;
     border-radius: 4px;
+
+    &.disabled {
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
   }
 
   .sort-dropdown {

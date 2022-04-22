@@ -62,7 +62,8 @@ exports[`SortButtons Sort options should use templates sortable properties as op
     valueField="value"
   />
   <button
-    className="sorting-toggle"
+    className="sorting-toggle false"
+    disabled={false}
     onClick={[Function]}
     type="button"
   >
@@ -135,7 +136,8 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
     valueField="value"
   />
   <button
-    className="sorting-toggle"
+    className="sorting-toggle false"
+    disabled={false}
     onClick={[Function]}
     type="button"
   >

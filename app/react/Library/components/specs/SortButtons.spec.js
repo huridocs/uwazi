@@ -93,6 +93,14 @@ describe('SortButtons', () => {
           value: '_score',
         });
       });
+
+      it('should disable the sort button and show the sort down icon', () => {
+        props.search.searchTerm = 'keyword';
+        props.search.sort = '_score';
+        render();
+        expect(component.find('.sorting-toggle').props().disabled).toBe(true);
+        expect(component.find('.sorting-toggle').props().children.props.icon).toBe('arrow-down');
+      });
     });
 
     describe('when relevance sorting is active and there is no search term', () => {

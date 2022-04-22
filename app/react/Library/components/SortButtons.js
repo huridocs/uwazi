@@ -112,8 +112,15 @@ class SortButtons extends Component {
             )
           }
         />
-        <button type="button" className="sorting-toggle" onClick={this.changeOrder}>
-          <Icon icon={search.order === 'asc' ? 'arrow-up' : 'arrow-down'} />
+        <button
+          type="button"
+          disabled={search.sort === '_score'}
+          className={`sorting-toggle ${search.sort === '_score' && 'disabled'}`}
+          onClick={this.changeOrder}
+        >
+          <Icon
+            icon={search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down'}
+          />
         </button>
       </div>
     );
