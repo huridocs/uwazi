@@ -7,6 +7,7 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons/faArrowUp';
+import { faArrowDown } from '@fortawesome/free-solid-svg-icons/faArrowDown';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { faBook } from '@fortawesome/free-solid-svg-icons/faBook';
 import { faBullhorn } from '@fortawesome/free-solid-svg-icons/faBullhorn';
@@ -21,8 +22,6 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons/faCheckCircle';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
 import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
-import { faArrowCircleUp } from '@fortawesome/free-solid-svg-icons/faArrowCircleUp';
-import { faArrowCircleDown } from '@fortawesome/free-solid-svg-icons/faArrowCircleDown';
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
 import { faClone } from '@fortawesome/free-solid-svg-icons/faClone';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons/faCloudUploadAlt';
@@ -126,6 +125,7 @@ const icons = {
   faArrowLeft,
   faArrowsAlt,
   faArrowUp,
+  faArrowDown,
   faArrowRight,
   faBars,
   faBook,
@@ -141,8 +141,6 @@ const icons = {
   faChevronLeft,
   faChevronRight,
   faCircle,
-  faArrowCircleUp,
-  faArrowCircleDown,
   faClock,
   faClone,
   faCloudUploadAlt,

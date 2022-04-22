@@ -106,10 +106,21 @@
   gap: 15px;
   border-right: 1px solid #d7d7dc;
   padding-right: 15px;
+  align-items: center;
+
+  .sorting-toggle {
+    background-color: white;
+    border: #ccc 1px solid;
+    border-radius: 4px;
+  }
 
   .sort-dropdown {
     width: 20vw;
     max-width: 250px;
+
+    div {
+      height: unset;
+    }
 
     li {
       white-space: nowrap;
