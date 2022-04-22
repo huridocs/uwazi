@@ -18,10 +18,11 @@ const getMetadataSorts = templates =>
           property.type === 'numeric' ||
           property.type === 'select');
 
-      if (sortable && !sorts.find(s => s.property === property.name)) {
+      if (sortable && !sorts.find(s => s.name === property.name)) {
         const sortString = `metadata.${property.name}`;
         sorts.push({
           label: property.label,
+          name: property.name,
           value: sortString,
           type: property.type,
           context: template._id,
@@ -38,19 +39,19 @@ class SortButtons extends Component {
   }
 
   changeOrder() {
-    const { sort } = this.props.search;
-    this.sort(sort);
+    const { sort, treatAs } = this.props.search;
+    this.sort(sort, treatAs, this.props.search.order === 'asc' ? 'desc' : 'asc');
   }
 
-  sort(property, defaultTreatAs) {
-    const { search } = this.props;
-    let treatAs = defaultTreatAs;
+  sort(property, defaultTreatAs, selectedSort) {
+    const treatAs = defaultTreatAs;
+    let order = selectedSort;
 
-    if (search.sort === property) {
-      treatAs = search.treatAs;
+    if (treatAs && !selectedSort) {
+      order = treatAs === 'string' ? 'asc' : 'desc';
     }
 
-    const sort = { sort: property, order: search.order === 'asc' ? 'desc' : 'asc', treatAs };
+    const sort = { sort: property, order, treatAs };
 
     this.props.merge(this.props.stateProperty, sort);
 
@@ -79,7 +80,7 @@ class SortButtons extends Component {
     const search = this.validateSearch();
     const metadataSorts = getMetadataSorts(templates);
     const commonSorts = [
-      { label: 'Title', value: 'title', type: 'string', context: 'System' },
+      { label: 'Title', value: 'title', type: 'text', context: 'System' },
       { label: 'Date added', value: 'creationDate', type: 'number', context: 'System' },
       { label: 'Date modified', value: 'editDate', type: 'number', context: 'System' },
     ];
@@ -95,6 +96,7 @@ class SortButtons extends Component {
       ...option,
       label: t(option.context, option.label, undefined, false),
     }));
+
     return (
       <div className="sort-buttons">
         <DropdownList
