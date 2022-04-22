@@ -11,7 +11,6 @@ const text = {
   type: 'text',
   analyzer: 'tokenizer',
   fields: {
-    raw: { type: 'text' },
     sort: textSortField,
   },
   term_vector: 'with_positions_offsets',
@@ -20,9 +19,6 @@ const text = {
 const noSorttext = {
   type: 'text',
   analyzer: 'tokenizer',
-  fields: {
-    raw: { type: 'text' },
-  },
   term_vector: 'with_positions_offsets',
 };
 
@@ -34,7 +30,6 @@ const noIndexText = {
 const id = {
   type: 'keyword',
   fields: {
-    raw: { type: 'keyword' },
     sort: textSortField,
   },
 };
@@ -43,7 +38,6 @@ const date = {
   type: 'date',
   format: 'epoch_millis',
   fields: {
-    raw: { type: 'date', index: false, format: 'epoch_millis' },
     sort: { type: 'date', format: 'epoch_millis' },
   },
 };
@@ -53,7 +47,6 @@ const number = {
   type: 'double',
   doc_values: true,
   fields: {
-    raw: { type: 'double', index: false },
     sort: { type: 'double' },
   },
 };
