@@ -82,7 +82,7 @@ export default function () {
         aggregations: {
           _types: {
             terms: {
-              field: 'template.raw',
+              field: 'template',
               missing: 'missing',
               size: preloadOptionsSearch,
             },
