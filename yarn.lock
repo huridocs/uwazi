@@ -1814,10 +1814,10 @@
     notepack.io "~2.1.0"
     socket.io-parser "~4.0.4"
 
-"@supercharge/promise-pool@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/@supercharge/promise-pool/-/promise-pool-1.2.0.tgz"
-  integrity sha512-k6Se9Tv8ouVQXGzt1eJptK3sBSqA1vWs7ilFqfOdfeHBzMAuSTyW8E0KWs3yw0JPy1JLkOhwQ75c0kddetoroA==
+"@supercharge/promise-pool@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@supercharge/promise-pool/-/promise-pool-2.1.0.tgz#7e9bc2e55060a77641858b391fa8439228457fff"
+  integrity sha512-YEKOfn4xF+DQ61UY5NwHNtr8hYjwchXjGTocVJDAHLQceIRZF8VECH7gumFbp+aGTfygPbMbEtBumXJ/mcJz+w==
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
