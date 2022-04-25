@@ -149,7 +149,6 @@ export default {
         ],
       });
     }
-
     const hubsIds = ownRelations.map(relationship => relationship.hub);
     return model.get({ hub: { $in: hubsIds } });
   },
