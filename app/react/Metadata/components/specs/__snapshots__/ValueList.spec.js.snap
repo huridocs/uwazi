@@ -2,39 +2,109 @@
 
 exports[`ValueList compact render should render array values separated by ", " 1`] = `
 Array [
-  "first_value",
-  ", ",
-  "second_value",
-  ", ",
-  "third value",
+  <span
+    key="0"
+  >
+    first_value
+  </span>,
+  <span
+    key="1"
+  >
+    , 
+  </span>,
+  <span
+    key="2"
+  >
+    second_value
+  </span>,
+  <span
+    key="3"
+  >
+    , 
+  </span>,
+  <span
+    key="4"
+  >
+    third value
+  </span>,
 ]
 `;
 
 exports[`ValueList compact render should render multidate in multiple lines 1`] = `
 Array [
-  "first_value",
-  <br />,
-  "second_value",
-  <br />,
-  "third value",
+  <span
+    key="0"
+  >
+    first_value
+  </span>,
+  <span
+    key="1"
+  >
+    <br />
+  </span>,
+  <span
+    key="2"
+  >
+    second_value
+  </span>,
+  <span
+    key="3"
+  >
+    <br />
+  </span>,
+  <span
+    key="4"
+  >
+    third value
+  </span>,
 ]
 `;
 
 exports[`ValueList compact render should render multidaterange in multiple lines 1`] = `
 Array [
-  "first_value",
-  <br />,
-  "second_value",
-  <br />,
-  "third value",
+  <span
+    key="0"
+  >
+    first_value
+  </span>,
+  <span
+    key="1"
+  >
+    <br />
+  </span>,
+  <span
+    key="2"
+  >
+    second_value
+  </span>,
+  <span
+    key="3"
+  >
+    <br />
+  </span>,
+  <span
+    key="4"
+  >
+    third value
+  </span>,
 ]
 `;
 
 exports[`ValueList compact render should rendern icons when the value has one 1`] = `
 Array [
-  "first_value",
-  ", ",
-  <Fragment>
+  <span
+    key="0"
+  >
+    first_value
+  </span>,
+  <span
+    key="1"
+  >
+    , 
+  </span>,
+  <span
+    key="2"
+  >
     <Connect(Icon)
       className="item-icon item-icon-center"
       data={
@@ -44,9 +114,17 @@ Array [
       }
     />
     second_value
-  </Fragment>,
-  ", ",
-  "third value",
+  </span>,
+  <span
+    key="3"
+  >
+    , 
+  </span>,
+  <span
+    key="4"
+  >
+    third value
+  </span>,
 ]
 `;
 

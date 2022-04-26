@@ -190,7 +190,7 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
         type="button"
       >
         <span
-          no-translate={true}
+          no-translate="true"
         >
           30
         </span>

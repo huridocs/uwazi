@@ -22,7 +22,7 @@ exports[`Thumbnail should render pdf icon when .pdf extension 1`] = `
   className="thumbnail"
 >
   <span
-    no-translate={true}
+    no-translate="true"
   >
     <Connect(Icon)
       icon="file-pdf"
