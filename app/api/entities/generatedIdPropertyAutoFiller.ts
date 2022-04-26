@@ -48,7 +48,7 @@ const updateRecursively = async (
 const populateGeneratedIdByTemplate = async (
   templateId: ObjectIdSchema,
   properties: PropertySchema[]
-): Promise<void> => {
+) => {
   const generatedIdProperties = properties.filter(prop => prop.type === propertyTypes.generatedid);
   const searchQuery = generatedIdProperties.reduce(
     (values, property: PropertySchema) => ({
@@ -60,7 +60,7 @@ const populateGeneratedIdByTemplate = async (
   const stepSize = 5000;
   const entitiesQty = await model.count({ template: templateId });
   const steps = Array(Math.floor(entitiesQty / stepSize) || 1);
-  return new PromisePool()
+  await new PromisePool()
     .for(steps)
     .withConcurrency(Math.min(5, steps.length))
     .process(async () => {

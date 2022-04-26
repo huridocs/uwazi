@@ -6,27 +6,19 @@ services:
       dockerfile: elastic-icu-7.10.1.Dockerfile
     ports:
       - "9200:9200"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - ./data_elastic:/usr/share/elasticsearch/data
     environment:
-      - bootstrap.memory_lock=true
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - cluster.routing.allocation.disk.threshold_enabled=false
+        - bootstrap.memory_lock=true
+        - discovery.type=single-node
+        - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+        - cluster.routing.allocation.disk.threshold_enabled=false
   mongo:
     image: "mongo:4.2"
-    volumes:
-      - ./data_mongo:/data/db
     ports:
       - "27017:27017"
   redis:
     image: "redis:5.0.14"
     command: redis-server
     ports:
-        - "6379:6379"
+      - "6379:6379"
     environment:
       - REDIS_REPLICATION_MODE=master
