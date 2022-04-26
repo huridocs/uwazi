@@ -124,12 +124,9 @@ class DocumentsList extends Component {
             {ActionButtons} {Search && <Search storeKey={this.props.storeKey} />}
           </div>
           <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
-            <div className="documents-counter">
-              <span className="documents-counter-label">{counter}</span>
-              <span className="documents-counter-sort">
-                <Translate>sorted by</Translate>
-              </span>
-            </div>
+            <span className="documents-counter-sort">
+              <Translate>sorted by</Translate>
+            </span>
             <SortButtons
               sortCallback={this.props.searchDocuments}
               selectedTemplates={this.props.filters.get('documentTypes')}
@@ -147,6 +144,9 @@ class DocumentsList extends Component {
                 </button>
               </div>
             </NeedAuthorization>
+            <div className="documents-counter">
+              <span className="documents-counter-label">{counter}</span>
+            </div>
           </div>
           {blankState() && <Welcome />}
 
