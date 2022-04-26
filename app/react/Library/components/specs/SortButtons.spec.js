@@ -71,15 +71,14 @@ describe('SortButtons', () => {
           },
         ]);
         render();
-
-        expect(component.find('.Dropdown:not(.width-placeholder) li').length).toBe(4);
-
-        expect(component.find('li').last().children().at(0).find('span').last().text()).toBe(
-          'sortableProperty (A-Z)'
-        );
-        expect(component.find('li').last().children().at(1).find('span').last().text()).toBe(
-          'sortableProperty (Z-A)'
-        );
+        expect(component.find('.sort-dropdown').props().data.length).toBe(4);
+        expect(component.find('.sort-dropdown').props().data).toContainEqual({
+          context: 'id',
+          label: 'sortableProperty',
+          name: 'sortable_name',
+          type: 'text',
+          value: 'metadata.sortable_name',
+        });
       });
     });
 
@@ -87,9 +86,20 @@ describe('SortButtons', () => {
       it('should display sort by search relevance option', () => {
         props.search.searchTerm = 'keyword';
         render();
-        expect(component.find('li').at(3).children().at(0).find('span').last().text()).toBe(
-          'Search relevance'
-        );
+        expect(component.find('.sort-dropdown').props().data).toContainEqual({
+          context: 'System',
+          label: 'Search relevance',
+          type: 'number',
+          value: '_score',
+        });
+      });
+
+      it('should disable the sort button and show the sort down icon', () => {
+        props.search.searchTerm = 'keyword';
+        props.search.sort = '_score';
+        render();
+        expect(component.find('.sorting-toggle').props().disabled).toBe(true);
+        expect(component.find('.sorting-toggle').props().children.props.icon).toBe('arrow-down');
       });
     });
 
@@ -105,30 +115,24 @@ describe('SortButtons', () => {
       it('should set the option active', () => {
         props.search.sort = 'metadata.sortable_name';
         render();
-        expect(component.find('li').last().hasClass('is-active')).toBe(true);
+        expect(component.find('.sort-dropdown').props().value).toBe('metadata.sortable_name');
       });
     });
 
     describe('clicking an option', () => {
       it('should sort by that property with default order (asc for text and desc for date)', () => {
         render();
-        component.setState({ active: true });
-        component.find('li').last().children().at(0).simulate('click');
+        component
+          .find('.sort-dropdown')
+          .simulate('change', { value: 'metadata.sortable_name', type: 'select' });
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'metadata.sortable_name', order: 'asc', userSelectedSorting: true } },
           'library'
         );
 
-        const templates = props.templates.toJS();
-        const lastPropindex = templates[0].properties.length - 1;
-        templates[0].properties[lastPropindex].name = 'different_name';
-        templates[0].properties[lastPropindex].type = 'date';
-        props.templates = immutable(templates);
-
-        render();
-        component.setState({ active: true });
-
-        component.find('li').last().children().at(0).simulate('click');
+        component
+          .find('.sort-dropdown')
+          .simulate('change', { value: 'metadata.different_name', type: 'date' });
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'metadata.different_name', order: 'desc', userSelectedSorting: true } },
           'library'
@@ -138,29 +142,6 @@ describe('SortButtons', () => {
   });
 
   describe('sort', () => {
-    it('should merge with searchTerm and filtersForm and NOT toggle between asc/desc', () => {
-      render();
-      instance.sort('title', 'asc', 'number');
-      expect(props.sortCallback).toHaveBeenCalledWith(
-        { search: { sort: 'title', order: 'asc', userSelectedSorting: true } },
-        'library'
-      );
-
-      props.search.order = 'asc';
-      props.search.treatAs = 'number';
-      render();
-      instance.sort('title', 'asc', 'string');
-      expect(props.merge).toHaveBeenCalledWith('search', {
-        sort: 'title',
-        order: 'asc',
-        treatAs: 'number',
-      });
-      expect(props.sortCallback).toHaveBeenCalledWith(
-        { search: { sort: 'title', order: 'asc', userSelectedSorting: true } },
-        'library'
-      );
-    });
-
     it('should not fail if no sortCallback', () => {
       delete props.sortCallback;
       render();
@@ -173,11 +154,20 @@ describe('SortButtons', () => {
       expect(error).toBeUndefined();
     });
 
+    it('should change sorting order when using the order button', () => {
+      props.search = { order: 'asc', sort: 'title' };
+      render();
+      component.find('button[type="button"]').simulate('click');
+      expect(props.sortCallback).toHaveBeenCalledWith(
+        { search: { sort: 'title', order: 'desc', userSelectedSorting: true } },
+        'library'
+      );
+    });
     describe('when changing property being sorted', () => {
       it('should use default order', () => {
         props.search = { order: 'desc', sort: 'title' };
         render();
-        instance.sort('title');
+        instance.sort('title', 'string');
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'title', order: 'asc', userSelectedSorting: true } },
           'library'
@@ -186,7 +176,7 @@ describe('SortButtons', () => {
         props.sortCallback.calls.reset();
         props.search = { order: 'desc', sort: 'title' };
         render();
-        instance.sort('creationDate', 'desc');
+        instance.sort('creationDate', 'number');
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'creationDate', order: 'desc', userSelectedSorting: true } },
           'library'
@@ -195,9 +185,9 @@ describe('SortButtons', () => {
         props.sortCallback.calls.reset();
         props.search = { order: 'desc', sort: 'title' };
         render();
-        instance.sort('creationDate', 'asc');
+        instance.sort('creationDate', 'number');
         expect(props.sortCallback).toHaveBeenCalledWith(
-          { search: { sort: 'creationDate', order: 'asc', userSelectedSorting: true } },
+          { search: { sort: 'creationDate', order: 'desc', userSelectedSorting: true } },
           'library'
         );
       });
@@ -207,7 +197,7 @@ describe('SortButtons', () => {
       it('should keep the treatAs property', () => {
         props.search = { order: 'desc', sort: 'title', treatAs: 'number' };
         render();
-        instance.sort('title');
+        instance.sort('title', 'number');
         instance.changeOrder();
         expect(props.merge).toHaveBeenCalledWith('search', {
           sort: 'title',
@@ -218,23 +208,11 @@ describe('SortButtons', () => {
     });
   });
 
-  describe('when filtering title property', () => {
-    it('should set active title', () => {
-      props.search = { order: 'asc', sort: 'title' };
+  describe('when filtering number property', () => {
+    it('should set value to number', () => {
+      props.search = { order: 'asc', sort: 'number' };
       render();
-      const title = component.find('li').at(0);
-      expect(title.hasClass('is-active')).toBe(true);
-    });
-  });
-
-  describe('when filtering creationDate property asc', () => {
-    it('should set active recent', () => {
-      props.search = { order: 'asc', sort: 'creationDate' };
-      render();
-      const title = component.find('li').at(0);
-      const recent = component.find('li').at(1);
-      expect(title.hasClass('is-active')).toBe(false);
-      expect(recent.hasClass('is-active')).toBe(true);
+      expect(component.find('.sort-dropdown').props().value).toBe('number');
     });
   });
 
