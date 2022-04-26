@@ -12,7 +12,14 @@ import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures, uploadId, uploadId2 } from './fixtures';
+import {
+  fixtures,
+  uploadId,
+  uploadId2,
+  restrictedUploadId2,
+  adminUser,
+  writerUser,
+} from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -78,19 +85,71 @@ describe('files routes', () => {
   });
 
   describe('GET/files', () => {
-    it('should return all uploads based on the filter', async () => {
+    it('should return entity related files only if the user has permission for the entity', async () => {
+      testingEnvironment.setPermissions(writerUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ type: 'custom' });
+        .query({ type: 'custom' })
+        .expect(200);
+
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        'restrictedUpload',
+        'restrictedUpload2',
+        'upload2',
+      ]);
+    });
+
+    it('should return all uploads for an admin', async () => {
+      testingEnvironment.setPermissions(adminUser);
+      const response: SuperTestResponse = await request(app)
+        .get('/api/files')
+        .query({ type: 'custom' })
+        .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'upload1',
+        'restrictedUpload',
+        'restrictedUpload2',
         'upload2',
       ]);
+    });
+
+    it('should only allow properly typed id and type parameters in the query', async () => {
+      testingEnvironment.setPermissions(adminUser);
+
+      await request(app).get('/api/files').query({ $where: '1===1' }).expect(400);
+
+      await request(app)
+        .get('/api/files')
+        .query({ type: { $exists: 1 } })
+        .expect(400);
+
+      const response: SuperTestResponse = await request(app)
+        .get('/api/files')
+        .query({ _id: uploadId.toString(), type: 'custom' })
+        .expect(200);
+
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual(['upload1']);
     });
   });
 
   describe('DELETE/api/files', () => {
+    beforeEach(() => {
+      testingEnvironment.setPermissions(adminUser);
+    });
+
+    it('should not allow any extra parameters aside from a properly typed id', async () => {
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: 'someid', __property__: 'should_not_be_here' })
+        .expect(400);
+
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: { $eq: 1234 } })
+        .expect(400);
+    });
+
     it('should delete upload and return the response', async () => {
       await request(app)
         .post('/api/files/upload/custom')
@@ -103,8 +162,22 @@ describe('files routes', () => {
       expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
     });
 
+    it('should allow deletion if and only if user has permission for the entity', async () => {
+      testingEnvironment.setPermissions(collabUser);
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: restrictedUploadId2.toString() })
+        .expect(404);
+
+      testingEnvironment.setPermissions(writerUser);
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: restrictedUploadId2.toString() })
+        .expect(200);
+    });
+
     it('should reindex all entities that are related to the files deleted', async () => {
-      await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+      await request(app).delete('/api/files').query({ _id: uploadId2.toString() }).expect(200);
 
       expect(search.indexEntities).toHaveBeenCalledWith(
         { sharedId: { $in: ['sharedId1'] } },

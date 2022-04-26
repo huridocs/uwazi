@@ -17,7 +17,7 @@ const renderRelationshipLinks = linksProp => {
   return <ValueList compact property={hydratedProp} />;
 };
 
-export const showByType = (prop, compact) => {
+export const showByType = (prop, compact, templateId) => {
   let result = prop.value;
   switch (prop.type) {
     case null:
@@ -59,7 +59,7 @@ export const showByType = (prop, compact) => {
       result = prop.parent ? `${prop.parent}: ${prop.value}` : result;
       break;
     case 'geolocation_group':
-      result = <GroupedGeolocationViewer members={prop.members} />;
+      result = <GroupedGeolocationViewer members={prop.members} templateId={templateId} />;
       break;
     case 'relationship':
       result = renderRelationshipLinks(prop);
@@ -67,7 +67,7 @@ export const showByType = (prop, compact) => {
     default:
       if (prop.value && prop.value.map) {
         prop.value = prop.value.map(_value => {
-          const value = showByType(_value, compact);
+          const value = showByType(_value, compact, templateId);
           return value && value.value ? value : { value };
         });
         result = prop.parent ? (
@@ -151,7 +151,15 @@ function filterProps(showSubset) {
   };
 }
 
-const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, groupGeolocations }) => {
+const Metadata = ({
+  metadata,
+  compact,
+  renderLabel,
+  showSubset,
+  highlight,
+  groupGeolocations,
+  templateId,
+}) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const groupedMetadata = groupGeolocations
     ? groupAdjacentGeolocations(filteredMetadata)
@@ -172,7 +180,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, group
           >
             {renderLabel(prop, <dt>{t(prop.translateContext || 'System', prop.label)}</dt>)}
             <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-              {showByType(prop, compact)}
+              {showByType(prop, compact, templateId)}
             </dd>
           </dl>
         );
@@ -207,6 +215,7 @@ Metadata.propTypes = {
       ]),
     })
   ).isRequired,
+  templateId: PropTypes.string,
   highlight: PropTypes.arrayOf(PropTypes.string),
   compact: PropTypes.bool,
   renderLabel: PropTypes.func,

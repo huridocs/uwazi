@@ -10,6 +10,12 @@ import {
   UseRowSelectInstanceProps,
   UseRowSelectOptions,
   UseRowSelectState,
+  UseRowStateState,
+  UseSortByState,
+  UseRowStateRowProps,
+  UseRowStateOptions,
+  UseSortByOptions,
+  UseRowStateCellProps,
 } from 'react-table';
 
 interface CustomColumn {
@@ -21,6 +27,8 @@ declare module 'react-table' {
     extends UseExpandedOptions<D>,
       UseFiltersOptions<D>,
       UseRowSelectOptions<D>,
+      UseRowStateOptions<D>,
+      UseSortByOptions<D>,
       UsePaginationOptions<D> {}
 
   export interface TableInstance<D>
@@ -28,6 +36,8 @@ declare module 'react-table' {
       UseExpandedInstanceProps<D>,
       UseFiltersInstanceProps<D>,
       UseRowSelectInstanceProps<D>,
+      UseRowStateInstanceProps<D>,
+      UseSortByInstanceProps<D>,
       UsePaginationInstanceProps<D> {}
 
   export interface TableState<D>
@@ -35,6 +45,8 @@ declare module 'react-table' {
       UseExpandedState<D>,
       UseFiltersState<D>,
       UseRowSelectState<D>,
+      UseRowStateState<D>,
+      UseSortByState<D>,
       UsePaginationState<D> {}
 
   export interface ColumnInterface<D extends object = {}>
@@ -47,7 +59,8 @@ declare module 'react-table' {
     extends UseExpandedRowProps<D>,
       UseGroupByRowProps<D>,
       UseRowSelectRowProps<D>,
-      UseRowStateRowProps<D> {}
+      UseRowStateRowProps<D>,
+      UseRowStateCellProps<D> {}
 
   export interface ColumnInstance<D extends object = {}> extends UseFiltersColumnProps<D> {}
 }

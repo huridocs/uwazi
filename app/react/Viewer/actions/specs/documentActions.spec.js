@@ -225,7 +225,7 @@ describe('documentActions', () => {
           `${APIURL}entities?sharedId=targetId&omitRelationships=true&include=%5B%22permissions%22%5D`,
           {
             body: JSON.stringify({
-              rows: [{ documents: [{}] }],
+              rows: [{ documents: [{ _id: 'fileId' }] }],
             }),
           }
         )
@@ -267,9 +267,12 @@ describe('documentActions', () => {
             ],
           }),
         })
-        .get(`${APIURL}references/by_document?sharedId=targetId`, {
-          body: JSON.stringify([{ connectedDocument: '1' }]),
-        });
+        .get(
+          `${APIURL}references/by_document?sharedId=targetId&file=fileId&onlyTextReferences=true`,
+          {
+            body: JSON.stringify([{ connectedDocument: '1' }]),
+          }
+        );
     });
 
     afterEach(() => backend.restore());
@@ -461,25 +464,20 @@ describe('documentActions', () => {
     });
 
     describe('loadTargetDocument', () => {
-      it('should loadTargetDocument with id passed', done => {
+      it('should loadTargetDocument with id passed', async () => {
         const targetId = 'targetId';
 
         const expectedActions = [
           {
             type: 'viewer/targetDoc/SET',
-            value: { defaultDoc: {}, documents: [{}] },
+            value: { defaultDoc: { _id: 'fileId' }, documents: [{ _id: 'fileId' }] },
           },
           { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] },
         ];
         const store = mockStore({ locale: 'es' });
 
-        store
-          .dispatch(actions.loadTargetDocument(targetId))
-          .then(() => {
-            expect(store.getActions()).toEqual(expectedActions);
-          })
-          .then(done)
-          .catch(done.fail);
+        await store.dispatch(actions.loadTargetDocument(targetId));
+        expect(store.getActions()).toEqual(expectedActions);
       });
     });
 
