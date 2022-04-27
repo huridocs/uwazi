@@ -1,9 +1,11 @@
 import rison from 'rison-node';
+import { startsWith, last } from 'lodash';
 
 import api from 'app/Search/SearchAPI';
 import { markdownDatasets } from 'app/Markdown';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import { EntitySchema } from 'shared/types/entityType';
 import PagesAPI from '../PagesAPI';
 import pageItemLists from './pageItemLists';
 
@@ -45,6 +47,33 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   return listsData;
 };
 
+const replaceDynamicProperties = (
+  pageContent: string,
+  localDatasets?: { entityRaw: EntitySchema }
+) => {
+  const dinamicProperties = pageContent?.match(/\$\{.*\}/g);
+  //entity.title
+  //entity.metadata.select
+  //template.title
+  //${entity.metadata.select}
+  if (!pageContent || !localDatasets) {
+    return pageContent;
+  }
+  const parsedProperties = (dinamicProperties || []).reduce((values, p) => {
+    if (startsWith(p, '${entity.metadata.')) {
+      const propertyName: string = last(p.split('.')).slice(0, -1); //select
+      if (Object.keys(localDatasets.entityRaw.metadata || {}).includes(propertyName)) {
+        return { ...values, [p]: localDatasets.entityRaw.metadata[propertyName][0].value };
+      }
+    }
+    return values;
+  }, {});
+
+  return Object.entries(parsedProperties).reduce(
+    (content, [key, value]) => content.replaceAll(key, value),
+    pageContent
+  );
+};
 const getPageAssets = async (
   requestParams: RequestParams,
   additionalDatasets?: {},
@@ -52,6 +81,7 @@ const getPageAssets = async (
 ) => {
   const page = await PagesAPI.getById(requestParams);
 
+  page.metadata.content = replaceDynamicProperties(page.metadata?.content, localDatasets);
   const listsData = prepareLists(page.metadata.content, requestParams);
 
   const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders(), {
