@@ -52,7 +52,7 @@ const replaceDynamicProperties = (
     return pageContent;
   }
 
-  return pageContent.replace(/\$\{((entityRaw|entity|template).*)\}/g, (match, p) => {
+  return pageContent.replace(/\$\{((entityRaw|entity|template)[^}]*)\}/g, (match, p) => {
     if (has(localDatasets, p)) {
       return get(localDatasets, p);
     }
@@ -66,7 +66,6 @@ const getPageAssets = async (
   localDatasets?: {}
 ) => {
   const page = await PagesAPI.getById(requestParams);
-
   page.metadata.content = replaceDynamicProperties(page.metadata?.content, localDatasets);
   const listsData = prepareLists(page.metadata.content, requestParams);
 

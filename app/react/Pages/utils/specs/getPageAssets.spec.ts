@@ -8,17 +8,18 @@ import pageItemLists from '../pageItemLists';
 import { getPageAssets } from '../getPageAssets';
 
 describe('getPageAssets', () => {
-  const page = {
-    _id: 'abc2',
-    title: 'Page 1',
-    metadata: /*non-metadata-object*/ { content: 'originalContent' },
-  };
-
+  let page: { _id: string; title: string; metadata: { content: string } };
   let data;
   let request: RequestParams;
   let apiSearch: jasmine.Spy;
 
   beforeEach(() => {
+    page = {
+      _id: 'abc2',
+      title: 'Page 1',
+      metadata: /*non-metadata-object*/ { content: 'originalContent' },
+    };
+
     spyOn(PagesAPI, 'getById').and.returnValue(Promise.resolve(page));
 
     spyOn(pageItemLists, 'generate').and.returnValue({
@@ -126,6 +127,48 @@ describe('getPageAssets', () => {
           customData: { localData: 'from store' },
         });
       });
+    });
+  });
+
+  describe('Dynamic content', () => {
+    const localDatasets = {
+      entity: {
+        sharedId: 'mtpkxxe1uom',
+        metadata: {
+          text: {
+            value: 'some text',
+          },
+        },
+      },
+      template: {
+        name: 'Document',
+        properties: [
+          {
+            _id: '6267e68226904c252518f914',
+            label: 'Text',
+            type: 'text',
+            name: 'text',
+            filter: true,
+          },
+        ],
+      },
+    };
+    it('should parse the content and insert references to dataset', async () => {
+      page.metadata.content =
+        // eslint-disable-next-line no-template-curly-in-string
+        '<h1>${entity.metadata.text.value} from template ${template.name}</h1>';
+      const assets = await getPageAssets(request, undefined, localDatasets);
+      expect(assets.pageView.metadata.content).toBe('<h1>some text from template Document</h1>');
+    });
+
+    it('should ignore references if they are not part of a dataset', async () => {
+      // eslint-disable-next-line no-template-curly-in-string
+      page.metadata.content = '<h1>${entity.sharedId} from template ${template.metadata}</h1>';
+      const assets = await getPageAssets(request, undefined, localDatasets);
+      expect(assets.pageView.metadata.content).toBe(
+        // eslint-disable-next-line no-template-curly-in-string
+        '<h1>mtpkxxe1uom from template ${template.metadata}</h1>'
+      );
     });
   });
 });
