@@ -129,8 +129,7 @@ describe('reindex', () => {
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
 
-      // eslint-disable-next-line jest/no-focused-tests
-      fit('should not find structural changes on unchanged inherit', async () => {
+      it('should not find structural changes on unchanged inherit', async () => {
         const [template] = await templates.get({ _id: templateInheritingFromAnother });
         const reindex = await checkIfReindex(template);
 
@@ -183,8 +182,7 @@ describe('reindex', () => {
         expect(search.indexEntities).toHaveBeenCalled();
       });
 
-      // eslint-disable-next-line jest/no-focused-tests
-      fit('should find structural changes on changed inherit', async () => {
+      it('should find structural changes on changed inherit', async () => {
         const [template] = await templates.get({ _id: templateInheritingFromAnother });
         template.properties[0].inherit = {
           property: propertyToBeInherited2.toString(),
