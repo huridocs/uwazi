@@ -85,6 +85,9 @@ describe('Entity Page view', () => {
       await expect(page).toMatchElement('.descriptores-content', {
         text: 'Derechos reproductivos',
       });
+      await expect(page).toMatchElement('.dynamic-values', {
+        text: 'Entidad: Artavia Murillo y otros con template: Medida Provisional tiene estado Activo',
+      });
     });
 
     it('should display EntityData values', async () => {
