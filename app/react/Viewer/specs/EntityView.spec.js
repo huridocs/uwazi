@@ -105,7 +105,7 @@ describe('EntityView', () => {
           property_two: { name: 'property_two', value: 'formatted-rawP2' },
         });
         expect(datasetsActions.value.entityRaw).toEqual(entities[1]);
-        expect(datasetsActions.value.template).toEqual(templates.get(1));
+        expect(datasetsActions.value.template).toEqual(templates.get(1).toJS());
       });
     });
   });
