@@ -22,7 +22,7 @@ const formatEntity = (entity, templates, thesauris) => {
   return formattedEntity;
 };
 
-export default class Entity extends Component {
+class Entity extends Component {
   static async requestState(requestParams, state) {
     const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
       await Promise.all([
@@ -43,7 +43,7 @@ export default class Entity extends Component {
         {
           entity: formatEntity(entity, state.templates, state.thesauris),
           entityRaw: entity,
-          template: entityTemplate,
+          template: entityTemplate.toJS(),
         }
       );
 
@@ -98,3 +98,5 @@ export default class Entity extends Component {
 Entity.contextTypes = {
   store: PropTypes.object,
 };
+
+export default Entity;
