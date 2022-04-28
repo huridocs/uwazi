@@ -1,20 +1,37 @@
+import 'isomorphic-fetch';
 import entities from 'api/entities';
-import { deleteFiles, getFileContent, testingUploadPaths } from 'api/files/filesystem';
+import { testingUploadPaths } from 'api/files/filesystem';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import db from 'api/utils/testing_db';
-import backend from 'fetch-mock'; // eslint-disable-line
-import moment from 'moment';
-import path from 'path';
+import backend from 'fetch-mock';
 import { EntitySchema } from 'shared/types/entityType';
-import vaultEvidencesModel from '../vaultEvidencesModel';
-import vaultSync from '../vaultSync';
-import fixtures, { templateId } from './fixtures';
-import { mockVault } from './helpers.js';
+import { preserveSync } from '../preserveSync';
+import { fixtures, templateId } from './fixtures';
+
+const mockVault = async (host, token, evidences) => {
+  backend.get(
+    // @ts-ignore
+    (url, opts) => url === `${host}/api/evidences` && opts?.headers.Authorization === token,
+    JSON.stringify(evidences)
+  );
+
+  // return Promise.all(
+  //   evidences.map(async e => {
+  //     if (e.listItem.filename) {
+  //       await createPackage(JSON.stringify(e.jsonInfo), e.listItem.filename);
+  //       const zipPackage = fs.createReadStream(path.join(__dirname, `zips/${e.listItem.filename}`));
+  //       const zipResponse = new Response(zipPackage, {
+  //         headers: { 'Content-Type': 'application/zip' },
+  //       });
+  //       backend.get(`https://preserve.org/download/${e.listItem.filename}`, file);
+  //     }
+  //   })
+  // );
+};
 
 describe('preserveSync', () => {
-  const token = 'auth_token';
-  const tenantName = 'evidenceVaultTenant';
+  const tenantName = 'preserveTenant';
 
   beforeEach(async () => {
     await db.connect({ defaultTenant: false });
@@ -33,19 +50,10 @@ describe('preserveSync', () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
-  afterEach(async () => {
-    await deleteFiles([
-      path.join(__dirname, '/zips/package1.zip'),
-      path.join(__dirname, '/zips/package2.zip'),
-      path.join(__dirname, '/zips/package3.zip'),
-      path.join(__dirname, '/zips/package5.zip'),
-    ]);
-  });
-
   afterAll(async () => db.disconnect());
 
   describe('sync', () => {
-    let imported: EntitySchema;
+    let imported: EntitySchema[];
     beforeEach(async () => {
       const evidences = [
         {
@@ -61,13 +69,6 @@ describe('preserveSync', () => {
         },
         {
           attributes: {
-            status: 'ERROR',
-            url: 'url1',
-            downloads: [],
-          },
-        },
-        {
-          attributes: {
             title: 'title of url2',
             status: 'PROCESSED',
             url: 'url2',
@@ -77,178 +78,23 @@ describe('preserveSync', () => {
             ],
           },
         },
-        {
-          attributes: {
-            status: 'PROCESSING',
-            url: 'url1',
-            downloads: [],
-          },
-        },
       ];
 
-      await mockVault(token, evidences);
-      await vaultSync.syncAllTenants();
+      await mockVault('http://preserve-testing.org', 'auth-token', evidences);
+      await preserveSync.syncAllTenants();
 
       await tenants.run(async () => {
         imported = await entities.get();
       }, tenantName);
     });
 
-    fit('should create entities based on evidences PROCESSED status', async () => {
+    it('should create entities based on evidences PROCESSED status', async () => {
       expect(imported.map(e => e.title)).toEqual(['title of url1', 'title of url2']);
       expect(imported.map(e => e.template)).toEqual([templateId, templateId]);
     });
 
-    it('should assign url to link field', async () => {
-      expect(imported.map(e => e.metadata.original_url[0].value)).toEqual([
-        { label: 'url 1', url: 'url 1' },
-        { label: 'url 2', url: 'url 2' },
-      ]);
-    });
-
-    it('should assign time of request', async () => {
-      const dates = imported.map(e =>
-        moment.utc(e.metadata.time_of_request[0].value, 'X').format('DD-MM-YYYY')
-      );
-      expect(dates).toEqual(['30-05-2019', '25-05-2018']);
-    });
-
-    it('should add zip package as attachment', async () => {
-      await tenants.run(async () => {
-        expect(await getFileContent('1.png')).toBe('this is a fake image');
-        expect(await getFileContent('2.png')).toBe('this is a fake image');
-      }, tenantName);
-
-      expect(imported[0].attachments.find(a => a.filename.match(/zip/))).toMatchObject({
-        filename: '1.zip',
-      });
-
-      expect(imported[1].attachments.find(a => a.filename.match(/zip/))).toMatchObject({
-        filename: '2.zip',
-      });
-    });
-
-    it('should set png file as an attachment, and add the link into image field', async () => {
-      const firstPngAttachment = imported[0].attachments.find(a => a.filename.match(/png/));
-      expect(firstPngAttachment).toMatchObject({ filename: '1.png' });
-
-      expect(imported[0].metadata.screenshot[0]).toEqual({
-        value: '/api/files/1.png',
-      });
-
-      const secondPngAttachment = imported[1].attachments.find(a => a.filename.match(/png/));
-      expect(secondPngAttachment).toMatchObject({ filename: '2.png' });
-
-      expect(imported[1].metadata.screenshot[0]).toEqual({
-        value: '/api/files/2.png',
-      });
-    });
-
-    it('should set mp4 file as an attachment, and add the link into media field', async () => {
-      await tenants.run(async () => {
-        expect(await getFileContent('1.mp4')).toBe('this is a fake video');
-        expect(await getFileContent('2.mp4')).toBe('this is a fake video');
-      }, tenantName);
-
-      const firstMp4Attachment = imported[0].attachments.find(a => a.filename.match(/mp4/));
-      expect(firstMp4Attachment).toMatchObject({ filename: '1.mp4' });
-
-      expect(imported[0].metadata.video[0]).toEqual({
-        value: '/api/files/1.mp4',
-      });
-
-      const secondPngAttachment = imported[1].attachments.find(a => a.filename.match(/mp4/));
-      expect(secondPngAttachment).toMatchObject({ filename: '2.mp4' });
-
-      expect(imported[1].metadata.video[0]).toEqual({
-        value: '/api/files/2.mp4',
-      });
-    });
-
-    it('should work with multiple token/template configs', async () => {
-      const anotherToken = 'anotherToken';
-      const evidences = [
-        {
-          listItem: { status: '201', request: '5', filename: 'package5.zip' },
-          jsonInfo: { title: 'title5' },
-        },
-        {
-          listItem: { status: '501', request: '8', filename: null },
-          jsonInfo: { title: 'title8' },
-        },
-      ];
-
-      await mockVault(anotherToken, evidences);
-
-      await tenants.run(async () => {
-        await vaultSync.sync([
-          { token, template: templateId },
-          { token: anotherToken, template: templateId },
-        ]);
-        imported = await entities.get();
-      }, tenantName);
-
-      expect(imported.map(e => e.title)).toEqual(['title1', 'title2', 'title5']);
-      expect(imported.map(e => e.template)).toEqual([templateId, templateId, templateId]);
-    });
+    // it('should add all downloads to attachments', async () => {});
   });
 
-  it('should not fill media/image field if file does not exist', async () => {
-    const evidences = [
-      {
-        listItem: { request: '1', filename: 'package1.zip', status: '201' },
-        jsonInfo: { title: 'title1' },
-      },
-      {
-        listItem: { request: '2', filename: 'package2.zip', status: '201' },
-      },
-    ];
-
-    await mockVault(token, evidences);
-
-    let imported;
-    await tenants.run(async () => {
-      await vaultSync.sync({ token, template: templateId });
-      imported = await entities.get();
-      expect(await getFileContent('1.mp4')).toBe('this is a fake video');
-    }, tenantName);
-
-    expect(imported.map(e => e.metadata.video[0].value)).toEqual(['/api/files/1.mp4', '']);
-
-    expect(imported.map(e => e.metadata.screenshot[0].value)).toEqual(['/api/files/1.png', '']);
-
-    expect(imported[0].attachments).toMatchObject([
-      { filename: '1.mp4' },
-      { filename: '1.png' },
-      { filename: '1.zip' },
-    ]);
-
-    expect(imported[1].attachments).toMatchObject([{ filename: '2.zip' }]);
-  });
-
-  it('should not import already imported evidences', async () => {
-    await tenants.run(async () => {
-      await vaultEvidencesModel.saveMultiple([{ request: '1' }, { request: '3' }]);
-    }, tenantName);
-
-    const evidences = [
-      { listItem: { request: '1', filename: 'package1.zip' }, jsonInfo: { title: 'title1' } },
-      { listItem: { request: '3', filename: 'package3.zip' }, jsonInfo: { title: 'title3' } },
-      {
-        listItem: { request: '2', filename: 'package2.zip', url: 'url 2', status: '201' },
-        jsonInfo: { title: 'title2' },
-      },
-    ];
-
-    await mockVault(token, evidences);
-
-    let imported;
-    await tenants.run(async () => {
-      await vaultSync.sync({ token, template: templateId });
-      await vaultSync.sync({ token, template: templateId });
-      imported = await entities.get();
-    }, tenantName);
-
-    expect(imported.map(e => e.title)).toEqual(['title2']);
-  });
+  // it('should not import already imported evidences', async () => {});
 });

@@ -72,6 +72,11 @@ export interface Settings {
     };
     topicClassification?: boolean;
     favorites?: boolean;
+    preserve?: {
+      host: string;
+      token: string;
+      template: ObjectIdSchema;
+    };
     ocr?: {
       url: string;
     };

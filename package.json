@@ -234,7 +234,6 @@
     "@types/expect-puppeteer": "^4.4.1",
     "@types/express": "^4.17.2",
     "@types/express-session": "^1.17.0",
-    "@types/fetch-mock": "^7.3.5",
     "@types/google.maps": "^3.48.2",
     "@types/helmet": "^0.0.48",
     "@types/immutable": "^3.8.7",

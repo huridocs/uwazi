@@ -200,6 +200,16 @@ const settingsSchema = {
         },
         topicClassification: { type: 'boolean' },
         favorites: { type: 'boolean' },
+        preserve: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['host', 'token', 'template'],
+          properties: {
+            host: { type: 'string' },
+            token: { type: 'string' },
+            template: objectIdSchema,
+          },
+        },
         ocr: {
           type: 'object',
           additionalProperties: false,
