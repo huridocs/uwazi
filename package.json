@@ -124,7 +124,7 @@
     "helmet": "^3.23.3",
     "html-to-react": "^1.4.3",
     "htmlparser2": "^3.9.2",
-    "immutable": "^3.7.6",
+    "immutable": "^4.0.0",
     "is-reachable": "^5.1.1",
     "isomorphic-fetch": "3.0.0",
     "joi": "^13.6.0",
