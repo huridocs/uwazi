@@ -78,7 +78,6 @@ function compareShallowProperties(updatedTemplate, originalTemplate, updatedKeys
       changedProperties.push(key);
     }
   });
-  console.log('changedProperties', changedProperties)
   return changedProperties;
 }
 
