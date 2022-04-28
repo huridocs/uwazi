@@ -147,7 +147,7 @@ const extractFilters = (baseQuery, path) => {
 };
 
 const getpath = (property, suggested) =>
-  suggested ? `suggestedMetadata.${property.name}.raw` : `metadata.${property.name}.raw`;
+  suggested ? `suggestedMetadata.${property.name}` : `metadata.${property.name}`;
 
 export const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
   const path = getpath(property, suggested);
