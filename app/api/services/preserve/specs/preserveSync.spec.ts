@@ -1,39 +1,59 @@
-import 'isomorphic-fetch';
 import entities from 'api/entities';
-import { testingUploadPaths } from 'api/files/filesystem';
+import { uwaziFS } from 'api/files/uwaziFS';
+import { fileExists, generateFileName, testingUploadPaths } from 'api/files/filesystem';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import db from 'api/utils/testing_db';
 import backend from 'fetch-mock';
-import { EntitySchema } from 'shared/types/entityType';
+import 'isomorphic-fetch';
+import path from 'path';
+import qs from 'qs';
+import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import { URL } from 'url';
 import { preserveSync } from '../preserveSync';
+import { preserveSyncModel } from '../preserveSyncModel';
 import { fixtures, templateId } from './fixtures';
 
-const mockVault = async (host, token, evidences) => {
+const mockVault = async (evidences: any[], isoDate = '') => {
+  const host = 'http://preserve-testing.org';
+  const token = 'auth-token';
+  const queryString = qs.stringify({
+    filter: {
+      status: 'PROCESSED',
+      ...(isoDate ? { date: { gt: isoDate } } : {}),
+    },
+  });
+  backend.reset();
   backend.get(
-    // @ts-ignore
-    (url, opts) => url === `${host}/api/evidences` && opts?.headers.Authorization === token,
+    (url, opts) =>
+      // @ts-ignore
+      url === `${host}/api/evidences?${queryString}` && opts?.headers.Authorization === token,
     JSON.stringify(evidences)
   );
 
-  // return Promise.all(
-  //   evidences.map(async e => {
-  //     if (e.listItem.filename) {
-  //       await createPackage(JSON.stringify(e.jsonInfo), e.listItem.filename);
-  //       const zipPackage = fs.createReadStream(path.join(__dirname, `zips/${e.listItem.filename}`));
-  //       const zipResponse = new Response(zipPackage, {
-  //         headers: { 'Content-Type': 'application/zip' },
-  //       });
-  //       backend.get(`https://preserve.org/download/${e.listItem.filename}`, file);
-  //     }
-  //   })
-  // );
+  const downloads = evidences.map(e => e.attributes.downloads).flat();
+  // const paths = await testingUploadPaths();
+
+  return Promise.all(
+    downloads.map(async download => {
+      const tmpName = generateFileName({ originalname: 'test' });
+      await uwaziFS.writeFile(path.join('/tmp', tmpName), 'content');
+      const file = uwaziFS.createReadStream(path.join('/tmp', tmpName));
+      // @ts-ignore
+      const fileResponse = new Response(file, {
+        headers: { 'Content-Type': 'application/octet-stream' },
+      });
+      const url = new URL(path.join(host, download.path)).toString();
+      backend.get(url, fileResponse);
+    })
+  );
 };
 
 describe('preserveSync', () => {
   const tenantName = 'preserveTenant';
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await db.connect({ defaultTenant: false });
     await db.clearAllAndLoad(fixtures);
     backend.restore();
@@ -52,49 +72,114 @@ describe('preserveSync', () => {
 
   afterAll(async () => db.disconnect());
 
-  describe('sync', () => {
-    let imported: EntitySchema[];
-    beforeEach(async () => {
-      const evidences = [
-        {
-          attributes: {
-            title: 'title of url1',
-            status: 'PROCESSED',
-            url: 'url1',
-            downloads: [
-              { path: '/evidences/id1/content.txt' },
-              { path: '/evidences/id1/screenshot.jpg' },
-            ],
-          },
-        },
-        {
-          attributes: {
-            title: 'title of url2',
-            status: 'PROCESSED',
-            url: 'url2',
-            downloads: [
-              { path: '/evidences/id2/content.txt' },
-              { path: '/evidences/id2/screenshot.jpg' },
-            ],
-          },
-        },
-      ];
+  const fakeEvidence = (id: string) => ({
+    attributes: {
+      date: `date${id}`,
+      title: `title of url${id}`,
+      status: 'PROCESSED',
+      url: `url${id}`,
+      downloads: [
+        { path: `/evidences/id${id}/content${id}.txt` },
+        { path: `/evidences/id${id}/screenshot${id}.jpg` },
+      ],
+    },
+  });
 
-      await mockVault('http://preserve-testing.org', 'auth-token', evidences);
+  describe('sync', () => {
+    beforeAll(async () => {
+      const evidences = [fakeEvidence('1'), fakeEvidence('2')];
+
+      await mockVault(evidences);
       await preserveSync.syncAllTenants();
 
       await tenants.run(async () => {
-        imported = await entities.get();
+        const { lastImport } = (await preserveSyncModel.get())[0];
+        await mockVault([], lastImport);
       }, tenantName);
+
+      await tenants.run(async () => {
+        const { lastImport } = (await preserveSyncModel.get())[0];
+        await mockVault([fakeEvidence('3')], lastImport);
+      }, tenantName);
+
+      await preserveSync.syncAllTenants();
     });
 
     it('should create entities based on evidences PROCESSED status', async () => {
-      expect(imported.map(e => e.title)).toEqual(['title of url1', 'title of url2']);
-      expect(imported.map(e => e.template)).toEqual([templateId, templateId]);
+      await tenants.run(async () => {
+        const entitiesImported: EntitySchema[] = await entities.get();
+        expect(entitiesImported.map(e => e.title)).toEqual([
+          'title of url1',
+          'title of url2',
+          'title of url3',
+        ]);
+        expect(entitiesImported.map(e => e.template)).toEqual([templateId, templateId, templateId]);
+      }, tenantName);
+    });
+
+    it('should not create extra lastImport', async () => {
+      await tenants.run(async () => {
+        const datesImported = await preserveSyncModel.get();
+        expect(datesImported).toMatchObject([
+          {
+            lastImport: 'date3',
+          },
+        ]);
+      }, tenantName);
+    });
+
+    it('should save evidences downloads as attachments', async () => {
+      await tenants.run(async () => {
+        const entitiesImported: EntityWithFilesSchema[] = (await entities.get())
+          .sort()
+          .map((entity: EntityWithFilesSchema) => ({
+            ...entity,
+            attachments: entity.attachments
+              ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
+              : [],
+          }));
+        expect(entitiesImported).toMatchObject(
+          [
+            {
+              attachments: [
+                { filename: expect.any(String), originalname: 'content1.txt' },
+                { filename: expect.any(String), originalname: 'screenshot1.jpg' },
+              ],
+            },
+            {
+              attachments: [
+                { filename: expect.any(String), originalname: 'content2.txt' },
+                { filename: expect.any(String), originalname: 'screenshot2.jpg' },
+              ],
+            },
+            {
+              attachments: [
+                { filename: expect.any(String), originalname: 'content3.txt' },
+                { filename: expect.any(String), originalname: 'screenshot3.jpg' },
+              ],
+            },
+          ].sort()
+        );
+      }, tenantName);
+    });
+
+    it('should save evidences downloads to disk', async () => {
+      await tenants.run(async () => {
+        const entitiesImported: EntityWithFilesSchema[] = await entities.get();
+        const attachments: FileType[] = entitiesImported
+          .map(entity => entity.attachments || [])
+          .flat();
+        const testingPaths = await testingUploadPaths();
+        // eslint-disable-next-line no-restricted-syntax
+        for await (const attachment of attachments) {
+          expect(
+            await fileExists(path.join(testingPaths.attachments, attachment.filename || ''))
+          ).toBe(true);
+        }
+      }, tenantName);
     });
 
     // it('should add all downloads to attachments', async () => {});
+    // it('should not import already imported evidences', async () => {});
   });
-
-  // it('should not import already imported evidences', async () => {});
 });
