@@ -6,9 +6,6 @@ Object {
     "value": Object {
       "analyzer": "tokenizer",
       "fields": Object {
-        "raw": Object {
-          "type": "text",
-        },
         "sort": Object {
           "analyzer": "string_sorter",
           "fielddata": true,
@@ -27,10 +24,6 @@ Object {
   "properties": Object {
     "value": Object {
       "fields": Object {
-        "raw": Object {
-          "index": false,
-          "type": "double",
-        },
         "sort": Object {
           "type": "double",
         },
@@ -47,9 +40,6 @@ Object {
     "label": Object {
       "analyzer": "tokenizer",
       "fields": Object {
-        "raw": Object {
-          "type": "text",
-        },
         "sort": Object {
           "analyzer": "string_sorter",
           "fielddata": true,
@@ -61,9 +51,6 @@ Object {
     },
     "value": Object {
       "fields": Object {
-        "raw": Object {
-          "type": "keyword",
-        },
         "sort": Object {
           "analyzer": "string_sorter",
           "fielddata": true,
