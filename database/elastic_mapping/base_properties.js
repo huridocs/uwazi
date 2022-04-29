@@ -55,7 +55,12 @@ const properties = {
   },
   attachments: {
     type: 'object',
-    enabled: false,
+    enabled: true,
+    properties: {
+      mimetype: {
+        type: 'keyword',
+      },
+    },
   },
   icon: {
     type: 'object',
