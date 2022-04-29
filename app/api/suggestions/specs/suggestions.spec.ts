@@ -5,7 +5,7 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
-import { fixtures, personTemplateId } from './fixtures';
+import { fixtures, personTemplateId, suggestionId } from './fixtures';
 
 const getSuggestions = async (propertyName: string) =>
   Suggestions.get({ propertyName }, { page: { size: 5, number: 1 } });
@@ -103,6 +103,30 @@ describe('suggestions', () => {
       expect(suggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared4').state).toBe(
         SuggestionState.error
       );
+    });
+  });
+
+  describe('accept()', () => {
+    it('should accept a suggestion', async () => {
+      const { suggestions } = await getSuggestions('super_powers');
+      const labelMismatchedSuggestion = suggestions.find(
+        (sug: any) => sug.state === SuggestionState.labelMismatch
+      );
+      await Suggestions.accept(
+        {
+          _id: suggestionId,
+          sharedId: labelMismatchedSuggestion.sharedId,
+          entityId: labelMismatchedSuggestion.entityId,
+        },
+        false
+      );
+      const { suggestions: newSuggestions } = await getSuggestions('super_powers');
+      const changedSuggestion = newSuggestions.find(
+        (sg: any) => sg._id.toString() === suggestionId.toString()
+      );
+
+      expect(changedSuggestion.state).toBe(SuggestionState.labelMatch);
+      expect(changedSuggestion.suggestedValue).toEqual(changedSuggestion.labeledValue);
     });
   });
 });

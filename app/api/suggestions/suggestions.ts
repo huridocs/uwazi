@@ -1,12 +1,15 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 /* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { EntitySchema } from 'shared/types/entityType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import settings from 'api/settings/settings';
+import { files } from 'api/files/files';
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
@@ -268,6 +271,37 @@ export const Suggestions = {
             ...entity,
             title: suggestion.suggestedValue,
           }));
+
+    const fetchedFiles = await files.get({ _id: suggestion.fileId });
+    if (fetchedFiles.length > 0) {
+      const file = fetchedFiles[0];
+      const newTextSelection = suggestion.selectionRectangles;
+      if (!file.extractedMetadata) {
+        const newExtractedMetadata: any[] = [
+          {
+            name: suggestion.propertyName,
+            timestamp: Date(),
+            selection: {
+              text: suggestion.suggestedValue,
+              selectionRectangles: newTextSelection,
+            },
+          },
+        ];
+        file.extractedMetadata = newExtractedMetadata;
+      } else {
+        const extractedMetadata = file.extractedMetadata.find(
+          (em: any) => em.name === suggestion.propertyName
+        );
+        (extractedMetadata as ExtractedMetadataSchema).timestamp = Date();
+
+        (extractedMetadata as ExtractedMetadataSchema).selection = {
+          text: suggestion.suggestedValue as string,
+          selectionRectangles: newTextSelection,
+        };
+      }
+      await files.save(file);
+    }
+
     await entities.saveMultiple(entitiesToUpdate);
   },
   deleteByEntityId: async (sharedId: string) => {

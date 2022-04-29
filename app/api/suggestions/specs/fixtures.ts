@@ -4,6 +4,8 @@ import { testingDB, DBFixture } from 'api/utils/testing_db';
 
 const factory = getFixturesFactory();
 
+const suggestionId = testingDB.id();
+
 const shared2esId = testingDB.id();
 const shared2enId = testingDB.id();
 const shared6enId = testingDB.id();
@@ -116,6 +118,7 @@ const fixtures: DBFixture = {
       error: '',
     },
     {
+      _id: suggestionId,
       fileId: factory.id('F3'),
       entityId: 'shared2',
       propertyName: 'super_powers',
@@ -281,7 +284,7 @@ const fixtures: DBFixture = {
       title: 'Batman es',
       language: 'es',
       metadata: { super_powers: [{ value: 'conocimiento científico' }] },
-      template: personTemplateId,
+      template: factory.id('template1'),
     },
     {
       _id: testingDB.id(),
@@ -391,6 +394,16 @@ const fixtures: DBFixture = {
         },
       ],
     },
+    {
+      _id: factory.id('template1'),
+      properties: [
+        {
+          label: 'Super powers',
+          type: 'text',
+          name: 'super_powers',
+        },
+      ],
+    },
   ],
 };
 
@@ -403,4 +416,5 @@ export {
   suggestionSharedId6Enemy,
   personTemplateId,
   heroTemplateId,
+  suggestionId,
 };
