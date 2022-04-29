@@ -1,7 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import {
+  ObjectIdSchema,
+  PropertyValueSchema,
+  SelectionRectanglesSchema,
+} from 'shared/types/commonTypes';
 
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
@@ -40,6 +44,13 @@ export interface IXSuggestionType {
   status?: 'processing' | 'failed' | 'ready';
   date?: number;
   error?: string;
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    page?: string;
+  }[];
 }
 
 export interface IXSuggestionsQuery {

@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
@@ -35,7 +37,13 @@ type RawSuggestion = {
   xml_file_name: string;
   text: string;
   segment_text: string;
-  page_number: number;
+  segments_boxes: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    page_number: number;
+  }[];
   /* eslint-enable camelcase */
 };
 
@@ -222,7 +230,11 @@ class InformationExtraction {
           status,
           error,
           date: new Date().getTime(),
-          page: rawSuggestion.page_number,
+          selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
+            const rect = { ...box, page: box.page_number.toString() };
+            delete rect.page_number;
+            return rect;
+          }),
         };
         return IXSuggestionsModel.save(suggestion);
       })

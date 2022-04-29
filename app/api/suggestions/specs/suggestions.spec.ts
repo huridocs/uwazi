@@ -3,9 +3,9 @@ import db from 'api/utils/testing_db';
 
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
 import { fixtures, personTemplateId } from './fixtures';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 
 const getSuggestions = async (propertyName: string) =>
   Suggestions.get({ propertyName }, { page: { size: 5, number: 1 } });
@@ -96,6 +96,13 @@ describe('suggestions', () => {
           (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
         ).state
       ).toBe(SuggestionState.valueMismatch);
+    });
+
+    it('should return error status', async () => {
+      const { suggestions } = await getSuggestions('age');
+      expect(suggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared4').state).toBe(
+        SuggestionState.error
+      );
     });
   });
 });

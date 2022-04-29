@@ -141,6 +141,12 @@ export const Suggestions = {
                 branches: [
                   {
                     case: {
+                      $ne: ['$error', ''],
+                    },
+                    then: 'Error',
+                  },
+                  {
+                    case: {
                       $lte: ['$date', model.creationDate],
                     },
                     then: SuggestionState.obsolete,

@@ -18,6 +18,13 @@ const suggestionSharedId6EnemyEs = testingDB.id();
 const fixtures: DBFixture = {
   settings: [
     {
+      languages: [
+        {
+          default: true,
+          key: 'en',
+          label: 'English',
+        },
+      ],
       features: {
         metadataExtraction: {
           url: 'https://metadataextraction.com',
@@ -61,6 +68,7 @@ const fixtures: DBFixture = {
       date: 5,
       page: 2,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared1',
@@ -71,6 +79,7 @@ const fixtures: DBFixture = {
       date: 5,
       page: 2,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared1',
@@ -81,6 +90,7 @@ const fixtures: DBFixture = {
       date: 5,
       page: 2,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared2',
@@ -91,6 +101,7 @@ const fixtures: DBFixture = {
       date: 2,
       page: 3,
       status: 'processing',
+      error: '',
     },
     {
       fileId: factory.id('F2'),
@@ -102,6 +113,7 @@ const fixtures: DBFixture = {
       date: 4,
       page: 5,
       status: 'ready',
+      error: '',
     },
     {
       fileId: factory.id('F3'),
@@ -113,6 +125,7 @@ const fixtures: DBFixture = {
       date: 4,
       page: 5,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared3',
@@ -123,6 +136,7 @@ const fixtures: DBFixture = {
       date: 4,
       page: 3,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared3',
@@ -133,6 +147,7 @@ const fixtures: DBFixture = {
       date: 4000,
       page: 3,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared4',
@@ -143,6 +158,7 @@ const fixtures: DBFixture = {
       date: 3,
       page: 1,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared4',
@@ -153,6 +169,7 @@ const fixtures: DBFixture = {
       date: 4,
       page: 3,
       status: 'ready',
+      error: 'This has an error',
     },
     {
       entityId: 'shared5',
@@ -163,6 +180,7 @@ const fixtures: DBFixture = {
       date: 6,
       page: 2,
       status: 'ready',
+      error: '',
     },
     {
       entityId: 'shared5',
@@ -173,6 +191,7 @@ const fixtures: DBFixture = {
       date: 4,
       page: 3,
       status: 'ready',
+      error: '',
     },
     {
       _id: suggestionSharedId6Title,
@@ -184,6 +203,7 @@ const fixtures: DBFixture = {
       date: 2,
       page: 12,
       status: 'ready',
+      error: '',
     },
     {
       _id: suggestionSharedId6Enemy,
@@ -195,6 +215,7 @@ const fixtures: DBFixture = {
       date: 5,
       page: 3,
       status: 'ready',
+      error: '',
     },
     {
       _id: suggestionSharedId6EnemyEs,
@@ -206,6 +227,7 @@ const fixtures: DBFixture = {
       date: 5,
       page: 3,
       status: 'ready',
+      error: '',
     },
     {
       fileId: factory.id('F4'),
@@ -218,6 +240,7 @@ const fixtures: DBFixture = {
       date: 5,
       page: 3,
       status: 'ready',
+      error: '',
     },
   ],
   entities: [
