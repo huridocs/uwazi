@@ -1,9 +1,10 @@
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 
-const template: IImmutable<TemplateSchema> = Immutable.fromJS({
+const dbTemplate: IImmutable<TemplateSchema> = Immutable.fromJS({
   color: '#A03AB1',
   entityViewPage: 'gr7lmh3406',
   _id: '626f4019389811b04456ab95',
@@ -73,7 +74,7 @@ const template: IImmutable<TemplateSchema> = Immutable.fromJS({
   __v: 0,
 });
 
-const entityRaw: EntitySchema = {
+const dbEntity: EntitySchema = {
   sharedId: '8mdlvmt704q',
   permissions: [
     {
@@ -573,4 +574,300 @@ const thesauri = Immutable.fromJS([
   },
 ]);
 
-export { template, entityRaw, thesauri };
+const expectedFormattedEntity = {
+  metadata: {
+    character_description: {
+      translateContext: '626f3efb389811b044569513',
+      label: 'Character description',
+      name: 'character_description',
+      type: 'inherit',
+      value: [
+        {
+          value: 'Criminal mastermind',
+        },
+      ],
+      inheritedType: 'text',
+      onlyForCards: false,
+      indexInTemplate: 0,
+    },
+    main_enemy: {
+      translateContext: '626f4019389811b04456ab95',
+      _id: '626f40f4389811b04456bc33',
+      label: 'Main enemy',
+      type: 'relationship',
+      content: '626f3f85389811b04456a0cd',
+      relationType: '626f3f7a389811b044569db9',
+      name: 'main_enemy',
+      indexInTemplate: 1,
+      value: [
+        {
+          value: 'Batman hero',
+          url: '/entity/v5g098ioqe',
+          icon: null,
+          relatedEntity: {
+            sharedId: 'v5g098ioqe',
+            creationDate: 1651458822623,
+            published: true,
+            metadata: {
+              character_details: [
+                {
+                  value: 'awab9gii2uu',
+                  label: 'Batman',
+                  type: 'entity',
+                },
+              ],
+            },
+            attachments: [],
+            title: 'Batman hero',
+            documents: [],
+            template: '626f3f85389811b04456a0cd',
+            _id: '626f4306389811b04456cf38',
+          },
+        },
+      ],
+    },
+    main_colors: {
+      translateContext: '626f4019389811b04456ab95',
+      _id: '626f4122389811b04456c2b4',
+      label: 'Main colors',
+      type: 'multiselect',
+      content: '626f40c7389811b04456b5b5',
+      name: 'main_colors',
+      indexInTemplate: 2,
+      value: [
+        {
+          value: 'Blue',
+        },
+        {
+          value: 'Red',
+        },
+      ],
+    },
+    comic_dates: {
+      translateContext: '626f4019389811b04456ab95',
+      _id: '626f4341389811b04456d3c4',
+      label: 'Comic dates',
+      type: 'multidaterange',
+      name: 'comic_dates',
+      indexInTemplate: 3,
+      value: [
+        {
+          value: 'Apr 2, 2018 ~ May 31, 2022',
+        },
+        {
+          value: 'May 15, 2013 ~ May 14, 2014',
+        },
+      ],
+    },
+  },
+  sharedId: '8mdlvmt704q',
+  permissions: [
+    {
+      refId: '58ad7d240d44252fee4e6212',
+      type: 'user',
+      level: 'write',
+    },
+  ],
+  user: '58ad7d240d44252fee4e6212',
+  creationDate: 1651458629899,
+  published: true,
+  attachments: [],
+  __v: 0,
+  relations: [
+    {
+      template: null,
+      entityData: {
+        sharedId: '8mdlvmt704q',
+        creationDate: 1651458629899,
+        published: true,
+        metadata: {
+          character_description: [
+            {
+              value: 'ci03oddudli',
+              label: 'Joker',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'Criminal mastermind',
+                },
+              ],
+              inheritedType: 'text',
+            },
+          ],
+          main_colors: [
+            {
+              value: 'ibxxz2mmc6j',
+              label: 'Red',
+            },
+            {
+              value: '50i5v4txihr',
+              label: 'Blue',
+            },
+          ],
+          main_enemy: [
+            {
+              value: 'v5g098ioqe',
+              label: 'Batman hero',
+              icon: null,
+              type: 'entity',
+            },
+          ],
+          comic_dates: [
+            {
+              value: {
+                from: 1522627200,
+                to: 1654041599,
+              },
+            },
+            {
+              value: {
+                from: 1368576000,
+                to: 1400111999,
+              },
+            },
+          ],
+        },
+        attachments: [],
+        title: 'Joker villian',
+        documents: [],
+        template: '626f4019389811b04456ab95',
+        _id: '626f4245389811b04456c36e',
+      },
+      _id: '626f4245389811b04456c37a',
+      entity: '8mdlvmt704q',
+      hub: '626f4245389811b04456c375',
+    },
+    {
+      template: '626f3fbc389811b04456a4ce',
+      entityData: {
+        sharedId: 'ci03oddudli',
+        creationDate: 1651458558816,
+        published: true,
+        metadata: {
+          description: [
+            {
+              value: 'Criminal mastermind',
+            },
+          ],
+          image: [
+            {
+              value: '',
+            },
+          ],
+          number_of_comics: [
+            {
+              value: 35,
+            },
+          ],
+        },
+        attachments: [],
+        title: 'Joker',
+        documents: [],
+        template: '626f3efb389811b044569513',
+        _id: '626f41fe389811b04456c341',
+      },
+      _id: '626f4245389811b04456c37b',
+      entity: 'ci03oddudli',
+      hub: '626f4245389811b04456c375',
+    },
+    {
+      template: null,
+      entityData: {
+        sharedId: '8mdlvmt704q',
+        creationDate: 1651458629899,
+        published: true,
+        metadata: {
+          character_description: [
+            {
+              value: 'ci03oddudli',
+              label: 'Joker',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'Criminal mastermind',
+                },
+              ],
+              inheritedType: 'text',
+            },
+          ],
+          main_colors: [
+            {
+              value: 'ibxxz2mmc6j',
+              label: 'Red',
+            },
+            {
+              value: '50i5v4txihr',
+              label: 'Blue',
+            },
+          ],
+          main_enemy: [
+            {
+              value: 'v5g098ioqe',
+              label: 'Batman hero',
+              icon: null,
+              type: 'entity',
+            },
+          ],
+          comic_dates: [
+            {
+              value: {
+                from: 1522627200,
+                to: 1654041599,
+              },
+            },
+            {
+              value: {
+                from: 1368576000,
+                to: 1400111999,
+              },
+            },
+          ],
+        },
+        attachments: [],
+        title: 'Joker villian',
+        documents: [],
+        template: '626f4019389811b04456ab95',
+        _id: '626f4245389811b04456c36e',
+      },
+      _id: '626f4371389811b04456d435',
+      entity: '8mdlvmt704q',
+      hub: '626f4371389811b04456d430',
+    },
+    {
+      template: '626f3f7a389811b044569db9',
+      entityData: {
+        sharedId: 'v5g098ioqe',
+        creationDate: 1651458822623,
+        published: true,
+        metadata: {
+          character_details: [
+            {
+              value: 'awab9gii2uu',
+              label: 'Batman',
+              type: 'entity',
+            },
+          ],
+        },
+        attachments: [],
+        title: 'Batman hero',
+        documents: [],
+        template: '626f3f85389811b04456a0cd',
+        _id: '626f4306389811b04456cf38',
+      },
+      _id: '626f4371389811b04456d436',
+      entity: 'v5g098ioqe',
+      hub: '626f4371389811b04456d430',
+    },
+  ],
+  editDate: 1651458929437,
+  title: 'Joker villian',
+  documents: [],
+  language: 'en',
+  template: '626f4019389811b04456ab95',
+  _id: '626f4245389811b04456c36e',
+  documentType: 'Villian',
+};
+
+export { dbTemplate, dbEntity, thesauri, expectedFormattedEntity };

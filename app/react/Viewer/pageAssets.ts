@@ -1,6 +1,6 @@
 import { formater as formatter } from 'app/Metadata';
 import { pick, isObject, isArray } from 'lodash';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, MetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -29,21 +29,52 @@ const mapPropertyValue = (item: any) => {
   return itemValue;
 };
 
+const composeEntityData = (rawEntity: EntitySchema) => {
+  // const entity = pickEntityFields(rawEntity);
+  // const newMetadata = entity.metadata.map((property: MetadataObjectSchema) => {
+  //   const propertyName = property.name as string;
+  //   if (isArray(property)) {
+  //     return { [propertyName]: property.map(item => mapPropertyValue(item)) };
+  //   }
+  //   return { [propertyName]: mapPropertyValue(property) };
+  // });
+  // const composedMetadata =
+  //   metadata && metadata.length > 0
+  //     ? metadata.map(data => {
+  //         console.log(data);
+  //       })
+  //     : {};
+  // return {
+  //   ...entity,
+  //   metadata: composedMetadata,
+  // };
+};
+
+const formatEntity = (
+  entity: EntitySchema,
+  template: IImmutable<TemplateSchema>,
+  thesauris: ThesaurusSchema[]
+) => {
+  const formattedEntity = formatter.prepareMetadata(entity, [template], thesauris);
+  formattedEntity.metadata = formattedEntity.metadata.reduce(
+    (memo, property) => ({ ...memo, [property.name]: property }),
+    {}
+  );
+  return formattedEntity;
+};
+
 const prepareAssets = (
   entityRaw: EntitySchema,
   template: IImmutable<TemplateSchema>,
   thesauris: ThesaurusSchema[]
 ) => {
-  const formattedEntity = formatter.prepareMetadata(entityRaw, [template], thesauris);
-  const entity = pickEntityFields(entityRaw);
-  const newMetadata = formattedEntity.metadata.map((property: MetadataObjectSchema) => {
-    const propertyName = property.name as string;
-    if (isArray(property)) {
-      return { [propertyName]: property.map(item => mapPropertyValue(item)) };
-    }
-    return { [propertyName]: mapPropertyValue(property) };
-  });
-  return { entity: { ...entity, metadata: newMetadata }, entityRaw, template: template.toJS() };
+  const formattedEntity = formatEntity(entityRaw, template, thesauris);
+  return {
+    entity: formattedEntity,
+    entityRaw,
+    entityData: {},
+    template: template.toJS(),
+  };
 };
 
 export { prepareAssets };
