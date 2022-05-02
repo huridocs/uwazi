@@ -38,6 +38,7 @@ import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
+import { preserveSync } from './api/services/preserve/preserveSync';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
 
 mongoose.Promise = Promise;
@@ -194,6 +195,12 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         );
 
         twitterRepeater.start();
+
+        new DistributedLoop('preserve_integration', async () => preserveSync.syncAllTenants(), {
+          port: config.redis.port,
+          host: config.redis.host,
+          delayTimeBetweenTasks: 5000,
+        }).start();
       }
     });
 
