@@ -7,7 +7,7 @@ import path from 'path';
 import qs from 'qs';
 import request from 'shared/JSONRequest';
 import { EntitySchema } from 'shared/types/entityType';
-import { Settings } from 'shared/types/settingsType';
+import { PreserveConfig } from 'shared/types/settingsType';
 import { preserveSyncModel } from './preserveSyncModel';
 
 const preserveSync = {
@@ -17,66 +17,64 @@ const preserveSync = {
       return tenants.run(async () => {
         permissionsContext.setCommandContext();
         const { features } = await settings.get({}, 'features.preserve');
-        return this.sync(features);
+        if (features?.preserve) {
+          await this.sync(features.preserve);
+        }
       }, tenantName);
     }, Promise.resolve());
   },
 
-  async sync(features: Settings['features']) {
-    if (features?.preserve) {
-      const config = features.preserve;
+  async sync(preserveConfig: PreserveConfig) {
+    const preservationSync = await preserveSyncModel.db.findOne({}, {});
 
-      const preservationSync = await preserveSyncModel.db.findOne({}, {});
+    const queryString = qs.stringify({
+      filter: {
+        status: 'PROCESSED',
+        ...(preservationSync ? { date: { gt: preservationSync.lastImport } } : {}),
+      },
+    });
 
-      const queryString = qs.stringify({
-        filter: {
-          status: 'PROCESSED',
-          ...(preservationSync ? { date: { gt: preservationSync.lastImport } } : {}),
-        },
-      });
-
-      const evidences = await request.get(
-        `${config.host}/api/evidences?${queryString}`,
-        {},
-        {
-          Authorization: config.token,
-        }
-      );
-
-      await evidences.json.data.reduce(async (previous: Promise<EntitySchema>, evidence: any) => {
-        await previous;
-        const { sharedId } = await entities.save(
-          { title: evidence.attributes.title, template: config.template },
-          { language: 'en', user: {} }
-        );
-        await Promise.all(
-          evidence.attributes.downloads.map(async (download: any) => {
-            const fileName = generateFileName({ originalname: path.basename(download.path) });
-            const fileStream = (
-              await fetch(new URL(path.join(config.host, download.path)).toString(), {
-                headers: { Authorization: config.token },
-              })
-            ).body as unknown as NodeJS.ReadableStream;
-            if (fileStream) {
-              await fileFromReadStream(fileName, fileStream);
-
-              await files.save({
-                entity: sharedId,
-                type: 'attachment',
-                filename: fileName,
-                originalname: path.basename(download.path),
-              });
-            }
-          })
-        );
-      }, Promise.resolve());
-
-      if (evidences.json.data.length) {
-        await preserveSyncModel.save({
-          ...(preservationSync ? { _id: preservationSync._id } : {}),
-          lastImport: evidences.json.data[evidences.json.data.length - 1].attributes.date,
-        });
+    const evidences = await request.get(
+      `${preserveConfig.host}/api/evidences?${queryString}`,
+      {},
+      {
+        Authorization: preserveConfig.token,
       }
+    );
+
+    await evidences.json.data.reduce(async (previous: Promise<EntitySchema>, evidence: any) => {
+      await previous;
+      const { sharedId } = await entities.save(
+        { title: evidence.attributes.title, template: preserveConfig.template },
+        { language: 'en', user: {} }
+      );
+      await Promise.all(
+        evidence.attributes.downloads.map(async (download: any) => {
+          const fileName = generateFileName({ originalname: path.basename(download.path) });
+          const fileStream = (
+            await fetch(new URL(path.join(preserveConfig.host, download.path)).toString(), {
+              headers: { Authorization: preserveConfig.token },
+            })
+          ).body as unknown as NodeJS.ReadableStream;
+          if (fileStream) {
+            await fileFromReadStream(fileName, fileStream);
+
+            await files.save({
+              entity: sharedId,
+              type: 'attachment',
+              filename: fileName,
+              originalname: path.basename(download.path),
+            });
+          }
+        })
+      );
+    }, Promise.resolve());
+
+    if (evidences.json.data.length) {
+      await preserveSyncModel.save({
+        ...(preservationSync ? { _id: preservationSync._id } : {}),
+        lastImport: evidences.json.data[evidences.json.data.length - 1].attributes.date,
+      });
     }
   },
 };

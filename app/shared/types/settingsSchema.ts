@@ -112,6 +112,19 @@ const settingsEvidencesVaultSchema = {
   },
 };
 
+const settingsPreserveConfigSchema = {
+  title: 'PreserveConfig',
+  type: 'object',
+  additionalProperties: false,
+  definitions: { objectIdSchema },
+  required: ['host', 'token', 'template'],
+  properties: {
+    host: { type: 'string' },
+    token: { type: 'string' },
+    template: objectIdSchema,
+  },
+};
+
 const settingsLinkSchema = {
   type: 'object',
   additionalProperties: false,
@@ -139,6 +152,7 @@ const settingsSchema = {
     settingsFilterSchema,
     settingsLinkSchema,
     settingsSyncSchema,
+    settingsPreserveConfigSchema,
   },
   additionalProperties: false,
   hasDefaultLanguage: true,
@@ -200,16 +214,7 @@ const settingsSchema = {
         },
         topicClassification: { type: 'boolean' },
         favorites: { type: 'boolean' },
-        preserve: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['host', 'token', 'template'],
-          properties: {
-            host: { type: 'string' },
-            token: { type: 'string' },
-            template: objectIdSchema,
-          },
-        },
+        preserve: settingsPreserveConfigSchema,
         ocr: {
           type: 'object',
           additionalProperties: false,
@@ -272,6 +277,7 @@ const settingsSchema = {
 };
 
 const validateSettings = wrapValidator(ajv.compile(settingsSchema));
+
 export {
   validateSettings,
   emitSchemaTypes,
@@ -282,4 +288,5 @@ export {
   settingsSyncSchema,
   settingsLinkSchema,
   settingsSchema,
+  settingsPreserveConfigSchema,
 };

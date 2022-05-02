@@ -38,6 +38,7 @@ const mockVault = async (evidences: any[], isoDate = '') => {
       const tmpName = generateFileName({ originalname: 'test' });
       await uwaziFS.writeFile(path.join('/tmp', tmpName), 'content');
       const file = uwaziFS.createReadStream(path.join('/tmp', tmpName));
+
       // @ts-ignore
       const fileResponse = new Response(file, {
         headers: { 'Content-Type': 'application/octet-stream' },
