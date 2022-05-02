@@ -52,7 +52,14 @@ export const fixtures: DBFixture = {
   ],
 
   settings: [
-    { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
+    {
+      _id: db.id(),
+      languages: [
+        { key: 'es', label: 'ES', default: true },
+        { key: 'pt', label: 'PT' },
+        { key: 'en', label: 'EN' },
+      ],
+    },
   ],
   templates: [
     {

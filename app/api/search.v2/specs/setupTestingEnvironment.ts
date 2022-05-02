@@ -5,7 +5,15 @@ const setupTestingEnviroment = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(
     {
       ...data,
-      settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+      settings: [
+        {
+          _id: db.id(),
+          languages: [
+            { key: 'en', label: 'EN', default: true },
+            { key: 'es', label: 'ES' },
+          ],
+        },
+      ],
       translations: [
         { locale: 'en', contexts: [] },
         { locale: 'es', contexts: [] },

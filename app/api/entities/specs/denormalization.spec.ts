@@ -12,7 +12,15 @@ const load = async (data: DBFixture, index?: string) =>
   db.setupFixturesAndContext(
     {
       ...data,
-      settings: [{ _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+      settings: [
+        {
+          _id: db.id(),
+          languages: [
+            { key: 'en', label: 'EN', default: true },
+            { key: 'es', label: 'ES' },
+          ],
+        },
+      ],
       translations: data.translations || [
         { locale: 'en', contexts: [] },
         { locale: 'es', contexts: [] },

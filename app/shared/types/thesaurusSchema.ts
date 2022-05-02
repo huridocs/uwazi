@@ -47,12 +47,12 @@ export const thesaurusSchema = {
   type: 'object',
   required: ['name'],
   definitions: { objectIdSchema, thesaurusValueSchema },
+  uniqueName: true,
   properties: {
     _id: objectIdSchema,
     type: { type: 'string', enum: ['thesauri'] },
     name: {
       type: 'string',
-      uniqueName: '',
       minLength: 1,
     },
     enable_classification: { type: 'boolean' },
