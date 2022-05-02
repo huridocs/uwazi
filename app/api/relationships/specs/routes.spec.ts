@@ -20,7 +20,7 @@ describe('relationships routes', () => {
   beforeEach(async () => {
     spyOn(errorLog, 'error');
     await testingEnvironment.setUp({
-      settings: [{ languages: [{ key: 'en', default: true }] }],
+      settings: [{ languages: [{ key: 'en', label: 'EN', default: true }] }],
     });
   });
 
