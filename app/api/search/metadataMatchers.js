@@ -1,5 +1,5 @@
 const textFilter = (filter, path = 'metadata') => ({
-  term: { [`${path}.${filter.name}.raw`]: filter.value },
+  term: { [`${path}.${filter.name}`]: filter.value },
 });
 
 const rangeFilter = (filter, path = 'metadata') => {
@@ -30,7 +30,7 @@ const multiselectFilter = (filter, path = 'metadata') => {
   if (values.includes('any')) {
     match = {
       exists: {
-        field: `${path}.${filter.name}.raw`,
+        field: `${path}.${filter.name}`,
       },
     };
     return match;
@@ -40,9 +40,9 @@ const multiselectFilter = (filter, path = 'metadata') => {
     match = {
       bool: {
         should: [
-          missingFilter(`${path}.${filter.name}.raw`),
+          missingFilter(`${path}.${filter.name}`),
           {
-            terms: { [`${path}.${filter.name}.raw`]: _values },
+            terms: { [`${path}.${filter.name}`]: _values },
           },
         ],
       },
@@ -50,13 +50,13 @@ const multiselectFilter = (filter, path = 'metadata') => {
     return match;
   }
   if (!values.includes('missing') && !filterValue.and) {
-    match = { terms: { [`${path}.${filter.name}.raw`]: values } };
+    match = { terms: { [`${path}.${filter.name}`]: values } };
   }
 
   if (filterValue.and) {
     match = {
       bool: {
-        must: values.map(value => ({ term: { [`${path}.${filter.name}.raw`]: value } })),
+        must: values.map(value => ({ term: { [`${path}.${filter.name}`]: value } })),
       },
     };
   }
@@ -105,7 +105,7 @@ const strictNestedFilter = filter => {
 
     properties[key].values.forEach(val => {
       const term = { term: {} };
-      term.term[`metadata.${filter.name}.${key}.raw`] = { value: val };
+      term.term[`metadata.${filter.name}.${key}`] = { value: val };
       match.nested.query.bool.must.push(term);
     });
   });
