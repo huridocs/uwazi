@@ -88,7 +88,9 @@ describe('DatePicker', () => {
 
     it('should render a latin-based value (until correct locales are implemented)', () => {
       render();
-      expect(input.props().selected).toBe(parseInt(moment('2016-07-28').format('x'), 10));
+      expect(input.props().selected).toBe(
+        parseInt(moment('2016-07-28').locale('en').format('x'), 10)
+      );
     });
 
     it('should not fail on change', () => {
@@ -97,7 +99,7 @@ describe('DatePicker', () => {
       render();
       input.simulate('change', newDate);
       expect(props.onChange).toHaveBeenCalledWith(
-        parseInt(moment.utc('2020-08-18').format('X'), 10)
+        parseInt(moment.utc('2020-08-18').locale('en').format('X'), 10)
       );
     });
   });

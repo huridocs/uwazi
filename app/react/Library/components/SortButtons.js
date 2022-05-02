@@ -4,118 +4,51 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { actions } from 'react-redux-form';
-import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
+import { DropdownList } from 'app/Forms';
 
-export class SortButtons extends Component {
-  static orderDirectionLabel(propertyType, order = 'asc') {
-    let label = order === 'asc' ? 'A-Z' : 'Z-A';
-    if (propertyType === 'date') {
-      label = order === 'asc' ? t('System', 'Oldest') : t('System', 'Newest');
-    }
+const getMetadataSorts = templates =>
+  templates.toJS().reduce((sorts, template) => {
+    template.properties.forEach(property => {
+      const sortable =
+        property.filter &&
+        (property.type === 'text' ||
+          property.type === 'date' ||
+          property.type === 'numeric' ||
+          property.type === 'select');
 
-    if (propertyType === 'numeric') {
-      label = order === 'asc' ? '0-9' : '9-0';
-    }
+      if (sortable && !sorts.find(s => s.name === property.name)) {
+        const sortString = `metadata.${property.name}`;
+        sorts.push({
+          label: property.label,
+          name: property.name,
+          value: sortString,
+          type: property.type,
+          context: template._id,
+        });
+      }
+    });
+    return sorts;
+  }, []);
 
-    return label;
-  }
-
+class SortButtons extends Component {
   constructor(props) {
     super(props);
-    this.state = { active: false };
-    this.toggle = this.toggle.bind(this);
-  }
-
-  getAdditionalSorts(templates, search) {
-    const additionalSorts = templates.toJS().reduce((sorts, template) => {
-      template.properties.forEach(property => {
-        const sortable =
-          property.filter &&
-          (property.type === 'text' ||
-            property.type === 'date' ||
-            property.type === 'numeric' ||
-            property.type === 'select');
-
-        if (sortable && !sorts.find(s => s.property === property.name)) {
-          const sortString = `metadata.${property.name}`;
-          const sortOptions = { isActive: search.sort === sortString, search, type: property.type };
-
-          sorts.push({
-            property: property.name,
-            html: this.createSortItem(
-              sortString,
-              sortString,
-              template._id,
-              property.label,
-              sortOptions
-            ),
-          });
-        }
-      });
-      return sorts;
-    }, []);
-
-    return additionalSorts.map(s => s.html);
-  }
-
-  createSortItem(key, sortString, context, label, options) {
-    const { isActive, search, type } = options;
-    const treatAs = type === 'text' || type === 'select' ? 'string' : 'number';
-    const firstOrder = treatAs !== 'number' ? 'asc' : 'desc';
-    const secondOrder = treatAs !== 'number' ? 'desc' : 'asc';
-
-    return (
-      <li key={key} className={`Dropdown-option ${isActive ? 'is-active' : ''}`}>
-        <a
-          className={`Dropdown-option__item ${
-            isActive && search.order === firstOrder ? 'is-active' : ''
-          }`}
-          onClick={() => this.handleClick(sortString, firstOrder, treatAs)}
-        >
-          <span>
-            {t(context, label)} ({SortButtons.orderDirectionLabel(type, firstOrder)})
-          </span>
-          <ShowIf if={isActive && search.order === firstOrder}>
-            <Icon icon="caret-down" />
-          </ShowIf>
-          <ShowIf if={isActive && search.order === firstOrder}>
-            <Icon icon="caret-up" />
-          </ShowIf>
-        </a>
-        <a
-          className={`Dropdown-option__item ${
-            isActive && search.order === secondOrder ? 'is-active' : ''
-          }`}
-          onClick={() => this.handleClick(sortString, secondOrder, treatAs)}
-        >
-          <span>
-            {t(context, label)} ({SortButtons.orderDirectionLabel(type, secondOrder)})
-          </span>
-          <ShowIf if={isActive && search.order === secondOrder}>
-            <Icon icon="caret-down" />
-          </ShowIf>
-          <ShowIf if={isActive && search.order === secondOrder}>
-            <Icon icon="caret-up" />
-          </ShowIf>
-        </a>
-      </li>
-    );
+    this.changeOrder = this.changeOrder.bind(this);
   }
 
   changeOrder() {
-    const { sort, order } = this.props.search;
-    this.sort(sort, order === 'desc' ? 'asc' : 'desc');
+    const { sort, treatAs } = this.props.search;
+    this.sort(sort, treatAs, this.props.search.order === 'asc' ? 'desc' : 'asc');
   }
 
-  sort(property, defaultOrder, defaultTreatAs) {
-    const { search } = this.props;
-    const order = defaultOrder || 'asc';
-    let treatAs = defaultTreatAs;
+  sort(property, defaultTreatAs, selectedSort) {
+    const treatAs = defaultTreatAs;
+    let order = selectedSort;
 
-    if (search.sort === property) {
-      treatAs = search.treatAs;
+    if (treatAs && !selectedSort) {
+      order = treatAs === 'string' ? 'asc' : 'desc';
     }
 
     const sort = { sort: property, order, treatAs };
@@ -132,18 +65,6 @@ export class SortButtons extends Component {
     }
   }
 
-  handleClick(property, defaultOrder, treatAs) {
-    if (!this.state.active) {
-      return;
-    }
-
-    this.sort(property, defaultOrder, treatAs);
-  }
-
-  toggle() {
-    this.setState(prevState => ({ active: !prevState.active }));
-  }
-
   validateSearch() {
     const { search } = this.props;
     const _search = { ...search };
@@ -154,58 +75,53 @@ export class SortButtons extends Component {
     return _search;
   }
 
-  renderDropdown(search, additionalSorts, { includeEvents = true } = {}) {
-    const { active } = this.state;
-    return (
-      <div
-        className={`Dropdown ${!includeEvents ? 'width-placeholder' : ''} order-by ${
-          active && includeEvents ? 'is-active' : ''
-        }`}
-      >
-        <ul className="Dropdown-list" onClick={includeEvents ? this.toggle : () => {}}>
-          {this.createSortItem('title', 'title', 'System', 'Title', {
-            isActive: search.sort === 'title',
-            search,
-            type: 'string',
-          })}
-          {this.createSortItem('creationDate', 'creationDate', 'System', 'Date added', {
-            isActive: search.sort === 'creationDate',
-            search,
-            type: 'date',
-          })}
-          {this.createSortItem('editDate', 'editDate', 'System', 'Date modified', {
-            isActive: search.sort === 'editDate',
-            search,
-            type: 'date',
-          })}
-          {search.searchTerm && (
-            <li
-              key="relevance"
-              className={`Dropdown-option ${search.sort === '_score' ? 'is-active' : ''}`}
-            >
-              <a
-                className={`Dropdown-option__item ${search.sort === '_score' ? 'is-active' : ''}`}
-                onClick={() => (includeEvents ? this.handleClick('_score') : null)}
-              >
-                <span>{t('System', 'Search relevance')}</span>
-              </a>
-            </li>
-          )}
-          {additionalSorts}
-        </ul>
-      </div>
-    );
-  }
-
   render() {
     const { templates } = this.props;
     const search = this.validateSearch();
-    const order = search.order === 'asc' ? 'up' : 'down';
-    const additionalSorts = this.getAdditionalSorts(templates, search, order);
+    const metadataSorts = getMetadataSorts(templates);
+    const commonSorts = [
+      { label: 'Title', value: 'title', type: 'text', context: 'System' },
+      { label: 'Date added', value: 'creationDate', type: 'number', context: 'System' },
+      { label: 'Date modified', value: 'editDate', type: 'number', context: 'System' },
+    ];
+    if (search.searchTerm) {
+      commonSorts.push({
+        label: 'Search relevance',
+        value: '_score',
+        type: 'number',
+        context: 'System',
+      });
+    }
+    const sortOptions = [...commonSorts, ...metadataSorts].map(option => ({
+      ...option,
+      label: t(option.context, option.label, undefined, false),
+    }));
+
     return (
       <div className="sort-buttons">
-        {this.renderDropdown(search, additionalSorts, { includeEvents: false })}
-        {this.renderDropdown(search, additionalSorts)}
+        <DropdownList
+          className="sort-dropdown"
+          value={search.sort}
+          data={sortOptions}
+          valueField="value"
+          textField="label"
+          onChange={selected =>
+            this.sort(
+              selected.value,
+              selected.type === 'text' || selected.type === 'select' ? 'string' : 'number'
+            )
+          }
+        />
+        <button
+          type="button"
+          disabled={search.sort === '_score'}
+          className={`sorting-toggle ${search.sort === '_score' && 'disabled'}`}
+          onClick={this.changeOrder}
+        >
+          <Icon
+            icon={search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down'}
+          />
+        </button>
       </div>
     );
   }
@@ -221,7 +137,7 @@ SortButtons.propTypes = {
   storeKey: PropTypes.string,
 };
 
-export function mapStateToProps(state, ownProps) {
+function mapStateToProps(state, ownProps) {
   let { templates } = state;
   const stateProperty = ownProps.stateProperty
     ? ownProps.stateProperty
@@ -232,7 +148,7 @@ export function mapStateToProps(state, ownProps) {
   }
 
   const search = stateProperty
-    .split(/[.,\/]/)
+    .split(/[.,/]/)
     .reduce(
       (memo, property) => (Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null),
       state
@@ -244,4 +160,5 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({ merge: actions.merge }, wrapDispatch(dispatch, props.storeKey));
 }
 
+export { SortButtons, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(SortButtons);
