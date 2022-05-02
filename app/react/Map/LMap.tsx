@@ -3,6 +3,8 @@ import L from 'leaflet';
 import 'leaflet.markercluster';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import uniqueID from 'shared/uniqueID';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
 import {
   DataMarker,
   getClusterMarker,
