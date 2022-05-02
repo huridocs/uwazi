@@ -1,4 +1,3 @@
-import 'isomorphic-fetch';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings';
 import { tenants } from 'api/tenants';
@@ -46,7 +45,9 @@ const preserveSync = {
         }
       );
 
-      await evidences.json.reduce(async (previous: Promise<EntitySchema>, evidence: any) => {
+      // console.log(evidences);
+
+      await evidences.json.data.reduce(async (previous: Promise<EntitySchema>, evidence: any) => {
         await previous;
         const { sharedId } = await entities.save(
           { title: evidence.attributes.title, template: config.template },
@@ -56,7 +57,9 @@ const preserveSync = {
           evidence.attributes.downloads.map(async (download: any) => {
             const fileName = generateFileName({ originalname: path.basename(download.path) });
             const fileStream = (
-              await fetch(new URL(path.join(config.host, download.path)).toString())
+              await fetch(new URL(path.join(config.host, download.path)).toString(), {
+                headers: { Authorization: config.token },
+              })
             ).body;
             if (fileStream) {
               await fileFromReadStream(fileName, fileStream);
@@ -72,10 +75,10 @@ const preserveSync = {
         );
       }, Promise.resolve());
 
-      if (evidences.json.length) {
+      if (evidences.json.data.length) {
         await preserveSyncModel.save({
           ...(preservationSync ? { _id: preservationSync._id } : {}),
-          lastImport: evidences.json[evidences.json.length - 1].attributes.date,
+          lastImport: evidences.json.data[evidences.json.data.length - 1].attributes.date,
         });
       }
     }

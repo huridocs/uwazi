@@ -29,7 +29,7 @@ const mockVault = async (evidences: any[], isoDate = '') => {
     (url, opts) =>
       // @ts-ignore
       url === `${host}/api/evidences?${queryString}` && opts?.headers.Authorization === token,
-    JSON.stringify(evidences)
+    JSON.stringify({ data: evidences })
   );
 
   const downloads = evidences.map(e => e.attributes.downloads).flat();
