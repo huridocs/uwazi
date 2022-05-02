@@ -1,7 +1,8 @@
 import { connect } from 'react-redux';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import DatePickerComponent from 'react-datepicker';
+import DatePickerComponent, { registerLocale } from 'react-datepicker';
+import * as localization from 'date-fns/locale';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import moment from 'moment-timezone';
@@ -45,6 +46,7 @@ class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    registerLocale(props.locale, localization[props.locale]);
   }
 
   handleChange(datePickerValue) {
@@ -59,10 +61,7 @@ class DatePicker extends Component {
   }
 
   render() {
-    let { locale, format } = this.props;
-    const { useTimezone, value } = this.props;
-    locale = locale || 'en';
-    format = format || 'dd/MM/yyyy';
+    const { locale, format, useTimezone, value } = this.props;
 
     const datePickerValue = removeOffset(useTimezone, value);
 
@@ -85,8 +84,8 @@ class DatePicker extends Component {
 DatePicker.defaultProps = {
   value: undefined,
   endOfDay: false,
-  locale: undefined,
-  format: undefined,
+  locale: 'en',
+  format: 'dd/MM/yyyy',
   useTimezone: false,
 };
 
