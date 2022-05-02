@@ -196,7 +196,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
         twitterRepeater.start();
 
-        new DistributedLoop('preserve_integration', () => preserveSync.syncAllTenants(), {
+        new DistributedLoop('preserve_integration', async () => preserveSync.syncAllTenants(), {
           port: config.redis.port,
           host: config.redis.host,
           delayTimeBetweenTasks: 5000,
