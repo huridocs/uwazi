@@ -56,11 +56,11 @@ const preserveSync = {
               await fetch(new URL(path.join(config.host, download.path)).toString(), {
                 headers: { Authorization: config.token },
               })
-            ).body;
+            ).body as unknown as NodeJS.ReadableStream;
             if (fileStream) {
               await fileFromReadStream(fileName, fileStream);
 
-              return files.save({
+              await files.save({
                 entity: sharedId,
                 type: 'attachment',
                 filename: fileName,

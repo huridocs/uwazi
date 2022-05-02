@@ -106,7 +106,7 @@ const generateFileName = ({ originalname = '' }: FileType) =>
  */
 const fileFromReadStream = async (
   fileName: FilePath,
-  readStream: Readable,
+  readStream: Readable | NodeJS.ReadableStream,
   destination: string | undefined = undefined
 ): Promise<FilePath> =>
   new Promise((resolve, reject) => {

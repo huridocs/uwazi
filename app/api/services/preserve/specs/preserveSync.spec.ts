@@ -5,7 +5,6 @@ import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import db from 'api/utils/testing_db';
 import backend from 'fetch-mock';
-import 'isomorphic-fetch';
 import path from 'path';
 import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
@@ -183,8 +182,5 @@ describe('preserveSync', () => {
         }
       }, tenantName);
     });
-
-    // it('should add all downloads to attachments', async () => {});
-    // it('should not import already imported evidences', async () => {});
   });
 });
