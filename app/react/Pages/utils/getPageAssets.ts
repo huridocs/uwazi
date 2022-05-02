@@ -52,7 +52,7 @@ const replaceDynamicProperties = (
     return pageContent;
   }
 
-  return pageContent.replace(/\$\{((entityRaw|entity|template)[^}]*)\}/g, (match, p) => {
+  return pageContent.replace(/\$\{((entityRaw.|entity.|template.)[^}^\s]*)\}/g, (match, p) => {
     if (has(localDatasets, p)) {
       return get(localDatasets, p);
     }

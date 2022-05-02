@@ -7,20 +7,12 @@ import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
 import { getPageAssets } from 'app/Pages/utils/getPageAssets';
-import { formater as formatter } from 'app/Metadata';
 
 import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
-import * as uiActions from '../Entities/actions/uiActions';
+import { prepareAssets } from './pageAssets';
 
-const formatEntity = (entity, templates, thesauris) => {
-  const formattedEntity = formatter.prepareMetadata(entity, templates, thesauris);
-  formattedEntity.metadata = formattedEntity.metadata.reduce(
-    (memo, property) => ({ ...memo, [property.name]: property }),
-    {}
-  );
-  return formattedEntity;
-};
+import * as uiActions from '../Entities/actions/uiActions';
 
 class Entity extends Component {
   static async requestState(requestParams, state) {
@@ -37,13 +29,12 @@ class Entity extends Component {
 
     if (entityTemplate.get('entityViewPage')) {
       const pageQuery = { sharedId: entityTemplate.get('entityViewPage') };
+      const assets = prepareAssets(entity, entityTemplate, state.thesauris);
       const { pageView, itemLists, datasets } = await getPageAssets(
         requestParams.set(pageQuery),
         undefined,
         {
-          entity: formatEntity(entity, state.templates, state.thesauris),
-          entityRaw: entity,
-          template: entityTemplate.toJS(),
+          ...assets,
         }
       );
 
