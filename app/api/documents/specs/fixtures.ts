@@ -92,7 +92,11 @@ export const fixtures: DBFixture = {
   settings: [
     {
       _id: db.id(),
-      languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en', default: true }],
+      languages: [
+        { key: 'es', label: 'ES' },
+        { key: 'pt', label: 'PT' },
+        { key: 'en', label: 'EN', default: true },
+      ],
     },
   ],
   templates: [
