@@ -29,25 +29,25 @@ const mapPropertyValue = (item: any) => {
   return itemValue;
 };
 
-const composeEntityData = (rawEntity: EntitySchema) => {
-  // const entity = pickEntityFields(rawEntity);
-  // const newMetadata = entity.metadata.map((property: MetadataObjectSchema) => {
-  //   const propertyName = property.name as string;
-  //   if (isArray(property)) {
-  //     return { [propertyName]: property.map(item => mapPropertyValue(item)) };
-  //   }
-  //   return { [propertyName]: mapPropertyValue(property) };
-  // });
-  // const composedMetadata =
-  //   metadata && metadata.length > 0
-  //     ? metadata.map(data => {
-  //         console.log(data);
-  //       })
-  //     : {};
-  // return {
-  //   ...entity,
-  //   metadata: composedMetadata,
-  // };
+const composeEntityData = (entityRaw: EntitySchema, metadata) => {
+  const entity = pickEntityFields(entityRaw);
+  const formattedMetadata = Object.entries(entityRaw.metadata || {}).map(([key, values]) => {
+    const formattedValue = values?.map(value => {
+      return {
+        ...value,
+        displayValue: value.label,
+        value: value.value,
+      };
+    });
+    return {
+      [key]: formattedValue,
+    };
+  });
+  console.log(JSON.stringify(formattedMetadata, null, 2));
+  return {
+    ...entity,
+    metadata: formattedMetadata,
+  };
 };
 
 const formatEntity = (
@@ -57,7 +57,10 @@ const formatEntity = (
 ) => {
   const formattedEntity = formatter.prepareMetadata(entity, [template], thesauris);
   formattedEntity.metadata = formattedEntity.metadata.reduce(
-    (memo, property) => ({ ...memo, [property.name]: property }),
+    (memo: MetadataObjectSchema, property: MetadataObjectSchema) => ({
+      ...memo,
+      [property.name as string]: property,
+    }),
     {}
   );
   return formattedEntity;
@@ -72,7 +75,7 @@ const prepareAssets = (
   return {
     entity: formattedEntity,
     entityRaw,
-    entityData: {},
+    entityData: composeEntityData(entityRaw, formattedEntity.metadata),
     template: template.toJS(),
   };
 };
