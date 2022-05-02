@@ -1,16 +1,14 @@
+import entities from 'api/entities';
+import { fileFromReadStream, files, generateFileName } from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings';
 import { tenants } from 'api/tenants';
-import request from 'shared/JSONRequest';
-import entities from 'api/entities';
-import { Settings } from 'shared/types/settingsType';
-import { EntitySchema } from 'shared/types/entityType';
-import qs from 'qs';
-import { preserveSyncModel } from './preserveSyncModel';
-import { fileFromReadStream, files, generateFileName } from 'api/files';
 import path from 'path';
-import { saveEntity } from 'api/entities/entitySavingManager';
-import { Readable } from 'stream';
+import qs from 'qs';
+import request from 'shared/JSONRequest';
+import { EntitySchema } from 'shared/types/entityType';
+import { Settings } from 'shared/types/settingsType';
+import { preserveSyncModel } from './preserveSyncModel';
 
 const preserveSync = {
   async syncAllTenants() {
@@ -44,8 +42,6 @@ const preserveSync = {
           Authorization: config.token,
         }
       );
-
-      // console.log(evidences);
 
       await evidences.json.data.reduce(async (previous: Promise<EntitySchema>, evidence: any) => {
         await previous;

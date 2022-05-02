@@ -33,7 +33,6 @@ const mockVault = async (evidences: any[], isoDate = '') => {
   );
 
   const downloads = evidences.map(e => e.attributes.downloads).flat();
-  // const paths = await testingUploadPaths();
 
   return Promise.all(
     downloads.map(async download => {
@@ -44,8 +43,14 @@ const mockVault = async (evidences: any[], isoDate = '') => {
       const fileResponse = new Response(file, {
         headers: { 'Content-Type': 'application/octet-stream' },
       });
-      const url = new URL(path.join(host, download.path)).toString();
-      backend.get(url, fileResponse);
+
+      backend.get(
+        (url, opts) =>
+          url === new URL(path.join(host, download.path)).toString() &&
+          // @ts-ignore
+          opts?.headers.Authorization === token,
+        fileResponse
+      );
     })
   );
 };
