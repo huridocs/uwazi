@@ -1,6 +1,6 @@
 import { formater as formatter } from 'app/Metadata';
 import { pick, isObject, isArray } from 'lodash';
-import { MetadataObjectSchema, MetadataSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -32,9 +32,9 @@ const formatProperty = (item: any) => {
       //   return { ...subValue, ...relatedEntity };
       // });
       formattedItem = item.value.map(target => ({
-        ...target,
         displayValue: target.value,
-        value: target.originalValue,
+        value: target.originalValue || target.value,
+        ...(target.relatedEntity && { reference: target.relatedEntity }),
       }));
     }
   }
@@ -73,11 +73,12 @@ const prepareAssets = (
   template: IImmutable<TemplateSchema>,
   thesauris: ThesaurusSchema[]
 ) => {
-  const formattedEntity = formatEntity(entityRaw, template, thesauris);
+  const entity = formatEntity(entityRaw, template, thesauris);
+  const entityData = formatEntityData(entity);
   return {
-    entity: formattedEntity,
+    entity,
     entityRaw,
-    entityData: formatEntityData(formattedEntity),
+    entityData,
     template: template.toJS(),
   };
 };
