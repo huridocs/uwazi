@@ -199,7 +199,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         new DistributedLoop('preserve_integration', async () => preserveSync.syncAllTenants(), {
           port: config.redis.port,
           host: config.redis.host,
-          delayTimeBetweenTasks: 5000,
+          delayTimeBetweenTasks: 30000,
         }).start();
       }
     });
