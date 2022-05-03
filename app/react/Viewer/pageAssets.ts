@@ -7,41 +7,49 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 const pickEntityFields = (entity: EntitySchema) =>
-  pick(entity, ['title', 'sharedId', 'creationDate', 'editDate', 'language', 'template']);
+  pick(entity, [
+    'title',
+    'sharedId',
+    'creationDate',
+    'editDate',
+    'language',
+    'template',
+    'metadata',
+  ]);
 
-const mapPropertyValue = (item: any) => {
+const formatProperty = (item: any) => {
+  let formattedItem = { ...item };
+
   if (!isObject(item)) {
     return item;
   }
-  let formattedItem = { ...item };
 
-  formattedItem.displatValue = formattedItem.inheritedValue
-    ? formattedItem.inheritedValue[0].value
-    : formattedItem.label;
-  formattedItem.type = formattedItem.inheritedType || formattedItem.type;
-  // if (isObject(item)) {
-  //   if (isArray(item.value)) {
-  //     itemValue.value = item.value.map(target => {
-  //       const relatedEntity = pickEntityFields(target.relatedEntity);
-  //       const subValue = pick(target, ['value', 'url', 'icon']);
-  //       return { ...subValue, ...relatedEntity };
-  //     });
-  //   }
-  // }
-  return pick(formattedItem, ['displatValue', 'type']);
+  if (isObject(item)) {
+    if (isArray(item.value)) {
+      // itemValue.value = item.value.map(target => {
+      //   const relatedEntity = pickEntityFields(target.relatedEntity);
+      //   const subValue = pick(target, ['value', 'url', 'icon']);
+      //   return { ...subValue, ...relatedEntity };
+      // });
+      formattedItem = item.value.map(target => ({
+        ...target,
+        displayValue: target.value,
+        value: target.originalValue,
+      }));
+    }
+  }
+  return formattedItem;
 };
 
-const formatEntityData = (entity: EntitySchema, rawMetadata: MetadataSchema | undefined) => {
-  const entityProperties = pickEntityFields(entity);
-  const formattedMetadata = rawMetadata
-    ? Object.entries(rawMetadata).map(([key, value]) => ({
-        [key]: value ? value.map(mapPropertyValue) : [],
+const formatEntityData = (formattedEntity: EntitySchema) => {
+  const entity = pickEntityFields(formattedEntity);
+  const formattedMetadata = entity.metadata
+    ? Object.entries(entity.metadata).map(([key, value]) => ({
+        [key]: formatProperty(value),
       }))
     : {};
-  return {
-    ...entityProperties,
-    metadata: formattedMetadata,
-  };
+
+  return { ...entity, metadata: formattedMetadata };
 };
 
 const formatEntity = (
@@ -69,7 +77,7 @@ const prepareAssets = (
   return {
     entity: formattedEntity,
     entityRaw,
-    entityData: formatEntityData(formattedEntity, entityRaw.metadata),
+    entityData: formatEntityData(formattedEntity),
     template: template.toJS(),
   };
 };

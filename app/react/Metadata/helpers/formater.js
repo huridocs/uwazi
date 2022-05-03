@@ -117,11 +117,13 @@ export default {
 
   getSelectOptions(option, thesaurus, doc) {
     let value = '';
+    let originalValue = '';
     let icon;
     let parent;
 
     if (option) {
       value = option.label || option.value;
+      originalValue = option.value;
       icon = option.icon;
       parent = option.parent?.label;
     }
@@ -137,7 +139,7 @@ export default {
       relatedEntity = relation?.entityData;
     }
 
-    return { value, url, icon, parent, relatedEntity };
+    return { value, originalValue, url, icon, parent, relatedEntity };
   },
 
   multimedia(property, [{ value }], type) {
@@ -220,13 +222,24 @@ export default {
 
   select(property, [metadataValue]) {
     const { value, url, icon, parent } = this.getSelectOptions(metadataValue);
-    return { label: property.get('label'), name: property.get('name'), value, icon, url, parent };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value,
+      icon,
+      url,
+      parent,
+    };
   },
 
   multiselect(property, thesauriValues) {
     const sortedValues = this.getThesauriValues(thesauriValues);
     const groupsOptions = groupByParent(sortedValues);
-    return { label: property.get('label'), name: property.get('name'), value: groupsOptions };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value: groupsOptions,
+    };
   },
 
   inherit(property, propValue = [], thesauri, options, templates) {
