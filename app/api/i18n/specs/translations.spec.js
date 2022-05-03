@@ -109,6 +109,10 @@ describe('translations', () => {
         })
         .catch(catchErrors(done));
     });
+
+    it('should not allow duplicate keys', () => {
+      fail('TODO');
+    });
   });
 
   describe('get()', () => {
@@ -222,6 +226,11 @@ describe('translations', () => {
           done();
         });
     });
+
+    it('should not allow duplicate keys', () => {
+      fail('TODO with new');
+      fail('TODO with update');
+    });
   });
 
   describe('addEntry()', () => {
@@ -239,10 +248,14 @@ describe('translations', () => {
         })
         .catch(catchErrors(done));
     });
+
+    it('should change existing keys without adding', () => {
+      fail('TODO');
+    });
   });
 
   describe('addContext()', () => {
-    it('should add a context with his values', done => {
+    it('should add a context with its values', done => {
       const values = { Name: 'Name', Surname: 'Surname' };
       translations
         .addContext('context', 'Judge', values, 'type')
@@ -262,7 +275,7 @@ describe('translations', () => {
   });
 
   describe('deleteContext()', () => {
-    it('should add a context with his values', done => {
+    it('should delete a context and its values', done => {
       translations
         .deleteContext('System')
         .then(result => {
@@ -299,7 +312,7 @@ describe('translations', () => {
         .catch(catchErrors(done));
     });
 
-    it('should add a context with his values', done => {
+    it('should update a context with its values', done => {
       const keyNameChanges = { Password: 'Pass', Account: 'Acc', System: 'Interface' };
       const deletedProperties = ['Age'];
       const values = {
