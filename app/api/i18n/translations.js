@@ -18,8 +18,23 @@ function prepareContexts(contexts) {
   }));
 }
 
+function checkDuplicateKeys(context, values) {
+  if (!values) return;
+
+  const seen = new Set();
+  values.forEach(value => {
+    if (seen.has(value.key)) {
+      throw new Error(
+        `Process is trying to save repeated translation key ${value.key} in context ${context.id} (${context.type}).`
+      );
+    }
+    seen.add(value.key);
+  });
+}
+
 function processContextValues(context) {
   let values;
+
   if (context.values && !Array.isArray(context.values)) {
     values = [];
     Object.keys(context.values).forEach(key => {
@@ -27,7 +42,11 @@ function processContextValues(context) {
     });
   }
 
-  return { ...context, values: values || context.values };
+  values = values || context.values;
+
+  checkDuplicateKeys(context, values);
+
+  return { ...context, values };
 }
 
 const propagateTranslation = async (translation, currentTranslationData) => {

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
@@ -223,9 +224,43 @@ describe('translations', () => {
         });
     });
 
-    it('should not allow duplicate keys', () => {
-      fail('TODO with new');
-      fail('TODO with update');
+    it('should not allow duplicate keys', async () => {
+      try {
+        await translations.save({
+          locale: 'fr',
+          contexts: [
+            {
+              values: [
+                { key: 'repeated_key', value: 'first_value' },
+                { key: 'unique_key', value: 'unique_value' },
+                { key: 'repeated_key', value: 'second_value' },
+              ],
+            },
+          ],
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain('Process is trying to save repeated translation key');
+      }
+
+      try {
+        await translations.save({
+          locale: 'en',
+          contexts: [
+            {
+              id: dictionaryId,
+              values: [
+                { key: 'repeated_key', value: 'first_value' },
+                { key: 'unique_key', value: 'unique_value' },
+                { key: 'repeated_key', value: 'second_value' },
+              ],
+            },
+          ],
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain('Process is trying to save repeated translation key');
+      }
     });
   });
 
@@ -245,8 +280,13 @@ describe('translations', () => {
         .catch(catchErrors(done));
     });
 
-    it('should change existing keys without adding', () => {
-      fail('TODO');
+    it('should not allow adding existing keys', async () => {
+      try {
+        await translations.addEntry('System', 'Password', 'password_again');
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain('Process is trying to save repeated translation key');
+      }
     });
   });
 
