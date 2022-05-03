@@ -12,18 +12,17 @@ import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
-import { fixtures, templateId } from './fixtures';
+import { anotherTemplateId, fixtures, templateId } from './fixtures';
 
-const mockVault = async (evidences: any[], isoDate = '') => {
+const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
-  const token = 'auth-token';
   const queryString = qs.stringify({
     filter: {
       status: 'PROCESSED',
       ...(isoDate ? { date: { gt: isoDate } } : {}),
     },
   });
-  backend.reset();
+
   backend.get(
     (url, opts) =>
       // @ts-ignore
@@ -94,17 +93,19 @@ describe('preserveSync', () => {
     beforeAll(async () => {
       const evidences = [fakeEvidence('1'), fakeEvidence('2')];
 
-      await mockVault(evidences);
+      await mockVault(evidences, 'auth-token');
+      await mockVault(evidences, 'another-auth-token');
       await preserveSync.syncAllTenants();
 
-      await tenants.run(async () => {
-        const { lastImport } = (await preserveSyncModel.get())[0];
-        await mockVault([], lastImport);
-      }, tenantName);
+      // backend.reset();
 
       await tenants.run(async () => {
-        const { lastImport } = (await preserveSyncModel.get())[0];
-        await mockVault([fakeEvidence('3')], lastImport);
+        const { lastImport } = (await preserveSyncModel.get({ token: 'auth-token' }))[0];
+        await mockVault([fakeEvidence('3')], 'auth-token', lastImport);
+        const { lastImport: anotherLastImport } = (
+          await preserveSyncModel.get({ token: 'another-auth-token' })
+        )[0];
+        await mockVault([fakeEvidence('3')], 'another-auth-token', anotherLastImport);
       }, tenantName);
 
       await preserveSync.syncAllTenants();
@@ -112,22 +113,38 @@ describe('preserveSync', () => {
 
     it('should create entities based on evidences PROCESSED status', async () => {
       await tenants.run(async () => {
-        const entitiesImported: EntitySchema[] = await entities.get();
-        expect(entitiesImported.map(e => e.title)).toEqual([
-          'title of url1',
-          'title of url2',
-          'title of url3',
+        const entitiesImported: EntitySchema[] = await entities.get(
+          {},
+          {},
+          { sort: { title: 'asc' } }
+        );
+        expect(
+          entitiesImported.map(entity => ({
+            title: entity.title,
+            template: entity.template?.toString(),
+          }))
+        ).toMatchObject([
+          { title: 'title of url1', template: templateId.toString() },
+          { title: 'title of url1', template: anotherTemplateId.toString() },
+          { title: 'title of url2', template: templateId.toString() },
+          { title: 'title of url2', template: anotherTemplateId.toString() },
+          { title: 'title of url3', template: templateId.toString() },
+          { title: 'title of url3', template: anotherTemplateId.toString() },
         ]);
-        expect(entitiesImported.map(e => e.template)).toEqual([templateId, templateId, templateId]);
       }, tenantName);
     });
 
-    it('should not create extra lastImport', async () => {
+    it('should create one lastImport per token', async () => {
       await tenants.run(async () => {
         const datesImported = await preserveSyncModel.get();
         expect(datesImported).toMatchObject([
           {
             lastImport: 'date3',
+            token: 'auth-token',
+          },
+          {
+            lastImport: 'date3',
+            token: 'another-auth-token',
           },
         ]);
       }, tenantName);
@@ -135,14 +152,14 @@ describe('preserveSync', () => {
 
     it('should save evidences downloads as attachments', async () => {
       await tenants.run(async () => {
-        const entitiesImported: EntityWithFilesSchema[] = (await entities.get())
-          .sort()
-          .map((entity: EntityWithFilesSchema) => ({
-            ...entity,
-            attachments: entity.attachments
-              ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
-              : [],
-          }));
+        const entitiesImported: EntityWithFilesSchema[] = (
+          await entities.get({}, {}, { sort: { title: 'asc' } })
+        ).map((entity: EntityWithFilesSchema) => ({
+          ...entity,
+          attachments: entity.attachments
+            ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
+            : [],
+        }));
         expect(entitiesImported).toMatchObject(
           [
             {
@@ -153,8 +170,26 @@ describe('preserveSync', () => {
             },
             {
               attachments: [
+                { filename: expect.any(String), originalname: 'content1.txt' },
+                { filename: expect.any(String), originalname: 'screenshot1.jpg' },
+              ],
+            },
+            {
+              attachments: [
                 { filename: expect.any(String), originalname: 'content2.txt' },
                 { filename: expect.any(String), originalname: 'screenshot2.jpg' },
+              ],
+            },
+            {
+              attachments: [
+                { filename: expect.any(String), originalname: 'content2.txt' },
+                { filename: expect.any(String), originalname: 'screenshot2.jpg' },
+              ],
+            },
+            {
+              attachments: [
+                { filename: expect.any(String), originalname: 'content3.txt' },
+                { filename: expect.any(String), originalname: 'screenshot3.jpg' },
               ],
             },
             {
