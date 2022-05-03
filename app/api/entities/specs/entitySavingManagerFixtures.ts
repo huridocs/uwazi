@@ -91,7 +91,14 @@ const fixtures: DBFixture = {
     },
   ],
   settings: [
-    { _id: db.id(), languages: [{ key: 'en', default: true }, { key: 'pt' }, { key: 'es' }] },
+    {
+      _id: db.id(),
+      languages: [
+        { key: 'en', label: 'EN', default: true },
+        { key: 'pt', label: 'PT' },
+        { key: 'es', label: 'ES' },
+      ],
+    },
   ],
   users: [editorUser],
 };
