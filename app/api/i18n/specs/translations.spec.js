@@ -46,22 +46,22 @@ describe('translations', () => {
         .processSystemKeys(keys)
         .then(() => translations.get())
         .then(result => {
-          const ESTrnaslations = result
+          const ESTranslations = result
             .find(t => t.locale === 'es')
             .contexts.find(c => c.label === 'System').values;
-          const ENTrnaslations = result
+          const ENTranslations = result
             .find(t => t.locale === 'en')
             .contexts.find(c => c.label === 'System').values;
           const otherTranslation = result
             .find(t => t.locale === 'other')
             .contexts.find(c => c.label === 'System').values;
 
-          expect(ENTrnaslations.Password).toBe('Password');
-          expect(ENTrnaslations.Account).toBe('Account');
-          expect(ENTrnaslations.Email).toBe('E-Mail');
-          expect(ENTrnaslations.Age).toBe('Age');
-          expect(ENTrnaslations['new key']).toBe('new key');
-          expect(ENTrnaslations['new key 2']).toBe('label2');
+          expect(ENTranslations.Password).toBe('Password');
+          expect(ENTranslations.Account).toBe('Account');
+          expect(ENTranslations.Email).toBe('E-Mail');
+          expect(ENTranslations.Age).toBe('Age');
+          expect(ENTranslations['new key']).toBe('new key');
+          expect(ENTranslations['new key 2']).toBe('label2');
 
           expect(otherTranslation.Password).toBe('Password');
           expect(otherTranslation.Account).toBe('Account');
@@ -70,12 +70,12 @@ describe('translations', () => {
           expect(otherTranslation['new key']).toBe('new key');
           expect(otherTranslation['new key 2']).toBe('label2');
 
-          expect(ESTrnaslations.Password).toBe('Contraseña');
-          expect(ESTrnaslations.Account).toBe('Cuenta');
-          expect(ESTrnaslations.Email).toBe('Correo electronico');
-          expect(ESTrnaslations.Age).toBe('Edad');
-          expect(ESTrnaslations['new key']).toBe('new key');
-          expect(ESTrnaslations['new key 2']).toBe('label2');
+          expect(ESTranslations.Password).toBe('Contraseña');
+          expect(ESTranslations.Account).toBe('Cuenta');
+          expect(ESTranslations.Email).toBe('Correo electronico');
+          expect(ESTranslations.Age).toBe('Edad');
+          expect(ESTranslations['new key']).toBe('new key');
+          expect(ESTranslations['new key 2']).toBe('label2');
           done();
         })
         .catch(catchErrors(done));
