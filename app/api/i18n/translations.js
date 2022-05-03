@@ -171,14 +171,13 @@ export default {
 
   processSystemKeys(keys) {
     return model.get().then(languages => {
-      let existingKeys = languages[0].contexts.find(c => c.label === 'System').values;
-      const newKeys = keys.map(k => k.key);
-      const keysToAdd = [];
-      keys.forEach(key => {
-        if (!existingKeys.find(k => key.key === k.key)) {
-          keysToAdd.push({ key: key.key, value: key.label || key.key });
-        }
-      });
+      let existingKeys = new Set(
+        languages[0].contexts.find(c => c.label === 'System').values.map(v => v.key)
+      );
+      const newKeys = new Set(keys.map(k => k.key));
+      const keysToAdd = keys
+        .filter(key => !existingKeys.has(key.key))
+        .map(key => ({ key: key.key, value: key.label || key.key }));
 
       languages.forEach(language => {
         let system = language.contexts.find(c => c.label === 'System');
@@ -191,7 +190,7 @@ export default {
           language.contexts.unshift(system);
         }
         existingKeys = system.values;
-        const valuesWithRemovedValues = existingKeys.filter(i => newKeys.includes(i.key));
+        const valuesWithRemovedValues = existingKeys.filter(i => newKeys.has(i.key));
         system.values = valuesWithRemovedValues.concat(keysToAdd);
       });
 
