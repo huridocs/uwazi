@@ -92,9 +92,10 @@ describe('preserveSync', () => {
   describe('sync', () => {
     beforeAll(async () => {
       const evidences = [fakeEvidence('1'), fakeEvidence('2')];
-
       await mockVault(evidences, 'auth-token');
-      await mockVault(evidences, 'another-auth-token');
+
+      const moreEvidences = [fakeEvidence('4')];
+      await mockVault(moreEvidences, 'another-auth-token');
       await preserveSync.syncAllTenants();
 
       // backend.reset();
@@ -105,7 +106,7 @@ describe('preserveSync', () => {
         const { lastImport: anotherLastImport } = (
           await preserveSyncModel.get({ token: 'another-auth-token' })
         )[0];
-        await mockVault([fakeEvidence('3')], 'another-auth-token', anotherLastImport);
+        await mockVault([fakeEvidence('5')], 'another-auth-token', anotherLastImport);
       }, tenantName);
 
       await preserveSync.syncAllTenants();
@@ -125,11 +126,10 @@ describe('preserveSync', () => {
           }))
         ).toMatchObject([
           { title: 'title of url1', template: templateId.toString() },
-          { title: 'title of url1', template: anotherTemplateId.toString() },
           { title: 'title of url2', template: templateId.toString() },
-          { title: 'title of url2', template: anotherTemplateId.toString() },
           { title: 'title of url3', template: templateId.toString() },
-          { title: 'title of url3', template: anotherTemplateId.toString() },
+          { title: 'title of url4', template: anotherTemplateId.toString() },
+          { title: 'title of url5', template: anotherTemplateId.toString() },
         ]);
       }, tenantName);
     });
@@ -143,7 +143,7 @@ describe('preserveSync', () => {
             token: 'auth-token',
           },
           {
-            lastImport: 'date3',
+            lastImport: 'date5',
             token: 'another-auth-token',
           },
         ]);
@@ -170,18 +170,6 @@ describe('preserveSync', () => {
             },
             {
               attachments: [
-                { filename: expect.any(String), originalname: 'content1.txt' },
-                { filename: expect.any(String), originalname: 'screenshot1.jpg' },
-              ],
-            },
-            {
-              attachments: [
-                { filename: expect.any(String), originalname: 'content2.txt' },
-                { filename: expect.any(String), originalname: 'screenshot2.jpg' },
-              ],
-            },
-            {
-              attachments: [
                 { filename: expect.any(String), originalname: 'content2.txt' },
                 { filename: expect.any(String), originalname: 'screenshot2.jpg' },
               ],
@@ -194,8 +182,14 @@ describe('preserveSync', () => {
             },
             {
               attachments: [
-                { filename: expect.any(String), originalname: 'content3.txt' },
-                { filename: expect.any(String), originalname: 'screenshot3.jpg' },
+                { filename: expect.any(String), originalname: 'content4.txt' },
+                { filename: expect.any(String), originalname: 'screenshot4.jpg' },
+              ],
+            },
+            {
+              attachments: [
+                { filename: expect.any(String), originalname: 'content5.txt' },
+                { filename: expect.any(String), originalname: 'screenshot5.jpg' },
               ],
             },
           ].sort()
