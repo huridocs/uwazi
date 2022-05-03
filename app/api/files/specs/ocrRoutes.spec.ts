@@ -47,7 +47,7 @@ const FIXTURES: DBFixture = {
   settings: [
     {
       _id: db.id(),
-      languages: [{ key: 'en', default: true }],
+      languages: [{ key: 'en', label: 'EN', default: true }],
       features: {
         ocr: { url: 'protocol://serviceUrl' },
       },

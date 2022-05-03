@@ -67,5 +67,12 @@ export const fixtures = {
       properties: [{ _id: db.id(), name: 'text_field', type: 'text', filter: true }],
     },
   ],
-  settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+  settings: [
+    {
+      languages: [
+        { key: 'en', label: 'EN', default: true },
+        { key: 'es', label: 'ES' },
+      ],
+    },
+  ],
 };

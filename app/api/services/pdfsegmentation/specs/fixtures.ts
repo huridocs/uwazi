@@ -1,21 +1,12 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { Settings } from 'shared/types/settingsType';
 
 const factory = getFixturesFactory();
 
-const settings = [
+const settings: Settings[] = [
   {
     features: {
-      metadataExtraction: [
-        {
-          template: factory.id('templateToSegmentA'),
-          properties: ['property1', 'property2'],
-        },
-        {
-          template: factory.id('templateToSegmentB'),
-          properties: ['property1'],
-        },
-      ],
       segmentation: {
         url: 'http://localhost:1234/files',
       },
@@ -27,12 +18,6 @@ const otherSettings = [
   {
     _id: db.id(),
     features: {
-      metadataExtraction: [
-        {
-          template: factory.id('templateToSegmentB'),
-          properties: ['property1'],
-        },
-      ],
       segmentation: {
         url: 'http://localhost:1234/files',
       },
@@ -82,10 +67,10 @@ const fixturesFiveFiles: DBFixture = {
 const fixturesOneHundredFiles: DBFixture = {
   settings,
   entities: [...Array(100).keys()].map(x =>
-    factory.entity('A' + x.toString(), 'templateToSegmentA')
+    factory.entity(`A${x.toString()}`, 'templateToSegmentA')
   ),
   files: [...Array(100).keys()].map(x =>
-    factory.file('F' + x.toString(), 'A' + x.toString(), 'document', fixturesPdfNameA)
+    factory.file(`F${x.toString()}`, `A${x.toString()}`, 'document', fixturesPdfNameA)
   ),
 };
 
