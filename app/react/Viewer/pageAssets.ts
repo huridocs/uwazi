@@ -10,13 +10,14 @@ const pickEntityFields = (entity: EntitySchema) =>
   pick(entity, ['title', 'sharedId', 'creationDate', 'editDate', 'language', 'template']);
 
 const mapPropertyValue = (item: any) => {
-  console.log(item);
   if (!isObject(item)) {
     return item;
   }
   let formattedItem = { ...item };
 
-  formattedItem.displatValue = formattedItem.inheritedValue[0].value || formattedItem.label;
+  formattedItem.displatValue = formattedItem.inheritedValue
+    ? formattedItem.inheritedValue[0].value
+    : formattedItem.label;
   formattedItem.type = formattedItem.inheritedType || formattedItem.type;
   // if (isObject(item)) {
   //   if (isArray(item.value)) {
@@ -27,8 +28,7 @@ const mapPropertyValue = (item: any) => {
   //     });
   //   }
   // }
-  console.log(formattedItem);
-  return pick(formattedItem, ['displatValue', 'value', 'type']);
+  return pick(formattedItem, ['displatValue', 'type']);
 };
 
 const formatEntityData = (entity: EntitySchema, rawMetadata: MetadataSchema | undefined) => {
@@ -38,10 +38,6 @@ const formatEntityData = (entity: EntitySchema, rawMetadata: MetadataSchema | un
         [key]: value ? value.map(mapPropertyValue) : [],
       }))
     : {};
-  console.log(
-    'Final object: ',
-    JSON.stringify({ ...entityProperties, metadata: formattedMetadata }, null, 2)
-  );
   return {
     ...entityProperties,
     metadata: formattedMetadata,
@@ -70,7 +66,6 @@ const prepareAssets = (
   thesauris: ThesaurusSchema[]
 ) => {
   const formattedEntity = formatEntity(entityRaw, template, thesauris);
-  console.log('formattedEntity: ', JSON.stringify(formattedEntity, null, 2));
   return {
     entity: formattedEntity,
     entityRaw,
