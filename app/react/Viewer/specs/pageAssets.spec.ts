@@ -11,91 +11,79 @@ describe('pageAssets', () => {
     it('should return a raw entity', () => {
       expect(entityRaw).toEqual(dbEntity);
     });
-    it('should return a formatted entity', () => {
+    xit('should return a formatted entity', () => {
       expect(entity).toEqual(expectedFormattedEntity);
     });
-    it('should return an intermediate entity', () => {
-      const expectedEntityData = {
-        title: 'Joker villian',
-        sharedId: '8mdlvmt704q',
-        creationDate: 1651458629899,
-        editDate: 1651458929437,
-        language: 'en',
-        template: '626f4019389811b04456ab95',
-        metadata: {
-          character_description: [
-            {
-              value: 'Criminal mastermind',
-              displayValue: 'Criminal mastermind',
-              reference: {
-                sharedId: 'ci03oddudli',
-                type: 'inherit',
-                property: 'description',
-              },
-            },
-          ],
-          main_enemy: [
-            {
-              value: 'Batman hero',
-              displayValue: 'Batman hero',
-              content: '626f3f85389811b04456a0cd',
-              _id: '626f40f4389811b04456bc33',
-              reference: [
-                {
-                  value: 'Batman hero',
-                  url: '/entity/v5g098ioqe',
-                  icon: null,
-                  title: 'Batman hero',
-                  sharedId: 'v5g098ioqe',
-                  creationDate: 1651458822623,
-                  template: '626f3f85389811b04456a0cd',
-                  type: 'relationship',
-                },
-              ],
-            },
-          ],
-          main_colors: [
-            {
-              value: 'Blue',
-              displayValue: 'Blue',
-              type: 'multiselect',
-              content: '626f40c7389811b04456b5b5',
-              _id: '626f4122389811b04456c2b4',
-            },
-            {
-              value: 'Red',
-              displayValue: 'Red',
-              type: 'multiselect',
-              content: '626f40c7389811b04456b5b5',
-              _id: '626f4122389811b04456c2b4',
-            },
-          ],
-          comic_dates: [
-            {
-              displayValue: 'Apr 2, 2018 ~ May 31, 2022',
-              value: {
-                from: 1522627200,
-                to: 1654041599,
-              },
-              _id: '626f4341389811b04456d3c4',
-              type: 'multidaterange',
-            },
-            {
-              displayValue: 'May 15, 2013 ~ May 14, 2014',
-              value: {
-                from: 1368576000,
-                to: 1400111999,
-              },
-              _id: '626f4341389811b04456d3c4',
-              type: 'multidaterange',
-            },
-          ],
-        },
-      };
-      expect(entityData).toEqual(expectedEntityData);
-    });
+
     it('should transform the template from inmmutable to plain javascript', () => {
       expect(template).toEqual(dbTemplate.toJS());
+    });
+    it('should return text properties formatted', () => {
+      expect(entityData.metadata.text).toEqual([
+        { displayValue: 'one', value: 'one', type: 'text', name: 'text' },
+      ]);
+    });
+    it('should return numeric properties formatted', () => {
+      expect(entityData.metadata.numeric).toEqual([
+        { displayValue: 1, value: 1, type: 'numeric', name: 'numeric' },
+      ]);
+    });
+    it('should return select properties formatted', () => {
+      expect(entityData.metadata.select).toEqual([
+        { displayValue: 'Argentina', value: 'f5t0ah6aluq', type: 'select', name: 'select' },
+      ]);
+    });
+    it('should return multi select properties formatted', () => {
+      expect(entityData.metadata.multi_select).toEqual([
+        {
+          value: 'f5t0ah6aluq',
+          displayValue: 'Argentina',
+          type: 'multiselect',
+          name: 'multi_select',
+        },
+        {
+          value: 'k9vqx1bkkso',
+          displayValue: 'Colombia',
+          type: 'multiselect',
+          name: 'multi_select',
+        },
+      ]);
+    });
+    it('should return date properties formatted', () => {
+      expect(entityData.metadata.date).toEqual([
+        {
+          value: 1651536000,
+          displayValue: 'May 3, 2022',
+          type: 'date',
+          name: 'date',
+        },
+      ]);
+    });
+    it('should return geolocation properties formatted', () => {
+      expect(entityData.metadata.geolocation_geolocation).toEqual([
+        {
+          value: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' },
+          displayValue: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' },
+          type: 'geolocation',
+          name: 'geolocation_geolocation',
+        },
+      ]);
+    });
+    it('should return multi date range properties formatted', () => {
+      expect(entityData.metadata.multi_date_range).toEqual([
+        {
+          displayValue: 'May 8, 2022 ~ May 13, 2022',
+          name: 'multi_date_range',
+          type: 'multidaterange',
+          value: { from: 1651968000, to: 1652486399 },
+        },
+        {
+          displayValue: 'May 15, 2022 ~ May 20, 2022',
+          name: 'multi_date_range',
+          type: 'multidaterange',
+          value: { from: 1652572800, to: 1653091199 },
+        },
+      ]);
     });
   });
 });

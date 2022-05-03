@@ -181,8 +181,15 @@ export default {
   },
 
   multidaterange(property, dateranges = []) {
-    const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
-    return { label: property.get('label'), name: property.get('name'), value };
+    const value = dateranges.map(range => ({
+      value: this.formatDateRange(range),
+      originalValue: range.value,
+    }));
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value,
+    };
   },
 
   image(property, value) {
@@ -225,6 +232,7 @@ export default {
     return {
       label: property.get('label'),
       name: property.get('name'),
+      originalValue: metadataValue.value,
       value,
       icon,
       url,

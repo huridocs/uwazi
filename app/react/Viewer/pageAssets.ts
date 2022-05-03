@@ -18,47 +18,56 @@ const pickEntityFields = (entity: EntitySchema) =>
   ]);
 
 const formatProperty = (item: any) => {
-  let formattedItem = { ...item };
+  let formattedItem = [
+    {
+      displayValue: item.value,
+      value: item.timestamp || item.originalValue || item.value,
+      type: item.type,
+      name: item.name,
+    },
+  ];
 
-  if (!isObject(item)) {
-    return item;
-  }
-
-  if (isObject(item)) {
-    if (isArray(item.value)) {
-      // itemValue.value = item.value.map(target => {
-      //   const relatedEntity = pickEntityFields(target.relatedEntity);
-      //   const subValue = pick(target, ['value', 'url', 'icon']);
-      //   return { ...subValue, ...relatedEntity };
-      // });
-      formattedItem = item.value.map(target => ({
+  if (isArray(item.value)) {
+    // itemValue.value = item.value.map(target => {
+    //   const relatedEntity = pickEntityFields(target.relatedEntity);
+    //   const subValue = pick(target, ['value', 'url', 'icon']);
+    //   return { ...subValue, ...relatedEntity };
+    // });
+    formattedItem = item.value.map(target => {
+      if (item.type === 'geolocation') {
+        return {
+          displayValue: target,
+          value: target,
+          name: item.name,
+          type: item.type,
+        };
+      }
+      return {
         displayValue: target.value,
         value: target.originalValue || target.value,
         ...(target.relatedEntity && { reference: target.relatedEntity }),
-      }));
-    }
+        name: item.name,
+        type: item.type,
+      };
+    });
   }
+
   return formattedItem;
 };
 
 const formatEntityData = (formattedEntity: EntitySchema) => {
   const entity = pickEntityFields(formattedEntity);
-  const formattedMetadata = entity.metadata
-    ? Object.entries(entity.metadata).map(([key, value]) => ({
-        [key]: formatProperty(value),
-      }))
-    : {};
+  const formattedMetadata = entity.metadata.reduce((memo, property) => {
+    const formattedProperty = formatProperty(property);
+    return { ...memo, [property.name]: formattedProperty };
+  }, {});
 
   return { ...entity, metadata: formattedMetadata };
 };
 
-const formatEntity = (
-  entity: EntitySchema,
-  template: IImmutable<TemplateSchema>,
-  thesauris: ThesaurusSchema[]
-) => {
-  const formattedEntity = formatter.prepareMetadata(entity, [template], thesauris);
-  formattedEntity.metadata = formattedEntity.metadata.reduce(
+const formatEntity = (formattedEntity: EntitySchema) => {
+  const entity = { ...formattedEntity };
+  entity.metadata = formattedEntity.metadata.reduce(
     (memo: MetadataObjectSchema, property: MetadataObjectSchema) => ({
       ...memo,
       [property.name as string]: property,
@@ -73,8 +82,9 @@ const prepareAssets = (
   template: IImmutable<TemplateSchema>,
   thesauris: ThesaurusSchema[]
 ) => {
-  const entity = formatEntity(entityRaw, template, thesauris);
-  const entityData = formatEntityData(entity);
+  const formattedEntity = formatter.prepareMetadata(entityRaw, [template], thesauris);
+  const entity = formatEntity(formattedEntity);
+  const entityData = formatEntityData(formattedEntity);
   return {
     entity,
     entityRaw,

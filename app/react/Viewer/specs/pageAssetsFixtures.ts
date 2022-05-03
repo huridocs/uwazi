@@ -5,548 +5,591 @@ import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 
 const dbTemplate: IImmutable<TemplateSchema> = Immutable.fromJS({
-  color: '#A03AB1',
-  entityViewPage: 'gr7lmh3406',
-  _id: '626f4019389811b04456ab95',
-  name: 'Villian',
-  properties: [
-    {
-      _id: '626f4019389811b04456ab96',
-      label: 'Character description',
-      type: 'relationship',
-      content: '626f3efb389811b044569513',
-      relationType: '626f3fbc389811b04456a4ce',
-      name: 'character_description',
-      inherit: {
-        property: '626f3efb389811b044569514',
-        type: 'text',
-      },
-    },
-    {
-      _id: '626f40f4389811b04456bc33',
-      label: 'Main enemy',
-      type: 'relationship',
-      content: '626f3f85389811b04456a0cd',
-      relationType: '626f3f7a389811b044569db9',
-      name: 'main_enemy',
-    },
-    {
-      _id: '626f4122389811b04456c2b4',
-      label: 'Main colors',
-      type: 'multiselect',
-      content: '626f40c7389811b04456b5b5',
-      name: 'main_colors',
-    },
-    {
-      _id: '626f4341389811b04456d3c4',
-      label: 'Comic dates',
-      type: 'multidaterange',
-      name: 'comic_dates',
-    },
-  ],
+  _id: '5bfbb1a0471dd0fc16ada146',
+  name: 'Document',
   commonProperties: [
     {
-      _id: '626f4019389811b04456ab97',
+      _id: '5bfbb1a0471dd0fc16ada148',
       label: 'Title',
       name: 'title',
       isCommonProperty: true,
       type: 'text',
       prioritySorting: false,
-      generatedId: false,
     },
     {
-      _id: '626f4019389811b04456ab98',
+      _id: '5bfbb1a0471dd0fc16ada147',
       label: 'Date added',
       name: 'creationDate',
       isCommonProperty: true,
       type: 'date',
       prioritySorting: false,
     },
+  ],
+  properties: [
+    { _id: '6267e68226904c252518f914', label: 'Text', type: 'text', name: 'text', filter: true },
     {
-      _id: '626f4019389811b04456ab99',
-      label: 'Date modified',
-      name: 'editDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
+      _id: '6267e68226904c252518f915',
+      label: 'Numeric',
+      type: 'numeric',
+      name: 'numeric',
+      filter: true,
+    },
+    {
+      _id: '62693f2b3483cd0da78b6ffb',
+      label: 'Select',
+      type: 'select',
+      content: '626825379c8a75a1ea9a821e',
+      name: 'select',
+      filter: true,
+    },
+    {
+      _id: '627176d9ff128cfd6de09972',
+      label: 'Multi Select',
+      type: 'multiselect',
+      content: '626825379c8a75a1ea9a821e',
+      name: 'multi_select',
+    },
+    {
+      _id: '626c191b8a46c11701b499b3',
+      label: 'Relationship',
+      type: 'relationship',
+      content: '626c19238a46c11701b49a55',
+      relationType: '626c19088a46c11701b493e6',
+      name: 'relationship',
+    },
+    {
+      _id: '626c19418a46c11701b4a390',
+      label: 'Inherit',
+      type: 'relationship',
+      content: '626c19238a46c11701b49a55',
+      relationType: '626c19088a46c11701b493e6',
+      name: 'inherit',
+      inherit: { property: '626c19498a46c11701b4a702', type: 'date' },
+    },
+    { _id: '627176d9ff128cfd6de09975', label: 'Date', type: 'date', name: 'date' },
+    {
+      _id: '627176d9ff128cfd6de09976',
+      label: 'Date Range',
+      type: 'daterange',
+      name: 'date_range',
+    },
+    {
+      _id: '627176d9ff128cfd6de09977',
+      label: 'Multi Date',
+      type: 'multidate',
+      name: 'multi_date',
+    },
+    {
+      _id: '627176d9ff128cfd6de09978',
+      label: 'Multi Date Range',
+      type: 'multidaterange',
+      name: 'multi_date_range',
+    },
+    { _id: '627176d9ff128cfd6de09979', label: 'Rich Text', type: 'markdown', name: 'rich_text' },
+    { _id: '627176d9ff128cfd6de0997a', label: 'Link', type: 'link', name: 'link' },
+    { _id: '627176d9ff128cfd6de0997b', label: 'Image', type: 'image', name: 'image' },
+    { _id: '627176d9ff128cfd6de0997c', label: 'Media', type: 'media', name: 'media' },
+    {
+      _id: '627176d9ff128cfd6de0997d',
+      label: 'Geolocation',
+      type: 'geolocation',
+      name: 'geolocation_geolocation',
     },
   ],
   __v: 0,
+  default: true,
+  color: '#e46841',
+  entityViewPage: '8x8b1bzsj1i',
 });
 
 const dbEntity: EntitySchema = {
-  sharedId: '8mdlvmt704q',
+  sharedId: 'mtpkxxe1uom',
   permissions: [
     {
-      refId: '58ad7d240d44252fee4e6212',
+      refId: '58ada34d299e82674854510f',
       type: 'user',
       level: 'write',
     },
   ],
-  user: '58ad7d240d44252fee4e6212',
-  creationDate: 1651458629899,
+  user: '58ada34d299e82674854510f',
+  creationDate: 1650976400574,
   published: true,
   metadata: {
-    character_description: [
+    multi_select: [
       {
-        value: 'ci03oddudli',
-        label: 'Joker',
+        value: 'k9vqx1bkkso',
+        label: 'Colombia',
+      },
+      {
+        value: 'f5t0ah6aluq',
+        label: 'Argentina',
+      },
+    ],
+    media: [
+      {
+        value: '/api/files/1651603234992ndu8pskupzp.mp4',
+      },
+    ],
+    date_range: [
+      {
+        value: {
+          from: 1651536000,
+          to: 1651708799,
+        },
+      },
+    ],
+    text: [
+      {
+        value: 'one',
+      },
+    ],
+    geolocation_geolocation: [
+      {
+        value: {
+          lat: 46.660244945286394,
+          lon: 8.283691406250002,
+          label: '',
+        },
+      },
+    ],
+    numeric: [
+      {
+        value: 1,
+      },
+    ],
+    date: [
+      {
+        value: 1651536000,
+      },
+    ],
+    rich_text: [
+      {
+        value: 'Test 1 long text',
+      },
+    ],
+    multi_date_range: [
+      {
+        value: {
+          from: 1651968000,
+          to: 1652486399,
+        },
+      },
+      {
+        value: {
+          from: 1652572800,
+          to: 1653091199,
+        },
+      },
+    ],
+    multi_date: [
+      {
+        value: 1651622400,
+      },
+      {
+        value: 1651708800,
+      },
+    ],
+    relationship: [
+      {
+        value: 'zse9gkdu27',
+        label: 'Test 5',
+        icon: null,
+        type: 'entity',
+      },
+    ],
+    link: [
+      {
+        value: {
+          label: 'test',
+          url: 'https://google.com',
+        },
+      },
+    ],
+    inherit: [
+      {
+        value: 'zse9gkdu27',
+        label: 'Test 5',
         icon: null,
         type: 'entity',
         inheritedValue: [
           {
-            value: 'Criminal mastermind',
+            value: 1650412800,
           },
         ],
-        inheritedType: 'text',
+        inheritedType: 'date',
       },
     ],
-    main_colors: [
+    image: [
       {
-        value: 'ibxxz2mmc6j',
-        label: 'Red',
-      },
-      {
-        value: '50i5v4txihr',
-        label: 'Blue',
+        value: '/api/files/1651603234992smwovxz1mq.jpeg',
       },
     ],
-    main_enemy: [
+    select: [
       {
-        value: 'v5g098ioqe',
-        label: 'Batman hero',
-        icon: null,
-        type: 'entity',
-      },
-    ],
-    comic_dates: [
-      {
-        value: {
-          from: 1522627200,
-          to: 1654041599,
-        },
-      },
-      {
-        value: {
-          from: 1368576000,
-          to: 1400111999,
-        },
+        value: 'f5t0ah6aluq',
+        label: 'Argentina',
       },
     ],
   },
-  attachments: [],
+  attachments: [
+    {
+      _id: '62717723ff128cfd6de09ab5',
+      originalname: 'mars.jpeg',
+      mimetype: 'image/jpeg',
+      size: 3405,
+      filename: '1651603234992smwovxz1mq.jpeg',
+      entity: 'mtpkxxe1uom',
+      type: 'attachment',
+      creationDate: 1651603235065,
+    },
+    {
+      _id: '62717723ff128cfd6de09ab7',
+      originalname: 'sample video.mp4',
+      mimetype: 'video/mp4',
+      size: 1570024,
+      filename: '1651603234992ndu8pskupzp.mp4',
+      entity: 'mtpkxxe1uom',
+      type: 'attachment',
+      creationDate: 1651603235066,
+    },
+  ],
   __v: 0,
   relations: [
     {
-      template: null,
+      template: '626c19088a46c11701b493e6',
       entityData: {
-        sharedId: '8mdlvmt704q',
-        creationDate: 1651458629899,
+        sharedId: 'zse9gkdu27',
+        creationDate: 1651251547653,
         published: true,
         metadata: {
-          character_description: [
+          date: [
             {
-              value: 'ci03oddudli',
-              label: 'Joker',
+              value: 1650412800,
+            },
+          ],
+          relationship_2: [
+            {
+              value: 'l8rnfv6qss',
+              label: 'Test 4',
               icon: null,
               type: 'entity',
-              inheritedValue: [
-                {
-                  value: 'Criminal mastermind',
-                },
-              ],
-              inheritedType: 'text',
-            },
-          ],
-          main_colors: [
-            {
-              value: 'ibxxz2mmc6j',
-              label: 'Red',
-            },
-            {
-              value: '50i5v4txihr',
-              label: 'Blue',
-            },
-          ],
-          main_enemy: [
-            {
-              value: 'v5g098ioqe',
-              label: 'Batman hero',
-              icon: null,
-              type: 'entity',
-            },
-          ],
-          comic_dates: [
-            {
-              value: {
-                from: 1522627200,
-                to: 1654041599,
-              },
-            },
-            {
-              value: {
-                from: 1368576000,
-                to: 1400111999,
-              },
             },
           ],
         },
         attachments: [],
-        title: 'Joker villian',
+        title: 'Test 5',
         documents: [],
-        template: '626f4019389811b04456ab95',
-        _id: '626f4245389811b04456c36e',
+        template: '626c19238a46c11701b49a55',
+        _id: '626c195b8a46c11701b4aaaf',
       },
-      _id: '626f4245389811b04456c37a',
-      entity: '8mdlvmt704q',
-      hub: '626f4245389811b04456c375',
+      _id: '626c19658a46c11701b4aafb',
+      entity: 'zse9gkdu27',
+      hub: '626c19658a46c11701b4aaf5',
     },
     {
-      template: '626f3fbc389811b04456a4ce',
+      template: null,
       entityData: {
-        sharedId: 'ci03oddudli',
-        creationDate: 1651458558816,
+        sharedId: 'mtpkxxe1uom',
+        creationDate: 1650976400574,
         published: true,
         metadata: {
-          description: [
+          multi_select: [
             {
-              value: 'Criminal mastermind',
+              value: 'k9vqx1bkkso',
+              label: 'Colombia',
+            },
+            {
+              value: 'f5t0ah6aluq',
+              label: 'Argentina',
+            },
+          ],
+          media: [
+            {
+              value: '/api/files/1651603234992ndu8pskupzp.mp4',
+            },
+          ],
+          date_range: [
+            {
+              value: {
+                from: 1651536000,
+                to: 1651708799,
+              },
+            },
+          ],
+          text: [
+            {
+              value: 'one',
+            },
+          ],
+          geolocation_geolocation: [
+            {
+              value: {
+                lat: 46.660244945286394,
+                lon: 8.283691406250002,
+                label: '',
+              },
+            },
+          ],
+          numeric: [
+            {
+              value: 1,
+            },
+          ],
+          date: [
+            {
+              value: 1651536000,
+            },
+          ],
+          rich_text: [
+            {
+              value: 'Test 1 long text',
+            },
+          ],
+          multi_date_range: [
+            {
+              value: {
+                from: 1651968000,
+                to: 1652486399,
+              },
+            },
+            {
+              value: {
+                from: 1652572800,
+                to: 1653091199,
+              },
+            },
+          ],
+          multi_date: [
+            {
+              value: 1651622400,
+            },
+            {
+              value: 1651708800,
+            },
+          ],
+          relationship: [
+            {
+              value: 'zse9gkdu27',
+              label: 'Test 5',
+              icon: null,
+              type: 'entity',
+            },
+          ],
+          link: [
+            {
+              value: {
+                label: 'test',
+                url: 'https://google.com',
+              },
+            },
+          ],
+          inherit: [
+            {
+              value: 'zse9gkdu27',
+              label: 'Test 5',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 1650412800,
+                },
+              ],
+              inheritedType: 'date',
             },
           ],
           image: [
             {
-              value: '',
+              value: '/api/files/1651603234992smwovxz1mq.jpeg',
             },
           ],
-          number_of_comics: [
+          select: [
             {
-              value: 35,
-            },
-          ],
-        },
-        attachments: [],
-        title: 'Joker',
-        documents: [],
-        template: '626f3efb389811b044569513',
-        _id: '626f41fe389811b04456c341',
-      },
-      _id: '626f4245389811b04456c37b',
-      entity: 'ci03oddudli',
-      hub: '626f4245389811b04456c375',
-    },
-    {
-      template: null,
-      entityData: {
-        sharedId: '8mdlvmt704q',
-        creationDate: 1651458629899,
-        published: true,
-        metadata: {
-          character_description: [
-            {
-              value: 'ci03oddudli',
-              label: 'Joker',
-              icon: null,
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 'Criminal mastermind',
-                },
-              ],
-              inheritedType: 'text',
-            },
-          ],
-          main_colors: [
-            {
-              value: 'ibxxz2mmc6j',
-              label: 'Red',
-            },
-            {
-              value: '50i5v4txihr',
-              label: 'Blue',
-            },
-          ],
-          main_enemy: [
-            {
-              value: 'v5g098ioqe',
-              label: 'Batman hero',
-              icon: null,
-              type: 'entity',
-            },
-          ],
-          comic_dates: [
-            {
-              value: {
-                from: 1522627200,
-                to: 1654041599,
-              },
-            },
-            {
-              value: {
-                from: 1368576000,
-                to: 1400111999,
-              },
+              value: 'f5t0ah6aluq',
+              label: 'Argentina',
             },
           ],
         },
-        attachments: [],
-        title: 'Joker villian',
+        attachments: [
+          {
+            _id: '62717723ff128cfd6de09ab5',
+            originalname: 'mars.jpeg',
+            mimetype: 'image/jpeg',
+            size: 3405,
+            filename: '1651603234992smwovxz1mq.jpeg',
+            entity: 'mtpkxxe1uom',
+            type: 'attachment',
+            creationDate: 1651603235065,
+          },
+          {
+            _id: '62717723ff128cfd6de09ab7',
+            originalname: 'sample video.mp4',
+            mimetype: 'video/mp4',
+            size: 1570024,
+            filename: '1651603234992ndu8pskupzp.mp4',
+            entity: 'mtpkxxe1uom',
+            type: 'attachment',
+            creationDate: 1651603235066,
+          },
+        ],
+        title: 'Test 1',
         documents: [],
-        template: '626f4019389811b04456ab95',
-        _id: '626f4245389811b04456c36e',
+        template: '5bfbb1a0471dd0fc16ada146',
+        _id: '6267e69026904c252518f946',
       },
-      _id: '626f4371389811b04456d435',
-      entity: '8mdlvmt704q',
-      hub: '626f4371389811b04456d430',
-    },
-    {
-      template: '626f3f7a389811b044569db9',
-      entityData: {
-        sharedId: 'v5g098ioqe',
-        creationDate: 1651458822623,
-        published: true,
-        metadata: {
-          character_details: [
-            {
-              value: 'awab9gii2uu',
-              label: 'Batman',
-              type: 'entity',
-            },
-          ],
-        },
-        attachments: [],
-        title: 'Batman hero',
-        documents: [],
-        template: '626f3f85389811b04456a0cd',
-        _id: '626f4306389811b04456cf38',
-      },
-      _id: '626f4371389811b04456d436',
-      entity: 'v5g098ioqe',
-      hub: '626f4371389811b04456d430',
+      _id: '626c19658a46c11701b4aafa',
+      entity: 'mtpkxxe1uom',
+      hub: '626c19658a46c11701b4aaf5',
     },
   ],
-  editDate: 1651458929437,
-  title: 'Joker villian',
+  editDate: 1651603235026,
+  title: 'Test 1',
   documents: [],
   language: 'en',
-  template: '626f4019389811b04456ab95',
-  _id: '626f4245389811b04456c36e',
+  template: '5bfbb1a0471dd0fc16ada146',
+  _id: '6267e69026904c252518f946',
 };
 
 const thesauri = Immutable.fromJS([
   {
-    _id: '626f3f08389811b044569812',
+    _id: '626825379c8a75a1ea9a821e',
     values: [
-      {
-        label: 'Flight',
-        id: '4rbw98l56os',
-      },
-      {
-        label: 'Superhuman Strength',
-        id: '4e2oaqrdap1',
-      },
-      {
-        label: 'Invisibility',
-        id: 'j1augfuq7ck',
-      },
+      { label: 'Argentina', id: 'f5t0ah6aluq' },
+      { label: 'Peru', id: 'agq2wnfyism' },
+      { label: 'Colombia', id: 'k9vqx1bkkso' },
+      { label: 'Cambodia', id: 'yx6zptkxp7j' },
+      { label: 'Puerto Rico', id: '9v2i080m3j6' },
     ],
-    name: 'Super power',
+    name: 'País',
     __v: 0,
   },
   {
-    _id: '626f40c7389811b04456b5b5',
+    default: true,
     values: [
-      {
-        label: 'Red',
-        id: 'ibxxz2mmc6j',
-      },
-      {
-        label: 'Blue',
-        id: '50i5v4txihr',
-      },
-      {
-        label: 'Black',
-        id: '63o9gtlb5kk',
-      },
+      { id: 'mtpkxxe1uom', label: 'Test 1' },
+      { id: 'i4a5p7hnqr', label: 'Test 2' },
+      { id: 'am4a13pt3b', label: 'Test 3' },
+      { id: 'l8rnfv6qss', label: 'Test 4' },
     ],
-    name: 'Colors',
-    __v: 0,
-  },
-  {
-    values: [
-      {
-        id: 'awab9gii2uu',
-        label: 'Batman',
-      },
-      {
-        id: 'ci03oddudli',
-        label: 'Joker',
-      },
-    ],
-    color: '#D9534F',
-    name: 'Comic character',
-    optionsCount: 2,
+    color: '#e46841',
+    name: 'Document',
+    optionsCount: 4,
     properties: [
+      { _id: '6267e68226904c252518f914', label: 'Text', type: 'text', name: 'text', filter: true },
       {
-        _id: '626f3efb389811b044569514',
-        label: 'Description',
-        type: 'text',
-        name: 'description',
-      },
-      {
-        _id: '626f3efb389811b044569515',
-        label: 'Number of comics',
+        _id: '6267e68226904c252518f915',
+        label: 'Numeric',
         type: 'numeric',
-        name: 'number_of_comics',
+        name: 'numeric',
+        filter: true,
       },
       {
-        _id: '626f3efb389811b044569517',
-        label: 'Image',
-        type: 'image',
-        name: 'image',
+        _id: '62693f2b3483cd0da78b6ffb',
+        label: 'Select',
+        type: 'select',
+        content: '626825379c8a75a1ea9a821e',
+        name: 'select',
+        filter: true,
       },
       {
-        _id: '626f42b5389811b04456caae',
-        label: 'Series dates',
-        type: 'multidaterange',
-        name: 'series_dates',
-      },
-    ],
-    __v: 0,
-    entityViewPage: '',
-    _id: '626f3efb389811b044569513',
-    type: 'template',
-    commonProperties: [
-      {
-        _id: '626f3efb389811b044569518',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '626f3efb389811b044569519',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '626f3efb389811b04456951a',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-  },
-  {
-    values: [
-      {
-        id: 'v5g098ioqe',
-        label: 'Batman hero',
-      },
-    ],
-    color: '#E91E63',
-    name: 'Hero',
-    optionsCount: 1,
-    properties: [
-      {
-        _id: '626f3fde389811b04456ab0c',
-        label: 'Character details',
-        type: 'relationship',
-        content: '626f3efb389811b044569513',
-        relationType: '626f3fbc389811b04456a4ce',
-        name: 'character_details',
-      },
-    ],
-    __v: 0,
-    entityViewPage: '',
-    _id: '626f3f85389811b04456a0cd',
-    type: 'template',
-    commonProperties: [
-      {
-        _id: '626f3f85389811b04456a0ce',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '626f3f85389811b04456a0cf',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '626f3f85389811b04456a0d0',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-  },
-  {
-    values: [
-      {
-        id: '8mdlvmt704q',
-        label: 'Joker villian',
-      },
-    ],
-    color: '#A03AB1',
-    name: 'Villian',
-    optionsCount: 1,
-    properties: [
-      {
-        _id: '626f4019389811b04456ab96',
-        label: 'Character description',
-        type: 'relationship',
-        content: '626f3efb389811b044569513',
-        relationType: '626f3fbc389811b04456a4ce',
-        name: 'character_description',
-        inherit: {
-          property: '626f3efb389811b044569514',
-          type: 'text',
-        },
-      },
-      {
-        _id: '626f40f4389811b04456bc33',
-        label: 'Main enemy',
-        type: 'relationship',
-        content: '626f3f85389811b04456a0cd',
-        relationType: '626f3f7a389811b044569db9',
-        name: 'main_enemy',
-      },
-      {
-        _id: '626f4122389811b04456c2b4',
-        label: 'Main colors',
+        _id: '627176d9ff128cfd6de09972',
+        label: 'Multi Select',
         type: 'multiselect',
-        content: '626f40c7389811b04456b5b5',
-        name: 'main_colors',
+        content: '626825379c8a75a1ea9a821e',
+        name: 'multi_select',
       },
       {
-        _id: '626f4341389811b04456d3c4',
-        label: 'Comic dates',
+        _id: '626c191b8a46c11701b499b3',
+        label: 'Relationship',
+        type: 'relationship',
+        content: '626c19238a46c11701b49a55',
+        relationType: '626c19088a46c11701b493e6',
+        name: 'relationship',
+      },
+      {
+        _id: '626c19418a46c11701b4a390',
+        label: 'Inherit',
+        type: 'relationship',
+        content: '626c19238a46c11701b49a55',
+        relationType: '626c19088a46c11701b493e6',
+        name: 'inherit',
+        inherit: { property: '626c19498a46c11701b4a702', type: 'date' },
+      },
+      { _id: '627176d9ff128cfd6de09975', label: 'Date', type: 'date', name: 'date' },
+      {
+        _id: '627176d9ff128cfd6de09976',
+        label: 'Date Range',
+        type: 'daterange',
+        name: 'date_range',
+      },
+      {
+        _id: '627176d9ff128cfd6de09977',
+        label: 'Multi Date',
+        type: 'multidate',
+        name: 'multi_date',
+      },
+      {
+        _id: '627176d9ff128cfd6de09978',
+        label: 'Multi Date Range',
         type: 'multidaterange',
-        name: 'comic_dates',
+        name: 'multi_date_range',
+      },
+      { _id: '627176d9ff128cfd6de09979', label: 'Rich Text', type: 'markdown', name: 'rich_text' },
+      { _id: '627176d9ff128cfd6de0997a', label: 'Link', type: 'link', name: 'link' },
+      { _id: '627176d9ff128cfd6de0997b', label: 'Image', type: 'image', name: 'image' },
+      { _id: '627176d9ff128cfd6de0997c', label: 'Media', type: 'media', name: 'media' },
+      {
+        _id: '627176d9ff128cfd6de0997d',
+        label: 'Geolocation',
+        type: 'geolocation',
+        name: 'geolocation_geolocation',
       },
     ],
     __v: 0,
-    entityViewPage: 'gr7lmh3406',
-    _id: '626f4019389811b04456ab95',
+    entityViewPage: '8x8b1bzsj1i',
+    _id: '5bfbb1a0471dd0fc16ada146',
     type: 'template',
     commonProperties: [
       {
-        _id: '626f4019389811b04456ab97',
+        _id: '5bfbb1a0471dd0fc16ada148',
+        label: 'Title',
+        name: 'title',
+        isCommonProperty: true,
+        type: 'text',
+        prioritySorting: false,
+      },
+      {
+        _id: '5bfbb1a0471dd0fc16ada147',
+        label: 'Date added',
+        name: 'creationDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+    ],
+  },
+  {
+    values: [{ id: 'zse9gkdu27', label: 'Test 5' }],
+    color: '#D9534F',
+    name: 'Document 2',
+    optionsCount: 1,
+    properties: [
+      { _id: '626c19498a46c11701b4a702', label: 'Date', type: 'date', name: 'date' },
+      {
+        _id: '626c19fd8a46c11701b4aea8',
+        label: 'Relationship 2',
+        type: 'relationship',
+        content: '5bfbb1a0471dd0fc16ada146',
+        relationType: '626c19088a46c11701b493e6',
+        name: 'relationship_2',
+      },
+    ],
+    __v: 0,
+    entityViewPage: '',
+    _id: '626c19238a46c11701b49a55',
+    type: 'template',
+    commonProperties: [
+      {
+        _id: '626c19238a46c11701b49a56',
         label: 'Title',
         name: 'title',
         isCommonProperty: true,
@@ -555,7 +598,7 @@ const thesauri = Immutable.fromJS([
         generatedId: false,
       },
       {
-        _id: '626f4019389811b04456ab98',
+        _id: '626c19238a46c11701b49a57',
         label: 'Date added',
         name: 'creationDate',
         isCommonProperty: true,
@@ -563,7 +606,7 @@ const thesauri = Immutable.fromJS([
         prioritySorting: false,
       },
       {
-        _id: '626f4019389811b04456ab99',
+        _id: '626c19238a46c11701b49a58',
         label: 'Date modified',
         name: 'editDate',
         isCommonProperty: true,
