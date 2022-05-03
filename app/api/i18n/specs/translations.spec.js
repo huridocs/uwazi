@@ -109,10 +109,6 @@ describe('translations', () => {
         })
         .catch(catchErrors(done));
     });
-
-    it('should not allow duplicate keys', () => {
-      fail('TODO');
-    });
   });
 
   describe('get()', () => {
