@@ -98,8 +98,6 @@ describe('preserveSync', () => {
       await mockVault(moreEvidences, 'another-auth-token');
       await preserveSync.syncAllTenants();
 
-      // backend.reset();
-
       await tenants.run(async () => {
         const { lastImport } = (await preserveSyncModel.get({ token: 'auth-token' }))[0];
         await mockVault([fakeEvidence('3')], 'auth-token', lastImport);
