@@ -117,11 +117,18 @@ const settingsPreserveConfigSchema = {
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
-  required: ['host', 'token', 'template'],
+  required: ['host', 'config'],
   properties: {
     host: { type: 'string' },
-    token: { type: 'string' },
-    template: objectIdSchema,
+    config: {
+      type: 'array',
+      items: {
+        required: ['token', 'template'],
+        type: 'object',
+        additionalProperties: false,
+        properties: { token: { type: 'string' }, template: objectIdSchema },
+      },
+    },
   },
 };
 
