@@ -5445,10 +5445,6 @@ detect-newline@^3.0.0:
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-3.1.0.tgz#576f5dfc63ae1a192ff192d8ad3af6308991b651"
   integrity sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
 
-detect-passive-events@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/detect-passive-events/-/detect-passive-events-1.0.4.tgz"
-
 devtools-protocol@0.0.969999:
   version "0.0.969999"
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.969999.tgz#3d6be0a126b3607bb399ae2719b471dda71f3478"
@@ -12001,7 +11997,7 @@ prop-types-extra@^1.0.1:
   dependencies:
     warning "^3.0.0"
 
-prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -12375,15 +12371,10 @@ react-hot-loader@^4.13.0:
     shallowequal "^1.1.0"
     source-map "^0.7.3"
 
-react-image-gallery@^0.8.12:
-  version "0.8.12"
-  resolved "https://registry.npmjs.org/react-image-gallery/-/react-image-gallery-0.8.12.tgz"
-  dependencies:
-    lodash.debounce "^4.0.8"
-    lodash.throttle "^4.1.1"
-    prop-types "^15.5.8"
-    react-swipeable "^4.2.2"
-    resize-observer-polyfill "^1.5.0"
+react-image-gallery@^1.2.7:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/react-image-gallery/-/react-image-gallery-1.2.7.tgz#2dfb83c52f32828a5340ca565f91bca58241fcfe"
+  integrity sha512-ts7yMWykvZhslGMuvVAUk7a1dJIx9QtIwK6Clv8dOGxPsJid92FRrLvXbZDvkYcUyj48sHalnBhqU6mZNCB2jg==
 
 react-is@^16.12.0, react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.6:
   version "16.13.1"
@@ -12502,13 +12493,6 @@ react-smooth@~1.0.0:
     prop-types "^15.6.0"
     raf "^3.4.0"
     react-transition-group "^2.5.0"
-
-react-swipeable@^4.2.2:
-  version "4.3.2"
-  resolved "https://registry.npmjs.org/react-swipeable/-/react-swipeable-4.3.2.tgz"
-  dependencies:
-    detect-passive-events "^1.0.4"
-    prop-types "^15.5.8"
 
 react-table@^7.7.0:
   version "7.7.0"

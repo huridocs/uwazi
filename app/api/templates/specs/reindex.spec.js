@@ -1,9 +1,14 @@
 import db from 'api/utils/testing_db';
 import { search } from 'api/search';
 import { propertyTypes } from 'shared/propertyTypes';
-import templates from '../templates';
+import fixtures, {
+  pageSharedId,
+  propertyToBeInherited2,
+  templateInheritingFromAnother,
+  templateWithContents,
+} from './fixtures/fixtures';
 import { checkIfReindex } from '../reindex';
-import fixtures, { templateWithContents, pageSharedId } from './fixtures/fixtures';
+import templates from '../templates';
 
 const getAndUpdateTemplate = async props => {
   const [template] = await templates.get({ _id: templateWithContents });
@@ -123,6 +128,13 @@ describe('reindex', () => {
         await templates.save(template, 'en', reindex);
         expect(search.indexEntities).not.toHaveBeenCalled();
       });
+
+      it('should not find structural changes on unchanged inherit', async () => {
+        const [template] = await templates.get({ _id: templateInheritingFromAnother });
+        const reindex = await checkIfReindex(template);
+
+        expect(reindex).toEqual(false);
+      });
     });
     describe('commonProperties', () => {
       it('should not reindex if priority sorting has changed', async () => {
@@ -168,6 +180,15 @@ describe('reindex', () => {
 
         await templates.save(template, 'en', reindex);
         expect(search.indexEntities).toHaveBeenCalled();
+      });
+
+      it('should find structural changes on changed inherit', async () => {
+        const [template] = await templates.get({ _id: templateInheritingFromAnother });
+        template.properties[0].inherit = {
+          property: propertyToBeInherited2.toString(),
+          type: 'text',
+        };
+        expect(await checkIfReindex(template)).toEqual(true);
       });
     });
     describe('commonProperty', () => {

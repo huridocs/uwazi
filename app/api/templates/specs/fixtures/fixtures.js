@@ -9,7 +9,9 @@ const select4id = db.id();
 const swapTemplate = db.id();
 const relatedTo = db.id();
 const templateToBeInherited = db.id();
+const templateInheritingFromAnother = db.id();
 const propertyToBeInherited = db.id();
+const propertyToBeInherited2 = db.id();
 const thesauriId1 = db.id();
 const thesauriId2 = db.id();
 const templateWithExtractedMetadata = db.id();
@@ -123,21 +125,26 @@ export default {
       _id: templateToBeInherited,
       name: 'template to be inherited',
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-      properties: [{ _id: propertyToBeInherited, name: 'inherit_me', type: 'text' }],
+      properties: [
+        { _id: propertyToBeInherited, name: 'inherit_me', type: 'text' },
+        { _id: propertyToBeInherited2, name: 'inherit_me_as_well', type: 'text' },
+      ],
       default: true,
     },
     {
+      _id: templateInheritingFromAnother,
       name: 'template inheriting from another',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }],
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.relationship,
           name: 'inherit',
           label: 'Inherit',
-          relationtype: relatedTo,
-          content: templateToBeInherited,
+          relationType: relatedTo.toString(),
+          content: templateToBeInherited.toString(),
           inherit: {
-            property: propertyToBeInherited,
+            property: propertyToBeInherited.toString(),
             type: 'text',
           },
         },
@@ -244,7 +251,9 @@ export {
   templateWithContents,
   swapTemplate,
   templateToBeInherited,
+  templateInheritingFromAnother,
   propertyToBeInherited,
+  propertyToBeInherited2,
   relatedTo,
   thesauriId1,
   thesauriId2,
