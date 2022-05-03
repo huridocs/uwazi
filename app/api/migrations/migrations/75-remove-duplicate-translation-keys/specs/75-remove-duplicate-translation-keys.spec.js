@@ -4,7 +4,8 @@ import fixtures from './fixtures.js';
 
 describe('migration remove-duplicate-translation-keys', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    // spyOn(process.stdout, 'write');
+    migration.reindex = false;
   });
 
   afterAll(async () => {
@@ -28,20 +29,19 @@ describe('migration remove-duplicate-translation-keys', () => {
       { key: 'duplicate_key', value: 'duplicate_key' },
       { key: 'multiple_key_with_tr', value: 'pick this one' },
     ];
-    await migration.up();
-    const translations = await testingDB.mongodb.collection('translations').find().toArray();
+    await migration.up(testingDB.mongodb);
+    const translations = await testingDB.mongodb.collection('translations').find({}).toArray();
     translations.forEach(tr => {
       const systemValues = tr.contexts[0].values;
       expect(systemValues).toMatchObject(expectedSystemValues);
       const dictValues = tr.contexts[1].values;
       expect(dictValues).toMatchObject(expectedDictValues);
     });
-    fail('TODO');
   });
 
   it('should reindex if there are removed keys', async () => {
     await testingDB.clearAllAndLoad(fixtures);
-    await migration.up();
+    await migration.up(testingDB.mongodb);
     expect(migration.reindex).toBe(true);
   });
 
@@ -66,7 +66,7 @@ describe('migration remove-duplicate-translation-keys', () => {
         },
       ],
     });
-    await migration.up();
+    await migration.up(testingDB.mongodb);
     expect(migration.reindex).toBe(false);
   });
 });
