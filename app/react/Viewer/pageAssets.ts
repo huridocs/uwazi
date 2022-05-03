@@ -10,42 +10,40 @@ const pickEntityFields = (entity: EntitySchema) =>
   pick(entity, ['title', 'sharedId', 'creationDate', 'editDate', 'language', 'template']);
 
 const mapPropertyValue = (item: any) => {
+  console.log(item);
   if (!isObject(item)) {
     return item;
   }
+  let formattedItem = { ...item };
 
-  let itemValue = item;
-  if (isObject(item)) {
-    itemValue = pick(item, ['name', 'label', 'content', '_id', 'type', 'timestamp', 'value']);
-    if (isArray(item.value)) {
-      itemValue.value = item.value.map(target => {
-        const relatedEntity = pickEntityFields(target.relatedEntity);
-        const subValue = pick(target, ['value', 'url', 'icon']);
-        return { ...subValue, ...relatedEntity };
-      });
-    }
-  }
-
-  return itemValue;
+  formattedItem.displatValue = formattedItem.inheritedValue[0].value || formattedItem.label;
+  formattedItem.type = formattedItem.inheritedType || formattedItem.type;
+  // if (isObject(item)) {
+  //   if (isArray(item.value)) {
+  //     itemValue.value = item.value.map(target => {
+  //       const relatedEntity = pickEntityFields(target.relatedEntity);
+  //       const subValue = pick(target, ['value', 'url', 'icon']);
+  //       return { ...subValue, ...relatedEntity };
+  //     });
+  //   }
+  // }
+  console.log(formattedItem);
+  return pick(formattedItem, ['displatValue', 'value', 'type']);
 };
 
-const composeEntityData = (entityRaw: EntitySchema, metadata) => {
-  const entity = pickEntityFields(entityRaw);
-  const formattedMetadata = Object.entries(entityRaw.metadata || {}).map(([key, values]) => {
-    const formattedValue = values?.map(value => {
-      return {
-        ...value,
-        displayValue: value.label,
-        value: value.value,
-      };
-    });
-    return {
-      [key]: formattedValue,
-    };
-  });
-  console.log(JSON.stringify(formattedMetadata, null, 2));
+const formatEntityData = (entity: EntitySchema, rawMetadata: MetadataSchema | undefined) => {
+  const entityProperties = pickEntityFields(entity);
+  const formattedMetadata = rawMetadata
+    ? Object.entries(rawMetadata).map(([key, value]) => ({
+        [key]: value ? value.map(mapPropertyValue) : [],
+      }))
+    : {};
+  console.log(
+    'Final object: ',
+    JSON.stringify({ ...entityProperties, metadata: formattedMetadata }, null, 2)
+  );
   return {
-    ...entity,
+    ...entityProperties,
     metadata: formattedMetadata,
   };
 };
@@ -72,10 +70,11 @@ const prepareAssets = (
   thesauris: ThesaurusSchema[]
 ) => {
   const formattedEntity = formatEntity(entityRaw, template, thesauris);
+  console.log('formattedEntity: ', JSON.stringify(formattedEntity, null, 2));
   return {
     entity: formattedEntity,
     entityRaw,
-    entityData: composeEntityData(entityRaw, formattedEntity.metadata),
+    entityData: formatEntityData(formattedEntity, entityRaw.metadata),
     template: template.toJS(),
   };
 };
