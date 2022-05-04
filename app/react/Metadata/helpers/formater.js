@@ -258,6 +258,8 @@ export default {
       name: property.get('name'),
       type: property.get('inherit').get('type'),
       noLabel: property.get('noLabel'),
+      reference: options.doc.relations.find(relation => relation.entity === propValue[0].value)
+        .entityData,
     });
 
     const type = propertyInfo.get('type');
