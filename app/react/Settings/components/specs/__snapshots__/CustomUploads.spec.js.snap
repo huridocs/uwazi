@@ -72,7 +72,6 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           >
             URL:
           </span>
-          <br />
           <span
             className="thumbnail-url"
           >
@@ -105,7 +104,6 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           >
             URL:
           </span>
-          <br />
           <span
             className="thumbnail-url"
           >

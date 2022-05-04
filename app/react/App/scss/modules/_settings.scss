@@ -335,22 +335,24 @@
       div.info {
         display: flex;
         flex-direction: column;
-        height: 80px;
         width: calc(100% - 80px);
         padding-left: 15px;
+        padding-bottom: 20px;
         align-items: flex-start;
         justify-content: space-between;
 
         span {
           font-weight: bold;
           font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
-          background-color: $c-grey-lighten;
-          padding: 4px 8px;
           border-radius: 3px;
-          display: block;
           max-width: 100%;
           overflow-x: auto;
           white-space: nowrap;
+
+          &.thumbnail-url {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+          }
         }
       }
     }
@@ -369,9 +371,9 @@
   }
 
   .thumbnail {
-    width: 80px;
-    height: 80px;
-    min-width: 80px;
+    width: 95px;
+    height: 95px;
+    min-width: 95px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -380,6 +382,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      background-color: #ddd;
     }
   }
 }

@@ -61,7 +61,6 @@ export class CustomUploads extends RouteHandler {
                 <Thumbnail file={`/assets/${upload.get('filename')}`} />
                 <div className="info">
                   <span no-translate="true">URL:</span>
-                  <br />
                   <span className="thumbnail-url">{`/assets/${upload.get('filename')}`}</span>
                   <ConfirmButton action={() => this.props.deleteCustomUpload(upload.get('_id'))}>
                     <Translate>Delete</Translate>
