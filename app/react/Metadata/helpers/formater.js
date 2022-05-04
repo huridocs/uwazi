@@ -137,6 +137,7 @@ export default {
     if (doc && doc.relations && doc.relations.length > 0) {
       const relation = doc.relations.find(e => e.entity === option.value);
       relatedEntity = relation?.entityData;
+      relatedEntity.inheritedProperty = 'title';
     }
 
     return { value, originalValue, url, icon, parent, relatedEntity };

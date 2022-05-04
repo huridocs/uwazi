@@ -86,7 +86,7 @@ describe('pageAssets', () => {
       expect(entityData.metadata.relationship).toEqual([
         {
           name: 'relationship',
-          type: 'relationship',
+          type: 'inherit',
           value: 'zse9gkdu27',
           displayValue: 'Test 5',
           reference: {
@@ -94,6 +94,7 @@ describe('pageAssets', () => {
             creationDate: 1651251547653,
             title: 'Test 5',
             template: '626c19238a46c11701b49a55',
+            inheritedProperty: 'title',
           },
         },
       ]);

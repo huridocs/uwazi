@@ -16,7 +16,15 @@ type FormattedPropertyValueSchema = Partial<MetadataObjectSchema> & {
   value?: PropertyValueSchema;
 };
 const pickEntityFields = (entity: FormattedEntity) =>
-  pick(entity, ['title', 'sharedId', 'creationDate', 'editDate', 'language', 'template']);
+  pick(entity, [
+    'title',
+    'sharedId',
+    'creationDate',
+    'editDate',
+    'language',
+    'template',
+    'inheritedProperty',
+  ]);
 
 const metadataFields = {
   relationship: {
@@ -53,16 +61,21 @@ const formatPropertyValue = (
 const formatProperty = (item: FormattedPropertyValueSchema) => {
   const values = !isArray(item.value) ? [item] : item.value;
 
-  const formattedItem = values.map((target: any) => {
+  const formattedItem = values.map(target => {
     const relatedEntity = pickEntityFields(target.relatedEntity);
     const metadataField = metadataFields[item.type] || metadataFields.default;
     const value = formatPropertyValue(target, metadataField);
+    let { type } = item;
+
+    if (item.type === 'relationship') {
+      type = 'inherit';
+    }
 
     return {
       displayValue: get(target, metadataField.displayValue, target),
       value,
       name: item.name,
-      type: item.type,
+      type,
       ...(!isEmpty(relatedEntity) ? { reference: relatedEntity } : {}),
     };
   });

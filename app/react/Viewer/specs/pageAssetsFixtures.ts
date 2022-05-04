@@ -698,6 +698,7 @@ const expectedFormattedEntity = {
           relatedEntity: {
             sharedId: 'zse9gkdu27',
             creationDate: 1651251547653,
+            inheritedProperty: 'title',
             published: true,
             metadata: {
               date: [
@@ -925,6 +926,7 @@ const expectedFormattedEntity = {
         attachments: [],
         title: 'Test 5',
         documents: [],
+        inheritedProperty: 'title',
         template: '626c19238a46c11701b49a55',
         _id: '626c195b8a46c11701b4aaaf',
       },
