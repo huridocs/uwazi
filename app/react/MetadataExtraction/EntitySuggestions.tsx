@@ -149,13 +149,7 @@ export const EntitySuggestions = ({
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
-      const { state } = selectedFlatRows[0].values;
-      if (state === SuggestionState.valueMismatch) {
-        selectedFlatRows[0].values.state = SuggestionState.valueMatch;
-      }
-      if (state === SuggestionState.labelMismatch) {
-        selectedFlatRows[0].values.state = SuggestionState.labelMatch;
-      }
+      selectedFlatRows[0].values.state = SuggestionState.labelMatch;
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }

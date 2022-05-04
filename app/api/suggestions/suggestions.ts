@@ -293,12 +293,22 @@ export const Suggestions = {
         const extractedMetadata = file.extractedMetadata.find(
           (em: any) => em.name === suggestion.propertyName
         );
-        (extractedMetadata as ExtractedMetadataSchema).timestamp = Date();
-
-        (extractedMetadata as ExtractedMetadataSchema).selection = {
-          text: suggestion.suggestedValue as string,
-          selectionRectangles: newTextSelection,
-        };
+        if (!extractedMetadata) {
+          file.extractedMetadata.push({
+            name: suggestion.propertyName,
+            timestamp: Date(),
+            selection: {
+              text: suggestion.suggestedValue as string,
+              selectionRectangles: newTextSelection,
+            },
+          });
+        } else {
+          (extractedMetadata as ExtractedMetadataSchema).timestamp = Date();
+          (extractedMetadata as ExtractedMetadataSchema).selection = {
+            text: suggestion.suggestedValue as string,
+            selectionRectangles: newTextSelection,
+          };
+        }
       }
       await files.save(file);
     }
