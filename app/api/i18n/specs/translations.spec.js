@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
