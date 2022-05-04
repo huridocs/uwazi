@@ -58,7 +58,7 @@ module.exports = production => {
 
               if (
                 packageName.match(
-                  /qrcode.react|pdfjs-dist|recharts|react-map-gl|mapbox-gl|LazyLoad/
+                  /qrcode.react|pdfjs-dist|recharts|react-map-gl|leaflet|mapbox-gl|LazyLoad/
                 )
               ) {
                 return packageName;

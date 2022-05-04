@@ -29,6 +29,14 @@ export interface SettingsLinkSchema {
   type?: string;
 }
 
+export interface PreserveConfig {
+  host: string;
+  config: {
+    token: string;
+    template: ObjectIdSchema;
+  }[];
+}
+
 export interface Settings {
   _id?: ObjectIdSchema;
   __v?: number;
@@ -72,6 +80,7 @@ export interface Settings {
     };
     topicClassification?: boolean;
     favorites?: boolean;
+    preserve?: PreserveConfig;
     ocr?: {
       url: string;
     };

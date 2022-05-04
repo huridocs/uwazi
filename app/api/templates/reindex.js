@@ -1,3 +1,4 @@
+import { deepEquals } from 'shared/dataUtils';
 import templates from './templates';
 
 const SHOULD_NOT_TRIGGER_REINDEX = [
@@ -37,7 +38,10 @@ function compareTemplateProperties(updatedProperties, originalProperties) {
     }
 
     Object.keys(updatedProperty).forEach(originalKey => {
-      if (updatedProperty[originalKey] !== originalProperty[originalKey] && originalKey !== '_id') {
+      if (
+        originalKey !== '_id' &&
+        !deepEquals(updatedProperty[originalKey], originalProperty[originalKey])
+      ) {
         changedProps.push(originalKey);
       }
     });

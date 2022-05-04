@@ -77,7 +77,16 @@ export default {
       metadata: { text: [{ value: 'text' }] },
     },
   ],
-  settings: [{ _id: db.id(), languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en' }] }],
+  settings: [
+    {
+      _id: db.id(),
+      languages: [
+        { key: 'es', label: 'ES' },
+        { key: 'pt', label: 'PT' },
+        { key: 'en', label: 'EN' },
+      ],
+    },
+  ],
   templates: [
     {
       _id: templateId,
