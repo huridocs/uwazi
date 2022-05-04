@@ -99,5 +99,23 @@ describe('pageAssets', () => {
         },
       ]);
     });
+
+    it('should return inhertied relationship properties formatted', () => {
+      expect(entityData.metadata.inherit).toEqual([
+        {
+          name: 'inherit',
+          type: 'inherit',
+          value: 1650412800,
+          displayValue: 'Apr 20, 2022',
+          reference: {
+            sharedId: 'zse9gkdu27',
+            creationDate: 1651251547653,
+            title: 'Test 5',
+            template: '626c19238a46c11701b49a55',
+            inheritedProperty: 'date',
+          },
+        },
+      ]);
+    });
   });
 });
