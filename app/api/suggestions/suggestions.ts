@@ -24,6 +24,7 @@ export const Suggestions = {
       status: 'ready',
     });
     const { languages } = await settings.get();
+    // @ts-ignore
     const defaultLanguage = languages.find(l => l.default).key;
 
     const { state, language, ...filters } = filter;
