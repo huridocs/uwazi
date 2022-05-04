@@ -169,6 +169,7 @@ export default {
       label: property.get('label'),
       name: property.get('name'),
       value: this.formatDateRange(daterange[0]),
+      originalValue: daterange[0].value,
     };
   },
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { prepareAssets } from '../pageAssets';
 import { dbEntity, dbTemplate, thesauri, expectedFormattedEntity } from './pageAssetsFixtures';
 
@@ -18,19 +19,23 @@ describe('pageAssets', () => {
     it('should transform the template from inmmutable to plain javascript', () => {
       expect(template).toEqual(dbTemplate.toJS());
     });
-    it('should return text properties formatted', () => {
-      expect(entityData.metadata.text).toEqual([
-        { displayValue: 'one', value: 'one', type: 'text', name: 'text' },
-      ]);
-    });
-    it('should return numeric properties formatted', () => {
-      expect(entityData.metadata.numeric).toEqual([
-        { displayValue: 1, value: 1, type: 'numeric', name: 'numeric' },
-      ]);
-    });
-    it('should return select properties formatted', () => {
-      expect(entityData.metadata.select).toEqual([
-        { displayValue: 'Argentina', value: 'f5t0ah6aluq', type: 'select', name: 'select' },
+
+    it.each`
+      propertyName    | type           | displayValue                                 | value
+      ${'text'}       | ${'text'}      | ${'one'}                                     | ${'one'}
+      ${'numeric'}    | ${'numeric'}   | ${1}                                         | ${1}
+      ${'select'}     | ${'select'}    | ${'Argentina'}                               | ${'f5t0ah6aluq'}
+      ${'date'}       | ${'date'}      | ${'May 3, 2022'}                             | ${1651536000}
+      ${'date_range'} | ${'daterange'} | ${'May 3, 2022 ~ May 4, 2022'}               | ${{ from: 1651536000, to: 1651708799 }}
+      ${'image'}      | ${'image'}     | ${'/api/files/1651603234992smwovxz1mq.jpeg'} | ${'/api/files/1651603234992smwovxz1mq.jpeg'}
+    `('should return $type properties formatted', ({ propertyName, type, displayValue, value }) => {
+      expect(entityData.metadata[propertyName]).toEqual([
+        {
+          displayValue,
+          value,
+          type,
+          name: propertyName,
+        },
       ]);
     });
     it('should return multi select properties formatted', () => {
@@ -49,16 +54,7 @@ describe('pageAssets', () => {
         },
       ]);
     });
-    it('should return date properties formatted', () => {
-      expect(entityData.metadata.date).toEqual([
-        {
-          value: 1651536000,
-          displayValue: 'May 3, 2022',
-          type: 'date',
-          name: 'date',
-        },
-      ]);
-    });
+
     it('should return geolocation properties formatted', () => {
       expect(entityData.metadata.geolocation_geolocation).toEqual([
         {
@@ -82,6 +78,23 @@ describe('pageAssets', () => {
           name: 'multi_date_range',
           type: 'multidaterange',
           value: { from: 1652572800, to: 1653091199 },
+        },
+      ]);
+    });
+
+    it('should return relationship properties formatted', () => {
+      expect(entityData.metadata.relationship).toEqual([
+        {
+          name: 'relationship',
+          type: 'relationship',
+          value: 'zse9gkdu27',
+          displayValue: 'Test 5',
+          reference: {
+            sharedId: 'zse9gkdu27',
+            creationDate: 1651251547653,
+            title: 'Test 5',
+            template: '626c19238a46c11701b49a55',
+          },
         },
       ]);
     });
