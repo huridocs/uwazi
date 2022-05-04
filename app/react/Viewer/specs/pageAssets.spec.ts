@@ -12,7 +12,7 @@ describe('pageAssets', () => {
     it('should return a raw entity', () => {
       expect(entityRaw).toEqual(dbEntity);
     });
-    xit('should return a formatted entity', () => {
+    it('should return a formatted entity', () => {
       expect(entity).toEqual(expectedFormattedEntity);
     });
 
