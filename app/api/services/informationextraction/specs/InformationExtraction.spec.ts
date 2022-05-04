@@ -10,10 +10,31 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
 
+let informationExtraction: InformationExtraction;
 describe('InformationExtraction', () => {
-  let informationExtraction: InformationExtraction;
   let IXExternalService: ExternalDummyService;
   let xmlA: Buffer;
+
+  const setIXServiceResults = (results: any[]) => {
+    const IXResults = results.map((result: any) => ({
+      tenant: 'tenant1',
+      property_name: 'property1',
+      xml_file_name: 'documentA.xml',
+      text: 'suggestion_text_1',
+      segment_text: 'segment_text_1',
+      segments_boxes: [
+        {
+          left: 1,
+          top: 2,
+          width: 3,
+          height: 4,
+          page_number: 1,
+        },
+      ],
+      ...result,
+    }));
+    IXExternalService.setResults(IXResults);
+  };
 
   beforeAll(async () => {
     IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
@@ -204,38 +225,12 @@ describe('InformationExtraction', () => {
 
   describe('when suggestions are ready', () => {
     it('should request and store the suggestions', async () => {
-      IXExternalService.setResults([
+      setIXServiceResults([
+        {},
         {
-          tenant: 'tenant1',
-          property_name: 'property1',
-          xml_file_name: 'documentA.xml',
-          text: 'suggestion_text_1',
-          segment_text: 'segment_text_1',
-          segments_boxes: [
-            {
-              left: 1,
-              top: 2,
-              width: 3,
-              height: 4,
-              page_number: 1,
-            },
-          ],
-        },
-        {
-          tenant: 'tenant1',
-          property_name: 'property1',
-          xml_file_name: 'documentC.xml',
           text: 'suggestion_text_2',
+          xml_file_name: 'documentC.xml',
           segment_text: 'segment_text_2',
-          segments_boxes: [
-            {
-              left: 21,
-              top: 21,
-              width: 32,
-              height: 45,
-              page_number: 1,
-            },
-          ],
         },
       ]);
 
@@ -341,22 +336,10 @@ describe('InformationExtraction', () => {
     });
 
     it('should store failed suggestions', async () => {
-      IXExternalService.setResults([
+      setIXServiceResults([
         {
-          tenant: 'tenant1',
-          property_name: 'property1',
-          xml_file_name: 'documentA.xml',
           text: '',
           segment_text: '',
-          segments_boxes: [
-            {
-              left: 1,
-              top: 2,
-              width: 3,
-              height: 4,
-              page_number: 1,
-            },
-          ],
         },
       ]);
 
@@ -389,38 +372,16 @@ describe('InformationExtraction', () => {
     });
 
     it('should not store invalid suggestions for the field as ready', async () => {
-      IXExternalService.setResults([
+      setIXServiceResults([
         {
-          tenant: 'tenant1',
           property_name: 'property2',
-          xml_file_name: 'documentA.xml',
           text: '',
-          segment_text: 'segment_text_1',
-          segments_boxes: [
-            {
-              left: 1,
-              top: 2,
-              width: 3,
-              height: 4,
-              page_number: 1,
-            },
-          ],
         },
         {
-          tenant: 'tenant1',
           property_name: 'property2',
           xml_file_name: 'documentC.xml',
           text: 'Not a valid date',
           segment_text: 'segment_text_2',
-          segments_boxes: [
-            {
-              left: 1,
-              top: 2,
-              width: 3,
-              height: 4,
-              page_number: 1,
-            },
-          ],
         },
       ]);
 
@@ -440,38 +401,15 @@ describe('InformationExtraction', () => {
     });
 
     it('should store empty suggestions when they are of type text', async () => {
-      IXExternalService.setResults([
+      setIXServiceResults([
         {
-          tenant: 'tenant1',
-          property_name: 'property1',
-          xml_file_name: 'documentA.xml',
           text: '',
           segment_text: '',
-          segments_boxes: [
-            {
-              left: 1,
-              top: 2,
-              width: 3,
-              height: 4,
-              page_number: 1,
-            },
-          ],
         },
         {
-          tenant: 'tenant1',
           property_name: 'property4',
-          xml_file_name: 'documentA.xml',
           text: '',
           segment_text: '',
-          segments_boxes: [
-            {
-              left: 1,
-              top: 2,
-              width: 3,
-              height: 4,
-              page_number: 1,
-            },
-          ],
         },
       ]);
 
@@ -507,22 +445,10 @@ describe('InformationExtraction', () => {
     });
 
     it('should store non-configured languages as default language suggestion', async () => {
-      IXExternalService.setResults([
+      setIXServiceResults([
         {
-          tenant: 'tenant1',
-          property_name: 'property1',
           xml_file_name: 'documentE.xml',
           text: 'Esto es una prueba',
-          segment_text: 'segment_text_1',
-          segments_boxes: [
-            {
-              left: 1,
-              top: 2,
-              width: 3,
-              height: 4,
-              page_number: 1,
-            },
-          ],
         },
       ]);
 
