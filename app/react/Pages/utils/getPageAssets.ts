@@ -8,13 +8,6 @@ import pageItemLists from './pageItemLists';
 
 type Query = { filters: {}; types: string[]; limit?: string };
 
-type localDatasets = {
-  entityData?: {};
-  entity?: {};
-  entityRaw?: {};
-  template?: {};
-};
-
 interface ListsData {
   params: string[];
   content: string;
@@ -51,7 +44,7 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   return listsData;
 };
 
-const replaceDynamicProperties = (pageContent?: string, datasets?: localDatasets) => {
+const replaceDynamicProperties = (pageContent?: string, datasets?: any) => {
   if (!pageContent || !datasets || (!datasets.entityData && !datasets.template)) {
     return pageContent;
   }
@@ -87,7 +80,7 @@ const replaceDynamicProperties = (pageContent?: string, datasets?: localDatasets
 const getPageAssets = async (
   requestParams: RequestParams,
   additionalDatasets?: {},
-  localDatasets?: localDatasets
+  localDatasets?: {}
 ) => {
   const page = await PagesAPI.getById(requestParams);
   page.metadata.content = replaceDynamicProperties(page.metadata?.content, localDatasets);
