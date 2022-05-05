@@ -932,6 +932,40 @@ describe('search', () => {
     expect(entities.rows[0].title).toBe('metadata1');
   });
 
+  it('sort by inherited values', async () => {
+    userFactory.mock(undefined);
+    const entitiesAsc = await search.search(
+      {
+        types: [ids.template1],
+        order: 'asc',
+        sort: 'metadata.relationshipcountryselect.inheritedValue',
+      },
+      'en'
+    );
+    expect(entitiesAsc.rows.map(entity => entity.title)).toEqual([
+      'Inherited 2',
+      'Inherited 1',
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+    ]);
+    const entitiesDesc = await search.search(
+      {
+        types: [ids.template1],
+        order: 'desc',
+        sort: 'metadata.relationshipcountryselect.inheritedValue',
+      },
+      'en'
+    );
+    expect(entitiesDesc.rows.map(entity => entity.title)).toEqual([
+      'Inherited 1',
+      'Inherited 2',
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+    ]);
+  });
+
   it('should allow including unpublished documents if user', async () => {
     const { rows } = await search.search(
       {

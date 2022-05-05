@@ -8,18 +8,18 @@ import { t } from 'app/I18N';
 import { Icon } from 'UI';
 import { DropdownList } from 'app/Forms';
 
+const isSortableType = type => ['text', 'date', 'numeric', 'select'].includes(type);
+
 const getMetadataSorts = templates =>
   templates.toJS().reduce((sorts, template) => {
     template.properties.forEach(property => {
       const sortable =
         property.filter &&
-        (property.type === 'text' ||
-          property.type === 'date' ||
-          property.type === 'numeric' ||
-          property.type === 'select');
+        (isSortableType(property.type) ||
+          (property.inherit && isSortableType(property.inherit.type)));
 
       if (sortable && !sorts.find(s => s.name === property.name)) {
-        const sortString = `metadata.${property.name}`;
+        const sortString = `metadata.${property.name}${property.inherit ? '.inheritedValue' : ''}`;
         sorts.push({
           label: property.label,
           name: property.name,
