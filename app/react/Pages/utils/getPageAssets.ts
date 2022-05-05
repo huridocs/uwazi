@@ -8,6 +8,13 @@ import pageItemLists from './pageItemLists';
 
 type Query = { filters: {}; types: string[]; limit?: string };
 
+type localDatasets = {
+  entityData?: {};
+  entity?: {};
+  entityRaw?: {};
+  template?: {};
+};
+
 interface ListsData {
   params: string[];
   content: string;
@@ -44,26 +51,48 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   return listsData;
 };
 
-const replaceDynamicProperties = (
-  pageContent: string | undefined,
-  localDatasets: {} | undefined
-) => {
-  if (!pageContent || !localDatasets) {
-    return pageContent;
-  }
-
-  return pageContent.replace(/\$\{((entityRaw.|entity.|template.)[^}^\s]*)\}/g, (match, p) => {
-    if (has(localDatasets, p)) {
-      return get(localDatasets, p);
+const replaceForTemplate = (pageContent: string, dataset: localDatasets, regex: RegExp) =>
+  pageContent.replace(regex, (match, p) => {
+    if (has(dataset, p)) {
+      return get(dataset, p);
     }
     return match;
   });
+
+const replaceForEntity = (pageContent: string, dataset: localDatasets, regex: RegExp) =>
+  pageContent.replace(regex, (match, p) => {
+    if (!p.startsWith('entity.metadata.') && has(dataset, p)) {
+      return get(dataset, p);
+    }
+    return match;
+  });
+
+const replaceDynamicProperties = (pageContent?: string, localDatasets?: localDatasets) => {
+  let result = pageContent;
+  const parsableDatasets = {
+    entity: localDatasets?.entityData,
+    template: localDatasets?.template,
+  };
+
+  if (!result || (!parsableDatasets.entity && !parsableDatasets.template)) {
+    return result;
+  }
+
+  if (result.match(/\$\{((template.)[^}^\s]*)\}/g)) {
+    result = replaceForTemplate(result, parsableDatasets, /\$\{((template.)[^}^\s]*)\}/g);
+  }
+
+  if (result.match(/\$\{((entity.)[^}^\s]*)\}/g)) {
+    result = replaceForEntity(result, parsableDatasets, /\$\{((entity.)[^}^\s]*)\}/g);
+  }
+
+  return result;
 };
 
 const getPageAssets = async (
   requestParams: RequestParams,
   additionalDatasets?: {},
-  localDatasets?: {}
+  localDatasets?: localDatasets
 ) => {
   const page = await PagesAPI.getById(requestParams);
   page.metadata.content = replaceDynamicProperties(page.metadata?.content, localDatasets);
