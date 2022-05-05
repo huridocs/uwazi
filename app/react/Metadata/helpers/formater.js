@@ -5,6 +5,21 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 
+const prepareRelatedEntity = (options, propValue, templates, property) => {
+  let relatedEntity;
+  if (options.doc && options.doc.relations && options.doc.relations.length > 0) {
+    relatedEntity = options.doc.relations.find(
+      relation => relation.entity === propValue[0].value
+    ).entityData;
+    const template = templates.find(t => relatedEntity.template === t.get('_id'));
+    const inheritedProperty = template
+      .get('properties')
+      .find(p => p.get('_id') === property.get('inherit').get('property'));
+    relatedEntity = { ...relatedEntity, inheritedProperty: inheritedProperty.get('name') };
+  }
+  return relatedEntity;
+};
+
 const addSortedProperties = (templates, sortedProperties) =>
   templates.reduce((_property, template) => {
     if (!template.get('properties')) {
@@ -274,13 +289,8 @@ export default {
             return null;
           }
 
-          const relatedEntity = options.doc.relations?.find(
-            relation => relation.entity === propValue[0].value
-          ).entityData;
-          const template = templates.find(t => relatedEntity.template === t.get('_id'));
-          const inheritedProperty = template
-            .get('properties')
-            .find(p => p.get('_id') === property.get('inherit').get('property'));
+          const relatedEntity = prepareRelatedEntity(options, propValue, templates, property);
+
           const formattedValue = this[methodType](
             propertyInfo,
             v.inheritedValue,
@@ -290,7 +300,7 @@ export default {
           );
           return {
             ...formattedValue,
-            relatedEntity: { ...relatedEntity, inheritedProperty: inheritedProperty.get('name') },
+            ...(relatedEntity && { relatedEntity }),
           };
         }
 
