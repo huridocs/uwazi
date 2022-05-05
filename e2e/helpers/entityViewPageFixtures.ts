@@ -1,6 +1,8 @@
+/* eslint-disable no-template-curly-in-string */
 const textWithDynamicValues =
-  // eslint-disable-next-line no-template-curly-in-string
-  '<p className="dynamic-values">Entidad: ${entity.title} con template: ${template.name} tiene estado ${entityRaw.metadata.estado[0].label}</p>';
+  '<p className="dynamic-values">Entidad: ${entity.title} con template: ${template.name} tiene estado ${entity.metadata.estado.displayValue}</p>' +
+  '<p className="dynamic-values">Código de estado: ${entity.metadata.estado}, índices: ${entity.metadata.env_o_a_la_corte[0]}</p>' +
+  '<p className="dynamic-values">Fecha de envío: ${entity.metadata.env_o_a_la_corte[0].displayValue}</p>';
 
 export const contents = `<h1>My entity view</h1>
 <p className="custom-title"><Value path="entityRaw.title" /></p>

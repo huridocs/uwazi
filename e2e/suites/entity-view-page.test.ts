@@ -88,6 +88,12 @@ describe('Entity Page view', () => {
       await expect(page).toMatchElement('.dynamic-values', {
         text: 'Entidad: Artavia Murillo y otros con template: Medida Provisional tiene estado Activo',
       });
+      await expect(page).toMatchElement('.dynamic-values', {
+        text: 'Código de estado: 35ae6c24-9f4c-4017-9f01-2bc42ff7ad83, índices: 1324252800',
+      });
+      await expect(page).toMatchElement('.dynamic-values', {
+        text: 'Fecha de envío: Dec 19, 2011',
+      });
     });
 
     it('should display EntityData values', async () => {
