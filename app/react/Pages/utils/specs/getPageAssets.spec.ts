@@ -148,6 +148,22 @@ describe('getPageAssets', () => {
             { value: '123fgfdcv', displayValue: 'Option 1' },
             { value: 'yjk56dfgd', displayValue: 'Option 2' },
           ],
+          multiDateRange: [
+            {
+              value: {
+                from: 1651968000,
+                to: 1652486399,
+              },
+              displayValue: 'May 5, 2022 - May 5, 2023',
+            },
+            {
+              value: {
+                from: 1652572800,
+                to: 1653091199,
+              },
+              displayValue: 'May 5, 2024 - May 5, 2025',
+            },
+          ],
         },
       },
       template: {
@@ -172,19 +188,23 @@ describe('getPageAssets', () => {
     });
 
     it.each`
-      path                                                | result
-      ${'${entity.title}'}                                | ${'My entity'}
-      ${'${entity.sharedId}'}                             | ${'mtpkxxe1uom'}
-      ${'${entity.metadata.a_date}'}                      | ${747198000}
-      ${'${entity.metadata.a_date.displayValue}'}         | ${'September 5, 1993'}
-      ${'${entity.metadata.multiselect}'}                 | ${'123fgfdcv'}
-      ${'${entity.metadata.multiselect[0]}'}              | ${'123fgfdcv'}
-      ${'${entity.metadata.multiselect[1]}'}              | ${'123fgfdcv'}
-      ${'${entity.metadata.multiselect.displayValue}'}    | ${'Option 1'}
-      ${'${entity.metadata.multiselect[0].displayValue}'} | ${'Option 1'}
-      ${'${entity.metadata.multiselect[1].displayValue}'} | ${'Option 2'}
+      path                                              | result
+      ${'entity.title'}                                 | ${'My entity'}
+      ${'entity.sharedId'}                              | ${'mtpkxxe1uom'}
+      ${'entity.metadata.a_date'}                       | ${747198000}
+      ${'entity.metadata.a_date.value'}                 | ${747198000}
+      ${'entity.metadata.a_date.displayValue'}          | ${'September 5, 1993'}
+      ${'entity.metadata.multiselect'}                  | ${'123fgfdcv'}
+      ${'entity.metadata.multiselect[0]'}               | ${'123fgfdcv'}
+      ${'entity.metadata.multiselect[1]'}               | ${'yjk56dfgd'}
+      ${'entity.metadata.multiselect.displayValue'}     | ${'Option 1'}
+      ${'entity.metadata.multiselect[0].displayValue'}  | ${'Option 1'}
+      ${'entity.metadata.multiselect[0].value'}         | ${'123fgfdcv'}
+      ${'entity.metadata.multiselect[1].displayValue'}  | ${'Option 2'}
+      ${'entity.metadata.multiDateRange'}               | ${{ from: 1651968000, to: 1652486399 }}
+      ${'entity.metadata.multiDateRange[0].value.from'} | ${1651968000}
     `('should work for entity path $path', async ({ path, result }) => {
-      page.metadata.content = `<p>My dynamic path results is: ${path}</p>`;
+      page.metadata.content = `<p>My dynamic path results is: \${${path}}</p>`;
       const assets = await getPageAssets(request, undefined, localDatasets);
       expect(assets.pageView.metadata.content).toBe(`<p>My dynamic path results is: ${result}</p>`);
     });

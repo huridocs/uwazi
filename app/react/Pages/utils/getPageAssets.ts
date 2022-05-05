@@ -60,8 +60,23 @@ const replaceForTemplate = (pageContent: string, dataset: localDatasets, regex: 
   });
 
 const replaceForEntity = (pageContent: string, dataset: localDatasets, regex: RegExp) =>
+  // eslint-disable-next-line max-statements
   pageContent.replace(regex, (match, p) => {
     if (!p.startsWith('entity.metadata.') && has(dataset, p)) {
+      return get(dataset, p);
+    }
+    if (p.match(/entity.metadata.\w*$/)) {
+      return get(dataset, `${p}[0].value`);
+    }
+    if (p.match(/entity.metadata.\w*.(value|displayValue)$/)) {
+      const path = p.split('.');
+      const pathEnd = path.pop();
+      return get(dataset, `${path.join('.')}[0].${pathEnd}`);
+    }
+    if (p.match(/entity.metadata.\w*\[\d+]$/)) {
+      return get(dataset, `${p}.value`);
+    }
+    if (has(dataset, p)) {
       return get(dataset, p);
     }
     return match;
