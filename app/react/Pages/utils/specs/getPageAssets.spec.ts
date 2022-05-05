@@ -134,12 +134,23 @@ describe('getPageAssets', () => {
     const localDatasets = {
       entity: {
         sharedId: 'mtpkxxe1uom',
+        title: 'My entity',
         metadata: {
-          text: {
-            value: 'some text',
-          },
+          my_text_property: [
+            {
+              value: 'some text',
+              displayValue: 'some text',
+            },
+          ],
+          numericValue: [{ value: 1993, displayValue: 1993 }],
+          a_date: [{ value: 747198000, displayValue: 'September 5, 1993' }],
+          multiselect: [
+            { value: '123fgfdcv', displayValue: 'Option 1' },
+            { value: 'yjk56dfgd', displayValue: 'Option 2' },
+          ],
         },
       },
+
       template: {
         name: 'Document',
         properties: [
@@ -156,9 +167,29 @@ describe('getPageAssets', () => {
     it('should parse the content and insert references to dataset', async () => {
       page.metadata.content =
         // eslint-disable-next-line no-template-curly-in-string
-        '<h1>${entity.metadata.text.value} from template ${template.name}</h1>';
+        '<h1>${entity.metadata.my_text_property} from template ${template.name}</h1>';
       const assets = await getPageAssets(request, undefined, localDatasets);
       expect(assets.pageView.metadata.content).toBe('<h1>some text from template Document</h1>');
+    });
+
+    it.each`
+      path                                             | result
+      ${'entity.title'}                                | ${'My entity'}
+      ${'entity.sharedId'}                             | ${'mtpkxxe1uom'}
+      ${'entity.metadata.a_date'}                      | ${747198000}
+      ${'entity.metadata.a_date.displayValue'}         | ${'September 5, 1993'}
+      ${'entity.metadata.multiselect'}                 | ${'123fgfdcv'}
+      ${'entity.metadata.multiselect[0]'}              | ${'123fgfdcv'}
+      ${'entity.metadata.multiselect[1]'}              | ${'123fgfdcv'}
+      ${'entity.metadata.multiselect.displayValue'}    | ${'Option 1'}
+      ${'entity.metadata.multiselect[0].displayValue'} | ${'Option 1'}
+      ${'entity.metadata.multiselect[1].displayValue'} | ${'Option 2'}
+    `('should work for entity path $path', async ({ path, result }) => {
+      page.metadata.content = `<p>My dynamic path results in: ${path}</p>`;
+      const assets = await getPageAssets(request, undefined, localDatasets);
+      expect(assets.pageView.metadata.content).toBe(
+        `<h1>My dynamic path results in: ${result}</h1>`
+      );
     });
 
     it('should ignore references if they are not part of a dataset', async () => {
