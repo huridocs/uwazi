@@ -26,6 +26,10 @@ const fixtures: DBFixture = {
           key: 'en',
           label: 'English',
         },
+        {
+          key: 'es',
+          label: 'Spanish',
+        },
       ],
       features: {
         metadataExtraction: {
