@@ -26,19 +26,28 @@ const pickEntityFields = (entity: FormattedEntity) =>
     'inheritedProperty',
   ]);
 
-const metadataFields = {
-  relationship: {
-    displayValue: 'value',
-    value: 'originalValue',
-  },
-  geolocation: {
-    displayValue: 'value[0]',
-    value: 'value',
-  },
-  default: {
-    displayValue: 'value',
-    value: ['timestamp', 'originalValue', 'value'],
-  },
+const metadataFields = (property: FormattedPropertyValueSchema) => {
+  switch (property.type) {
+    case 'geolocation':
+      return {
+        displayValue: 'value[0]',
+        value: 'value',
+      };
+    default:
+      return {
+        displayValue: 'value',
+        value: ['timestamp', 'originalValue', 'value'],
+      };
+  }
+};
+
+const propertyDisplayType = (property: FormattedPropertyValueSchema) => {
+  switch (property.type) {
+    case 'relationship':
+      return 'inherit';
+    default:
+      return property.type;
+  }
 };
 
 type MetadataFieldValues = {
@@ -61,21 +70,16 @@ const formatPropertyValue = (
 const formatProperty = (item: FormattedPropertyValueSchema) => {
   const values = !isArray(item.value) ? [item] : item.value;
 
-  const formattedItem = values.map(target => {
+  const formattedItem = values.map((target: any) => {
     const relatedEntity = pickEntityFields(target.relatedEntity);
-    const metadataField = metadataFields[item.type] || metadataFields.default;
+    const metadataField = metadataFields(item);
     const value = formatPropertyValue(target, metadataField);
-    let { type } = item;
-
-    if (item.type === 'relationship') {
-      type = 'inherit';
-    }
 
     return {
       displayValue: get(target, metadataField.displayValue, target),
       value,
       name: item.name,
-      type,
+      type: propertyDisplayType(item),
       ...(!isEmpty(relatedEntity) ? { reference: relatedEntity } : {}),
     };
   });
@@ -107,9 +111,10 @@ const formatEntity = (formattedEntity: FormattedEntity) => {
 const prepareAssets = (
   entityRaw: EntitySchema,
   template: IImmutable<TemplateSchema>,
+  templates: IImmutable<TemplateSchema>[],
   thesauris: ThesaurusSchema[]
 ) => {
-  const formattedEntity = formatter.prepareMetadata(entityRaw, [template], thesauris);
+  const formattedEntity = formatter.prepareMetadata(entityRaw, templates, thesauris);
   const entity = formatEntity(formattedEntity);
   const entityData = formatEntityData(formattedEntity);
   return {

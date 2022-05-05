@@ -29,7 +29,7 @@ class Entity extends Component {
 
     if (entityTemplate.get('entityViewPage')) {
       const pageQuery = { sharedId: entityTemplate.get('entityViewPage') };
-      const assets = prepareAssets(entity, entityTemplate, state.thesauris);
+      const assets = prepareAssets(entity, entityTemplate, state.templates, state.thesauris);
       const { pageView, itemLists, datasets } = await getPageAssets(
         requestParams.set(pageQuery),
         undefined,

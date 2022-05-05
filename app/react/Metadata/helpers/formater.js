@@ -258,8 +258,6 @@ export default {
       name: property.get('name'),
       type: property.get('inherit').get('type'),
       noLabel: property.get('noLabel'),
-      reference: options.doc.relations.find(relation => relation.entity === propValue[0].value)
-        .entityData,
     });
 
     const type = propertyInfo.get('type');
@@ -276,7 +274,24 @@ export default {
             return null;
           }
 
-          return this[methodType](propertyInfo, v.inheritedValue, thesauri, options, templates);
+          const relatedEntity = options.doc.relations?.find(
+            relation => relation.entity === propValue[0].value
+          ).entityData;
+          const template = templates.find(t => relatedEntity.template === t.get('_id'));
+          const inheritedProperty = template
+            .get('properties')
+            .find(p => p.get('_id') === property.get('inherit').get('property'));
+          const formattedValue = this[methodType](
+            propertyInfo,
+            v.inheritedValue,
+            thesauri,
+            options,
+            templates
+          );
+          return {
+            ...formattedValue,
+            relatedEntity: { ...relatedEntity, inheritedProperty: inheritedProperty.get('name') },
+          };
         }
 
         return {};

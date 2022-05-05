@@ -1,14 +1,24 @@
 /* eslint-disable max-statements */
+import { EntitySchema } from 'shared/types/entityType';
+import { TemplateSchema } from 'shared/types/templateType';
 import { prepareAssets } from '../pageAssets';
-import { dbEntity, dbTemplate, thesauri, expectedFormattedEntity } from './pageAssetsFixtures';
+import { dbEntity, dbTemplates, thesauri, expectedFormattedEntity } from './pageAssetsFixtures';
 
 describe('pageAssets', () => {
   describe('prepareAssets', () => {
-    const { entity, entityRaw, entityData, template } = prepareAssets(
-      dbEntity,
-      dbTemplate,
-      thesauri
-    );
+    let entity: EntitySchema;
+    let entityRaw: EntitySchema;
+    let entityData: EntitySchema;
+    let template: TemplateSchema;
+
+    beforeAll(() => {
+      ({ entity, entityRaw, entityData, template } = prepareAssets(
+        dbEntity,
+        dbTemplates[0],
+        dbTemplates,
+        thesauri
+      ));
+    });
     it('should return a raw entity', () => {
       expect(entityRaw).toEqual(dbEntity);
     });
@@ -17,7 +27,7 @@ describe('pageAssets', () => {
     });
 
     it('should transform the template from inmmutable to plain javascript', () => {
-      expect(template).toEqual(dbTemplate.toJS());
+      expect(template).toEqual(dbTemplates[0].toJS());
     });
 
     it.each`
@@ -29,7 +39,7 @@ describe('pageAssets', () => {
       ${'date_range'} | ${'daterange'} | ${'May 3, 2022 ~ May 4, 2022'}               | ${{ from: 1651536000, to: 1651708799 }}
       ${'image'}      | ${'image'}     | ${'/api/files/1651603234992smwovxz1mq.jpeg'} | ${'/api/files/1651603234992smwovxz1mq.jpeg'}
     `('should return $type properties formatted', ({ propertyName, type, displayValue, value }) => {
-      expect(entityData.metadata[propertyName]).toEqual([
+      expect(entityData.metadata?.[propertyName]).toEqual([
         {
           displayValue,
           value,
@@ -39,7 +49,7 @@ describe('pageAssets', () => {
       ]);
     });
     it('should return multi select properties formatted', () => {
-      expect(entityData.metadata.multi_select).toEqual([
+      expect(entityData.metadata?.multi_select).toEqual([
         {
           value: 'f5t0ah6aluq',
           displayValue: 'Argentina',
@@ -55,8 +65,18 @@ describe('pageAssets', () => {
       ]);
     });
 
+    it('should return link properties formatted', () => {
+      expect(entityData.metadata?.link).toEqual([
+        {
+          displayValue: { label: 'test', url: 'https://google.com' },
+          value: { label: 'test', url: 'https://google.com' },
+          type: 'link',
+          name: 'link',
+        },
+      ]);
+    });
     it('should return geolocation properties formatted', () => {
-      expect(entityData.metadata.geolocation_geolocation).toEqual([
+      expect(entityData.metadata?.geolocation_geolocation).toEqual([
         {
           value: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' },
           displayValue: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' },
@@ -66,7 +86,7 @@ describe('pageAssets', () => {
       ]);
     });
     it('should return multi date range properties formatted', () => {
-      expect(entityData.metadata.multi_date_range).toEqual([
+      expect(entityData.metadata?.multi_date_range).toEqual([
         {
           displayValue: 'May 8, 2022 ~ May 13, 2022',
           name: 'multi_date_range',
@@ -83,7 +103,7 @@ describe('pageAssets', () => {
     });
 
     it('should return relationship properties formatted', () => {
-      expect(entityData.metadata.relationship).toEqual([
+      expect(entityData.metadata?.relationship).toEqual([
         {
           name: 'relationship',
           type: 'inherit',
@@ -101,7 +121,7 @@ describe('pageAssets', () => {
     });
 
     it('should return inhertied relationship properties formatted', () => {
-      expect(entityData.metadata.inherit).toEqual([
+      expect(entityData.metadata?.inherit).toEqual([
         {
           name: 'inherit',
           type: 'inherit',

@@ -4,137 +4,155 @@ import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 
-const dbTemplate: IImmutable<TemplateSchema> = Immutable.fromJS({
-  _id: '5bfbb1a0471dd0fc16ada146',
-  name: 'Document',
-  commonProperties: [
-    {
-      _id: '5bfbb1a0471dd0fc16ada148',
-      label: 'Title',
-      name: 'title',
-      isCommonProperty: true,
-      type: 'text',
-      prioritySorting: false,
-    },
-    {
-      _id: '5bfbb1a0471dd0fc16ada147',
-      label: 'Date added',
-      name: 'creationDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
-    },
-  ],
-  properties: [
-    {
-      _id: '6267e68226904c252518f914',
-      label: 'Text',
-      type: 'text',
-      name: 'text',
-      filter: true,
-    },
-    {
-      _id: '6267e68226904c252518f915',
-      label: 'Numeric',
-      type: 'numeric',
-      name: 'numeric',
-      filter: true,
-    },
-    {
-      _id: '62693f2b3483cd0da78b6ffb',
-      label: 'Select',
-      type: 'select',
-      content: '626825379c8a75a1ea9a821e',
-      name: 'select',
-      filter: true,
-    },
-    {
-      _id: '627176d9ff128cfd6de09972',
-      label: 'Multi Select',
-      type: 'multiselect',
-      content: '626825379c8a75a1ea9a821e',
-      name: 'multi_select',
-    },
-    {
-      _id: '626c191b8a46c11701b499b3',
-      label: 'Relationship',
-      type: 'relationship',
-      content: '6272dc3e4c077e92cc2b72ed',
-      relationType: '626c19088a46c11701b493e6',
-      name: 'relationship',
-    },
-    {
-      _id: '626c19418a46c11701b4a390',
-      label: 'Inherit',
-      type: 'relationship',
-      content: '626c19238a46c11701b49a55',
-      relationType: '626c19088a46c11701b493e6',
-      name: 'inherit',
-      inherit: {
-        property: '626c19498a46c11701b4a702',
-        type: 'date',
+const dbTemplates: IImmutable<TemplateSchema>[] = [
+  Immutable.fromJS({
+    _id: '5bfbb1a0471dd0fc16ada146',
+    name: 'Document',
+    commonProperties: [
+      {
+        _id: '5bfbb1a0471dd0fc16ada148',
+        label: 'Title',
+        name: 'title',
+        isCommonProperty: true,
+        type: 'text',
+        prioritySorting: false,
       },
-    },
-    {
-      _id: '627176d9ff128cfd6de09975',
-      label: 'Date',
-      type: 'date',
-      name: 'date',
-    },
-    {
-      _id: '627176d9ff128cfd6de09976',
-      label: 'Date Range',
-      type: 'daterange',
-      name: 'date_range',
-    },
-    {
-      _id: '627176d9ff128cfd6de09977',
-      label: 'Multi Date',
-      type: 'multidate',
-      name: 'multi_date',
-    },
-    {
-      _id: '627176d9ff128cfd6de09978',
-      label: 'Multi Date Range',
-      type: 'multidaterange',
-      name: 'multi_date_range',
-    },
-    {
-      _id: '627176d9ff128cfd6de09979',
-      label: 'Rich Text',
-      type: 'markdown',
-      name: 'rich_text',
-    },
-    {
-      _id: '627176d9ff128cfd6de0997a',
-      label: 'Link',
-      type: 'link',
-      name: 'link',
-    },
-    {
-      _id: '627176d9ff128cfd6de0997b',
-      label: 'Image',
-      type: 'image',
-      name: 'image',
-    },
-    {
-      _id: '627176d9ff128cfd6de0997c',
-      label: 'Media',
-      type: 'media',
-      name: 'media',
-    },
-    {
-      _id: '627176d9ff128cfd6de0997d',
-      label: 'Geolocation',
-      type: 'geolocation',
-      name: 'geolocation_geolocation',
-    },
-  ],
-  __v: 0,
-  default: true,
-  color: '#e46841',
-  entityViewPage: '8x8b1bzsj1i',
-});
+      {
+        _id: '5bfbb1a0471dd0fc16ada147',
+        label: 'Date added',
+        name: 'creationDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+    ],
+    properties: [
+      {
+        _id: '6267e68226904c252518f914',
+        label: 'Text',
+        type: 'text',
+        name: 'text',
+        filter: true,
+      },
+      {
+        _id: '6267e68226904c252518f915',
+        label: 'Numeric',
+        type: 'numeric',
+        name: 'numeric',
+        filter: true,
+      },
+      {
+        _id: '62693f2b3483cd0da78b6ffb',
+        label: 'Select',
+        type: 'select',
+        content: '626825379c8a75a1ea9a821e',
+        name: 'select',
+        filter: true,
+      },
+      {
+        _id: '627176d9ff128cfd6de09972',
+        label: 'Multi Select',
+        type: 'multiselect',
+        content: '626825379c8a75a1ea9a821e',
+        name: 'multi_select',
+      },
+      {
+        _id: '626c191b8a46c11701b499b3',
+        label: 'Relationship',
+        type: 'relationship',
+        content: '6272dc3e4c077e92cc2b72ed',
+        relationType: '626c19088a46c11701b493e6',
+        name: 'relationship',
+      },
+      {
+        _id: '626c19418a46c11701b4a390',
+        label: 'Inherit',
+        type: 'relationship',
+        content: '626c19238a46c11701b49a55',
+        relationType: '626c19088a46c11701b493e6',
+        name: 'inherit',
+        inherit: {
+          property: '626c19498a46c11701b4a702',
+          type: 'date',
+        },
+      },
+      {
+        _id: '627176d9ff128cfd6de09975',
+        label: 'Date',
+        type: 'date',
+        name: 'date',
+      },
+      {
+        _id: '627176d9ff128cfd6de09976',
+        label: 'Date Range',
+        type: 'daterange',
+        name: 'date_range',
+      },
+      {
+        _id: '627176d9ff128cfd6de09977',
+        label: 'Multi Date',
+        type: 'multidate',
+        name: 'multi_date',
+      },
+      {
+        _id: '627176d9ff128cfd6de09978',
+        label: 'Multi Date Range',
+        type: 'multidaterange',
+        name: 'multi_date_range',
+      },
+      {
+        _id: '627176d9ff128cfd6de09979',
+        label: 'Rich Text',
+        type: 'markdown',
+        name: 'rich_text',
+      },
+      {
+        _id: '627176d9ff128cfd6de0997a',
+        label: 'Link',
+        type: 'link',
+        name: 'link',
+      },
+      {
+        _id: '627176d9ff128cfd6de0997b',
+        label: 'Image',
+        type: 'image',
+        name: 'image',
+      },
+      {
+        _id: '627176d9ff128cfd6de0997c',
+        label: 'Media',
+        type: 'media',
+        name: 'media',
+      },
+      {
+        _id: '627176d9ff128cfd6de0997d',
+        label: 'Geolocation',
+        type: 'geolocation',
+        name: 'geolocation_geolocation',
+      },
+    ],
+    __v: 0,
+    default: true,
+    color: '#e46841',
+    entityViewPage: '8x8b1bzsj1i',
+  }),
+  Immutable.fromJS({
+    _id: '626c19238a46c11701b49a55',
+    name: 'Document2',
+    properties: [
+      {
+        _id: '626c19498a46c11701b4a702',
+        label: 'Date',
+        type: 'date',
+        name: 'date',
+      },
+    ],
+    __v: 0,
+    default: true,
+    color: '#e46841',
+    entityViewPage: '8x8b1bzsj1i',
+  }),
+];
 
 const dbEntity: EntitySchema = {
   _id: '6267e69026904c252518f946',
@@ -925,6 +943,32 @@ const expectedFormattedEntity = {
           name: 'inherit',
           value: 'Apr 20, 2022',
           timestamp: 1650412800,
+          relatedEntity: {
+            _id: '626c195b8a46c11701b4aaaf',
+            attachments: [],
+            creationDate: 1651251547653,
+            documents: [],
+            published: true,
+            sharedId: 'zse9gkdu27',
+            template: '626c19238a46c11701b49a55',
+            title: 'Test 5',
+            metadata: {
+              date: [
+                {
+                  value: 1650412800,
+                },
+              ],
+              relationship_2: [
+                {
+                  icon: null,
+                  label: 'Test 4',
+                  type: 'entity',
+                  value: 'l8rnfv6qss',
+                },
+              ],
+            },
+            inheritedProperty: 'date',
+          },
         },
       ],
       inheritedType: 'date',
@@ -1292,4 +1336,4 @@ const expectedFormattedEntity = {
   documentType: 'Document',
 };
 
-export { dbTemplate, dbEntity, thesauri, expectedFormattedEntity };
+export { dbTemplates, dbEntity, thesauri, expectedFormattedEntity };
