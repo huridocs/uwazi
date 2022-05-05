@@ -51,57 +51,37 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
   return listsData;
 };
 
-const replaceForTemplate = (pageContent: string, dataset: localDatasets, regex: RegExp) =>
-  pageContent.replace(regex, (match, p) => {
-    if (has(dataset, p)) {
-      return get(dataset, p);
-    }
-    return match;
-  });
+const replaceDynamicProperties = (pageContent?: string, datasets?: localDatasets) => {
+  if (!pageContent || !datasets || (!datasets.entityData && !datasets.template)) {
+    return pageContent;
+  }
 
-const replaceForEntity = (pageContent: string, dataset: localDatasets, regex: RegExp) =>
-  // eslint-disable-next-line max-statements
-  pageContent.replace(regex, (match, p) => {
-    if (!p.startsWith('entity.metadata.') && has(dataset, p)) {
-      return get(dataset, p);
-    }
-    if (p.match(/entity.metadata.\w*$/)) {
-      return get(dataset, `${p}[0].value`);
-    }
-    if (p.match(/entity.metadata.\w*.(value|displayValue)$/)) {
-      const path = p.split('.');
-      const pathEnd = path.pop();
-      return get(dataset, `${path.join('.')}[0].${pathEnd}`);
-    }
-    if (p.match(/entity.metadata.\w*\[\d+]$/)) {
-      return get(dataset, `${p}.value`);
-    }
-    if (has(dataset, p)) {
-      return get(dataset, p);
-    }
-    return match;
-  });
-
-const replaceDynamicProperties = (pageContent?: string, localDatasets?: localDatasets) => {
-  let result = pageContent;
   const parsableDatasets = {
-    entity: localDatasets?.entityData,
-    template: localDatasets?.template,
+    entity: datasets.entityData,
+    template: datasets.template,
   };
 
-  if (!result || (!parsableDatasets.entity && !parsableDatasets.template)) {
-    return result;
-  }
+  return pageContent.replace(/\$\{((entity.|template.)[^}^\s]*)\}/g, (match, p) => {
+    switch (true) {
+      case /entity.metadata.\w*$/.test(p):
+        return get(parsableDatasets, `${p}[0].value`);
 
-  if (result.match(/\$\{((template.)[^}^\s]*)\}/g)) {
-    result = replaceForTemplate(result, parsableDatasets, /\$\{((template.)[^}^\s]*)\}/g);
-  }
+      case /entity.metadata.\w*.(value|displayValue)$/.test(p): {
+        const path = p.split('.');
+        const pathEnd = path.pop();
+        return get(parsableDatasets, `${path.join('.')}[0].${pathEnd}`);
+      }
 
-  if (result.match(/\$\{((entity.)[^}^\s]*)\}/g)) {
-    result = replaceForEntity(result, parsableDatasets, /\$\{((entity.)[^}^\s]*)\}/g);
-  }
+      case /entity.metadata.\w*\[\d+]$/.test(p):
+        return get(parsableDatasets, `${p}.value`);
 
-  return result;
+      case has(parsableDatasets, p):
+        return get(parsableDatasets, p);
+
+      default:
+        return match;
+    }
+  });
 };
 
 const getPageAssets = async (
