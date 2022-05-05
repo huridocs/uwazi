@@ -26,7 +26,8 @@ export const Suggestions = {
     const { languages } = await settings.get();
     // @ts-ignore
     const defaultLanguage = languages.find(l => l.default).key;
-
+    //@ts-ignore
+    const configuredLanguages = languages.map(l => l.key);
     const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
       [
@@ -37,7 +38,16 @@ export const Suggestions = {
             let: {
               localFieldEntityId: '$entityId',
               localFieldLanguage: {
-                $cond: [{ $eq: ['$language', 'other'] }, defaultLanguage, '$language'],
+                $cond: [
+                  {
+                    $or: [
+                      { $eq: ['$language', 'other'] },
+                      { $not: [{ $in: ['$language', configuredLanguages] }] },
+                    ],
+                  },
+                  defaultLanguage,
+                  '$language',
+                ],
               },
             },
             pipeline: [
