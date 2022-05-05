@@ -6,18 +6,23 @@ import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 
 const prepareRelatedEntity = (options, propValue, templates, property) => {
-  let relatedEntity;
-  if (options.doc && options.doc.relations && options.doc.relations.length > 0) {
-    relatedEntity = options.doc.relations.find(
-      relation => relation.entity === propValue[0].value
-    ).entityData;
-    const template = templates.find(t => relatedEntity.template === t.get('_id'));
+  const relation =
+    options.doc && options.doc.relations
+      ? options.doc.relations.find(rel => rel.entity === propValue[0].value)
+      : undefined;
+
+  if (relation && relation.entityData) {
+    const template = templates.find(t => relation.entityData.template === t.get('_id'));
     const inheritedProperty = template
       .get('properties')
       .find(p => p.get('_id') === property.get('inherit').get('property'));
-    relatedEntity = { ...relatedEntity, inheritedProperty: inheritedProperty.get('name') };
+    return {
+      ...relation.entityData,
+      inheritedProperty: inheritedProperty.get('name'),
+    };
   }
-  return relatedEntity;
+
+  return undefined;
 };
 
 const addSortedProperties = (templates, sortedProperties) =>
