@@ -322,6 +322,17 @@ describe('translations', () => {
           'Process is trying to add inconsistent keys to different languages.'
         );
       }
+      try {
+        await translations.addTranslations('System', {
+          en: { Key: 'english_value' },
+          es: { OtherKey: 'other_spanish_value' },
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain(
+          'Process is trying to add inconsistent keys to different languages.'
+        );
+      }
     });
 
     it('should throw an error if missing a language', async () => {
@@ -332,7 +343,7 @@ describe('translations', () => {
         fail('Should throw error.');
       } catch (error) {
         expect(error.message).toContain(
-          'Process is trying to add inconsistent keys to different languages.'
+          'Process is trying to add inconsistent keys to different languages. Missing languages: es.'
         );
       }
     });

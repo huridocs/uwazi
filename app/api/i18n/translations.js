@@ -156,10 +156,31 @@ export default {
       .then(() => 'ok');
   },
 
-  addTranslations(contextId, keyValuePairsPerLanguage, overwriteExisting = false) {
+  async addTranslations(contextId, keyValuePairsPerLanguage, overwriteExisting = false) {
     // keyValuePairsPerLanguage expected in the form of:
     // { 'en': { 'key': 'value', ...}, 'es': { 'key': 'value', ...}, ... }
-    return Promise.resolve()
+
+    const { languages } = await settings.get({}, 'languages');
+    const existingLanguages = languages.map(l => l.key);
+    const missingLanguages = existingLanguages.filter(lkey => !(lkey in keyValuePairsPerLanguage));
+    if (missingLanguages.length) {
+      throw new Error(
+        `Process is trying to add inconsistent keys to different languages. Missing languages: ${missingLanguages}.`
+      );
+    }
+
+    const defaultLanguage = languages.find(l => l.default).key;
+    const keySet = new Set(Object.keys(keyValuePairsPerLanguage[defaultLanguage]));
+    if (
+      !Array.from(Object.values(keyValuePairsPerLanguage)).every(keyValues => {
+        const keys = Array.from(Object.keys(keyValues));
+        return keys.length === keySet.size && keys.every(key => keySet.has(key));
+      })
+    ) {
+      throw new Error('Process is trying to add inconsistent keys to different languages.');
+    }
+
+    return Promise.resolve();
   },
 
   addContext(id, contextName, values, type) {
