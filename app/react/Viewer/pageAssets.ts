@@ -68,7 +68,7 @@ const formatPropertyValue = (
 };
 
 const formatProperty = (item: FormattedPropertyValueSchema) => {
-  const values = !isArray(item.value) ? [item] : item.value;
+  const values: unknown[] = !isArray(item.value) ? [item] : item.value;
 
   const formattedItem = values.map((target: any) => {
     const relatedEntity = pickEntityFields(target.relatedEntity);
