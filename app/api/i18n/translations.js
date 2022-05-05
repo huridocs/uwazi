@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import thesauri from 'api/thesauri/thesauri';
 import settings from 'api/settings/settings';
 import model from './translationsModel.js';
@@ -152,6 +154,12 @@ export default {
         )
       )
       .then(() => 'ok');
+  },
+
+  addTranslations(contextId, keyValuePairsPerLanguage, overwriteExisting = false) {
+    // keyValuePairsPerLanguage expected in the form of:
+    // { 'en': { 'key': 'value', ...}, 'es': { 'key': 'value', ...}, ... }
+    return Promise.resolve()
   },
 
   addContext(id, contextName, values, type) {

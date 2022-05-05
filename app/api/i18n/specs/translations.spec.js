@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
@@ -248,6 +249,7 @@ describe('translations', () => {
           contexts: [
             {
               id: dictionaryId,
+              // eslint-disable-next-line max-lines
               values: [
                 { key: 'repeated_key', value: 'first_value' },
                 { key: 'unique_key', value: 'unique_value' },
@@ -286,6 +288,101 @@ describe('translations', () => {
       } catch (error) {
         expect(error.message).toContain('Process is trying to save repeated translation key');
       }
+    });
+  });
+
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('addTranslations', () => {
+    it('should add the new entries to translations', done => {
+      translations
+        .addTranslations('System', {
+          en: { Key: 'english_value', OtherKey: 'other_english_value' },
+          es: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
+        })
+        .then(() => translations.get())
+        .then(result => {
+          expect(result[0].contexts[0].values.Key).toBe('english_value');
+          expect(result[0].contexts[0].values.OtherKey).toBe('other_english_value');
+          expect(result[1].contexts[0].values.Key).toBe('spanish_value');
+          expect(result[1].contexts[0].values.OtherKey).toBe('other_spanish_value');
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should throw an error on inconsistent updates', async () => {
+      try {
+        await translations.addTranslations('System', {
+          en: { Key: 'english_value' },
+          es: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain(
+          'Process is trying to add inconsistent keys to different languages.'
+        );
+      }
+    });
+
+    it('should throw an error if missing a language', async () => {
+      try {
+        await translations.addTranslations('System', {
+          en: { Key: 'english_value' },
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain(
+          'Process is trying to add inconsistent keys to different languages.'
+        );
+      }
+    });
+
+    it('should not fail when trying to add nonexisting languages', done => {
+      translations
+        .addTranslations('System', {
+          en: { Key: 'english_value', OtherKey: 'other_english_value' },
+          es: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
+          fr: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
+        })
+        .then(() => translations.get())
+        .then(result => {
+          expect(result[0].contexts[0].values.Key).toBe('english_value');
+          expect(result[0].contexts[0].values.OtherKey).toBe('other_english_value');
+          expect(result[1].contexts[0].values.Key).toBe('spanish_value');
+          expect(result[1].contexts[0].values.OtherKey).toBe('other_spanish_value');
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should not overwrite existing values by default', done => {
+      translations
+        .addTranslations('System', {
+          en: { Password: 'new_english_value' },
+          es: { Password: 'new_spanish_value' },
+        })
+        .then(() => translations.get())
+        .then(result => {
+          expect(result[0].contexts[0].values.Password).toBe('Password');
+          expect(result[1].contexts[0].values.Password).toBe('Contraseña');
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should overwrite existing values when explicitly prompted', done => {
+      translations
+        .addTranslations('System', {
+          en: { Password: 'new_english_value' },
+          es: { Password: 'new_spanish_value' },
+        })
+        .then(() => translations.get())
+        .then(result => {
+          expect(result[0].contexts[0].values.Password).toBe('new_english_value');
+          expect(result[1].contexts[0].values.Password).toBe('new_spanish_value');
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
