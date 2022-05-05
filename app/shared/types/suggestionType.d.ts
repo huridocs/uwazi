@@ -6,7 +6,6 @@ import {
   PropertyValueSchema,
   SelectionRectanglesSchema,
 } from 'shared/types/commonTypes';
-import { SuggestionState } from './suggestionSchema';
 
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
@@ -19,7 +18,16 @@ export interface EntitySuggestionType {
   currentValue?: PropertyValueSchema;
   segment: string;
   language: string;
-  state: SuggestionState;
+  state:
+    | 'Match / Label'
+    | 'Mismatch / Label'
+    | 'Match / Value'
+    | 'Mismatch / Value'
+    | 'Empty / Empty'
+    | 'Obsolete'
+    | 'Empty / Label'
+    | 'Empty / Value'
+    | 'Error';
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
@@ -65,5 +73,6 @@ export interface IXSuggestionsFilter {
     | 'Empty / Empty'
     | 'Obsolete'
     | 'Empty / Label'
-    | 'Empty / Value';
+    | 'Empty / Value'
+    | 'Error';
 }
