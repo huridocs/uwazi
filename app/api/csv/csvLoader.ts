@@ -100,24 +100,12 @@ export class CSVLoader extends EventEmitter {
       values: [...thesauriValues, ...thesaurusValues],
     });
 
-    await Object.keys(thesauriTranslations).reduce(async (prev, lang) => {
-      await prev;
-      const translationValues = thesauriTranslations[lang];
-      const [currentTranslation] = await translationsModel.get({ locale: lang });
-      const currentContext = currentTranslation.contexts.find(
-        (c: { id: string }) => c.id.toString() === thesaurusId.toString()
-      );
+    thesauriTranslations[language] = Object.fromEntries(
+      thesaurusValues.map(({ label }) => [label, label])
+    );
 
-      return translations.save({
-        ...currentTranslation,
-        contexts: [
-          {
-            ...currentContext,
-            values: [...currentContext.values, ...translationValues],
-          },
-        ],
-      });
-    }, Promise.resolve());
+    await translations.addTranslations(thesaurusId.toString(), thesauriTranslations, true);
+
     return saved;
   }
   /* eslint-enable class-methods-use-this */
