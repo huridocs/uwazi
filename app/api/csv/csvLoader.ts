@@ -3,7 +3,6 @@ import { EventEmitter } from 'events';
 import templates from 'api/templates';
 import settings from 'api/settings';
 import translations from 'api/i18n';
-import translationsModel from 'api/i18n/translationsModel';
 import thesauri from 'api/thesauri';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
