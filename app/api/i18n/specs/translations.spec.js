@@ -291,8 +291,7 @@ describe('translations', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('addTranslations', () => {
+  describe('addTranslations', () => {
     it('should add the new entries to translations', done => {
       translations
         .addTranslations('System', {
@@ -348,7 +347,7 @@ describe('translations', () => {
       }
     });
 
-    it('should not fail when trying to add nonexisting languages', done => {
+    it('should not fail when trying to add to nonexisting languages', done => {
       translations
         .addTranslations('System', {
           en: { Key: 'english_value', OtherKey: 'other_english_value' },
@@ -383,10 +382,14 @@ describe('translations', () => {
 
     it('should overwrite existing values when explicitly prompted', done => {
       translations
-        .addTranslations('System', {
-          en: { Password: 'new_english_value' },
-          es: { Password: 'new_spanish_value' },
-        })
+        .addTranslations(
+          'System',
+          {
+            en: { Password: 'new_english_value' },
+            es: { Password: 'new_spanish_value' },
+          },
+          true
+        )
         .then(() => translations.get())
         .then(result => {
           expect(result[0].contexts[0].values.Password).toBe('new_english_value');

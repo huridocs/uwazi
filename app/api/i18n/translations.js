@@ -180,7 +180,20 @@ export default {
       throw new Error('Process is trying to add inconsistent keys to different languages.');
     }
 
-    return Promise.resolve();
+    return Promise.all(
+      (await model.get()).map(translation => {
+        const context = translation.contexts.find(c => c.id === contextId);
+        if (!context) {
+          return Promise.resolve();
+        }
+        const valueDict = Object.fromEntries(context.values.map(({ key, value }) => [key, value]));
+        Object.entries(keyValuePairsPerLanguage[translation.locale]).forEach(([key, value]) => {
+          if (!(key in valueDict) || overwriteExisting) valueDict[key] = value;
+        });
+        context.values = Object.entries(valueDict).map(([key, value]) => ({ key, value }));
+        return this.save(translation);
+      })
+    );
   },
 
   addContext(id, contextName, values, type) {
