@@ -4,7 +4,7 @@ import { fromJS as Immutable } from 'immutable';
 import { Provider } from 'react-redux';
 import { match, RouterContext } from 'react-router';
 import { renderToString } from 'react-dom/server';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import React from 'react';
 
 import { I18NUtils, t, Translate } from 'app/I18N';
