@@ -156,39 +156,30 @@ export default {
       .then(() => 'ok');
   },
 
-  async addTranslations(contextId, keyValuePairsPerLanguage, overwriteExisting = false) {
+  async updateEntries(contextId, keyValuePairsPerLanguage) {
     // keyValuePairsPerLanguage expected in the form of:
     // { 'en': { 'key': 'value', ...}, 'es': { 'key': 'value', ...}, ... }
 
-    const { languages } = await settings.get({}, 'languages');
-    const existingLanguages = languages.map(l => l.key);
-    const missingLanguages = existingLanguages.filter(lkey => !(lkey in keyValuePairsPerLanguage));
-    if (missingLanguages.length) {
-      throw new Error(
-        `Process is trying to add inconsistent keys to different languages. Missing languages: ${missingLanguages}.`
-      );
-    }
-
-    const defaultLanguage = languages.find(l => l.default).key;
-    const keySet = new Set(Object.keys(keyValuePairsPerLanguage[defaultLanguage]));
-    if (
-      !Array.from(Object.values(keyValuePairsPerLanguage)).every(keyValues => {
-        const keys = Array.from(Object.keys(keyValues));
-        return keys.length === keySet.size && keys.every(key => keySet.has(key));
-      })
-    ) {
-      throw new Error('Process is trying to add inconsistent keys to different languages.');
-    }
+    const languages = new Set((await settings.get({}, 'languages')).languages.map(l => l.key));
+    const languagesToUpdate = Object.keys(keyValuePairsPerLanguage).filter(l => languages.has(l));
 
     return Promise.all(
-      (await model.get()).map(translation => {
+      (await model.get({ locale: { $in: languagesToUpdate } })).map(translation => {
         const context = translation.contexts.find(c => c.id === contextId);
         if (!context) {
           return Promise.resolve();
         }
         const valueDict = Object.fromEntries(context.values.map(({ key, value }) => [key, value]));
+        const missingKeys = Object.keys(keyValuePairsPerLanguage[translation.locale]).filter(
+          key => !(key in valueDict)
+        );
+        if (missingKeys.length) {
+          throw new Error(
+            `Process is trying to update missing translation keys: ${translation.locale} - ${contextId} - ${missingKeys}.`
+          );
+        }
         Object.entries(keyValuePairsPerLanguage[translation.locale]).forEach(([key, value]) => {
-          if (!(key in valueDict) || overwriteExisting) valueDict[key] = value;
+          valueDict[key] = value;
         });
         context.values = Object.entries(valueDict).map(([key, value]) => ({ key, value }));
         return this.save(translation);

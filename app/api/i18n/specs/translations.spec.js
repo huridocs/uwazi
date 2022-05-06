@@ -291,109 +291,60 @@ describe('translations', () => {
     });
   });
 
-  describe('addTranslations', () => {
-    it('should add the new entries to translations', done => {
+  describe('updateEntries', () => {
+    it('should update the entries', done => {
       translations
-        .addTranslations('System', {
+        .updateEntries('System', {
+          en: { Password: 'Passphrase', Age: 'Years Old' },
+        })
+        .then(() => translations.get())
+        .then(result => {
+          expect(result[0].contexts[0].values).toMatchObject({
+            Password: 'Passphrase',
+            Account: 'Account',
+            Email: 'E-Mail',
+            Age: 'Years Old',
+          });
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should throw an error on if trying to update missing keys', async () => {
+      try {
+        await translations.updateEntries('System', {
           en: { Key: 'english_value', OtherKey: 'other_english_value' },
-          es: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
-        })
-        .then(() => translations.get())
-        .then(result => {
-          expect(result[0].contexts[0].values.Key).toBe('english_value');
-          expect(result[0].contexts[0].values.OtherKey).toBe('other_english_value');
-          expect(result[1].contexts[0].values.Key).toBe('spanish_value');
-          expect(result[1].contexts[0].values.OtherKey).toBe('other_spanish_value');
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-
-    it('should throw an error on inconsistent updates', async () => {
-      try {
-        await translations.addTranslations('System', {
-          en: { Key: 'english_value' },
-          es: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
+          es: { Key: 'spanish_value' },
         });
         fail('Should throw error.');
       } catch (error) {
-        expect(error.message).toContain(
-          'Process is trying to add inconsistent keys to different languages.'
-        );
-      }
-      try {
-        await translations.addTranslations('System', {
-          en: { Key: 'english_value' },
-          es: { OtherKey: 'other_spanish_value' },
-        });
-        fail('Should throw error.');
-      } catch (error) {
-        expect(error.message).toContain(
-          'Process is trying to add inconsistent keys to different languages.'
+        expect(error.message).toBe(
+          'Process is trying to update missing translation keys: en - System - Key,OtherKey.'
         );
       }
     });
 
-    it('should throw an error if missing a language', async () => {
-      try {
-        await translations.addTranslations('System', {
-          en: { Key: 'english_value' },
-        });
-        fail('Should throw error.');
-      } catch (error) {
-        expect(error.message).toContain(
-          'Process is trying to add inconsistent keys to different languages. Missing languages: es.'
-        );
-      }
-    });
-
-    it('should not fail when trying to add to nonexisting languages', done => {
+    it('should not fail when trying to update a nonexisting language', done => {
       translations
-        .addTranslations('System', {
-          en: { Key: 'english_value', OtherKey: 'other_english_value' },
-          es: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
-          fr: { Key: 'spanish_value', OtherKey: 'other_spanish_value' },
+        .updateEntries('System', {
+          en: { Password: 'Passphrase', Age: 'Years Old' },
+          es: { Password: 'Password in Spanish', Age: 'Age in Spanish' },
+          fr: { Password: 'mot de masse', Age: 'âge' },
         })
         .then(() => translations.get())
         .then(result => {
-          expect(result[0].contexts[0].values.Key).toBe('english_value');
-          expect(result[0].contexts[0].values.OtherKey).toBe('other_english_value');
-          expect(result[1].contexts[0].values.Key).toBe('spanish_value');
-          expect(result[1].contexts[0].values.OtherKey).toBe('other_spanish_value');
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-
-    it('should not overwrite existing values by default', done => {
-      translations
-        .addTranslations('System', {
-          en: { Password: 'new_english_value' },
-          es: { Password: 'new_spanish_value' },
-        })
-        .then(() => translations.get())
-        .then(result => {
-          expect(result[0].contexts[0].values.Password).toBe('Password');
-          expect(result[1].contexts[0].values.Password).toBe('Contraseña');
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-
-    it('should overwrite existing values when explicitly prompted', done => {
-      translations
-        .addTranslations(
-          'System',
-          {
-            en: { Password: 'new_english_value' },
-            es: { Password: 'new_spanish_value' },
-          },
-          true
-        )
-        .then(() => translations.get())
-        .then(result => {
-          expect(result[0].contexts[0].values.Password).toBe('new_english_value');
-          expect(result[1].contexts[0].values.Password).toBe('new_spanish_value');
+          expect(result[0].contexts[0].values).toMatchObject({
+            Password: 'Passphrase',
+            Account: 'Account',
+            Email: 'E-Mail',
+            Age: 'Years Old',
+          });
+          expect(result[1].contexts[0].values).toMatchObject({
+            Password: 'Password in Spanish',
+            Account: 'Cuenta',
+            Email: 'Correo electronico',
+            Age: 'Age in Spanish',
+          });
           done();
         })
         .catch(catchErrors(done));
