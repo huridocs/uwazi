@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
 import thesauri from 'api/thesauri/thesauri';
 import settings from 'api/settings/settings';
 import model from './translationsModel.js';
