@@ -100,10 +100,6 @@ export class CSVLoader extends EventEmitter {
       values: [...thesauriValues, ...thesaurusValues],
     });
 
-    thesauriTranslations[language] = Object.fromEntries(
-      thesaurusValues.map(({ label }) => [label, label])
-    );
-
     await translations.updateEntries(thesaurusId.toString(), thesauriTranslations);
 
     return saved;
