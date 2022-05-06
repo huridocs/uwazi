@@ -40,10 +40,7 @@ export const Suggestions = {
               localFieldLanguage: {
                 $cond: [
                   {
-                    $or: [
-                      { $eq: ['$language', 'other'] },
-                      { $not: [{ $in: ['$language', configuredLanguages] }] },
-                    ],
+                    $not: [{ $in: ['$language', configuredLanguages] }],
                   },
                   defaultLanguage,
                   '$language',
