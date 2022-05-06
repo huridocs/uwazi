@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import api from 'app/Search/SearchAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { markdownDatasets } from 'app/Markdown';
@@ -181,10 +182,10 @@ describe('getPageAssets', () => {
     };
     it('should parse the content and insert references to dataset', async () => {
       page.metadata.content =
-        // eslint-disable-next-line no-template-curly-in-string
         '<h1>${entity.metadata.my_text_property} from template ${template.name}</h1>';
       const assets = await getPageAssets(request, undefined, localDatasets);
       expect(assets.pageView.metadata.content).toBe('<h1>some text from template Document</h1>');
+      expect(assets.errors).not.toBeDefined();
     });
 
     it.each`
@@ -210,12 +211,13 @@ describe('getPageAssets', () => {
     });
 
     it('should ignore references if they are not part of a dataset', async () => {
-      // eslint-disable-next-line no-template-curly-in-string
       page.metadata.content = '<h1>${entity.sharedId} from template ${template.metadata}</h1>';
       const assets = await getPageAssets(request, undefined, localDatasets);
       expect(assets.pageView.metadata.content).toBe(
-        // eslint-disable-next-line no-template-curly-in-string
         '<h1>mtpkxxe1uom from template ${template.metadata}</h1>'
+      );
+      expect(assets.errors).toEqual(
+        'The following expressions are not valid properties:\n ${template.metadata}'
       );
     });
   });

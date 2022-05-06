@@ -1,5 +1,5 @@
 import rison from 'rison-node';
-import { get, has } from 'lodash';
+import { get, has, uniq } from 'lodash';
 import api from 'app/Search/SearchAPI';
 import { markdownDatasets } from 'app/Markdown';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -46,7 +46,7 @@ const prepareLists = (content: string, requestParams: RequestParams) => {
 
 const replaceDynamicProperties = (pageContent?: string, datasets?: any) => {
   if (!pageContent || !datasets || (!datasets.entityData && !datasets.template)) {
-    return pageContent;
+    return { content: pageContent, errors: [] };
   }
 
   const parsableDatasets = {
@@ -54,7 +54,8 @@ const replaceDynamicProperties = (pageContent?: string, datasets?: any) => {
     template: datasets.template,
   };
 
-  return pageContent.replace(/\$\{((entity.|template.)[^}^\s]*)\}/g, (match, p) => {
+  const errors: string[] = [];
+  const content = pageContent.replace(/\$\{((entity.|template.)[^}^\s]*)\}/g, (match, p) => {
     switch (true) {
       case /entity.metadata.\w*$/.test(p):
         return get(parsableDatasets, `${p}[0].value`);
@@ -72,9 +73,11 @@ const replaceDynamicProperties = (pageContent?: string, datasets?: any) => {
         return get(parsableDatasets, p);
 
       default:
+        errors.push(match);
         return match;
     }
   });
+  return { content, errors };
 };
 
 const getPageAssets = async (
@@ -83,7 +86,10 @@ const getPageAssets = async (
   localDatasets?: {}
 ) => {
   const page = await PagesAPI.getById(requestParams);
-  page.metadata.content = replaceDynamicProperties(page.metadata?.content, localDatasets);
+
+  const { content, errors } = replaceDynamicProperties(page.metadata?.content, localDatasets);
+  page.metadata.content = content;
+
   const listsData = prepareLists(page.metadata.content, requestParams);
 
   const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders(), {
@@ -105,10 +111,14 @@ const getPageAssets = async (
     options: searchOptions[index],
   }));
 
+  const failedExpressions = uniq(errors).join('\n');
   return {
     pageView,
     itemLists,
     datasets: { ...datasets, ...localDatasets },
+    ...(failedExpressions.length && {
+      errors: `The following expressions are not valid properties:\n ${failedExpressions}`,
+    }),
   };
 };
 
