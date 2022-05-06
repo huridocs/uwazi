@@ -51,7 +51,7 @@ export class Settings extends RouteHandler {
         const results = perm[1][1];
         const uniqueDocs = results.totalRows;
 
-        const thesaurus = thesauri.find(template => template._id === prop.content);
+        const thesaurus = thesauri.find(th => th._id === prop.content);
         if (!thesaurus.hasOwnProperty('suggestions')) {
           thesaurus.suggestions = 0;
         }
