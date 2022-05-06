@@ -40,6 +40,8 @@ export const EntitySuggestions = ({
   });
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    toggleAllRowsSelected(false);
     row.toggleRowSelected();
     setAcceptingSuggestion(true);
   };
@@ -93,6 +95,8 @@ export const EntitySuggestions = ({
   };
 
   const showPDF = (row: Row<EntitySuggestionType>) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    toggleAllRowsSelected(false);
     row.toggleRowSelected();
     setSidePanelOpened(true);
   };
@@ -123,6 +127,7 @@ export const EntitySuggestions = ({
     gotoPage,
     setPageSize,
     selectedFlatRows,
+    toggleAllRowsSelected,
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
