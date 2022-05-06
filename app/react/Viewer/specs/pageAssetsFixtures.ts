@@ -234,7 +234,7 @@ const dbEntity: EntitySchema = {
     ],
     rich_text: [
       {
-        value: 'Test 1 long text',
+        value: '# one\n\n## two\n\n### three',
       },
     ],
     link: [
@@ -1047,7 +1047,7 @@ const expectedFormattedEntity = {
       type: 'markdown',
       name: 'rich_text',
       indexInTemplate: 10,
-      value: 'Test 1 long text',
+      value: '# one\n\n## two\n\n### three',
     },
     link: {
       translateContext: '5bfbb1a0471dd0fc16ada146',

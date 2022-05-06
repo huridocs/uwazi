@@ -38,6 +38,7 @@ describe('pageAssets', () => {
       ${'date'}       | ${'date'}      | ${'May 3, 2022'}                             | ${1651536000}
       ${'date_range'} | ${'daterange'} | ${'May 3, 2022 ~ May 4, 2022'}               | ${{ from: 1651536000, to: 1651708799 }}
       ${'image'}      | ${'image'}     | ${'/api/files/1651603234992smwovxz1mq.jpeg'} | ${'/api/files/1651603234992smwovxz1mq.jpeg'}
+      ${'rich_text'}  | ${'markdown'}  | ${'# one\n\n## two\n\n### three'}            | ${'# one\n\n## two\n\n### three'}
     `('should return $type properties formatted', ({ propertyName, type, displayValue, value }) => {
       expect(entityData.metadata?.[propertyName]).toEqual([
         {
@@ -61,6 +62,23 @@ describe('pageAssets', () => {
           displayValue: 'Colombia',
           type: 'multiselect',
           name: 'multi_select',
+        },
+      ]);
+    });
+
+    it('should return multi date properties formatted', () => {
+      expect(entityData.metadata?.multi_date).toEqual([
+        {
+          value: 1651622400,
+          displayValue: 'May 4, 2022',
+          type: 'multidate',
+          name: 'multi_date',
+        },
+        {
+          value: 1651708800,
+          displayValue: 'May 5, 2022',
+          type: 'multidate',
+          name: 'multi_date',
         },
       ]);
     });
