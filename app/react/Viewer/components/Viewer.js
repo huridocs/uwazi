@@ -184,7 +184,6 @@ class Viewer extends Component {
     );
   }
 }
-
 Viewer.defaultProps = {
   searchTerm: '',
   raw: false,
@@ -220,7 +219,6 @@ Viewer.propTypes = {
 Viewer.contextTypes = {
   store: PropTypes.object,
 };
-
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();

@@ -226,7 +226,7 @@ exports[`SemanticSearchResults when the search is empty should render not found 
     encodeSpecialCharacters={true}
   >
     <title>
-      Semantic search not found
+      Search not found
     </title>
   </HelmetWrapper>
 </div>
