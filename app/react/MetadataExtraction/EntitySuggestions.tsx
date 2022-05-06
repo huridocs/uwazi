@@ -107,14 +107,12 @@ export const EntitySuggestions = ({
 
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
     <div onClick={() => showPDF(row)}>
-      {row.original.segment && (
-        <>
-          <span className="segment-pdf">
-            <Translate>PDF</Translate>
-          </span>
-          {row.original.segment}
-        </>
-      )}
+      <>
+        <span className="segment-pdf">
+          <Translate>PDF</Translate>
+        </span>
+        {row.original.segment}
+      </>
     </div>
   );
 
