@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import * as semanticSearchActions from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import SearchDescription from 'app/Library/components/SearchDescription';
 import { Icon } from 'UI';
 import ResultsSidePanel from './ResultsSidePanel';
@@ -92,7 +91,7 @@ export class SemanticSearchResults extends Component {
               <Translate>Search not found</Translate>
             </p>
             <Helmet>
-              <title>Semantic search not found</title>
+              <title>{t('System', 'Search not found', null, false)}</title>
             </Helmet>
           </>
         )}

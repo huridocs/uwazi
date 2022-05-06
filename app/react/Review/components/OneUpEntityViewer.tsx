@@ -24,7 +24,7 @@ import { OneUpTitleBar } from 'app/Review/components/OneUpTitleBar';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { TabContent, Tabs } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';

@@ -1,13 +1,13 @@
+import React from 'react';
+import { Helmet } from 'react-helmet';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
-import { I18NApi } from 'app/I18N';
+import { I18NApi, t } from 'app/I18N';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import UsersAPI from 'app/Users/UsersAPI';
-import React from 'react';
-import Helmet from 'react-helmet';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import { getReadyToReviewSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
@@ -28,13 +28,13 @@ export class Settings extends RouteHandler {
 
     // This builds and queries elasticsearch for suggestion counts per thesaurus
     const props = thesauri
-      .filter(t => t.enable_classification)
+      .filter(thesaurus => thesaurus.enable_classification)
       .map(thesaurus => resolveTemplateProp(thesaurus, templates));
     const allDocsWithSuggestions = await Promise.all(
       [].concat(
         ...props.map(p =>
-          templates.map(t => {
-            const reqParams = requestParams.set(getReadyToReviewSuggestionsQuery(t._id, p));
+          templates.map(template => {
+            const reqParams = requestParams.set(getReadyToReviewSuggestionsQuery(template._id, p));
             return api.search(reqParams);
           })
         )
@@ -42,14 +42,16 @@ export class Settings extends RouteHandler {
     );
 
     // This processes the search results per thesaurus and stores the aggregate  number of documents to review
-    const propToAgg = props.map(p => templates.map(t => [p, [t, allDocsWithSuggestions.shift()]]));
+    const propToAgg = props.map(p =>
+      templates.map(template => [p, [template, allDocsWithSuggestions.shift()]])
+    );
     propToAgg.forEach(tup => {
       tup.forEach(perm => {
         const prop = perm[0];
         const results = perm[1][1];
         const uniqueDocs = results.totalRows;
 
-        const thesaurus = thesauri.find(t => t._id === prop.content);
+        const thesaurus = thesauri.find(template => template._id === prop.content);
         if (!thesaurus.hasOwnProperty('suggestions')) {
           thesaurus.suggestions = 0;
         }
@@ -70,7 +72,7 @@ export class Settings extends RouteHandler {
     return (
       <div className="row settings">
         <Helmet>
-          <title>Settings</title>
+          <title>{t('System', 'Settings', null, false)}</title>
         </Helmet>
         <div className="settings-navigation">
           <SettingsNavigation />
