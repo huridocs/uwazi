@@ -139,7 +139,9 @@ export class OneUpEntityViewerBase extends Component<
 
     return (
       <div className="row flex">
-        <Helmet title={entity.title ? entity.title : 'Entity'} />
+        <Helmet>
+          <title>{entity.title ? entity.title : 'Entity'}</title>
+        </Helmet>
         <div className="content-holder">
           <main className="content-main">
             <div className="content-header content-header-entity">

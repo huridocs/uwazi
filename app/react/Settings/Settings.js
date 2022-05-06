@@ -69,7 +69,9 @@ export class Settings extends RouteHandler {
   render() {
     return (
       <div className="row settings">
-        <Helmet title="Settings" />
+        <Helmet>
+          <title>Settings</title>
+        </Helmet>
         <div className="settings-navigation">
           <SettingsNavigation />
         </div>

@@ -101,7 +101,9 @@ class Viewer extends Component {
 
     return (
       <div className="row">
-        <Helmet title={`${documentTitle} • Page ${page}`} />
+        <Helmet>
+          <title>{`${documentTitle} • Page ${page}`}</title>
+        </Helmet>
         <ShowIf if={!targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">

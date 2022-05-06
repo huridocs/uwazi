@@ -23,7 +23,9 @@ export class LibraryLayoutBase extends Component {
 
     return (
       <div className="row panels-layout">
-        <Helmet title={t('System', 'Library', null, false)} />
+        <Helmet>
+          <title>{t('System', 'Library', null, false)}</title>
+        </Helmet>
         {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass}>
           <main className={`${className}`}>{children}</main>

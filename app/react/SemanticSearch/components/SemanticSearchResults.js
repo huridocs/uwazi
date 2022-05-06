@@ -91,12 +91,16 @@ export class SemanticSearchResults extends Component {
             <p>
               <Translate>Search not found</Translate>
             </p>
-            <Helmet title="Semantic search not found" />
+            <Helmet>
+              <title>Semantic search not found</title>
+            </Helmet>
           </>
         )}
         {!isEmpty && (
           <>
-            <Helmet title={`${searchTerm} - Semantic search results`} />
+            <Helmet>
+              <title>{`${searchTerm} - Semantic search results`}</title>
+            </Helmet>
             <main className="semantic-search-results-viewer document-viewer with-panel">
               <div>
                 <h3>

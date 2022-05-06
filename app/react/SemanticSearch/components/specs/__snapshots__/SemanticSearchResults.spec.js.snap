@@ -7,8 +7,11 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
   <HelmetWrapper
     defer={true}
     encodeSpecialCharacters={true}
-    title="query - Semantic search results"
-  />
+  >
+    <title>
+      query - Semantic search results
+    </title>
+  </HelmetWrapper>
   <main
     className="semantic-search-results-viewer document-viewer with-panel"
   >
@@ -221,7 +224,10 @@ exports[`SemanticSearchResults when the search is empty should render not found 
   <HelmetWrapper
     defer={true}
     encodeSpecialCharacters={true}
-    title="Semantic search not found"
-  />
+  >
+    <title>
+      Semantic search not found
+    </title>
+  </HelmetWrapper>
 </div>
 `;

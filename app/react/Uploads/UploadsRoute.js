@@ -108,7 +108,9 @@ export default class Uploads extends RouteHandler {
 
     return (
       <div className="row panels-layout">
-        <Helmet title={t('System', 'Uploads', null, false)} />
+        <Helmet>
+          <title>{t('System', 'Uploads', null, false)}</title>
+        </Helmet>
         <UploadsHeader />
         <div className="content-holder uploads-viewer document-viewer with-panel with-header">
           <main>

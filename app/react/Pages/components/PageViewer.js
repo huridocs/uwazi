@@ -72,7 +72,11 @@ class PageViewer extends Component {
       <div className="row">
         {!parsedPageError && (
           <>
-            {setBrowserTitle && <Helmet title={page.get('title') ? page.get('title') : 'Page'} />}
+            {setBrowserTitle && (
+              <Helmet>
+                <title>{page.get('title') ? page.get('title') : 'Page'}</title>
+              </Helmet>
+            )}
             <main className="page-viewer document-viewer">
               <div className="main-wrapper">
                 {this.state.customPageError && this.renderErrorWarning()}
