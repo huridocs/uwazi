@@ -104,7 +104,7 @@ export class CSVLoader extends EventEmitter {
       thesaurusValues.map(({ label }) => [label, label])
     );
 
-    await translations.addTranslations(thesaurusId.toString(), thesauriTranslations, true);
+    await translations.updateEntries(thesaurusId.toString(), thesauriTranslations);
 
     return saved;
   }
