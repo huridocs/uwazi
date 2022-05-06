@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 export default (req: Request, res: Response, next: NextFunction) => {
-  if (!['POST', 'DELETE', 'PUT', 'OPTIONS'].includes(req.method)) {
+  if (!['POST', 'DELETE', 'PUT'].includes(req.method)) {
     return next();
   }
   if (req.get('X-Requested-With') === 'XMLHttpRequest') {
