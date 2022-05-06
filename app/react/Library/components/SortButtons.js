@@ -7,8 +7,12 @@ import { actions } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 import { DropdownList } from 'app/Forms';
+import { propertyTypes } from 'shared/propertyTypes';
 
-const isSortableType = type => ['text', 'date', 'numeric', 'select'].includes(type);
+const isSortableType = type =>
+  [propertyTypes.text, propertyTypes.date, propertyTypes.numeric, propertyTypes.select].includes(
+    type
+  );
 
 const getMetadataSorts = templates =>
   templates.toJS().reduce((sorts, template) => {
