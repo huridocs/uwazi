@@ -69,7 +69,7 @@ export class Confirm extends Component {
   }
 
   render() {
-    const { type } = this.props;
+    const { type, acceptLabel } = this.props;
     return (
       <Modal isOpen={this.state.isOpen} type={type}>
         <Modal.Body>
@@ -95,7 +95,7 @@ export class Confirm extends Component {
               className={`btn confirm-button btn-${type}`}
               onClick={this.accept}
             >
-              {t('System', 'Accept')}
+              {t('System', acceptLabel)}
             </button>
           </Modal.Footer>
         )}
@@ -113,6 +113,7 @@ Confirm.defaultProps = {
   title: 'Confirm action',
   message: 'Are you sure you want to continue?',
   extraConfirmWord: 'CONFIRM',
+  acceptLabel: 'Accept',
 };
 
 Confirm.propTypes = {
@@ -126,6 +127,7 @@ Confirm.propTypes = {
   type: PropTypes.string,
   title: PropTypes.string,
   message: PropTypes.string,
+  acceptLabel: PropTypes.string,
 };
 
 export default Confirm;
