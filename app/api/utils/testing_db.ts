@@ -17,6 +17,7 @@ import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 import { createMongoInstance } from './createMongoInstance';
 import { UserSchema } from '../../shared/types/userType';
+import { Settings } from 'shared/types/settingsType';
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
@@ -32,6 +33,7 @@ export type DBFixture = {
   pages?: PageType[];
   ixsuggestions?: IXSuggestionType[];
   users?: UserSchema[];
+  settings?: Settings[];
   [k: string]: any;
 };
 

@@ -7,22 +7,15 @@ import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
 import { getPageAssets } from 'app/Pages/utils/getPageAssets';
-import { formater as formatter } from 'app/Metadata';
 
+import { notificationActions } from 'app/Notifications';
 import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
+import { prepareAssets } from './pageAssets';
+
 import * as uiActions from '../Entities/actions/uiActions';
 
-const formatEntity = (entity, templates, thesauris) => {
-  const formattedEntity = formatter.prepareMetadata(entity, templates, thesauris);
-  formattedEntity.metadata = formattedEntity.metadata.reduce(
-    (memo, property) => ({ ...memo, [property.name]: property }),
-    {}
-  );
-  return formattedEntity;
-};
-
-export default class Entity extends Component {
+class Entity extends Component {
   static async requestState(requestParams, state) {
     const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
       await Promise.all([
@@ -33,27 +26,25 @@ export default class Entity extends Component {
 
     const entityTemplate = state.templates.find(t => t.get('_id') === entity.template);
 
-    let additionalActions = [];
-
+    const pageActions = [];
     if (entityTemplate.get('entityViewPage')) {
-      const pageQuery = { sharedId: entityTemplate.get('entityViewPage') };
-      const { pageView, itemLists, datasets } = await getPageAssets(
-        requestParams.set(pageQuery),
+      const assets = prepareAssets(entity, entityTemplate, state.templates, state.thesauris);
+      const { pageView, itemLists, datasets, errors } = await getPageAssets(
+        requestParams.set({ sharedId: entityTemplate.get('entityViewPage') }),
         undefined,
         {
-          entity: formatEntity(entity, state.templates, state.thesauris),
-          entityRaw: entity,
-          template: entityTemplate,
+          ...assets,
         }
       );
 
-      const pageActions = [
+      pageActions.push(
         actions.set('page/pageView', pageView),
         actions.set('page/itemLists', itemLists),
-        actions.set('page/datasets', datasets),
-      ];
-
-      additionalActions = additionalActions.concat(pageActions);
+        actions.set('page/datasets', datasets)
+      );
+      if (errors && state.user.get('_id')) {
+        pageActions.push(notificationActions.notify(errors, 'warning'));
+      }
     }
 
     return [
@@ -72,7 +63,7 @@ export default class Entity extends Component {
           },
         },
       }),
-    ].concat(additionalActions);
+    ].concat(pageActions);
   }
 
   componentWillUnmount() {
@@ -98,3 +89,5 @@ export default class Entity extends Component {
 Entity.contextTypes = {
   store: PropTypes.object,
 };
+
+export default Entity;

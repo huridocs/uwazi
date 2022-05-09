@@ -125,7 +125,14 @@ export const permissionsLevelFixtures: DBFixture = {
     },
   ],
 
-  settings: [{ languages: [{ key: 'es', default: true }, { key: 'en' }] }],
+  settings: [
+    {
+      languages: [
+        { key: 'es', label: 'ES', default: true },
+        { key: 'en', label: 'EN' },
+      ],
+    },
+  ],
 };
 
 export { users, group1, template1Id, template2Id, template3Id };
