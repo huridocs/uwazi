@@ -157,6 +157,13 @@
       }
     },
     {
+      "files": ["app/**/specs/*"],
+      "rules": {
+        "max-lines-per-function": "off",
+        "max-lines": "off"
+      }
+    },
+    {
       "files": ["app/**/*.ts*", "database/**/*.ts", "e2e/**/*.ts"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
