@@ -88,7 +88,7 @@ if (config.sentry.dsn) {
 }
 
 routesErrorHandler(app);
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 const http = Server(app);
 
