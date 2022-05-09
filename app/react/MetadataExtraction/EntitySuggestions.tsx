@@ -62,7 +62,8 @@ export const EntitySuggestions = ({
       state === SuggestionState.labelEmpty ||
       state === SuggestionState.valueEmpty ||
       state === SuggestionState.obsolete ||
-      state === SuggestionState.empty
+      state === SuggestionState.empty ||
+      state === SuggestionState.error
     ) {
       className += 'btn-outline-secondary disabled';
     }
@@ -84,7 +85,8 @@ export const EntitySuggestions = ({
             state === SuggestionState.valueEmpty ||
             state === SuggestionState.obsolete ||
             state === SuggestionState.labelMatch ||
-            state === SuggestionState.valueMatch
+            state === SuggestionState.valueMatch ||
+            state === SuggestionState.error
           }
           onClick={async () => showConfirmationModal(row)}
         >
