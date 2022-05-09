@@ -68,7 +68,7 @@ const formatPropertyValue = (
 };
 
 const formatProperty = (item: FormattedPropertyValueSchema) => {
-  const values: unknown[] = !isArray(item.value) ? [item] : item.value;
+  const values: unknown[] = !isArray(item.value) || !item.value.length ? [item] : item.value;
 
   const formattedItem = values.map((target: any) => {
     const relatedEntity = pickEntityFields(target.relatedEntity);
@@ -96,6 +96,7 @@ const formatEntityData = (formattedEntity: FormattedEntity) => {
 
   return { ...entity, metadata: formattedMetadata };
 };
+
 const formatEntity = (formattedEntity: FormattedEntity) => {
   const originalMetadata: MetadataObjectSchema[] = formattedEntity.metadata;
   const metadata = originalMetadata.reduce(

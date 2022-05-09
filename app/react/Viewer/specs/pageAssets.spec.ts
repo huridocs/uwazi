@@ -167,6 +167,14 @@ describe('pageAssets', () => {
           displayValue: undefined,
         },
       ]);
+      expect(entityData.metadata?.emptyRelation).toEqual([
+        {
+          name: 'emptyRelation',
+          type: 'inherit',
+          value: [],
+          displayValue: [],
+        },
+      ]);
     });
   });
 });
