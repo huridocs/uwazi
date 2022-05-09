@@ -1,7 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import {
+  ObjectIdSchema,
+  PropertyValueSchema,
+  SelectionRectanglesSchema,
+} from 'shared/types/commonTypes';
 
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
@@ -14,7 +18,16 @@ export interface EntitySuggestionType {
   currentValue?: PropertyValueSchema;
   segment: string;
   language: string;
-  state: 'Empty' | 'Matching' | 'Pending';
+  state:
+    | 'Match / Label'
+    | 'Mismatch / Label'
+    | 'Match / Value'
+    | 'Mismatch / Value'
+    | 'Empty / Empty'
+    | 'Obsolete'
+    | 'Empty / Label'
+    | 'Empty / Value'
+    | 'Error';
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
@@ -32,6 +45,13 @@ export interface IXSuggestionType {
   status?: 'processing' | 'failed' | 'ready';
   date?: number;
   error?: string;
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    page?: string;
+  }[];
 }
 
 export interface IXSuggestionsQuery {
@@ -44,6 +64,15 @@ export interface IXSuggestionsQuery {
 
 export interface IXSuggestionsFilter {
   language?: string;
-  propertyName?: string;
-  state?: 'Empty' | 'Matching' | 'Pending';
+  propertyName: string;
+  state?:
+    | 'Match / Label'
+    | 'Mismatch / Label'
+    | 'Match / Value'
+    | 'Mismatch / Value'
+    | 'Empty / Empty'
+    | 'Obsolete'
+    | 'Empty / Label'
+    | 'Empty / Value'
+    | 'Error';
 }
