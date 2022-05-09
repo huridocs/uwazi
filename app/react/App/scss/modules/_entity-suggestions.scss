@@ -96,6 +96,43 @@
     &.action {
       padding-left: 5px;
       align-items: center;
+
+      button {
+        box-shadow: 0px 2px 2px rgba(55, 71, 79, 0.4);
+        &:focus, &:hover {
+          color: #ECA41A;
+        }
+
+        &.label-match {
+          border-color: #4cae4c;
+          &:hover {
+            color: #4cae4c;
+          }
+        }
+  
+        &.label-value-mismatch {
+          border-color: #ECA41A;
+          color: #ECA41A;
+        }
+  
+        &.value-match {
+          border-color: #5073cf;
+          &:hover {
+            color: #5073cf;
+          }
+        }
+
+        &.disabled[disabled] {
+          color: #D7D7DC;
+          border-color: #D7D7DC;
+        }
+  
+        &:active, &:disabled {
+          box-shadow: none;
+        }
+  
+      }
+
     }
 
     &.title {
@@ -119,6 +156,15 @@
 
     &.state {
       width: 7%;
+      .modal-tip-label {
+        font-size: 12px;
+        color: $c-black;
+        cursor: pointer;
+        border-bottom: none;
+        z-index: 1;
+        float: right;
+      }
+      
     }
   }
 
