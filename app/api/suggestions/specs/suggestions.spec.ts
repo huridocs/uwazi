@@ -128,5 +128,23 @@ describe('suggestions', () => {
       expect(changedSuggestion.state).toBe(SuggestionState.labelMatch);
       expect(changedSuggestion.suggestedValue).toEqual(changedSuggestion.labeledValue);
     });
+    it('should not accept a suggestion with an error', async () => {
+      const { suggestions } = await getSuggestions('age');
+      const errorSuggestion = suggestions.find(
+        (s: EntitySuggestionType) => s.sharedId === 'shared4'
+      );
+      try {
+        await Suggestions.accept(
+          {
+            _id: errorSuggestion._id,
+            sharedId: errorSuggestion.sharedId,
+            entityId: errorSuggestion.entityId,
+          },
+          true
+        );
+      } catch (e) {
+        expect(e.message).toBe('Suggestion has an error');
+      }
+    });
   });
 });

@@ -261,6 +261,9 @@ export const Suggestions = {
     if (!suggestion) {
       throw new Error('Suggestion not found');
     }
+    if (suggestion.error !== '') {
+      throw new Error('Suggestion has an error');
+    }
     const query = allLanguages
       ? { sharedId: acceptedSuggestion.sharedId }
       : { sharedId: acceptedSuggestion.sharedId, _id: acceptedSuggestion.entityId };
