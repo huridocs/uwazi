@@ -71,7 +71,7 @@ export class Confirm extends Component {
   render() {
     const { type, acceptLabel, zIndex } = this.props;
     return (
-      <Modal isOpen={this.state.isOpen} type={type} className="modal-confirm" zIndex={zIndex}>
+      <Modal isOpen={this.state.isOpen} type={type} zIndex={zIndex}>
         <Modal.Body>
           <h4>
             <Translate>{this.props.title}</Translate>
