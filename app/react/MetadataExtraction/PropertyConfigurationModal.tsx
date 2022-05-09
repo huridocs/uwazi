@@ -7,7 +7,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 const SUPPORTED_PROPERTIES = ['text', 'number', 'date'];
 
-interface IXTemplateConfiguration {
+export interface IXTemplateConfiguration {
   template: ObjectIdSchema;
   properties: string[];
 }
@@ -28,8 +28,7 @@ export const PropertyConfigurationModal = ({
   currentProperties,
 }: PropertyConfigurationModalProps) => {
   const currentValues = currentProperties.reduce((result: string[], config) => {
-    const template = config.template;
-    const properties = config.properties;
+    const { template, properties } = config;
     const props = properties.map(prop => `${template}-${prop}`);
     return result.concat(props);
   }, []);
@@ -85,7 +84,7 @@ export const PropertyConfigurationModal = ({
           onChange={setValues}
           options={options}
           optionsToShow={20}
-          showSearch={true}
+          showSearch
         />
       </Modal.Body>
       <Modal.Footer>

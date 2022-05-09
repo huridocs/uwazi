@@ -75,6 +75,37 @@ export const suggestionsRoutes = (app: Application) => {
     }
   );
 
+  app.post(
+    '/api/suggestions/configurations',
+    needsAuthorization(['admin']),
+    validateAndCoerceRequest({
+      properties: {
+        body: {
+          additionalProperties: false,
+          properties: {
+            configurations: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  template: { type: 'string' },
+                  properties: {
+                    type: 'array',
+                    items: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+    async (req, res, _next) => {
+      await Suggestions.saveConfigurations(req.body);
+      res.json({ success: true });
+    }
+  );
+
   app.get(
     '/api/suggestions/status',
     serviceMiddleware,

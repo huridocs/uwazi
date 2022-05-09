@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+// import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
 
 import { Translate, I18NLink } from 'app/I18N';
@@ -11,8 +11,10 @@ import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { Settings } from 'shared/types/settingsType';
-import saveSettings from 'app/Settings/actions/settingsActions';
-import { PropertyConfigurationModal } from './PropertyConfigurationModal';
+// import saveSettings from 'app/Settings/actions/settingsActions';
+import { RequestParams } from 'app/utils/RequestParams';
+import { saveConfigurations } from './SuggestionsAPI';
+import { IXTemplateConfiguration, PropertyConfigurationModal } from './PropertyConfigurationModal';
 
 function mapStateToProps({ settings, templates }: any) {
   return {
@@ -27,6 +29,7 @@ class MetadataExtractionComponent extends React.Component<
 > {
   constructor(props: MetadataExtractionDashboardPropTypes) {
     super(props);
+    this.saveConfigs = this.saveConfigs.bind(this);
     this.state = {
       configurationModalIsOpen: false,
     };
@@ -86,6 +89,22 @@ class MetadataExtractionComponent extends React.Component<
     return formatted;
   }
 
+  async saveConfigs(newSettings: IXTemplateConfiguration[]) {
+    console.log(newSettings);
+    this.setState({ configurationModalIsOpen: false });
+    // const settings = this.props.settings.toJS();
+
+    // settings.features!.metadataExtraction!.templates = newSettings;
+    // this.props.saveSettings(settings);
+    const reqParams = new RequestParams(newSettings);
+    try {
+      await saveConfigurations(reqParams);
+    } catch (e) {
+      // Error
+      console.log(e);
+    }
+  }
+
   render() {
     const formattedData: FormattedSettingsData = this.arrangeTemplatesAndProperties();
     const extractionSettings =
@@ -112,13 +131,7 @@ class MetadataExtractionComponent extends React.Component<
           <PropertyConfigurationModal
             isOpen={this.state.configurationModalIsOpen}
             onClose={() => this.setState({ configurationModalIsOpen: false })}
-            onAccept={newSettings => {
-              this.setState({ configurationModalIsOpen: false });
-              const settings = this.props.settings.toJS();
-
-              settings.features!.metadataExtraction!.templates = newSettings;
-              this.props.saveSettings(settings);
-            }}
+            onAccept={this.saveConfigs}
             templates={this.props.templates.toJS()}
             currentProperties={extractionSettings}
           />
@@ -173,7 +186,6 @@ class MetadataExtractionComponent extends React.Component<
 export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
   settings: IImmutable<Settings>;
-  saveSettings: (settings: Settings) => void;
 }
 
 export interface FormattedSettingsData {
@@ -187,10 +199,4 @@ export interface MetadataExtractionDashboardStateTypes {
   configurationModalIsOpen: boolean;
 }
 
-export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ saveSettings: saveSettings }, dispatch);
-
-export const MetadataExtractionDashboard = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MetadataExtractionComponent);
+export const MetadataExtractionDashboard = connect(mapStateToProps)(MetadataExtractionComponent);
