@@ -50,7 +50,9 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       onClick={[Function]}
       type="button"
     >
-      Accept
+      <Connect(Translate)>
+        Accept
+      </Connect(Translate)>
     </button>
   </Footer>
 </Modal>
@@ -85,7 +87,9 @@ exports[`CantDeleteTemplateAlert noCancel option should hide the cancel button 1
       onClick={[Function]}
       type="button"
     >
-      Accept
+      <Connect(Translate)>
+        Accept
+      </Connect(Translate)>
     </button>
   </Footer>
 </Modal>

@@ -99,7 +99,7 @@ export class Confirm extends Component {
               className={`btn confirm-button btn-${type}`}
               onClick={this.accept}
             >
-              {t('System', acceptLabel)}
+              <Translate>{acceptLabel}</Translate>
             </button>
           </Modal.Footer>
         )}
