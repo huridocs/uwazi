@@ -70,7 +70,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
 
   confirmation = {
     templateConflict: {
-      title: 'Lengthy reindex process',
+      title: 'Template conflict',
       key: 'Mapping conflict error',
       text: `A reindex of your collection is necessary. The reason may vary 
        -- from certain changes made to a template's property to new fields
@@ -133,14 +133,11 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
 
       cancel: () => {},
       title: t('System', this.confirmation[confirmationKey].title, null, false),
-      message: t(
-        'System',
-        this.confirmation[confirmationKey].key,
-        this.confirmation[confirmationKey].text,
-        false
-      ),
+      key: this.confirmation[confirmationKey].key,
+      message: this.confirmation[confirmationKey].text,
       type: 'success',
       acceptLabel: 'Confirm',
+      zIndex: 99,
     });
   }
 

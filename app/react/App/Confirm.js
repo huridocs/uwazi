@@ -69,12 +69,16 @@ export class Confirm extends Component {
   }
 
   render() {
-    const { type, acceptLabel } = this.props;
+    const { type, acceptLabel, zIndex } = this.props;
     return (
-      <Modal isOpen={this.state.isOpen} type={type}>
+      <Modal isOpen={this.state.isOpen} type={type} className="modal-confirm" zIndex={zIndex}>
         <Modal.Body>
-          <h4>{this.props.title}</h4>
-          <p>{this.props.message}</p>
+          <h4>
+            <Translate>{this.props.title}</Translate>
+          </h4>
+          <p>
+            <Translate translationKey={this.props.key}>{this.props.message}</Translate>,
+          </p>
           {this.props.extraConfirm && !this.state.isLoading && this.renderExtraConfirm()}
           {this.state.isLoading && <Loader />}
         </Modal.Body>
@@ -111,9 +115,11 @@ Confirm.defaultProps = {
   noCancel: false,
   type: 'danger',
   title: 'Confirm action',
+  key: '',
   message: 'Are you sure you want to continue?',
   extraConfirmWord: 'CONFIRM',
   acceptLabel: 'Accept',
+  zIndex: 99,
 };
 
 Confirm.propTypes = {
@@ -126,8 +132,10 @@ Confirm.propTypes = {
   cancel: PropTypes.func,
   type: PropTypes.string,
   title: PropTypes.string,
+  key: PropTypes.string,
   message: PropTypes.string,
   acceptLabel: PropTypes.string,
+  zIndex: PropTypes.number,
 };
 
 export default Confirm;

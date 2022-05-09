@@ -49,8 +49,8 @@ export class SelectMultiplePanel extends Component {
       accept: () => {
         this.props.deleteEntities(this.props.entitiesSelected.toJS());
       },
-      title: t('System', 'Confirm', null, false),
-      message: t('System', 'Confirm delete multiple items', null, false),
+      title: 'Confirm',
+      message: 'Confirm delete multiple items',
     });
   }
 
@@ -100,8 +100,8 @@ export class SelectMultiplePanel extends Component {
       accept: () => {
         this.props.resetForm(this.props.formKey);
       },
-      title: t('System', 'Confirm', null, false),
-      message: t('System', 'Discard changes', null, false),
+      title: 'Confirm',
+      message: 'Discard changes',
     });
   }
 
