@@ -379,8 +379,7 @@ describe('thesauri', () => {
         });
       });
 
-      // eslint-disable-next-line jest/no-focused-tests
-      fdescribe('when trying to save duplicated labels', () => {
+      describe('when trying to save duplicated labels', () => {
         it.each([
           {
             case: 'root',
