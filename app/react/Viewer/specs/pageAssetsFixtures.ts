@@ -130,6 +130,13 @@ const dbTemplates: IImmutable<TemplateSchema>[] = [
         type: 'geolocation',
         name: 'geolocation_geolocation',
       },
+      {
+        _id: '6267e68226904c252518f914',
+        label: 'Empty text',
+        type: 'text',
+        name: 'emptyText',
+        filter: true,
+      },
     ],
     __v: 0,
     default: true,
@@ -1098,6 +1105,14 @@ const expectedFormattedEntity = {
         },
       ],
       onlyForCards: false,
+    },
+    emptyText: {
+      label: 'Empty text',
+      name: 'emptyText',
+      type: 'text',
+      showInCard: undefined,
+      translateContext: '5bfbb1a0471dd0fc16ada146',
+      value: undefined,
     },
   },
   attachments: [

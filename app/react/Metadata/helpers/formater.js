@@ -467,6 +467,7 @@ export default {
     return {
       label: property.get('label'),
       name: property.get('name'),
+      type: property.get('type'),
       value,
       showInCard,
       translateContext: template.get('_id'),

@@ -76,7 +76,7 @@ const formatProperty = (item: FormattedPropertyValueSchema) => {
     const value = formatPropertyValue(target, metadataField);
 
     return {
-      displayValue: get(target, metadataField.displayValue, target),
+      displayValue: get(target, metadataField.displayValue, value),
       value,
       name: item.name,
       type: propertyDisplayType(item),
