@@ -54,6 +54,13 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           "type": "text",
           "value": "metadata.sortable_name",
         },
+        Object {
+          "context": "id",
+          "label": "inherited1",
+          "name": "inherited1",
+          "type": "relationship",
+          "value": "metadata.inherited1.inheritedValue",
+        },
       ]
     }
     onChange={[Function]}
@@ -127,6 +134,13 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
           "name": "sortable_name",
           "type": "text",
           "value": "metadata.sortable_name",
+        },
+        Object {
+          "context": "id",
+          "label": "inherited1",
+          "name": "inherited1",
+          "type": "relationship",
+          "value": "metadata.inherited1.inheritedValue",
         },
       ]
     }

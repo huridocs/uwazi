@@ -28,6 +28,24 @@ describe('SortButtons', () => {
             { filter: true, name: 'number', label: 'number', type: 'numeric' },
             { filter: true, name: 'my_select', label: 'my select', type: 'select' },
             { filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text' },
+            {
+              filter: true,
+              name: 'inherited1',
+              label: 'inherited1',
+              type: 'relationship',
+              inherit: {
+                type: 'text',
+              },
+            },
+            {
+              filter: true,
+              name: 'inherited2',
+              label: 'inherited2',
+              type: 'relationship',
+              inherit: {
+                type: 'multiselect',
+              },
+            },
           ],
         },
       ]),

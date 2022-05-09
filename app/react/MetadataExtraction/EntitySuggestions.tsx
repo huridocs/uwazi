@@ -40,23 +40,54 @@ export const EntitySuggestions = ({
   });
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    toggleAllRowsSelected(false);
     row.toggleRowSelected();
     setAcceptingSuggestion(true);
   };
 
+  const actionsCellButtonClassNames = (state: string) => {
+    let className = 'btn ';
+    if (state === SuggestionState.labelMatch) {
+      className += 'btn-outline-success label-match';
+    }
+    if (state === SuggestionState.labelMismatch || state === SuggestionState.valueMismatch) {
+      className += 'btn-outline-warning label-value-mismatch';
+    }
+
+    if (state === SuggestionState.valueMatch) {
+      className += 'btn-outline-primary value-match';
+    }
+    if (
+      state === SuggestionState.labelEmpty ||
+      state === SuggestionState.valueEmpty ||
+      state === SuggestionState.obsolete ||
+      state === SuggestionState.empty ||
+      state === SuggestionState.error
+    ) {
+      className += 'btn-outline-secondary disabled';
+    }
+
+    return className;
+  };
+
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.values;
+    const { state } = suggestion;
     return (
       <div>
         <button
           type="button"
           aria-label="Accept suggestion"
-          className={
-            suggestion.state === SuggestionState.matching
-              ? 'btn btn-success'
-              : 'btn btn-outline-primary'
+          className={actionsCellButtonClassNames(state)}
+          disabled={
+            state === SuggestionState.labelEmpty ||
+            state === SuggestionState.valueEmpty ||
+            state === SuggestionState.obsolete ||
+            state === SuggestionState.labelMatch ||
+            state === SuggestionState.valueMatch ||
+            state === SuggestionState.error
           }
-          disabled={suggestion.state === SuggestionState.matching}
           onClick={async () => showConfirmationModal(row)}
         >
           <Icon icon="arrow-right" />
@@ -66,6 +97,8 @@ export const EntitySuggestions = ({
   };
 
   const showPDF = (row: Row<EntitySuggestionType>) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    toggleAllRowsSelected(false);
     row.toggleRowSelected();
     setSidePanelOpened(true);
   };
@@ -76,14 +109,12 @@ export const EntitySuggestions = ({
 
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
     <div onClick={() => showPDF(row)}>
-      {row.original.segment && (
-        <>
-          <span className="segment-pdf">
-            <Translate>PDF</Translate>
-          </span>
-          {row.original.segment}
-        </>
-      )}
+      <>
+        <span className="segment-pdf">
+          <Translate>PDF</Translate>
+        </span>
+        {row.original.segment}
+      </>
     </div>
   );
 
@@ -96,6 +127,7 @@ export const EntitySuggestions = ({
     gotoPage,
     setPageSize,
     selectedFlatRows,
+    toggleAllRowsSelected,
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
@@ -122,7 +154,7 @@ export const EntitySuggestions = ({
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
-      selectedFlatRows[0].values.state = 'Matching';
+      selectedFlatRows[0].values.state = SuggestionState.labelMatch;
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
@@ -243,7 +275,7 @@ export const EntitySuggestions = ({
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
       </div>
-      {selectedFlatRows.length && (
+      {Boolean(selectedFlatRows.length) && (
         <PDFSidePanel
           open={sidePanelOpened}
           closeSidePanel={closePDFSidePanel}

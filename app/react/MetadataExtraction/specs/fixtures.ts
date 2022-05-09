@@ -9,7 +9,7 @@ const defaultHeaders = [
   'Title',
   'Context',
   'Language',
-  'StateAllMatchingEmptyPending',
+  'StateAllMatch / LabelMismatch / LabelMatch / ValueMismatch / ValueEmpty / EmptyObsolete',
 ];
 
 const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {
@@ -23,7 +23,7 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       suggestedValue: 'Olowo Kamali',
       segment: 'Olowo Kamali Case',
       language: 'English',
-      state: SuggestionState.matching,
+      state: SuggestionState.labelMismatch,
       date: 1,
       page: 5,
       fileId: 'fileId1',
@@ -37,7 +37,7 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       suggestedValue: 'Violación caso 1',
       segment: 'Detalle Violación caso 1',
       language: 'Spanish',
-      state: SuggestionState.empty,
+      state: SuggestionState.valueEmpty,
       date: 2,
       page: 2,
       fileId: 'fileId1',
@@ -55,7 +55,7 @@ const dateSuggestion = {
   suggestedValue: 1585851003,
   segment: 'Fecha Apr 2, 2020',
   language: 'Spanish',
-  state: SuggestionState.matching,
+  state: SuggestionState.valueMatch,
   date: 2,
   page: 2,
   fileId: 'fildId',
