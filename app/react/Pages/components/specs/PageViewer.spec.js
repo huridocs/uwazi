@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import React from 'react';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { shallow } from 'enzyme';
 
 import MarkdownViewer from 'app/Markdown';
@@ -47,7 +47,7 @@ describe('PageViewer', () => {
 
     describe('Helmet', () => {
       it('should render the page helmet', () => {
-        expect(component.find(Helmet).props().title).toBe('Page 1');
+        expect(component.find(Helmet).find('title').text()).toBe('Page 1');
       });
 
       it('should not overwrite the page title', () => {

@@ -51,6 +51,8 @@ const getInheritedProps = async (templates: TemplateSchema[]) => {
 };
 
 const denormalizeInheritedProperties = async (template: TemplateSchema) => {
+  if (template.synced) return template.properties;
+
   const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
 
   return template.properties?.map(prop => {
