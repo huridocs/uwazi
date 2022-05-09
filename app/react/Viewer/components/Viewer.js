@@ -1,6 +1,6 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from 'immutable';
@@ -101,7 +101,9 @@ class Viewer extends Component {
 
     return (
       <div className="row">
-        <Helmet title={`${documentTitle} • Page ${page}`} />
+        <Helmet>
+          <title>{`${documentTitle} • Page ${page}`}</title>
+        </Helmet>
         <ShowIf if={!targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
@@ -182,7 +184,6 @@ class Viewer extends Component {
     );
   }
 }
-
 Viewer.defaultProps = {
   searchTerm: '',
   raw: false,
@@ -218,7 +219,6 @@ Viewer.propTypes = {
 Viewer.contextTypes = {
   store: PropTypes.object,
 };
-
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();

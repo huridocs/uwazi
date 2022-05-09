@@ -81,10 +81,11 @@ describe('metadata formater', () => {
       ] = data.metadata;
     });
 
-    const formatValue = value => ({
+    const formatValue = (value, originalValue) => ({
       icon: undefined,
       url: `/entity/${value.toLowerCase().replace(/ /g, '')}`,
       value,
+      ...(originalValue ? { originalValue } : {}),
     });
 
     it('should maintain doc original data untouched', () => {
@@ -187,16 +188,19 @@ describe('metadata formater', () => {
     it('should process bound relationship types', () => {
       assessBasicProperties(relationship1, ['Relationship', 'relationship1', 'templateID']);
       expect(relationship1.value.length).toBe(2);
-      assessMultiValues(relationship1, [formatValue('Value 1'), formatValue('Value 2')]);
+      assessMultiValues(relationship1, [
+        formatValue('Value 1', 'value1'),
+        formatValue('Value 2', 'value2'),
+      ]);
     });
 
     it('should process free relationship types', () => {
       assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
       assessMultiValues(relationship2, [
-        formatValue('Value 1'),
-        formatValue('Value 2'),
-        formatValue('Value 4'),
+        formatValue('Value 1', 'value1'),
+        formatValue('Value 2', 'value2'),
+        formatValue('Value 4', 'value4'),
       ]);
     });
 
