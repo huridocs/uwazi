@@ -1,5 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import ReactModal from 'react-modal';
+import ReactPlayer from 'react-player';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
@@ -66,7 +67,9 @@ function filterAttachments(
       return filteredAttachments.filter(a => a.mimetype && a.mimetype.includes('image'));
     case MediaModalType.Media:
       return filteredAttachments.filter(
-        a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
+        a =>
+          (a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))) ||
+          (a.url && ReactPlayer.canPlay(a.url))
       );
     default:
       return attachments;
