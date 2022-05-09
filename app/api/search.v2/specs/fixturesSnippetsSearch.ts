@@ -16,7 +16,14 @@ const fileWithFullText = (sharedId: string, fullText: {}): FileType => ({
 });
 
 const fixturesSnippetsSearch: DBFixture = {
-  settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+  settings: [
+    {
+      languages: [
+        { key: 'en', label: 'EN', default: true },
+        { key: 'es', label: 'ES' },
+      ],
+    },
+  ],
   templates: [
     {
       _id: template1Id,

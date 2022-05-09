@@ -121,7 +121,7 @@ const fixtures: DBFixture = {
   settings: [
     {
       _id: db.id(),
-      languages: [{ key: 'es', default: true }],
+      languages: [{ key: 'es', label: 'ES', default: true }],
       publicFormDestination: 'http://localhost:54321',
       allowedPublicTemplates: [templateId.toString()],
     },

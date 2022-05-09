@@ -6,7 +6,11 @@ const textPropertyId = db.id();
 const fixtures: DBFixture = {
   settings: [
     {
-      languages: [{ key: 'en', default: true }, { key: 'es' }, { key: 'pt' }],
+      languages: [
+        { key: 'en', label: 'En', default: true },
+        { key: 'es', label: 'ES' },
+        { key: 'pt', label: 'PT' },
+      ],
     },
   ],
   templates: [

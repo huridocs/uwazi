@@ -9,7 +9,14 @@ const entity2es = testingDB.id();
 const entity3es = testingDB.id();
 
 export const fixturesTitleSearch: DBFixture = {
-  settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
+  settings: [
+    {
+      languages: [
+        { key: 'en', label: 'EN', default: true },
+        { key: 'es', label: 'ES' },
+      ],
+    },
+  ],
   entities: [
     {
       _id: entity1en,

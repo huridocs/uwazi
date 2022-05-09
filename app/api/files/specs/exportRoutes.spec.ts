@@ -38,7 +38,11 @@ describe('export routes', () => {
           {
             dateFormat: 'yyyy-MM-dd',
             site_name: 'uwazi',
-            languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
+            languages: [
+              { key: 'es', label: 'ES', default: true },
+              { key: 'pt', label: 'PT' },
+              { key: 'en', label: 'EN' },
+            ],
           },
         ],
       };

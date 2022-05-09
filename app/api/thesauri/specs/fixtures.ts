@@ -126,7 +126,7 @@ const fixtures: DBFixture = {
       published: true,
     },
   ],
-  settings: [{ _id: testingDB.id(), languages: [{ key: 'es', default: true }] }],
+  settings: [{ _id: testingDB.id(), languages: [{ key: 'es', label: 'ES', default: true }] }],
   translations: [
     {
       _id: testingDB.id(),
