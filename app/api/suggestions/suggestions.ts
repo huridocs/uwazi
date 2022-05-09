@@ -10,6 +10,8 @@ import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel'
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import settings from 'api/settings/settings';
 import { files } from 'api/files/files';
+import entitiesModel from 'api/entities/entitiesModel';
+import languages from 'shared/languages';
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
@@ -23,15 +25,15 @@ export const Suggestions = {
       propertyName: filter.propertyName,
       status: 'ready',
     });
-    const { languages } = await settings.get();
+    const { languages: dbLanguages } = await settings.get();
     // @ts-ignore
-    const defaultLanguage = languages.find(l => l.default).key;
+    const defaultLanguage = dbLanguages.find(l => l.default).key;
     //@ts-ignore
-    const configuredLanguages = languages.map(l => l.key);
+    const configuredLanguages = dbLanguages.map(l => l.key);
     const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
       [
-        { $match: { ...filters, status: 'ready' } },
+        { $match: { ...filters } },
         {
           $lookup: {
             from: 'entities',
@@ -340,5 +342,93 @@ export const Suggestions = {
         await IXSuggestionsModel.delete({ _id: suggestion._id });
       }
     }
+  },
+  saveConfigurations: async (configs: any) => {
+    const currentSettings = await settings.get();
+    // @ts-ignore
+    const defaultLanguage = currentSettings?.languages?.find(lang => lang.default).key;
+    const settingsTemplates = configs;
+    const currentSettingsTemplates = currentSettings.features?.metadataExtraction?.templates;
+
+    if (settingsTemplates && currentSettingsTemplates) {
+      const deletedTemplates = currentSettingsTemplates.filter(
+        set => !settingsTemplates.find((st: any) => st.template === set.template)
+      );
+
+      const deletedTemplateProps = currentSettingsTemplates
+        .map(currentTemplate => {
+          const currentTemplateId = currentTemplate.template;
+          const property: any = {};
+          const template = settingsTemplates.find((st: any) => st.template === currentTemplateId);
+          if (template) {
+            property.template = currentTemplateId;
+            property.properties = [];
+            currentTemplate.properties.forEach(prop => {
+              if (!template.properties.includes(prop)) {
+                property.properties.push(prop);
+              }
+            });
+          }
+          return property;
+        })
+        .filter(prop => prop.template && prop.properties.length);
+
+      const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
+
+      deletedTemplatesAndDeletedTemplateProps.forEach(template => {
+        const templateId = template.template;
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        template.properties.forEach(async prop => {
+          await Suggestions.deleteByProperty(prop, templateId.toString());
+        });
+      });
+      // @ts-ignore
+      currentSettings.features.metadataExtraction.templates = settingsTemplates;
+      await settings.save(currentSettings);
+    }
+
+    settingsTemplates.forEach(async (template: { template: string; properties: string[] }) => {
+      const cursor = entitiesModel.db
+        .find({ template: template.template, language: defaultLanguage })
+        .select('_id, sharedId')
+        .cursor();
+      for (let entity = await cursor.next(); entity; entity = await cursor.next()) {
+        // We fetch files by sharedId
+        const entityFiles = await files.get({
+          entity: entity.sharedId,
+          type: 'document',
+          status: 'ready',
+        });
+
+        const suggestionsPlaceholders: any[] = [];
+
+        entityFiles.forEach((file: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          template.properties.forEach(async (prop: string) => {
+            const language = languages.get(file.language, 'ISO639_1') || 'other';
+            const [existingSuggestion] = await IXSuggestionsModel.get({
+              entityId: file.entity,
+              language,
+              fileId: file._id,
+            });
+
+            suggestionsPlaceholders.push({
+              ...existingSuggestion,
+              language,
+              fileId: file._id,
+              entityId: file.entity,
+              propertyName: prop,
+              status: 'processing',
+              error: '',
+              segment: '',
+              suggestedValue: '',
+              date: new Date().getTime(),
+            });
+          });
+        });
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        await suggestionsPlaceholders.forEach(async sug => IXSuggestionsModel.saveMultiple(sug));
+      }
+    });
   },
 };
