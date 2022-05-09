@@ -93,6 +93,7 @@ describe('pageAssets', () => {
         },
       ]);
     });
+
     it('should return geolocation properties formatted', () => {
       expect(entityData.metadata?.geolocation_geolocation).toEqual([
         {
@@ -103,6 +104,7 @@ describe('pageAssets', () => {
         },
       ]);
     });
+
     it('should return multi date range properties formatted', () => {
       expect(entityData.metadata?.multi_date_range).toEqual([
         {
@@ -152,6 +154,25 @@ describe('pageAssets', () => {
             template: '626c19238a46c11701b49a55',
             inheritedProperty: 'date',
           },
+        },
+      ]);
+    });
+
+    it('should work when metadata value is not set', () => {
+      expect(entityData.metadata?.emptyText).toEqual([
+        {
+          name: 'emptyText',
+          type: 'text',
+          value: undefined,
+          displayValue: undefined,
+        },
+      ]);
+      expect(entityData.metadata?.emptyRelation).toEqual([
+        {
+          name: 'emptyRelation',
+          type: 'inherit',
+          value: [],
+          displayValue: [],
         },
       ]);
     });
