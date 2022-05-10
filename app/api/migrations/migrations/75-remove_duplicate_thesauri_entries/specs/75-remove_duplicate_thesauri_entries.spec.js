@@ -12,7 +12,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
   });
 
   afterAll(async () => {
-    await testingDB.tearDown();
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {
@@ -23,12 +23,16 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     fail('TODO');
   });
 
+  it('should unify groups and keep the unified group, if there is any', async () => {
+    fail('TODO');
+  });
+
   it.each([
     { case: 'select' },
     { case: 'multiselect' },
     { case: 'inherited select' },
     { case: 'inherited multiselect' },
-  ])('should point $case properties to remaining value', () => {
+  ])('should unify $case entity properties and point to remaining value', () => {
     fail('TODO');
   });
 
@@ -38,6 +42,6 @@ describe('migration remove_duplicate_thesauri_entries', () => {
 
   it('should reindex if there were no changes to entities', async () => {
     fail('TODO');
-    expect(migration.reindex).toBe(true);
+    expect(migration.reindex).toBe(false);
   });
 });
