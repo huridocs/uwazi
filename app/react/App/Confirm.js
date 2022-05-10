@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 
 import Modal from 'app/Layout/Modal';
 import Loader from 'app/components/Elements/Loader';
@@ -91,7 +91,7 @@ class Confirm extends Component {
           <Modal.Footer>
             {!this.props.noCancel && (
               <button type="button" className="btn btn-default cancel-button" onClick={this.cancel}>
-                {t('System', 'Cancel')}
+                <Translate>Cancel</Translate>
               </button>
             )}
             <button

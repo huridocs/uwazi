@@ -41,7 +41,9 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       onClick={[Function]}
       type="button"
     >
-      Cancel
+      <Connect(Translate)>
+        Cancel
+      </Connect(Translate)>
     </button>
     <button
       className="btn confirm-button btn-danger"
