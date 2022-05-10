@@ -56,7 +56,9 @@ function extractMessageFromValidation(error) {
 }
 
 const handleErrorStatus = error => {
-  if (error.status === 401) {
+  if (error.status === 400) {
+    store.dispatch(notify('OMG THIS IS BAD', 'danger'));
+  } else if (error.status === 401) {
     browserHistory.replace('/login');
   } else if (error.status === 404) {
     browserHistory.replace('/404');
