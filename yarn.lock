@@ -366,10 +366,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.16.7", "@babel/parser@^7.17.0", "@babel/parser@^7.17.3", "@babel/parser@^7.4.3":
-  version "7.17.3"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.17.3.tgz#b07702b982990bf6fdc1da5049a23fece4c5c3d0"
-  integrity sha512-7yJPvPV+ESz2IUTPbOL+YkIGyCqOyNIzdguKQuJGnH7bg1WTIifuM21YqokFt/THWh1AkCRn9IgoykTRCBVpzA==
+"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.16.7", "@babel/parser@^7.17.10", "@babel/parser@^7.17.3", "@babel/parser@^7.4.3":
+  version "7.17.10"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.17.10.tgz#873b16db82a8909e0fbd7f115772f4b739f6ce78"
+  integrity sha512-n2Q6i+fnJqzOaq2VkdXxy2TCPCWQZHiCo0XqmrCvDWcZQKRyZzYi4Z0yxlBuN0w+r2ZHmre+Q087DSrw3pbJDQ==
 
 "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@^7.16.7":
   version "7.16.7"
@@ -12020,19 +12020,10 @@ puppeteer@^13.5.2:
     unbzip2-stream "1.4.3"
     ws "8.5.0"
 
-qr.js@0.0.0:
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/qr.js/-/qr.js-0.0.0.tgz"
-  integrity sha1-ys6GOG9ZoNuAUPqQ2baw6IoeNk8=
-
-qrcode.react@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/qrcode.react/-/qrcode.react-1.0.0.tgz"
-  integrity sha512-jBXleohRTwvGBe1ngV+62QvEZ/9IZqQivdwzo9pJM4LQMoCM2VnvNBnKdjvGnKyDZ/l0nCDgsPod19RzlPvm/Q==
-  dependencies:
-    loose-envify "^1.4.0"
-    prop-types "^15.6.0"
-    qr.js "0.0.0"
+qrcode.react@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-3.0.1.tgz#0cb1d7cfdf3955737fbd3509c193985795ca0612"
+  integrity sha512-uCNm16ClMCrdM2R20c/zqmdwHcbMQf3K7ey39EiK/UgEKbqWeM0iH2QxW3iDVFzjQKFzH23ICgOyG4gNsJ0/gw==
 
 qs@6.9.3:
   version "6.9.3"
