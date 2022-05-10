@@ -81,7 +81,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     },
     largeNumberOfEntities: {
       title: 'Lengthy reindex process',
-      key: 'Lengthy reindex process',
+      key: 'Template with a long number of entities',
       text: `The template has changed and the associated entities will be re-indexed,
       this process may take several minutes, do you want to continue?`,
     },
@@ -132,7 +132,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
       },
 
       cancel: () => {},
-      title: t('System', this.confirmation[confirmationKey].title, null, false),
+      title: this.confirmation[confirmationKey].title,
       messageKey: this.confirmation[confirmationKey].key,
       message: this.confirmation[confirmationKey].text,
       type: 'success',
