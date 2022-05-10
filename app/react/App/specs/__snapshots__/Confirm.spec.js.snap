@@ -19,7 +19,6 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       >
         Are you sure you want to continue?
       </Connect(Translate)>
-      ,
     </p>
     <p>
       <Connect(Translate)>
@@ -77,7 +76,6 @@ exports[`CantDeleteTemplateAlert noCancel option should hide the cancel button 1
       >
         Are you sure you want to continue?
       </Connect(Translate)>
-      ,
     </p>
   </Body>
   <Footer>

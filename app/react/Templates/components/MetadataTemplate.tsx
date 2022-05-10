@@ -133,7 +133,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
 
       cancel: () => {},
       title: t('System', this.confirmation[confirmationKey].title, null, false),
-      key: this.confirmation[confirmationKey].key,
+      messageKey: this.confirmation[confirmationKey].key,
       message: this.confirmation[confirmationKey].text,
       type: 'success',
       acceptLabel: 'Confirm',

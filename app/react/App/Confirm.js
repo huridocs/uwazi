@@ -5,7 +5,7 @@ import { t, Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 import Loader from 'app/components/Elements/Loader';
 
-export class Confirm extends Component {
+class Confirm extends Component {
   static getDerivedStateFromProps(newProps, state) {
     if (newProps.accept !== state.accept) {
       return { isOpen: true, accept: newProps.accept };
@@ -69,15 +69,19 @@ export class Confirm extends Component {
   }
 
   render() {
-    const { type, acceptLabel, zIndex } = this.props;
+    const { type, acceptLabel, zIndex, message, title, messageKey } = this.props;
     return (
       <Modal isOpen={this.state.isOpen} type={type} zIndex={zIndex}>
         <Modal.Body>
           <h4>
-            <Translate>{this.props.title}</Translate>
+            {typeof title !== 'string' && title}
+            {typeof title === 'string' && <Translate>{title}</Translate>}
           </h4>
           <p>
-            <Translate translationKey={this.props.key}>{this.props.message}</Translate>,
+            {typeof message !== 'string' && message}
+            {typeof message === 'string' && (
+              <Translate translationKey={messageKey}>{message}</Translate>
+            )}
           </p>
           {this.props.extraConfirm && !this.state.isLoading && this.renderExtraConfirm()}
           {this.state.isLoading && <Loader />}
@@ -115,7 +119,7 @@ Confirm.defaultProps = {
   noCancel: false,
   type: 'danger',
   title: 'Confirm action',
-  key: '',
+  messageKey: '',
   message: 'Are you sure you want to continue?',
   extraConfirmWord: 'CONFIRM',
   acceptLabel: 'Accept',
@@ -134,8 +138,10 @@ Confirm.propTypes = {
   title: PropTypes.string,
   key: PropTypes.string,
   message: PropTypes.string,
+  messageKey: PropTypes.string,
   acceptLabel: PropTypes.string,
   zIndex: PropTypes.number,
 };
 
+export { Confirm };
 export default Confirm;

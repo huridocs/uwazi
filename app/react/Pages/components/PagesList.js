@@ -3,17 +3,22 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { deletePage } from 'app/Pages/actions/pageActions';
 
-export class PagesList extends Component {
+class PagesList extends Component {
   deletePage(page) {
     return this.context.confirm({
       accept: () => {
         this.props.deletePage(page.toJS());
       },
-      title: `Confirm delete page: ${page.get('title')}`,
+      title: (
+        <>
+          <Translate>Confirm delete page:</Translate>
+          &nbsp;{page.get('title')}
+        </>
+      ),
       message: 'Are you sure you want to delete this page?',
     });
   }
@@ -73,4 +78,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ deletePage }, dispatch);
 }
 
+export { PagesList };
 export default connect(mapStateToProps, mapDispatchToProps)(PagesList);
