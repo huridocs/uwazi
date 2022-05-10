@@ -394,41 +394,60 @@ export const Suggestions = {
         .cursor();
       for (let entity = await cursor.next(); entity; entity = await cursor.next()) {
         // We fetch files by sharedId
-        const entityFiles = await files.get({
-          entity: entity.sharedId,
-          type: 'document',
-          status: 'ready',
-        });
-
-        const suggestionsPlaceholders: any[] = [];
-
-        entityFiles.forEach((file: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          template.properties.forEach(async (prop: string) => {
-            const language = languages.get(file.language, 'ISO639_1') || 'other';
-            const [existingSuggestion] = await IXSuggestionsModel.get({
-              entityId: file.entity,
-              language,
-              fileId: file._id,
-            });
-
-            suggestionsPlaceholders.push({
-              ...existingSuggestion,
-              language,
-              fileId: file._id,
-              entityId: file.entity,
-              propertyName: prop,
-              status: 'processing',
-              error: '',
-              segment: '',
-              suggestedValue: '',
-              date: new Date().getTime(),
-            });
-          });
-        });
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        await suggestionsPlaceholders.forEach(async sug => IXSuggestionsModel.saveMultiple(sug));
+        await Suggestions.populateSuggestionsUsingEntities(
+          entity.sharedId as string,
+          template.properties
+        );
       }
     });
+  },
+
+  populateSuggestionsUsingEntities: async (sharedId: string, properties: string[]) => {
+    const entityFiles = await files.get({
+      entity: sharedId,
+      type: 'document',
+      status: 'ready',
+    });
+
+    const suggestionsPlaceholders: any[] = [];
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    entityFiles.forEach(async (file: any) => {
+      const language = languages.get(file.language, 'ISO639_1') || 'other';
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      await properties.forEach(async (prop: string) => {
+        const suggestion = await Suggestions.constructASuggestionPlaceholder(prop, file, language);
+        suggestionsPlaceholders.push(suggestion);
+      });
+    });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    await suggestionsPlaceholders.forEach(async sug => IXSuggestionsModel.save(sug));
+  },
+
+  constructASuggestionPlaceholder: async (property: string, file: any, language: string) => {
+    const [existingSuggestion] = await IXSuggestionsModel.get({
+      entityId: file.entity,
+      language,
+      fileId: file._id,
+      propertyName: property,
+    });
+
+    return {
+      // @ts-ignore
+      language,
+      fileId: file._id,
+      // @ts-ignore
+      entityId: file.entity,
+      // @ts-ignore
+      propertyName: property,
+      status: 'processing',
+      // @ts-ignore
+      error: '',
+      // @ts-ignore
+      segment: '',
+      suggestedValue: '',
+      date: new Date().getTime(),
+      ...existingSuggestion,
+    };
   },
 };
