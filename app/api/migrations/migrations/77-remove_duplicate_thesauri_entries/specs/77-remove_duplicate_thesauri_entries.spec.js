@@ -19,11 +19,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     expect(migration.delta).toBe(77);
   });
 
-  it('should remove duplicated thesauri entries from root and groups', async () => {
-    fail('TODO');
-  });
-
-  it('should unify groups and keep the unified group, if there is any', async () => {
+  it('should rename label repetitions', async () => {
     fail('TODO');
   });
 
@@ -32,7 +28,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     { case: 'multiselect' },
     { case: 'inherited select' },
     { case: 'inherited multiselect' },
-  ])('should unify $case entity properties and point to remaining value', () => {
+  ])('should denormalize changed $case entity properties', () => {
     fail('TODO');
   });
 
