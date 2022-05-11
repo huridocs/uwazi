@@ -23,7 +23,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     // spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
     migration.reindex = undefined;
-    await migration.up();
+    await migration.up(testingDB.mongodb);
   });
 
   afterAll(async () => {
@@ -95,7 +95,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
 
   it('should reindex if there were no changes', async () => {
     await testingDB.clearAllAndLoad({});
-    await migration.up();
+    await migration.up(testingDB.mongodb);
     expect(migration.reindex).toBe(false);
   });
 });
