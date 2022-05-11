@@ -31,8 +31,10 @@ export interface SettingsLinkSchema {
 
 export interface PreserveConfig {
   host: string;
-  token: string;
-  template: ObjectIdSchema;
+  config: {
+    token: string;
+    template: ObjectIdSchema;
+  }[];
 }
 
 export interface Settings {

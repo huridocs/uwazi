@@ -687,12 +687,14 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
 
   const allProps = propertiesHelper.allProperties(templates);
   if (query.sort) {
-    const sortingProp = allProps.find(p => `metadata.${p.name}` === query.sort);
-    if (sortingProp && sortingProp.type === 'select') {
-      queryBuilder.sort(query.sort, query.order, true);
-    } else {
-      queryBuilder.sort(query.sort, query.order);
-    }
+    const sortingProp = allProps.find(p =>
+      [`metadata.${p.name}`, `metadata.${p.name}.inheritedValue`].includes(query.sort)
+    );
+    const sortByLabel =
+      sortingProp &&
+      (sortingProp.type === 'select' ||
+        (sortingProp.inherit && sortingProp.inherit.type === 'select'));
+    queryBuilder.sort(query.sort, query.order, sortByLabel);
   }
 
   const allTemplates = templates.map(t => t._id);

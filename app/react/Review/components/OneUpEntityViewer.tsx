@@ -24,7 +24,7 @@ import { OneUpTitleBar } from 'app/Review/components/OneUpTitleBar';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { TabContent, Tabs } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -139,7 +139,9 @@ export class OneUpEntityViewerBase extends Component<
 
     return (
       <div className="row flex">
-        <Helmet title={entity.title ? entity.title : 'Entity'} />
+        <Helmet>
+          <title>{entity.title ? entity.title : 'Entity'}</title>
+        </Helmet>
         <div className="content-holder">
           <main className="content-main">
             <div className="content-header content-header-entity">

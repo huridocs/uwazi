@@ -1,6 +1,6 @@
 import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { RequestError } from 'app/App/ErrorHandling/ErrorUtils';
 import Footer from 'app/App/Footer';
@@ -38,7 +38,9 @@ class GeneralError extends RouteHandler {
     error.requestId = safeRequestId ? safeRequestId[0] : undefined;
     return (
       <div>
-        <Helmet title={error.title} />
+        <Helmet>
+          <title>{error.title}</title>
+        </Helmet>
         <ErrorFallback error={error} />
         <Footer />
       </div>

@@ -1,12 +1,22 @@
-import { objectIdSchema, propertyValueSchema } from 'shared/types/commonSchemas';
+import {
+  objectIdSchema,
+  propertyValueSchema,
+  selectionRectanglesSchema,
+} from 'shared/types/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
 export enum SuggestionState {
-  empty = 'Empty',
-  matching = 'Matching',
-  pending = 'Pending',
+  labelMatch = 'Match / Label',
+  labelMismatch = 'Mismatch / Label',
+  valueMatch = 'Match / Value',
+  valueMismatch = 'Mismatch / Value',
+  empty = 'Empty / Empty',
+  obsolete = 'Obsolete',
+  labelEmpty = 'Empty / Label',
+  valueEmpty = 'Empty / Value',
+  error = 'Error',
 }
 
 export const IXSuggestionSchema = {
@@ -26,6 +36,7 @@ export const IXSuggestionSchema = {
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     date: { type: 'number' },
     error: { type: 'string' },
+    selectionRectangles: selectionRectanglesSchema,
   },
   required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language'],
 };
@@ -74,6 +85,7 @@ export const SuggestionsQueryFilterSchema = {
     propertyName: { type: 'string' },
     state: { type: 'string', enum: Object.values(SuggestionState) },
   },
+  required: ['propertyName'],
 };
 
 export const IXSuggestionsQuerySchema = {

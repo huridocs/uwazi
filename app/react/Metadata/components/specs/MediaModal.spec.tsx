@@ -3,6 +3,7 @@
  */
 import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
+import ReactPlayer from 'react-player';
 import { actions as formActions } from 'react-redux-form';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
@@ -80,6 +81,19 @@ describe('Media Modal', () => {
     const testUrl = 'http://test.test/test.jpg';
     const jpgAttachment = { _id: 123, url: testUrl, size: 1234 };
     render({ attachments: [jpgAttachment] });
+
+    const firstAttachment = component.find('.media-grid-item');
+    firstAttachment.simulate('click');
+
+    expect(props.onChange).toHaveBeenCalledWith(testUrl);
+    expect(props.onClose).toHaveBeenCalled();
+  });
+
+  it('Should select a video attachment with url', () => {
+    const testUrl = 'www.externalresource.com/video';
+    jest.spyOn(ReactPlayer, 'canPlay').mockReturnValue(true);
+    const videoAttachment = { _id: 123, url: testUrl, name: 'short video' };
+    render({ attachments: [videoAttachment], type: MediaModalType.Media });
 
     const firstAttachment = component.find('.media-grid-item');
     firstAttachment.simulate('click');

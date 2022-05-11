@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { t } from 'app/I18N';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
@@ -23,7 +23,9 @@ export class LibraryLayoutBase extends Component {
 
     return (
       <div className="row panels-layout">
-        <Helmet title={t('System', 'Library', null, false)} />
+        <Helmet>
+          <title>{t('System', 'Library', null, false)}</title>
+        </Helmet>
         {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass}>
           <main className={`${className}`}>{children}</main>
