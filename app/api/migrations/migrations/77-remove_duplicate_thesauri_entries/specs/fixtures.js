@@ -31,6 +31,11 @@ export default {
         { label: 'C', id: 'C_id' },
         { label: 'C', id: 'C_2_id' },
         { label: 'C', id: 'C_3_id' },
+        {
+          label: 'A',
+          id: 'A_group_id',
+          values: [{ label: 'D', id: 'group_D_id' }],
+        },
       ],
     },
   ],
@@ -157,6 +162,55 @@ export default {
       user: adminUserId,
       language: 'en',
       sharedId: rootSharedId,
+      mongoLanguage: 'en',
+    },
+    {
+      metadata: {
+        inherited_select: [
+          {
+            value: rootSharedId,
+            label: 'root_entites',
+            type: 'entity',
+            inheritedValue: [{ value: 'C_3_id', label: 'C' }],
+            inheritedType: 'select',
+          },
+        ],
+        inherited_multiselect: [
+          {
+            value: rootSharedId,
+            label: 'root_entites',
+            type: 'entity',
+            inheritedValue: [
+              { value: 'A_2_id', label: 'A' },
+              { value: 'B', label: 'B_id' },
+              { label: 'C', id: 'C_id' },
+              { label: 'C', id: 'C_2_id' },
+              { label: 'C', id: 'C_3_id' },
+              {
+                value: 'group_B_id',
+                label: 'B',
+                parent: { value: 'group_1_id', label: 'group_1' },
+              },
+              {
+                value: 'group_A_id',
+                label: 'A',
+                parent: { value: 'group_1_id', label: 'group_1' },
+              },
+              {
+                value: 'group_A_2_id',
+                label: 'A',
+                parent: { value: 'group_1_id', label: 'group_1' },
+              },
+            ],
+            inheritedType: 'multiselect',
+          },
+        ],
+      },
+      template: inheritingTemplate,
+      title: 'inheriting entity',
+      user: adminUserId,
+      language: 'en',
+      sharedId: 'inheriting_shared_id',
       mongoLanguage: 'en',
     },
   ],
