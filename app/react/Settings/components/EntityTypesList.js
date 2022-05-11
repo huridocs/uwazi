@@ -13,7 +13,7 @@ import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
 import Tip from '../../Layout/Tip';
 
-export class EntityTypesList extends Component {
+class EntityTypesList extends Component {
   setAsDefaultButton(template) {
     return (
       <>
@@ -38,7 +38,12 @@ export class EntityTypesList extends Component {
           accept: () => {
             this.props.deleteTemplate(template);
           },
-          title: `Confirm delete of template: ${template.name}`,
+          title: (
+            <>
+              <Translate>Confirm delete of template:</Translate>&nbsp;{template.name}
+            </>
+          ),
+          messageKey: 'confirm delete template',
           message: `Are you sure you want to delete this entity type?
         This will delete the template and all relationship properties from other templates pointing to this one.`,
         });
@@ -47,7 +52,11 @@ export class EntityTypesList extends Component {
         this.context.confirm({
           accept: () => {},
           noCancel: true,
-          title: `Can not delete template: ${template.name}`,
+          title: (
+            <>
+              <Translate>Can not delete template:</Translate>&nbsp;{template.name}
+            </>
+          ),
           message: 'This template has associated entities',
         });
       });
@@ -162,4 +171,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { EntityTypesList };
 export default connect(mapStateToProps, mapDispatchToProps)(EntityTypesList);

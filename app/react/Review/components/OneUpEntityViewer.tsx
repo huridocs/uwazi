@@ -113,7 +113,7 @@ export class OneUpEntityViewerBase extends Component<
           accept: () => this.props.toggleOneUpFullEdit(),
           title: 'Keep this in mind if you want to edit:',
           message:
-            "Changes can't be undone after saving. Chaning text fields may invalidate the suggestions.",
+            "Changes can't be undone after saving. Changing text fields may invalidate the suggestions.",
         });
     }
     return (

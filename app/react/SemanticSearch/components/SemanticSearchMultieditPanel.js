@@ -79,8 +79,8 @@ export class SemanticSearchMultieditPanel extends Component {
       accept: () => {
         this.close();
       },
-      title: t('System', 'Confirm', null, false),
-      message: t('System', 'Discard changes', null, false),
+      title: 'Confirm',
+      message: 'Discard changes',
     });
   }
 
