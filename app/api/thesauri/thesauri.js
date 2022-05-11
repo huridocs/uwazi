@@ -23,7 +23,7 @@ const autoincrementValuesId = thesauri => {
   return thesauri;
 };
 
-function thesauriToTranslatioNContext(thesauri) {
+function thesauriToTranslationContext(thesauri) {
   return thesauri.values.reduce((ctx, prop) => {
     ctx[prop.label] = prop.label;
     if (prop.values) {
@@ -38,7 +38,7 @@ function thesauriToTranslatioNContext(thesauri) {
 }
 
 const create = async thesauri => {
-  const context = thesauriToTranslatioNContext(thesauri);
+  const context = thesauriToTranslationContext(thesauri);
   context[thesauri.name] = thesauri.name;
 
   const created = await model.save(thesauri);
@@ -64,7 +64,7 @@ const updateTranslation = (current, thesauri) => {
     'id',
     'label'
   );
-  const context = thesauriToTranslatioNContext(thesauri);
+  const context = thesauriToTranslationContext(thesauri);
 
   context[thesauri.name] = thesauri.name;
   return translations.updateContext(
