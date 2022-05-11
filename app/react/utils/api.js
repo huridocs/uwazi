@@ -56,28 +56,25 @@ function extractMessageFromValidation(error) {
 }
 
 const handleErrorStatus = error => {
-  switch (true) {
-    case error.status === 400:
+  switch (error.status || true) {
+    case 400:
+    case 422:
       store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
       break;
 
-    case error.status === 401:
+    case 401:
       browserHistory.replace('/login');
       break;
 
-    case error.status === 404:
+    case 404:
       browserHistory.replace('/404');
       break;
 
-    case error.status === 409:
+    case 409:
       store.dispatch(notify(error.json.error, 'warning'));
       break;
 
-    case error.status === 422:
-      store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
-      break;
-
-    case error.status === 500:
+    case 500:
       store.dispatch(notify(extractMessageFromError(error), 'danger'));
       break;
 
