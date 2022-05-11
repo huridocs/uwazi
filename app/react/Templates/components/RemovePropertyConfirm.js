@@ -15,7 +15,7 @@ export class RemovePropertyConfirm extends Component {
 
   render() {
     return (
-      <Modal isOpen={this.props.isOpen || false} type="danger">
+      <Modal isOpen={this.props.isOpen || false} type="danger" zIndex={99}>
         <Modal.Body>
           <h4>
             <Translate>Confirm deletion</Translate>

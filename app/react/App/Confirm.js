@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 
 import Modal from 'app/Layout/Modal';
 import Loader from 'app/components/Elements/Loader';
 
-export class Confirm extends Component {
+class Confirm extends Component {
   static getDerivedStateFromProps(newProps, state) {
     if (newProps.accept !== state.accept) {
       return { isOpen: true, accept: newProps.accept };
@@ -69,12 +69,20 @@ export class Confirm extends Component {
   }
 
   render() {
-    const { type } = this.props;
+    const { type, acceptLabel, zIndex, message, title, messageKey } = this.props;
     return (
-      <Modal isOpen={this.state.isOpen} type={type}>
+      <Modal isOpen={this.state.isOpen} type={type} zIndex={zIndex}>
         <Modal.Body>
-          <h4>{this.props.title}</h4>
-          <p>{this.props.message}</p>
+          <h4>
+            {typeof title !== 'string' && title}
+            {typeof title === 'string' && <Translate>{title}</Translate>}
+          </h4>
+          <p>
+            {typeof message !== 'string' && message}
+            {typeof message === 'string' && (
+              <Translate translationKey={messageKey}>{message}</Translate>
+            )}
+          </p>
           {this.props.extraConfirm && !this.state.isLoading && this.renderExtraConfirm()}
           {this.state.isLoading && <Loader />}
         </Modal.Body>
@@ -83,7 +91,7 @@ export class Confirm extends Component {
           <Modal.Footer>
             {!this.props.noCancel && (
               <button type="button" className="btn btn-default cancel-button" onClick={this.cancel}>
-                {t('System', 'Cancel')}
+                <Translate>Cancel</Translate>
               </button>
             )}
             <button
@@ -95,7 +103,7 @@ export class Confirm extends Component {
               className={`btn confirm-button btn-${type}`}
               onClick={this.accept}
             >
-              {t('System', 'Accept')}
+              <Translate>{acceptLabel}</Translate>
             </button>
           </Modal.Footer>
         )}
@@ -111,8 +119,11 @@ Confirm.defaultProps = {
   noCancel: false,
   type: 'danger',
   title: 'Confirm action',
+  messageKey: '',
   message: 'Are you sure you want to continue?',
   extraConfirmWord: 'CONFIRM',
+  acceptLabel: 'Accept',
+  zIndex: 99,
 };
 
 Confirm.propTypes = {
@@ -124,8 +135,12 @@ Confirm.propTypes = {
   accept: PropTypes.func,
   cancel: PropTypes.func,
   type: PropTypes.string,
-  title: PropTypes.string,
-  message: PropTypes.string,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  messageKey: PropTypes.string,
+  acceptLabel: PropTypes.string,
+  zIndex: PropTypes.number,
 };
 
+export { Confirm };
 export default Confirm;
