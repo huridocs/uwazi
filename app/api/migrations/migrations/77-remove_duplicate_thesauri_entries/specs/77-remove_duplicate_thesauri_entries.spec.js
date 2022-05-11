@@ -17,12 +17,10 @@ const expectedMultiSelect = [
 ];
 
 describe('migration remove_duplicate_thesauri_entries', () => {
-  let savedThesaurus;
-
   beforeEach(async () => {
     // spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
-    migration.reindex = undefined;
+    migration.reindex = false;
     await migration.up(testingDB.mongodb);
   });
 
@@ -93,8 +91,9 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     expect(migration.reindex).toBe(true);
   });
 
-  it('should reindex if there were no changes', async () => {
+  it('should not reindex if there were no changes', async () => {
     await testingDB.clearAllAndLoad({});
+    migration.reindex = false;
     await migration.up(testingDB.mongodb);
     expect(migration.reindex).toBe(false);
   });
