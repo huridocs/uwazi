@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 export default {
-  delta: 75,
+  delta: 76,
 
   name: 'remove-duplicate-translation-keys',
 

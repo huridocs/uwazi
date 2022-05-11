@@ -4,7 +4,7 @@ import fixtures from './fixtures.js';
 
 describe('migration remove-duplicate-translation-keys', () => {
   beforeEach(async () => {
-    // spyOn(process.stdout, 'write');
+    spyOn(process.stdout, 'write');
     migration.reindex = false;
   });
 
@@ -13,7 +13,7 @@ describe('migration remove-duplicate-translation-keys', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(75);
+    expect(migration.delta).toBe(76);
   });
 
   it('should remove multiple keys and keep correct values in all languages, in all contexts', async () => {
