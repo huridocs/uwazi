@@ -56,24 +56,41 @@ function extractMessageFromValidation(error) {
 }
 
 const handleErrorStatus = error => {
-  if (error.status === 400) {
-    store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
-  } else if (error.status === 401) {
-    browserHistory.replace('/login');
-  } else if (error.status === 404) {
-    browserHistory.replace('/404');
-  } else if (error.status === 409) {
-    store.dispatch(notify(error.json.error, 'warning'));
-  } else if (error.status === 422) {
-    store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
-  } else if (error.status === 500) {
-    store.dispatch(notify(extractMessageFromError(error), 'danger'));
-  } else if (isNonUsualApiError(error)) {
-    store.dispatch(notify(error.json.prettyMessage || error.json.error, 'danger'));
-  } else if (error instanceof TypeError) {
-    store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
-  } else {
-    store.dispatch(notify('An error has occurred', 'danger'));
+  switch (true) {
+    case error.status === 400:
+      store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
+      break;
+
+    case error.status === 401:
+      browserHistory.replace('/login');
+      break;
+
+    case error.status === 404:
+      browserHistory.replace('/404');
+      break;
+
+    case error.status === 409:
+      store.dispatch(notify(error.json.error, 'warning'));
+      break;
+
+    case error.status === 422:
+      store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
+      break;
+
+    case error.status === 500:
+      store.dispatch(notify(extractMessageFromError(error), 'danger'));
+      break;
+
+    case isNonUsualApiError(error):
+      store.dispatch(notify(error.json.prettyMessage || error.json.error, 'danger'));
+      break;
+
+    case error instanceof TypeError:
+      store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
+      break;
+
+    default:
+      store.dispatch(notify('An error has occurred', 'danger'));
   }
 };
 
