@@ -16,7 +16,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(75);
+    expect(migration.delta).toBe(77);
   });
 
   it('should remove duplicated thesauri entries from root and groups', async () => {

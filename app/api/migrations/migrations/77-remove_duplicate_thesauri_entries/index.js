@@ -1,5 +1,5 @@
 export default {
-  delta: 75,
+  delta: 77,
 
   name: 'remove_duplicate_thesauri_entries',
 
