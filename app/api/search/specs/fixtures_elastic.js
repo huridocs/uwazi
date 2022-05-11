@@ -8,10 +8,12 @@ const batmanFinishes = 'shared';
 const metadataSnippets = 'metadataSnippets';
 
 const multiselect1 = db.id();
+const select1 = db.id();
 const dateField = db.id();
 const richTextField = db.id();
 const cityGeolocation = db.id();
 const entity1 = db.id();
+const entity3 = db.id();
 const template = db.id();
 const template1 = db.id();
 const template2 = db.id();
@@ -203,6 +205,13 @@ export const fixtures = {
             ],
           },
         ],
+        relationshipcountryselect: [
+          {
+            value: entity1,
+            label: 'metadata1',
+            inheritedValue: [{ value: 'EgyptID', label: 'Egypt' }],
+          },
+        ],
         relationshipdate: [
           {
             value: entity1,
@@ -235,6 +244,13 @@ export const fixtures = {
       published: true,
       user: userId,
       metadata: {
+        relationshipcountryselect: [
+          {
+            value: entity3,
+            label: 'metadata3',
+            inheritedValue: [{ value: 'SpainID', label: 'Cool Spain' }],
+          },
+        ],
         relationshipcountry: [
           {
             value: entity1,
@@ -319,7 +335,7 @@ export const fixtures = {
       },
     },
     {
-      _id: db.id(),
+      _id: entity3,
       sharedId: 'metadata3',
       template: templateMetadata1,
       language: 'en',
@@ -466,6 +482,18 @@ export const fixtures = {
         },
         {
           _id: db.id(),
+          name: 'relationshipcountryselect',
+          type: 'relationship',
+          filter: true,
+          relationType,
+          content: templateMetadata1,
+          inherit: {
+            property: select1,
+            type: 'select',
+          },
+        },
+        {
+          _id: db.id(),
           name: 'relationshipdate',
           type: 'relationship',
           filter: true,
@@ -509,7 +537,7 @@ export const fixtures = {
         { _id: db.id(), name: 'field1', type: 'text', filter: true },
         { _id: db.id(), name: 'field2', type: 'text', filter: true },
         {
-          _id: db.id(),
+          _id: select1,
           name: 'select1',
           type: 'select',
           filter: true,

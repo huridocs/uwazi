@@ -8,10 +8,12 @@ import { Icon } from 'UI';
 import { searchDocuments, processFilters } from 'app/Library/actions/libraryActions';
 import { t, Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
-import SearchTips from 'app/Library/components/SearchTips';
+import ModalTips from 'app/App/ModalTips';
+import { SearchTipsContent } from 'app/App/SearchTipsContent';
 import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 
+// eslint-disable-next-line import/exports-last
 export class SearchBar extends Component {
   constructor(props) {
     super(props);
@@ -71,7 +73,12 @@ export class SearchBar extends Component {
             </button>
           </FeatureToggleSemanticSearch>
         </Form>
-        <SearchTips />
+        <ModalTips
+          label={t('System', 'Search Tips', null, false)}
+          title={t('System', 'Narrow down your searches', null, false)}
+        >
+          <SearchTipsContent />
+        </ModalTips>
       </div>
     );
   }
