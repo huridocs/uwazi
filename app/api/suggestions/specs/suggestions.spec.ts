@@ -39,12 +39,12 @@ describe('suggestions', () => {
       expect(suggestions.length).toBe(6);
     });
 
-    it('should be able to filter', async () => {
+    it('should return all suggestions', async () => {
       const { suggestions } = await Suggestions.get(
         { propertyName: 'super_powers' },
         { page: { size: 50, number: 1 } }
       );
-      expect(suggestions.length).toBe(2);
+      expect(suggestions.length).toBe(3);
     });
 
     it('should return match status', async () => {
@@ -52,7 +52,7 @@ describe('suggestions', () => {
 
       expect(
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
-      ).toBe(SuggestionState.labelMatch);
+      ).toBe(SuggestionState.valueMismatch);
 
       const { suggestions: enemySuggestions } = await getSuggestions('enemy');
 
