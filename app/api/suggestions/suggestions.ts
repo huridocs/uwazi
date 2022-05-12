@@ -160,7 +160,7 @@ export const Suggestions = {
                   },
                   {
                     case: {
-                      $lte: ['$date', model.creationDate],
+                      $lte: ['$date', model ? model.creationDate : 0],
                     },
                     then: SuggestionState.obsolete,
                   },
@@ -348,9 +348,9 @@ export const Suggestions = {
     // @ts-ignore
     const defaultLanguage = currentSettings?.languages?.find(lang => lang.default).key;
     const settingsTemplates = configs;
-    const currentSettingsTemplates = currentSettings.features?.metadataExtraction?.templates;
-
-    if (settingsTemplates && currentSettingsTemplates) {
+    let currentSettingsTemplates = currentSettings.features?.metadataExtraction?.templates;
+    currentSettingsTemplates = currentSettingsTemplates || [];
+    if (settingsTemplates) {
       const deletedTemplates = currentSettingsTemplates.filter(
         set => !settingsTemplates.find((st: any) => st.template === set.template)
       );
@@ -375,53 +375,56 @@ export const Suggestions = {
 
       const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
 
-      deletedTemplatesAndDeletedTemplateProps.forEach(template => {
+      const dPromises = deletedTemplatesAndDeletedTemplateProps.map(async template => {
         const templateId = template.template;
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        template.properties.forEach(async prop => {
+        const promises = template.properties.map(async prop => {
           await Suggestions.deleteByProperty(prop, templateId.toString());
         });
+        await Promise.all(promises);
       });
+      await Promise.all(dPromises);
       // @ts-ignore
       currentSettings.features.metadataExtraction.templates = settingsTemplates;
       await settings.save(currentSettings);
     }
 
-    settingsTemplates.forEach(async (template: { template: string; properties: string[] }) => {
-      const cursor = entitiesModel.db
-        .find({ template: template.template, language: defaultLanguage })
-        .select('_id, sharedId')
-        .cursor();
-      for (let entity = await cursor.next(); entity; entity = await cursor.next()) {
-        // We fetch files by sharedId
-        await Suggestions.populateSuggestionsUsingEntities(
-          entity.sharedId as string,
-          template.properties
-        );
+    const templatesPromises = settingsTemplates.map(
+      async (template: { template: string; properties: string[] }) => {
+        const cursor = await entitiesModel.db
+          .find({ template: template.template, language: defaultLanguage })
+          .select('_id, sharedId')
+          .cursor();
+        for (let entity = await cursor.next(); entity; entity = await cursor.next()) {
+          // We fetch files by sharedId
+          await Suggestions.populateSuggestionsUsingEntities(
+            entity.sharedId as string,
+            template.properties
+          );
+        }
       }
-    });
+    );
+    await Promise.all(templatesPromises);
   },
 
   populateSuggestionsUsingEntities: async (sharedId: string, properties: string[]) => {
     const entityFiles = await files.get({
       entity: sharedId,
       type: 'document',
-      status: 'ready',
     });
-
     const suggestionsPlaceholders: any[] = [];
-
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    entityFiles.forEach(async (file: any) => {
+    const filesPromises = entityFiles.map(async (file: any) => {
       const language = languages.get(file.language, 'ISO639_1') || 'other';
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      await properties.forEach(async (prop: string) => {
+      const promises = properties.map(async (prop: string) => {
         const suggestion = await Suggestions.constructASuggestionPlaceholder(prop, file, language);
         suggestionsPlaceholders.push(suggestion);
       });
+      await Promise.all(promises);
     });
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    await suggestionsPlaceholders.forEach(async sug => IXSuggestionsModel.save(sug));
+    await Promise.all(filesPromises);
+    const saveSuggestionsPlaceholdersPromises = suggestionsPlaceholders.map(async sug =>
+      IXSuggestionsModel.save(sug)
+    );
+    await Promise.all(saveSuggestionsPlaceholdersPromises);
   },
 
   constructASuggestionPlaceholder: async (property: string, file: any, language: string) => {

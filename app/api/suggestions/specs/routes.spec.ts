@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 import entities from 'api/entities';
@@ -9,6 +8,8 @@ import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import {
   fixtures,
+  heroTemplateId,
+  personTemplateId,
   shared2enId,
   shared2esId,
   shared6enId,
@@ -18,6 +19,9 @@ import {
 import { setUpApp } from 'api/utils/testingRoutes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { EntitySchema } from 'shared/types/entityType';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import settings from 'api/settings/settings';
+import { Suggestions } from '../suggestions';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -35,15 +39,15 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   },
 }));
 
+// eslint-disable-next-line max-statements
 describe('suggestions routes', () => {
-  let user: { username: string; role: string } | undefined;
+  const user = { username: 'user 1', role: 'admin' };
   const getUser = () => user;
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
   });
   beforeEach(async () => {
-    user = { username: 'user 1', role: 'admin' };
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
@@ -142,7 +146,6 @@ describe('suggestions routes', () => {
 
     describe('authentication', () => {
       it('should reject with unauthorized when user has not admin role', async () => {
-        user = { username: 'user 1', role: 'editor' };
         const response = await request(app).get('/api/suggestions/').query({}).expect(401);
         expect(response.unauthorized).toBe(true);
       });
@@ -159,7 +162,6 @@ describe('suggestions routes', () => {
       expect(response.body).toMatchObject({ status: 'ready' });
     });
     it('should reject with unauthorized when user has not admin role', async () => {
-      user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .get('/api/suggestions/status')
         .query({ property: 'super_powers' })
@@ -178,7 +180,6 @@ describe('suggestions routes', () => {
       expect(response.body).toMatchObject({ status: 'processing' });
     });
     it('should reject with unauthorized when user has not admin role', async () => {
-      user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .post('/api/suggestions/train')
         .send({ property: 'super_powers' })
@@ -250,7 +251,6 @@ describe('suggestions routes', () => {
       );
     });
     it('should reject with unauthorized when user has not admin role', async () => {
-      user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .post('/api/suggestions/accept')
         .send({
@@ -263,6 +263,66 @@ describe('suggestions routes', () => {
         })
         .expect(401);
       expect(response.unauthorized).toBe(true);
+    });
+  });
+
+  describe('POST /api/suggestions/configurations', () => {
+    const payload = [
+      {
+        template: personTemplateId.toString(),
+        properties: ['super_powers'],
+      },
+      {
+        template: heroTemplateId.toString(),
+        properties: ['enemy'],
+      },
+    ];
+
+    const removeSuggestionsFromDBAndSaveConfigs = async () => {
+      await IXSuggestionsModel.delete({});
+      await request(app).post('/api/suggestions/configurations').send(payload).expect(200);
+    };
+
+    it('should save configurations in settings', async () => {
+      await removeSuggestionsFromDBAndSaveConfigs();
+      const set = await settings.get();
+      expect(set.features?.metadataExtraction?.templates).toMatchObject(payload);
+    });
+    it('should create placeholder suggestions', async () => {
+      await removeSuggestionsFromDBAndSaveConfigs();
+      const { suggestions: superPowerSugg } = await Suggestions.get(
+        { propertyName: 'super_powers' },
+        { page: { size: 5, number: 1 } }
+      );
+      expect(superPowerSugg).toMatchObject([
+        {
+          sharedId: 'shared2',
+          propertyName: 'super_powers',
+          segment: '',
+          suggestedValue: '',
+          entityTitle: 'Batman en',
+        },
+        {
+          sharedId: 'shared2',
+          propertyName: 'super_powers',
+          segment: '',
+          suggestedValue: '',
+          entityTitle: 'Batman es',
+        },
+      ]);
+      const { suggestions: enemySugg } = await Suggestions.get(
+        { propertyName: 'enemy' },
+        { page: { size: 5, number: 1 } }
+      );
+      expect(enemySugg).toMatchObject([
+        {
+          sharedId: 'shared6',
+          propertyName: 'enemy',
+          segment: '',
+          suggestedValue: '',
+          entityTitle: 'The Penguin',
+        },
+      ]);
     });
   });
 });
