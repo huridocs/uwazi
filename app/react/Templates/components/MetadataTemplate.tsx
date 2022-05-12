@@ -72,13 +72,16 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     templateConflict: {
       title: 'Template conflict',
       key: 'Mapping conflict error',
-      text: `The template has changed and the mappings are not compatible,
-        your entire collection must be re-indexed. This process may take several minutes,
-        do you want to continue?`,
+      text: `A reindex of your collection is necessary. The reason may vary 
+       -- from certain changes made to a template's property to new fields
+       that need to be populated across entities. 
+       This process will not negatively affect the data in your collection. 
+       It can last a few minutes and some parts of your collection might take
+       some time to reappear in the Library, but this is temporary. Do you want to continue?`,
     },
     largeNumberOfEntities: {
       title: 'Lengthy reindex process',
-      key: 'Lengthy reindex process',
+      key: 'Template with a long number of entities',
       text: `The template has changed and the associated entities will be re-indexed,
       this process may take several minutes, do you want to continue?`,
     },
@@ -129,13 +132,12 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
       },
 
       cancel: () => {},
-      title: t('System', this.confirmation[confirmationKey].title, null, false),
-      message: t(
-        'System',
-        this.confirmation[confirmationKey].key,
-        this.confirmation[confirmationKey].text,
-        false
-      ),
+      title: this.confirmation[confirmationKey].title,
+      messageKey: this.confirmation[confirmationKey].key,
+      message: this.confirmation[confirmationKey].text,
+      type: 'success',
+      acceptLabel: 'Confirm',
+      zIndex: 99,
     });
   }
 
