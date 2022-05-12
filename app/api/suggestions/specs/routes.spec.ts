@@ -41,13 +41,14 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
 
 // eslint-disable-next-line max-statements
 describe('suggestions routes', () => {
-  const user = { username: 'user 1', role: 'admin' };
+  let user: { username: string; role: string } | undefined;
   const getUser = () => user;
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
   });
   beforeEach(async () => {
+    user = { username: 'user 1', role: 'admin' };
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
@@ -68,6 +69,19 @@ describe('suggestions routes', () => {
         .query({ filter: { propertyName: 'super_powers' } })
         .expect(200);
       expect(response.body.suggestions).toMatchObject([
+        {
+          propertyName: 'super_powers',
+          suggestedValue: 'NOT_READY',
+          segment: 'Red Robin, a variation on the traditional Robin persona.',
+          language: 'en',
+          date: 2,
+          page: 3,
+          currentValue: 'scientific knowledge',
+          state: SuggestionState.valueMismatch,
+          entityId: shared2enId.toString(),
+          sharedId: 'shared2',
+          entityTitle: 'Batman en',
+        },
         {
           entityId: shared2esId.toString(),
           sharedId: 'shared2',
@@ -146,6 +160,7 @@ describe('suggestions routes', () => {
 
     describe('authentication', () => {
       it('should reject with unauthorized when user has not admin role', async () => {
+        user = { username: 'user 1', role: 'editor' };
         const response = await request(app).get('/api/suggestions/').query({}).expect(401);
         expect(response.unauthorized).toBe(true);
       });
@@ -162,6 +177,7 @@ describe('suggestions routes', () => {
       expect(response.body).toMatchObject({ status: 'ready' });
     });
     it('should reject with unauthorized when user has not admin role', async () => {
+      user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .get('/api/suggestions/status')
         .query({ property: 'super_powers' })
@@ -180,6 +196,7 @@ describe('suggestions routes', () => {
       expect(response.body).toMatchObject({ status: 'processing' });
     });
     it('should reject with unauthorized when user has not admin role', async () => {
+      user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .post('/api/suggestions/train')
         .send({ property: 'super_powers' })
@@ -251,6 +268,7 @@ describe('suggestions routes', () => {
       );
     });
     it('should reject with unauthorized when user has not admin role', async () => {
+      user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .post('/api/suggestions/accept')
         .send({
