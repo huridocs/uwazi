@@ -1,4 +1,6 @@
 /* eslint-disable no-await-in-loop */
+const ROOT_PROPERTIES = new Set(['select', 'multiselect']);
+
 const renameValues = values => {
   if (!values) return [values, false];
   let changed = false;
@@ -32,9 +34,13 @@ export default {
 
   reindex: false,
 
-  async up(db) {
-    process.stdout.write(`${this.name}...\r\n`);
+  thesauriIdLabelMap: {},
 
+  propertyNameContentMap: {},
+
+  propertyIdContentMap: {},
+
+  async handleThesauri(db) {
     const thesauri = db.collection('dictionaries').find();
 
     while (await thesauri.hasNext()) {
@@ -47,5 +53,53 @@ export default {
           .updateOne({ _id: thesaurus._id }, { $set: { values: newValues } });
       }
     }
+  },
+
+  async buildThesauriMap(db) {
+    const thesauri = db.collection('dictionaries').find();
+
+    while (await thesauri.hasNext()) {
+      const thesaurus = await thesauri.next();
+      const flatValues = [];
+      thesaurus.values.forEach(value => {
+        flatValues.push(value);
+        if (value.values) {
+          value.values.forEach(v => {
+            flatValues.push(v);
+          });
+        }
+      });
+      this.thesauriIdLabelMap[thesaurus._id.toString()] = Object.fromEntries(
+        flatValues.map(({ id, label }) => [id, label])
+      );
+    }
+  },
+
+  async buildContentMaps(db) {
+    const templates = db.collection('templates').find();
+    while (await templates.hasNext()) {
+      const template = await templates.next();
+      this.propertyNameContentMap[template._id.toString()] = {};
+      this.propertyIdContentMap[template._id.toString()] = {};
+      template.properties.forEach(p => {
+        if (ROOT_PROPERTIES.has(p.type)) {
+          this.propertyNameContentMap[template._id.toString()][p.name] = p.content;
+          this.propertyIdContentMap[template._id.toString()][p._id.toString()] = p.content;
+        }
+      });
+    }
+  },
+
+  async up(db) {
+    process.stdout.write(`${this.name}...\r\n`);
+
+    await this.handleThesauri(db);
+
+    await this.buildThesauriMap(db);
+
+    await this.buildContentMaps(db);
+
+    console.log(this.propertyNameContentMap);
+    console.log(this.propertyIdContentMap);
   },
 };

@@ -61,11 +61,11 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     expect(thesaurus.values).toMatchObject(expectedDictValues);
   });
 
-  it.each([
+  fit.each([
     { property: 'select', title: 'root_entity', expected: expectedSelect },
     { property: 'multi_select', title: 'root_entity', expected: expectedMultiSelect },
   ])(
-    'should denormalize changed $case entity properties',
+    'should denormalize changed $property entity properties',
     async ({ property, title, expected }) => {
       const entity = await testingDB.mongodb.collection('entities').findOne({ title });
       expect(entity.metadata[property]).toMatchObject(expected);
@@ -80,7 +80,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
       expected: expectedMultiSelect,
     },
   ])(
-    'should denormalize changed $case entity properties',
+    'should denormalize changed $property entity properties',
     async ({ property, title, expected }) => {
       const entity = await testingDB.mongodb.collection('entities').findOne({ title });
       expect(entity.metadata[property][0].inheritedValue).toMatchObject(expected);
