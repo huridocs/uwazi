@@ -10,6 +10,19 @@ const rootTemplate = db.id();
 const inheritingTemplate = db.id();
 const rootSharedId = 'root_entity_sharedId';
 
+const selectValue = [{ value: 'C_3_id', label: 'C' }];
+const multiSelectValues = [
+  { value: 'A_2_id', label: 'A' },
+  { value: 'B_id', label: 'B' },
+  { value: 'C_id', label: 'C' },
+  { value: 'C_2_id', label: 'C' },
+  { value: 'C_3_id', label: 'C' },
+  { value: 'group_B_id', label: 'B', parent: { value: 'group_1_id', label: 'group_1' } },
+  { value: 'group_A_id', label: 'A', parent: { value: 'group_1_id', label: 'group_1' } },
+  { value: 'group_A_2_id', label: 'A', parent: { value: 'group_1_id', label: 'group_1' } },
+  { value: 'group_D_id', label: 'D', parent: { value: 'A_group_id', label: 'A' } },
+];
+
 export default {
   dictionaries: [
     {
@@ -145,18 +158,8 @@ export default {
   entities: [
     {
       metadata: {
-        select: [{ value: 'C_3_id', label: 'C' }],
-        multi_select: [
-          { value: 'A_2_id', label: 'A' },
-          { value: 'B', label: 'B_id' },
-          { label: 'C', id: 'C_id' },
-          { label: 'C', id: 'C_2_id' },
-          { label: 'C', id: 'C_3_id' },
-          { value: 'group_B_id', label: 'B', parent: { value: 'group_1_id', label: 'group_1' } },
-          { value: 'group_A_id', label: 'A', parent: { value: 'group_1_id', label: 'group_1' } },
-          { value: 'group_A_2_id', label: 'A', parent: { value: 'group_1_id', label: 'group_1' } },
-          { value: 'group_D_id', label: 'D', parent: { value: 'A_group_id', label: 'A' } },
-        ],
+        select: selectValue,
+        multi_select: multiSelectValues,
       },
       template: rootTemplate,
       title: 'root_entity',
@@ -172,7 +175,7 @@ export default {
             value: rootSharedId,
             label: 'root_entites',
             type: 'entity',
-            inheritedValue: [{ value: 'C_3_id', label: 'C' }],
+            inheritedValue: selectValue,
             inheritedType: 'select',
           },
         ],
@@ -181,29 +184,7 @@ export default {
             value: rootSharedId,
             label: 'root_entites',
             type: 'entity',
-            inheritedValue: [
-              { value: 'A_2_id', label: 'A' },
-              { value: 'B', label: 'B_id' },
-              { label: 'C', id: 'C_id' },
-              { label: 'C', id: 'C_2_id' },
-              { label: 'C', id: 'C_3_id' },
-              {
-                value: 'group_B_id',
-                label: 'B',
-                parent: { value: 'group_1_id', label: 'group_1' },
-              },
-              {
-                value: 'group_A_id',
-                label: 'A',
-                parent: { value: 'group_1_id', label: 'group_1' },
-              },
-              {
-                value: 'group_A_2_id',
-                label: 'A',
-                parent: { value: 'group_1_id', label: 'group_1' },
-              },
-              { value: 'group_D_id', label: 'D', parent: { value: 'A_group_id', label: 'A' } },
-            ],
+            inheritedValue: multiSelectValues,
             inheritedType: 'multiselect',
           },
         ],

@@ -40,6 +40,8 @@ export default {
 
   propertyIdContentMap: {},
 
+  bulkWriteActions: [],
+
   async handleThesauri(db) {
     const thesauri = db.collection('dictionaries').find();
 
@@ -87,7 +89,74 @@ export default {
           this.propertyIdContentMap[template._id.toString()][p._id.toString()] = p.content;
         }
       });
+      if (!Object.keys(this.propertyNameContentMap[template._id.toString()]).length) {
+        delete this.propertyNameContentMap[template._id.toString()];
+        delete this.propertyIdContentMap[template._id.toString()];
+      }
     }
+  },
+
+  denormalizeEntry(entry, thesaurus) {
+    const newEntry = { ...entry, label: thesaurus[entry.value] };
+    if (entry.parent) newEntry.parent = this.denormalizeEntry(entry.parent, thesaurus);
+    return newEntry;
+  },
+
+  denormalizeProperty(name, entries, templateId) {
+    if (
+      templateId in this.propertyNameContentMap &&
+      name in this.propertyNameContentMap[templateId]
+    ) {
+      const thesaurusId = this.propertyNameContentMap[templateId][name];
+      const thesaurus = this.thesauriIdLabelMap[thesaurusId];
+      // console.log(name)
+      // console.log(entries);
+      // console.log(thesaurus)
+      return [name, entries.map(entry => this.denormalizeEntry(entry, thesaurus))];
+    }
+    return [name, entries];
+  },
+
+  denormalizeMetadata(metadata, templateId) {
+    return Object.fromEntries(
+      Object.entries(metadata).map(([name, entries]) =>
+        this.denormalizeProperty(name, entries, templateId)
+      )
+    );
+  },
+
+  denormalizeEntity(entity) {
+    return {
+      ...entity,
+      metadata: this.denormalizeMetadata(entity.metadata, entity.template.toString()),
+    };
+  },
+
+  replaceAction(entity) {
+    return {
+      replaceOne: {
+        filter: { _id: entity._id },
+        replacement: entity,
+      },
+    };
+  },
+
+  async perform(db) {
+    await db.collection('entities').bulkWrite(this.bulkWriteActions);
+    this.bulkWriteActions = [];
+  },
+
+  async denormalize(db) {
+    const entities = await db.collection('entities').find({});
+    while (await entities.hasNext()) {
+      const entity = await entities.next();
+      const templateId = entity.template.toString();
+      if (templateId in this.propertyNameContentMap) {
+        this.bulkWriteActions.push(this.replaceAction(this.denormalizeEntity(entity)));
+      }
+      if (this.bulkWriteActions.length >= 1000) await this.perform();
+    }
+    if (this.bulkWriteActions.length) await this.perform(db);
   },
 
   async up(db) {
@@ -99,7 +168,6 @@ export default {
 
     await this.buildContentMaps(db);
 
-    console.log(this.propertyNameContentMap);
-    console.log(this.propertyIdContentMap);
+    await this.denormalize(db);
   },
 };

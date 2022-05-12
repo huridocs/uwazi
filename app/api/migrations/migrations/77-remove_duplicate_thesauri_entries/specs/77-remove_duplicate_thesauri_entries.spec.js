@@ -6,10 +6,10 @@ const expectedSelect = [{ value: 'C_3_id', label: 'C__(3)' }];
 
 const expectedMultiSelect = [
   { value: 'A_2_id', label: 'A__(2)' },
-  { value: 'B', label: 'B_id' },
-  { label: 'C', id: 'C_id' },
-  { label: 'C__(2)', id: 'C_2_id' },
-  { label: 'C__(3)', id: 'C_3_id' },
+  { value: 'B_id', label: 'B' },
+  { value: 'C_id', label: 'C' },
+  { value: 'C_2_id', label: 'C__(2)' },
+  { value: 'C_3_id', label: 'C__(3)' },
   { value: 'group_B_id', label: 'B', parent: { value: 'group_1_id', label: 'group_1' } },
   { value: 'group_A_id', label: 'A', parent: { value: 'group_1_id', label: 'group_1' } },
   { value: 'group_A_2_id', label: 'A__(2)', parent: { value: 'group_1_id', label: 'group_1' } },
@@ -61,7 +61,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     expect(thesaurus.values).toMatchObject(expectedDictValues);
   });
 
-  fit.each([
+  it.each([
     { property: 'select', title: 'root_entity', expected: expectedSelect },
     { property: 'multi_select', title: 'root_entity', expected: expectedMultiSelect },
   ])(
