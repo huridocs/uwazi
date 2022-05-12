@@ -46,22 +46,22 @@ describe('translations', () => {
         .processSystemKeys(keys)
         .then(() => translations.get())
         .then(result => {
-          const ESTrnaslations = result
+          const ESTranslations = result
             .find(t => t.locale === 'es')
             .contexts.find(c => c.label === 'System').values;
-          const ENTrnaslations = result
+          const ENTranslations = result
             .find(t => t.locale === 'en')
             .contexts.find(c => c.label === 'System').values;
           const otherTranslation = result
             .find(t => t.locale === 'other')
             .contexts.find(c => c.label === 'System').values;
 
-          expect(ENTrnaslations.Password).toBe('Password');
-          expect(ENTrnaslations.Account).toBe('Account');
-          expect(ENTrnaslations.Email).toBe('E-Mail');
-          expect(ENTrnaslations.Age).toBe('Age');
-          expect(ENTrnaslations['new key']).toBe('new key');
-          expect(ENTrnaslations['new key 2']).toBe('label2');
+          expect(ENTranslations.Password).toBe('Password');
+          expect(ENTranslations.Account).toBe('Account');
+          expect(ENTranslations.Email).toBe('E-Mail');
+          expect(ENTranslations.Age).toBe('Age');
+          expect(ENTranslations['new key']).toBe('new key');
+          expect(ENTranslations['new key 2']).toBe('label2');
 
           expect(otherTranslation.Password).toBe('Password');
           expect(otherTranslation.Account).toBe('Account');
@@ -70,12 +70,12 @@ describe('translations', () => {
           expect(otherTranslation['new key']).toBe('new key');
           expect(otherTranslation['new key 2']).toBe('label2');
 
-          expect(ESTrnaslations.Password).toBe('Contraseña');
-          expect(ESTrnaslations.Account).toBe('Cuenta');
-          expect(ESTrnaslations.Email).toBe('Correo electronico');
-          expect(ESTrnaslations.Age).toBe('Edad');
-          expect(ESTrnaslations['new key']).toBe('new key');
-          expect(ESTrnaslations['new key 2']).toBe('label2');
+          expect(ESTranslations.Password).toBe('Contraseña');
+          expect(ESTranslations.Account).toBe('Cuenta');
+          expect(ESTranslations.Email).toBe('Correo electronico');
+          expect(ESTranslations.Age).toBe('Edad');
+          expect(ESTranslations['new key']).toBe('new key');
+          expect(ESTranslations['new key 2']).toBe('label2');
           done();
         })
         .catch(catchErrors(done));
@@ -222,6 +222,46 @@ describe('translations', () => {
           done();
         });
     });
+
+    it('should not allow duplicate keys', async () => {
+      try {
+        await translations.save({
+          locale: 'fr',
+          contexts: [
+            {
+              values: [
+                { key: 'repeated_key', value: 'first_value' },
+                { key: 'unique_key', value: 'unique_value' },
+                { key: 'repeated_key', value: 'second_value' },
+              ],
+            },
+          ],
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain('Process is trying to save repeated translation key');
+      }
+
+      try {
+        await translations.save({
+          locale: 'en',
+          contexts: [
+            {
+              id: dictionaryId,
+              // eslint-disable-next-line max-lines
+              values: [
+                { key: 'repeated_key', value: 'first_value' },
+                { key: 'unique_key', value: 'unique_value' },
+                { key: 'repeated_key', value: 'second_value' },
+              ],
+            },
+          ],
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain('Process is trying to save repeated translation key');
+      }
+    });
   });
 
   describe('addEntry()', () => {
@@ -239,10 +279,79 @@ describe('translations', () => {
         })
         .catch(catchErrors(done));
     });
+
+    it('should not allow adding existing keys', async () => {
+      try {
+        await translations.addEntry('System', 'Password', 'password_again');
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toContain('Process is trying to save repeated translation key');
+      }
+    });
+  });
+
+  describe('updateEntries', () => {
+    it('should update the entries', done => {
+      translations
+        .updateEntries('System', {
+          en: { Password: 'Passphrase', Age: 'Years Old' },
+        })
+        .then(() => translations.get())
+        .then(result => {
+          expect(result[0].contexts[0].values).toMatchObject({
+            Password: 'Passphrase',
+            Account: 'Account',
+            Email: 'E-Mail',
+            Age: 'Years Old',
+          });
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should throw an error on if trying to update missing keys', async () => {
+      try {
+        await translations.updateEntries('System', {
+          en: { Key: 'english_value', OtherKey: 'other_english_value' },
+          es: { Key: 'spanish_value' },
+        });
+        fail('Should throw error.');
+      } catch (error) {
+        expect(error.message).toBe(
+          'Process is trying to update missing translation keys: en - System - Key,OtherKey.'
+        );
+      }
+    });
+
+    it('should not fail when trying to update a nonexisting language', done => {
+      translations
+        .updateEntries('System', {
+          en: { Password: 'Passphrase', Age: 'Years Old' },
+          es: { Password: 'Password in Spanish', Age: 'Age in Spanish' },
+          fr: { Password: 'mot de masse', Age: 'âge' },
+        })
+        .then(() => translations.get())
+        .then(result => {
+          expect(result[0].contexts[0].values).toMatchObject({
+            Password: 'Passphrase',
+            Account: 'Account',
+            Email: 'E-Mail',
+            Age: 'Years Old',
+          });
+          expect(result[1].contexts[0].values).toMatchObject({
+            Password: 'Password in Spanish',
+            Account: 'Cuenta',
+            Email: 'Correo electronico',
+            Age: 'Age in Spanish',
+          });
+          done();
+        })
+        .catch(catchErrors(done));
+    });
   });
 
   describe('addContext()', () => {
-    it('should add a context with his values', done => {
+    it('should add a context with its values', done => {
       const values = { Name: 'Name', Surname: 'Surname' };
       translations
         .addContext('context', 'Judge', values, 'type')
@@ -262,7 +371,7 @@ describe('translations', () => {
   });
 
   describe('deleteContext()', () => {
-    it('should add a context with his values', done => {
+    it('should delete a context and its values', done => {
       translations
         .deleteContext('System')
         .then(result => {
@@ -299,7 +408,7 @@ describe('translations', () => {
         .catch(catchErrors(done));
     });
 
-    it('should add a context with his values', done => {
+    it('should update a context with its values', done => {
       const keyNameChanges = { Password: 'Pass', Account: 'Acc', System: 'Interface' };
       const deletedProperties = ['Age'];
       const values = {

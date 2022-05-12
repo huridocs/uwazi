@@ -1,4 +1,4 @@
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { checkThesaurusCanBeDeleted, deleteThesaurus } from 'app/Thesauri/actions/thesaurisActions';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 import sortThesauri from '../utils/sortThesauri';
 
-export class ThesauriList extends Component {
+class ThesauriList extends Component {
   getThesaurusSuggestionActions(thesaurus) {
     const showSuggestions =
       this.props.topicClassificationEnabled || thesaurus.enable_classification;
@@ -73,7 +73,11 @@ export class ThesauriList extends Component {
           accept: () => {
             this.props.deleteThesaurus(thesaurus);
           },
-          title: `Confirm delete thesaurus: ${thesaurus.name}`,
+          title: (
+            <>
+              <Translate>Confirm delete thesaurus:</Translate>&nbsp;{thesaurus.name}
+            </>
+          ),
           message: 'Are you sure you want to delete this thesaurus?',
         });
       })
@@ -81,7 +85,11 @@ export class ThesauriList extends Component {
         this.context.confirm({
           accept: () => {},
           noCancel: true,
-          title: `Cannot delete thesaurus: ${thesaurus.name}`,
+          title: (
+            <>
+              <Translate>Cannot delete thesaurus:&nbsp;</Translate>&nbsp;{thesaurus.name}
+            </>
+          ),
           message: 'This thesaurus is being used in document types and cannot be deleted.',
         });
       });
@@ -157,4 +165,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { ThesauriList };
 export default connect(mapStateToProps, mapDispatchToProps)(ThesauriList);

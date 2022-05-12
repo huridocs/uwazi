@@ -23,7 +23,7 @@ const suggestionForEntityA = {
   suggestedValue: 'Suggested title',
   segment: 'Suggested title',
   language: 'English',
-  state: SuggestionState.pending,
+  state: SuggestionState.labelMismatch,
   date: 0,
   page: 1,
   fileId: '_idFileA',

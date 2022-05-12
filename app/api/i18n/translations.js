@@ -18,8 +18,23 @@ function prepareContexts(contexts) {
   }));
 }
 
+function checkDuplicateKeys(context, values) {
+  if (!values) return;
+
+  const seen = new Set();
+  values.forEach(value => {
+    if (seen.has(value.key)) {
+      throw new Error(
+        `Process is trying to save repeated translation key ${value.key} in context ${context.id} (${context.type}).`
+      );
+    }
+    seen.add(value.key);
+  });
+}
+
 function processContextValues(context) {
   let values;
+
   if (context.values && !Array.isArray(context.values)) {
     values = [];
     Object.keys(context.values).forEach(key => {
@@ -27,7 +42,11 @@ function processContextValues(context) {
     });
   }
 
-  return { ...context, values: values || context.values };
+  values = values || context.values;
+
+  checkDuplicateKeys(context, values);
+
+  return { ...context, values };
 }
 
 const propagateTranslation = async (translation, currentTranslationData) => {
@@ -135,6 +154,37 @@ export default {
       .then(() => 'ok');
   },
 
+  async updateEntries(contextId, keyValuePairsPerLanguage) {
+    // keyValuePairsPerLanguage expected in the form of:
+    // { 'en': { 'key': 'value', ...}, 'es': { 'key': 'value', ...}, ... }
+
+    const languages = new Set((await settings.get({}, 'languages')).languages.map(l => l.key));
+    const languagesToUpdate = Object.keys(keyValuePairsPerLanguage).filter(l => languages.has(l));
+
+    return Promise.all(
+      (await model.get({ locale: { $in: languagesToUpdate } })).map(translation => {
+        const context = translation.contexts.find(c => c.id === contextId);
+        if (!context) {
+          return Promise.resolve();
+        }
+        const valueDict = Object.fromEntries(context.values.map(({ key, value }) => [key, value]));
+        const missingKeys = Object.keys(keyValuePairsPerLanguage[translation.locale]).filter(
+          key => !(key in valueDict)
+        );
+        if (missingKeys.length) {
+          throw new Error(
+            `Process is trying to update missing translation keys: ${translation.locale} - ${contextId} - ${missingKeys}.`
+          );
+        }
+        Object.entries(keyValuePairsPerLanguage[translation.locale]).forEach(([key, value]) => {
+          valueDict[key] = value;
+        });
+        context.values = Object.entries(valueDict).map(([key, value]) => ({ key, value }));
+        return this.save(translation);
+      })
+    );
+  },
+
   addContext(id, contextName, values, type) {
     const translatedValues = [];
     Object.keys(values).forEach(key => {
@@ -171,14 +221,13 @@ export default {
 
   processSystemKeys(keys) {
     return model.get().then(languages => {
-      let existingKeys = languages[0].contexts.find(c => c.label === 'System').values;
-      const newKeys = keys.map(k => k.key);
-      const keysToAdd = [];
-      keys.forEach(key => {
-        if (!existingKeys.find(k => key.key === k.key)) {
-          keysToAdd.push({ key: key.key, value: key.label || key.key });
-        }
-      });
+      let existingKeys = new Set(
+        languages[0].contexts.find(c => c.label === 'System').values.map(v => v.key)
+      );
+      const newKeys = new Set(keys.map(k => k.key));
+      const keysToAdd = keys
+        .filter(key => !existingKeys.has(key.key))
+        .map(key => ({ key: key.key, value: key.label || key.key }));
 
       languages.forEach(language => {
         let system = language.contexts.find(c => c.label === 'System');
@@ -191,7 +240,7 @@ export default {
           language.contexts.unshift(system);
         }
         existingKeys = system.values;
-        const valuesWithRemovedValues = existingKeys.filter(i => newKeys.includes(i.key));
+        const valuesWithRemovedValues = existingKeys.filter(i => newKeys.has(i.key));
         system.values = valuesWithRemovedValues.concat(keysToAdd);
       });
 

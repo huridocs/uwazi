@@ -120,7 +120,15 @@ class Configure2fa extends Component<Configure2faProps, State> {
                       </Translate>
                       <div className="qr-code">
                         {otpauth && (
-                          <QRCode value={otpauth} level="Q" includeMargin={false} renderAs="svg" />
+                          <QRCode
+                            value={otpauth}
+                            level="Q"
+                            includeMargin={false}
+                            renderAs="svg"
+                            size={200}
+                            bgColor="white"
+                            fgColor="black"
+                          />
                         )}
                       </div>
                       <Translate>Or enter this secret key into your Authenticator app</Translate>

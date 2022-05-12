@@ -52,9 +52,12 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
                 className="qr-code"
               >
                 <ForwardRef
+                  bgColor="white"
+                  fgColor="black"
                   includeMargin={false}
                   level="Q"
                   renderAs="svg"
+                  size={200}
                   value="otpAuthURL"
                 />
               </div>
@@ -214,9 +217,12 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
                 className="qr-code"
               >
                 <ForwardRef
+                  bgColor="white"
+                  fgColor="black"
                   includeMargin={false}
                   level="Q"
                   renderAs="svg"
+                  size={200}
                   value="otpAuthURL"
                 />
               </div>

@@ -63,8 +63,8 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
       accept: () => {
         this.props.multipleUpdate(this.props.selectedDocuments, { published: true });
       },
-      title: t('System', 'Confirm', null, false),
-      message: t('System', 'Confirm publish multiple items', null, false),
+      title: 'Confirm',
+      message: 'Confirm publish multiple items',
       type: 'success',
     });
   }

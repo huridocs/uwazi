@@ -5,6 +5,26 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 
+const prepareRelatedEntity = (options, propValue, templates, property) => {
+  const relation =
+    options.doc && options.doc.relations
+      ? options.doc.relations.find(rel => rel.entity === propValue[0].value)
+      : undefined;
+
+  if (relation && relation.entityData) {
+    const template = templates.find(t => relation.entityData.template === t.get('_id'));
+    const inheritedProperty = template
+      .get('properties')
+      .find(p => p.get('_id') === property.get('inherit').get('property'));
+    return {
+      ...relation.entityData,
+      inheritedProperty: inheritedProperty.get('name'),
+    };
+  }
+
+  return undefined;
+};
+
 const addSortedProperties = (templates, sortedProperties) =>
   templates.reduce((_property, template) => {
     if (!template.get('properties')) {
@@ -117,11 +137,13 @@ export default {
 
   getSelectOptions(option, thesaurus, doc) {
     let value = '';
+    let originalValue = '';
     let icon;
     let parent;
 
     if (option) {
       value = option.label || option.value;
+      originalValue = option.value;
       icon = option.icon;
       parent = option.parent?.label;
     }
@@ -135,9 +157,12 @@ export default {
     if (doc && doc.relations && doc.relations.length > 0) {
       const relation = doc.relations.find(e => e.entity === option.value);
       relatedEntity = relation?.entityData;
+      relatedEntity = relatedEntity
+        ? { ...relatedEntity, inheritedProperty: 'title' }
+        : relatedEntity;
     }
 
-    return { value, url, icon, parent, relatedEntity };
+    return { value, originalValue, url, icon, parent, relatedEntity };
   },
 
   multimedia(property, [{ value }], type) {
@@ -167,6 +192,7 @@ export default {
       label: property.get('label'),
       name: property.get('name'),
       value: this.formatDateRange(daterange[0]),
+      originalValue: daterange[0].value,
     };
   },
 
@@ -179,8 +205,15 @@ export default {
   },
 
   multidaterange(property, dateranges = []) {
-    const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
-    return { label: property.get('label'), name: property.get('name'), value };
+    const value = dateranges.map(range => ({
+      value: this.formatDateRange(range),
+      originalValue: range.value,
+    }));
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value,
+    };
   },
 
   image(property, value) {
@@ -220,13 +253,25 @@ export default {
 
   select(property, [metadataValue]) {
     const { value, url, icon, parent } = this.getSelectOptions(metadataValue);
-    return { label: property.get('label'), name: property.get('name'), value, icon, url, parent };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      originalValue: metadataValue.value,
+      value,
+      icon,
+      url,
+      parent,
+    };
   },
 
   multiselect(property, thesauriValues) {
     const sortedValues = this.getThesauriValues(thesauriValues);
     const groupsOptions = groupByParent(sortedValues);
-    return { label: property.get('label'), name: property.get('name'), value: groupsOptions };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value: groupsOptions,
+    };
   },
 
   inherit(property, propValue = [], thesauri, options, templates) {
@@ -251,7 +296,19 @@ export default {
             return null;
           }
 
-          return this[methodType](propertyInfo, v.inheritedValue, thesauri, options, templates);
+          const relatedEntity = prepareRelatedEntity(options, propValue, templates, property);
+
+          const formattedValue = this[methodType](
+            propertyInfo,
+            v.inheritedValue,
+            thesauri,
+            options,
+            templates
+          );
+          return {
+            ...formattedValue,
+            ...(relatedEntity && { relatedEntity }),
+          };
         }
 
         return {};
@@ -410,6 +467,7 @@ export default {
     return {
       label: property.get('label'),
       name: property.get('name'),
+      type: property.get('type'),
       value,
       showInCard,
       translateContext: template.get('_id'),
