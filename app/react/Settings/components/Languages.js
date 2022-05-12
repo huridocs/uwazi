@@ -9,7 +9,7 @@ import { languages as elasticLanguages, allLanguages as languagesList } from 'sh
 import Warning from '../../Layout/Warning';
 import Tip from '../../Layout/Tip';
 
-export class Languages extends Component {
+class Languages extends Component {
   static defaultLanguage() {
     return (
       <span>
@@ -82,9 +82,21 @@ export class Languages extends Component {
   deleteLanguage(language) {
     this.context.confirm({
       accept: () => this.props.deleteLanguage(language.key),
-      title: `Confirm delete ${language.label}`,
-      message: `Are you sure you want to delete ${language.label} language?
-      This action may take some time, can not be undone and will delete all the information in that language.`,
+      title: (
+        <>
+          <Translate>Confirm delete </Translate> {language.label}
+        </>
+      ),
+      message: (
+        <>
+          <Translate>Are you sure you want to delete</Translate>&nbsp;
+          {language.label} <Translate> language? </Translate>
+          <Translate>
+            This action may take some time, can not be undone and will delete all the information in
+            that language.
+          </Translate>
+        </>
+      ),
       extraConfirm: true,
     });
   }
@@ -92,7 +104,11 @@ export class Languages extends Component {
   addLanguage(language) {
     this.context.confirm({
       accept: () => this.props.addLanguage(language),
-      title: `Confirm add ${language.label}`,
+      title: (
+        <>
+          <Translate>Confirm add</Translate>&nbsp;{language.label}
+        </>
+      ),
       message:
         'This action may take some time while we add the extra language to the entire collection.',
       extraConfirm: true,
@@ -187,4 +203,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { Languages };
 export default connect(mapStateToProps, mapDispatchToProps)(Languages);

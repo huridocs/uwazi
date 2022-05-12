@@ -3,7 +3,6 @@ import { EventEmitter } from 'events';
 import templates from 'api/templates';
 import settings from 'api/settings';
 import translations from 'api/i18n';
-import translationsModel from 'api/i18n/translationsModel';
 import thesauri from 'api/thesauri';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -100,24 +99,8 @@ export class CSVLoader extends EventEmitter {
       values: [...thesauriValues, ...thesaurusValues],
     });
 
-    await Object.keys(thesauriTranslations).reduce(async (prev, lang) => {
-      await prev;
-      const translationValues = thesauriTranslations[lang];
-      const [currentTranslation] = await translationsModel.get({ locale: lang });
-      const currentContext = currentTranslation.contexts.find(
-        (c: { id: string }) => c.id.toString() === thesaurusId.toString()
-      );
+    await translations.updateEntries(thesaurusId.toString(), thesauriTranslations);
 
-      return translations.save({
-        ...currentTranslation,
-        contexts: [
-          {
-            ...currentContext,
-            values: [...currentContext.values, ...translationValues],
-          },
-        ],
-      });
-    }, Promise.resolve());
     return saved;
   }
   /* eslint-enable class-methods-use-this */

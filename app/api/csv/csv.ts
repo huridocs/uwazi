@@ -58,13 +58,12 @@ const csv = (readStream: Readable, stopOnError = false) => ({
 
       thesauriTranslations: Object.keys(languagesToTranslate).reduce((translations, lang) => {
         // eslint-disable-line no-param-reassign
-        translations[lang] = values.map(t => ({
-          key: t[languageLabel],
-          value: t[languagesToTranslate[lang]],
-        }));
+        translations[lang] = Object.fromEntries(
+          values.map(t => [t[languageLabel], t[languagesToTranslate[lang]]])
+        );
 
         return translations;
-      }, {} as { [k: string]: { key: string; value: string }[] }),
+      }, {} as { [k: string]: { [k: string]: string } }),
     };
   },
 });
