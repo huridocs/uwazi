@@ -29,7 +29,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(77);
+    expect(migration.delta).toBe(78);
   });
 
   it('should not touch unrelated properties', async () => {

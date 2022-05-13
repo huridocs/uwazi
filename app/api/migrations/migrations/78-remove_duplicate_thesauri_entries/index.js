@@ -28,7 +28,7 @@ const renameValues = values => {
 };
 
 export default {
-  delta: 77,
+  delta: 78,
 
   name: 'remove_duplicate_thesauri_entries',
 
