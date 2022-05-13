@@ -12,6 +12,7 @@ import JSONUtils from 'shared/JSONUtils';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import settingsModel from 'api/settings';
+import { FetchResponseError } from 'shared/JSONRequest';
 
 import { RequestParams } from 'app/utils/RequestParams';
 import { getPropsFromRoute } from './utils';
@@ -84,7 +85,9 @@ function handle404(res) {
 }
 
 function respondError(res, error, req) {
-  handleError(error, { req });
+  if (!(error instanceof FetchResponseError)) {
+    handleError(error, { req });
+  }
   const code = error.status || 500;
   res.status(code);
   const requestId = error.json?.requestId || '';
