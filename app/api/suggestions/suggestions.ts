@@ -419,15 +419,15 @@ export const Suggestions = {
       entity: sharedId,
       type: 'document',
     });
+
     let suggestionsPlaceholders: any[] = [];
     const filesPromises = entityFiles.map(async (file: any) => {
       const language = languages.get(file.language, 'ISO639_1') || 'other';
-      const suggestionsPromises = properties.map(async (prop: string) => {
-        const suggestion = await Suggestions.constructBlankSuggestion(prop, file, language);
-        if (suggestion) return suggestion;
-      });
+      const suggestionsPromises = properties.map(async (prop: string) =>
+        Suggestions.constructBlankSuggestion(prop, file, language)
+      );
       const suggestions = await Promise.all(suggestionsPromises);
-      suggestionsPlaceholders = suggestions.filter(sug => sug);
+      suggestionsPlaceholders = suggestionsPlaceholders.concat(suggestions.filter(sug => sug));
     });
     await Promise.all(filesPromises);
     await IXSuggestionsModel.saveMultiple(suggestionsPlaceholders);
