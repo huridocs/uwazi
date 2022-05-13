@@ -5,17 +5,19 @@ import { Translate } from 'app/I18N';
 
 export default class Modal extends Component {
   render() {
-    const style = { overlay: { zIndex: 100, backgroundColor: 'rgba(0, 0, 0, 0.75)' } };
-    const type = this.props.type || 'success';
+    const style = {
+      overlay: { zIndex: this.props.zIndex, backgroundColor: 'rgba(0, 0, 0, 0.75)' },
+    };
+    const { type, className, children, isOpen } = this.props;
     return (
       <ReactModal
         style={style}
-        className={`modal-dialog modal-${type} ${this.props.className}`}
-        isOpen={this.props.isOpen}
+        className={`modal-dialog modal-${type} ${className}`}
+        isOpen={isOpen}
         contentLabel=""
         ariaHideApp={false}
       >
-        <div className="modal-content">{this.props.children}</div>
+        <div className="modal-content">{children}</div>
       </ReactModal>
     );
   }
@@ -28,8 +30,14 @@ Modal.propTypes = {
   type: PropTypes.string,
   children: childrenType,
   className: PropTypes.string,
+  zIndex: PropTypes.number,
 };
-
+Modal.defaultProps = {
+  isOpen: false,
+  type: 'success',
+  className: '',
+  zIndex: 100,
+};
 const Body = ({ children }) => <div className="modal-body">{children}</div>;
 Body.propTypes = { children: childrenType };
 
