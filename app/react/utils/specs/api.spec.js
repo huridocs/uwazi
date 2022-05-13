@@ -1,15 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-/** @format */
-
 import { browserHistory } from 'react-router';
-import { RequestParams } from 'app/utils/RequestParams';
-
+import backend from 'fetch-mock';
 import { APIURL } from 'app/config';
 import { store } from 'app/store';
 import api from 'app/utils/api';
-import backend from 'fetch-mock';
+import { RequestParams } from 'app/utils/RequestParams';
 import loadingBar from 'app/App/LoadingProgressBar';
 import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 
@@ -43,6 +40,7 @@ describe('api', () => {
       .get(`${APIURL}test_get?key=value`, JSON.stringify({ method: 'GET' }))
       .post(`${APIURL}test_post`, JSON.stringify({ method: 'POST' }))
       .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
+      .get(`${APIURL}badrequest`, { status: 400, body: { error: 'cannot process' } })
       .get(`${APIURL}unauthorised`, { status: 401, body: {} })
       .get(`${APIURL}notfound`, { status: 404, body: {} })
       .get(`${APIURL}conflict`, { status: 409, body: { error: 'conflict error' } })
@@ -156,6 +154,14 @@ describe('api', () => {
   }
 
   describe('error handling', () => {
+    describe('400', () => {
+      it('should notify as danger', async () => {
+        await testErrorHandling('badrequest', () => {
+          testNotificationDisplayed('cannot process', 'danger');
+        });
+      });
+    });
+
     describe('401', () => {
       it('should redirect to login', async () => {
         await testErrorHandling('unauthorised', () => {

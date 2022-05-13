@@ -2,8 +2,10 @@
 
 exports[`ConfirmModal should render a confirm modal 1`] = `
 <Modal
+  className=""
   isOpen={true}
   type="danger"
+  zIndex={100}
 >
   <Body>
     <h4>

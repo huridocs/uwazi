@@ -2,15 +2,23 @@
 
 exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm input 1`] = `
 <Modal
+  className=""
   isOpen={false}
   type="danger"
+  zIndex={99}
 >
   <Body>
     <h4>
-      Confirm action
+      <Connect(Translate)>
+        Confirm action
+      </Connect(Translate)>
     </h4>
     <p>
-      Are you sure you want to continue?
+      <Connect(Translate)
+        translationKey=""
+      >
+        Are you sure you want to continue?
+      </Connect(Translate)>
     </p>
     <p>
       <Connect(Translate)>
@@ -33,7 +41,9 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       onClick={[Function]}
       type="button"
     >
-      Cancel
+      <Connect(Translate)>
+        Cancel
+      </Connect(Translate)>
     </button>
     <button
       className="btn confirm-button btn-danger"
@@ -41,7 +51,9 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       onClick={[Function]}
       type="button"
     >
-      Accept
+      <Connect(Translate)>
+        Accept
+      </Connect(Translate)>
     </button>
   </Footer>
 </Modal>
@@ -49,15 +61,23 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
 
 exports[`CantDeleteTemplateAlert noCancel option should hide the cancel button 1`] = `
 <Modal
+  className=""
   isOpen={false}
   type="danger"
+  zIndex={99}
 >
   <Body>
     <h4>
-      Confirm action
+      <Connect(Translate)>
+        Confirm action
+      </Connect(Translate)>
     </h4>
     <p>
-      Are you sure you want to continue?
+      <Connect(Translate)
+        translationKey=""
+      >
+        Are you sure you want to continue?
+      </Connect(Translate)>
     </p>
   </Body>
   <Footer>
@@ -67,7 +87,9 @@ exports[`CantDeleteTemplateAlert noCancel option should hide the cancel button 1
       onClick={[Function]}
       type="button"
     >
-      Accept
+      <Connect(Translate)>
+        Accept
+      </Connect(Translate)>
     </button>
   </Footer>
 </Modal>

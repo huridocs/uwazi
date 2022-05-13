@@ -56,7 +56,6 @@ export default app => {
           .then(response => res.json({ rows: [response] }))
           .catch(next);
       }
-
       relationtypes
         .get()
         .then(response => res.json({ rows: response }))
