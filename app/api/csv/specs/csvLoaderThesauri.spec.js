@@ -113,7 +113,7 @@ describe('csvLoader thesauri', () => {
         'value1',
         'value2',
         'Value3',
-        ' value4',
+        ' value4 ',
         'new value',
       ]);
       mockedFile.mockRestore();
