@@ -10,35 +10,41 @@ import { EntitySchema } from 'shared/types/entityType';
 import { PreserveConfig } from 'shared/types/settingsType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { preserveSyncModel } from './preserveSyncModel';
+import { errorLog } from 'api/log';
 
-const saveEvidences =
+const saveEvidence =
   (token: string, template: ObjectIdSchema, host: string) =>
   async (previous: Promise<EntitySchema>, evidence: any) => {
     await previous;
-    const { sharedId } = await entities.save(
-      { title: evidence.attributes.title, template },
-      { language: 'en', user: {} }
-    );
-    await Promise.all(
-      evidence.attributes.downloads.map(async (download: any) => {
-        const fileName = generateFileName({ originalname: path.basename(download.path) });
-        const fileStream = (
-          await fetch(new URL(path.join(host, download.path)).toString(), {
-            headers: { Authorization: token },
-          })
-        ).body as unknown as NodeJS.ReadableStream;
-        if (fileStream) {
-          await fileFromReadStream(fileName, fileStream);
 
-          await files.save({
-            entity: sharedId,
-            type: 'attachment',
-            filename: fileName,
-            originalname: path.basename(download.path),
-          });
-        }
-      })
-    );
+    try {
+      const { sharedId } = await entities.save(
+        { title: evidence.attributes.title, template },
+        { language: 'en', user: {} }
+      );
+      await Promise.all(
+        evidence.attributes.downloads.map(async (download: any) => {
+          const fileName = generateFileName({ originalname: path.basename(download.path) });
+          const fileStream = (
+            await fetch(new URL(path.join(host, download.path)).toString(), {
+              headers: { Authorization: token },
+            })
+          ).body as unknown as NodeJS.ReadableStream;
+          if (fileStream) {
+            await fileFromReadStream(fileName, fileStream);
+
+            await files.save({
+              entity: sharedId,
+              type: 'attachment',
+              filename: fileName,
+              originalname: path.basename(download.path),
+            });
+          }
+        })
+      );
+    } catch (error) {
+      errorLog.error(error);
+    }
   };
 
 const preserveSync = {
@@ -75,7 +81,7 @@ const preserveSync = {
       );
 
       await evidences.json.data.reduce(
-        saveEvidences(config.token, config.template, preserveConfig.host),
+        saveEvidence(config.token, config.template, preserveConfig.host),
         Promise.resolve()
       );
 
