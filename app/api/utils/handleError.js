@@ -143,9 +143,6 @@ const handleError = (_error, { req = undefined, uncaught = false, useContext = t
   const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
 
   const error = errorData || new Error('Unexpected error has occurred');
-  if (error.json) {
-    return false;
-  }
   let result = prettifyError(error, { req, uncaught });
 
   if (useContext) {
