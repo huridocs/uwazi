@@ -343,60 +343,68 @@ export const Suggestions = {
       }
     }
   },
-  saveConfigurations: async (configs: any) => {
+
+  deleteSuggestionsNotConfigured: async (
+    currentSettingsTemplates: any[],
+    settingsTemplates: any[]
+  ) => {
+    const deletedTemplates = currentSettingsTemplates.filter(
+      set => !settingsTemplates.find((st: any) => st.template === set.template)
+    );
+
+    const deletedTemplateProps = currentSettingsTemplates
+      .map(currentTemplate => {
+        const currentTemplateId = currentTemplate.template;
+        const property: any = {};
+        const template = settingsTemplates.find((st: any) => st.template === currentTemplateId);
+        if (template) {
+          property.template = currentTemplateId;
+          property.properties = [];
+          currentTemplate.properties.forEach((prop: string) => {
+            if (!template.properties.includes(prop)) {
+              property.properties.push(prop);
+            }
+          });
+        }
+        return property;
+      })
+      .filter(prop => prop.template && prop.properties.length);
+
+    const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
+
+    const deletedTempPromises = deletedTemplatesAndDeletedTemplateProps.map(async template => {
+      const templateId = template.template;
+      const promises = template.properties.map(async (prop: string) => {
+        await Suggestions.deleteByProperty(prop, templateId.toString());
+      });
+      await Promise.all(promises);
+    });
+    await Promise.all(deletedTempPromises);
+  },
+
+  saveConfigurations: async (settingsTemplates: { template: string; properties: string[] }[]) => {
     const currentSettings = await settings.get();
-    // @ts-ignore
-    const defaultLanguage = currentSettings?.languages?.find(lang => lang.default).key;
-    const settingsTemplates = configs;
+    const defaultLanguage = currentSettings?.languages?.find(lang => lang.default)?.key;
     let currentSettingsTemplates = currentSettings.features?.metadataExtraction?.templates;
     currentSettingsTemplates = currentSettingsTemplates || [];
-    if (settingsTemplates) {
-      const deletedTemplates = currentSettingsTemplates.filter(
-        set => !settingsTemplates.find((st: any) => st.template === set.template)
-      );
+    await Suggestions.deleteSuggestionsNotConfigured(currentSettingsTemplates, settingsTemplates);
+    // @ts-ignore
+    currentSettings.features.metadataExtraction.templates = settingsTemplates;
+    await settings.save(currentSettings);
 
-      const deletedTemplateProps = currentSettingsTemplates
-        .map(currentTemplate => {
-          const currentTemplateId = currentTemplate.template;
-          const property: any = {};
-          const template = settingsTemplates.find((st: any) => st.template === currentTemplateId);
-          if (template) {
-            property.template = currentTemplateId;
-            property.properties = [];
-            currentTemplate.properties.forEach(prop => {
-              if (!template.properties.includes(prop)) {
-                property.properties.push(prop);
-              }
-            });
-          }
-          return property;
-        })
-        .filter(prop => prop.template && prop.properties.length);
+    await Suggestions.createBlankState(settingsTemplates, defaultLanguage as string);
+    return currentSettings;
+  },
 
-      const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
-
-      const dPromises = deletedTemplatesAndDeletedTemplateProps.map(async template => {
-        const templateId = template.template;
-        const promises = template.properties.map(async prop => {
-          await Suggestions.deleteByProperty(prop, templateId.toString());
-        });
-        await Promise.all(promises);
-      });
-      await Promise.all(dPromises);
-      // @ts-ignore
-      currentSettings.features.metadataExtraction.templates = settingsTemplates;
-      await settings.save(currentSettings);
-    }
-
+  createBlankState: async (settingsTemplates: any[], defaultLanguage: string) => {
     const templatesPromises = settingsTemplates.map(
       async (template: { template: string; properties: string[] }) => {
         const cursor = await entitiesModel.db
           .find({ template: template.template, language: defaultLanguage })
-          .select('_id, sharedId')
+          .select('sharedId')
           .cursor();
         for (let entity = await cursor.next(); entity; entity = await cursor.next()) {
-          // We fetch files by sharedId
-          await Suggestions.populateSuggestionsUsingEntities(
+          await Suggestions.createBlankStateSuggestions(
             entity.sharedId as string,
             template.properties
           );
@@ -406,28 +414,30 @@ export const Suggestions = {
     await Promise.all(templatesPromises);
   },
 
-  populateSuggestionsUsingEntities: async (sharedId: string, properties: string[]) => {
+  createBlankStateSuggestions: async (sharedId: string, properties: string[]) => {
     const entityFiles = await files.get({
       entity: sharedId,
       type: 'document',
     });
-    const suggestionsPlaceholders: any[] = [];
+    let suggestionsPlaceholders: any[] = [];
     const filesPromises = entityFiles.map(async (file: any) => {
       const language = languages.get(file.language, 'ISO639_1') || 'other';
-      const promises = properties.map(async (prop: string) => {
-        const suggestion = await Suggestions.constructASuggestionPlaceholder(prop, file, language);
-        suggestionsPlaceholders.push(suggestion);
+      const suggestionsPromises = properties.map(async (prop: string) => {
+        const suggestion = await Suggestions.constructBlankSuggestion(prop, file, language);
+        if (suggestion) return suggestion;
       });
-      await Promise.all(promises);
+      const suggestions = await Promise.all(suggestionsPromises);
+      suggestionsPlaceholders = suggestions.filter(sug => sug);
     });
     await Promise.all(filesPromises);
-    const saveSuggestionsPlaceholdersPromises = suggestionsPlaceholders.map(async sug =>
-      IXSuggestionsModel.save(sug)
-    );
-    await Promise.all(saveSuggestionsPlaceholdersPromises);
+    await IXSuggestionsModel.saveMultiple(suggestionsPlaceholders);
   },
 
-  constructASuggestionPlaceholder: async (property: string, file: any, language: string) => {
+  constructBlankSuggestion: async (
+    property: string,
+    file: any,
+    language: string
+  ): Promise<any | undefined> => {
     const [existingSuggestion] = await IXSuggestionsModel.get({
       entityId: file.entity,
       language,
@@ -435,22 +445,19 @@ export const Suggestions = {
       propertyName: property,
     });
 
+    if (existingSuggestion) {
+      return undefined;
+    }
     return {
-      // @ts-ignore
       language,
       fileId: file._id,
-      // @ts-ignore
       entityId: file.entity,
-      // @ts-ignore
       propertyName: property,
       status: 'processing',
-      // @ts-ignore
       error: '',
-      // @ts-ignore
       segment: '',
       suggestedValue: '',
       date: new Date().getTime(),
-      ...existingSuggestion,
     };
   },
 };
