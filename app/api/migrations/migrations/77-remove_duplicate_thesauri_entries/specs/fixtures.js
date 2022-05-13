@@ -68,6 +68,7 @@ export default {
           content: thesaurusId.toString(),
           name: 'select',
         },
+        { label: 'Text', type: 'text', name: 'select' },
         {
           _id: multiselectPropertyId,
           label: 'Multi Select',
@@ -112,6 +113,7 @@ export default {
           relationType: selectRelationId.toString(),
           name: 'inherited_select',
         },
+        { label: 'Number', type: 'numeric', name: 'number' },
         {
           label: 'inherited_multiselect',
           type: 'relationship',
@@ -159,6 +161,7 @@ export default {
     {
       metadata: {
         select: selectValue,
+        text: { value: 'some text' },
         multi_select: multiSelectValues,
       },
       template: rootTemplate,
@@ -179,6 +182,7 @@ export default {
             inheritedType: 'select',
           },
         ],
+        number: { value: 0 },
         inherited_multiselect: [
           {
             value: rootSharedId,

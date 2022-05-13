@@ -32,6 +32,21 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     expect(migration.delta).toBe(77);
   });
 
+  it('should not touch unrelated properties', async () => {
+    await testingDB.mongodb
+      .collection('entities')
+      .findOne({ title: 'root_entity' })
+      .then(entity => {
+        expect(entity.metadata.text.value).toBe('some text');
+      });
+    await testingDB.mongodb
+      .collection('entities')
+      .findOne({ title: 'inheriting entity' })
+      .then(entity => {
+        expect(entity.metadata.number.value).toBe(0);
+      });
+  });
+
   it('should rename label repetitions', async () => {
     const expectedDictValues = [
       { label: 'A', id: 'A_id' },
