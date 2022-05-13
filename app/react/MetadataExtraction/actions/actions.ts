@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux';
 import { IStore } from 'app/istore';
+import { t } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -7,6 +8,16 @@ import api from 'app/utils/api';
 import { acceptEntitySuggestion } from 'app/MetadataExtraction/SuggestionsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import scroller from 'app/Viewer/utils/Scroller';
+import { actions } from 'app/BasicReducer';
+import { saveConfigurations as saveConfigs } from '../SuggestionsAPI';
+import { IXTemplateConfiguration } from '../PropertyConfigurationModal';
+
+const saveConfigurations =
+  (newSettingsConfigs: IXTemplateConfiguration[]) => async (dispatch: any) => {
+    const settings = await saveConfigs(new RequestParams(newSettingsConfigs));
+    dispatch(actions.set('settings/collection', settings));
+    dispatch(notificationActions.notify(t('System', 'Settings updated'), 'success'));
+  };
 
 const fetchEntity = async (entitySharedId: string) => {
   const entityRequest = new RequestParams({ sharedId: entitySharedId });
@@ -42,4 +53,4 @@ const acceptSuggestion =
     }
   };
 
-export { acceptSuggestion, fetchEntity, fetchFile, scrollToPage };
+export { acceptSuggestion, fetchEntity, fetchFile, scrollToPage, saveConfigurations };

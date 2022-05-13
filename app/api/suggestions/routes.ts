@@ -100,9 +100,10 @@ export const suggestionsRoutes = (app: Application) => {
         },
       },
     }),
-    async (req, res, _next) => {
-      await Suggestions.saveConfigurations(req.body);
-      res.json({ success: true });
+    (req, res, next) => {
+      Suggestions.saveConfigurations(req.body)
+        .then(response => res.json(response))
+        .catch(next);
     }
   );
 
