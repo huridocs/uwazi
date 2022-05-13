@@ -18,7 +18,7 @@ const expectedMultiSelect = [
 
 describe('migration remove_duplicate_thesauri_entries', () => {
   beforeEach(async () => {
-    // spyOn(process.stdout, 'write');
+    spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
     migration.reindex = false;
     await migration.up(testingDB.mongodb);
@@ -102,7 +102,7 @@ describe('migration remove_duplicate_thesauri_entries', () => {
     }
   );
 
-  it('should reindex if there were change', async () => {
+  it('should reindex if there were changes', async () => {
     expect(migration.reindex).toBe(true);
   });
 

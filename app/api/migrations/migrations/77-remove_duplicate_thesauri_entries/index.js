@@ -1,5 +1,8 @@
 /* eslint-disable no-await-in-loop */
-const ROOT_PROPERTIES = new Set(['select', 'multiselect']);
+const ROOT_TYPES = new Set(['select', 'multiselect']);
+
+const isInheritedWithThesaurus = property =>
+  property.type === 'relationship' && ROOT_TYPES.has(property.inherit.type);
 
 const renameValues = values => {
   if (!values) return [values, false];
@@ -77,28 +80,49 @@ export default {
     }
   },
 
-  async buildContentMaps(db) {
+  async gatherRootProperties(db) {
     const templates = db.collection('templates').find();
     while (await templates.hasNext()) {
       const template = await templates.next();
       this.propertyNameContentMap[template._id.toString()] = {};
-      this.propertyIdContentMap[template._id.toString()] = {};
       template.properties.forEach(p => {
-        if (ROOT_PROPERTIES.has(p.type)) {
+        if (ROOT_TYPES.has(p.type)) {
           this.propertyNameContentMap[template._id.toString()][p.name] = p.content;
-          this.propertyIdContentMap[template._id.toString()][p._id.toString()] = p.content;
+          this.propertyIdContentMap[p._id.toString()] = p.content;
+        }
+      });
+    }
+  },
+
+  async gatherInheritedProperties(db) {
+    const templates = db.collection('templates').find();
+    while (await templates.hasNext()) {
+      const template = await templates.next();
+      template.properties.forEach(p => {
+        if (isInheritedWithThesaurus(p)) {
+          this.propertyNameContentMap[template._id.toString()][p.name] =
+            this.propertyIdContentMap[p.inherit.property];
         }
       });
       if (!Object.keys(this.propertyNameContentMap[template._id.toString()]).length) {
         delete this.propertyNameContentMap[template._id.toString()];
-        delete this.propertyIdContentMap[template._id.toString()];
       }
     }
   },
 
+  async buildContentMaps(db) {
+    await this.gatherRootProperties(db);
+    await this.gatherInheritedProperties(db);
+  },
+
   denormalizeEntry(entry, thesaurus) {
-    const newEntry = { ...entry, label: thesaurus[entry.value] };
-    if (entry.parent) newEntry.parent = this.denormalizeEntry(entry.parent, thesaurus);
+    const newEntry = { ...entry };
+    if (entry.inheritedValue) {
+      newEntry.inheritedValue = entry.inheritedValue.map(e => this.denormalizeEntry(e, thesaurus));
+    } else {
+      newEntry.label = thesaurus[entry.value];
+      if (entry.parent) newEntry.parent = this.denormalizeEntry(entry.parent, thesaurus);
+    }
     return newEntry;
   },
 
