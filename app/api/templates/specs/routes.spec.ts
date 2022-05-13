@@ -170,7 +170,7 @@ describe('templates routes', () => {
       const savedTemplate = await templates.get({ name: 'template4' });
       try {
         await postToEnpoint('/api/templates', {
-          ...savedTemplate,
+          ...savedTemplate[0],
           properties: [
             {
               label: 'Numeric',
@@ -180,7 +180,7 @@ describe('templates routes', () => {
           ],
           reindex: false,
         });
-      } catch (error) {
+      } catch (error: any) {
         expect(error.message).toContain('expected 200 "OK", got 409 "Conflict"');
       }
     });
