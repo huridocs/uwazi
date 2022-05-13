@@ -403,7 +403,7 @@ describe('thesauri', () => {
             ],
           },
         ])('should not allow duplication in $case', async ({ values }) => {
-          const toSave = { name: 'test_thesaurus', values: values };
+          const toSave = { name: 'test_thesaurus', values };
           try {
             await thesauri.save(toSave);
             fail('should throw error');
