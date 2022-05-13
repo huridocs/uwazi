@@ -108,15 +108,6 @@ original error: {
     });
   });
 
-  describe('when error is a response to client error', () => {
-    it('should ignore it', () => {
-      const error = handleError({ json: { error: 'error' } });
-      expect(error).toBe(false);
-      expect(errorLog.error).not.toHaveBeenCalled();
-      expect(debugLog.debug).not.toHaveBeenCalled();
-    });
-  });
-
   describe('when "Cast to objectId failed"', () => {
     it('should set code to 400', () => {
       const error = handleError({ message: 'Cast to ObjectId failed for value' });
