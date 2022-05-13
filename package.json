@@ -84,7 +84,7 @@
     "@loadable/component": "^5.13.1",
     "@sentry/node": "^6.19.2",
     "@sentry/react": "^6.19.2",
-    "@sentry/tracing": "^6.19.2",
+    "@sentry/tracing": "^6.19.7",
     "@socket.io/redis-adapter": "7.0.0",
     "@socket.io/redis-emitter": "4.1.0",
     "@supercharge/promise-pool": "^2.1.0",
