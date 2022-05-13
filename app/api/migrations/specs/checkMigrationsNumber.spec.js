@@ -11,6 +11,8 @@ describe('Unique migrations', () => {
     );
     const deltas = migrations.map(m => m.delta);
 
+    console.log(deltas);
+
     expect(new Set(deltas).size).toBe(deltas.length);
   });
 });
