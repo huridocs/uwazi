@@ -295,7 +295,7 @@
     "fetch-mock": "^9.11.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "27.5.1",
-    "jest-environment-jsdom": "^27.0.6",
+    "jest-environment-jsdom": "^28.1.0",
     "jest-extended": "2.0.0",
     "jest-image-snapshot": "^4.5.1",
     "jest-puppeteer": "4.4.0",
