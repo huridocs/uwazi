@@ -2,7 +2,9 @@
 const ROOT_TYPES = new Set(['select', 'multiselect']);
 
 const isInheritedWithThesaurus = property =>
-  property.type === 'relationship' && ROOT_TYPES.has(property.inherit.type);
+  property.type === 'relationship' &&
+  property.inherit?.type &&
+  ROOT_TYPES.has(property.inherit.type);
 
 const renameValues = values => {
   if (!values) return [values, false];
