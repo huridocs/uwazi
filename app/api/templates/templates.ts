@@ -169,7 +169,10 @@ export default {
     await validateTemplate(template);
     await this.swapNamesValidation(template);
 
-    await updateMapping([template]);
+    if (reindex) {
+      await updateMapping([template]);
+    }
+
     return template._id
       ? this._update(template, language, reindex, templateStructureChanges)
       : _save(template);
