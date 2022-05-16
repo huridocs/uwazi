@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.66.0-rc2",
+  "version": "1.66.0-rc5",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -82,9 +82,9 @@
     "@fortawesome/react-fontawesome": "^0.1.18",
     "@googlemaps/js-api-loader": "^1.13.8",
     "@loadable/component": "^5.13.1",
-    "@sentry/node": "^6.19.2",
-    "@sentry/react": "^6.19.2",
-    "@sentry/tracing": "^6.19.2",
+    "@sentry/node": "^6.19.7",
+    "@sentry/react": "^6.19.7",
+    "@sentry/tracing": "^6.19.7",
     "@socket.io/redis-adapter": "7.0.0",
     "@socket.io/redis-emitter": "4.1.0",
     "@supercharge/promise-pool": "^2.1.0",
@@ -190,7 +190,7 @@
     "rsmq": "^0.12.4",
     "rtlcss": "^3.5.0",
     "sanitize-filename": "^1.6.3",
-    "serialize-javascript": "^5.0.1",
+    "serialize-javascript": "^6.0.0",
     "sift": "^16.0.0",
     "socket.io": "4.4.1",
     "socket.io-client": "4.4.1",
@@ -213,7 +213,7 @@
     "@babel/core": "7.17.5",
     "@babel/eslint-parser": "7.17.0",
     "@babel/helper-call-delegate": "^7.12.13",
-    "@babel/parser": "^7.17.0",
+    "@babel/parser": "^7.17.10",
     "@babel/plugin-proposal-class-properties": "7.16.7",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4",
     "@babel/plugin-proposal-object-rest-spread": "7.17.3",

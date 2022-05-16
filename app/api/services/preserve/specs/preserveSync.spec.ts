@@ -10,6 +10,7 @@ import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
+import { errorLog } from 'api/log';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId } from './fixtures';
@@ -76,10 +77,10 @@ describe('preserveSync', () => {
 
   afterAll(async () => db.disconnect());
 
-  const fakeEvidence = (id: string) => ({
+  const fakeEvidence = (id: string, title: string) => ({
     attributes: {
       date: `date${id}`,
-      title: `title of url${id}`,
+      title,
       status: 'PROCESSED',
       url: `url${id}`,
       downloads: [
@@ -91,20 +92,26 @@ describe('preserveSync', () => {
 
   describe('sync', () => {
     beforeAll(async () => {
-      const evidences = [fakeEvidence('1'), fakeEvidence('2')];
+      errorLog.error = jest.fn();
+      const evidences = [fakeEvidence('1', 'title of url1'), fakeEvidence('2', 'title of url2')];
       await mockVault(evidences, 'auth-token');
 
-      const moreEvidences = [fakeEvidence('4')];
+      const moreEvidences = [fakeEvidence('4', 'title of url4'), fakeEvidence('42', '')];
+
       await mockVault(moreEvidences, 'another-auth-token');
       await preserveSync.syncAllTenants();
 
       await tenants.run(async () => {
         const { lastImport } = (await preserveSyncModel.get({ token: 'auth-token' }))[0];
-        await mockVault([fakeEvidence('3')], 'auth-token', lastImport);
+        await mockVault([fakeEvidence('3', 'title of url3')], 'auth-token', lastImport);
         const { lastImport: anotherLastImport } = (
           await preserveSyncModel.get({ token: 'another-auth-token' })
         )[0];
-        await mockVault([fakeEvidence('5')], 'another-auth-token', anotherLastImport);
+        await mockVault(
+          [fakeEvidence('5', 'title of url5')],
+          'another-auth-token',
+          anotherLastImport
+        );
       }, tenantName);
 
       await preserveSync.syncAllTenants();
