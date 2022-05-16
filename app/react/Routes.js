@@ -64,6 +64,8 @@ function enterOnLibrary(_nxtState, replace) {
   if (blankState() && !state.user.get('_id')) {
     return replace('/login');
   }
+
+  // return replace('/library/?q=(includeUnpublished:!t)');
   trackPage();
 }
 
@@ -100,13 +102,25 @@ function getPageIndexRoute(customHomePage) {
   };
 }
 
+function libraryDefaults(callBack, state, defaultView) {
+  if (state.user.get('_id')) {
+    return callBack(null, {
+      onEnter: (_nextState, replace) => {
+        replace('/library/?q=(includeUnpublished:!t)');
+      },
+    });
+  }
+
+  return callBack(null, getDefaultLibraryComponent(defaultView));
+}
+
 function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page') || '';
   const defaultView = state.settings.collection.get('defaultLibraryView');
 
   if (!validateHomePageRoute(homePageSetting)) {
-    return callBack(null, getDefaultLibraryComponent(defaultView));
+    return libraryDefaults(callBack, state, defaultView);
   }
 
   const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
@@ -123,7 +137,7 @@ function getIndexRoute(_nextState, callBack) {
     });
   }
 
-  return callBack(null, getDefaultLibraryComponent(defaultView));
+  return libraryDefaults(callBack, state, defaultView);
 }
 
 const routes = (
