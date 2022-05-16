@@ -32,10 +32,10 @@ const renameValues = values => {
 export default {
   delta: 78,
 
-  name: 'remove_duplicate_thesauri_entries',
+  name: 'resolve_duplicate_thesauri_entries',
 
-  description:
-    'This migration removes duplicated thesauri entries, and links the entity property values to the remaining entry.',
+  description: `This migration resolves duplicated thesauri entries, by renaming multiples: 
+    three labels named "A" will be transformed to "A", "A__(2)" and "A__(3)".`,
 
   reindex: false,
 

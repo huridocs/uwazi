@@ -16,7 +16,7 @@ const expectedMultiSelect = [
   { value: 'group_D_id', label: 'D', parent: { value: 'A_group_id', label: 'A__(3)' } },
 ];
 
-describe('migration remove_duplicate_thesauri_entries', () => {
+describe('migration resolve_duplicate_thesauri_entries', () => {
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
