@@ -188,7 +188,7 @@
     "rsmq": "^0.12.4",
     "rtlcss": "^3.5.0",
     "sanitize-filename": "^1.6.3",
-    "serialize-javascript": "^5.0.1",
+    "serialize-javascript": "^6.0.0",
     "sift": "^16.0.0",
     "socket.io": "4.4.1",
     "socket.io-client": "4.4.1",
