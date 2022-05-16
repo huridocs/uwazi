@@ -46,7 +46,7 @@ class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    registerLocale(props.locale, localization[props.locale]);
+    registerLocale(props.locale || 'en', localization[props.locale] || localization.enGB);
   }
 
   handleChange(datePickerValue) {
@@ -62,17 +62,16 @@ class DatePicker extends Component {
 
   render() {
     const { locale, format, useTimezone, value } = this.props;
-
+    const defaultFormat = 'dd/MM/yyyy';
     const datePickerValue = removeOffset(useTimezone, value);
-
     return (
       <DatePickerComponent
-        dateFormat={format}
+        dateFormat={format || defaultFormat}
         className="form-control"
         onChange={this.handleChange}
         selected={datePickerValue}
         locale={locale}
-        placeholderText={format}
+        placeholderText={format || defaultFormat}
         isClearable
         fixedHeight
         showYearDropdown
