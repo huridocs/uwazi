@@ -135,9 +135,6 @@ export default {
     ) {
       const thesaurusId = this.propertyNameContentMap[templateId][name];
       const thesaurus = this.thesauriIdLabelMap[thesaurusId];
-      // console.log(name)
-      // console.log(entries);
-      // console.log(thesaurus)
       return [name, entries.map(entry => this.denormalizeEntry(entry, thesaurus))];
     }
     return [name, entries];
