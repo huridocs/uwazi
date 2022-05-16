@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -114,7 +114,9 @@ class EntityViewer extends Component {
 
     return (
       <div className="row">
-        <Helmet title={entity.get('title') ? entity.get('title') : 'Entity'} />
+        <Helmet>
+          <title>{entity.get('title') ? entity.get('title') : 'Entity'}</title>
+        </Helmet>
 
         {selectedTab !== 'page' && (
           <div className="content-header content-header-entity">

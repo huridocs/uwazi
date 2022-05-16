@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import {
   deleteRelationType,
   checkRelationTypeCanBeDeleted,
@@ -20,7 +20,11 @@ export class RelationTypesList extends Component {
           accept: () => {
             this.props.deleteRelationType(relationType);
           },
-          title: `Confirm delete connection type: ${relationType.name}`,
+          title: (
+            <>
+              <Translate>Confirm delete connection type:</Translate>&nbsp;{relationType.name}
+            </>
+          ),
           message: 'Are you sure you want to delete this connection type?',
         });
       })
@@ -28,7 +32,11 @@ export class RelationTypesList extends Component {
         this.context.confirm({
           accept: () => {},
           noCancel: true,
-          title: `Cannot delete connection type: ${relationType.name}`,
+          title: (
+            <>
+              <Translate>Cannot delete connection type:</Translate>&nbsp;{relationType.name}
+            </>
+          ),
           message: 'This connection type is being used and cannot be deleted.',
         });
       });

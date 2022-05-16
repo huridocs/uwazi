@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -72,7 +72,11 @@ class PageViewer extends Component {
       <div className="row">
         {!parsedPageError && (
           <>
-            {setBrowserTitle && <Helmet title={page.get('title') ? page.get('title') : 'Page'} />}
+            {setBrowserTitle && (
+              <Helmet>
+                <title>{page.get('title') ? page.get('title') : 'Page'}</title>
+              </Helmet>
+            )}
             <main className="page-viewer document-viewer">
               <div className="main-wrapper">
                 {this.state.customPageError && this.renderErrorWarning()}

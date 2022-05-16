@@ -15,6 +15,7 @@ import {
 } from 'app/MetadataExtraction/specs/fixtures';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
 
@@ -71,7 +72,7 @@ describe('EntitySuggestions', () => {
           'Entity title1',
           'PDFOlowo Kamali Case',
           'English',
-          'Matching',
+          SuggestionState.labelMismatch,
         ]);
         const secondRow = within(rows[2])
           .getAllByRole('cell')
@@ -83,7 +84,7 @@ describe('EntitySuggestions', () => {
           'Título entidad',
           'PDFDetalle Violación caso 1',
           'Spanish',
-          'Empty',
+          SuggestionState.valueEmpty,
         ]);
       });
     });
@@ -148,12 +149,12 @@ describe('EntitySuggestions', () => {
         await renderComponent();
         const header = screen.getAllByRole('columnheader', { name: 'State All' })[0];
         fireEvent.change(within(header).getByRole('combobox'), {
-          target: { value: 'Empty' },
+          target: { value: SuggestionState.empty },
         });
       });
       expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
         data: {
-          filter: { state: 'Empty', propertyName: 'other_title' },
+          filter: { state: SuggestionState.empty, propertyName: 'other_title' },
           page: { size: 100, number: 1 },
         },
         headers: {},
@@ -233,7 +234,7 @@ describe('EntitySuggestions', () => {
       await act(async () => renderComponent());
 
       const rows = screen.getAllByRole('row');
-      const acceptButton = within(rows[2]).getByLabelText('Accept suggestion');
+      const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
       await act(async () => {
         fireEvent.click(acceptButton);
       });
@@ -245,14 +246,14 @@ describe('EntitySuggestions', () => {
       await act(async () => {
         fireEvent.click(confirmButton);
       });
-      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], true);
+      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], true);
       expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
     });
     it('should accept a suggestion for only the current language of an entity', async () => {
-      const pendingRow = within(screen.getAllByRole('row')[2])
+      const pendingRow = within(screen.getAllByRole('row')[1])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(pendingRow[6]).toEqual('Empty');
+      expect(pendingRow[6]).toEqual(SuggestionState.labelMismatch);
       const languageCheck = screen.getByRole('checkbox');
       await act(async () => {
         fireEvent.click(languageCheck);
@@ -261,12 +262,12 @@ describe('EntitySuggestions', () => {
       await act(async () => {
         fireEvent.click(confirmButton);
       });
-      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[1], false);
+      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], false);
 
-      const selectedRow = within(screen.getAllByRole('row')[2])
+      const selectedRow = within(screen.getAllByRole('row')[1])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(selectedRow[6]).toEqual('Matching');
+      expect(selectedRow[6]).toEqual(SuggestionState.labelMatch);
     });
     it('should not accept a suggestion in confirmation is cancelled', async () => {
       const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;

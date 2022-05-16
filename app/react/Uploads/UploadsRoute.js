@@ -1,3 +1,5 @@
+import React from 'react';
+import { Helmet } from 'react-helmet';
 import RouteHandler from 'app/App/RouteHandler';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import { t } from 'app/I18N';
@@ -15,8 +17,6 @@ import api from 'app/Search/SearchAPI';
 import ImportPanel from 'app/Uploads/components/ImportPanel';
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
-import React from 'react';
-import Helmet from 'react-helmet';
 
 import setReduxState from 'app/Library/helpers/setReduxState';
 import rison from 'rison-node';
@@ -108,7 +108,9 @@ export default class Uploads extends RouteHandler {
 
     return (
       <div className="row panels-layout">
-        <Helmet title={t('System', 'Uploads', null, false)} />
+        <Helmet>
+          <title>{t('System', 'Uploads', null, false)}</title>
+        </Helmet>
         <UploadsHeader />
         <div className="content-holder uploads-viewer document-viewer with-panel with-header">
           <main>

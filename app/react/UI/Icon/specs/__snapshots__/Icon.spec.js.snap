@@ -2,66 +2,87 @@
 
 exports[`Icon should allow configuring the icon as directionAware 1`] = `
 <FontAwesomeIcon
+  beat={false}
+  beatFade={false}
   border={false}
+  bounce={false}
   className=""
+  fade={false}
   fixedWidth={false}
   flip={null}
   icon="angle-left"
   inverse={false}
   listItem={false}
   mask={null}
+  maskId={null}
   pull={null}
   pulse={false}
   rotation={null}
+  shake={false}
   size={null}
   spin={false}
   swapOpacity={false}
   symbol={false}
   title=""
+  titleId={null}
   transform={null}
 />
 `;
 
 exports[`Icon should allow configuring the icon as directionAware 2`] = `
 <FontAwesomeIcon
+  beat={false}
+  beatFade={false}
   border={false}
+  bounce={false}
   className=""
+  fade={false}
   fixedWidth={false}
   flip="horizontal"
   icon="angle-left"
   inverse={false}
   listItem={false}
   mask={null}
+  maskId={null}
   pull={null}
   pulse={false}
   rotation={null}
+  shake={false}
   size={null}
   spin={false}
   swapOpacity={false}
   symbol={false}
   title=""
+  titleId={null}
   transform={null}
 />
 `;
 
 exports[`Icon should instantiate a FontAwesomeIcon 1`] = `
 <FontAwesomeIcon
+  beat={false}
+  beatFade={false}
   border={false}
+  bounce={false}
   className=""
+  fade={false}
   fixedWidth={false}
   flip={null}
   icon="angle-right"
   inverse={false}
   listItem={false}
   mask={null}
+  maskId={null}
   pull={null}
   pulse={false}
   rotation={null}
+  shake={false}
   size="xs"
   spin={false}
   swapOpacity={false}
   symbol={false}
   title=""
+  titleId={null}
   transform={null}
 />
 `;
