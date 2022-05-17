@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable max-lines */
 /* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -393,71 +391,63 @@ export const Suggestions = {
     await settings.save(currentSettings);
 
     await Suggestions.createBlankState(settingsTemplates, defaultLanguage as string);
+
     return currentSettings;
   },
+
+  fetchEntitiesBatch: async (query: any, limit: number = 100) =>
+    entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).exec(),
 
   createBlankState: async (settingsTemplates: any[], defaultLanguage: string) => {
     const templatesPromises = settingsTemplates.map(
       async (template: { template: string; properties: string[] }) => {
-        const cursor = await entitiesModel.db
-          .find({ template: template.template, language: defaultLanguage })
-          .select('sharedId')
-          .cursor();
-        for (let entity = await cursor.next(); entity; entity = await cursor.next()) {
-          await Suggestions.createBlankStateSuggestions(
-            entity.sharedId as string,
-            template.properties
-          );
+        const BATCH_SIZE = 2000;
+        let query: any = {
+          template: template.template,
+          language: defaultLanguage,
+        };
+
+        const entitiesSharedIds: string[] = [];
+
+        let fetchedEntities = await Suggestions.fetchEntitiesBatch(query, BATCH_SIZE);
+        while (fetchedEntities.length) {
+          const sharedIds = fetchedEntities.map(entity => entity.sharedId);
+          entitiesSharedIds.push(...(sharedIds as string[]));
+          query = {
+            ...query,
+            _id: { $gt: fetchedEntities[fetchedEntities.length - 1]._id },
+          };
+          fetchedEntities = await Suggestions.fetchEntitiesBatch(query, BATCH_SIZE);
         }
+
+        const fetchedFiles = await files.get(
+          { entity: { $in: entitiesSharedIds } },
+          '_id entity language'
+        );
+
+        const blankSuggestions: any[] = [];
+        fetchedFiles.forEach((file: any) => {
+          const language = languages.get(file.language, 'ISO639_1') || 'others';
+          template.properties.forEach((propertyName: string) => {
+            blankSuggestions.push({
+              language,
+              fileId: file._id,
+              entityId: file.entity,
+              propertyName,
+              status: 'processing',
+              error: '',
+              segment: '',
+              suggestedValue: '',
+              date: new Date().getTime(),
+            });
+          });
+        });
+
+        await IXSuggestionsModel.db
+          .dbForCurrentTenant()
+          .insertMany(blankSuggestions, { lean: true });
       }
     );
     await Promise.all(templatesPromises);
-  },
-
-  createBlankStateSuggestions: async (sharedId: string, properties: string[]) => {
-    const entityFiles = await files.get({
-      entity: sharedId,
-      type: 'document',
-    });
-
-    let suggestionsPlaceholders: any[] = [];
-    const filesPromises = entityFiles.map(async (file: any) => {
-      const language = languages.get(file.language, 'ISO639_1') || 'other';
-      const suggestionsPromises = properties.map(async (prop: string) =>
-        Suggestions.constructBlankSuggestion(prop, file, language)
-      );
-      const suggestions = await Promise.all(suggestionsPromises);
-      suggestionsPlaceholders = suggestionsPlaceholders.concat(suggestions.filter(sug => sug));
-    });
-    await Promise.all(filesPromises);
-    await IXSuggestionsModel.saveMultiple(suggestionsPlaceholders);
-  },
-
-  constructBlankSuggestion: async (
-    property: string,
-    file: any,
-    language: string
-  ): Promise<any | undefined> => {
-    const [existingSuggestion] = await IXSuggestionsModel.get({
-      entityId: file.entity,
-      language,
-      fileId: file._id,
-      propertyName: property,
-    });
-
-    if (existingSuggestion) {
-      return undefined;
-    }
-    return {
-      language,
-      fileId: file._id,
-      entityId: file.entity,
-      propertyName: property,
-      status: 'processing',
-      error: '',
-      segment: '',
-      suggestedValue: '',
-      date: new Date().getTime(),
-    };
   },
 };

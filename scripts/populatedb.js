@@ -8,7 +8,7 @@ const DEFAULT_LANGUAGE = 'en';
 const SHARED_ID = 'sharedid';
 const TEMPLATE_ID = '5bfbb1a0471dd0fc16ada146';
 const TITLE = 'Generated title';
-const TOTAL_ENTITIES = 2000;
+const TOTAL_ENTITIES = 100000;
 
 const entities = [];
 const files = [];
