@@ -42,8 +42,8 @@ describe('templates routes', () => {
     next();
   });
 
-  const postToEnpoint = async (route: string, body: any) =>
-    request(app).post(route).send(body).expect(200);
+  const postToEnpoint = async (route: string, body: any, expectedCode = 200) =>
+    request(app).post(route).send(body).expect(expectedCode);
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_index');
@@ -155,7 +155,7 @@ describe('templates routes', () => {
     });
   });
 
-  describe('check mappings', () => {
+  describe('mappings', () => {
     it('should throw an error if template is invalid vs the current elasticsearch mapping', async () => {
       await postToEnpoint('/api/templates', {
         ...templateToSave,
@@ -168,8 +168,13 @@ describe('templates routes', () => {
         ],
       });
       const savedTemplate = await templates.get({ name: 'template4' });
-      try {
-        await postToEnpoint('/api/templates', {
+      await postToEnpoint('/api/templates', {
+        ...savedTemplate[0],
+        properties: [],
+      });
+      const { body } = await postToEnpoint(
+        '/api/templates',
+        {
           ...savedTemplate[0],
           properties: [
             {
@@ -179,10 +184,42 @@ describe('templates routes', () => {
             },
           ],
           reindex: false,
-        });
-      } catch (error: any) {
-        expect(error.message).toContain('expected 200 "OK", got 409 "Conflict"');
-      }
+        },
+        409
+      );
+      expect(body.error).toContain('conflict');
+    });
+
+    it('should throw an error if template is reusing a property name in same operation', async () => {
+      await postToEnpoint('/api/templates', {
+        ...templateToSave,
+        properties: [
+          {
+            label: 'Numeric',
+            type: 'numeric',
+            name: 'numeric',
+          },
+        ],
+      });
+      const savedTemplate = await templates.get({ name: 'template4' });
+
+      const { body } = await postToEnpoint(
+        '/api/templates',
+        {
+          ...savedTemplate[0],
+          properties: [
+            {
+              label: 'Numeric',
+              type: 'text',
+              name: 'numeric',
+            },
+          ],
+          reindex: false,
+        },
+        400
+      );
+
+      expect(body.error).toContain('swap');
     });
   });
 });
