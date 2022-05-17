@@ -14343,10 +14343,10 @@ svgo@^2.3.0:
     csso "^4.2.0"
     stable "^0.1.8"
 
-swagger-jsdoc@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/swagger-jsdoc/-/swagger-jsdoc-6.1.0.tgz"
-  integrity sha512-xgep5M8Gq31MxpCbQLvJZpNqHfGPfI+sILCzujZbEXIQp2COtkZgoGASs0gacRs4xHmLDH+GuMGdorPITSG4tA==
+swagger-jsdoc@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/swagger-jsdoc/-/swagger-jsdoc-6.2.1.tgz#2f3f67c8433ae2c09e7e318d2f8fd9e09f0166b3"
+  integrity sha512-l2BwFf7wzNPb11+NRRy65X+kuHUGLb3ZuGFn6A8xDXXTu73YzJmCiy+LED/6QsOgPBPgO3u3sDEz6KuOHAlCtA==
   dependencies:
     commander "6.2.0"
     doctrine "3.0.0"
