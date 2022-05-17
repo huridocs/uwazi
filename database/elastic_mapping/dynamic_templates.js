@@ -1,15 +1,5 @@
 const dynamicTemplates = [
   {
-    message_field: {
-      match: 'message',
-      match_mapping_type: 'string',
-      mapping: {
-        type: 'string',
-        index: true,
-      },
-    },
-  },
-  {
     fullText_other: {
       match: 'fullText_other',
       match_mapping_type: 'string',
