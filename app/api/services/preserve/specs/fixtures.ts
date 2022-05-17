@@ -22,15 +22,39 @@ export const fixtures: DBFixture = {
   templates: [
     {
       _id: templateId,
-      title: 'Template with custom page 1',
-      entityViewPage: '1',
-      properties: [],
+      title: 'Template 1',
+      properties: [
+        {
+          _id: db.id(),
+          name: 'url',
+          type: 'link',
+          label: 'URL',
+        },
+        {
+          _id: db.id(),
+          name: 'source',
+          type: 'text',
+          label: 'Source',
+        },
+      ],
     },
     {
       _id: anotherTemplateId,
-      title: 'Template with custom page 2',
-      entityViewPage: '2',
-      properties: [],
+      title: 'Template 2',
+      properties: [
+        {
+          _id: db.id(),
+          name: 'url',
+          type: 'text',
+          label: 'URL',
+        },
+        {
+          _id: db.id(),
+          name: 'source',
+          type: 'link',
+          label: 'Source',
+        },
+      ],
     },
   ],
 };

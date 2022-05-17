@@ -82,7 +82,7 @@ describe('preserveSync', () => {
       date: `date${id}`,
       title,
       status: 'PROCESSED',
-      url: `url${id}`,
+      url: `http://www.url${id}test.org`,
       downloads: [
         { path: `/evidences/id${id}/content${id}.txt` },
         { path: `/evidences/id${id}/screenshot${id}.jpg` },
@@ -215,6 +215,34 @@ describe('preserveSync', () => {
             await fileExists(path.join(testingPaths.attachments, attachment.filename || ''))
           ).toBe(true);
         }
+      }, tenantName);
+    });
+
+    it('should save url and source properties based on the evidence url', async () => {
+      await tenants.run(async () => {
+        const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
+        expect(entitiesImported).toMatchObject([
+          {
+            metadata: {
+              url: [{ value: { url: 'http://www.url1test.org', label: '' } }],
+              source: [{ value: 'www.url1test.org' }],
+            },
+          },
+          {
+            metadata: {
+              url: [{ value: { url: 'http://www.url2test.org', label: '' } }],
+              source: [{ value: 'www.url2test.org' }],
+            },
+          },
+          {
+            metadata: {
+              url: [{ value: { url: 'http://www.url3test.org', label: '' } }],
+              source: [{ value: 'www.url3test.org' }],
+            },
+          },
+          { metadata: {} },
+          { metadata: {} },
+        ]);
       }, tenantName);
     });
   });

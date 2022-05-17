@@ -1,25 +1,47 @@
 import entities from 'api/entities';
 import { fileFromReadStream, files, generateFileName } from 'api/files';
+import { errorLog } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings';
+import templates from 'api/templates';
 import { tenants } from 'api/tenants';
 import path from 'path';
 import qs from 'qs';
 import request from 'shared/JSONRequest';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { PreserveConfig } from 'shared/types/settingsType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { preserveSyncModel } from './preserveSyncModel';
-import { errorLog } from 'api/log';
 
 const saveEvidence =
-  (token: string, template: ObjectIdSchema, host: string) =>
+  (token: string, templateId: ObjectIdSchema, host: string) =>
   async (previous: Promise<EntitySchema>, evidence: any) => {
     await previous;
 
     try {
+      const template = await templates.getById(templateId);
+
+      const hasURLProperty = (template?.properties || []).find(
+        property => property.name === 'url' && property.type === 'link'
+      );
+
+      const hasSourceProperty = (template?.properties || []).find(
+        property => property.name === 'source' && property.type === 'text'
+      );
+
       const { sharedId } = await entities.save(
-        { title: evidence.attributes.title, template },
+        {
+          title: evidence.attributes.title,
+          template: templateId,
+          metadata: {
+            ...(hasURLProperty
+              ? { url: [{ value: { label: '', url: evidence.attributes.url } }] }
+              : {}),
+            ...(hasSourceProperty
+              ? { source: [{ value: new URL(evidence.attributes.url).hostname }] }
+              : {}),
+          },
+        },
         { language: 'en', user: {} }
       );
       await Promise.all(
