@@ -222,7 +222,7 @@
     "@babel/plugin-transform-modules-commonjs": "7.16.8",
     "@babel/plugin-transform-react-constant-elements": "7.17.6",
     "@babel/plugin-transform-react-inline-elements": "7.16.7",
-    "@babel/preset-env": "7.16.11",
+    "@babel/preset-env": "7.17.12",
     "@babel/preset-react": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
     "@babel/traverse": "^7.17.3",
