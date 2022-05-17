@@ -65,7 +65,6 @@ function enterOnLibrary(_nxtState, replace) {
     return replace('/login');
   }
 
-  // return replace('/library/?q=(includeUnpublished:!t)');
   trackPage();
 }
 
