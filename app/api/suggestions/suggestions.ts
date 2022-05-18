@@ -482,7 +482,7 @@ export const Suggestions = {
 
         const blankSuggestions: any[] = [];
         fetchedFiles.forEach((file: any) => {
-          const language = languages.get(file.language, 'ISO639_1') || 'other';
+          const language = languages.get(file.language, 'ISO639_1') || defaultLanguage;
           template.properties.forEach((propertyName: string) => {
             blankSuggestions.push({
               language,
