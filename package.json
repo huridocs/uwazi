@@ -192,7 +192,7 @@
     "sanitize-filename": "^1.6.3",
     "serialize-javascript": "^6.0.0",
     "sift": "^16.0.0",
-    "socket.io": "4.4.1",
+    "socket.io": "4.5.1",
     "socket.io-client": "4.4.1",
     "superagent": "^6.1.0",
     "svg-captcha": "^1.4.0",
