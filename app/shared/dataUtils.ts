@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 const arrayDeepEquals = (a: Array<any>, b: Array<any>): boolean => {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i += 1) {
@@ -34,4 +36,16 @@ const deepEquals = (a: any, b: any): boolean => {
   return a === b;
 };
 
-export { deepEquals };
+const dateToMilliseconds = (value: string) => {
+  let getDate = Date.parse(`${value} GMT`);
+  if (Number.isNaN(getDate)) {
+    const momentDate = moment
+      .parseZone(value, ['DD-MM-YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD', 'YYYY'])
+      .format('x');
+    getDate = parseInt(momentDate, 10);
+  }
+  const formattedDate = getDate / 1000;
+  return formattedDate;
+};
+
+export { deepEquals, dateToMilliseconds };

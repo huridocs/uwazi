@@ -23,6 +23,7 @@ import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
+import { dateToMilliseconds } from 'shared/dataUtils';
 import {
   FileWithAggregation,
   getFilesForTraining,
@@ -174,7 +175,7 @@ class InformationExtraction {
     let suggestedValue: any = suggestion.text.trim();
 
     if (property?.type === 'date') {
-      suggestedValue = new Date(suggestion.text).getTime() / 1000;
+      suggestedValue = dateToMilliseconds(suggestion.text);
     }
 
     if (Number.isNaN(suggestedValue)) {
