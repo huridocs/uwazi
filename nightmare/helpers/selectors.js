@@ -186,6 +186,8 @@ export default {
     acceptPublishModel:
       'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success',
     metadataPanel: '.side-panel.metadata-sidepanel',
+    filtersRestricted:
+      '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(3) > label',
   },
   documentView: {
     searchTextTab:
