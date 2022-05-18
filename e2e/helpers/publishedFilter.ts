@@ -13,7 +13,6 @@ const assessFilterStatus = async () => {
 
 const goToPublishedEntities = async () => {
   await page.goto(host);
-  await disableTransitions();
 
   const [publishedSelected, restrcitedSelected] = await assessFilterStatus();
   if (!publishedSelected) {
@@ -24,11 +23,11 @@ const goToPublishedEntities = async () => {
     await page.click('[title="Restricted"]');
     await page.waitForNavigation();
   }
+  await disableTransitions();
 };
 
 const goToRestrictedEntities = async () => {
   await page.goto(host);
-  await disableTransitions();
 
   const [publishedSelected, restrcitedSelected] = await assessFilterStatus();
   if (publishedSelected) {
@@ -39,11 +38,12 @@ const goToRestrictedEntities = async () => {
     await page.click('[title="Restricted"]');
     await page.waitForNavigation();
   }
+  await disableTransitions();
 };
 
 const goToAllEntities = async () => {
   await page.goto(host);
-  await disableTransitions();
+
   const [publishedSelected, restrcitedSelected] = await assessFilterStatus();
   if (!publishedSelected) {
     await page.click('[title="Published"]');
@@ -53,6 +53,7 @@ const goToAllEntities = async () => {
     await page.click('[title="Restricted"]');
     await page.waitForNavigation();
   }
+  await disableTransitions();
 };
 
 export { goToPublishedEntities, goToRestrictedEntities, goToAllEntities };
