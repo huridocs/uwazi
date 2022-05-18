@@ -31,7 +31,7 @@ export const Suggestions = {
     const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
       [
-        { $match: { ...filters, status: 'ready' } },
+        { $match: { ...filters, status: { $ne: 'processing' } } },
         {
           $lookup: {
             from: 'entities',
