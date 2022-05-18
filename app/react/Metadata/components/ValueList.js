@@ -31,7 +31,7 @@ const renderCompact = prop =>
       )
     : interpose(
         prop.value.map(v => withIcon(v)),
-        ', '
+        <span>, </span>
       );
 
 const ValueList = ({ property, compact }) =>
