@@ -58,7 +58,7 @@
         color: $c-primary;
         cursor: pointer;
         background-color: transparent;
-        
+
         &:hover {
           text-decoration: underline;
         }
@@ -96,6 +96,21 @@
 
     .new {
       background-color: rgba($color: #5cb85c, $alpha: 0.15);
+    }
+  }
+}
+
+.entity-viewer {
+  .metadata-type-relationship {
+    .link-button {
+      display: block;
+      text-align: left;
+      margin-bottom: 5px;
+    }
+    dd {
+      span {
+        display: none;
+      }
     }
   }
 }
