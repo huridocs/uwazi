@@ -83,10 +83,12 @@ const generateNames = async (properties: PropertySchema[]) => {
   }));
 };
 
+const newThesauriId = () => uuid.v4();
+
 function generateIds(properties: ThesaurusSchema[] = []) {
   return properties.map(property => ({
     ...property,
-    id: property.id || uuid.v4(),
+    id: property.id || newThesauriId(),
   }));
 }
 interface PropertyOrThesaurusSchema
@@ -219,6 +221,7 @@ const updateExtractedMetadataProperties = async (
 
 export type { PropertyOrThesaurusSchema };
 export {
+  newThesauriId,
   safeName,
   denormalizeInheritedProperties,
   generateIds,
