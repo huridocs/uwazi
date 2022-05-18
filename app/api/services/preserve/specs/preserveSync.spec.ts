@@ -1,8 +1,10 @@
 import entities from 'api/entities';
-import { uwaziFS } from 'api/files/uwaziFS';
 import { fileExists, generateFileName, testingUploadPaths } from 'api/files/filesystem';
+import { uwaziFS } from 'api/files/uwaziFS';
+import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
+import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
 import backend from 'fetch-mock';
 import path from 'path';
@@ -10,10 +12,9 @@ import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
-import { errorLog } from 'api/log';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
-import { anotherTemplateId, fixtures, templateId } from './fixtures';
+import { anotherTemplateId, fixtures, templateId, thesauri1Id } from './fixtures';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -93,7 +94,11 @@ describe('preserveSync', () => {
   describe('sync', () => {
     beforeAll(async () => {
       errorLog.error = jest.fn();
-      const evidences = [fakeEvidence('1', 'title of url1'), fakeEvidence('2', 'title of url2')];
+      const evidences = [
+        fakeEvidence('1', 'title of url1'),
+        fakeEvidence('2', 'title of url2'),
+        fakeEvidence('2', ''),
+      ];
       await mockVault(evidences, 'auth-token');
 
       const moreEvidences = [fakeEvidence('4', 'title of url4'), fakeEvidence('42', '')];
@@ -220,24 +225,33 @@ describe('preserveSync', () => {
 
     it('should save url and source properties based on the evidence url', async () => {
       await tenants.run(async () => {
+        const importedThesauri = await thesauri.getById(thesauri1Id);
+        expect(importedThesauri).toMatchObject({
+          values: [
+            { label: 'www.url1test.org' },
+            { label: 'www.url2test.org' },
+            { label: 'www.url3test.org' },
+          ],
+        });
+
         const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
         expect(entitiesImported).toMatchObject([
           {
             metadata: {
               url: [{ value: { url: 'http://www.url1test.org', label: '' } }],
-              source: [{ value: 'www.url1test.org' }],
+              source: [{ label: 'www.url1test.org' }],
             },
           },
           {
             metadata: {
               url: [{ value: { url: 'http://www.url2test.org', label: '' } }],
-              source: [{ value: 'www.url2test.org' }],
+              source: [{ label: 'www.url2test.org' }],
             },
           },
           {
             metadata: {
               url: [{ value: { url: 'http://www.url3test.org', label: '' } }],
-              source: [{ value: 'www.url3test.org' }],
+              source: [{ label: 'www.url3test.org' }],
             },
           },
           { metadata: {} },

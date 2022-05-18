@@ -1,17 +1,63 @@
 import entities from 'api/entities';
 import { fileFromReadStream, files, generateFileName } from 'api/files';
 import { errorLog } from 'api/log';
+import { EnforcedWithId } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings';
 import templates from 'api/templates';
+import { newThesauriId } from 'api/templates/utils';
 import { tenants } from 'api/tenants';
+import thesauri from 'api/thesauri';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
+import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
 import request from 'shared/JSONRequest';
+import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { PreserveConfig } from 'shared/types/settingsType';
+import { TemplateSchema } from 'shared/types/templateType';
 import { preserveSyncModel } from './preserveSyncModel';
+
+const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
+  const [value] = await dictionariesModel.db.aggregate([
+    { $match: { _id: new ObjectId(thesauriId) } },
+    { $unwind: '$values' },
+    { $match: { 'values.label': valueLabel } },
+    { $replaceRoot: { newRoot: '$values' } },
+  ]);
+
+  return value?.id;
+};
+
+const extractSource = async (
+  template: EnforcedWithId<TemplateSchema> | null,
+  evidence: { [k: string]: any }
+) => {
+  const sourceProperty = (template?.properties || []).find(
+    property => property.name === 'source' && property.type === propertyTypes.select
+  );
+
+  if (!sourceProperty) {
+    return {};
+  }
+
+  const { hostname } = new URL(evidence.attributes.url);
+  let valueId = await thesauriValueId(sourceProperty.content || '', hostname);
+  const contentThesauri = await thesauri.getById(sourceProperty.content);
+
+  if (!valueId && contentThesauri) {
+    valueId = newThesauriId();
+    await dictionariesModel.db.updateOne(
+      { _id: sourceProperty.content },
+      // @ts-ignore
+      { $push: { values: { label: hostname, _id: new ObjectId(), id: valueId } } }
+    );
+  }
+
+  return valueId ? { source: [{ value: valueId }] } : {};
+};
 
 const saveEvidence =
   (token: string, templateId: ObjectIdSchema, host: string) =>
@@ -22,11 +68,7 @@ const saveEvidence =
       const template = await templates.getById(templateId);
 
       const hasURLProperty = (template?.properties || []).find(
-        property => property.name === 'url' && property.type === 'link'
-      );
-
-      const hasSourceProperty = (template?.properties || []).find(
-        property => property.name === 'source' && property.type === 'text'
+        property => property.name === 'url' && property.type === propertyTypes.link
       );
 
       const { sharedId } = await entities.save(
@@ -37,9 +79,7 @@ const saveEvidence =
             ...(hasURLProperty
               ? { url: [{ value: { label: '', url: evidence.attributes.url } }] }
               : {}),
-            ...(hasSourceProperty
-              ? { source: [{ value: new URL(evidence.attributes.url).hostname }] }
-              : {}),
+            ...(await extractSource(template, evidence)),
           },
         },
         { language: 'en', user: {} }

@@ -1,13 +1,16 @@
+import { templateUtils } from 'api/templates';
 import db, { DBFixture } from 'api/utils/testing_db';
+import { propertyTypes } from 'shared/propertyTypes';
 
 export const templateId = db.id();
 export const anotherTemplateId = db.id();
+export const thesauri1Id = db.id();
 
 export const fixtures: DBFixture = {
   settings: [
     {
       _id: db.id(),
-      languages: [{ label: 'English', key: 'en' }],
+      languages: [{ label: 'English', key: 'en', default: true }],
       features: {
         preserve: {
           host: 'http://preserve-testing.org',
@@ -26,15 +29,16 @@ export const fixtures: DBFixture = {
       properties: [
         {
           _id: db.id(),
-          name: 'url',
+          name: templateUtils.safeName('URL'),
           type: 'link',
           label: 'URL',
         },
         {
           _id: db.id(),
-          name: 'source',
-          type: 'text',
+          type: propertyTypes.select,
           label: 'Source',
+          name: templateUtils.safeName('Source'),
+          content: thesauri1Id,
         },
       ],
     },
@@ -56,5 +60,10 @@ export const fixtures: DBFixture = {
         },
       ],
     },
+  ],
+  dictionaries: [{ _id: thesauri1Id, name: 'thesauri1', values: [] }],
+  translations: [
+    { _id: db.id(), locale: 'en', contexts: [] },
+    { _id: db.id(), locale: 'es', contexts: [] },
   ],
 };
