@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 /* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -10,6 +12,11 @@ import settings from 'api/settings/settings';
 import { files } from 'api/files/files';
 import entitiesModel from 'api/entities/entitiesModel';
 import languages from 'shared/languages';
+
+interface ISettingsTemplate {
+  template: string | ObjectIdSchema;
+  properties: string[];
+}
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
@@ -370,27 +377,75 @@ export const Suggestions = {
 
     const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
 
-    const deletedTempPromises = deletedTemplatesAndDeletedTemplateProps.map(async template => {
-      const templateId = template.template;
-      const promises = template.properties.map(async (prop: string) => {
-        await Suggestions.deleteByProperty(prop, templateId.toString());
+    if (deletedTemplatesAndDeletedTemplateProps.length > 0) {
+      const deletedTemplateIds = deletedTemplatesAndDeletedTemplateProps.map(
+        temps => temps.template
+      );
+
+      const entitiesDoc = await entities.get({ template: { $in: deletedTemplateIds } }, 'sharedId');
+
+      const entitiesSharedIds = entitiesDoc.map((entity: any) => entity.sharedId);
+      const propNames: string[] = deletedTemplatesAndDeletedTemplateProps.reduce(
+        (acc, curr) => [...acc, ...curr.properties],
+        []
+      );
+      const uniquePropNames: string[] = [...new Set<string>(propNames)];
+
+      await IXSuggestionsModel.db.deleteMany({
+        $and: [
+          { entityId: { $in: entitiesSharedIds } },
+          { propertyName: { $in: uniquePropNames } },
+        ],
       });
-      await Promise.all(promises);
-    });
-    await Promise.all(deletedTempPromises);
+    }
   },
 
-  saveConfigurations: async (settingsTemplates: { template: string; properties: string[] }[]) => {
+  getTemplateDifference: (
+    currentSettingsTemplates: ISettingsTemplate[],
+    settingsTemplates: ISettingsTemplate[]
+  ) => {
+    const newTemplates = settingsTemplates.filter(temp => {
+      const oldTemplateIds = currentSettingsTemplates?.map(oldTemp => oldTemp.template) || [];
+      return !oldTemplateIds.includes(temp.template);
+    });
+
+    const combedNewTemplates = settingsTemplates
+      .map(newTemp => {
+        const oldTemplate = currentSettingsTemplates?.find(
+          oldTemp => oldTemp.template === newTemp.template
+        );
+        if (newTemp.properties.length === oldTemplate?.properties.length || !oldTemplate) {
+          return null;
+        }
+        const newProps = newTemp.properties;
+        const oldProps = oldTemplate?.properties || [];
+        const addedProps: string[] = newProps
+          .map((prop: any) => (!oldProps.includes(prop) ? prop : false))
+          .filter(p => p);
+        return { ...newTemp, properties: addedProps };
+      })
+      .filter(t => t);
+
+    return newTemplates.concat(combedNewTemplates as ISettingsTemplate[]);
+  },
+
+  saveConfigurations: async (settingsTemplates: ISettingsTemplate[]) => {
     const currentSettings = await settings.get();
     const defaultLanguage = currentSettings?.languages?.find(lang => lang.default)?.key;
-    let currentSettingsTemplates = currentSettings.features?.metadataExtraction?.templates;
+    let currentSettingsTemplates: ISettingsTemplate[] | undefined =
+      currentSettings.features?.metadataExtraction?.templates;
     currentSettingsTemplates = currentSettingsTemplates || [];
+
     await Suggestions.deleteSuggestionsNotConfigured(currentSettingsTemplates, settingsTemplates);
     // @ts-ignore
     currentSettings.features.metadataExtraction.templates = settingsTemplates;
     await settings.save(currentSettings);
 
-    await Suggestions.createBlankState(settingsTemplates, defaultLanguage as string);
+    const newTemplates = Suggestions.getTemplateDifference(
+      currentSettingsTemplates,
+      settingsTemplates
+    );
+    await Suggestions.createBlankState(newTemplates, defaultLanguage as string);
 
     return currentSettings;
   },
@@ -427,7 +482,7 @@ export const Suggestions = {
 
         const blankSuggestions: any[] = [];
         fetchedFiles.forEach((file: any) => {
-          const language = languages.get(file.language, 'ISO639_1') || 'others';
+          const language = languages.get(file.language, 'ISO639_1') || 'other';
           template.properties.forEach((propertyName: string) => {
             blankSuggestions.push({
               language,
