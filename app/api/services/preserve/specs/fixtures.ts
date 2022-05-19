@@ -48,6 +48,12 @@ export const fixtures: DBFixture = {
           name: templateUtils.safeName('Source'),
           content: thesauri1Id,
         },
+        {
+          _id: db.id(),
+          type: propertyTypes.date,
+          label: 'Preservation date',
+          name: templateUtils.safeName('Preservation date'),
+        },
       ],
     },
     {
@@ -65,6 +71,12 @@ export const fixtures: DBFixture = {
           name: 'source',
           type: 'link',
           label: 'Source',
+        },
+        {
+          _id: db.id(),
+          type: propertyTypes.text,
+          label: 'Preservation date',
+          name: templateUtils.safeName('Preservation date'),
         },
       ],
     },

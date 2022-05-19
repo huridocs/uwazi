@@ -82,7 +82,7 @@ describe('preserveSync', () => {
 
   const fakeEvidence = (id: string, title: string) => ({
     attributes: {
-      date: `date${id}`,
+      date: new Date(parseInt(`${id}000`, 10)),
       title,
       status: 'PROCESSED',
       url: `http://www.url${id}test.org`,
@@ -166,11 +166,11 @@ describe('preserveSync', () => {
         const datesImported = await preserveSyncModel.get();
         expect(datesImported).toMatchObject([
           {
-            lastImport: 'date3',
+            lastImport: new Date(3000).toISOString(),
             token: 'auth-token',
           },
           {
-            lastImport: 'date5',
+            lastImport: new Date(5000).toISOString(),
             token: 'another-auth-token',
           },
         ]);
@@ -273,6 +273,26 @@ describe('preserveSync', () => {
               url: [{ value: { url: 'http://www.url3test.org', label: '' } }],
               source: [{ label: 'www.url3test.org' }],
             },
+          },
+          { metadata: {} },
+          { metadata: {} },
+        ]);
+      }, tenantName);
+    });
+
+    it('should save date on "Preserve date" if property exists on the template', async () => {
+      await tenants.run(async () => {
+        permissionsContext.setCommandContext();
+        const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
+        expect(entitiesImported).toMatchObject([
+          {
+            metadata: { preservation_date: [{ value: 1 }] },
+          },
+          {
+            metadata: { preservation_date: [{ value: 2 }] },
+          },
+          {
+            metadata: { preservation_date: [{ value: 3 }] },
           },
           { metadata: {} },
           { metadata: {} },
