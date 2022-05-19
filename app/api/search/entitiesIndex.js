@@ -4,7 +4,6 @@ import entities from 'api/entities';
 import { errorLog } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
-import { denormalizeInheritedProperties } from 'api/templates/utils';
 import { elastic } from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
@@ -165,18 +164,4 @@ const reindexAll = async (tmpls, searchInstance) => {
   return indexEntities({ query: {}, searchInstance });
 };
 
-const checkMapping = async template => {
-  try {
-    await updateMapping([
-      { ...template, properties: await denormalizeInheritedProperties(template) },
-    ]);
-  } catch (e) {
-    if (e.meta?.body?.error?.reason?.match(/mapp[ing|er]/)) {
-      return { error: 'mapping conflict', valid: false };
-    }
-    throw e;
-  }
-  return { valid: true };
-};
-
-export { bulkIndex, indexEntities, updateMapping, checkMapping, reindexAll };
+export { bulkIndex, indexEntities, updateMapping, reindexAll };

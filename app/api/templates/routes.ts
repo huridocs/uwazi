@@ -1,12 +1,11 @@
 import { Application } from 'express';
 import settings from 'api/settings';
-import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
+import { reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
 import { TemplateSchema } from 'shared/types/templateType';
 import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
-import { generateNames } from './utils';
 import { checkIfReindex } from './reindex';
 
 const reindexAllTemplates = async () => {
@@ -24,26 +23,25 @@ const saveTemplate = async (template: TemplateSchema, language: string, fullRein
   );
 };
 
-const prepareRequest = async (body: TemplateSchema & { reindex?: boolean }) => {
-  const request = { ...body };
-  const { reindex: fullReindex } = request;
-  delete request.reindex;
-  const template = { ...request };
-
-  const templateProperties = await generateNames(template.properties || []);
-  const { valid, error } = await checkMapping({ ...template, properties: templateProperties });
-
-  return { template, fullReindex, valid, error };
+const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
+  try {
+    return await callback();
+  } catch (e: any) {
+    if (e.meta?.body?.error?.reason?.match(/mapp[ing|er]/)) {
+      throw createError('mapping conflict', 409);
+    }
+    throw e;
+  }
 };
 
 export default (app: Application) => {
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
-      const { template, fullReindex, valid, error } = await prepareRequest(req.body);
+      const { reindex: fullReindex, ...template } = req.body;
 
-      if (!valid && !fullReindex) throw createError(error, 409);
-
-      const response = await saveTemplate(template, req.language, fullReindex);
+      const response = await handleMappingConflict(async () =>
+        saveTemplate(template, req.language, fullReindex)
+      );
 
       req.sockets.emitToCurrentTenant('templateChange', response);
 
