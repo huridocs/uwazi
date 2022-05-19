@@ -228,14 +228,11 @@ describe('EntitySuggestions', () => {
   });
 
   describe('Accepting suggestion', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
-      await act(async () => renderComponent());
-    });
-
-    describe('text properties', () => {
+    describe('text property', () => {
       beforeEach(async () => {
+        jest.resetAllMocks();
+        spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+        await act(async () => renderComponent());
         const rows = screen.getAllByRole('row');
         const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
         await act(async () => {
@@ -279,6 +276,38 @@ describe('EntitySuggestions', () => {
           fireEvent.click(cancelButton);
         });
         expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
+      });
+    });
+
+    describe('date property', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(
+          Promise.resolve({ suggestions: [{ ...dateSuggestion }], totalPages: 1 })
+        );
+        await act(async () =>
+          renderComponent({
+            name: 'fecha',
+            type: 'date',
+            label: 'Fecha',
+          })
+        );
+        const rows = screen.getAllByRole('row');
+        const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
+        await act(async () => {
+          fireEvent.click(acceptButton);
+        });
+      });
+
+      it('should accept a suggestion for all languages of an entity', async () => {
+        const languageCheck = screen.queryByRole('checkbox');
+        expect(languageCheck).toBeNull();
+        const confirmButton = screen.getByText('Confirm').parentElement!;
+        await act(async () => {
+          fireEvent.click(confirmButton);
+        });
+        expect(acceptIXSuggestion).toBeCalledWith(dateSuggestion, true);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
       });
     });
   });
