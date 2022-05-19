@@ -31,7 +31,6 @@ export const EntitySuggestions = ({
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
@@ -41,9 +40,6 @@ export const EntitySuggestions = ({
   });
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
-    if (reviewedProperty.type !== 'date') {
-      setOpenModal(true);
-    }
     row.toggleRowSelected();
     setAcceptingSuggestion(true);
   };
@@ -159,7 +155,8 @@ export const EntitySuggestions = ({
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
-    setOpenModal(false);
+
+    setAcceptingSuggestion(false);
     toggleAllRowsSelected(false);
   };
 
@@ -199,16 +196,6 @@ export const EntitySuggestions = ({
         setStatus('error');
       });
   }, []);
-
-  useEffect(() => {
-    if (acceptingSuggestion) {
-      if (reviewedProperty.type === 'date') {
-        acceptSuggestion(true)
-          .then(() => {})
-          .catch(() => {});
-      }
-    }
-  }, [acceptingSuggestion]);
 
   const ixmessages: { [k: string]: string } = {
     ready: 'Find suggestions',
@@ -283,8 +270,9 @@ export const EntitySuggestions = ({
           totalPages={totalPages}
         />
         <SuggestionAcceptanceModal
-          isOpen={openModal}
-          onClose={() => setOpenModal(false)}
+          isOpen={acceptingSuggestion}
+          propertyType={reviewedProperty.type}
+          onClose={() => setAcceptingSuggestion(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
       </div>
