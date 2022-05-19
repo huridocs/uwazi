@@ -637,11 +637,6 @@ describe('search', () => {
         'en'
       );
 
-      // console.log(
-      //   'allAggregations.aggregations.all.relationship',
-      //   JSON.stringify(allAggregations.aggregations.all.relationship, null, 2)
-      // );
-
       expect(allAggregations.aggregations.all.relationship.buckets).toMatchObject([
         {
           key: 'missing',
