@@ -2,7 +2,6 @@ import entities from 'api/entities';
 import { fileFromReadStream, files, generateFileName } from 'api/files';
 import { errorLog } from 'api/log';
 import { EnforcedWithId } from 'api/odm';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import { newThesauriId } from 'api/templates/utils';
@@ -10,6 +9,7 @@ import { tenants } from 'api/tenants';
 import thesauri from 'api/thesauri';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import users from 'api/users/users';
+import { appContext } from 'api/utils/AppContext';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
@@ -83,6 +83,10 @@ const saveEvidence =
       const template = await templates.getById(config.template);
       const user = await users.getById(config.user);
 
+      if (user) {
+        appContext.set('user', user);
+      }
+
       const { sharedId } = await entities.save(
         {
           title: evidence.attributes.title,
@@ -124,7 +128,6 @@ const preserveSync = {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
       return tenants.run(async () => {
-        permissionsContext.setCommandContext();
         const { features } = await settings.get({}, 'features.preserve');
         if (features?.preserve) {
           await this.sync(features.preserve);
