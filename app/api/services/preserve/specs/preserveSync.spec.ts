@@ -14,7 +14,7 @@ import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
-import { anotherTemplateId, fixtures, templateId, thesauri1Id } from './fixtures';
+import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -144,6 +144,20 @@ describe('preserveSync', () => {
       }, tenantName);
     });
 
+    it('should save entities with the user configured for the integration', async () => {
+      await tenants.run(async () => {
+        const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
+
+        expect(entitiesImported).toMatchObject([
+          { user: user._id },
+          { user: user._id },
+          { user: user._id },
+          expect.not.objectContaining({ user: expect.anything() }),
+          expect.not.objectContaining({ user: expect.anything() }),
+        ]);
+      }, tenantName);
+    });
+
     it('should create one lastImport per token', async () => {
       await tenants.run(async () => {
         const datesImported = await preserveSyncModel.get();
@@ -170,6 +184,7 @@ describe('preserveSync', () => {
             ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
             : [],
         }));
+
         expect(entitiesImported).toMatchObject(
           [
             {
