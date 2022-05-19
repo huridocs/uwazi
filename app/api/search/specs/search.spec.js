@@ -623,7 +623,6 @@ describe('search', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
   describe('relationship aggregations', () => {
     it('should return aggregations based on title of related entity', async () => {
       userFactory.mock({

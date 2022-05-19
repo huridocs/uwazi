@@ -458,13 +458,7 @@ const _sanitizeAggregations = async (
 ) => {
   const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations, limit);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
-  const denormalizedAggregations = await _denormalizeAggregations(
-    sanitizedAggregationNames,
-    templates,
-    dictionaries,
-    language
-  );
-  return denormalizedAggregations;
+  return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
 const permissionsInformation = (hit, user) => {
