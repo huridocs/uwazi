@@ -242,6 +242,43 @@ Nightmare.action('waitForCardToBeCreated', function waitForCardToBeCreated(cardT
   });
 });
 
+Nightmare.action(
+  'waitForCardToMatchTitle',
+  function waitForCardToMatchTitle(cardSelector, cardTitle, done) {
+    let attempt = 0;
+    const self = this;
+    function doEval() {
+      self.evaluate_now(
+        ([selector, title]) => {
+          const card = document.querySelector(selector);
+          if (card && card.querySelector('.item-name span')) {
+            return card.querySelector('.item-name span').innerText === title;
+          }
+
+          return false;
+        },
+        // eslint-disable-next-line prefer-arrow-callback, func-names
+        function (_done, result) {
+          if (result) {
+            done(null, true);
+          } else {
+            attempt += 1;
+            if (attempt < 20) {
+              setTimeout(doEval, 200);
+            } else {
+              done(null, false);
+            }
+          }
+        },
+        [cardSelector, cardTitle]
+      );
+    }
+
+    doEval();
+    return this;
+  }
+);
+
 Nightmare.action('waitForCardStatus', function waitForCardStatus(selector, statusText, done) {
   this.wait(
     (cardSelector, cardStatus) => {

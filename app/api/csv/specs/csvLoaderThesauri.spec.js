@@ -4,7 +4,7 @@ import translations from 'api/i18n';
 import settings from 'api/settings';
 
 import { CSVLoader } from '../csvLoader';
-import fixtures from './fixtures';
+import fixtures, { thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
 
 describe('csvLoader thesauri', () => {
@@ -96,6 +96,27 @@ describe('csvLoader thesauri', () => {
       expect(french['value 1']).toBe('valeur 1');
       expect(french['value 2']).toBe('valeur 2');
       expect(french['value 3']).toBe('valeur 3');
+    });
+
+    it('should not duplicate existing values', async () => {
+      const csv = `English, Spanish, French  ,
+                   value1, valor1, valeur1,
+                   value2, valor2, valeur2,
+                   Value3, Valor3, Valeur3,
+                   new value, nuevo valor, nouvelle valeur`;
+
+      const mockedFile = mockCsvFileReadStream(csv);
+      const updated = await loader.loadThesauri('mockedFileFromString', thesauri1Id, {
+        language: 'en',
+      });
+      expect(updated.values.map(v => v.label)).toEqual([
+        'value1',
+        'value2',
+        'Value3',
+        ' value4 ',
+        'new value',
+      ]);
+      mockedFile.mockRestore();
     });
   });
 });
