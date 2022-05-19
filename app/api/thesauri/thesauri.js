@@ -149,6 +149,15 @@ const thesauri = {
     return create(toSave);
   },
 
+  appendValues(thesaurus, newValues) {
+    const existingValues = thesaurus.values || [];
+    const existingLabels = new Set(existingValues.map(v => v.label));
+    return {
+      ...thesaurus,
+      values: [...existingValues, ...newValues.filter(v => !existingLabels.has(v.label))],
+    };
+  },
+
   entitiesToThesauri(_entities) {
     const values = _entities.map(entity => ({
       id: entity.sharedId,
