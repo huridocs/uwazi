@@ -84,9 +84,7 @@ const extractDate = async (
 
   return hasDateProperty
     ? {
-        preservation_date: [
-          { value: Date.parse(new Date(evidence.attributes.date).toISOString()) / 1000 },
-        ],
+        preservation_date: [{ value: Date.parse(evidence.attributes.date) / 1000 }],
       }
     : {};
 };

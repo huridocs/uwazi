@@ -63,13 +63,13 @@ export const fixtures: DBFixture = {
         {
           _id: db.id(),
           name: 'url',
-          type: 'text',
+          type: propertyTypes.text,
           label: 'URL',
         },
         {
           _id: db.id(),
           name: 'source',
-          type: 'link',
+          type: propertyTypes.text,
           label: 'Source',
         },
         {

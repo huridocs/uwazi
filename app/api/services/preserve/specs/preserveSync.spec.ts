@@ -274,8 +274,18 @@ describe('preserveSync', () => {
               source: [{ label: 'www.url3test.org' }],
             },
           },
-          { metadata: {} },
-          { metadata: {} },
+          {
+            metadata: expect.not.objectContaining({
+              url: expect.anything(),
+              source: expect.anything(),
+            }),
+          },
+          {
+            metadata: expect.not.objectContaining({
+              url: expect.anything(),
+              source: expect.anything(),
+            }),
+          },
         ]);
       }, tenantName);
     });
@@ -294,8 +304,8 @@ describe('preserveSync', () => {
           {
             metadata: { preservation_date: [{ value: 3 }] },
           },
-          { metadata: {} },
-          { metadata: {} },
+          { metadata: expect.not.objectContaining({ preservation_date: expect.anything() }) },
+          { metadata: expect.not.objectContaining({ preservation_date: expect.anything() }) },
         ]);
       }, tenantName);
     });
