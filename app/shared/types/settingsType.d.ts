@@ -34,6 +34,7 @@ export interface PreserveConfig {
   config: {
     token: string;
     template: ObjectIdSchema;
+    user?: ObjectIdSchema;
   }[];
 }
 
