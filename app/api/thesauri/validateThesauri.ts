@@ -9,10 +9,10 @@ const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
 ajv.addKeyword('uniqueName', {
   async: true,
-  validate: async (_config: any, thesauri: ThesaurusSchema) => {
+  validate: async (_config: any, thesaurus: ThesaurusSchema) => {
     const [duplicated] = await model.get({
-      _id: { $ne: thesauri._id },
-      name: new RegExp(`^${thesauri.name}$` || '', 'i'),
+      _id: { $ne: thesaurus._id },
+      name: new RegExp(`^${thesaurus.name}$` || '', 'i'),
     });
 
     if (duplicated) {
@@ -20,6 +20,20 @@ ajv.addKeyword('uniqueName', {
     }
     return true;
   },
+});
+
+const validateUniqeLabels = (values: { label: string }[] | undefined): boolean => {
+  if (!values) return true;
+  const asSet = new Set(values.map(v => v.label));
+  return values.length === asSet.size;
+};
+
+ajv.addKeyword('uniqueLabels', {
+  async: true,
+  validate: async (_config: any, thesaurus: ThesaurusSchema) =>
+    !thesaurus.values ||
+    (validateUniqeLabels(thesaurus.values) &&
+      thesaurus.values.every(v => validateUniqeLabels(v.values))),
 });
 
 export const validateThesauri = wrapValidator(ajv.compile(thesaurusSchema));

@@ -378,6 +378,70 @@ describe('thesauri', () => {
           expect(error).toBeDefined();
         });
       });
+
+      describe('when trying to save duplicated labels', () => {
+        it.each([
+          {
+            case: 'root',
+            values: [
+              { label: 'duplicated_label' },
+              { label: 'other_label' },
+              { label: 'duplicated_label' },
+            ],
+          },
+          {
+            case: 'group',
+            values: [
+              {
+                label: 'group',
+                values: [
+                  { label: 'duplicated_label' },
+                  { label: 'other_label' },
+                  { label: 'duplicated_label' },
+                ],
+              },
+            ],
+          },
+        ])('should not allow duplication in $case', async ({ values }) => {
+          const toSave = { name: 'test_thesaurus', values };
+          try {
+            await thesauri.save(toSave);
+            fail('should throw error');
+          } catch (e) {
+            expect(e).toBeDefined();
+          }
+        });
+
+        it('should allow same labels in different groups and/or root', async () => {
+          const toSave = {
+            name: 'test_thesaurus',
+            values: [
+              { label: 'same_label' },
+              { label: 'first_group', values: [{ label: 'same_label' }] },
+              { label: 'second_group', values: [{ label: 'same_label' }] },
+            ],
+          };
+
+          const response = await thesauri.save(toSave);
+          expect(response).toMatchObject({
+            _id: expect.anything(),
+            name: 'test_thesaurus',
+            values: [
+              { label: 'same_label', id: expect.anything() },
+              {
+                label: 'first_group',
+                id: expect.anything(),
+                values: [{ label: 'same_label', id: expect.anything() }],
+              },
+              {
+                label: 'second_group',
+                id: expect.anything(),
+                values: [{ label: 'same_label', id: expect.anything() }],
+              },
+            ],
+          });
+        });
+      });
     });
   });
 
