@@ -12,6 +12,21 @@ const defaultHeaders = [
   'StateAllMatch / LabelMismatch / LabelMatch / ValueMismatch / ValueEmpty / EmptyObsolete',
 ];
 
+const dateSuggestion = {
+  entityId: 'shared2',
+  sharedId: 'shared1',
+  propertyName: 'fecha',
+  entityTitle: 'Título entidad',
+  currentValue: 1585851003,
+  suggestedValue: 1585851003,
+  segment: 'Fecha Apr 2, 2020',
+  language: 'Spanish',
+  state: SuggestionState.valueMatch,
+  date: 2,
+  page: 2,
+  fileId: 'fildId',
+};
+
 const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {
   suggestions: [
     {
@@ -42,23 +57,9 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       page: 2,
       fileId: 'fileId1',
     },
+    { ...dateSuggestion },
   ],
   totalPages: 4,
-};
-
-const dateSuggestion = {
-  entityId: 'shared2',
-  sharedId: 'shared1',
-  propertyName: 'fecha',
-  entityTitle: 'Título entidad',
-  currentValue: 1585851003,
-  suggestedValue: 1585851003,
-  segment: 'Fecha Apr 2, 2020',
-  language: 'Spanish',
-  state: SuggestionState.valueMatch,
-  date: 2,
-  page: 2,
-  fileId: 'fildId',
 };
 
 const reviewedProperty: PropertySchema = {

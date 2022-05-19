@@ -232,49 +232,54 @@ describe('EntitySuggestions', () => {
       jest.resetAllMocks();
       spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
       await act(async () => renderComponent());
+    });
 
-      const rows = screen.getAllByRole('row');
-      const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
-      await act(async () => {
-        fireEvent.click(acceptButton);
+    describe('text properties', () => {
+      beforeEach(async () => {
+        const rows = screen.getAllByRole('row');
+        const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
+        await act(async () => {
+          fireEvent.click(acceptButton);
+        });
       });
-    });
-    it('should accept a suggestion for all languages of an entity', async () => {
-      const languageCheck = screen.getByRole('checkbox') as HTMLInputElement;
-      expect(languageCheck.checked).toBe(true);
-      const confirmButton = screen.getByText('Confirm').parentElement!;
-      await act(async () => {
-        fireEvent.click(confirmButton);
-      });
-      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], true);
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
-    });
-    it('should accept a suggestion for only the current language of an entity', async () => {
-      const pendingRow = within(screen.getAllByRole('row')[1])
-        .getAllByRole('cell')
-        .map(cell => cell.textContent);
-      expect(pendingRow[6]).toEqual(SuggestionState.labelMismatch);
-      const languageCheck = screen.getByRole('checkbox');
-      await act(async () => {
-        fireEvent.click(languageCheck);
-      });
-      const confirmButton = screen.getByText('Confirm').parentElement!;
-      await act(async () => {
-        fireEvent.click(confirmButton);
-      });
-      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], false);
 
-      const selectedRow = within(screen.getAllByRole('row')[1])
-        .getAllByRole('cell')
-        .map(cell => cell.textContent);
-      expect(selectedRow[6]).toEqual(SuggestionState.labelMatch);
-    });
-    it('should not accept a suggestion in confirmation is cancelled', async () => {
-      const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
-      await act(async () => {
-        fireEvent.click(cancelButton);
+      it('should accept a suggestion for all languages of an entity', async () => {
+        const languageCheck = screen.getByRole('checkbox') as HTMLInputElement;
+        expect(languageCheck.checked).toBe(true);
+        const confirmButton = screen.getByText('Confirm').parentElement!;
+        await act(async () => {
+          fireEvent.click(confirmButton);
+        });
+        expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], true);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
       });
-      expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
+      it('should accept a suggestion for only the current language of an entity', async () => {
+        const pendingRow = within(screen.getAllByRole('row')[1])
+          .getAllByRole('cell')
+          .map(cell => cell.textContent);
+        expect(pendingRow[6]).toEqual(SuggestionState.labelMismatch);
+        const languageCheck = screen.getByRole('checkbox');
+        await act(async () => {
+          fireEvent.click(languageCheck);
+        });
+        const confirmButton = screen.getByText('Confirm').parentElement!;
+        await act(async () => {
+          fireEvent.click(confirmButton);
+        });
+        expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], false);
+
+        const selectedRow = within(screen.getAllByRole('row')[1])
+          .getAllByRole('cell')
+          .map(cell => cell.textContent);
+        expect(selectedRow[6]).toEqual(SuggestionState.labelMatch);
+      });
+      it('should not accept a suggestion in confirmation is cancelled', async () => {
+        const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
+        await act(async () => {
+          fireEvent.click(cancelButton);
+        });
+        expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
+      });
     });
   });
 

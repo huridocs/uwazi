@@ -46,7 +46,7 @@ const updateEntitiesWithSuggestion = async (
 const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
   const fetchedFiles = await files.get({ _id: suggestion.fileId });
 
-  if (fetchedFiles.length > 0) return Promise.resolve();
+  if (!fetchedFiles?.length) return Promise.resolve();
   const file = fetchedFiles[0];
 
   file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
