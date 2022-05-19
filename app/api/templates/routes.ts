@@ -23,15 +23,6 @@ const saveTemplate = async (template: TemplateSchema, language: string, fullRein
   );
 };
 
-const prepareRequest = (body: TemplateSchema & { reindex?: boolean }) => {
-  const request = { ...body };
-  const { reindex: fullReindex } = request;
-  delete request.reindex;
-  const template = { ...request };
-
-  return { template, fullReindex };
-};
-
 const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
   try {
     return await callback();
@@ -46,7 +37,7 @@ const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
 export default (app: Application) => {
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
-      const { template, fullReindex } = prepareRequest(req.body);
+      const { reindex: fullReindex, ...template } = req.body;
 
       const response = await handleMappingConflict(async () =>
         saveTemplate(template, req.language, fullReindex)
