@@ -44,7 +44,7 @@ describe('templates routes', () => {
     next();
   });
 
-  const postToEnpoint = async (route: string, body: any, expectedCode = 200) =>
+  const postToEndpoint = async (route: string, body: any, expectedCode = 200) =>
     request(app).post(route).send(body).expect(expectedCode);
 
   beforeEach(async () => {
@@ -80,7 +80,7 @@ describe('templates routes', () => {
 
   describe('POST', () => {
     it('should create a template', async () => {
-      await postToEnpoint('/api/templates', templateToSave);
+      await postToEndpoint('/api/templates', templateToSave);
 
       const savedTemplates = await templates.get();
 
@@ -96,7 +96,7 @@ describe('templates routes', () => {
         __v: 0,
       };
 
-      await postToEnpoint('/api/templates', templateToUpdate);
+      await postToEndpoint('/api/templates', templateToUpdate);
 
       const [updatedTemplate] = await templates.get({ _id: templateToUpdate._id });
       expect(updatedTemplate.properties).toContainEqual(
@@ -105,7 +105,7 @@ describe('templates routes', () => {
     });
 
     it('should not emit settings update when settings not modified', async () => {
-      await postToEnpoint('/api/templates', templateToSave);
+      await postToEndpoint('/api/templates', templateToSave);
 
       expect(emitToCurrentTenantSpy).not.toHaveBeenCalledWith('updateSettings');
     });
@@ -116,7 +116,7 @@ describe('templates routes', () => {
         name: 'template5',
       });
 
-      await postToEnpoint('/api/templates', syncedTemplateToSave);
+      await postToEndpoint('/api/templates', syncedTemplateToSave);
 
       expect(templateSaveSpy).toHaveBeenCalledWith(syncedTemplateToSave, undefined, false, false);
     });
@@ -159,7 +159,7 @@ describe('templates routes', () => {
 
   describe('mappings', () => {
     it('should throw an error if template is invalid vs the current elasticsearch mapping', async () => {
-      await postToEnpoint('/api/templates', {
+      await postToEndpoint('/api/templates', {
         ...templateToSave,
         properties: [
           {
@@ -169,15 +169,15 @@ describe('templates routes', () => {
           },
         ],
       });
-      const savedTemplate = await templates.get({ name: 'template4' });
-      await postToEnpoint('/api/templates', {
-        ...savedTemplate[0],
+      const [savedTemplate] = await templates.get({ name: 'template4' });
+      await postToEndpoint('/api/templates', {
+        ...savedTemplate,
         properties: [],
       });
-      const { body } = await postToEnpoint(
+      const { body } = await postToEndpoint(
         '/api/templates',
         {
-          ...savedTemplate[0],
+          ...savedTemplate,
           properties: [
             {
               label: 'Numeric',
@@ -193,7 +193,7 @@ describe('templates routes', () => {
     });
 
     it('should throw an error if template is reusing a property name in same operation', async () => {
-      await postToEnpoint('/api/templates', {
+      await postToEndpoint('/api/templates', {
         ...templateToSave,
         properties: [
           {
@@ -203,12 +203,12 @@ describe('templates routes', () => {
           },
         ],
       });
-      const savedTemplate = await templates.get({ name: 'template4' });
+      const [savedTemplate] = await templates.get({ name: 'template4' });
 
-      const { body } = await postToEnpoint(
+      const { body } = await postToEndpoint(
         '/api/templates',
         {
-          ...savedTemplate[0],
+          ...savedTemplate,
           properties: [
             {
               label: 'Numeric',
@@ -237,7 +237,7 @@ describe('templates routes', () => {
         commonProperties: [{ name: 'title', type: 'text', label: 'Name' }],
       };
 
-      await postToEnpoint('/api/templates', templateA);
+      await postToEndpoint('/api/templates', templateA);
 
       const templateB = {
         ...templateToSave,
@@ -252,19 +252,19 @@ describe('templates routes', () => {
           },
         ],
       };
-      await postToEnpoint('/api/templates', templateB);
+      await postToEndpoint('/api/templates', templateB);
       const [savedTemplate] = await templates.get({ name: 'template B' });
 
       savedTemplate.properties![0].inherit!.property = inheritPropId.toString();
 
-      const { body } = await postToEnpoint('/api/templates', savedTemplate, 409);
+      const { body } = await postToEndpoint('/api/templates', savedTemplate, 409);
       expect(body.error).toContain('conflict');
     });
 
     describe('when there is an error other than mapping conflict', () => {
       it('should throw the error', async () => {
         spyOn(entitiesIndex, 'updateMapping').and.throwError('not 409');
-        await postToEnpoint(
+        await postToEndpoint(
           '/api/templates',
           {
             ...templateToSave,
