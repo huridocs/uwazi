@@ -46,34 +46,32 @@ const updateEntitiesWithSuggestion = async (
 const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
   const fetchedFiles = await files.get({ _id: suggestion.fileId });
 
-  if (fetchedFiles.length > 0) {
-    const file = fetchedFiles[0];
+  if (fetchedFiles.length > 0) return Promise.resolve();
+  const file = fetchedFiles[0];
 
-    file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
-    const extractedMetadata = file.extractedMetadata.find(
-      (em: any) => em.name === suggestion.propertyName
-    ) as ExtractedMetadataSchema;
+  file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
+  const extractedMetadata = file.extractedMetadata.find(
+    (em: any) => em.name === suggestion.propertyName
+  ) as ExtractedMetadataSchema;
 
-    if (!extractedMetadata) {
-      file.extractedMetadata.push({
-        name: suggestion.propertyName,
-        timestamp: Date(),
-        selection: {
-          text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
-          selectionRectangles: suggestion.selectionRectangles,
-        },
-      });
-    } else {
-      extractedMetadata.timestamp = Date();
-      extractedMetadata.selection = {
+  if (!extractedMetadata) {
+    file.extractedMetadata.push({
+      name: suggestion.propertyName,
+      timestamp: Date(),
+      selection: {
         text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
         selectionRectangles: suggestion.selectionRectangles,
-      };
-    }
-    await files.save(file);
+      },
+    });
+  } else {
+    extractedMetadata.timestamp = Date();
+    extractedMetadata.selection = {
+      text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
+      selectionRectangles: suggestion.selectionRectangles,
+    };
   }
+  return files.save(file);
 };
-
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
