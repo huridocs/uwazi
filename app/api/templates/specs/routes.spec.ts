@@ -3,9 +3,11 @@ import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import translations from 'api/i18n';
-import templateRoutes from '../routes';
-import templates from '../templates';
+import * as entitiesIndex from 'api/search/entitiesIndex';
+import { testingDB } from 'api/utils/testing_db';
 import { templateCommonProperties, fixtures, fixtureFactory } from './fixtures/routesFixtures';
+import templates from '../templates';
+import templateRoutes from '../routes';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -220,6 +222,63 @@ describe('templates routes', () => {
       );
 
       expect(body.error).toContain('swap');
+    });
+
+    it('should check mapping of new added inherited properties', async () => {
+      const inheritPropId = testingDB.id();
+      const inheritPropNum = testingDB.id();
+      const templateA = {
+        ...templateToSave,
+        name: 'template A',
+        properties: [
+          { _id: inheritPropNum, name: 'num', type: 'numeric', label: 'Numeric' },
+          { _id: inheritPropId, name: 'name', type: 'text', label: 'Name' },
+        ],
+        commonProperties: [{ name: 'title', type: 'text', label: 'Name' }],
+      };
+
+      await postToEnpoint('/api/templates', templateA);
+
+      const templateB = {
+        ...templateToSave,
+        name: 'template B',
+        properties: [
+          {
+            name: 'relationship',
+            label: 'relationship',
+            type: 'relationship',
+            relationType: 'asdf',
+            inherit: { property: inheritPropNum.toString() },
+          },
+        ],
+      };
+      await postToEnpoint('/api/templates', templateB);
+      const [savedTemplate] = await templates.get({ name: 'template B' });
+
+      savedTemplate.properties![0].inherit!.property = inheritPropId.toString();
+
+      const { body } = await postToEnpoint('/api/templates', savedTemplate, 409);
+      expect(body.error).toContain('conflict');
+    });
+
+    describe('when there is an error other than mapping conflict', () => {
+      it('should throw the error', async () => {
+        spyOn(entitiesIndex, 'updateMapping').and.throwError('not 409');
+        await postToEnpoint(
+          '/api/templates',
+          {
+            ...templateToSave,
+            properties: [
+              {
+                label: 'Numeric',
+                type: 'numeric',
+                name: 'numeric',
+              },
+            ],
+          },
+          500
+        );
+      });
     });
   });
 });
