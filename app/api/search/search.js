@@ -233,7 +233,7 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
   if (property.type === 'relationship') {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
-    const bucketEntities = await entitiesModel.get(
+    const bucketEntities = await entitiesModel.getUnrestricted(
       {
         sharedId: { $in: entitiesSharedId },
         language,
@@ -458,7 +458,13 @@ const _sanitizeAggregations = async (
 ) => {
   const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations, limit);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
-  return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
+  const denormalizedAggregations = await _denormalizeAggregations(
+    sanitizedAggregationNames,
+    templates,
+    dictionaries,
+    language
+  );
+  return denormalizedAggregations;
 };
 
 const permissionsInformation = (hit, user) => {

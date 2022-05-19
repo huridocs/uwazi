@@ -624,7 +624,7 @@ describe('search', () => {
   });
 
   // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('relationship aggregations', () => {
+  describe('relationship aggregations', () => {
     it('should return aggregations based on title of related entity', async () => {
       userFactory.mock({
         _id: ids.collaboratorId,
