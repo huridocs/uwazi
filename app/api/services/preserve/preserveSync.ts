@@ -2,13 +2,14 @@ import entities from 'api/entities';
 import { fileFromReadStream, files, generateFileName } from 'api/files';
 import { errorLog } from 'api/log';
 import { EnforcedWithId } from 'api/odm';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import { newThesauriId } from 'api/templates/utils';
 import { tenants } from 'api/tenants';
 import thesauri from 'api/thesauri';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
+import users from 'api/users/users';
+import { appContext } from 'api/utils/AppContext';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
@@ -74,30 +75,35 @@ const extractURL = async (
 };
 
 const saveEvidence =
-  (token: string, templateId: ObjectIdSchema, host: string) =>
+  (config: PreserveConfig['config'][0], host: string) =>
   async (previous: Promise<EntitySchema>, evidence: any) => {
     await previous;
 
     try {
-      const template = await templates.getById(templateId);
+      const template = await templates.getById(config.template);
+      const user = await users.getById(config.user);
+
+      if (user) {
+        appContext.set('user', user);
+      }
 
       const { sharedId } = await entities.save(
         {
           title: evidence.attributes.title,
-          template: templateId,
+          template: config.template,
           metadata: {
             ...(await extractURL(template, evidence)),
             ...(await extractSource(template, evidence)),
           },
         },
-        { language: 'en', user: {} }
+        { language: 'en', user: user || {} }
       );
       await Promise.all(
         evidence.attributes.downloads.map(async (download: any) => {
           const fileName = generateFileName({ originalname: path.basename(download.path) });
           const fileStream = (
             await fetch(new URL(path.join(host, download.path)).toString(), {
-              headers: { Authorization: token },
+              headers: { Authorization: config.token },
             })
           ).body as unknown as NodeJS.ReadableStream;
           if (fileStream) {
@@ -122,7 +128,6 @@ const preserveSync = {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
       return tenants.run(async () => {
-        permissionsContext.setCommandContext();
         const { features } = await settings.get({}, 'features.preserve');
         if (features?.preserve) {
           await this.sync(features.preserve);
@@ -152,7 +157,7 @@ const preserveSync = {
       );
 
       await evidences.json.data.reduce(
-        saveEvidence(config.token, config.template, preserveConfig.host),
+        saveEvidence(config, preserveConfig.host),
         Promise.resolve()
       );
 

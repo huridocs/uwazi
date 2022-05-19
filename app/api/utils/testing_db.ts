@@ -74,6 +74,7 @@ const initMongoServer = async (dbName: string) => {
 const testingDB: {
   mongodb: Db | null;
   dbName: string;
+  UserInContextMockFactory: UserInContextMockFactory;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
   id: (id?: string | undefined) => ObjectIdSchema;
@@ -84,6 +85,7 @@ const testingDB: {
 } = {
   mongodb: null,
   dbName: '',
+  UserInContextMockFactory: new UserInContextMockFactory(),
 
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
@@ -126,7 +128,7 @@ const testingDB: {
   async setupFixturesAndContext(fixtures: DBFixture, elasticIndex?: string) {
     await this.connect();
     await fixturer.clearAllAndLoad(mongodb, fixtures);
-    new UserInContextMockFactory().mockEditorUser();
+    this.UserInContextMockFactory.mockEditorUser();
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
