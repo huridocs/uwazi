@@ -479,6 +479,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result.permissions = permissionsInformation(hit, user);
     return result;
   });
+  console.log('response.body.aggregations.all', JSON.stringify(response.body.aggregations.all['relationship.value'], null, 2))
   const sanitizedAggregations = await _sanitizeAggregations(
     response.body.aggregations.all,
     templates,
@@ -486,7 +487,10 @@ const processResponse = async (response, templates, dictionaries, language, filt
     language
   );
 
+  console.log('sanitizedAggregations', JSON.stringify(sanitizedAggregations.relationship, null, 2))
+
   const aggregationsWithAny = _addAnyAggregation(sanitizedAggregations, filters, response);
+
   return {
     rows,
     totalRows: response.body.hits.total.value,

@@ -28,7 +28,6 @@ export default app => {
     validation.validateRequest(searchParamsSchema),
 
     (req, res, next) => {
-      console.log('api/search -----------------------------------')
       const action = req.query.geolocation ? search.searchGeolocations : search.search;
 
       return action(req.query, req.language, req.user)

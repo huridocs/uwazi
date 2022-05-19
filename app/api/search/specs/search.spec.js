@@ -5,6 +5,7 @@ import date from 'api/utils/date';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
+import { UserRole } from 'shared/types/userSchema';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
@@ -622,6 +623,61 @@ describe('search', () => {
     });
   });
 
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('relationship aggregations', () => {
+    it('should return aggregations based on title of related entity', async () => {
+      userFactory.mock({
+        _id: ids.collaboratorId,
+        role: UserRole.COLLABORATOR,
+        username: 'collaboratorUser',
+        email: 'collaborator@test.com',
+      });
+      const allAggregations = await search.search(
+        { allAggregations: false, types: [ids.template1] },
+        'en'
+      );
+
+      // console.log(
+      //   'allAggregations.aggregations.all.relationship',
+      //   JSON.stringify(allAggregations.aggregations.all.relationship, null, 2)
+      // );
+
+      expect(allAggregations.aggregations.all.relationship.buckets).toMatchObject([
+        {
+          key: 'missing',
+          doc_count: 29,
+          filtered: {
+            doc_count: 4,
+          },
+          label: 'No label',
+        },
+        {
+          key: 'shared2',
+          doc_count: 2,
+          filtered: {
+            doc_count: 1,
+          },
+          label: 'Batman begins en',
+        },
+        {
+          key: 'unpublished',
+          doc_count: 2,
+          filtered: {
+            doc_count: 1,
+          },
+          label: 'unpublished',
+        },
+        {
+          key: 'any',
+          doc_count: 1,
+          label: 'Any',
+          filtered: {
+            doc_count: 1,
+          },
+        },
+      ]);
+    });
+  });
   describe('multiselect aggregations', () => {
     it('should return aggregations of multiselect fields', done => {
       userFactory.mock(undefined);
