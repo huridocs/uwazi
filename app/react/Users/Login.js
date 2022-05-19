@@ -19,7 +19,7 @@ const reloadHome = () => {
   window.location.assign('/');
 };
 
-export class Login extends RouteHandler {
+class Login extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.state = { error: false, error2fa: false, recoverPassword: false, tokenRequired: false };
@@ -53,6 +53,7 @@ export class Login extends RouteHandler {
     }
     reconnectSocket();
     this.props.reloadThesauris();
+    this.props.change('library.search.publishedStatus.values', ['published', 'restricted']);
     browserHistory.push('/');
   }
 
@@ -231,6 +232,7 @@ Login.propTypes = {
   login: PropTypes.func,
   recoverPassword: PropTypes.func,
   reloadThesauris: PropTypes.func,
+  change: PropTypes.func,
 };
 
 export function mapStateToProps({ settings }) {
@@ -245,9 +247,12 @@ function mapDispatchToProps(dispatch) {
       login: auth.actions.login,
       recoverPassword: auth.actions.recoverPassword,
       reloadThesauris: reloadThesauri,
+      change: formActions.change,
     },
     dispatch
   );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
+
+export { Login };

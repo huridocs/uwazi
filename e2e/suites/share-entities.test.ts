@@ -53,7 +53,7 @@ describe('Share entities', () => {
     });
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
-    await expect(page).toClick('.userGroupsLookupField');
+    await expect(page).toClick('.userGroupsLookupField > input');
     await page.waitForSelector('.userGroupsLookupField li .press-enter-note');
     const availableCollaborators = await page.$$eval(
       '.userGroupsLookupField li .member-list-item',
