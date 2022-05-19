@@ -31,6 +31,7 @@ export const EntitySuggestions = ({
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
 
   socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
@@ -40,8 +41,9 @@ export const EntitySuggestions = ({
   });
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    toggleAllRowsSelected(false);
+    if (reviewedProperty.type !== 'date') {
+      setOpenModal(true);
+    }
     row.toggleRowSelected();
     setAcceptingSuggestion(true);
   };
@@ -149,7 +151,6 @@ export const EntitySuggestions = ({
   };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
-    setAcceptingSuggestion(false);
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
@@ -158,6 +159,8 @@ export const EntitySuggestions = ({
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
+    setOpenModal(false);
+    toggleAllRowsSelected(false);
   };
 
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
@@ -196,6 +199,16 @@ export const EntitySuggestions = ({
         setStatus('error');
       });
   }, []);
+
+  useEffect(() => {
+    if (acceptingSuggestion) {
+      if (reviewedProperty.type === 'date') {
+        acceptSuggestion(true)
+          .then(() => {})
+          .catch(() => {});
+      }
+    }
+  }, [acceptingSuggestion]);
 
   const ixmessages: { [k: string]: string } = {
     ready: 'Find suggestions',
@@ -270,8 +283,8 @@ export const EntitySuggestions = ({
           totalPages={totalPages}
         />
         <SuggestionAcceptanceModal
-          isOpen={acceptingSuggestion}
-          onClose={() => setAcceptingSuggestion(false)}
+          isOpen={openModal}
+          onClose={() => setOpenModal(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
       </div>
