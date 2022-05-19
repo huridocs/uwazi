@@ -126,7 +126,7 @@ const settingsPreserveConfigSchema = {
         required: ['token', 'template'],
         type: 'object',
         additionalProperties: false,
-        properties: { token: { type: 'string' }, template: objectIdSchema },
+        properties: { token: { type: 'string' }, template: objectIdSchema, user: objectIdSchema },
       },
     },
   },

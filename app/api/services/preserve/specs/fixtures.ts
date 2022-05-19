@@ -1,12 +1,20 @@
 import { templateUtils } from 'api/templates';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
+import { UserSchema } from 'shared/types/userType';
 
 export const templateId = db.id();
 export const anotherTemplateId = db.id();
 export const thesauri1Id = db.id();
+export const user: UserSchema = {
+  _id: db.id(),
+  username: 'author',
+  email: 'author@test_preserve.com',
+  role: 'admin',
+};
 
 export const fixtures: DBFixture = {
+  users: [user],
   settings: [
     {
       _id: db.id(),
@@ -15,7 +23,7 @@ export const fixtures: DBFixture = {
         preserve: {
           host: 'http://preserve-testing.org',
           config: [
-            { token: 'auth-token', template: templateId },
+            { token: 'auth-token', template: templateId, user: user._id },
             { token: 'another-auth-token', template: anotherTemplateId },
           ],
         },

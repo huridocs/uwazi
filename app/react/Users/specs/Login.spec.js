@@ -33,6 +33,7 @@ describe('Login', () => {
       recoverPassword: jasmine.createSpy('recoverPassword').and.returnValue(Promise.resolve()),
       notify: jasmine.createSpy('notify'),
       reloadThesauris: jasmine.createSpy('reloadThesauris'),
+      change: jasmine.createSpy('change'),
       routes: [],
     };
     spyOn(formActions, 'reset').and.callFake(formName => formName);
@@ -81,12 +82,17 @@ describe('Login', () => {
     });
 
     describe('on response success', () => {
-      it('should reload thesauris and go to home', async () => {
+      it('should reload thesauris, set filters to include "restricted", and go to home', async () => {
         spyOn(browserHistory, 'push');
         expect(props.reloadThesauris).not.toHaveBeenCalled();
+        expect(props.change).not.toHaveBeenCalled();
         await instance.submit('credentials');
 
         expect(props.reloadThesauris).toHaveBeenCalled();
+        expect(props.change).toHaveBeenCalledWith('library.search.publishedStatus.values', [
+          'published',
+          'restricted',
+        ]);
         expect(browserHistory.push).toHaveBeenCalledWith('/');
       });
 
