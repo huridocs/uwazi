@@ -79,8 +79,15 @@ class MetadataFormFields extends Component {
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris, attachments, localAttachments, multipleEdition } =
-      this.props;
+    const {
+      dateFormat,
+      version,
+      entityThesauris,
+      attachments,
+      localAttachments,
+      multipleEdition,
+      locale,
+    } = this.props;
     const propertyType = property.type;
     const plainAttachments = attachments.toJS();
     const plainLocalAttachments = localAttachments;
@@ -157,9 +164,9 @@ class MetadataFormFields extends Component {
           />
         );
       case 'date':
-        return <DatePicker model={_model} format={dateFormat} />;
+        return <DatePicker model={_model} format={dateFormat} locale={locale} />;
       case 'daterange':
-        return <DateRange model={_model} format={dateFormat} />;
+        return <DateRange model={_model} format={dateFormat} locale={locale} />;
       case 'numeric':
         return <Numeric model={_model} />;
       case 'markdown':
@@ -167,9 +174,9 @@ class MetadataFormFields extends Component {
       case 'nested':
         return <Nested model={_model} />;
       case 'multidate':
-        return <MultiDate model={_model} format={dateFormat} />;
+        return <MultiDate model={_model} format={dateFormat} locale={locale} />;
       case 'multidaterange':
-        return <MultiDateRange model={_model} format={dateFormat} />;
+        return <MultiDateRange model={_model} format={dateFormat} locale={locale} />;
       case 'geolocation':
         return <Geolocation model={_model} />;
       case 'link':
@@ -349,6 +356,7 @@ MetadataFormFields.defaultProps = {
   highlightedProps: [],
   localAttachments: [],
   storeKey: '',
+  locale: '',
 };
 
 MetadataFormFields.propTypes = {
@@ -365,6 +373,7 @@ MetadataFormFields.propTypes = {
   attachments: PropTypes.instanceOf(Immutable.List),
   localAttachments: PropTypes.arrayOf(PropTypes.instanceOf(Object)),
   change: PropTypes.func.isRequired,
+  locale: PropTypes.string,
 };
 
 export const mapStateToProps = (state, ownProps) => {
@@ -391,11 +400,13 @@ export const mapStateToProps = (state, ownProps) => {
     localAttachments = state.entityView.entityForm.attachments;
   }
 
+  const { locale } = state;
   return {
     dateFormat: state.settings.collection.get('dateFormat'),
     entityThesauris: state.entityThesauris,
     attachments,
     localAttachments,
+    locale,
   };
 };
 
