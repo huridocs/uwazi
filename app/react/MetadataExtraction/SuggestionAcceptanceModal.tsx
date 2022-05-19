@@ -36,7 +36,7 @@ export const SuggestionAcceptanceModal = ({
               <Translate>Apply to all languages</Translate>
             </>
           ) : (
-            <Translate>This will be applied across all languages</Translate>
+            <Translate>This will update the entity across all languages</Translate>
           )}
         </label>
       </Modal.Body>
