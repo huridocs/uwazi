@@ -1,5 +1,5 @@
 import { actions as formActions } from 'react-redux-form';
-import { dateToMilliseconds } from 'shared/dataUtils';
+import { dateToSeconds } from 'shared/dataUtils';
 import { actions } from 'app/BasicReducer';
 
 const updateSelection = (
@@ -20,7 +20,7 @@ const updateSelection = (
 
 const updateFormField = (value: string, model: string, fieldType?: string) => {
   if (fieldType === 'date') {
-    const dateForPicker = dateToMilliseconds(value);
+    const dateForPicker = dateToSeconds(value);
     return formActions.change(model, dateForPicker);
   }
 

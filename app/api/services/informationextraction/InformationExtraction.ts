@@ -22,7 +22,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
-import { dateToMilliseconds } from 'shared/dataUtils';
+import { dateToSeconds } from 'shared/dataUtils';
 import {
   FileWithAggregation,
   getFilesForTraining,
@@ -172,7 +172,7 @@ class InformationExtraction {
       case 'numeric':
         return parseFloat(suggestedValue) || null;
       case 'date':
-        return dateToMilliseconds(suggestedValue);
+        return dateToSeconds(suggestedValue);
       default:
         return suggestedValue;
     }

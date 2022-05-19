@@ -36,11 +36,11 @@ const deepEquals = (a: any, b: any): boolean => {
   return a === b;
 };
 
-const dateToMilliseconds = (value: string) => {
+const dateToSeconds = (value: string) => {
   let getDate = Date.parse(`${value} GMT`);
   if (Number.isNaN(getDate)) {
     const momentDate = moment
-      .parseZone(value, ['DD-MM-YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD', 'YYYY'])
+      .utc(value, ['DD-MM-YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD', 'YYYY'], false)
       .format('x');
     getDate = parseInt(momentDate, 10);
   }
@@ -48,4 +48,4 @@ const dateToMilliseconds = (value: string) => {
   return formattedDate;
 };
 
-export { deepEquals, dateToMilliseconds };
+export { deepEquals, dateToSeconds };
