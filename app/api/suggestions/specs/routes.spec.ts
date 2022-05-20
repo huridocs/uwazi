@@ -90,6 +90,37 @@ describe('suggestions routes', () => {
       expect(response.body.totalPages).toBe(1);
     });
 
+    it('should include failed suggestions but not processing ones', async () => {
+      const response = await request(app)
+        .get('/api/suggestions')
+        .query({ filter: { propertyName: 'age' } })
+        .expect(200);
+      expect(response.body.suggestions).toMatchObject(
+        expect.arrayContaining([
+          expect.objectContaining({
+            entityTitle: 'Joker',
+            propertyName: 'age',
+            segment: 'Joker age is 45',
+            sharedId: 'shared4',
+            state: 'Error',
+            suggestedValue: null,
+          }),
+        ])
+      );
+      expect(response.body.suggestions).not.toMatchObject(
+        expect.arrayContaining([
+          expect.objectContaining({
+            entityTitle: 'Alfred',
+            propertyName: 'age',
+            segment: 'Alfred 67 years old processing',
+            currentValue: 23,
+            sharedId: 'shared3',
+            state: 'Mismatch / Value',
+          }),
+        ])
+      );
+    });
+
     describe('pagination', () => {
       it('should return the requested page sorted by date by default', async () => {
         const response = await request(app)
@@ -121,13 +152,13 @@ describe('suggestions routes', () => {
           .get('/api/suggestions/')
           .query({ filter: { propertyName: 'enemy', state: SuggestionState.empty } })
           .expect(200);
-        expect(response.body.suggestions).toMatchObject([
-          {
+        expect(response.body.suggestions).toEqual([
+          expect.objectContaining({
             entityTitle: 'The Penguin',
             state: SuggestionState.empty,
             suggestedValue: '',
             currentValue: '',
-          },
+          }),
         ]);
       });
     });

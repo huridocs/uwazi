@@ -30,6 +30,7 @@ export const IXSuggestionSchema = {
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
+    suggestedText: { type: 'string' },
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
     page: { type: 'number', minimum: 1 },
