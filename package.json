@@ -223,7 +223,7 @@
     "@babel/plugin-transform-react-constant-elements": "7.17.6",
     "@babel/plugin-transform-react-inline-elements": "7.16.7",
     "@babel/preset-env": "7.17.12",
-    "@babel/preset-react": "7.16.7",
+    "@babel/preset-react": "7.17.12",
     "@babel/preset-typescript": "7.16.7",
     "@babel/traverse": "^7.17.3",
     "@testing-library/jest-dom": "^5.16.2",
