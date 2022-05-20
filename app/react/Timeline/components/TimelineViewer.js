@@ -121,7 +121,7 @@ export class TimelineViewer extends Component {
         }
 
         if (metadata.type === 'multidate') {
-          metadata.value.forEach(date => {
+          (metadata.value || []).forEach(date => {
             dates.push({ label: metadata.label, timestamp: date.timestamp, origin });
           });
         }
