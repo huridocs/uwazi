@@ -39,6 +39,7 @@ export interface IXSuggestionType {
   fileId?: ObjectIdSchema;
   propertyName: string;
   suggestedValue: PropertyValueSchema;
+  suggestedText?: string;
   segment: string;
   language: string;
   page?: number;
