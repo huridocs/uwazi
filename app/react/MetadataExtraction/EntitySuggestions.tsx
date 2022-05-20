@@ -164,7 +164,9 @@ export const EntitySuggestions = ({
     setSidePanelOpened(false);
     const changedPropertyValue =
       entity[reviewedProperty.name] || entity.metadata?.[reviewedProperty.name];
-    selectedFlatRows[0].values.currentValue = changedPropertyValue;
+    selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
+      ? changedPropertyValue[0].value || '-'
+      : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
   };
