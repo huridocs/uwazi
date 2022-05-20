@@ -1,18 +1,29 @@
+import { templateUtils } from 'api/templates';
 import db, { DBFixture } from 'api/utils/testing_db';
+import { propertyTypes } from 'shared/propertyTypes';
+import { UserSchema } from 'shared/types/userType';
 
 export const templateId = db.id();
 export const anotherTemplateId = db.id();
+export const thesauri1Id = db.id();
+export const user: UserSchema = {
+  _id: db.id(),
+  username: 'author',
+  email: 'author@test_preserve.com',
+  role: 'admin',
+};
 
 export const fixtures: DBFixture = {
+  users: [user],
   settings: [
     {
       _id: db.id(),
-      languages: [{ label: 'English', key: 'en' }],
+      languages: [{ label: 'English', key: 'en', default: true }],
       features: {
         preserve: {
           host: 'http://preserve-testing.org',
           config: [
-            { token: 'auth-token', template: templateId },
+            { token: 'auth-token', template: templateId, user: user._id },
             { token: 'another-auth-token', template: anotherTemplateId },
           ],
         },
@@ -22,15 +33,45 @@ export const fixtures: DBFixture = {
   templates: [
     {
       _id: templateId,
-      title: 'Template with custom page 1',
-      entityViewPage: '1',
-      properties: [],
+      title: 'Template 1',
+      properties: [
+        {
+          _id: db.id(),
+          name: templateUtils.safeName('URL'),
+          type: 'link',
+          label: 'URL',
+        },
+        {
+          _id: db.id(),
+          type: propertyTypes.select,
+          label: 'Source',
+          name: templateUtils.safeName('Source'),
+          content: thesauri1Id,
+        },
+      ],
     },
     {
       _id: anotherTemplateId,
-      title: 'Template with custom page 2',
-      entityViewPage: '2',
-      properties: [],
+      title: 'Template 2',
+      properties: [
+        {
+          _id: db.id(),
+          name: 'url',
+          type: 'text',
+          label: 'URL',
+        },
+        {
+          _id: db.id(),
+          name: 'source',
+          type: 'link',
+          label: 'Source',
+        },
+      ],
     },
+  ],
+  dictionaries: [{ _id: thesauri1Id, name: 'thesauri1', values: [] }],
+  translations: [
+    { _id: db.id(), locale: 'en', contexts: [] },
+    { _id: db.id(), locale: 'es', contexts: [] },
   ],
 };

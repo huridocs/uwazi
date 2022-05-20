@@ -3,9 +3,13 @@
 exports[`ValueList compact render should render array values separated by ", " 1`] = `
 Array [
   "first_value",
-  ", ",
+  <span>
+    , 
+  </span>,
   "second_value",
-  ", ",
+  <span>
+    , 
+  </span>,
   "third value",
 ]
 `;
@@ -33,7 +37,9 @@ Array [
 exports[`ValueList compact render should rendern icons when the value has one 1`] = `
 Array [
   "first_value",
-  ", ",
+  <span>
+    , 
+  </span>,
   <Fragment>
     <Connect(Icon)
       className="item-icon item-icon-center"
@@ -45,7 +51,9 @@ Array [
     />
     second_value
   </Fragment>,
-  ", ",
+  <span>
+    , 
+  </span>,
   "third value",
 ]
 `;

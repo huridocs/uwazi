@@ -1,8 +1,11 @@
 import entities from 'api/entities';
-import { uwaziFS } from 'api/files/uwaziFS';
 import { fileExists, generateFileName, testingUploadPaths } from 'api/files/filesystem';
+import { uwaziFS } from 'api/files/uwaziFS';
+import { errorLog } from 'api/log';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
+import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
 import backend from 'fetch-mock';
 import path from 'path';
@@ -10,10 +13,9 @@ import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
-import { errorLog } from 'api/log';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
-import { anotherTemplateId, fixtures, templateId } from './fixtures';
+import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -61,6 +63,7 @@ describe('preserveSync', () => {
   beforeAll(async () => {
     await db.connect({ defaultTenant: false });
     await db.clearAllAndLoad(fixtures);
+    db.UserInContextMockFactory.restore();
     backend.restore();
 
     const tenant1 = {
@@ -82,7 +85,7 @@ describe('preserveSync', () => {
       date: `date${id}`,
       title,
       status: 'PROCESSED',
-      url: `url${id}`,
+      url: `http://www.url${id}test.org`,
       downloads: [
         { path: `/evidences/id${id}/content${id}.txt` },
         { path: `/evidences/id${id}/screenshot${id}.jpg` },
@@ -93,15 +96,18 @@ describe('preserveSync', () => {
   describe('sync', () => {
     beforeAll(async () => {
       errorLog.error = jest.fn();
-      const evidences = [fakeEvidence('1', 'title of url1'), fakeEvidence('2', 'title of url2')];
-      await mockVault(evidences, 'auth-token');
-
-      const moreEvidences = [fakeEvidence('4', 'title of url4'), fakeEvidence('42', '')];
-
-      await mockVault(moreEvidences, 'another-auth-token');
-      await preserveSync.syncAllTenants();
-
       await tenants.run(async () => {
+        const evidences = [
+          fakeEvidence('1', 'title of url1'),
+          fakeEvidence('2', 'title of url2'),
+          fakeEvidence('2', ''),
+        ];
+        await mockVault(evidences, 'auth-token');
+
+        const moreEvidences = [fakeEvidence('4', 'title of url4'), fakeEvidence('42', '')];
+
+        await mockVault(moreEvidences, 'another-auth-token');
+        await preserveSync.syncAllTenants();
         const { lastImport } = (await preserveSyncModel.get({ token: 'auth-token' }))[0];
         await mockVault([fakeEvidence('3', 'title of url3')], 'auth-token', lastImport);
         const { lastImport: anotherLastImport } = (
@@ -119,6 +125,7 @@ describe('preserveSync', () => {
 
     it('should create entities based on evidences PROCESSED status', async () => {
       await tenants.run(async () => {
+        permissionsContext.setCommandContext();
         const entitiesImported: EntitySchema[] = await entities.get(
           {},
           {},
@@ -135,6 +142,21 @@ describe('preserveSync', () => {
           { title: 'title of url3', template: templateId.toString() },
           { title: 'title of url4', template: anotherTemplateId.toString() },
           { title: 'title of url5', template: anotherTemplateId.toString() },
+        ]);
+      }, tenantName);
+    });
+
+    it('should save entities with the user configured for the integration', async () => {
+      await tenants.run(async () => {
+        permissionsContext.setCommandContext();
+        const entitiesImported = await entities.get({}, '+permissions', { sort: { title: 'asc' } });
+
+        expect(entitiesImported).toMatchObject([
+          { user: user._id, permissions: [{ refId: user._id?.toString(), level: 'write' }] },
+          { user: user._id, permissions: [{ refId: user._id?.toString(), level: 'write' }] },
+          { user: user._id, permissions: [{ refId: user._id?.toString(), level: 'write' }] },
+          expect.not.objectContaining({ user: expect.anything() }),
+          expect.not.objectContaining({ user: expect.anything() }),
         ]);
       }, tenantName);
     });
@@ -157,6 +179,7 @@ describe('preserveSync', () => {
 
     it('should save evidences downloads as attachments', async () => {
       await tenants.run(async () => {
+        permissionsContext.setCommandContext();
         const entitiesImported: EntityWithFilesSchema[] = (
           await entities.get({}, {}, { sort: { title: 'asc' } })
         ).map((entity: EntityWithFilesSchema) => ({
@@ -165,6 +188,7 @@ describe('preserveSync', () => {
             ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
             : [],
         }));
+
         expect(entitiesImported).toMatchObject(
           [
             {
@@ -215,6 +239,44 @@ describe('preserveSync', () => {
             await fileExists(path.join(testingPaths.attachments, attachment.filename || ''))
           ).toBe(true);
         }
+      }, tenantName);
+    });
+
+    it('should save url and source properties based on the evidence url', async () => {
+      await tenants.run(async () => {
+        permissionsContext.setCommandContext();
+        const importedThesauri = await thesauri.getById(thesauri1Id);
+        expect(importedThesauri).toMatchObject({
+          values: [
+            { label: 'www.url1test.org' },
+            { label: 'www.url2test.org' },
+            { label: 'www.url3test.org' },
+          ],
+        });
+
+        const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
+        expect(entitiesImported).toMatchObject([
+          {
+            metadata: {
+              url: [{ value: { url: 'http://www.url1test.org', label: '' } }],
+              source: [{ label: 'www.url1test.org' }],
+            },
+          },
+          {
+            metadata: {
+              url: [{ value: { url: 'http://www.url2test.org', label: '' } }],
+              source: [{ label: 'www.url2test.org' }],
+            },
+          },
+          {
+            metadata: {
+              url: [{ value: { url: 'http://www.url3test.org', label: '' } }],
+              source: [{ label: 'www.url3test.org' }],
+            },
+          },
+          { metadata: {} },
+          { metadata: {} },
+        ]);
       }, tenantName);
     });
   });

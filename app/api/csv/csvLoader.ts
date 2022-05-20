@@ -92,12 +92,8 @@ export class CSVLoader extends EventEmitter {
     ).toThesauri(language, availableLanguages);
 
     const currentThesauri = (await thesauri.getById(thesaurusId)) || ({} as ThesaurusSchema);
-    const thesauriValues = currentThesauri.values || [];
-
-    const saved = await thesauri.save({
-      ...currentThesauri,
-      values: [...thesauriValues, ...thesaurusValues],
-    });
+    const theaurusToSave = thesauri.appendValues(currentThesauri, thesaurusValues);
+    const saved = await thesauri.save(theaurusToSave);
 
     await translations.updateEntries(thesaurusId.toString(), thesauriTranslations);
 
