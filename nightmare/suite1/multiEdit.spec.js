@@ -173,7 +173,7 @@ describe('multi edit path', () => {
         .waitForTheEntityToBeIndexed()
         .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
         .then(text => {
-          expect(text).toBe('Man-bat');
+          expect(text).toBe('The Spider');
           done();
         })
         .catch(catchErrors(done));
