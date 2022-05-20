@@ -28,9 +28,9 @@ export default app => {
     validation.validateRequest(searchParamsSchema),
 
     (req, res, next) => {
-      const action = req.query.geolocation ? 'searchGeolocations' : 'search';
+      const action = req.query.geolocation ? search.searchGeolocations : search.search;
 
-      return search[action](req.query, req.language, req.user)
+      return action(req.query, req.language, req.user)
         .then(results => res.json(results))
         .catch(next);
     }
