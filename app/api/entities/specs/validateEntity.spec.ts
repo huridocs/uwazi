@@ -219,9 +219,9 @@ describe('validateEntity', () => {
             ".metadata['markdown']"
           );
         });
-        it('should fail if value is a string that exceeds the lucene term byte-length limit', async () => {
+        it('should NOT fail if value is a string that exceeds the lucene term byte-length limit', async () => {
           const entity = createEntity({ metadata: { markdown: [{ value: largeField }] } });
-          await expectError(entity, 'maximum field length exceeded', ".metadata['markdown']");
+          await validateEntity(entity);
         });
       });
 
