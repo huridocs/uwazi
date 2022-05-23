@@ -20,9 +20,9 @@ import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
+import { dateToSeconds } from 'shared/dataUtils';
 import {
   FileWithAggregation,
   getFilesForTraining,
@@ -166,22 +166,16 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  coerceSuggestionValue = (suggestion: RawSuggestion, templates: TemplateSchema[]) => {
-    const allProps: PropertySchema[] = _.flatMap(templates, template => template.properties || []);
-
-    const property = allProps.find(p => p.name === suggestion.property_name);
-
-    let suggestedValue: any = suggestion.text.trim();
-
-    if (property?.type === 'date') {
-      suggestedValue = new Date(suggestion.text).getTime() / 1000;
+  coerceSuggestionValue = (suggestion: RawSuggestion, property?: PropertySchema) => {
+    const suggestedValue = suggestion.text.trim();
+    switch (property?.type) {
+      case 'numeric':
+        return parseFloat(suggestedValue) || null;
+      case 'date':
+        return dateToSeconds(suggestedValue);
+      default:
+        return suggestedValue;
     }
-
-    if (Number.isNaN(suggestedValue)) {
-      return null;
-    }
-
-    return suggestedValue;
   };
 
   saveSuggestions = async (message: ResultsMessage) => {
@@ -212,7 +206,14 @@ class InformationExtraction {
         let status: 'ready' | 'failed' = 'ready';
         let error = '';
 
-        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, templates);
+        const allProps: PropertySchema[] = _.flatMap(
+          templates,
+          template => template.properties || []
+        );
+        const property = allProps.find(p => p.name === rawSuggestion.property_name);
+
+        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, property);
+
         if (suggestedValue === null) {
           status = 'failed';
           error = 'Invalid value for property type';
@@ -226,6 +227,7 @@ class InformationExtraction {
         const suggestion: IXSuggestionType = {
           ...currentSuggestion,
           suggestedValue,
+          ...(property?.type === 'date' ? { suggestedText: rawSuggestion.text } : {}),
           segment: rawSuggestion.segment_text,
           status,
           error,

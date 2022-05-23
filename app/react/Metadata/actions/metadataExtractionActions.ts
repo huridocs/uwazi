@@ -1,18 +1,6 @@
-import moment from 'moment';
 import { actions as formActions } from 'react-redux-form';
+import { dateToSeconds } from 'shared/dataUtils';
 import { actions } from 'app/BasicReducer';
-
-const dateToMilliseconds = (value: string) => {
-  let getDate = Date.parse(`${value} GMT`);
-  if (Number.isNaN(getDate)) {
-    const momentDate = moment
-      .parseZone(value, ['DD-MM-YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD', 'YYYY'])
-      .format('x');
-    getDate = parseInt(momentDate, 10);
-  }
-  const formattedDate = getDate / 1000;
-  return formattedDate;
-};
 
 const updateSelection = (
   selection: { [key: string]: string },
@@ -32,7 +20,7 @@ const updateSelection = (
 
 const updateFormField = (value: string, model: string, fieldType?: string) => {
   if (fieldType === 'date') {
-    const dateForPicker = dateToMilliseconds(value);
+    const dateForPicker = dateToSeconds(value);
     return formActions.change(model, dateForPicker);
   }
 
