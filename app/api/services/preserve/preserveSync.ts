@@ -74,6 +74,21 @@ const extractURL = async (
   return hasURLProperty ? { url: [{ value: { label: '', url: evidence.attributes.url } }] } : {};
 };
 
+const extractDate = async (
+  template: EnforcedWithId<TemplateSchema> | null,
+  evidence: { [k: string]: any }
+) => {
+  const hasDateProperty = (template?.properties || []).find(
+    property => property.name === 'preservation_date' && property.type === propertyTypes.date
+  );
+
+  return hasDateProperty
+    ? {
+        preservation_date: [{ value: Date.parse(evidence.attributes.date) / 1000 }],
+      }
+    : {};
+};
+
 const saveEvidence =
   (config: PreserveConfig['config'][0], host: string) =>
   async (previous: Promise<EntitySchema>, evidence: any) => {
@@ -94,6 +109,7 @@ const saveEvidence =
           metadata: {
             ...(await extractURL(template, evidence)),
             ...(await extractSource(template, evidence)),
+            ...(await extractDate(template, evidence)),
           },
         },
         { language: 'en', user: user || {} }
