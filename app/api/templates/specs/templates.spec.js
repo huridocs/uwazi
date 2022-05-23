@@ -215,7 +215,7 @@ describe('templates', () => {
       const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];
 
       testTemplate.commonProperties[0].label = 'First New Title';
-      await templates.save(testTemplate);
+      await templates.save(testTemplate, 'es', true, false);
       let expectedContext = {
         'template to be edited': 'template to be edited',
         'First New Title': 'First New Title',
