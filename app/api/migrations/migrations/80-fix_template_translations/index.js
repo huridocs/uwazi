@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 export default {
   delta: 80,
@@ -29,6 +28,7 @@ export default {
           .toArray()
       ).map(context => context.label);
 
+      // eslint-disable-next-line no-restricted-syntax
       for await (const currentLabel of currentTranslationLabels) {
         await db.collection('translations').updateMany(
           {},

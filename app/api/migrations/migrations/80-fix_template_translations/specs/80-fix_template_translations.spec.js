@@ -4,7 +4,7 @@ import { fixtures } from './fixtures.js';
 
 describe('migration fix_template_translations', () => {
   beforeEach(async () => {
-    // spyOn(process.stdout, 'write');
+    spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
   });
 
