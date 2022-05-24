@@ -177,7 +177,7 @@ export default {
       if (templateId in this.propertyNameContentMap) {
         this.bulkWriteActions.push(this.replaceAction(this.denormalizeEntity(entity)));
       }
-      if (this.bulkWriteActions.length >= 1000) await this.perform();
+      if (this.bulkWriteActions.length >= 1000) await this.perform(db);
     }
     if (this.bulkWriteActions.length) await this.perform(db);
   },
