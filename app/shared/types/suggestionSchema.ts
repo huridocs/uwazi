@@ -34,11 +34,12 @@ export const IXSuggestionSchema = {
     language: { type: 'string', minLength: 1 },
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
+    state: { type: 'string', enum: Object.values(SuggestionState) },
     date: { type: 'number' },
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
   },
-  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language'],
+  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language', 'state'],
 };
 
 export const EntitySuggestionSchema = {

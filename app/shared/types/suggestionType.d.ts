@@ -43,6 +43,16 @@ export interface IXSuggestionType {
   language: string;
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
+  state?:
+    | 'Match / Label'
+    | 'Mismatch / Label'
+    | 'Match / Value'
+    | 'Mismatch / Value'
+    | 'Empty / Empty'
+    | 'Obsolete'
+    | 'Empty / Label'
+    | 'Empty / Value'
+    | 'Error';
   date?: number;
   error?: string;
   selectionRectangles?: {
