@@ -40,8 +40,6 @@ export const EntitySuggestions = ({
   });
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    toggleAllRowsSelected(false);
     row.toggleRowSelected();
     setAcceptingSuggestion(true);
   };
@@ -149,7 +147,6 @@ export const EntitySuggestions = ({
   };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
-    setAcceptingSuggestion(false);
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
@@ -158,13 +155,18 @@ export const EntitySuggestions = ({
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
+
+    setAcceptingSuggestion(false);
+    toggleAllRowsSelected(false);
   };
 
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const changedPropertyValue =
       entity[reviewedProperty.name] || entity.metadata?.[reviewedProperty.name];
-    selectedFlatRows[0].values.currentValue = changedPropertyValue;
+    selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
+      ? changedPropertyValue[0].value || '-'
+      : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
   };
@@ -271,6 +273,7 @@ export const EntitySuggestions = ({
         />
         <SuggestionAcceptanceModal
           isOpen={acceptingSuggestion}
+          propertyType={reviewedProperty.type}
           onClose={() => setAcceptingSuggestion(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />

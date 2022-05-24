@@ -4,12 +4,14 @@ import { Translate } from 'app/I18N';
 
 export interface SuggestionAcceptanceModalProps {
   isOpen: boolean;
+  propertyType: string;
   onClose: () => void;
   onAccept: (allLanguages: boolean) => void;
 }
 
 export const SuggestionAcceptanceModal = ({
   isOpen,
+  propertyType,
   onClose,
   onAccept,
 }: SuggestionAcceptanceModalProps) => {
@@ -23,13 +25,19 @@ export const SuggestionAcceptanceModal = ({
       </Modal.Header>
       <Modal.Body>
         <label className="language-checkbox">
-          <input
-            type="checkbox"
-            checked={allLanguages}
-            onChange={e => setAllLanguages(e.target.checked)}
-          />
-          &nbsp;
-          <Translate>Apply to all languages</Translate>
+          {propertyType !== 'date' ? (
+            <>
+              <input
+                type="checkbox"
+                checked={allLanguages}
+                onChange={e => setAllLanguages(e.target.checked)}
+              />
+              &nbsp;
+              <Translate>Apply to all languages</Translate>
+            </>
+          ) : (
+            <Translate>This will update the entity across all languages</Translate>
+          )}
         </label>
       </Modal.Body>
       <Modal.Footer>
