@@ -203,7 +203,9 @@ export default {
     templateStructureChanges = true
   ) {
     const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
-    await updateTranslation(currentTemplate, template);
+    if (templateStructureChanges || currentTemplate.name !== template.name) {
+      await updateTranslation(currentTemplate, template);
+    }
     if (templateStructureChanges) {
       await removeExcludedPropertiesValues(currentTemplate, template);
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
