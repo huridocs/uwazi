@@ -68,7 +68,7 @@ export default {
     while (await thesauri.hasNext()) {
       const thesaurus = await thesauri.next();
       const flatValues = [];
-      thesaurus.values.forEach(value => {
+      (thesaurus.values || []).forEach(value => {
         flatValues.push(value);
         if (value.values) {
           value.values.forEach(v => {
@@ -87,7 +87,7 @@ export default {
     while (await templates.hasNext()) {
       const template = await templates.next();
       this.propertyNameContentMap[template._id.toString()] = {};
-      template.properties.forEach(p => {
+      (template.properties || []).forEach(p => {
         if (ROOT_TYPES.has(p.type)) {
           this.propertyNameContentMap[template._id.toString()][p.name] = p.content;
           this.propertyIdContentMap[p._id.toString()] = p.content;
@@ -100,7 +100,7 @@ export default {
     const templates = db.collection('templates').find();
     while (await templates.hasNext()) {
       const template = await templates.next();
-      template.properties.forEach(p => {
+      (template.properties || []).forEach(p => {
         if (isInheritedWithThesaurus(p)) {
           this.propertyNameContentMap[template._id.toString()][p.name] =
             this.propertyIdContentMap[p.inherit.property];
@@ -149,10 +149,12 @@ export default {
   },
 
   denormalizeEntity(entity) {
-    return {
-      ...entity,
-      metadata: this.denormalizeMetadata(entity.metadata, entity.template.toString()),
-    };
+    return entity.template
+      ? {
+          ...entity,
+          metadata: this.denormalizeMetadata(entity.metadata, entity.template.toString()),
+        }
+      : entity;
   },
 
   replaceAction(entity) {
@@ -173,8 +175,8 @@ export default {
     const entities = await db.collection('entities').find({});
     while (await entities.hasNext()) {
       const entity = await entities.next();
-      const templateId = entity.template.toString();
-      if (templateId in this.propertyNameContentMap) {
+      const templateId = entity.template?.toString();
+      if (templateId && templateId in this.propertyNameContentMap) {
         this.bulkWriteActions.push(this.replaceAction(this.denormalizeEntity(entity)));
       }
       if (this.bulkWriteActions.length >= 1000) await this.perform(db);
