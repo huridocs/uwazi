@@ -218,6 +218,7 @@ describe('InformationExtraction', () => {
         expect.objectContaining({
           entityId: 'A1',
           status: 'processing',
+          state: 'placeholder',
         })
       );
     });
@@ -258,6 +259,7 @@ describe('InformationExtraction', () => {
           suggestedValue: 'suggestion_text_1',
           segment: 'segment_text_1',
           status: 'ready',
+          state: 'placeholder',
         })
       );
     });
@@ -322,6 +324,7 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_other_language',
+          state: 'placeholder',
         })
       );
 
@@ -331,6 +334,7 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_eng_language',
+          state: 'placeholder',
         })
       );
     });
@@ -367,6 +371,7 @@ describe('InformationExtraction', () => {
           segment: '',
           status: 'failed',
           error: 'Issue calculation suggestion',
+          state: 'placeholder',
         })
       );
     });
