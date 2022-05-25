@@ -249,6 +249,8 @@ export const Suggestions = {
     return { suggestions: data, totalPages };
   },
 
+  save: async (suggestion: IXSuggestionType, entity: EntitySchema, file: FileWithAggregation) => {},
+
   accept: async (
     acceptedSuggestion: {
       _id: ObjectIdSchema;
