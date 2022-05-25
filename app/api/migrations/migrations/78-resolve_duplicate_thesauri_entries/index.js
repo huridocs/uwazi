@@ -185,9 +185,9 @@ export default {
     const entities = await db.collection('entities').find({});
     while (await entities.hasNext()) {
       const entity = await entities.next();
-      const templateId = entity.template.toString();
+      const templateId = entity.template?.toString();
       const template = this.templateIdMap[templateId];
-      if (!template?.synced && templateId && templateId in this.propertyNameContentMap) {
+      if (templateId && !template?.synced && templateId in this.propertyNameContentMap) {
         this.bulkWriteActions.push(this.replaceAction(this.denormalizeEntity(entity)));
       }
       if (this.bulkWriteActions.length >= 1000) await this.perform(db);
