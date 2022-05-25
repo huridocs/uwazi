@@ -15,7 +15,6 @@ describe('stateTransitions', () => {
         },
         1,
         '',
-        '',
         ''
       )
     ).toBe('Error');
@@ -33,7 +32,6 @@ describe('stateTransitions', () => {
           date: 0,
         },
         1,
-        '',
         '',
         ''
       )
@@ -53,7 +51,6 @@ describe('stateTransitions', () => {
         },
         1,
         undefined,
-        '',
         'something'
       )
     ).toBe(SuggestionState.valueEmpty);
@@ -65,13 +62,12 @@ describe('stateTransitions', () => {
         {
           entityId: 'some entity',
           propertyName: 'some property',
-          suggestedValue: null,
+          suggestedValue: 'something',
           segment: 'segment info',
           language: 'es',
           date: 2,
         },
         1,
-        'something',
         'something',
         'something'
       )
@@ -91,7 +87,6 @@ describe('stateTransitions', () => {
         },
         1,
         'something',
-        '',
         ''
       )
     ).toBe(SuggestionState.empty);
@@ -110,7 +105,6 @@ describe('stateTransitions', () => {
         },
         1,
         'something',
-        '',
         'something'
       )
     ).toBe(SuggestionState.labelEmpty);
@@ -122,14 +116,13 @@ describe('stateTransitions', () => {
         {
           entityId: 'some entity',
           propertyName: 'some property',
-          suggestedValue: null,
+          suggestedValue: 'something else',
           segment: 'segment info',
           language: 'es',
           date: 2,
         },
         1,
         'something',
-        'something else',
         'something'
       )
     ).toBe(SuggestionState.labelMismatch);
@@ -141,14 +134,13 @@ describe('stateTransitions', () => {
         {
           entityId: 'some entity',
           propertyName: 'some property',
-          suggestedValue: null,
+          suggestedValue: 'something',
           segment: 'segment info',
           language: 'es',
           date: 2,
         },
         1,
         'something else',
-        'something',
         'something'
       )
     ).toBe(SuggestionState.valueMatch);
@@ -160,14 +152,13 @@ describe('stateTransitions', () => {
         {
           entityId: 'some entity',
           propertyName: 'some property',
-          suggestedValue: null,
+          suggestedValue: 'something',
           segment: 'segment info',
           language: 'es',
           date: 2,
         },
         1,
         'something else',
-        'something',
         'some other thing'
       )
     ).toBe(SuggestionState.valueMismatch);

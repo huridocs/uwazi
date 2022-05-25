@@ -5,10 +5,11 @@ export const getState = (
   suggestion: IXSuggestionType,
   modelCreationDate: number,
   labeledValue: string | undefined,
-  suggestedValue: string,
   currentValue: string
 ) => {
   if (suggestion.error) return 'Error';
+
+  const suggestedValue = suggestion.suggestedValue || '';
 
   if (suggestion.date !== undefined && suggestion.date <= modelCreationDate) {
     return SuggestionState.obsolete;
