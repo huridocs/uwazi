@@ -24,7 +24,7 @@ export const getState = (
   labeledValue: string | undefined,
   currentValue: string
 ) => {
-  if (suggestion.error) return 'Error';
+  if (suggestion.error) return SuggestionState.error;
 
   const suggestedValue = suggestion.suggestedValue || '';
 

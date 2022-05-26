@@ -2,14 +2,16 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXSuggestionsFilter } from 'shared/types/suggestionType';
-import { EntitySchema } from 'shared/types/entityType';
-import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
-import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
-import { SuggestionState } from 'shared/types/suggestionSchema';
-import settings from 'api/settings/settings';
 import { files } from 'api/files/files';
+import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
+import settings from 'api/settings/settings';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { index, IndexTargetTypes } from 'shared/indexData';
+import { SuggestionState } from 'shared/types/suggestionSchema';
+import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
+import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
+import { extractCurrentValue, extractLabeledValue, getState } from './getState';
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
@@ -249,7 +251,38 @@ export const Suggestions = {
     return { suggestions: data, totalPages };
   },
 
-  save: async (suggestion: IXSuggestionType, entity: EntitySchema, file: FileWithAggregation) => {},
+  save: async (suggestion: IXSuggestionType) => {
+    const { entityId, fileId, propertyName } = suggestion;
+    const [entity] = await entities.getUnrestricted({ _id: entityId });
+    const [file] = await files.get({ _id: fileId });
+    const [model] = await IXModelsModel.get({ propertyName }); // can there be more? should we sort by date and get the last?
+
+    const newSuggestion = {
+      ...suggestion,
+      state: getState(
+        suggestion,
+        model.creationDate,
+        extractLabeledValue(file, propertyName),
+        extractCurrentValue(entity, propertyName)
+      ),
+    };
+
+    return IXSuggestionsModel.save(newSuggestion);
+  },
+
+  saveMultiple: async (suggestions: IXSuggestionType[]) => {
+    const entityIds = suggestions.map(s => s.entityId);
+    const entityMap = index(await entities.getUnrestricted({ _id: { $in: entityIds } }), e =>
+      e._id.toString()
+    );
+    const fileIds = suggestions.map(s => s.fileId);
+    const fileMap = index(await files.get({ _id: { $in: fileIds } }), f => f._id.toString());
+    const propertyNames = suggestions.map(s => s.propertyName);
+    const propertyMap = index(
+      await IXModelsModel.get({ propertyName: { $in: propertyNames } }),
+      m => m.propertyName
+    );
+  },
 
   accept: async (
     acceptedSuggestion: {
