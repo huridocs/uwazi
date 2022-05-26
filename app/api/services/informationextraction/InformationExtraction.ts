@@ -28,6 +28,7 @@ import {
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
+import { extractCurrentValue, extractLabeledValue, getState } from 'api/suggestions/getState';
 import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
@@ -236,6 +237,15 @@ class InformationExtraction {
             return rect;
           }),
         };
+
+        const [file] = await filesModel.get({ _id: suggestion.fileId });
+
+        suggestion.state = getState(
+          suggestion,
+          0,
+          extractLabeledValue(file || {}, suggestion.propertyName),
+          extractCurrentValue(entity, suggestion.propertyName)
+        );
         return IXSuggestionsModel.save(suggestion);
       })
     );
@@ -258,6 +268,13 @@ class InformationExtraction {
       status: 'processing',
       date: new Date().getTime(),
     };
+
+    suggestion.state = getState(
+      suggestion,
+      0,
+      extractLabeledValue(file, propertyName),
+      extractCurrentValue(entity, propertyName)
+    );
 
     return IXSuggestionsModel.save(suggestion);
   };

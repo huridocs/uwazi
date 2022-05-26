@@ -1,3 +1,5 @@
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 
@@ -7,6 +9,15 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 // - file (match through fileId)
 // - related model (match by propertyName)
 
+export const extractLabeledValue = (file: FileType, propertyName: string) =>
+  file.extractedMetadata?.find(em => em.name === propertyName)?.selection?.text;
+
+export const extractCurrentValue = (entity: EntitySchema, propertyName: string) =>
+  propertyName === 'title'
+    ? entity.title || ''
+    : (entity.metadata?.[propertyName]?.[0]?.value as string | undefined) || '';
+
+// eslint-disable-next-line max-statements
 export const getState = (
   suggestion: IXSuggestionType,
   modelCreationDate: number,

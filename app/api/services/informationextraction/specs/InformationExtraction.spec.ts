@@ -6,6 +6,7 @@ import { fs } from 'api/files';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -218,7 +219,7 @@ describe('InformationExtraction', () => {
         expect.objectContaining({
           entityId: 'A1',
           status: 'processing',
-          state: 'placeholder',
+          state: SuggestionState.valueMismatch,
         })
       );
     });
@@ -259,7 +260,7 @@ describe('InformationExtraction', () => {
           suggestedValue: 'suggestion_text_1',
           segment: 'segment_text_1',
           status: 'ready',
-          state: 'placeholder',
+          state: SuggestionState.valueMismatch,
         })
       );
     });
@@ -324,7 +325,7 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_other_language',
-          state: 'placeholder',
+          state: SuggestionState.valueMismatch,
         })
       );
 
@@ -334,7 +335,7 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_eng_language',
-          state: 'placeholder',
+          state: SuggestionState.valueMismatch,
         })
       );
     });
@@ -371,7 +372,7 @@ describe('InformationExtraction', () => {
           segment: '',
           status: 'failed',
           error: 'Issue calculation suggestion',
-          state: 'placeholder',
+          state: SuggestionState.error,
         })
       );
     });
