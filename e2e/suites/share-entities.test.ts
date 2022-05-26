@@ -28,7 +28,7 @@ describe('Share entities', () => {
   const getEntitiesCollaborators = async () =>
     page.$$eval('.members-list tr .member-list-item', items => items.map(item => item.textContent));
 
-  const checkAccessOfPersons = (accesses: string[]) => {
+  const checkAccessOfPersons = async (accesses: string[]) => {
     accesses.map(async (access, index) => {
       await expect(page).toMatchElement(`.members-list tr:nth-child(${index + 1}) select`, {
         text: access,
@@ -114,7 +114,7 @@ describe('Share entities', () => {
       'Asesores legales',
       'editor',
     ]);
-    checkAccessOfPersons(['Can edit', 'Can see', 'Can edit']);
+    await checkAccessOfPersons(['Can edit', 'Can see', 'Can edit']);
     await expect(page).toClick('button', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
@@ -132,7 +132,7 @@ describe('Share entities', () => {
       'editor',
     ]);
 
-    checkAccessOfPersons(['Can edit', 'Mixed access', 'Mixed access']);
+    await checkAccessOfPersons(['Can edit', 'Mixed access', 'Mixed access']);
     await expect(page).toClick('button', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
