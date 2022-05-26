@@ -99,7 +99,7 @@
     "ajv": "^6.12.3",
     "ajv-keywords": "^3.5.2",
     "bcryptjs": "^2.4.3",
-    "big.js": "^5.2.2",
+    "big.js": "^6.1.1",
     "body-parser": "^1.20.0",
     "bootstrap": "3.4.1",
     "child-process-promise": "^2.2.1",
