@@ -253,18 +253,25 @@ export const Suggestions = {
 
   save: async (suggestion: IXSuggestionType) => {
     const { entityId, fileId, propertyName } = suggestion;
-    const [entity] = await entities.getUnrestricted({ _id: entityId });
+    const [entity] = await entities.getUnrestricted({
+      sharedId: entityId,
+      language: suggestion.language,
+    });
     const [file] = await files.get({ _id: fileId });
     const [model] = await IXModelsModel.get({ propertyName }); // can there be more? should we sort by date and get the last?
 
     const newSuggestion = {
       ...suggestion,
-      state: getState(
-        suggestion,
-        model.creationDate,
-        extractLabeledValue(file, propertyName),
-        extractCurrentValue(entity, propertyName)
-      ),
+      ...(entity && file && model
+        ? {
+            state: getState(
+              suggestion,
+              model.creationDate,
+              extractLabeledValue(file, propertyName),
+              extractCurrentValue(entity, propertyName)
+            ),
+          }
+        : {}),
     };
 
     return IXSuggestionsModel.save(newSuggestion);

@@ -28,7 +28,7 @@ import {
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
-import { extractCurrentValue, extractLabeledValue, getState } from 'api/suggestions/getState';
+import { Suggestions } from 'api/suggestions/suggestions';
 import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
@@ -238,22 +238,13 @@ class InformationExtraction {
           }),
         };
 
-        const [file] = await filesModel.get({ _id: suggestion.fileId });
-
-        suggestion.state = getState(
-          suggestion,
-          0,
-          extractLabeledValue(file || {}, suggestion.propertyName),
-          extractCurrentValue(entity, suggestion.propertyName)
-        );
-        return IXSuggestionsModel.save(suggestion);
+        return Suggestions.save(suggestion);
       })
     );
   };
 
   saveSuggestionProcess = async (file: FileWithAggregation, propertyName: string) => {
     const entity = await this._getEntityFromFile(file);
-
     const [existingSuggestions] = await IXSuggestionsModel.get({
       entityId: entity.sharedId,
       propertyName,
@@ -269,14 +260,7 @@ class InformationExtraction {
       date: new Date().getTime(),
     };
 
-    suggestion.state = getState(
-      suggestion,
-      0,
-      extractLabeledValue(file, propertyName),
-      extractCurrentValue(entity, propertyName)
-    );
-
-    return IXSuggestionsModel.save(suggestion);
+    return Suggestions.save(suggestion);
   };
 
   serviceUrl = async () => {

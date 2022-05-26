@@ -44,6 +44,18 @@ const fixtures: DBFixture = {
         },
       ],
     }),
+    factory.entity(
+      'A1',
+      'templateToSegmentA',
+      {
+        property1: [
+          {
+            value: 1088985600,
+          },
+        ],
+      },
+      { language: 'other' }
+    ),
     factory.entity('A2', 'templateToSegmentA'),
     factory.entity('A3', 'templateToSegmentA'),
     factory.entity('A4', 'templateToSegmentA'),
