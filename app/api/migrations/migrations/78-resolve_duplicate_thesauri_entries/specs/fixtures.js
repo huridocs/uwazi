@@ -8,6 +8,7 @@ const selectRelationId = db.id();
 const multiselectRelationId = db.id();
 const rootTemplate = db.id();
 const inheritingTemplate = db.id();
+const syncedTemplate = db.id();
 const rootSharedId = 'root_entity_sharedId';
 
 const selectValue = [{ value: 'C_3_id', label: 'C' }];
@@ -147,6 +148,44 @@ export default {
         },
       ],
     },
+    {
+      _id: syncedTemplate,
+      name: 'synced_template',
+      synced: true,
+      properties: [
+        {
+          label: 'inherited_select_with_nonsynced_source',
+          type: 'relationship',
+          inherit: {
+            property: db.id().toString(),
+            type: 'select',
+          },
+          content: db.id().toString(),
+          relationType: selectRelationId.toString(),
+          name: 'inherited_select_with_nonsynced_source',
+        },
+      ],
+      commonProperties: [
+        {
+          label: 'Title',
+          name: 'title',
+          isCommonProperty: true,
+          type: 'text',
+        },
+        {
+          label: 'Date added',
+          name: 'creationDate',
+          isCommonProperty: true,
+          type: 'date',
+        },
+        {
+          label: 'Date modified',
+          name: 'editDate',
+          isCommonProperty: true,
+          type: 'date',
+        },
+      ],
+    },
   ],
   users: [
     {
@@ -176,7 +215,7 @@ export default {
         inherited_select: [
           {
             value: rootSharedId,
-            label: 'root_entites',
+            label: 'root_entity',
             type: 'entity',
             inheritedValue: selectValue,
             inheritedType: 'select',
@@ -186,7 +225,7 @@ export default {
         inherited_multiselect: [
           {
             value: rootSharedId,
-            label: 'root_entites',
+            label: 'root_entity',
             type: 'entity',
             inheritedValue: multiSelectValues,
             inheritedType: 'multiselect',
@@ -198,6 +237,25 @@ export default {
       user: adminUserId,
       language: 'en',
       sharedId: 'inheriting_shared_id',
+      mongoLanguage: 'en',
+    },
+    {
+      metadata: {
+        inherited_select_with_nonsynced_source: [
+          {
+            value: 'nonsynced_entity_sharedId',
+            label: 'nonsynced_entity_sharedId_title',
+            type: 'entity',
+            inheritedValue: [{ value: 'nonsynced_value', label: 'nonsynced_label' }],
+            inheritedType: 'select',
+          },
+        ],
+      },
+      template: syncedTemplate,
+      title: 'entity inheriting from nonsynced sources',
+      user: adminUserId,
+      language: 'en',
+      sharedId: 'inheriting_nonsynced__shared_id',
       mongoLanguage: 'en',
     },
   ],

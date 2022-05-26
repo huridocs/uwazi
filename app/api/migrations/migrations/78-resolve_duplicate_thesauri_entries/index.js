@@ -39,6 +39,8 @@ export default {
 
   reindex: false,
 
+  templateIdMap: {},
+
   thesauriIdLabelMap: {},
 
   propertyNameContentMap: {},
@@ -46,6 +48,14 @@ export default {
   propertyIdContentMap: {},
 
   bulkWriteActions: [],
+
+  async buildTemplateMap(db) {
+    const templates = db.collection('templates').find();
+    while (await templates.hasNext()) {
+      const template = await templates.next();
+      this.templateIdMap[template._id.toString()] = template;
+    }
+  },
 
   async handleThesauri(db) {
     const thesauri = db.collection('dictionaries').find();
@@ -176,7 +186,8 @@ export default {
     while (await entities.hasNext()) {
       const entity = await entities.next();
       const templateId = entity.template?.toString();
-      if (templateId && templateId in this.propertyNameContentMap) {
+      const template = this.templateIdMap[templateId];
+      if (templateId && !template?.synced && templateId in this.propertyNameContentMap) {
         this.bulkWriteActions.push(this.replaceAction(this.denormalizeEntity(entity)));
       }
       if (this.bulkWriteActions.length >= 1000) await this.perform(db);
@@ -186,6 +197,8 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
+
+    await this.buildTemplateMap(db);
 
     await this.handleThesauri(db);
 
