@@ -28,13 +28,14 @@ describe('Share entities', () => {
   const getEntitiesCollaborators = async () =>
     page.$$eval('.members-list tr .member-list-item', items => items.map(item => item.textContent));
 
-  const checkAccessOfPersons = async (accesses: string[]) => {
-    accesses.map(async (access, index) => {
-      await expect(page).toMatchElement(`.members-list tr:nth-child(${index + 1}) select`, {
-        text: access,
-      });
-    });
-  };
+  const checkAccessOfPersons = async (accesses: string[]) =>
+    Promise.all(
+      accesses.map(async (access, index) =>
+        expect(page).toMatchElement(`.members-list tr:nth-child(${index + 1}) select`, {
+          text: access,
+        })
+      )
+    );
 
   it('should create a collaborator in the shared User Group', async () => {
     await createUser({
