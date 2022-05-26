@@ -112,4 +112,11 @@ describe('migration resolve_duplicate_thesauri_entries', () => {
     await migration.up(testingDB.mongodb);
     expect(migration.reindex).toBe(false);
   });
+
+  it('should not fail on synced templates and skip the entities', async () => {
+    const title = 'entity inheriting from nonsynced sources';
+    const afterMigration = await testingDB.mongodb.collection('entities').findOne({ title });
+    const original = fixtures.entities.find(e => e.title === title);
+    expect(afterMigration).toMatchObject(original);
+  });
 });
