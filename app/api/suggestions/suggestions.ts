@@ -12,6 +12,7 @@ import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonType
 import { EntitySchema } from 'shared/types/entityType';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
 import { extractCurrentValue, extractLabeledValue, getState } from './getState';
+import { updateStates } from './updateState';
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
@@ -274,8 +275,13 @@ export const Suggestions = {
         : {}),
     };
 
-    return IXSuggestionsModel.save(newSuggestion);
+    await IXSuggestionsModel.save(newSuggestion);
   },
+
+  // save: async (suggestion: IXSuggestionType) => {
+  //   await IXSuggestionsModel.save(suggestion);
+  //   await updateStates({ _id: suggestion._id });
+  // },
 
   saveMultiple: async (suggestions: IXSuggestionType[]) => {
     const entityIds = suggestions.map(s => s.entityId);
