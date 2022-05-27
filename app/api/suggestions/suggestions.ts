@@ -259,7 +259,7 @@ export const Suggestions = {
       if (s.status === 'failed') {
         toSave.push({ ...s, state: SuggestionState.error });
       } else if (s.status === 'processing') {
-        toSave.push({ ...s, state: SuggestionState.valueMismatch });
+        toSave.push({ ...s, state: SuggestionState.processing });
       } else {
         toSave.push(s);
         update.push(s);

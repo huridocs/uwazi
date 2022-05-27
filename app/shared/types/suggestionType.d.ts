@@ -27,7 +27,8 @@ export interface EntitySuggestionType {
     | 'Obsolete'
     | 'Empty / Label'
     | 'Empty / Value'
-    | 'Error';
+    | 'Error'
+    | 'Processing';
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
@@ -52,7 +53,8 @@ export interface IXSuggestionType {
     | 'Obsolete'
     | 'Empty / Label'
     | 'Empty / Value'
-    | 'Error';
+    | 'Error'
+    | 'Processing';
   date?: number;
   error?: string;
   selectionRectangles?: {
@@ -84,5 +86,6 @@ export interface IXSuggestionsFilter {
     | 'Obsolete'
     | 'Empty / Label'
     | 'Empty / Value'
-    | 'Error';
+    | 'Error'
+    | 'Processing';
 }

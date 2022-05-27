@@ -219,7 +219,7 @@ describe('InformationExtraction', () => {
         expect.objectContaining({
           entityId: 'A1',
           status: 'processing',
-          state: SuggestionState.valueMismatch,
+          state: SuggestionState.processing,
         })
       );
     });

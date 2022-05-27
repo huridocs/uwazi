@@ -17,6 +17,7 @@ export enum SuggestionState {
   labelEmpty = 'Empty / Label',
   valueEmpty = 'Empty / Value',
   error = 'Error',
+  processing = 'Processing',
 }
 
 export const IXSuggestionSchema = {
@@ -39,7 +40,7 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
   },
-  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language', 'state'],
+  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language'],
 };
 
 export const EntitySuggestionSchema = {
