@@ -250,17 +250,23 @@ export const Suggestions = {
     return { suggestions: data, totalPages };
   },
 
-  save: async (_suggestion: IXSuggestionType) => {
-    const suggestion = { ..._suggestion };
-    if (suggestion.status === 'failed') {
-      suggestion.state = SuggestionState.error;
-    } else if (suggestion.status === 'processing') {
-      suggestion.state = SuggestionState.valueMismatch;
-    }
-    await IXSuggestionsModel.save(suggestion);
-    if (suggestion.status === 'ready') {
-      await updateStates({ _id: suggestion._id });
-    }
+  save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
+
+  saveMultiple: async (_suggestions: IXSuggestionType[]) => {
+    const toSave: IXSuggestionType[] = [];
+    const update: IXSuggestionType[] = [];
+    _suggestions.forEach(s => {
+      if (s.status === 'failed') {
+        toSave.push({ ...s, state: SuggestionState.error });
+      } else if (s.status === 'processing') {
+        toSave.push({ ...s, state: SuggestionState.valueMismatch });
+      } else {
+        toSave.push(s);
+        update.push(s);
+      }
+    });
+    await IXSuggestionsModel.saveMultiple(toSave);
+    if (update.length > 0) await updateStates({ _id: { $in: update.map(s => s._id) } });
   },
 
   accept: async (
