@@ -250,9 +250,17 @@ export const Suggestions = {
     return { suggestions: data, totalPages };
   },
 
-  save: async (suggestion: IXSuggestionType) => {
+  save: async (_suggestion: IXSuggestionType) => {
+    const suggestion = { ..._suggestion };
+    if (suggestion.status === 'failed') {
+      suggestion.state = SuggestionState.error;
+    } else if (suggestion.status === 'processing') {
+      suggestion.state = SuggestionState.valueMismatch;
+    }
     await IXSuggestionsModel.save(suggestion);
-    await updateStates({ _id: suggestion._id });
+    if (suggestion.status === 'ready') {
+      await updateStates({ _id: suggestion._id });
+    }
   },
 
   accept: async (
