@@ -147,14 +147,4 @@ describe('suggestions', () => {
       }
     });
   });
-
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('temp', () => {
-    it('trial', async () => {
-      await Suggestions.saveMultiple([
-        { entityId: fixtures.entities[0]._id.toString() },
-        { entityId: fixtures.entities[1]._id.toString() },
-      ]);
-    });
-  });
 });

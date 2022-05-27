@@ -6,12 +6,10 @@ import { files } from 'api/files/files';
 import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { index, IndexTargetTypes } from 'shared/indexData';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
-import { extractCurrentValue, extractLabeledValue, getState } from './getState';
 import { updateStates } from './updateState';
 
 export const Suggestions = {
@@ -253,48 +251,8 @@ export const Suggestions = {
   },
 
   save: async (suggestion: IXSuggestionType) => {
-    const { entityId, fileId, propertyName } = suggestion;
-    const [entity] = await entities.getUnrestricted({
-      sharedId: entityId,
-      language: suggestion.language,
-    });
-    const [file] = await files.get({ _id: fileId });
-    const [model] = await IXModelsModel.get({ propertyName }); // can there be more? should we sort by date and get the last?
-
-    const newSuggestion = {
-      ...suggestion,
-      ...(entity && file && model
-        ? {
-            state: getState(
-              suggestion,
-              model.creationDate,
-              extractLabeledValue(file, propertyName),
-              extractCurrentValue(entity, propertyName)
-            ),
-          }
-        : {}),
-    };
-
-    await IXSuggestionsModel.save(newSuggestion);
-  },
-
-  // save: async (suggestion: IXSuggestionType) => {
-  //   await IXSuggestionsModel.save(suggestion);
-  //   await updateStates({ _id: suggestion._id });
-  // },
-
-  saveMultiple: async (suggestions: IXSuggestionType[]) => {
-    const entityIds = suggestions.map(s => s.entityId);
-    const entityMap = index(await entities.getUnrestricted({ _id: { $in: entityIds } }), e =>
-      e._id.toString()
-    );
-    const fileIds = suggestions.map(s => s.fileId);
-    const fileMap = index(await files.get({ _id: { $in: fileIds } }), f => f._id.toString());
-    const propertyNames = suggestions.map(s => s.propertyName);
-    const propertyMap = index(
-      await IXModelsModel.get({ propertyName: { $in: propertyNames } }),
-      m => m.propertyName
-    );
+    await IXSuggestionsModel.save(suggestion);
+    await updateStates({ _id: suggestion._id });
   },
 
   accept: async (
