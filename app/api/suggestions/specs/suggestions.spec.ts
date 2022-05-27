@@ -13,6 +13,97 @@ const getSuggestions = async (propertyName: string) =>
 const findOneSuggestion = async (query: any) =>
   db.mongodb?.collection('ixsuggestions').findOne({ ...query });
 
+const stateUpdateCases = [
+  {
+    state: 'obsolete',
+    reason: 'the suggestion is older than model',
+    suggestionQuery: { entityId: 'shared5', propertyName: 'age' },
+  },
+  {
+    state: 'valueEmpty',
+    reason: 'labeled, suggested value is empty but not current value',
+    suggestionQuery: { entityId: 'shared3', propertyName: 'age' },
+  },
+  {
+    state: 'labelMatch',
+    reason: 'values match',
+    suggestionQuery: {
+      entityId: 'shared2',
+      propertyName: 'super_powers',
+      language: 'en',
+      status: 'ready',
+    },
+  },
+  {
+    state: 'empty',
+    reason: 'current and suggested values are empty',
+    suggestionQuery: {
+      entityId: 'shared6',
+      propertyName: 'enemy',
+      language: 'es',
+    },
+  },
+  {
+    state: 'labelEmpty',
+    reason: '< case not clear >',
+    suggestionQuery: {
+      entityId: 'shared6',
+      propertyName: 'enemy',
+      language: 'en',
+      fileId: { $exists: true },
+    },
+  },
+  {
+    state: 'labelMismatch',
+    reason: 'labeledValue and suggestedValue differ',
+    suggestionQuery: {
+      propertyName: 'super_powers',
+      language: 'es',
+    },
+  },
+  {
+    state: 'valueMatch',
+    reason: 'suggested and current values match',
+    suggestionQuery: {
+      entityId: 'shared1',
+      propertyName: 'enemy',
+    },
+  },
+  {
+    state: 'valueMismatch',
+    reason: 'suggested and current values differ',
+    suggestionQuery: {
+      entityId: 'shared6',
+      propertyName: 'enemy',
+      language: 'en',
+    },
+  },
+];
+
+const newProcessingSuggestion: IXSuggestionType = {
+  entityId: 'new_processing_suggestion',
+  propertyName: 'new',
+  suggestedValue: 'new',
+  segment: 'Some new segment',
+  language: 'en',
+  date: 5,
+  page: 2,
+  status: 'processing',
+  error: '',
+};
+
+const newErroringSuggestion: IXSuggestionType = {
+  entityId: 'new_erroring_suggestion',
+  propertyName: 'new',
+  suggestedValue: 'new',
+  segment: 'Some new segment',
+  language: 'en',
+  date: 5,
+  page: 2,
+  status: 'failed',
+  error: '',
+};
+
 describe('suggestions', () => {
   beforeEach(done => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
@@ -154,20 +245,9 @@ describe('suggestions', () => {
   describe('save()', () => {
     describe('on suggestion status error', () => {
       it('should mark error in state as well', async () => {
-        const suggestion: IXSuggestionType = {
-          entityId: 'new_erroring_suggestion',
-          propertyName: 'new',
-          suggestedValue: 'new',
-          segment: 'Some new segment',
-          language: 'en',
-          date: 5,
-          page: 2,
-          status: 'failed',
-          error: '',
-        };
-        await Suggestions.save(suggestion);
+        await Suggestions.save(newErroringSuggestion);
         expect(await findOneSuggestion({ entityId: 'new_erroring_suggestion' })).toMatchObject({
-          ...suggestion,
+          ...newErroringSuggestion,
           state: SuggestionState.error,
         });
         const original = await findOneSuggestion({});
@@ -182,20 +262,9 @@ describe('suggestions', () => {
 
     describe('on suggestion status processing', () => {
       it('should mark processing in state as well', async () => {
-        const suggestion: IXSuggestionType = {
-          entityId: 'new_processing_suggestion',
-          propertyName: 'new',
-          suggestedValue: 'new',
-          segment: 'Some new segment',
-          language: 'en',
-          date: 5,
-          page: 2,
-          status: 'processing',
-          error: '',
-        };
-        await Suggestions.save(suggestion);
+        await Suggestions.save(newProcessingSuggestion);
         expect(await findOneSuggestion({ entityId: 'new_processing_suggestion' })).toMatchObject({
-          ...suggestion,
+          ...newProcessingSuggestion,
           state: 'Processing',
         });
         const original = await findOneSuggestion({});
@@ -209,88 +278,56 @@ describe('suggestions', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('updateStates()', () => {
-    it.each([
-      {
-        state: 'obsolete',
-        reason: 'the suggestion is older than model',
-        suggestionQuery: { entityId: 'shared5', propertyName: 'age' },
-      },
-      {
-        state: 'valueEmpty',
-        reason: 'labeled, suggested value is empty but not current value',
-        suggestionQuery: { entityId: 'shared3', propertyName: 'age' },
-      },
-      {
-        state: 'labelMatch',
-        reason: 'values match',
-        suggestionQuery: {
-          entityId: 'shared2',
-          propertyName: 'super_powers',
-          language: 'en',
-          status: 'ready',
-        },
-      },
-      {
-        state: 'empty',
-        reason: 'current and suggested values are empty',
-        suggestionQuery: {
-          entityId: 'shared6',
-          propertyName: 'enemy',
-          language: 'es',
-        },
-      },
-      {
-        state: 'labelEmpty',
-        reason: '< case not clear >',
-        suggestionQuery: {
-          entityId: 'shared6',
-          propertyName: 'enemy',
-          language: 'en',
-          fileId: { $exists: true },
-        },
-      },
-      {
-        state: 'labelMismatch',
-        reason: 'labeledValue and suggestedValue differ',
-        suggestionQuery: {
-          propertyName: 'super_powers',
-          language: 'es',
-        },
-      },
-      {
-        state: 'valueMatch',
-        reason: 'suggested and current values match',
-        suggestionQuery: {
-          entityId: 'shared1',
-          propertyName: 'enemy',
-        },
-      },
-      {
-        state: 'valueMismatch',
-        reason: 'suggested and current values differ',
-        suggestionQuery: {
-          entityId: 'shared6',
-          propertyName: 'enemy',
-          language: 'en',
-        },
-      },
-    ])('should mark $state in state if $reason', async ({ state, suggestionQuery }) => {
-      const original = await findOneSuggestion(suggestionQuery);
-      const idQuery = { _id: original._id };
-      await Suggestions.updateStates(idQuery);
-      const changed = await findOneSuggestion(idQuery);
-      expect(changed).toMatchObject({
-        ...original,
-        state: SuggestionState[state],
-      });
-    });
+  describe('updateStates()', () => {
+    it.each(stateUpdateCases)(
+      'should mark $state in state if $reason',
+      async ({ state, suggestionQuery }) => {
+        const original = await findOneSuggestion(suggestionQuery);
+        const idQuery = { _id: original._id };
+        await Suggestions.updateStates(idQuery);
+        const changed = await findOneSuggestion(idQuery);
+        expect(changed).toMatchObject({
+          ...original,
+          state: SuggestionState[state],
+        });
+      }
+    );
   });
 
   describe('saveMultiple()', () => {
     it('should handle everything at once', async () => {
-      fail('TODO');
+      const originals = await Promise.all(
+        stateUpdateCases.map(async ({ suggestionQuery }) => findOneSuggestion(suggestionQuery))
+      );
+      const newSuggestions = [newErroringSuggestion, newProcessingSuggestion];
+      const toSave = originals.concat(newSuggestions);
+
+      await Suggestions.saveMultiple(toSave);
+
+      const changedSuggestions = await Promise.all(
+        stateUpdateCases.map(async ({ suggestionQuery }) => findOneSuggestion(suggestionQuery))
+      );
+
+      for (let i = 0; i < stateUpdateCases.length; i += 1) {
+        const original = originals[i];
+        const { state } = stateUpdateCases[i];
+        const changed = changedSuggestions[i];
+        expect(changed).toMatchObject({
+          ...original,
+          state: SuggestionState[state],
+        });
+      }
+
+      expect(await findOneSuggestion({ entityId: newErroringSuggestion.entityId })).toMatchObject({
+        ...newErroringSuggestion,
+        state: SuggestionState.error,
+      });
+      expect(await findOneSuggestion({ entityId: newProcessingSuggestion.entityId })).toMatchObject(
+        {
+          ...newProcessingSuggestion,
+          state: SuggestionState.processing,
+        }
+      );
     });
   });
 });
