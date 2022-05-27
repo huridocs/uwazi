@@ -28,13 +28,14 @@ describe('Share entities', () => {
   const getEntitiesCollaborators = async () =>
     page.$$eval('.members-list tr .member-list-item', items => items.map(item => item.textContent));
 
-  const checkAccessOfPersons = (accesses: string[]) => {
-    accesses.map(async (access, index) => {
-      await expect(page).toMatchElement(`.members-list tr:nth-child(${index + 1}) select`, {
-        text: access,
-      });
-    });
-  };
+  const checkAccessOfPersons = async (accesses: string[]) =>
+    Promise.all(
+      accesses.map(async (access, index) =>
+        expect(page).toMatchElement(`.members-list tr:nth-child(${index + 1}) select`, {
+          text: access,
+        })
+      )
+    );
 
   it('should create a collaborator in the shared User Group', async () => {
     await createUser({
@@ -114,7 +115,7 @@ describe('Share entities', () => {
       'Asesores legales',
       'editor',
     ]);
-    checkAccessOfPersons(['Can edit', 'Can see', 'Can edit']);
+    await checkAccessOfPersons(['Can edit', 'Can see', 'Can edit']);
     await expect(page).toClick('button', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
@@ -132,7 +133,7 @@ describe('Share entities', () => {
       'editor',
     ]);
 
-    checkAccessOfPersons(['Can edit', 'Mixed access', 'Mixed access']);
+    await checkAccessOfPersons(['Can edit', 'Mixed access', 'Mixed access']);
     await expect(page).toClick('button', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
