@@ -2,13 +2,16 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { EntitySuggestionType, IXSuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
 import { fixtures, personTemplateId, suggestionId } from './fixtures';
 
 const getSuggestions = async (propertyName: string) =>
   Suggestions.get({ propertyName }, { page: { size: 5, number: 1 } });
+
+const findOneSuggestion = async (query: any) =>
+  db.mongodb?.collection('ixsuggestions').findOne({ ...query });
 
 describe('suggestions', () => {
   beforeEach(done => {
@@ -149,10 +152,145 @@ describe('suggestions', () => {
   });
 
   describe('save()', () => {
-    it.todo('ALL');
+    describe('on suggestion status error', () => {
+      it('should mark error in state as well', async () => {
+        const suggestion: IXSuggestionType = {
+          entityId: 'new_erroring_suggestion',
+          propertyName: 'new',
+          suggestedValue: 'new',
+          segment: 'Some new segment',
+          language: 'en',
+          date: 5,
+          page: 2,
+          status: 'failed',
+          error: '',
+        };
+        await Suggestions.save(suggestion);
+        expect(await findOneSuggestion({ entityId: 'new_erroring_suggestion' })).toMatchObject({
+          ...suggestion,
+          state: SuggestionState.error,
+        });
+        const original = await findOneSuggestion({});
+        const changed: IXSuggestionType = { ...original, status: 'failed' };
+        await Suggestions.save(changed);
+        expect(await findOneSuggestion({ _id: original._id })).toMatchObject({
+          ...changed,
+          state: SuggestionState.error,
+        });
+      });
+    });
+
+    describe('on suggestion status processing', () => {
+      it('should mark processing in state as well', async () => {
+        const suggestion: IXSuggestionType = {
+          entityId: 'new_processing_suggestion',
+          propertyName: 'new',
+          suggestedValue: 'new',
+          segment: 'Some new segment',
+          language: 'en',
+          date: 5,
+          page: 2,
+          status: 'processing',
+          error: '',
+        };
+        await Suggestions.save(suggestion);
+        expect(await findOneSuggestion({ entityId: 'new_processing_suggestion' })).toMatchObject({
+          ...suggestion,
+          state: 'Processing',
+        });
+        const original = await findOneSuggestion({});
+        const changed: IXSuggestionType = { ...original, status: 'processing' };
+        await Suggestions.save(changed);
+        expect(await findOneSuggestion({ _id: original._id })).toMatchObject({
+          ...changed,
+          state: 'Processing',
+        });
+      });
+    });
   });
-  
+
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('updateStates()', () => {
+    it.each([
+      {
+        state: 'obsolete',
+        reason: 'the suggestion is older than model',
+        suggestionQuery: { entityId: 'shared5', propertyName: 'age' },
+      },
+      {
+        state: 'valueEmpty',
+        reason: 'labeled, suggested value is empty but not current value',
+        suggestionQuery: { entityId: 'shared3', propertyName: 'age' },
+      },
+      {
+        state: 'labelMatch',
+        reason: 'values match',
+        suggestionQuery: {
+          entityId: 'shared2',
+          propertyName: 'super_powers',
+          language: 'en',
+          status: 'ready',
+        },
+      },
+      {
+        state: 'empty',
+        reason: 'current and suggested values are empty',
+        suggestionQuery: {
+          entityId: 'shared6',
+          propertyName: 'enemy',
+          language: 'es',
+        },
+      },
+      {
+        state: 'labelEmpty',
+        reason: '< case not clear >',
+        suggestionQuery: {
+          entityId: 'shared6',
+          propertyName: 'enemy',
+          language: 'en',
+          fileId: { $exists: true },
+        },
+      },
+      {
+        state: 'labelMismatch',
+        reason: 'labeledValue and suggestedValue differ',
+        suggestionQuery: {
+          propertyName: 'super_powers',
+          language: 'es',
+        },
+      },
+      {
+        state: 'valueMatch',
+        reason: 'suggested and current values match',
+        suggestionQuery: {
+          entityId: 'shared1',
+          propertyName: 'enemy',
+        },
+      },
+      {
+        state: 'valueMismatch',
+        reason: 'suggested and current values differ',
+        suggestionQuery: {
+          entityId: 'shared6',
+          propertyName: 'enemy',
+          language: 'en',
+        },
+      },
+    ])('should mark $state in state if $reason', async ({ state, suggestionQuery }) => {
+      const original = await findOneSuggestion(suggestionQuery);
+      const idQuery = { _id: original._id };
+      await Suggestions.updateStates(idQuery);
+      const changed = await findOneSuggestion(idQuery);
+      expect(changed).toMatchObject({
+        ...original,
+        state: SuggestionState[state],
+      });
+    });
+  });
+
   describe('saveMultiple()', () => {
-    it.todo('ALL');
+    it('should handle everything at once', async () => {
+      fail('TODO');
+    });
   });
 });

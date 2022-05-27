@@ -181,6 +181,7 @@ const fixtures: DBFixture = {
     {
       entityId: 'shared5',
       propertyName: 'title',
+      fileId: factory.id('Fshared5').toString(),
       suggestedValue: 'Poison Ivy',
       segment: 'Poison Ivy is a fictional character appearing in comic books',
       language: 'en',
@@ -192,6 +193,7 @@ const fixtures: DBFixture = {
     {
       entityId: 'shared5',
       propertyName: 'age',
+      fileId: factory.id('Fshared5').toString(),
       suggestedValue: 25,
       segment: 'Poison Ivy 45 years old',
       language: 'en',
@@ -226,6 +228,7 @@ const fixtures: DBFixture = {
     },
     {
       _id: suggestionSharedId6EnemyEs,
+      fileId: factory.id('F4'),
       entityId: 'shared6',
       propertyName: 'enemy',
       suggestedValue: '',
@@ -353,6 +356,15 @@ const fixtures: DBFixture = {
         name: 'super_powers',
         selection: {
           text: 'conocimiento científico',
+          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        },
+      },
+    ]),
+    factory.file('Fshared5', 'shared5', 'document', 'documentPoisonIvy.pdf', 'eng', '', [
+      {
+        name: 'enemy',
+        selection: {
+          text: 'Poison Ivy',
           selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
         },
       },

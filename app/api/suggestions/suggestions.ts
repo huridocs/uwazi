@@ -250,6 +250,8 @@ export const Suggestions = {
     return { suggestions: data, totalPages };
   },
 
+  updateStates,
+
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
   saveMultiple: async (_suggestions: IXSuggestionType[]) => {
