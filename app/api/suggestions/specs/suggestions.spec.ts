@@ -147,4 +147,12 @@ describe('suggestions', () => {
       }
     });
   });
+
+  describe('save()', () => {
+    it.todo('ALL');
+  });
+  
+  describe('saveMultiple()', () => {
+    it.todo('ALL');
+  });
 });
