@@ -18,6 +18,7 @@ import {
 import { setUpApp } from 'api/utils/testingRoutes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { EntitySchema } from 'shared/types/entityType';
+import { Suggestions } from '../suggestions';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -41,6 +42,7 @@ describe('suggestions routes', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
+    await Suggestions.updateStates({});
   });
   beforeEach(async () => {
     user = { username: 'user 1', role: 'admin' };

@@ -260,7 +260,6 @@ export const Suggestions = {
               let: {
                 localFieldEntityId: '$entityId',
                 localFieldLanguage: {
-                  // another calculated field, blow up into two - first id match, then language
                   $cond: [
                     {
                       $not: [{ $in: ['$language', configuredLanguages] }],
