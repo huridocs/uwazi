@@ -46,6 +46,12 @@ describe('Metadata Properties', () => {
     await expect(page).toClick('div.alert-success');
   });
 
+  it('should not allow duplicated properties', async () => {
+    await expect(page).toClick('.property-options-list li:first-child button');
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('.alert.alert-danger');
+  });
+
   it('should create an entity filling all the props.', async () => {
     await goToRestrictedEntities();
     await expect(page).toClick('button', { text: 'Create entity' });
