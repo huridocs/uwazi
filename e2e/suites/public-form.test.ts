@@ -4,7 +4,6 @@ import { selectDate, uploadFileInMetadataField } from '../helpers/formActions';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
 import { refreshIndex } from '../helpers/elastichelpers';
 import { goToRestrictedEntities } from '../helpers/publishedFilter';
 import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
@@ -35,7 +34,6 @@ describe('Public forms', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
-    await disableTransitions();
   });
 
   afterAll(async () => {

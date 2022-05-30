@@ -1,6 +1,7 @@
 /*global page*/
 
 import { host } from '../config';
+import disableTransitions from './disableTransitions';
 
 export async function login(username: string, password: string) {
   await page.goto(host);
@@ -9,6 +10,7 @@ export async function login(username: string, password: string) {
   await expect(page).toFill('input[name=password]', password);
   await expect(page).toClick('button', { text: 'Login' });
   await page.waitForNavigation();
+  await disableTransitions();
 }
 
 export async function adminLogin() {
