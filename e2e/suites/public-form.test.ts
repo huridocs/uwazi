@@ -15,6 +15,10 @@ const buttonForVideo =
 const buttonForImagenAdicional =
   'div.content > div > div > main > div > div > form > div > div:nth-child(2) > div:nth-child(6) > ul > li.wide > div > div > div > button';
 
+const waitForTemplateToBeLoaded = async () => {
+  await page.waitForFunction('document.querySelector(".markdownEditor textarea").value !== ""');
+};
+
 const createMenuLinkToPublicForm = async (linkText: string) => {
   const element = await page.waitForSelector('.alert-info a.pull-right[target="_blank"]');
   const value = (
@@ -87,6 +91,7 @@ describe('Public forms', () => {
       await expect(page).toClick('a', { text: 'Account settings' });
       await expect(page).toClick('a', { text: 'Pages' });
       await expect(page).toClick('a', { text: 'Public Form Page' });
+      await waitForTemplateToBeLoaded();
       await expect(page).toFill(
         '.markdownEditor textarea',
         '<PublicForm template="624b29b432bdcda07b3854b9" />'
