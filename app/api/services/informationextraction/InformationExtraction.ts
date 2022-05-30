@@ -181,6 +181,8 @@ class InformationExtraction {
   saveSuggestions = async (message: ResultsMessage) => {
     const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
+    let processedSuggestions = 0;
+    const totalSuggestions = rawSuggestions.length;
 
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
@@ -238,7 +240,17 @@ class InformationExtraction {
             return rect;
           }),
         };
-        return IXSuggestionsModel.save(suggestion);
+
+        const sug = IXSuggestionsModel.save(suggestion);
+        emitToTenant(
+          message.tenant,
+          'ix_model_status',
+          message.params!.property_name,
+          'processing_suggestions',
+          `${processedSuggestions}/${totalSuggestions}`
+        );
+        processedSuggestions += 1;
+        return sug;
       })
     );
   };
@@ -277,7 +289,7 @@ class InformationExtraction {
   getSuggestions = async (property: string) => {
     const files = await this.getFilesForSuggestions(property);
     if (files.length === 0) {
-      emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
+      emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', '');
       return;
     }
 
@@ -388,7 +400,7 @@ class InformationExtraction {
           'ix_model_status',
           message.params!.property_name,
           'processing_suggestions',
-          'Getting suggestions'
+          ''
         );
 
         await this.getSuggestions(message.params!.property_name);
