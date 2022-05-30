@@ -300,7 +300,7 @@
     "jest-environment-jsdom": "^27.0.6",
     "jest-extended": "2.0.0",
     "jest-image-snapshot": "^4.5.1",
-    "jest-puppeteer": "4.4.0",
+    "jest-puppeteer": "6.1.0",
     "mini-css-extract-plugin": "^1.6.2",
     "mongodb-memory-server": "^8.4.1",
     "mutationobserver-shim": "^0.3.7",

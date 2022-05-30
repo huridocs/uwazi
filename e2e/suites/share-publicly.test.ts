@@ -15,8 +15,7 @@ const selectLookupOption = async (
   option: string,
   expectToDo: boolean = true
 ) => {
-  await expect(page).toClick('.userGroupsLookupField');
-  await expect(page).toFill('.userGroupsLookupField', searchTerm);
+  await expect(page).toFill('.userGroupsLookupField input', searchTerm);
   await page.waitForSelector('.userGroupsLookupField li .press-enter-note');
   if (expectToDo) {
     await expect(page).toClick('.userGroupsLookupField li .member-list-item', {
