@@ -12,6 +12,20 @@ import { EntitySchema } from 'shared/types/entityType';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
 import { updateStates } from './updateState';
 
+//update flows:
+// - suggestions (i.e. messages from the service - convention: suggestions are unique for file+property)
+//    - save, saveMultiple (done, tested)
+//    - accept (done, tested)
+// - related model (match by propertyName) - raw mongoose model, no manager object
+//    - save, but only when ready, not processing (see usages of IXModelsModel.save)
+//    - delete (no usage for now)
+// - file (match through fileId)
+//    - save
+//    - delete
+// - entity (match through entityId)
+//    - save
+//    - delete
+
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
