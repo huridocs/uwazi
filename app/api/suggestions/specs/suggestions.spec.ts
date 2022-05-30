@@ -5,7 +5,7 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { EntitySuggestionType, IXSuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
-import { fixtures, personTemplateId, suggestionId } from './fixtures';
+import { file2Id, file3Id, fixtures, personTemplateId, shared2enId, shared2esId, suggestionId } from './fixtures';
 
 const getSuggestions = async (propertyName: string) =>
   Suggestions.get({ propertyName }, { page: { size: 5, number: 1 } });
@@ -125,6 +125,10 @@ describe('suggestions', () => {
   });
 
   describe('get()', () => {
+    beforeEach(async () => {
+      await Suggestions.updateStates({});
+    });
+
     it('should return all title suggestions', async () => {
       const { suggestions } = await Suggestions.get(
         { propertyName: 'title' },
@@ -133,12 +137,59 @@ describe('suggestions', () => {
       expect(suggestions.length).toBe(6);
     });
 
+    it('should return total page count', async () => {
+      const { totalPages } = await Suggestions.get(
+        { propertyName: 'title' },
+        { page: { size: 50, number: 1 } }
+      );
+      expect(totalPages).toBe(1);
+    });
+
     it('should be able to filter', async () => {
       const { suggestions } = await Suggestions.get(
         { propertyName: 'super_powers' },
         { page: { size: 50, number: 1 } }
       );
       expect(suggestions.length).toBe(2);
+    });
+
+    it('should return suggestion and extra entity information', async () => {
+      const { suggestions } = await Suggestions.get(
+        { propertyName: 'super_powers' },
+        { page: { size: 50, number: 1 } }
+      );
+      expect(suggestions).toMatchObject([
+        {
+          fileId: file3Id,
+          propertyName: 'super_powers',
+          suggestedValue: 'scientific knowledge es',
+          segment: 'el confía en su propio conocimiento científico',
+          language: 'es',
+          date: 4,
+          page: 5,
+          currentValue: 'conocimiento científico',
+          labeledValue: 'conocimiento científico',
+          state: 'Mismatch / Label',
+          entityId: shared2esId,
+          sharedId: 'shared2',
+          entityTitle: 'Batman es',
+        },
+        {
+          fileId: file2Id,
+          propertyName: 'super_powers',
+          suggestedValue: 'scientific knowledge',
+          segment: 'he relies on his own scientific knowledge',
+          language: 'en',
+          date: 4,
+          page: 5,
+          currentValue: 'scientific knowledge',
+          labeledValue: 'scientific knowledge',
+          state: 'Match / Label',
+          entityId: shared2enId,
+          sharedId: 'shared2',
+          entityTitle: 'Batman en',
+        },
+      ]);
     });
 
     it('should return match status', async () => {
@@ -201,6 +252,10 @@ describe('suggestions', () => {
   });
 
   describe('accept()', () => {
+    beforeEach(async () => {
+      await Suggestions.updateStates({});
+    });
+
     it('should accept a suggestion', async () => {
       const { suggestions } = await getSuggestions('super_powers');
       const labelMismatchedSuggestion = suggestions.find(

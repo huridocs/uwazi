@@ -29,221 +29,365 @@ export const Suggestions = {
     const defaultLanguage = languages.find(l => l.default).key;
     //@ts-ignore
     const configuredLanguages = languages.map(l => l.key);
-    const { state, language, ...filters } = filter;
+    const { language, ...filters } = filter;
+    // const [{ data, count }] = await IXSuggestionsModel.facet(
+    //   [
+    //     { $match: { ...filters, status: 'ready' } },
+    //     {
+    //       $lookup: {
+    //         from: 'entities',
+    //         let: {
+    //           localFieldEntityId: '$entityId',
+    //           localFieldLanguage: {
+    //             $cond: [
+    //               {
+    //                 $not: [{ $in: ['$language', configuredLanguages] }],
+    //               },
+    //               defaultLanguage,
+    //               '$language',
+    //             ],
+    //           },
+    //         },
+    //         pipeline: [
+    //           {
+    //             $match: {
+    //               $expr: {
+    //                 $and: [
+    //                   { $eq: ['$sharedId', '$$localFieldEntityId'] },
+    //                   { $eq: ['$language', '$$localFieldLanguage'] },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //         ],
+    //         as: 'entity',
+    //       },
+    //     },
+    //     {
+    //       $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
+    //     },
+    //     {
+    //       $addFields: {
+    //         currentValue: {
+    //           $cond: [
+    //             { $eq: ['$propertyName', 'title'] },
+    //             { v: [{ value: '$entity.title' }] },
+    //             {
+    //               $arrayElemAt: [
+    //                 {
+    //                   $filter: {
+    //                     input: {
+    //                       $objectToArray: '$entity.metadata',
+    //                     },
+    //                     as: 'property',
+    //                     cond: {
+    //                       $eq: ['$$property.k', '$propertyName'],
+    //                     },
+    //                   },
+    //                 },
+    //                 0,
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //       },
+    //     },
+    //     {
+    //       $addFields: {
+    //         currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
+    //       },
+    //     },
+    //     {
+    //       $addFields: {
+    //         currentValue: { $ifNull: ['$currentValue.value', ''] },
+    //       },
+    //     },
+    //     {
+    //       $lookup: {
+    //         from: 'files',
+    //         let: {
+    //           localFieldFileId: '$fileId',
+    //         },
+    //         pipeline: [
+    //           {
+    //             $match: {
+    //               $expr: {
+    //                 $eq: ['$_id', '$$localFieldFileId'],
+    //               },
+    //             },
+    //           },
+    //         ],
+    //         as: 'file',
+    //       },
+    //     },
+    //     {
+    //       $addFields: { file: { $arrayElemAt: ['$file', 0] } },
+    //     },
+    //     {
+    //       $addFields: {
+    //         labeledValue: {
+    //           $arrayElemAt: [
+    //             {
+    //               $filter: {
+    //                 input: '$file.extractedMetadata',
+    //                 as: 'label',
+    //                 cond: {
+    //                   $eq: ['$propertyName', '$$label.name'],
+    //                 },
+    //               },
+    //             },
+    //             0,
+    //           ],
+    //         },
+    //       },
+    //     },
+    //     {
+    //       $addFields: {
+    //         labeledValue: '$labeledValue.selection.text',
+    //       },
+    //     },
+    //     {
+    //       $addFields: {
+    //         state: {
+    //           $switch: {
+    //             branches: [
+    //               {
+    //                 case: {
+    //                   $ne: ['$error', ''],
+    //                 },
+    //                 then: 'Error',
+    //               },
+    //               {
+    //                 case: {
+    //                   $lte: ['$date', model.creationDate],
+    //                 },
+    //                 then: SuggestionState.obsolete,
+    //               },
+    //               {
+    //                 case: {
+    //                   $and: [
+    //                     { $lte: ['$labeledValue', null] },
+    //                     { $eq: ['$suggestedValue', ''] },
+    //                     { $ne: ['$currentValue', ''] },
+    //                   ],
+    //                 },
+    //                 then: SuggestionState.valueEmpty,
+    //               },
+    //               {
+    //                 case: {
+    //                   $and: [
+    //                     { $eq: ['$suggestedValue', '$currentValue'] },
+    //                     { $eq: ['$suggestedValue', '$labeledValue'] },
+    //                   ],
+    //                 },
+    //                 then: SuggestionState.labelMatch,
+    //               },
+    //               {
+    //                 case: {
+    //                   $and: [{ $eq: ['$currentValue', ''] }, { $eq: ['$suggestedValue', ''] }],
+    //                 },
+    //                 then: SuggestionState.empty,
+    //               },
+    //               {
+    //                 case: {
+    //                   $and: [
+    //                     { $eq: ['$labeledValue', '$currentValue'] },
+    //                     { $ne: ['$labeledValue', '$suggestedValue'] },
+    //                     { $eq: ['$suggestedValue', ''] },
+    //                   ],
+    //                 },
+    //                 then: SuggestionState.labelEmpty,
+    //               },
+    //               {
+    //                 case: {
+    //                   $and: [
+    //                     { $eq: ['$labeledValue', '$currentValue'] },
+    //                     { $ne: ['$labeledValue', '$suggestedValue'] },
+    //                   ],
+    //                 },
+    //                 then: SuggestionState.labelMismatch,
+    //               },
+    //               {
+    //                 case: {
+    //                   $and: [{ $eq: ['$suggestedValue', '$currentValue'] }],
+    //                 },
+    //                 then: SuggestionState.valueMatch,
+    //               },
+    //             ],
+    //             default: SuggestionState.valueMismatch,
+    //           },
+    //         },
+    //       },
+    //     },
+    //     ...(state ? [{ $match: { $expr: { $eq: ['$state', state] } } }] : []),
+    //     { $sort: { date: 1, state: -1 } },
+    //     {
+    //       $project: {
+    //         entityId: '$entity._id',
+    //         sharedId: '$entity.sharedId',
+    //         entityTitle: '$entity.title',
+    //         fileId: 1,
+    //         language: 1,
+    //         propertyName: 1,
+    //         suggestedValue: 1,
+    //         segment: 1,
+    //         currentValue: 1,
+    //         state: 1,
+    //         page: 1,
+    //         date: 1,
+    //         labeledValue: 1,
+    //       },
+    //     },
+    //   ],
+    //   {
+    //     stage1: [{ $group: { _id: null, count: { $sum: 1 } } }],
+    //     stage2: [{ $skip: offset }, { $limit: limit }],
+    //   },
+    //   { count: '$stage1.count', data: '$stage2' }
+    // );
+
     const [{ data, count }] = await IXSuggestionsModel.facet(
-      [
-        { $match: { ...filters, status: 'ready' } },
-        {
-          $lookup: {
-            from: 'entities',
-            let: {
-              localFieldEntityId: '$entityId',
-              localFieldLanguage: {
-                $cond: [
-                  {
-                    $not: [{ $in: ['$language', configuredLanguages] }],
-                  },
-                  defaultLanguage,
-                  '$language',
-                ],
-              },
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ['$sharedId', '$$localFieldEntityId'] },
-                      { $eq: ['$language', '$$localFieldLanguage'] },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: 'entity',
-          },
-        },
-        {
-          $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
-        },
-        {
-          $addFields: {
-            currentValue: {
-              $cond: [
-                { $eq: ['$propertyName', 'title'] },
-                { v: [{ value: '$entity.title' }] },
-                {
-                  $arrayElemAt: [
+      [{ $match: { ...filters, status: 'ready' } }],
+      {
+        countBranch: [{ $group: { _id: null, count: { $sum: 1 } } }],
+        dataBranch: [
+          { $sort: { date: 1, state: -1 } }, // sort still needs to be before offset and limit
+          { $skip: offset },
+          { $limit: limit },
+          {
+            $lookup: {
+              from: 'entities',
+              let: {
+                localFieldEntityId: '$entityId',
+                localFieldLanguage: {
+                  // another calculated field, blow up into two - first id match, then language
+                  $cond: [
                     {
-                      $filter: {
-                        input: {
-                          $objectToArray: '$entity.metadata',
-                        },
-                        as: 'property',
-                        cond: {
-                          $eq: ['$$property.k', '$propertyName'],
-                        },
-                      },
+                      $not: [{ $in: ['$language', configuredLanguages] }],
                     },
-                    0,
+                    defaultLanguage,
+                    '$language',
                   ],
                 },
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
-          },
-        },
-        {
-          $addFields: {
-            currentValue: { $ifNull: ['$currentValue.value', ''] },
-          },
-        },
-        {
-          $lookup: {
-            from: 'files',
-            let: {
-              localFieldFileId: '$fileId',
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $eq: ['$_id', '$$localFieldFileId'],
-                  },
-                },
               },
-            ],
-            as: 'file',
-          },
-        },
-        {
-          $addFields: { file: { $arrayElemAt: ['$file', 0] } },
-        },
-        {
-          $addFields: {
-            labeledValue: {
-              $arrayElemAt: [
+              pipeline: [
                 {
-                  $filter: {
-                    input: '$file.extractedMetadata',
-                    as: 'label',
-                    cond: {
-                      $eq: ['$propertyName', '$$label.name'],
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$sharedId', '$$localFieldEntityId'] },
+                        { $eq: ['$language', '$$localFieldLanguage'] },
+                      ],
                     },
                   },
                 },
-                0,
               ],
+              as: 'entity',
             },
           },
-        },
-        {
-          $addFields: {
-            labeledValue: '$labeledValue.selection.text',
+          {
+            $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
           },
-        },
-        {
-          $addFields: {
-            state: {
-              $switch: {
-                branches: [
+          {
+            $addFields: {
+              currentValue: {
+                $cond: [
+                  { $eq: ['$propertyName', 'title'] },
+                  { v: [{ value: '$entity.title' }] },
                   {
-                    case: {
-                      $ne: ['$error', ''],
-                    },
-                    then: 'Error',
-                  },
-                  {
-                    case: {
-                      $lte: ['$date', model.creationDate],
-                    },
-                    then: SuggestionState.obsolete,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $lte: ['$labeledValue', null] },
-                        { $eq: ['$suggestedValue', ''] },
-                        { $ne: ['$currentValue', ''] },
-                      ],
-                    },
-                    then: SuggestionState.valueEmpty,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $eq: ['$suggestedValue', '$currentValue'] },
-                        { $eq: ['$suggestedValue', '$labeledValue'] },
-                      ],
-                    },
-                    then: SuggestionState.labelMatch,
-                  },
-                  {
-                    case: {
-                      $and: [{ $eq: ['$currentValue', ''] }, { $eq: ['$suggestedValue', ''] }],
-                    },
-                    then: SuggestionState.empty,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $eq: ['$labeledValue', '$currentValue'] },
-                        { $ne: ['$labeledValue', '$suggestedValue'] },
-                        { $eq: ['$suggestedValue', ''] },
-                      ],
-                    },
-                    then: SuggestionState.labelEmpty,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $eq: ['$labeledValue', '$currentValue'] },
-                        { $ne: ['$labeledValue', '$suggestedValue'] },
-                      ],
-                    },
-                    then: SuggestionState.labelMismatch,
-                  },
-                  {
-                    case: {
-                      $and: [{ $eq: ['$suggestedValue', '$currentValue'] }],
-                    },
-                    then: SuggestionState.valueMatch,
+                    $arrayElemAt: [
+                      {
+                        $filter: {
+                          input: {
+                            $objectToArray: '$entity.metadata',
+                          },
+                          as: 'property',
+                          cond: {
+                            $eq: ['$$property.k', '$propertyName'],
+                          },
+                        },
+                      },
+                      0,
+                    ],
                   },
                 ],
-                default: SuggestionState.valueMismatch,
               },
             },
           },
-        },
-        ...(state ? [{ $match: { $expr: { $eq: ['$state', state] } } }] : []),
-        { $sort: { date: 1, state: -1 } },
-        {
-          $project: {
-            entityId: '$entity._id',
-            sharedId: '$entity.sharedId',
-            entityTitle: '$entity.title',
-            fileId: 1,
-            language: 1,
-            propertyName: 1,
-            suggestedValue: 1,
-            segment: 1,
-            currentValue: 1,
-            state: 1,
-            page: 1,
-            date: 1,
-            labeledValue: 1,
+          {
+            $addFields: {
+              currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
+            },
           },
-        },
-      ],
-      {
-        stage1: [{ $group: { _id: null, count: { $sum: 1 } } }],
-        stage2: [{ $skip: offset }, { $limit: limit }],
+          {
+            $addFields: {
+              currentValue: { $ifNull: ['$currentValue.value', ''] },
+            },
+          },
+          {
+            $lookup: {
+              from: 'files',
+              let: {
+                localFieldFileId: '$fileId',
+              },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$_id', '$$localFieldFileId'],
+                    },
+                  },
+                },
+              ],
+              as: 'file',
+            },
+          },
+          {
+            $addFields: { file: { $arrayElemAt: ['$file', 0] } },
+          },
+          {
+            $addFields: {
+              labeledValue: {
+                $arrayElemAt: [
+                  {
+                    $filter: {
+                      input: '$file.extractedMetadata',
+                      as: 'label',
+                      cond: {
+                        $eq: ['$propertyName', '$$label.name'],
+                      },
+                    },
+                  },
+                  0,
+                ],
+              },
+            },
+          },
+          {
+            $addFields: {
+              labeledValue: '$labeledValue.selection.text',
+            },
+          },
+          {
+            $project: {
+              entityId: '$entity._id',
+              sharedId: '$entity.sharedId',
+              entityTitle: '$entity.title',
+              fileId: 1,
+              language: 1,
+              propertyName: 1,
+              suggestedValue: 1,
+              segment: 1,
+              currentValue: 1,
+              state: 1,
+              page: 1,
+              date: 1,
+              labeledValue: 1,
+            },
+          },
+        ],
       },
-      { count: '$stage1.count', data: '$stage2' }
+      { count: '$countBranch.count', data: '$dataBranch' }
     );
 
     const totalPages = Math.ceil(count[0] / limit);

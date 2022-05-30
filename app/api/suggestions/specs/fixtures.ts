@@ -17,6 +17,9 @@ const suggestionSharedId6Title = testingDB.id();
 const suggestionSharedId6Enemy = testingDB.id();
 const suggestionSharedId6EnemyEs = testingDB.id();
 
+const file2Id = factory.id('F2');
+const file3Id = factory.id('F3');
+
 const fixtures: DBFixture = {
   settings: [
     {
@@ -424,6 +427,8 @@ const fixtures: DBFixture = {
 };
 
 export {
+  file2Id,
+  file3Id,
   fixtures,
   shared2esId,
   shared2enId,
