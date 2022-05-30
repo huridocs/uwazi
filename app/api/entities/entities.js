@@ -56,7 +56,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
   const thesauriByKey = await templates.getRelatedThesauri(template);
 
-  return Promise.all(
+  const result = Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
         const toSave = { ...entity };
@@ -122,6 +122,10 @@ async function updateEntity(entity, _template, unrestricted = false) {
       return saveFunc(toSave);
     })
   );
+
+  await Suggestions.updateStates({ entityId: entity.sharedId });
+
+  return result;
 }
 
 async function createEntity(doc, languages, sharedId, docTemplate) {

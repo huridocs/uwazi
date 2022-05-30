@@ -252,8 +252,7 @@ export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
   const cursor = recalculateStates(query, languages || []);
   let state;
-  // eslint-disable-next-line no-cond-assign
-  // eslint-disable-next-line no-await-in-loop
+  // eslint-disable-next-line no-await-in-loop, no-cond-assign
   while ((state = await cursor.next())) {
     // eslint-disable-next-line no-await-in-loop
     await IXSuggestionsModel.db.updateOne({ _id: state._id }, { $set: { state: state.state } });

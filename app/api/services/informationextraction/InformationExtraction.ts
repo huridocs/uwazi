@@ -382,6 +382,8 @@ class InformationExtraction {
           creationDate: new Date().getTime(),
         });
 
+        await Suggestions.updateStates({ propertyName: currentModel.propertyName });
+
         emitToTenant(
           message.tenant,
           'ix_model_status',
