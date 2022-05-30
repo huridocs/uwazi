@@ -64,8 +64,7 @@ describe('Share entities', () => {
   });
 
   const selectLookupOption = async (searchTerm: string, option: string) => {
-    await expect(page).toClick('.userGroupsLookupField');
-    await expect(page).toFill('.userGroupsLookupField', searchTerm);
+    await expect(page).toFill('.userGroupsLookupField input', searchTerm);
     await page.waitForSelector('.userGroupsLookupField li .press-enter-note');
     await expect(page).toClick('.userGroupsLookupField li .member-list-item', {
       text: option,
