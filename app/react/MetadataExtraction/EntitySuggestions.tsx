@@ -30,14 +30,19 @@ export const EntitySuggestions = ({
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('ready');
+  const [statusMessage, setStatusMessage] = useState('...');
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
 
-  socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
-    if (propertyName === reviewedProperty.name) {
-      setStatus(modelStatus);
+  socket.on(
+    'ix_model_status',
+    (propertyName: string, modelStatus: string, modelMessage: string) => {
+      if (propertyName === reviewedProperty.name) {
+        setStatus(modelStatus);
+        setStatusMessage(modelMessage);
+      }
     }
-  });
+  );
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -172,6 +177,7 @@ export const EntitySuggestions = ({
   };
 
   const _trainModel = async () => {
+    setStatus('sending_labeled_data');
     const params = new RequestParams({
       property: reviewedProperty.name,
     });
@@ -201,8 +207,9 @@ export const EntitySuggestions = ({
 
   const ixmessages: { [k: string]: string } = {
     ready: 'Find suggestions',
-    processing_model: 'Training model...',
-    processing_suggestions: 'Finding suggestions...',
+    sending_labeled_data: 'Sending labeled data',
+    processing_model: 'Training model',
+    processing_suggestions: 'Finding suggestions ',
     error: 'Error',
   };
 
@@ -229,7 +236,7 @@ export const EntitySuggestions = ({
             className={`btn service-request-button ${status}`}
             onClick={_trainModel}
           >
-            <Translate>{ixmessages[status]}</Translate>
+            <Translate>{`${ixmessages[status]}${statusMessage}`}</Translate>
           </button>
         </div>
         <table {...getTableProps()}>
