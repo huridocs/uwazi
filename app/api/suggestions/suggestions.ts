@@ -490,6 +490,7 @@ export const Suggestions = {
     }
 
     await entities.saveMultiple(entitiesToUpdate);
+    await Suggestions.updateStates({ _id: acceptedSuggestion._id });
   },
   deleteByEntityId: async (sharedId: string) => {
     await IXSuggestionsModel.delete({ entityId: sharedId });
