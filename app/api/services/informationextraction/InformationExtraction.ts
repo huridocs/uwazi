@@ -29,6 +29,7 @@ import {
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
+import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
@@ -318,7 +319,7 @@ class InformationExtraction {
   };
 
   status = async (property: string) => {
-    const [currentModel] = await IXModelsModel.get({
+    const [currentModel] = await ixmodels.get({
       propertyName: property,
       status: 'processing',
     });
@@ -327,7 +328,7 @@ class InformationExtraction {
       return { status: 'processing_model', message: 'Training model' };
     }
 
-    const [suggestion] = await IXSuggestionsModel.get({
+    const [suggestion] = await ixmodels.get({
       propertyName: property,
       status: 'processing',
     });
@@ -349,7 +350,7 @@ class InformationExtraction {
   };
 
   saveModelProcess = async (property: string) => {
-    const [currentModel] = await IXModelsModel.get({
+    const [currentModel] = await ixmodels.get({
       propertyName: property,
     });
 
@@ -372,7 +373,7 @@ class InformationExtraction {
   processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       if (message.task === 'create_model' && message.success) {
-        const [currentModel] = await IXModelsModel.get({
+        const [currentModel] = await ixmodels.get({
           propertyName: message.params!.property_name,
         });
 

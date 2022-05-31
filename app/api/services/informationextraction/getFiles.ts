@@ -4,7 +4,7 @@ import { SegmentationType } from 'shared/types/segmentationType';
 import entitiesModel from 'api/entities/entitiesModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
+import ixmodels from 'api/services/informationextraction/ixmodels';
 import { FileType } from 'shared/types/fileType';
 
 const BATCH_SIZE = 50;
@@ -79,7 +79,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
 }
 
 async function getFilesForSuggestions(templates: ObjectIdSchema[], property: string) {
-  const [currentModel] = await IXModelsModel.get({ propertyName: property });
+  const [currentModel] = await ixmodels.get({ propertyName: property });
 
   const suggestions = await IXSuggestionsModel.get(
     { propertyName: property, date: { $gt: currentModel.creationDate } },
