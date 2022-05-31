@@ -355,7 +355,7 @@ class InformationExtraction {
       propertyName: property,
     });
 
-    await IXModelsModel.save({
+    await ixmodels.save({
       ...currentModel,
       status: ModelStatus.processing,
       creationDate: new Date().getTime(),
@@ -378,7 +378,7 @@ class InformationExtraction {
           propertyName: message.params!.property_name,
         });
 
-        await IXModelsModel.save({
+        await ixmodels.save({
           ...currentModel,
           status: ModelStatus.ready,
           creationDate: new Date().getTime(),
