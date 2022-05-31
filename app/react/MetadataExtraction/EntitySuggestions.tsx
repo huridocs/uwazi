@@ -29,20 +29,11 @@ export const EntitySuggestions = ({
 }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [status, setStatus] = useState('ready');
-  const [statusMessage, setStatusMessage] = useState('...');
+  const [status, setStatus] = useState<{ key: string; data?: undefined }>({
+    key: 'ready',
+  });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
-
-  socket.on(
-    'ix_model_status',
-    (propertyName: string, modelStatus: string, modelMessage: string) => {
-      if (propertyName === reviewedProperty.name) {
-        setStatus(modelStatus);
-        setStatusMessage(modelMessage);
-      }
-    }
-  );
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -177,16 +168,16 @@ export const EntitySuggestions = ({
   };
 
   const _trainModel = async () => {
-    setStatus('sending_labeled_data');
+    setStatus({ key: 'sending_labeled_data' });
     const params = new RequestParams({
       property: reviewedProperty.name,
     });
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
-    setStatus(response.status);
+    setStatus({ key: response.status });
     store?.dispatch(notify(response.message, type));
-    if (status === 'ready') {
+    if (status.key === 'ready') {
       await retrieveSuggestions();
     }
   };
@@ -198,20 +189,35 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus(response.status);
+        setStatus({ key: response.status });
       })
       .catch(() => {
-        setStatus('error');
+        setStatus({ key: 'error' });
       });
+
+    socket.on(
+      'ix_model_status',
+      (propertyName: string, modelStatus: string, _: string, data: any) => {
+        if (propertyName === reviewedProperty.name) {
+          setStatus({ key: modelStatus, data });
+        }
+      }
+    );
+    return () => {
+      socket.off('ix_model_status');
+    };
   }, []);
 
   const ixmessages: { [k: string]: string } = {
     ready: 'Find suggestions',
-    sending_labeled_data: 'Sending labeled data',
-    processing_model: 'Training model',
-    processing_suggestions: 'Finding suggestions ',
+    sending_labeled_data: 'Sending labeled data...',
+    processing_model: 'Training model...',
+    processing_suggestions: 'Finding suggestions',
     error: 'Error',
   };
+
+  const formatData = (data: { total: number; processed: number } | undefined) =>
+    data ? `${data.processed}/${data.total}` : '';
 
   return (
     <>
@@ -236,7 +242,7 @@ export const EntitySuggestions = ({
             className={`btn service-request-button ${status}`}
             onClick={_trainModel}
           >
-            <Translate>{`${ixmessages[status]}${statusMessage}`}</Translate>
+            <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
           </button>
         </div>
         <table {...getTableProps()}>

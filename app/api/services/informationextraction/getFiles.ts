@@ -7,7 +7,7 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
 import { FileType } from 'shared/types/fileType';
 
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 8;
 const MAX_TRAINING_FILES_NUMBER = 500;
 
 interface FileWithAggregation {
@@ -35,20 +35,16 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
 
   const segmentationDictionary = Object.assign(
     {},
-    ...segmentationForFiles.map(segmentation => {
-      return { [segmentation.filename]: segmentation };
-    })
+    ...segmentationForFiles.map(segmentation => ({ [segmentation.filename]: segmentation }))
   );
 
-  return files.map(file => {
-    return {
-      _id: file._id,
-      language: file.language,
-      extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
-      entity: file.entity,
-      segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
-    };
-  });
+  return files.map(file => ({
+    _id: file._id,
+    language: file.language,
+    extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
+    entity: file.entity,
+    segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
+  }));
 }
 
 async function getSegmentedFilesIds() {
