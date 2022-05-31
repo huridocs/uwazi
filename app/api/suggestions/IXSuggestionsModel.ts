@@ -14,6 +14,7 @@ const mongoSchema = new mongoose.Schema(props, {
 
 // @ts-ignore
 mongoSchema.index({ propertyName: 'text' }, { language_override: '_text' });
+mongoSchema.index({ date: 1, state: -1 });
 
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 

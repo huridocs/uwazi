@@ -19,12 +19,12 @@ import { updateStates } from './updateState';
 // - related model (match by propertyName) - raw mongoose model, no manager object
 //    - save, but only when ready, not processing (see usages of IXModelsModel.save)
 //    - delete (no usage for now)
-// - file (match through fileId)
+// - file (match through fileId) (what can change? who changes it?)
 //    - save
-//    - delete
+//    - delete (should delete the suggestion?)
 // - entity (match through entityId)
 //    - save
-//    - delete
+//    - delete (done, already handled by previous implementation, it deletes the suggestion)
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
