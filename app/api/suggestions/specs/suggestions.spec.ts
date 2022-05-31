@@ -5,7 +5,15 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { EntitySuggestionType, IXSuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
-import { file2Id, file3Id, fixtures, personTemplateId, shared2enId, shared2esId, suggestionId } from './fixtures';
+import {
+  file2Id,
+  file3Id,
+  fixtures,
+  personTemplateId,
+  shared2enId,
+  shared2esId,
+  suggestionId,
+} from './fixtures';
 
 const getSuggestions = async (propertyName: string) =>
   Suggestions.get({ propertyName }, { page: { size: 5, number: 1 } });

@@ -31,7 +31,6 @@ import {
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import ixmodels from './ixmodels';
-import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
   tenant: string;
@@ -383,8 +382,6 @@ class InformationExtraction {
           status: ModelStatus.ready,
           creationDate: new Date().getTime(),
         });
-
-        await Suggestions.updateStates({ propertyName: currentModel.propertyName });
 
         emitToTenant(
           message.tenant,
