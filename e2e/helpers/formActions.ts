@@ -20,6 +20,7 @@ export const waitForNavigation = async (
 ): Promise<[void, HTTPResponse | null]> => Promise.all([action, page.waitForNavigation()]);
 
 export const uploadFileInMetadataField = async (filepath: string, fileInputSelector: string) => {
+  await page.waitForSelector(fileInputSelector);
   const button = await page.$(fileInputSelector);
 
   if (button) {
