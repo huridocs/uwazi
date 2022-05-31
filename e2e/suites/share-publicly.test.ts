@@ -38,7 +38,7 @@ const reLogin = async (username: string, password: string) => {
   await disableTransitions();
 };
 
-describe('Share entities', () => {
+describe('Share publicly', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();

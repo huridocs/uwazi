@@ -157,7 +157,11 @@ const validateFieldSize = (
   entity: EntitySchema,
   value: MetadataObjectSchema[] = []
 ) => {
-  if (hasValue(value) && !validators.validateLuceneBytesLimit(value)) {
+  if (
+    property.type !== propertyTypes.markdown &&
+    hasValue(value) &&
+    !validators.validateLuceneBytesLimit(value)
+  ) {
     return [validationError({ message: customErrorMessages.length_exceeded }, property, entity)];
   }
   return [];

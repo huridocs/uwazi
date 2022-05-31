@@ -3,9 +3,11 @@ import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import translations from 'api/i18n';
-import templateRoutes from '../routes';
-import templates from '../templates';
+import * as entitiesIndex from 'api/search/entitiesIndex';
+import { testingDB } from 'api/utils/testing_db';
 import { templateCommonProperties, fixtures, fixtureFactory } from './fixtures/routesFixtures';
+import templates from '../templates';
+import templateRoutes from '../routes';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -42,8 +44,8 @@ describe('templates routes', () => {
     next();
   });
 
-  const postToEnpoint = async (route: string, body: any) =>
-    request(app).post(route).send(body).expect(200);
+  const postToEndpoint = async (route: string, body: any, expectedCode = 200) =>
+    request(app).post(route).send(body).expect(expectedCode);
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_index');
@@ -78,7 +80,7 @@ describe('templates routes', () => {
 
   describe('POST', () => {
     it('should create a template', async () => {
-      await postToEnpoint('/api/templates', templateToSave);
+      await postToEndpoint('/api/templates', templateToSave);
 
       const savedTemplates = await templates.get();
 
@@ -94,7 +96,7 @@ describe('templates routes', () => {
         __v: 0,
       };
 
-      await postToEnpoint('/api/templates', templateToUpdate);
+      await postToEndpoint('/api/templates', templateToUpdate);
 
       const [updatedTemplate] = await templates.get({ _id: templateToUpdate._id });
       expect(updatedTemplate.properties).toContainEqual(
@@ -103,7 +105,7 @@ describe('templates routes', () => {
     });
 
     it('should not emit settings update when settings not modified', async () => {
-      await postToEnpoint('/api/templates', templateToSave);
+      await postToEndpoint('/api/templates', templateToSave);
 
       expect(emitToCurrentTenantSpy).not.toHaveBeenCalledWith('updateSettings');
     });
@@ -114,7 +116,7 @@ describe('templates routes', () => {
         name: 'template5',
       });
 
-      await postToEnpoint('/api/templates', syncedTemplateToSave);
+      await postToEndpoint('/api/templates', syncedTemplateToSave);
 
       expect(templateSaveSpy).toHaveBeenCalledWith(syncedTemplateToSave, undefined, false, false);
     });
@@ -155,9 +157,9 @@ describe('templates routes', () => {
     });
   });
 
-  describe('check mappings', () => {
+  describe('mappings', () => {
     it('should throw an error if template is invalid vs the current elasticsearch mapping', async () => {
-      await postToEnpoint('/api/templates', {
+      await postToEndpoint('/api/templates', {
         ...templateToSave,
         properties: [
           {
@@ -167,9 +169,14 @@ describe('templates routes', () => {
           },
         ],
       });
-      const savedTemplate = await templates.get({ name: 'template4' });
-      try {
-        await postToEnpoint('/api/templates', {
+      const [savedTemplate] = await templates.get({ name: 'template4' });
+      await postToEndpoint('/api/templates', {
+        ...savedTemplate,
+        properties: [],
+      });
+      const { body } = await postToEndpoint(
+        '/api/templates',
+        {
           ...savedTemplate,
           properties: [
             {
@@ -179,10 +186,99 @@ describe('templates routes', () => {
             },
           ],
           reindex: false,
-        });
-      } catch (error) {
-        expect(error.message).toContain('expected 200 "OK", got 409 "Conflict"');
-      }
+        },
+        409
+      );
+      expect(body.error).toContain('conflict');
+    });
+
+    it('should throw an error if template is reusing a property name in same operation', async () => {
+      await postToEndpoint('/api/templates', {
+        ...templateToSave,
+        properties: [
+          {
+            label: 'Numeric',
+            type: 'numeric',
+            name: 'numeric',
+          },
+        ],
+      });
+      const [savedTemplate] = await templates.get({ name: 'template4' });
+
+      const { body } = await postToEndpoint(
+        '/api/templates',
+        {
+          ...savedTemplate,
+          properties: [
+            {
+              label: 'Numeric',
+              type: 'text',
+              name: 'numeric',
+            },
+          ],
+          reindex: false,
+        },
+        400
+      );
+
+      expect(body.error).toContain('swap');
+    });
+
+    it('should check mapping of new added inherited properties', async () => {
+      const inheritPropId = testingDB.id();
+      const inheritPropNum = testingDB.id();
+      const templateA = {
+        ...templateToSave,
+        name: 'template A',
+        properties: [
+          { _id: inheritPropNum, name: 'num', type: 'numeric', label: 'Numeric' },
+          { _id: inheritPropId, name: 'name', type: 'text', label: 'Name' },
+        ],
+        commonProperties: [{ name: 'title', type: 'text', label: 'Name' }],
+      };
+
+      await postToEndpoint('/api/templates', templateA);
+
+      const templateB = {
+        ...templateToSave,
+        name: 'template B',
+        properties: [
+          {
+            name: 'relationship',
+            label: 'relationship',
+            type: 'relationship',
+            relationType: 'asdf',
+            inherit: { property: inheritPropNum.toString() },
+          },
+        ],
+      };
+      await postToEndpoint('/api/templates', templateB);
+      const [savedTemplate] = await templates.get({ name: 'template B' });
+
+      savedTemplate.properties![0].inherit!.property = inheritPropId.toString();
+
+      const { body } = await postToEndpoint('/api/templates', savedTemplate, 409);
+      expect(body.error).toContain('conflict');
+    });
+
+    describe('when there is an error other than mapping conflict', () => {
+      it('should throw the error', async () => {
+        spyOn(entitiesIndex, 'updateMapping').and.throwError('not 409');
+        await postToEndpoint(
+          '/api/templates',
+          {
+            ...templateToSave,
+            properties: [
+              {
+                label: 'Numeric',
+                type: 'numeric',
+                name: 'numeric',
+              },
+            ],
+          },
+          500
+        );
+      });
     });
   });
 });

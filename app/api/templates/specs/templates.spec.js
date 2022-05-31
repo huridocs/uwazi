@@ -210,6 +210,26 @@ describe('templates', () => {
       );
     });
 
+    it('should update translations when name of the template changes', async () => {
+      spyOn(translations, 'updateContext');
+      const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];
+
+      testTemplate.name = 'changed name';
+      await templates.save(testTemplate, 'es', true, false);
+      const expectedContext = {
+        'template to be edited': 'changed name',
+      };
+
+      expect(translations.updateContext).toHaveBeenLastCalledWith(
+        templateToBeEditedId,
+        'changed name',
+        expectedContext,
+        [],
+        { Title: 'Title', 'changed name': 'changed name' },
+        'Entity'
+      );
+    });
+
     it('should update translations with the name of the title property, and remove old custom value', async () => {
       spyOn(translations, 'updateContext');
       const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];

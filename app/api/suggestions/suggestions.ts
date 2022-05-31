@@ -1,9 +1,8 @@
-/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 /* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXSuggestionsFilter } from 'shared/types/suggestionType';
+import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
 import { EntitySchema } from 'shared/types/entityType';
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
@@ -11,6 +10,68 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import settings from 'api/settings/settings';
 import { files } from 'api/files/files';
 
+interface AcceptedSuggestion {
+  _id: ObjectIdSchema;
+  sharedId: string;
+  entityId: string;
+}
+
+const updateEntitiesWithSuggestion = async (
+  allLanguages: boolean,
+  acceptedSuggestion: AcceptedSuggestion,
+  suggestion: IXSuggestionType
+) => {
+  const query = allLanguages
+    ? { sharedId: acceptedSuggestion.sharedId }
+    : { sharedId: acceptedSuggestion.sharedId, _id: acceptedSuggestion.entityId };
+  const storedEntities = await entities.get(query, '+permissions');
+  const entitiesToUpdate =
+    suggestion.propertyName !== 'title'
+      ? storedEntities.map((entity: EntitySchema) => ({
+          ...entity,
+          metadata: {
+            ...entity.metadata,
+            [suggestion.propertyName]: [{ value: suggestion.suggestedValue }],
+          },
+          permissions: entity.permissions || [],
+        }))
+      : storedEntities.map((entity: EntitySchema) => ({
+          ...entity,
+          title: suggestion.suggestedValue,
+        }));
+
+  await entities.saveMultiple(entitiesToUpdate);
+};
+
+const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
+  const fetchedFiles = await files.get({ _id: suggestion.fileId });
+
+  if (!fetchedFiles?.length) return Promise.resolve();
+  const file = fetchedFiles[0];
+
+  file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
+  const extractedMetadata = file.extractedMetadata.find(
+    (em: any) => em.name === suggestion.propertyName
+  ) as ExtractedMetadataSchema;
+
+  if (!extractedMetadata) {
+    file.extractedMetadata.push({
+      name: suggestion.propertyName,
+      timestamp: Date(),
+      selection: {
+        text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
+        selectionRectangles: suggestion.selectionRectangles,
+      },
+    });
+  } else {
+    extractedMetadata.timestamp = Date();
+    extractedMetadata.selection = {
+      text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
+      selectionRectangles: suggestion.selectionRectangles,
+    };
+  }
+  return files.save(file);
+};
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -31,7 +92,7 @@ export const Suggestions = {
     const { state, language, ...filters } = filter;
     const [{ data, count }] = await IXSuggestionsModel.facet(
       [
-        { $match: { ...filters, status: 'ready' } },
+        { $match: { ...filters, status: { $ne: 'processing' } } },
         {
           $lookup: {
             from: 'entities',
@@ -249,14 +310,7 @@ export const Suggestions = {
     return { suggestions: data, totalPages };
   },
 
-  accept: async (
-    acceptedSuggestion: {
-      _id: ObjectIdSchema;
-      sharedId: string;
-      entityId: string;
-    },
-    allLanguages: boolean
-  ) => {
+  accept: async (acceptedSuggestion: AcceptedSuggestion, allLanguages: boolean) => {
     const suggestion = await IXSuggestionsModel.getById(acceptedSuggestion._id);
     if (!suggestion) {
       throw new Error('Suggestion not found');
@@ -264,70 +318,14 @@ export const Suggestions = {
     if (suggestion.error !== '') {
       throw new Error('Suggestion has an error');
     }
-    const query = allLanguages
-      ? { sharedId: acceptedSuggestion.sharedId }
-      : { sharedId: acceptedSuggestion.sharedId, _id: acceptedSuggestion.entityId };
-    const storedEntities = await entities.get(query, '+permissions');
-    const entitiesToUpdate =
-      suggestion.propertyName !== 'title'
-        ? storedEntities.map((entity: EntitySchema) => ({
-            ...entity,
-            metadata: {
-              ...entity.metadata,
-              [suggestion.propertyName]: [{ value: suggestion.suggestedValue }],
-            },
-            permissions: entity.permissions || [],
-          }))
-        : storedEntities.map((entity: EntitySchema) => ({
-            ...entity,
-            title: suggestion.suggestedValue,
-          }));
-
-    const fetchedFiles = await files.get({ _id: suggestion.fileId });
-    if (fetchedFiles.length > 0) {
-      const file = fetchedFiles[0];
-      const newTextSelection = suggestion.selectionRectangles;
-      if (!file.extractedMetadata) {
-        const newExtractedMetadata: any[] = [
-          {
-            name: suggestion.propertyName,
-            timestamp: Date(),
-            selection: {
-              text: suggestion.suggestedValue,
-              selectionRectangles: newTextSelection,
-            },
-          },
-        ];
-        file.extractedMetadata = newExtractedMetadata;
-      } else {
-        const extractedMetadata = file.extractedMetadata.find(
-          (em: any) => em.name === suggestion.propertyName
-        );
-        if (!extractedMetadata) {
-          file.extractedMetadata.push({
-            name: suggestion.propertyName,
-            timestamp: Date(),
-            selection: {
-              text: suggestion.suggestedValue as string,
-              selectionRectangles: newTextSelection,
-            },
-          });
-        } else {
-          (extractedMetadata as ExtractedMetadataSchema).timestamp = Date();
-          (extractedMetadata as ExtractedMetadataSchema).selection = {
-            text: suggestion.suggestedValue as string,
-            selectionRectangles: newTextSelection,
-          };
-        }
-      }
-      await files.save(file);
-    }
-
-    await entities.saveMultiple(entitiesToUpdate);
+    await updateEntitiesWithSuggestion(allLanguages, acceptedSuggestion, suggestion);
+    await updateExtractedMetadata(suggestion);
   },
+
   deleteByEntityId: async (sharedId: string) => {
     await IXSuggestionsModel.delete({ entityId: sharedId });
   },
+
   deleteByProperty: async (propertyName: string, templateId: string) => {
     const cursor = IXSuggestionsModel.db.find({ propertyName }).cursor();
 

@@ -3,14 +3,11 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import { errorLog } from 'api/log';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
-import templates from 'api/templates';
-import { TemplateSchema } from 'shared/types/templateType';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { search } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
 import { elastic } from '../elastic';
-import { checkMapping, updateMapping, reindexAll } from '../entitiesIndex';
-import elasticMapFactory from '../../../../database/elastic_mapping/elasticMapFactory';
+import { updateMapping, reindexAll } from '../entitiesIndex';
 
 const forceIndexingOfNumberBasedProperty = async () => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -104,99 +101,6 @@ describe('entitiesIndex', () => {
       expect(mappedProps.name).toMatchSnapshot();
       expect(mappedProps.dob).toMatchSnapshot();
       expect(mappedProps.country).toMatchSnapshot();
-    });
-  });
-
-  describe('checkMapping', () => {
-    it('should check mapping of a template vs current mapping', async () => {
-      const templateA = {
-        _id: '123',
-        name: 'template A',
-        properties: [
-          { name: 'name', type: 'text', label: 'Name' },
-          { name: 'dob', type: 'date', label: 'Date of birth' },
-          { name: 'country', type: 'relationship', label: 'Country' },
-        ],
-      };
-
-      const templateB = {
-        _id: '456',
-        name: 'template B',
-        properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
-      };
-
-      await updateMapping([templateA]);
-      let response = await checkMapping(templateB);
-      expect(response).toEqual({ valid: true });
-
-      templateB.properties = [
-        { name: 'dob', type: 'text', label: 'Date of birth' },
-        { name: 'country', type: 'select', label: 'Country' },
-      ];
-
-      response = await checkMapping(templateB);
-
-      expect(response).toEqual({
-        error: 'mapping conflict',
-        valid: false,
-      });
-    });
-
-    it('should check mapping of new added inherited properties', async () => {
-      const inheritPropId = db.id();
-      const inheritPropNum = db.id();
-      const templateA: TemplateSchema = {
-        name: 'template A',
-        properties: [
-          { _id: inheritPropNum, name: 'num', type: 'numeric', label: 'Numeric' },
-          { _id: inheritPropId, name: 'name', type: 'text', label: 'Name' },
-        ],
-        commonProperties: [{ name: 'title', type: 'text', label: 'Name' }],
-      };
-
-      await templates.save(templateA, 'en');
-
-      const templateB: TemplateSchema = {
-        name: 'template B',
-        properties: [
-          {
-            name: 'relationship',
-            label: 'relationship',
-            type: 'relationship',
-            inherit: { property: inheritPropNum.toString() },
-          },
-        ],
-      };
-      await checkMapping(templateB);
-      templateB.properties = [
-        {
-          name: 'relationship',
-          label: 'relationship',
-          type: 'relationship',
-          inherit: { property: inheritPropId.toString() },
-        },
-      ];
-      const response = await checkMapping(templateB);
-      expect(response).toEqual({ error: 'mapping conflict', valid: false });
-    });
-
-    describe('when the mapping is empty', () => {
-      it('should throw no errors', async () => {
-        const templateB = {
-          _id: '456',
-          name: 'template B',
-          properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
-        };
-        const response = await checkMapping(templateB);
-        expect(response).toEqual({ valid: true });
-      });
-    });
-
-    describe('when there is an error other than mapping conflict', () => {
-      it('should throw the error', async () => {
-        spyOn(elasticMapFactory, 'mapping').and.returnValue({ probably_bad_mapping: true });
-        await expect(checkMapping({})).rejects.toThrow();
-      });
     });
   });
 

@@ -11,13 +11,12 @@ export class UserInContextMockFactory {
   }
 
   mockEditorUser() {
-    const editorUser = {
+    this.mock({
       _id: 'userId',
       role: UserRole.EDITOR,
       username: 'editorUser',
       email: 'editor@test.com',
-    };
-    this.spy = jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue(editorUser);
+    });
   }
 
   restore() {

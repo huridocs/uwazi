@@ -80,15 +80,15 @@ describe('preserveSync', () => {
 
   afterAll(async () => db.disconnect());
 
-  const fakeEvidence = (id: string, title: string) => ({
+  const fakeEvidence = (number: number, title: string) => ({
     attributes: {
-      date: `date${id}`,
+      date: new Date(parseInt(`${number}000`, 10)).toISOString(),
       title,
       status: 'PROCESSED',
-      url: `http://www.url${id}test.org`,
+      url: `http://www.url${number}test.org`,
       downloads: [
-        { path: `/evidences/id${id}/content${id}.txt` },
-        { path: `/evidences/id${id}/screenshot${id}.jpg` },
+        { path: `/evidences/id${number}/content${number}.txt` },
+        { path: `/evidences/id${number}/screenshot${number}.jpg` },
       ],
     },
   });
@@ -98,23 +98,23 @@ describe('preserveSync', () => {
       errorLog.error = jest.fn();
       await tenants.run(async () => {
         const evidences = [
-          fakeEvidence('1', 'title of url1'),
-          fakeEvidence('2', 'title of url2'),
-          fakeEvidence('2', ''),
+          fakeEvidence(1, 'title of url1'),
+          fakeEvidence(2, 'title of url2'),
+          fakeEvidence(2, ''),
         ];
         await mockVault(evidences, 'auth-token');
 
-        const moreEvidences = [fakeEvidence('4', 'title of url4'), fakeEvidence('42', '')];
+        const moreEvidences = [fakeEvidence(4, 'title of url4'), fakeEvidence(42, '')];
 
         await mockVault(moreEvidences, 'another-auth-token');
         await preserveSync.syncAllTenants();
         const { lastImport } = (await preserveSyncModel.get({ token: 'auth-token' }))[0];
-        await mockVault([fakeEvidence('3', 'title of url3')], 'auth-token', lastImport);
+        await mockVault([fakeEvidence(3, 'title of url3')], 'auth-token', lastImport);
         const { lastImport: anotherLastImport } = (
           await preserveSyncModel.get({ token: 'another-auth-token' })
         )[0];
         await mockVault(
-          [fakeEvidence('5', 'title of url5')],
+          [fakeEvidence(5, 'title of url5')],
           'another-auth-token',
           anotherLastImport
         );
@@ -166,11 +166,11 @@ describe('preserveSync', () => {
         const datesImported = await preserveSyncModel.get();
         expect(datesImported).toMatchObject([
           {
-            lastImport: 'date3',
+            lastImport: new Date(3000).toISOString(),
             token: 'auth-token',
           },
           {
-            lastImport: 'date5',
+            lastImport: new Date(5000).toISOString(),
             token: 'another-auth-token',
           },
         ]);
@@ -274,8 +274,38 @@ describe('preserveSync', () => {
               source: [{ label: 'www.url3test.org' }],
             },
           },
-          { metadata: {} },
-          { metadata: {} },
+          {
+            metadata: expect.not.objectContaining({
+              url: expect.anything(),
+              source: expect.anything(),
+            }),
+          },
+          {
+            metadata: expect.not.objectContaining({
+              url: expect.anything(),
+              source: expect.anything(),
+            }),
+          },
+        ]);
+      }, tenantName);
+    });
+
+    it('should save date on "Preserve date" if property exists on the template', async () => {
+      await tenants.run(async () => {
+        permissionsContext.setCommandContext();
+        const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
+        expect(entitiesImported).toMatchObject([
+          {
+            metadata: { preservation_date: [{ value: 1 }] },
+          },
+          {
+            metadata: { preservation_date: [{ value: 2 }] },
+          },
+          {
+            metadata: { preservation_date: [{ value: 3 }] },
+          },
+          { metadata: expect.not.objectContaining({ preservation_date: expect.anything() }) },
+          { metadata: expect.not.objectContaining({ preservation_date: expect.anything() }) },
         ]);
       }, tenantName);
     });
