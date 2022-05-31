@@ -15,12 +15,12 @@ import { updateStates } from './updateState';
 // - suggestions (i.e. messages from the service - convention: suggestions are unique for file+property)
 //    - save, saveMultiple (done, tested)
 //    - accept (done, tested)
-// - related model (match by propertyName) - raw mongoose model, no manager object
-//    - save, but only when ready, not processing (see usages of IXModelsModel.save)
-//    - delete (no usage for now)
+// - related model (match by propertyName) - raw mongoose model, no manager object - created ixmodels
+//    - save, but only when ready, not processing (see usages of IXModelsModel.save) - ixmodels.save, done, tested
+//    - delete - skip since no usage?
 // - file (match through fileId) (what can change? who changes it?)
-//    - save
-//    - delete (should delete the suggestion?)
+//    - save - update conditioned on extractedMetadata change
+//    - delete (should delete the suggestion - checked with G.)
 // - entity (match through entityId)
 //    - save
 //    - delete (done, already handled by previous implementation, it deletes the suggestion)
@@ -301,4 +301,5 @@ export const Suggestions = {
       }
     }
   },
+  delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
 };

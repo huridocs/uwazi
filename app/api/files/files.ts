@@ -1,12 +1,20 @@
-import { deleteUploadedFiles } from 'api/files/filesystem';
-import connections from 'api/relationships';
-import { search } from 'api/search';
 import entities from 'api/entities';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
+import { deleteUploadedFiles } from 'api/files/filesystem';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
+import connections from 'api/relationships';
+import { search } from 'api/search';
+import { Suggestions } from 'api/suggestions/suggestions';
+import { deepEquals } from 'shared/dataUtils';
+import { validateFile } from 'shared/types/fileSchema';
+import { FileType } from 'shared/types/fileType';
 import { filesModel } from './filesModel';
-import { validateFile } from '../../shared/types/fileSchema';
-import { FileType } from '../../shared/types/fileType';
+
+const suggestionUpdateTrigger = (
+  existingFile: FileType | null | undefined,
+  savedFile: FileType
+): boolean =>
+  !!existingFile && !deepEquals(existingFile.extractedMetadata, savedFile.extractedMetadata);
 
 export const files = {
   async save(_file: FileType, index = true) {
@@ -16,10 +24,14 @@ export const files = {
       file.mimetype = mimetype;
     }
 
+    const existingFile = file._id ? await filesModel.getById(file._id) : undefined;
     const savedFile = await filesModel.save(await validateFile(file));
     if (index) {
       await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
     }
+    // if (suggestionUpdateTrigger(existingFile, savedFile)) {
+    //   await Suggestions.updateStates({ fileId: savedFile._id });
+    // }
     return savedFile;
   },
 
@@ -35,6 +47,7 @@ export const files = {
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
         '+fullText'
       );
+      // await Suggestions.delete({ fileId: { $in: toDeleteFiles.map(f => f._id) } });
     }
 
     await cleanupRecordsOfFiles(toDeleteFiles.map(f => f._id));

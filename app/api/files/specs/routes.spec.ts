@@ -64,6 +64,10 @@ describe('files routes', () => {
       expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
     });
 
+    it('should update ix suggestions if extractedMetada changes', async () => {
+      fail('todo');
+    });
+
     describe('when external url file', () => {
       it('should guess the mimetype', async () => {
         await request(app)
@@ -198,6 +202,10 @@ describe('files routes', () => {
       const ocrCleanupSpy = jest.spyOn(ocrRecords, 'cleanupRecordsOfFiles');
       await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
       expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
+    });
+
+    it('should delete related ix suggestions', async () => {
+      fail('todo');
     });
 
     it('should validate _id as string', async () => {
