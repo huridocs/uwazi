@@ -3,7 +3,6 @@
 /* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
-import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SuggestionState } from 'shared/types/suggestionSchema';
@@ -34,10 +33,6 @@ export const Suggestions = {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
-    const [model] = await IXModelsModel.get({
-      propertyName: filter.propertyName,
-      status: 'ready',
-    });
     const { languages } = await settings.get();
     // @ts-ignore
     const defaultLanguage = languages.find(l => l.default).key;
