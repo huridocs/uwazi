@@ -20,6 +20,7 @@ import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ModelStatus } from 'shared/types/IXModelSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
@@ -321,7 +322,7 @@ class InformationExtraction {
   status = async (property: string) => {
     const [currentModel] = await ixmodels.get({
       propertyName: property,
-      status: 'processing',
+      status: ModelStatus.processing,
     });
 
     if (currentModel) {
@@ -330,7 +331,7 @@ class InformationExtraction {
 
     const [suggestion] = await ixmodels.get({
       propertyName: property,
-      status: 'processing',
+      status: ModelStatus.processing,
     });
 
     if (suggestion) {
@@ -356,7 +357,7 @@ class InformationExtraction {
 
     await IXModelsModel.save({
       ...currentModel,
-      status: 'processing',
+      status: ModelStatus.processing,
       creationDate: new Date().getTime(),
       propertyName: property,
     });
@@ -379,7 +380,7 @@ class InformationExtraction {
 
         await IXModelsModel.save({
           ...currentModel,
-          status: 'ready',
+          status: ModelStatus.ready,
           creationDate: new Date().getTime(),
         });
 
