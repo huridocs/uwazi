@@ -1,4 +1,4 @@
-name: e2e suite 2
+name: legacy e2e
 
 on:
   push:
@@ -13,8 +13,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e_test:
+  run:
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        suite-dir: ['suite1', 'suite2']
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.0-amd64
@@ -67,7 +70,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 20 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 5
-      - run: xvfb-run -a yarn e2e suite2
+      - run: xvfb-run -a yarn e2e ${{ matrix.suite_dir }}
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
