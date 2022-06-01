@@ -29,9 +29,9 @@ export const files = {
     if (index) {
       await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
     }
-    // if (suggestionUpdateTrigger(existingFile, savedFile)) {
-    //   await Suggestions.updateStates({ fileId: savedFile._id });
-    // }
+    if (suggestionUpdateTrigger(existingFile, savedFile)) {
+      await Suggestions.updateStates({ fileId: savedFile._id });
+    }
     return savedFile;
   },
 

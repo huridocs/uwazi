@@ -7,6 +7,8 @@ describe('deepEquals', () => {
     expect(deepEquals(undefined, 'data')).toBe(false);
     expect(deepEquals(undefined, undefined)).toBe(true);
     expect(deepEquals(undefined, null)).toBe(false);
+    expect(deepEquals(undefined, { data: 'data' })).toBe(false);
+    expect(deepEquals(undefined, ['data'])).toBe(false);
   });
 
   it('should handle basic types', () => {

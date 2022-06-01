@@ -3,10 +3,10 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { fs } from 'api/files';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');

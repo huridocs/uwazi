@@ -19,11 +19,12 @@ import { updateStates } from './updateState';
 //    - save, but only when ready, not processing (see usages of IXModelsModel.save) - ixmodels.save, done, tested
 //    - delete - skip since no usage?
 // - file (match through fileId) (what can change? who changes it?)
-//    - save - update conditioned on extractedMetadata change
-//    - delete (should delete the suggestion - checked with G.)
+//    - save - update conditioned on extractedMetadata change - done, tested
+//    - delete (should delete the suggestion) - done, tested
 // - entity (match through entityId)
 //    - save
 //    - delete (done, already handled by previous implementation, it deletes the suggestion)
+// - templates - what happens to this (ix in general), when a property is renamed?
 
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),

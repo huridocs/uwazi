@@ -5,13 +5,14 @@ import { Application, Request, Response, NextFunction } from 'express';
 import { search } from 'api/search';
 import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
 import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Suggestions } from 'api/suggestions/suggestions';
 import {
   fixtures,
   uploadId,
@@ -23,7 +24,6 @@ import {
 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
-
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
@@ -66,8 +66,66 @@ describe('files routes', () => {
       expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
     });
 
-    it('should update ix suggestions if extractedMetada changes', async () => {
-      fail('todo');
+    // eslint-disable-next-line jest/no-focused-tests, max-statements
+    fit('should update ix suggestions if extractedMetada changes', async () => {
+      const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+
+      const original = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+      await request(app)
+        .post('/api/files')
+        .send({ ...original });
+      expect(updateSpy).not.toHaveBeenCalled();
+
+      await request(app)
+        .post('/api/files')
+        .send({
+          ...original,
+          extractedMetadata: [
+            {
+              name: 'propertyName',
+              selection: {
+                text: 'something',
+                selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+              },
+            },
+          ],
+        });
+      expect(updateSpy).toHaveBeenCalledWith({ fileId: original._id });
+
+      updateSpy.mockClear();
+      const withExtractedMetadata = await db.mongodb
+        ?.collection('files')
+        .findOne({ _id: uploadId });
+      await request(app)
+        .post('/api/files')
+        .send({
+          ...withExtractedMetadata,
+        });
+      expect(updateSpy).not.toHaveBeenCalled();
+
+      await request(app)
+        .post('/api/files')
+        .send({
+          ...withExtractedMetadata,
+          extractedMetadata: [
+            {
+              name: 'propertyName',
+              selection: {
+                text: 'other something',
+                selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+              },
+            },
+          ],
+        });
+      expect(updateSpy).toHaveBeenCalledWith({ fileId: original._id });
+
+      updateSpy.mockClear();
+      await request(app)
+        .post('/api/files')
+        .send({ ...withExtractedMetadata, extractedMetadata: [] });
+      expect(updateSpy).toHaveBeenCalledWith({ fileId: original._id });
+
+      updateSpy.mockRestore();
     });
 
     describe('when external url file', () => {
@@ -208,7 +266,6 @@ describe('files routes', () => {
 
     it('should delete related ix suggestions', async () => {
       await request(app).delete('/api/files').query({ _id: uploadId.toString() });
-      console.log(await db.mongodb?.collection('ixsuggestions').find({}).toArray());
       expect(
         await db.mongodb?.collection('ixsuggestions').find({ fileId: restrictedUploadId }).toArray()
       ).toHaveLength(2);
