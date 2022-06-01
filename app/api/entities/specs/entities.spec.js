@@ -183,6 +183,21 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
+    it('should update ix suggestions on entity update', async () => {
+      const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+
+      const doc = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        title: 'Batman finishes in other words',
+      };
+      const user = { _id: db.id() };
+      const saved = await entities.save(doc, { user, language: 'en' });
+      expect(updateSpy).toHaveBeenCalledWith({ entityId: saved.sharedId });
+
+      updateSpy.mockRestore();
+    });
+
     it('should index the newly created documents', done => {
       const doc = { title: 'the dark knight', template: templateId };
       const user = { _id: db.id() };
