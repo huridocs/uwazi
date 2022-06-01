@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import { actions, t } from 'app/I18N';
+import { DropdownList } from 'app/Forms';
 
 class I18NMenu extends Component {
   static reload(url) {
@@ -16,11 +16,11 @@ class I18NMenu extends Component {
   render() {
     const { languages, locale, location, i18nmode, toggleInlineEdit } = this.props;
     let path = location.pathname;
-
     if (location.search.match(/page=/)) {
       const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
       location.search = cleanSearch === '?' ? '' : cleanSearch;
     }
+
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
     path = path.replace(regexp, '/');
 
@@ -38,19 +38,16 @@ class I18NMenu extends Component {
             <Icon icon="language" size="lg" />
           </button>
         </NeedAuthorization>
-        {languages.count() > 1 &&
-          languages.map(lang => {
-            const key = lang.get('key');
-            const label = lang.get('label');
-            const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
-            return (
-              <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
-                <a className="menuNav-btn btn btn-default" href={url} aria-label={label}>
-                  {key}
-                </a>
-              </li>
-            );
-          })}
+        <DropdownList
+          textField="label"
+          data={languages.toJS()}
+          value={languages.find(lang => lang.get('key') === locale).toJS()}
+          onChange={selected => {
+            const url = `/${selected.key}${path}${path.match('document') ? '' : location.search}`;
+            I18NMenu.reload(url);
+          }}
+          style={{ width: '100px' }}
+        />
       </ul>
     );
   }
