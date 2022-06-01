@@ -8,6 +8,20 @@ import { NeedAuthorization } from 'app/Auth';
 import { actions, t } from 'app/I18N';
 import { DropdownList } from 'app/Forms';
 
+const listItem = (item, i18nmode) => {
+  if (!item.type) {
+    return <span>{item.label}</span>;
+  }
+  return (
+    <NeedAuthorization roles={['admin', 'editor']}>
+      <div className="live-translate">
+        <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+        <span>{item.label}</span>
+      </div>
+    </NeedAuthorization>
+  );
+};
+
 class I18NMenu extends Component {
   static reload(url) {
     window.location.href = url;
@@ -16,8 +30,9 @@ class I18NMenu extends Component {
   render() {
     const { languages: languageMap, locale, location, i18nmode, toggleInlineEdit } = this.props;
     const languages = languageMap.toJS();
-    const currentLanguage = languages.find(lang => lang.key === locale);
-    let path = location.pathname;
+    const selectedLanguage =
+      languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
+    languages.push({ label: 'Live translate', key: 'livetranslate', type: 'livetranslate' });
 
     if (location.search.match(/page=/)) {
       const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
@@ -25,31 +40,24 @@ class I18NMenu extends Component {
     }
 
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
-    path = path.replace(regexp, '/');
+    const path = location.pathname.replace(regexp, '/');
 
     return (
       <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <button
-            className={`menuNav-btn btn btn-default${
-              i18nmode ? ' inlineEdit active' : ' inlineEdit'
-            }`}
-            type="button"
-            onClick={toggleInlineEdit}
-            aria-label={t('System', 'Add/edit translations', null, false)}
-          >
-            <Icon icon="language" size="lg" />
-          </button>
-        </NeedAuthorization>
         <DropdownList
-          textField="label"
           data={languages}
-          value={currentLanguage}
+          value={selectedLanguage}
+          textField="label"
           onChange={selected => {
-            const url = `/${selected.key}${path}${path.match('document') ? '' : location.search}`;
-            I18NMenu.reload(url);
+            if (selected.type === 'livetranslate') {
+              toggleInlineEdit();
+            } else {
+              const url = `/${selected.key}${path}${path.match('document') ? '' : location.search}`;
+              I18NMenu.reload(url);
+            }
           }}
-          style={{ width: '100px' }}
+          className="menuNav-language"
+          itemComponent={({ item }) => listItem(item, i18nmode)}
         />
       </ul>
     );

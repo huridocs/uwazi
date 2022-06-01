@@ -253,7 +253,21 @@ header {
   .menuNav-language {
     align-self: center;
     text-transform: none;
-    min-width: 100px;
+    min-width: 150px;
+
+    .live-translate {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .live-on {
+      color: #88eacd;
+    }
+
+    .live-off {
+      color: #ffe66b;
+    }
 
     .rw-input,
     .rw-select,
@@ -266,6 +280,10 @@ header {
     .rw-widget-input {
       background-color: unset;
       border: unset;
+    }
+
+    .rw-popup-container {
+      width: fit-content;
     }
   }
 }
