@@ -16,6 +16,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         suite-dir: ['e2e/regression_suites', 'e2e/suites']
     services:
