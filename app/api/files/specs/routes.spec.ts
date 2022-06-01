@@ -16,12 +16,14 @@ import {
   fixtures,
   uploadId,
   uploadId2,
+  restrictedUploadId,
   restrictedUploadId2,
   adminUser,
   writerUser,
 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
@@ -205,7 +207,14 @@ describe('files routes', () => {
     });
 
     it('should delete related ix suggestions', async () => {
-      fail('todo');
+      await request(app).delete('/api/files').query({ _id: uploadId.toString() });
+      console.log(await db.mongodb?.collection('ixsuggestions').find({}).toArray());
+      expect(
+        await db.mongodb?.collection('ixsuggestions').find({ fileId: restrictedUploadId }).toArray()
+      ).toHaveLength(2);
+      expect(
+        await db.mongodb?.collection('ixsuggestions').find({ fileId: uploadId }).toArray()
+      ).toHaveLength(0);
     });
 
     it('should validate _id as string', async () => {

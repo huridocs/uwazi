@@ -47,7 +47,7 @@ export const files = {
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
         '+fullText'
       );
-      // await Suggestions.delete({ fileId: { $in: toDeleteFiles.map(f => f._id) } });
+      await Suggestions.delete({ fileId: { $in: toDeleteFiles.map(f => f._id) } });
     }
 
     await cleanupRecordsOfFiles(toDeleteFiles.map(f => f._id));
