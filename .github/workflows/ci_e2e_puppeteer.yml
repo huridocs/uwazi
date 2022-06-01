@@ -13,8 +13,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e_test_puppeteer:
+  run:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        suite-dir: ['e2e/regression_suites', 'e2e/suites']
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.0-amd64
@@ -75,7 +78,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - run: xvfb-run -a yarn e2e-puppeteer
+      - run: xvfb-run -a yarn e2e-puppeteer-all ${{ matrix.suite_dir }}
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
