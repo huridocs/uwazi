@@ -89,7 +89,7 @@ class MultiTenantMongooseModel<T> {
   }
 
   aggregateCursor<U>(aggregations?: any[]) {
-    return this.dbForCurrentTenant().aggregate<U>(aggregations) as mongoose.Aggregate<U>;
+    return this.dbForCurrentTenant().aggregate<U>(aggregations) as mongoose.Aggregate<U[]>;
   }
 
   async facet(aggregations: any[], pipelines: any, project: any) {
