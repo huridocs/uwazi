@@ -46,7 +46,7 @@ class I18NMenu extends Component {
       <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
         <DropdownList
           data={languages}
-          value={selectedLanguage}
+          defaultValue={selectedLanguage}
           textField="label"
           onChange={selected => {
             if (selected.type === 'livetranslate') {
@@ -58,6 +58,7 @@ class I18NMenu extends Component {
           }}
           className="menuNav-language"
           itemComponent={({ item }) => listItem(item, i18nmode)}
+          valueComponent={({ item }) => listItem(item, i18nmode)}
         />
       </ul>
     );

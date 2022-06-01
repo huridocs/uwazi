@@ -254,6 +254,7 @@ header {
     align-self: center;
     text-transform: none;
     min-width: 150px;
+    width: 20ch;
 
     .live-translate {
       display: flex;
@@ -283,7 +284,13 @@ header {
     }
 
     .rw-popup-container {
-      width: fit-content;
+      width: 20ch;
+    }
+
+    .rw-list-option {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
   }
 }
