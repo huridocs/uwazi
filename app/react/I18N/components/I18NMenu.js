@@ -14,8 +14,11 @@ class I18NMenu extends Component {
   }
 
   render() {
-    const { languages, locale, location, i18nmode, toggleInlineEdit } = this.props;
+    const { languages: languageMap, locale, location, i18nmode, toggleInlineEdit } = this.props;
+    const languages = languageMap.toJS();
+    const currentLanguage = languages.find(lang => lang.key === locale);
     let path = location.pathname;
+
     if (location.search.match(/page=/)) {
       const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
       location.search = cleanSearch === '?' ? '' : cleanSearch;
@@ -40,8 +43,8 @@ class I18NMenu extends Component {
         </NeedAuthorization>
         <DropdownList
           textField="label"
-          data={languages.toJS()}
-          value={languages.find(lang => lang.get('key') === locale).toJS()}
+          data={languages}
+          value={currentLanguage}
           onChange={selected => {
             const url = `/${selected.key}${path}${path.match('document') ? '' : location.search}`;
             I18NMenu.reload(url);
