@@ -7,7 +7,7 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
 import { FileType } from 'shared/types/fileType';
 
-const BATCH_SIZE = 8;
+const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
 
 interface FileWithAggregation {
