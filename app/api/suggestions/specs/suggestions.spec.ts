@@ -24,17 +24,17 @@ const findOneSuggestion = async (query: any) =>
 const stateUpdateCases = [
   {
     state: 'obsolete',
-    reason: 'the suggestion is older than model',
+    reason: 'the suggestion is older than the model',
     suggestionQuery: { entityId: 'shared5', propertyName: 'age' },
   },
   {
     state: 'valueEmpty',
-    reason: 'labeled, suggested value is empty but not current value',
+    reason: 'entity value exists, file label is empty, suggestion is empty',
     suggestionQuery: { entityId: 'shared3', propertyName: 'age' },
   },
   {
     state: 'labelMatch',
-    reason: 'values match',
+    reason: 'file label exists, suggestion and entity value exist and match',
     suggestionQuery: {
       entityId: 'shared2',
       propertyName: 'super_powers',
@@ -44,7 +44,7 @@ const stateUpdateCases = [
   },
   {
     state: 'empty',
-    reason: 'current and suggested values are empty',
+    reason: 'entity value, file label, suggestion are all empty',
     suggestionQuery: {
       entityId: 'shared6',
       propertyName: 'enemy',
@@ -53,7 +53,7 @@ const stateUpdateCases = [
   },
   {
     state: 'labelEmpty',
-    reason: '< case not clear >',
+    reason: 'entity value and file label exists, suggestion is empty',
     suggestionQuery: {
       entityId: 'shared6',
       propertyName: 'enemy',
@@ -63,7 +63,7 @@ const stateUpdateCases = [
   },
   {
     state: 'labelMismatch',
-    reason: 'labeledValue and suggestedValue differ',
+    reason: 'file label exists, suggestion and entity value exist but do not match',
     suggestionQuery: {
       propertyName: 'super_powers',
       language: 'es',
@@ -71,7 +71,7 @@ const stateUpdateCases = [
   },
   {
     state: 'valueMatch',
-    reason: 'suggested and current values match',
+    reason: 'file label is empty, but suggestion and entity value exist and match',
     suggestionQuery: {
       entityId: 'shared1',
       propertyName: 'enemy',
@@ -79,7 +79,7 @@ const stateUpdateCases = [
   },
   {
     state: 'valueMismatch',
-    reason: 'suggested and current values differ',
+    reason: 'file label is empty, suggestion and entity value exist but do not match',
     suggestionQuery: {
       entityId: 'shared6',
       propertyName: 'enemy',
