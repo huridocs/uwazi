@@ -1,7 +1,5 @@
-import { host } from '../config';
-
 export const createTemplate = async (name: string) => {
-  await page.goto(`${host}/en/settings/account`);
+  await expect(page).toClick('[href="/en/settings/account"]');
   await expect(page).toClick('span', { text: 'Templates' });
   await expect(page).toClick('span', { text: 'Add template' });
   await expect(page).toFill('input[name="template.data.name"]', name);
