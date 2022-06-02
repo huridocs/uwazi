@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import { actions } from 'app/I18N';
+import { actions, Translate } from 'app/I18N';
 import { DropdownList } from 'app/Forms';
 
 const listItem = (item, i18nmode) => {
@@ -16,7 +16,7 @@ const listItem = (item, i18nmode) => {
     <NeedAuthorization roles={['admin', 'editor']}>
       <div className="live-translate">
         <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-        <span>{item.label}</span>
+        <Translate>{item.label}</Translate>
       </div>
     </NeedAuthorization>
   );
