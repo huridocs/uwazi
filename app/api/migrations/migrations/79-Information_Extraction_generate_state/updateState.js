@@ -235,7 +235,7 @@ const recalculateStates = (db, query, languages) => {
   ]);
 };
 
-export const updateStates = async (db, query, progressCallback) => {
+export const updateStates = async (db, query) => {
   const { languages } = await db.collection('settings').find({}).next();
   const cursor = recalculateStates(db, query, languages || []);
   let state;
@@ -246,6 +246,6 @@ export const updateStates = async (db, query, progressCallback) => {
       .collection('ixsuggestions')
       .updateOne({ _id: state._id }, { $set: { state: state.state } });
 
-    progressCallback();
+    // progressCallback();
   }
 };
