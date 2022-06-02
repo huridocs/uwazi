@@ -48,6 +48,9 @@ class I18NMenu extends Component {
           data={languages}
           defaultValue={selectedLanguage}
           textField="label"
+          className="menuNav-language"
+          itemComponent={({ item }) => listItem(item, i18nmode)}
+          valueComponent={({ item }) => listItem(item, i18nmode)}
           onSelect={selected => {
             if (selected.type === 'livetranslate') {
               toggleInlineEdit();
@@ -56,9 +59,6 @@ class I18NMenu extends Component {
               I18NMenu.reload(url);
             }
           }}
-          className="menuNav-language"
-          itemComponent={({ item }) => listItem(item, i18nmode)}
-          valueComponent={({ item }) => listItem(item, i18nmode)}
         />
       </ul>
     );
