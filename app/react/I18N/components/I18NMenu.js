@@ -48,7 +48,7 @@ class I18NMenu extends Component {
           data={languages}
           defaultValue={selectedLanguage}
           textField="label"
-          onChange={selected => {
+          onSelect={selected => {
             if (selected.type === 'livetranslate') {
               toggleInlineEdit();
             } else {
