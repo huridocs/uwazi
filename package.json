@@ -210,7 +210,7 @@
   "devDependencies": {
     "@babel/cli": "7.17.6",
     "@babel/core": "7.17.5",
-    "@babel/eslint-parser": "7.17.0",
+    "@babel/eslint-parser": "7.18.2",
     "@babel/helper-call-delegate": "^7.12.13",
     "@babel/parser": "^7.17.10",
     "@babel/plugin-proposal-class-properties": "7.17.12",
