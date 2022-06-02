@@ -74,13 +74,6 @@ header {
   }
 }
 
-@media (max-width: 1023px) {
-  .mobile-menuActions {
-    position: absolute;
-    bottom: 0px;
-  }
-}
-
 .menuNav {
   padding: 0;
   margin: 0;
@@ -96,6 +89,8 @@ header {
     border-top: 1px solid transparentize($c-black, 0.6);
     overflow: auto;
     transition: all 225ms;
+    display: flex;
+    flex-direction: column;
     &.is-active {
       left: 0px;
     }
@@ -121,8 +116,14 @@ header {
 .menuItems {
   flex-grow: 1;
   @media (max-width: 1023px) {
-    max-height: 80%;
     overflow: scroll;
+    order: 1;
+  }
+}
+
+.mobile-menuActions {
+  @media (max-width: 1023px) {
+    order: 2;
   }
 }
 
