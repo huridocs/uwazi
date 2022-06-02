@@ -9,7 +9,7 @@ export default {
   save: async (ixmodel: IXModelType) => {
     const saved = await model.save(ixmodel);
     if (ixmodel.status === ModelStatus.ready) {
-      await Suggestions.updateStates({ propertyName: saved.propertyName });
+      await Suggestions.setObsolete({ propertyName: saved.propertyName });
     }
     return saved;
   },

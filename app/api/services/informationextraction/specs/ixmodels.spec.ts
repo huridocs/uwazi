@@ -14,8 +14,8 @@ describe('save()', () => {
     await db.disconnect();
   });
 
-  it('should update suggestions on saving a ready model', async () => {
-    const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+  it('should set suggestions obsolete on saving a ready model', async () => {
+    const setSpy = jest.spyOn(Suggestions, 'setObsolete');
 
     await ixmodels.save({
       propertyName: 'property',
@@ -23,7 +23,7 @@ describe('save()', () => {
       status: ModelStatus.processing,
     });
 
-    expect(updateSpy).not.toHaveBeenCalled();
+    expect(setSpy).not.toHaveBeenCalled();
 
     await ixmodels.save({
       propertyName: 'property',
@@ -31,8 +31,8 @@ describe('save()', () => {
       status: ModelStatus.ready,
     });
 
-    expect(updateSpy).toHaveBeenCalledWith({ propertyName: 'property' });
+    expect(setSpy).toHaveBeenCalledWith({ propertyName: 'property' });
 
-    updateSpy.mockRestore();
+    setSpy.mockRestore();
   });
 });

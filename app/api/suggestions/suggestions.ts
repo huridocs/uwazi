@@ -190,6 +190,9 @@ export const Suggestions = {
 
   updateStates,
 
+  setObsolete: async (query: any) =>
+    IXSuggestionsModel.updateMany(query, { $set: { state: SuggestionState.obsolete } }),
+
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
   saveMultiple: async (_suggestions: IXSuggestionType[]) => {

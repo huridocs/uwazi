@@ -357,6 +357,15 @@ describe('suggestions', () => {
     );
   });
 
+  describe('setObsolete()', () => {
+    it('should set the queried suggestions to obsolete state', async () => {
+      const query = { entityId: 'shared1' };
+      await Suggestions.setObsolete(query);
+      const obsoletes = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
+      expect(obsoletes?.every(s => s.state === SuggestionState.obsolete)).toBe(true);
+    });
+  });
+
   describe('saveMultiple()', () => {
     it('should handle everything at once', async () => {
       const originals = await Promise.all(
