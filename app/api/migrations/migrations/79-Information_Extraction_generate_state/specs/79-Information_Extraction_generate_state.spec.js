@@ -2,7 +2,7 @@ import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
-describe('migration Information Extraction: generate state', () => {
+describe('migration Information Extraction generate state', () => {
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
