@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import { actions, t } from 'app/I18N';
+import { actions } from 'app/I18N';
 import { DropdownList } from 'app/Forms';
 
 const listItem = (item, i18nmode) => {
@@ -77,16 +77,16 @@ I18NMenu.propTypes = {
   locale: PropTypes.string,
 };
 
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ toggleInlineEdit: actions.toggleInlineEdit }, dispatch);
+}
+
 export function mapStateToProps(state) {
   return {
     languages: state.settings.collection.get('languages'),
     i18nmode: state.inlineEdit.get('inlineEdit'),
     locale: state.locale,
   };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ toggleInlineEdit: actions.toggleInlineEdit }, dispatch);
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(I18NMenu));
