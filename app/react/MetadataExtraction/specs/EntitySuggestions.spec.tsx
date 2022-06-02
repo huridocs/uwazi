@@ -5,7 +5,7 @@
 import 'mutationobserver-shim';
 import '@testing-library/jest-dom';
 import React from 'react';
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, RenderResult, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import {
   dateSuggestion,
@@ -16,6 +16,7 @@ import {
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { socket } from 'app/socket';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
 
@@ -35,12 +36,13 @@ jest.mock('app/MetadataExtraction/PDFSidePanel', () => ({
 
 describe('EntitySuggestions', () => {
   const acceptIXSuggestion = jest.fn();
+  let renderResult: RenderResult;
 
   const renderComponent = (property = reviewedProperty) => {
-    renderConnectedContainer(
+    ({ renderResult } = renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
       () => defaultState
-    );
+    ));
   };
 
   describe('Render table', () => {
@@ -332,6 +334,22 @@ describe('EntitySuggestions', () => {
         .getAllByRole('cell')
         .map(cell => cell.textContent);
       expect(updatedRow[2]).toEqual(`Other title${filledPropertyValue}`);
+    });
+  });
+
+  describe('Sockets', () => {
+    it('should subscribe to a socket event only once', async () => {
+      spyOn(socket, 'on').and.returnValue(() => {});
+      await act(async () => renderComponent());
+      expect(socket.on).toHaveBeenCalledTimes(1);
+      expect(socket.on).toHaveBeenCalledWith('ix_model_status', expect.any(Function));
+    });
+    it('should remove subscription to a socket when unmounting', async () => {
+      spyOn(socket, 'off').and.returnValue(() => {});
+      await act(async () => renderComponent());
+      renderResult.unmount();
+      expect(socket.off).toHaveBeenCalledTimes(1);
+      expect(socket.off).toHaveBeenCalledWith('ix_model_status');
     });
   });
 });
