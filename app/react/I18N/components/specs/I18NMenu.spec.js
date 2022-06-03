@@ -29,6 +29,7 @@ describe('I18NMenu', () => {
         search: '?query=weneedmoreclerics',
       },
       locale: 'es',
+      user: Immutable.fromJS({ _id: 'user1', role: 'admin' }),
     };
   });
 
@@ -105,4 +106,20 @@ describe('I18NMenu', () => {
     expect(reloadMock).not.toBeCalled();
     expect(toggleInlineEditMock).toBeCalled();
   });
+
+  it('should return null if there are no languages', () => {
+    props.languages = Immutable.fromJS([]);
+    render();
+    expect(screen.queryByRole('listbox')).toBeNull();
+  });
+
+  it('should display only the current language if there is only one language and no user', () => {
+    props.languages = Immutable.fromJS([{ key: 'en', label: 'English', default: true }]);
+    props.user = Immutable.fromJS({});
+    render();
+    expect(screen.queryByRole('listbox')).toBeNull();
+    expect(screen.getByText('English')).toBeInTheDocument();
+  });
+
+  it.todo('should change to a button when live translating', () => {});
 });

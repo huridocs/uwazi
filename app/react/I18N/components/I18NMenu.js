@@ -8,10 +8,24 @@ import { NeedAuthorization } from 'app/Auth';
 import { actions, Translate } from 'app/I18N';
 import { DropdownList } from 'app/Forms';
 
+const prepareDropdownValues = (languageMap, locale, user) => {
+  const languages = languageMap.toJS();
+
+  const selectedLanguage =
+    languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
+
+  if (user.get('_id') && user.get('role') !== 'collaborator') {
+    languages.push({ label: 'Live translate', key: 'livetranslate', type: 'livetranslate' });
+  }
+
+  return { languages, selectedLanguage };
+};
+
 const listItem = (item, i18nmode) => {
   if (!item.type) {
     return <span>{item.label}</span>;
   }
+
   return (
     <NeedAuthorization roles={['admin', 'editor']}>
       <div className="live-translate">
@@ -28,11 +42,15 @@ class I18NMenu extends Component {
   }
 
   render() {
-    const { languages: languageMap, locale, location, i18nmode, toggleInlineEdit } = this.props;
-    const languages = languageMap.toJS();
-    const selectedLanguage =
-      languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
-    languages.push({ label: 'Live translate', key: 'livetranslate', type: 'livetranslate' });
+    const {
+      languages: languageMap,
+      locale,
+      location,
+      i18nmode,
+      toggleInlineEdit,
+      user,
+    } = this.props;
+    const { languages, selectedLanguage } = prepareDropdownValues(languageMap, locale, user);
 
     if (location.search.match(/page=/)) {
       const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
@@ -42,7 +60,11 @@ class I18NMenu extends Component {
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
     const path = location.pathname.replace(regexp, '/');
 
-    return (
+    if (languageMap.size === 0) {
+      return null;
+    }
+
+    return languageMap.count() > 1 || user.size ? (
       <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
         <DropdownList
           data={languages}
@@ -61,6 +83,10 @@ class I18NMenu extends Component {
           }}
         />
       </ul>
+    ) : (
+      <div className="menuNav-language">
+        <span className="singleItem">{selectedLanguage.label}</span>
+      </div>
     );
   }
 }
@@ -72,8 +98,9 @@ I18NMenu.defaultProps = {
 I18NMenu.propTypes = {
   location: PropTypes.instanceOf(Object).isRequired,
   languages: PropTypes.instanceOf(Object).isRequired,
-  toggleInlineEdit: PropTypes.func.isRequired,
+  user: PropTypes.instanceOf(Object).isRequired,
   i18nmode: PropTypes.bool.isRequired,
+  toggleInlineEdit: PropTypes.func.isRequired,
   locale: PropTypes.string,
 };
 
@@ -86,6 +113,7 @@ export function mapStateToProps(state) {
     languages: state.settings.collection.get('languages'),
     i18nmode: state.inlineEdit.get('inlineEdit'),
     locale: state.locale,
+    user: state.user,
   };
 }
 
