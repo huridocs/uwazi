@@ -4,7 +4,6 @@ import { adminLogin, logout } from '../helpers/login';
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
 import { clearInput, selectDate, scrollTo, waitForNavigation } from '../helpers/formActions';
 import { goToRestrictedEntities } from '../helpers/publishedFilter';
 import { mouseClick } from '../helpers/selectorUtils';
@@ -13,7 +12,6 @@ describe('Metadata Properties', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
-    await disableTransitions();
   });
 
   it('should log in as admin then click the settings nav button.', async () => {
@@ -46,6 +44,12 @@ describe('Metadata Properties', () => {
     await expect(propertiesInMetadata[7]).toSelect('select:first-of-type', 'Relacionado a');
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert-success');
+  });
+
+  it('should not allow duplicated properties', async () => {
+    await expect(page).toClick('.property-options-list li:first-child button');
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('.alert.alert-danger');
   });
 
   it('should create an entity filling all the props.', async () => {

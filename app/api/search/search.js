@@ -233,7 +233,7 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
   if (property.type === 'relationship') {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
-    const bucketEntities = await entitiesModel.get(
+    const bucketEntities = await entitiesModel.getUnrestricted(
       {
         sharedId: { $in: entitiesSharedId },
         language,
@@ -487,6 +487,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
   );
 
   const aggregationsWithAny = _addAnyAggregation(sanitizedAggregations, filters, response);
+
   return {
     rows,
     totalRows: response.body.hits.total.value,

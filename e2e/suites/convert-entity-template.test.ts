@@ -3,7 +3,6 @@ import { createTemplate } from '../helpers/createTemplate';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
 
 const setupPreFlights = async (): Promise<void> => {
   await insertFixtures();
@@ -23,7 +22,10 @@ describe('Image is rendered when editing an entity in document view', () => {
   beforeAll(async () => {
     await setupPreFlights();
     await setupTest();
-    await disableTransitions();
+  });
+
+  afterAll(async () => {
+    await logout();
   });
 
   it('Should select image for image property from supporting files', async () => {
@@ -34,9 +36,5 @@ describe('Image is rendered when editing an entity in document view', () => {
     });
     await expect(page).toClick('span', { text: 'Add file' });
     await expect(page).toMatchElement('div.media-grid-card-header > h5', { text: 'batman.jpg' });
-  });
-
-  afterAll(async () => {
-    await logout();
   });
 });

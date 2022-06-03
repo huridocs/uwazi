@@ -13,8 +13,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e_test_puppeteer:
+  e2e-puppeteer:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite-dir: ['regression_suites', 'suites']
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.0-amd64
@@ -30,10 +34,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Checkout submodules
         run: git submodule update --init --recursive
-      - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v1
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
         with:
-          node-version: '14.18.3'
+          node-version-file: '.nvmrc'
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -75,7 +79,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - run: xvfb-run -a yarn e2e-puppeteer
+      - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}

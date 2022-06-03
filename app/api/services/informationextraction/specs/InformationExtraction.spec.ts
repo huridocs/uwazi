@@ -449,6 +449,34 @@ describe('InformationExtraction', () => {
       });
       expect(suggestionsMarkdown.length).toBe(1);
     });
+    it('should store the suggestion text and suggestion value for dates', async () => {
+      setIXServiceResults([
+        {
+          property_name: 'property2',
+          xml_file_name: 'documentC.xml',
+          text: 'October 12, 2019',
+          segment_text: 'Birthday of John Doe is October 12, 2019',
+        },
+      ]);
+
+      await saveSuggestionProcess('F3', 'A3', 'eng', 'property2');
+
+      await informationExtraction.processResults({
+        params: { property_name: 'property2' },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'ready',
+        propertyName: 'property2',
+      });
+      expect(suggestions).toMatchObject([
+        { suggestedValue: 1570838400, suggestedText: 'October 12, 2019' },
+      ]);
+    });
 
     it('should store non-configured languages as default language suggestion', async () => {
       setIXServiceResults([

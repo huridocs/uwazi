@@ -3,6 +3,7 @@
 import db from 'api/utils/testing_db';
 
 const userId = db.id();
+const collaboratorId = db.id();
 const batmanBegins = 'shared2';
 const batmanFinishes = 'shared';
 const metadataSnippets = 'metadataSnippets';
@@ -691,6 +692,7 @@ export const ids = {
   batmanFinishes,
   metadataSnippets,
   userId,
+  collaboratorId,
   template: template.toString(),
   template1: template1.toString(),
   template2: template2.toString(),

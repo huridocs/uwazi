@@ -30,7 +30,7 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
     },
     {
       entityId: 'shared2',
-      sharedId: 'shared1',
+      sharedId: 'shared2',
       propertyName: 'property1',
       entityTitle: 'Título entidad',
       currentValue: '',
@@ -48,17 +48,17 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
 
 const dateSuggestion = {
   entityId: 'shared2',
-  sharedId: 'shared1',
+  sharedId: 'shared2',
   propertyName: 'fecha',
   entityTitle: 'Título entidad',
   currentValue: 1585851003,
   suggestedValue: 1585851003,
   segment: 'Fecha Apr 2, 2020',
   language: 'Spanish',
-  state: SuggestionState.valueMatch,
+  state: SuggestionState.labelMismatch,
   date: 2,
   page: 2,
-  fileId: 'fildId',
+  fileId: 'fileId1',
 };
 
 const reviewedProperty: PropertySchema = {
