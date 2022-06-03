@@ -1,4 +1,4 @@
-import { deepEquals } from '../dataUtils';
+import { deepEquals } from '../deepEquals';
 
 describe('deepEquals', () => {
   it('should handle null or undefined', () => {

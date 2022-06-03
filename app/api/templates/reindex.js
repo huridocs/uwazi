@@ -1,4 +1,4 @@
-import { deepEquals } from 'shared/dataUtils';
+import { deepEquals } from 'shared/data_utils/deepEquals';
 import templates from './templates';
 
 const SHOULD_NOT_TRIGGER_REINDEX = [

@@ -5,7 +5,7 @@ import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { deepEquals } from 'shared/dataUtils';
+import { deepEquals } from 'shared/data_utils/deepEquals';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { filesModel } from './filesModel';
