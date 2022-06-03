@@ -10,7 +10,6 @@ import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonType
 import { EntitySchema } from 'shared/types/entityType';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
 import { updateStates } from './updateState';
-
 //update flows:
 // - suggestions (i.e. messages from the service - convention: suggestions are unique for file+property)
 //    - save, saveMultiple (done, tested)
@@ -41,151 +40,295 @@ export const Suggestions = {
     const configuredLanguages = languages.map(l => l.key);
     const { language, ...filters } = filter;
 
-    const [{ data, count }] = await IXSuggestionsModel.facet(
-      [{ $match: { ...filters, status: 'ready' } }],
+    // const response = await IXSuggestionsModel.facet(
+    //   [
+    //     { $match: { ...filters, status: 'ready' } },
+    //     { $sort: { date: 1, state: -1 } }, // sort still needs to be before offset and limit
+    //   ],
+    //   {
+    //     countBranch: [{ $group: { _id: null, count: { $sum: 1 } } }],
+    //     dataBranch: [
+    //       { $skip: offset },
+    //       { $limit: limit },
+    //       {
+    //         $lookup: {
+    //           from: 'entities',
+    //           let: {
+    //             localFieldEntityId: '$entityId',
+    //             localFieldLanguage: {
+    //               $cond: [
+    //                 {
+    //                   $not: [{ $in: ['$language', configuredLanguages] }],
+    //                 },
+    //                 defaultLanguage,
+    //                 '$language',
+    //               ],
+    //             },
+    //           },
+    //           pipeline: [
+    //             {
+    //               $match: {
+    //                 $expr: {
+    //                   $and: [
+    //                     { $eq: ['$sharedId', '$$localFieldEntityId'] },
+    //                     { $eq: ['$language', '$$localFieldLanguage'] },
+    //                   ],
+    //                 },
+    //               },
+    //             },
+    //           ],
+    //           as: 'entity',
+    //         },
+    //       },
+    //       {
+    //         $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
+    //       },
+    //       {
+    //         $addFields: {
+    //           currentValue: {
+    //             $cond: [
+    //               { $eq: ['$propertyName', 'title'] },
+    //               { v: [{ value: '$entity.title' }] },
+    //               {
+    //                 $arrayElemAt: [
+    //                   {
+    //                     $filter: {
+    //                       input: {
+    //                         $objectToArray: '$entity.metadata',
+    //                       },
+    //                       as: 'property',
+    //                       cond: {
+    //                         $eq: ['$$property.k', '$propertyName'],
+    //                       },
+    //                     },
+    //                   },
+    //                   0,
+    //                 ],
+    //               },
+    //             ],
+    //           },
+    //         },
+    //       },
+    //       {
+    //         $addFields: {
+    //           currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
+    //         },
+    //       },
+    //       {
+    //         $addFields: {
+    //           currentValue: { $ifNull: ['$currentValue.value', ''] },
+    //         },
+    //       },
+    //       {
+    //         $lookup: {
+    //           from: 'files',
+    //           let: {
+    //             localFieldFileId: '$fileId',
+    //           },
+    //           pipeline: [
+    //             {
+    //               $match: {
+    //                 $expr: {
+    //                   $eq: ['$_id', '$$localFieldFileId'],
+    //                 },
+    //               },
+    //             },
+    //           ],
+    //           as: 'file',
+    //         },
+    //       },
+    //       {
+    //         $addFields: { file: { $arrayElemAt: ['$file', 0] } },
+    //       },
+    //       {
+    //         $addFields: {
+    //           labeledValue: {
+    //             $arrayElemAt: [
+    //               {
+    //                 $filter: {
+    //                   input: '$file.extractedMetadata',
+    //                   as: 'label',
+    //                   cond: {
+    //                     $eq: ['$propertyName', '$$label.name'],
+    //                   },
+    //                 },
+    //               },
+    //               0,
+    //             ],
+    //           },
+    //         },
+    //       },
+    //       {
+    //         $addFields: {
+    //           labeledValue: '$labeledValue.selection.text',
+    //         },
+    //       },
+    //       {
+    //         $project: {
+    //           entityId: '$entity._id',
+    //           sharedId: '$entity.sharedId',
+    //           entityTitle: '$entity.title',
+    //           fileId: 1,
+    //           language: 1,
+    //           propertyName: 1,
+    //           suggestedValue: 1,
+    //           segment: 1,
+    //           currentValue: 1,
+    //           state: 1,
+    //           page: 1,
+    //           date: 1,
+    //           labeledValue: 1,
+    //         },
+    //       },
+    //     ],
+    //   },
+    //   { count: '$countBranch.count', data: '$dataBranch' }
+    // );
+
+    const [{ count }] = await IXSuggestionsModel.db.aggregate([
+      { $match: { ...filters, status: 'ready' } },
+      { $count: 'count' },
+    ]);
+
+    const suggestions = await IXSuggestionsModel.db.aggregate([
+      { $match: { ...filters, status: 'ready' } },
+      { $sort: { date: 1, state: -1 } }, // sort still needs to be before offset and limit
+      { $skip: offset },
+      { $limit: limit },
       {
-        countBranch: [{ $group: { _id: null, count: { $sum: 1 } } }],
-        dataBranch: [
-          { $sort: { date: 1, state: -1 } }, // sort still needs to be before offset and limit
-          { $skip: offset },
-          { $limit: limit },
-          {
-            $lookup: {
-              from: 'entities',
-              let: {
-                localFieldEntityId: '$entityId',
-                localFieldLanguage: {
-                  $cond: [
-                    {
-                      $not: [{ $in: ['$language', configuredLanguages] }],
-                    },
-                    defaultLanguage,
-                    '$language',
+        $lookup: {
+          from: 'entities',
+          let: {
+            localFieldEntityId: '$entityId',
+            localFieldLanguage: {
+              $cond: [
+                {
+                  $not: [{ $in: ['$language', configuredLanguages] }],
+                },
+                defaultLanguage,
+                '$language',
+              ],
+            },
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$sharedId', '$$localFieldEntityId'] },
+                    { $eq: ['$language', '$$localFieldLanguage'] },
                   ],
                 },
               },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        { $eq: ['$sharedId', '$$localFieldEntityId'] },
-                        { $eq: ['$language', '$$localFieldLanguage'] },
-                      ],
-                    },
-                  },
-                },
-              ],
-              as: 'entity',
             },
-          },
-          {
-            $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
-          },
-          {
-            $addFields: {
-              currentValue: {
-                $cond: [
-                  { $eq: ['$propertyName', 'title'] },
-                  { v: [{ value: '$entity.title' }] },
-                  {
-                    $arrayElemAt: [
-                      {
-                        $filter: {
-                          input: {
-                            $objectToArray: '$entity.metadata',
-                          },
-                          as: 'property',
-                          cond: {
-                            $eq: ['$$property.k', '$propertyName'],
-                          },
-                        },
-                      },
-                      0,
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-          {
-            $addFields: {
-              currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
-            },
-          },
-          {
-            $addFields: {
-              currentValue: { $ifNull: ['$currentValue.value', ''] },
-            },
-          },
-          {
-            $lookup: {
-              from: 'files',
-              let: {
-                localFieldFileId: '$fileId',
-              },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$_id', '$$localFieldFileId'],
-                    },
-                  },
-                },
-              ],
-              as: 'file',
-            },
-          },
-          {
-            $addFields: { file: { $arrayElemAt: ['$file', 0] } },
-          },
-          {
-            $addFields: {
-              labeledValue: {
+          ],
+          as: 'entity',
+        },
+      },
+      {
+        $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
+      },
+      {
+        $addFields: {
+          currentValue: {
+            $cond: [
+              { $eq: ['$propertyName', 'title'] },
+              { v: [{ value: '$entity.title' }] },
+              {
                 $arrayElemAt: [
                   {
                     $filter: {
-                      input: '$file.extractedMetadata',
-                      as: 'label',
+                      input: {
+                        $objectToArray: '$entity.metadata',
+                      },
+                      as: 'property',
                       cond: {
-                        $eq: ['$propertyName', '$$label.name'],
+                        $eq: ['$$property.k', '$propertyName'],
                       },
                     },
                   },
                   0,
                 ],
               },
-            },
+            ],
           },
-          {
-            $addFields: {
-              labeledValue: '$labeledValue.selection.text',
-            },
-          },
-          {
-            $project: {
-              entityId: '$entity._id',
-              sharedId: '$entity.sharedId',
-              entityTitle: '$entity.title',
-              fileId: 1,
-              language: 1,
-              propertyName: 1,
-              suggestedValue: 1,
-              segment: 1,
-              currentValue: 1,
-              state: 1,
-              page: 1,
-              date: 1,
-              labeledValue: 1,
-            },
-          },
-        ],
+        },
       },
-      { count: '$countBranch.count', data: '$dataBranch' }
-    );
+      {
+        $addFields: {
+          currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
+        },
+      },
+      {
+        $addFields: {
+          currentValue: { $ifNull: ['$currentValue.value', ''] },
+        },
+      },
+      {
+        $lookup: {
+          from: 'files',
+          let: {
+            localFieldFileId: '$fileId',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$_id', '$$localFieldFileId'],
+                },
+              },
+            },
+          ],
+          as: 'file',
+        },
+      },
+      {
+        $addFields: { file: { $arrayElemAt: ['$file', 0] } },
+      },
+      {
+        $addFields: {
+          labeledValue: {
+            $arrayElemAt: [
+              {
+                $filter: {
+                  input: '$file.extractedMetadata',
+                  as: 'label',
+                  cond: {
+                    $eq: ['$propertyName', '$$label.name'],
+                  },
+                },
+              },
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $addFields: {
+          labeledValue: '$labeledValue.selection.text',
+        },
+      },
+      {
+        $project: {
+          entityId: '$entity._id',
+          sharedId: '$entity.sharedId',
+          entityTitle: '$entity.title',
+          fileId: 1,
+          language: 1,
+          propertyName: 1,
+          suggestedValue: 1,
+          segment: 1,
+          currentValue: 1,
+          state: 1,
+          page: 1,
+          date: 1,
+          labeledValue: 1,
+        },
+      },
+    ]);
 
-    const totalPages = Math.ceil(count[0] / limit);
-    return { suggestions: data, totalPages };
+    const totalPages = Math.ceil(count / limit);
+    return { suggestions, totalPages };
   },
 
   updateStates,
