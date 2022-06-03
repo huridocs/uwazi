@@ -1,26 +1,29 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
-
-import { generateNames } from 'api/templates/utils';
-import ID from 'shared/uniqueID';
-import { propertyTypes } from 'shared/propertyTypes';
-import date from 'api/utils/date';
-import relationships from 'api/relationships/relationships';
-import { search } from 'api/search';
-import templates from 'api/templates/templates';
 import path from 'path';
+
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
-import { unique } from 'api/utils/filters';
-import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import relationships from 'api/relationships/relationships';
+import { search } from 'api/search';
 import { Suggestions } from 'api/suggestions/suggestions';
+import templates from 'api/templates/templates';
+import { generateNames } from 'api/templates/utils';
+import date from 'api/utils/date';
+import { unique } from 'api/utils/filters';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
+import { AccessLevels } from 'shared/types/permissionSchema';
+import { propertyTypes } from 'shared/propertyTypes';
+import ID from 'shared/uniqueID';
+
+import { denormalizeMetadata, denormalizeRelated } from './denormalize';
+import model from './entitiesModel';
+import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
-import model from './entitiesModel';
 import settings from '../settings';
-import { denormalizeMetadata, denormalizeRelated } from './denormalize';
-import { saveSelections } from './metadataExtraction/saveSelections';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -34,6 +37,21 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.geolocation,
   propertyTypes.numeric,
 ];
+
+const updateIxSuggestionsTrigger = async newEntity => {
+  let extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
+  if (!extractionTemplates || !newEntity.metadata) return false;
+  extractionTemplates = objectIndex(
+    extractionTemplates,
+    d => d.template.toString(),
+    d => new Set(d.properties)
+  );
+  const [existing] = await model.getUnrestricted({ _id: newEntity._id });
+  if (!existing || !(existing.template?.toString() in extractionTemplates)) return false;
+  const extractedProperties = extractionTemplates[existing.template.toString()];
+  const changedMetadata = shallowObjectDiff(newEntity.metadata, existing.metadata).all;
+  return changedMetadata.some(m => extractedProperties.has(m));
+};
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
@@ -123,7 +141,9 @@ async function updateEntity(entity, _template, unrestricted = false) {
     })
   );
 
-  await Suggestions.updateStates({ entityId: entity.sharedId });
+  if (await updateIxSuggestionsTrigger(entity)) {
+    await Suggestions.updateStates({ entityId: entity.sharedId });
+  }
 
   return result;
 }

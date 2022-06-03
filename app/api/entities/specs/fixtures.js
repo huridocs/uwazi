@@ -176,7 +176,10 @@ export default {
       title: 'Batman finishes',
       published: true,
       metadata: {
+        text: [{ value: 'textvalue' }],
         property1: [{ value: 'value1' }],
+        property2: [{ value: 'value2' }],
+        description: [{ value: 'descriptionvalue' }],
         friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
         enemies: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
       },
@@ -502,7 +505,20 @@ export default {
     },
   ],
   settings: [
-    { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
+    {
+      _id: db.id(),
+      languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
+      features: {
+        metadataExtraction: {
+          templates: [
+            {
+              template: templateId.toString(),
+              properties: ['property2', 'description'],
+            },
+          ],
+        },
+      },
+    },
   ],
   templates: [
     {

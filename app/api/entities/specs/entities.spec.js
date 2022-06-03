@@ -183,7 +183,7 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    it('should update ix suggestions on entity update', async () => {
+    it('should update ix suggestions on entity update, if relevant metadata is changed', async () => {
       const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
       const doc = {
@@ -192,7 +192,42 @@ describe('entities', () => {
         title: 'Batman finishes in other words',
       };
       const user = { _id: db.id() };
-      const saved = await entities.save(doc, { user, language: 'en' });
+      let saved = await entities.save(doc, { user, language: 'en' });
+      expect(updateSpy).not.toHaveBeenCalled();
+
+      let toSave = {
+        ...doc,
+        metadata: {
+          ...saved.metadata,
+          text: [{ value: 'new text value' }],
+          property1: [{ value: 'new property 1 value' }],
+        },
+      };
+      saved = await entities.save(toSave, { user, language: 'en' });
+      expect(updateSpy).not.toHaveBeenCalled();
+
+      toSave = {
+        ...doc,
+        metadata: {
+          ...saved.metadata,
+          property2: [{ value: 'new property 2 value' }],
+        },
+      };
+      saved = await entities.save(toSave, { user, language: 'en' });
+      expect(updateSpy).toHaveBeenCalledWith({ entityId: saved.sharedId });
+
+      updateSpy.mockClear();
+      toSave = {
+        ...doc,
+        metadata: {
+          ...saved.metadata,
+          text: [{ value: 'second new text value' }],
+          property1: [{ value: 'second new property 1 value' }],
+          property2: [{ value: 'second new property 2 value' }],
+          description: [{ value: 'new description value' }],
+        },
+      };
+      saved = await entities.save(toSave, { user, language: 'en' });
       expect(updateSpy).toHaveBeenCalledWith({ entityId: saved.sharedId });
 
       updateSpy.mockRestore();

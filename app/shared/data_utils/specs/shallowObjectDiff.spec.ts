@@ -97,6 +97,22 @@ describe('objectIndex()', () => {
     });
   });
 
+  it('should also return all concatenated', () => {
+    expect(
+      shallowObjectDiff(ABC, {
+        A: 0,
+        C: 999,
+        D: 3,
+      })
+    ).toMatchObject({
+      isDifferent: true,
+      missing: ['B'],
+      extra: ['D'],
+      differentValue: ['C'],
+      all: ['B', 'D', 'C'],
+    });
+  });
+
   it('should find and mark deep difference', () => {
     expect(
       shallowObjectDiff(ABC, {

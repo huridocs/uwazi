@@ -9,6 +9,7 @@ type ShallowDiffResult = {
   missing: PropNameType[];
   extra: PropNameType[];
   differentValue: PropNameType[];
+  all: PropNameType[];
 };
 
 const shallowObjectDiff = (left: PropObject, right: PropObject): ShallowDiffResult => {
@@ -18,11 +19,13 @@ const shallowObjectDiff = (left: PropObject, right: PropObject): ShallowDiffResu
   const extra = Object.keys(right).filter(p => !leftProps.has(p));
   const inBoth = Object.keys(left).filter(p => rightProps.has(p));
   const differentValue = inBoth.filter(p => !deepEquals(left[p], right[p]));
+  const all = missing.concat(extra, differentValue);
   return {
-    isDifferent: !!missing.length || !!extra.length || !!differentValue.length,
+    isDifferent: !!all.length,
     missing,
     extra,
     differentValue,
+    all,
   };
 };
 
