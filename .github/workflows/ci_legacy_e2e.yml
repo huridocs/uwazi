@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run:
+  legacy-e2e-run:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
@@ -71,7 +71,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 20 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 5
-      - run: xvfb-run -a yarn e2e ${{ matrix.suite_dir }}
+      - run: xvfb-run -a yarn e2e ${{ matrix.suite-dir }}
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
