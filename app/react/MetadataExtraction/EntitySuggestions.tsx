@@ -69,9 +69,14 @@ export const EntitySuggestions = ({
     return className;
   };
 
+  const isRequiredFieldWithoutSuggestion = (row: EntitySuggestionType) =>
+    (row.propertyName === 'title' && row.suggestedValue === '') ||
+    (reviewedProperty.required && row.suggestedValue === '');
+
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.values;
     const { state } = suggestion;
+    console.log('Reviewed property: ', reviewedProperty);
     return (
       <div>
         <button
@@ -84,7 +89,8 @@ export const EntitySuggestions = ({
             state === SuggestionState.obsolete ||
             state === SuggestionState.labelMatch ||
             state === SuggestionState.valueMatch ||
-            state === SuggestionState.error
+            state === SuggestionState.error ||
+            isRequiredFieldWithoutSuggestion(row.original)
           }
           onClick={async () => showConfirmationModal(row)}
         >
