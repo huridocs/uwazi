@@ -26,6 +26,19 @@ describe('Translations', () => {
     await disableTransitions();
   };
 
+  const checkLanguageChange = async (
+    language: string,
+    libraryText: string,
+    translation: string
+  ) => {
+    await changeLanguage(language);
+    await expect(page).toClick('a', { text: libraryText });
+    await expect(page).toClick('.multiselectItem', { text: translation });
+    await expect(page).toMatchElement('.item-document', {
+      text: translation,
+    });
+  };
+
   describe('Translations from settings', () => {
     it('should be able to translate a page', async () => {
       await expect(page).toClick('a', { text: 'Account settings' });
@@ -34,17 +47,13 @@ describe('Translations', () => {
 
       await expect(page).toFill(
         'input[name="translationsForm,1,contexts,10,values,Mecanismo"]',
-        'Mechanism'
+        'Mecânica'
       );
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toMatchElement('.alert-success');
 
-      await changeLanguage('Português');
-      await expect(page).toClick('a', { text: 'Libreria' });
-      await expect(page).toClick('.multiselectItem', { text: 'Mechanism' });
-      await expect(page).toMatchElement('.item-document', {
-        text: 'Mechanism',
-      });
+      await checkLanguageChange('Português', 'Libreria', 'Mecânica');
+      await checkLanguageChange('English', 'Library', 'Mecanismo');
     });
   });
 
