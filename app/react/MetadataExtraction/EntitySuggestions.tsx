@@ -76,6 +76,7 @@ export const EntitySuggestions = ({
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.values;
     const { state } = suggestion;
+    console.log('Reviewed property: ', reviewedProperty);
     return (
       <div>
         <button
