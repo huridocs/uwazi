@@ -4,8 +4,8 @@ import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { NeedAuthorization } from 'app/Auth';
-import { actions, Translate } from 'app/I18N';
+import { actions, Translate, t } from 'app/I18N';
+
 import { DropdownList } from 'app/Forms';
 
 const prepareDropdownValues = (languageMap, locale, user) => {
@@ -20,22 +20,18 @@ const prepareDropdownValues = (languageMap, locale, user) => {
 
   return { languages, selectedLanguage };
 };
-
 const listItem = (item, i18nmode) => {
   if (!item.type) {
     return <span>{item.label}</span>;
   }
 
   return (
-    <NeedAuthorization roles={['admin', 'editor']}>
-      <div className="live-translate">
-        <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-        <Translate>{item.label}</Translate>
-      </div>
-    </NeedAuthorization>
+    <div className="live-translate">
+      <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+      <Translate>{item.label}</Translate>
+    </div>
   );
 };
-
 class I18NMenu extends Component {
   static reload(url) {
     window.location.href = url;
@@ -65,24 +61,44 @@ class I18NMenu extends Component {
     }
 
     return languageMap.count() > 1 || user.size ? (
-      <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
-        <DropdownList
-          data={languages}
-          defaultValue={selectedLanguage}
-          textField="label"
-          className="menuNav-language"
-          itemComponent={({ item }) => listItem(item, i18nmode)}
-          valueComponent={({ item }) => listItem(item, i18nmode)}
-          onSelect={selected => {
-            if (selected.type === 'livetranslate') {
-              toggleInlineEdit();
-            } else {
-              const url = `/${selected.key}${path}${path.match('document') ? '' : location.search}`;
-              I18NMenu.reload(url);
-            }
-          }}
-        />
-      </ul>
+      <div className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
+        {!i18nmode ? (
+          <DropdownList
+            data={languages}
+            defaultValue={selectedLanguage}
+            textField="label"
+            className="menuNav-language"
+            itemComponent={({ item }) => listItem(item)}
+            valueComponent={({ item }) => listItem(item)}
+            onSelect={selected => {
+              if (selected.type === 'livetranslate') {
+                toggleInlineEdit();
+              } else {
+                const url = `/${selected.key}${path}${
+                  path.match('document') ? '' : location.search
+                }`;
+                I18NMenu.reload(url);
+              }
+            }}
+          />
+        ) : (
+          <div className="menuNav-language">
+            <button
+              className="singleItem"
+              type="button"
+              onClick={toggleInlineEdit}
+              aria-label={t('System', 'Turn off inline translation', null, false)}
+            >
+              <div className="live-translate">
+                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+              </div>
+            </button>
+            <span className="singleItem">
+              <Translate>Live translate</Translate>
+            </span>
+          </div>
+        )}
+      </div>
     ) : (
       <div className="menuNav-language">
         <span className="singleItem">{selectedLanguage.label}</span>

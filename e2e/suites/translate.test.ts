@@ -20,7 +20,7 @@ describe('Translations', () => {
   };
 
   const changeLanguage = async (language: string) => {
-    await expect(page).toClick('.menuNav-I18NMenu .rw-select');
+    await expect(page).toClick('.menuNav-language .rw-btn');
     await expect(page).toClick('.rw-popup-container li span', { text: language });
     await page.waitForNavigation();
     await disableTransitions();
@@ -40,7 +40,7 @@ describe('Translations', () => {
   };
 
   describe('Translations from settings', () => {
-    it('should be able to translate a page', async () => {
+    it('should translate a text from settings', async () => {
       await expect(page).toClick('a', { text: 'Account settings' });
       await expect(page).toClick('span', { text: 'Translations' });
       await expect(page).toClick('a', { text: 'Mecanismo' });
@@ -70,15 +70,14 @@ describe('Translations', () => {
     });
 
     it('should check the translated text', async () => {
+      await expect(page).toClick('.singleItem');
       await changeLanguage('Español');
       await expect(page).toMatchElement('.translation', { text: 'Filtros' });
     });
 
     it('should deactive live translate', async () => {
       await activateTranslation();
-      await expect(page).toClick('.menuNav-I18NMenu');
-      await expect(page).toClick('.live-translate');
-      await expect(page).toMatchElement('.live-off');
+      await expect(page).toClick('.singleItem');
     });
   });
   afterAll(async () => {

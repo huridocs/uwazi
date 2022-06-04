@@ -253,11 +253,17 @@ header {
   }
 
   .menuNav-language {
+    display: flex;
     align-self: center;
     text-transform: none;
     min-width: 150px;
     width: 20ch;
+    gap: 10px;
 
+    button {
+      border: none;
+      background: none;
+    }
     .live-translate {
       display: flex;
       gap: 10px;
@@ -297,6 +303,7 @@ header {
 
     .singleItem {
       color: $c-white;
+      background-color: #60748b;
     }
   }
 }

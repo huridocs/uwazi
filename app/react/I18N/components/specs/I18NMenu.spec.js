@@ -10,6 +10,7 @@ import I18NMenu from '../I18NMenu';
 
 describe('I18NMenu', () => {
   let props;
+  let renderResult;
   const reloadMock = jest.fn();
   const toggleInlineEditMock = jest.fn();
   I18NMenu.WrappedComponent.reload = reloadMock;
@@ -32,27 +33,27 @@ describe('I18NMenu', () => {
       user: Immutable.fromJS({ _id: 'user1', role: 'admin' }),
     };
   });
-
-  const editorUser = Immutable.fromJS({ _id: 'user1', role: 'editor' });
-
-  const render = user => {
+  const render = () => {
     const reduxStore = {
       ...defaultState,
-      user,
     };
-    renderConnectedContainer(<I18NMenu.WrappedComponent {...props} />, () => reduxStore);
+    ({ renderResult } = renderConnectedContainer(
+      <I18NMenu.WrappedComponent {...props} />,
+      () => reduxStore
+    ));
   };
 
   describe('documents path', () => {
     it('should not show live transtions for not authorized user', async () => {
-      render(Immutable.fromJS({ _id: 'user1', role: 'collaborator' }));
+      props.user = Immutable.fromJS({ _id: 'user1', role: 'collaborator' });
+      render();
       fireEvent.click(screen.getByTitle('open dropdown'));
       const options = screen.getAllByRole('option');
-      expect(options.map(option => option.textContent)).toEqual(['English', 'Español', '']);
+      expect(options.map(option => option.textContent)).toEqual(['English', 'Español']);
     });
 
     it('should show live transtions for authorized user', async () => {
-      render(editorUser);
+      render();
       fireEvent.click(screen.getByTitle('open dropdown'));
       const options = screen.getAllByRole('option');
       expect(options.map(option => option.textContent)).toEqual([
@@ -63,7 +64,7 @@ describe('I18NMenu', () => {
     });
 
     it('should show as active the current locale', async () => {
-      render(editorUser);
+      render();
       fireEvent.click(screen.getByTitle('open dropdown'));
       const options = screen.getAllByRole('option');
       expect(options[1].getAttribute('class')).toContain('rw-state-selected');
@@ -83,7 +84,7 @@ describe('I18NMenu', () => {
         props.locale = locale;
         props.location.pathname = pathName;
         props.location.search = search;
-        render(editorUser);
+        render();
         fireEvent.click(screen.getByTitle('open dropdown'));
         const options = screen.getByRole('listbox').parentElement;
         await act(async () => {
@@ -97,7 +98,7 @@ describe('I18NMenu', () => {
 
   it('should active toggle translation edit mode when clicking Live translate', async () => {
     reloadMock.mockClear();
-    render(editorUser);
+    render();
     fireEvent.click(screen.getByTitle('open dropdown'));
     const options = screen.getByRole('listbox').parentElement;
     await act(async () => {
@@ -121,5 +122,15 @@ describe('I18NMenu', () => {
     expect(screen.getByText('English')).toBeInTheDocument();
   });
 
-  it.todo('should change to a button when live translating', () => {});
+  it('should change to a button when live translating', async () => {
+    props.i18nmode = true;
+
+    render();
+    expect(screen.queryByTitle('open dropdown')).toBeNull();
+    expect(screen.getByRole('button').textContent).toEqual('Live translate');
+    expect(screen.getByRole('button').className).toContain('singleItem');
+
+    const activeIcon = renderResult.container.getElementsByClassName('live-on');
+    expect(activeIcon.length).toBe(1);
+  });
 });
