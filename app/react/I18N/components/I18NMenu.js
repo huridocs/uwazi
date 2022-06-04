@@ -62,7 +62,7 @@ class I18NMenu extends Component {
 
     return languageMap.count() > 1 || user.size ? (
       <div className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
-        {!i18nmode ? (
+        {!i18nmode && (
           <DropdownList
             data={languages}
             defaultValue={selectedLanguage}
@@ -81,7 +81,8 @@ class I18NMenu extends Component {
               }
             }}
           />
-        ) : (
+        )}
+        {i18nmode && (
           <div className="menuNav-language">
             <button
               className="singleItem"

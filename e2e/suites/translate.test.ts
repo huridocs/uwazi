@@ -78,6 +78,7 @@ describe('Translations', () => {
     it('should deactive live translate', async () => {
       await activateTranslation();
       await expect(page).toClick('.singleItem');
+      await expect(page).not.toMatchElement('Live translate');
     });
   });
   afterAll(async () => {

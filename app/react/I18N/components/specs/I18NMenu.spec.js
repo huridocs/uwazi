@@ -127,7 +127,7 @@ describe('I18NMenu', () => {
 
     render();
     expect(screen.queryByTitle('open dropdown')).toBeNull();
-    expect(screen.getByRole('button').textContent).toEqual('Live translate');
+    expect(screen.getByRole('button').parentElement.textContent).toEqual('Live translate');
     expect(screen.getByRole('button').className).toContain('singleItem');
 
     const activeIcon = renderResult.container.getElementsByClassName('live-on');
