@@ -74,13 +74,6 @@ header {
   }
 }
 
-@media (max-width: 1023px) {
-  .mobile-menuActions {
-    position: absolute;
-    bottom: 0px;
-  }
-}
-
 .menuNav {
   padding: 0;
   margin: 0;
@@ -96,6 +89,8 @@ header {
     border-top: 1px solid transparentize($c-black, 0.6);
     overflow: auto;
     transition: all 225ms;
+    display: flex;
+    flex-direction: column;
     &.is-active {
       left: 0px;
     }
@@ -119,9 +114,16 @@ header {
 }
 
 .menuItems {
+  flex-grow: 1;
   @media (max-width: 1023px) {
-    max-height: 80%;
     overflow: scroll;
+    order: 1;
+  }
+}
+
+.mobile-menuActions {
+  @media (max-width: 1023px) {
+    order: 2;
   }
 }
 
@@ -247,6 +249,61 @@ header {
       } @else {
         color: $c-white;
       }
+    }
+  }
+
+  .menuNav-language {
+    display: flex;
+    align-self: center;
+    text-transform: none;
+    min-width: 150px;
+    width: 20ch;
+    gap: 10px;
+
+    button {
+      border: none;
+      background: none;
+    }
+    .live-translate {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .live-on {
+      color: #88eacd;
+    }
+
+    .live-off {
+      color: #ffe66b;
+    }
+
+    .rw-input,
+    .rw-select,
+    .rw-btn-select {
+      background-color: $c-theme;
+      color: $c-white;
+      height: $header-height;
+    }
+
+    .rw-widget-input {
+      background-color: unset;
+      border: unset;
+    }
+
+    .rw-popup-container {
+      width: 20ch;
+    }
+
+    .rw-list-option {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .singleItem {
+      color: $c-white;
+      background-color: #60748b;
     }
   }
 }
