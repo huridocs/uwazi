@@ -23,17 +23,17 @@ const findOneSuggestion = async (query: any) =>
 
 const stateUpdateCases = [
   {
-    state: 'obsolete',
+    state: SuggestionState.obsolete,
     reason: 'the suggestion is older than the model',
     suggestionQuery: { entityId: 'shared5', propertyName: 'age' },
   },
   {
-    state: 'valueEmpty',
+    state: SuggestionState.valueEmpty,
     reason: 'entity value exists, file label is empty, suggestion is empty',
     suggestionQuery: { entityId: 'shared3', propertyName: 'age' },
   },
   {
-    state: 'labelMatch',
+    state: SuggestionState.labelMatch,
     reason: 'file label exists, suggestion and entity value exist and match',
     suggestionQuery: {
       entityId: 'shared2',
@@ -43,7 +43,7 @@ const stateUpdateCases = [
     },
   },
   {
-    state: 'empty',
+    state: SuggestionState.empty,
     reason: 'entity value, file label, suggestion are all empty',
     suggestionQuery: {
       entityId: 'shared6',
@@ -52,7 +52,7 @@ const stateUpdateCases = [
     },
   },
   {
-    state: 'labelEmpty',
+    state: SuggestionState.labelEmpty,
     reason: 'entity value and file label exists, suggestion is empty',
     suggestionQuery: {
       entityId: 'shared6',
@@ -62,7 +62,7 @@ const stateUpdateCases = [
     },
   },
   {
-    state: 'labelMismatch',
+    state: SuggestionState.labelMismatch,
     reason: 'file label exists, suggestion and entity value exist but do not match',
     suggestionQuery: {
       propertyName: 'super_powers',
@@ -70,7 +70,7 @@ const stateUpdateCases = [
     },
   },
   {
-    state: 'valueMatch',
+    state: SuggestionState.valueMatch,
     reason: 'file label is empty, but suggestion and entity value exist and match',
     suggestionQuery: {
       entityId: 'shared1',
@@ -78,7 +78,7 @@ const stateUpdateCases = [
     },
   },
   {
-    state: 'valueMismatch',
+    state: SuggestionState.valueMismatch,
     reason: 'file label is empty, suggestion and entity value exist but do not match',
     suggestionQuery: {
       entityId: 'shared6',
@@ -299,8 +299,8 @@ describe('suggestions', () => {
           },
           true
         );
-      } catch (e) {
-        expect(e.message).toBe('Suggestion has an error');
+      } catch (e: any) {
+        expect(e?.message).toBe('Suggestion has an error');
       }
     });
   });
@@ -351,7 +351,7 @@ describe('suggestions', () => {
         const changed = await findOneSuggestion(idQuery);
         expect(changed).toMatchObject({
           ...original,
-          state: SuggestionState[state],
+          state,
         });
       }
     );
@@ -386,7 +386,7 @@ describe('suggestions', () => {
         const changed = changedSuggestions[i];
         expect(changed).toMatchObject({
           ...original,
-          state: SuggestionState[state],
+          state,
         });
       }
 
