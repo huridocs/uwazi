@@ -1,6 +1,6 @@
 import { actions as formActions } from 'react-redux-form';
-import { dateToSeconds } from 'shared/dataUtils';
 import { actions } from 'app/BasicReducer';
+import { dateToSeconds } from 'shared/data_utils/deepEquals';
 
 const updateSelection = (
   selection: { [key: string]: string },
