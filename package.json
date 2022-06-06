@@ -225,7 +225,7 @@
     "@babel/preset-react": "7.17.12",
     "@babel/preset-typescript": "7.16.7",
     "@babel/traverse": "^7.17.3",
-    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^14.2.0",
     "@types/cheerio": "^0.22.30",
