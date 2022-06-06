@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
@@ -9,20 +7,12 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { updateStates } from './updateState';
-//update flows:
-// - suggestions (i.e. messages from the service - convention: suggestions are unique for file+property)
-//    - save, saveMultiple (done, tested)
-//    - accept (done, tested)
-// - related model (match by propertyName) - raw mongoose model, no manager object - created ixmodels
-//    - save, but only when ready, not processing (see usages of IXModelsModel.save) - ixmodels.save, done, tested
-//    - delete - skip since no usage?
-// - file (match through fileId) (what can change? who changes it?)
-//    - save - update conditioned on extractedMetadata change - done, tested
-//    - delete (should delete the suggestion) - done, tested
-// - entity (match through entityId)
-//    - save
-//    - delete (done, already handled by previous implementation, it deletes the suggestion)
-// - templates - what happens to this (ix in general), when a property is renamed?
+import {
+  getCurrentValueStage,
+  getEntityStage,
+  getFileStage,
+  getLabeledValueStage,
+} from './pipelineStages';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -89,16 +79,12 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
-  // eslint-disable-next-line max-statements
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages } = await settings.get();
-    // @ts-ignore
-    const defaultLanguage = languages.find(l => l.default).key;
-    //@ts-ignore
-    const configuredLanguages = languages.map(l => l.key);
+
     const { language, ...filters } = filter;
 
     const [{ count }] = await IXSuggestionsModel.db.aggregate([
@@ -108,122 +94,13 @@ export const Suggestions = {
 
     const suggestions = await IXSuggestionsModel.db.aggregate([
       { $match: { ...filters, status: { $ne: 'processing' } } },
-      { $sort: { date: 1, state: -1 } }, // sort still needs to be before offset and limit
+      { $sort: { date: 1, state: -1 } },
       { $skip: offset },
       { $limit: limit },
-      {
-        $lookup: {
-          from: 'entities',
-          let: {
-            localFieldEntityId: '$entityId',
-            localFieldLanguage: {
-              $cond: [
-                {
-                  $not: [{ $in: ['$language', configuredLanguages] }],
-                },
-                defaultLanguage,
-                '$language',
-              ],
-            },
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$sharedId', '$$localFieldEntityId'] },
-                    { $eq: ['$language', '$$localFieldLanguage'] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'entity',
-        },
-      },
-      {
-        $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
-      },
-      {
-        $addFields: {
-          currentValue: {
-            $cond: [
-              { $eq: ['$propertyName', 'title'] },
-              { v: [{ value: '$entity.title' }] },
-              {
-                $arrayElemAt: [
-                  {
-                    $filter: {
-                      input: {
-                        $objectToArray: '$entity.metadata',
-                      },
-                      as: 'property',
-                      cond: {
-                        $eq: ['$$property.k', '$propertyName'],
-                      },
-                    },
-                  },
-                  0,
-                ],
-              },
-            ],
-          },
-        },
-      },
-      {
-        $addFields: {
-          currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
-        },
-      },
-      {
-        $addFields: {
-          currentValue: { $ifNull: ['$currentValue.value', ''] },
-        },
-      },
-      {
-        $lookup: {
-          from: 'files',
-          let: {
-            localFieldFileId: '$fileId',
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ['$_id', '$$localFieldFileId'],
-                },
-              },
-            },
-          ],
-          as: 'file',
-        },
-      },
-      {
-        $addFields: { file: { $arrayElemAt: ['$file', 0] } },
-      },
-      {
-        $addFields: {
-          labeledValue: {
-            $arrayElemAt: [
-              {
-                $filter: {
-                  input: '$file.extractedMetadata',
-                  as: 'label',
-                  cond: {
-                    $eq: ['$propertyName', '$$label.name'],
-                  },
-                },
-              },
-              0,
-            ],
-          },
-        },
-      },
-      {
-        $addFields: {
-          labeledValue: '$labeledValue.selection.text',
-        },
-      },
+      ...getEntityStage(languages!),
+      ...getCurrentValueStage(),
+      ...getFileStage(),
+      ...getLabeledValueStage(),
       {
         $project: {
           entityId: '$entity._id',
@@ -291,6 +168,7 @@ export const Suggestions = {
   deleteByProperty: async (propertyName: string, templateId: string) => {
     const cursor = IXSuggestionsModel.db.find({ propertyName }).cursor();
 
+    // eslint-disable-next-line no-await-in-loop
     for (let suggestion = await cursor.next(); suggestion; suggestion = await cursor.next()) {
       const sharedId = suggestion.entityId;
       // eslint-disable-next-line no-await-in-loop
