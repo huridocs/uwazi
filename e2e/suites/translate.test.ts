@@ -3,27 +3,19 @@
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
+import { changeLanguage } from '../helpers/changeLanguage';
 
 describe('Translations', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
-    await disableTransitions();
   });
 
   const activateTranslation = async () => {
     await expect(page).toClick('.menuNav-I18NMenu');
     await expect(page).toClick('.live-translate');
     await expect(page).toMatchElement('.live-on');
-  };
-
-  const changeLanguage = async (language: string) => {
-    await expect(page).toClick('.menuNav-language .rw-btn');
-    await expect(page).toClick('.rw-popup-container li span', { text: language });
-    await page.waitForNavigation();
-    await disableTransitions();
   };
 
   const checkLanguageChange = async (
@@ -33,10 +25,7 @@ describe('Translations', () => {
   ) => {
     await changeLanguage(language);
     await expect(page).toClick('a', { text: libraryText });
-    await expect(page).toClick('.multiselectItem', { text: translation });
-    await expect(page).toMatchElement('.item-document', {
-      text: translation,
-    });
+    await expect(page).toMatchElement('.multiselectItem', { text: translation });
   };
 
   describe('Translations from settings', () => {
@@ -52,8 +41,8 @@ describe('Translations', () => {
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toMatchElement('.alert-success');
 
-      await checkLanguageChange('Português', 'Libreria', 'Mecânica');
       await checkLanguageChange('English', 'Library', 'Mecanismo');
+      await checkLanguageChange('Português', 'Libreria', 'Mecânica');
     });
   });
 
