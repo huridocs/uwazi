@@ -53,7 +53,7 @@ jobs:
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: yarn test --config=jest.server.config.js --coverage --coverageDirectory  coverage/api --maxWorkers=2
+        run: yarn test --config=app/jest.server.config.js --coverage --coverageDirectory  coverage/api --maxWorkers=2
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
@@ -82,7 +82,7 @@ jobs:
       - run: chmod +x ./cc-test-reporter
       - run: ./cc-test-reporter before-build
       - name: Run tests
-        run: yarn test --config=jest.client.config.js --coverage --coverageDirectory  coverage/react --maxWorkers=2
+        run: yarn test --config=app/jest.client.config.js --coverage --coverageDirectory  coverage/react --maxWorkers=2
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
