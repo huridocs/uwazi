@@ -15,7 +15,7 @@ const recalculateStates = (query: any, languages: any[]): AggregationCursor => {
   const configuredLanguages = languages.map(l => l.key);
   return IXSuggestionsModel.db
     .aggregateCursor<StateResult[]>([
-      { $match: { ...query, status: 'ready' } },
+      { $match: { ...query, status: { $ne: 'processing' } } },
       {
         $lookup: {
           from: 'entities',
