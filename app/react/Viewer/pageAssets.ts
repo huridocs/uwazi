@@ -1,6 +1,10 @@
 import { formater as formatter } from 'app/Metadata';
-import { pick, isArray, isObject, isEmpty, toPairs, take, get } from 'lodash';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { pick, isArray, isObject, isEmpty, toPairs, take, get, groupBy } from 'lodash';
+import {
+  MetadataObjectSchema,
+  PropertySchema,
+  PropertyValueSchema,
+} from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -15,6 +19,17 @@ type FormattedPropertyValueSchema = Partial<MetadataObjectSchema> & {
   relatedEntity?: FormattedEntity;
   value?: PropertyValueSchema;
 };
+
+const aggregateRelationships = (
+  entity: Partial<FormattedEntity>,
+  formattedEntity: FormattedEntity,
+  templateProperties: PropertySchema[]
+) => {
+  const relationshipGroups = groupBy(formattedEntity.relations, 'template');
+  delete relationshipGroups.null;
+  return 'something';
+};
+
 const pickEntityFields = (entity: FormattedEntity) =>
   pick(entity, [
     'title',
@@ -87,14 +102,27 @@ const formatProperty = (item: FormattedPropertyValueSchema) => {
   return formattedItem;
 };
 
-const formatEntityData = (formattedEntity: FormattedEntity) => {
+const formatEntityData = (
+  formattedEntity: FormattedEntity,
+  templateProperties: PropertySchema[]
+) => {
   const entity = pickEntityFields(formattedEntity);
   const formattedMetadata = formattedEntity.metadata.reduce((memo, property) => {
     const formattedProperty = formatProperty(property);
     return { ...memo, [property.name as string]: formattedProperty };
   }, {});
 
-  return { ...entity, metadata: formattedMetadata };
+  const relationshipsAggregations = aggregateRelationships(
+    { entity, formattedMetadata },
+    formattedEntity,
+    templateProperties
+  );
+
+  return {
+    ...entity,
+    metadata: formattedMetadata,
+    inherited_relationships: relationshipsAggregations,
+  };
 };
 
 const formatEntity = (formattedEntity: FormattedEntity) => {
@@ -117,7 +145,7 @@ const prepareAssets = (
 ) => {
   const formattedEntity = formatter.prepareMetadata(entityRaw, templates, thesauris);
   const entity = formatEntity(formattedEntity);
-  const entityData = formatEntityData(formattedEntity);
+  const entityData = formatEntityData(formattedEntity, template.get('properties').toJS());
   return {
     entity,
     entityRaw,

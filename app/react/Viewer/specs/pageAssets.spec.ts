@@ -4,7 +4,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { prepareAssets } from '../pageAssets';
 import { dbEntity, dbTemplates, thesauri, expectedFormattedEntity } from './fixtures/pageAssets';
 import {
-  dbEntity as dbEntity2,
+  rawEntities,
   dbTemplates as dbTemplates2,
   thesauri as thesauri2,
 } from './fixtures/pageAssetsRelationsAggregations';
@@ -189,18 +189,24 @@ describe('pageAssets', () => {
         ]);
       });
 
-      describe('aggregated relations data', () => {
-        const { entity: entity2, entityData: entityData2 } = prepareAssets(
-          dbEntity2,
-          dbTemplates2[1],
+      // eslint-disable-next-line jest/no-focused-tests
+      fdescribe('aggregated relations data', () => {
+        const { entityData: entityData1 } = prepareAssets(
+          rawEntities[0],
+          dbTemplates2[0],
+          dbTemplates2,
+          thesauri2
+        );
+        const { entityData: entityData2 } = prepareAssets(
+          rawEntities[1],
+          dbTemplates2[0],
           dbTemplates2,
           thesauri2
         );
 
-        it('should contain a relationship_data field', () => {
-          console.log('ENTITY: ', JSON.stringify(entity2, null, 2));
-          console.log('ENTITYDATA: ', JSON.stringify(entityData2, null, 2));
-          expect(entityData.relationship_data).toBeDefined();
+        it('should contain a inherited_relationships entry for every multi-inherit type', () => {
+          expect(entityData1.inherited_relationships).toBeDefined();
+          expect(entityData2.inherited_relationships).toBeDefined();
         });
       });
     });
