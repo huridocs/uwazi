@@ -74,6 +74,7 @@ export interface LanguageSchema {
   key: string;
   rtl?: boolean;
   default?: boolean;
+  ISO639_3?: string;
 }
 
 export type LanguagesListSchema = {
