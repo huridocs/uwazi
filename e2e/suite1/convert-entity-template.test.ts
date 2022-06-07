@@ -13,8 +13,8 @@ const setupPreFlights = async (): Promise<void> => {
 const setupTest = async () => {
   await createTemplate('With image');
   await createEntity('With image', {
-    pdf: `${__dirname}/test_files/valid.pdf`,
-    supportingFile: `${__dirname}/test_files/batman.jpg`,
+    pdf: `${__dirname}/../test_files/valid.pdf`,
+    supportingFile: `${__dirname}/../test_files/batman.jpg`,
   });
 };
 
