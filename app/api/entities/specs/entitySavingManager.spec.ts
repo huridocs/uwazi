@@ -242,7 +242,7 @@ describe('entitySavingManager', () => {
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedFiles[0].filename}`);
+        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${sortedSavedFiles[0].filename}`);
         expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });
 
