@@ -160,6 +160,7 @@ export const EntitySuggestions = ({
     toggleAllRowsSelected(false);
   };
 
+  // eslint-disable-next-line max-statements
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const changedPropertyValue =
@@ -169,6 +170,16 @@ export const EntitySuggestions = ({
       : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
+    // @ts-ignore
+    const { suggestedValue, labeledValue } = selectedFlatRows[0].original;
+    if (labeledValue === suggestedValue && changedPropertyValue === suggestedValue) {
+      selectedFlatRows[0].values.state = SuggestionState.labelMatch;
+    } else if (labeledValue === changedPropertyValue && labeledValue !== suggestedValue) {
+      selectedFlatRows[0].values.state = SuggestionState.valueMismatch;
+    } else if (suggestedValue === changedPropertyValue) {
+      selectedFlatRows[0].values.state = SuggestionState.valueMatch;
+    }
+    selectedFlatRows[0].setState({});
   };
 
   const _trainModel = async () => {
