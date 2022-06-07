@@ -5,6 +5,7 @@ import { saveEntity } from 'api/entities/entitySavingManager';
 import { errorLog } from 'api/log';
 import { files as filesAPI } from 'api/files';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
+import { advancedSort } from 'app/utils/advancedSort';
 import {
   editorUser,
   entity1Id,
@@ -16,7 +17,6 @@ import {
   anotherTextFile,
   pdfFile,
 } from './entitySavingManagerFixtures';
-import { advancedSort } from 'app/utils/advancedSort';
 
 describe('entitySavingManager', () => {
   beforeAll(() => {
@@ -242,7 +242,9 @@ describe('entitySavingManager', () => {
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${sortedSavedFiles[0].filename}`);
+        expect(savedEntity.metadata.image[0].value).toBe(
+          `/api/files/${sortedSavedFiles[0].filename}`
+        );
         expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });
 
