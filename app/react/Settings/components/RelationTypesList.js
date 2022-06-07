@@ -7,11 +7,18 @@ import {
   deleteRelationType,
   checkRelationTypeCanBeDeleted,
 } from 'app/RelationTypes/actions/relationTypesActions';
+import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
+import RouteHandler from 'app/App/RouteHandler';
 import { Icon } from 'UI';
-
+import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 
-export class RelationTypesList extends Component {
+class RelationTypesList extends RouteHandler {
+  static async requestState(requestParams) {
+    const relationTypes = await relationTypesAPI.get(requestParams.onlyHeaders());
+    return [actions.set('relationTypes', relationTypes)];
+  }
+
   deleteRelationType(relationType) {
     return this.props
       .checkRelationTypeCanBeDeleted(relationType)
@@ -93,6 +100,7 @@ RelationTypesList.propTypes = {
 
 RelationTypesList.contextTypes = {
   confirm: PropTypes.func,
+  store: PropTypes.object,
 };
 
 export function mapStateToProps(state) {

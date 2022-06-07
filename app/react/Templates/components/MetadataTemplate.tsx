@@ -95,6 +95,9 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
 
   onSubmit = async (_template: TemplateSchema) => {
     const template = { ..._template };
+    if (this.props.environment === 'relationType') {
+      template.commonProperties = undefined;
+    }
     template.properties = template.properties?.map(_prop => {
       const prop = { ..._prop };
       prop.label = _prop.label.trim();
@@ -178,7 +181,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                 />
               </Field>
             </FormGroup>
-            {defaultColor && (
+            {defaultColor && !(environment === 'relationType') && (
               <Control
                 model=".color"
                 component={ColorPicker}
