@@ -29,7 +29,7 @@ const PDFSidePanel = ({
   const templates = store?.getState().templates;
 
   useEffect(() => {
-    fetchEntity(entitySuggestion.sharedId)
+    fetchEntity(entitySuggestion.entityId, entitySuggestion.language)
       .then(response => {
         setEntity(response[0]);
         loadFetchedInReduxForm(
