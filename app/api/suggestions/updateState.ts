@@ -1,7 +1,9 @@
-import settings from 'api/settings';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 import { AggregationCursor } from 'mongoose';
+
+import settings from 'api/settings';
+import { ModelBulkWriteStream } from 'api/utils/modelBulkWriteStream';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -154,9 +156,11 @@ export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
   const cursor = recalculateStates(query, languages || []);
   let state;
+  const writeStream = new ModelBulkWriteStream(IXSuggestionsModel);
   // eslint-disable-next-line no-await-in-loop, no-cond-assign
   while ((state = await cursor.next())) {
     // eslint-disable-next-line no-await-in-loop
-    await IXSuggestionsModel.db.updateOne({ _id: state._id }, { $set: { state: state.state } });
+    await writeStream.update({ _id: state._id }, { $set: { state: state.state } });
   }
+  await writeStream.flush();
 };
