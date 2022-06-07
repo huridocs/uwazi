@@ -24,7 +24,7 @@ class ModelBulkWriteStream {
   }
 
   async check() {
-    if (this.actions.length > this.stackLimit) {
+    if (this.actions.length >= this.stackLimit) {
       return this.flush();
     }
     return null;
@@ -35,8 +35,8 @@ class ModelBulkWriteStream {
     return this.check();
   }
 
-  async delete(document: any, collation?: any) {
-    this.actions.push({ deleteOne: { document, collation } });
+  async delete(filter: any, collation?: any) {
+    this.actions.push({ deleteOne: { filter, collation } });
     return this.check();
   }
 
