@@ -13,7 +13,7 @@ import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 
-class RelationTypesList extends RouteHandler {
+export class RelationTypesList extends RouteHandler {
   static async requestState(requestParams) {
     const relationTypes = await relationTypesAPI.get(requestParams.onlyHeaders());
     return [actions.set('relationTypes', relationTypes)];
