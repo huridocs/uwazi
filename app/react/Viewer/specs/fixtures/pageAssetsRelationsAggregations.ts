@@ -212,7 +212,6 @@ const thesauris = Immutable.fromJS([
       },
     ],
     name: 'Selector',
-    __v: 0,
   },
   {
     default: true,
@@ -249,7 +248,7 @@ const thesauris = Immutable.fromJS([
         showInCard: true,
       },
     ],
-    __v: 0,
+
     _id: '5bfbb1a0471dd0fc16ada146',
     type: 'template',
     commonProperties: [
@@ -337,7 +336,7 @@ const thesauris = Immutable.fromJS([
         name: 'iselect-country',
       },
     ],
-    __v: 0,
+
     entityViewPage: 'hetu84j0k47',
     _id: '629e567fd4242c571392f548',
     type: 'template',
@@ -394,7 +393,7 @@ const thesauris = Immutable.fromJS([
         name: 'select',
       },
     ],
-    __v: 0,
+
     entityViewPage: '',
     _id: '629f900638ef5b3343848e80',
     type: 'template',
@@ -440,7 +439,7 @@ const rawEntities: EntitySchema[] = [
     language: 'en',
     sharedId: 's07ki698a69',
     permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
-    __v: 0,
+
     documents: [],
     attachments: [],
     metadata: {
@@ -1097,7 +1096,7 @@ const rawEntities: EntitySchema[] = [
     language: 'en',
     sharedId: 'ayvlz9vy4vq',
     permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
-    __v: 0,
+
     documents: [],
     attachments: [],
     metadata: {
@@ -1209,6 +1208,49 @@ const rawEntities: EntitySchema[] = [
       },
     ],
   },
+  {
+    _id: '62a0d232d00ef468a25bfe0c',
+    template: '629e567fd4242c571392f548',
+    title: 'iDocument 3',
+    user: '58ada34d299e82674854510f',
+    creationDate: 1654706738101,
+    published: false,
+    editDate: 1654706738103,
+    language: 'en',
+    sharedId: '6vad5znb6c',
+    permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
+
+    documents: [],
+    attachments: [],
+    metadata: {
+      itext: [],
+      inumeric: [],
+      iselect: [],
+      description: [{ value: 'Just some text' }],
+      igeolocation: [],
+      'iselect-country': [],
+    },
+    relations: [],
+  },
 ];
 
-export { dbTemplates, rawEntities, thesauris };
+const relationTypes = [
+  {
+    _id: '629e55f1d4242c571392d5fc',
+    name: 'Multi-inherit',
+  },
+  {
+    _id: '629e55f8d4242c571392dbf1',
+    name: 'Inherit',
+  },
+  {
+    _id: '629e55fed4242c571392e1e8',
+    name: 'Related to',
+  },
+  {
+    _id: '629f902238ef5b3343849b62',
+    name: 'Multi-inherit-2',
+  },
+];
+
+export { dbTemplates, rawEntities, thesauris, relationTypes };

@@ -5,6 +5,7 @@ import { prepareAssets } from '../pageAssets';
 import { dbEntity, dbTemplates, thesauris, expectedFormattedEntity } from './fixtures/pageAssets';
 import {
   rawEntities,
+  relationTypes,
   dbTemplates as dbTemplates2,
   thesauris as thesauris2,
 } from './fixtures/pageAssetsRelationsAggregations';
@@ -24,7 +25,7 @@ describe('pageAssets', () => {
           templates: dbTemplates,
           thesauris,
         },
-        {}
+        []
       ));
     });
 
@@ -193,24 +194,22 @@ describe('pageAssets', () => {
       });
 
       describe('aggregated relations data', () => {
-        const { entityData: entityData1 } = prepareAssets(
-          rawEntities[0],
-          dbTemplates2.get(0),
-          {
-            templates: dbTemplates,
-            thesauris: thesauris2,
-          },
-          {}
-        );
-        const { entityData: entityData2 } = prepareAssets(
-          rawEntities[1],
-          dbTemplates2.get(0),
-          {
-            templates: dbTemplates,
-            thesauris: thesauris2,
-          },
-          {}
-        );
+        const [entityData1, entityData2, entityData3] = rawEntities.map(rawEntity => {
+          const { entityData: result } = prepareAssets(
+            rawEntity,
+            dbTemplates2.get(0),
+            {
+              templates: dbTemplates,
+              thesauris: thesauris2,
+            },
+            relationTypes
+          );
+          return result;
+        });
+
+        it('should not add the inherited_relationships entry for entities with no relations', () => {
+          expect(entityData3.inherited_relationships.length).toBe(0);
+        });
 
         it('should contain a inherited_relationships entry for every multi-inherit type', () => {
           expect(entityData1.inherited_relationships).toBeDefined();

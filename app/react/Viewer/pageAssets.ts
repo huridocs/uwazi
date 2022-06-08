@@ -1,17 +1,14 @@
 import { IStore } from 'app/istore';
 import { formater as formatter } from 'app/Metadata';
 import { pick, isArray, isObject, isEmpty, toPairs, take, get, groupBy } from 'lodash';
-import {
-  MetadataObjectSchema,
-  MetadataSchema,
-  PropertyValueSchema,
-} from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 
 type FormattedEntity = EntitySchema & {
   metadata: MetadataObjectSchema[];
+  relations: any[];
 };
 
 type FormattedPropertyValueSchema = Partial<MetadataObjectSchema> & {
@@ -21,9 +18,12 @@ type FormattedPropertyValueSchema = Partial<MetadataObjectSchema> & {
 };
 
 const aggregateRelationships = (
-  entity: Partial<FormattedEntity>,
-  relationTypes: MetadataSchema
+  entity: FormattedEntity,
+  relationTypes: { _id: string; name: string }[]
 ) => {
+  if (!entity.relations || entity.relations.length === 0) {
+    return [];
+  }
   const relationshipGroups = groupBy(entity.relations, 'template');
   delete relationshipGroups.null;
   return 'something';
@@ -130,7 +130,7 @@ const prepareAssets = (
   entityRaw: EntitySchema,
   template: IImmutable<TemplateSchema>,
   state: Pick<IStore, 'templates' | 'thesauris'>,
-  relationTypes: MetadataSchema
+  relationTypes: { _id: string; name: string }[]
 ) => {
   const formattedEntity = formatter.prepareMetadata(entityRaw, state.templates, state.thesauris);
   const entity = formatEntity(formattedEntity);
