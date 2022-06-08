@@ -199,7 +199,7 @@ describe('pageAssets', () => {
             rawEntity,
             dbTemplates2.get(0),
             {
-              templates: dbTemplates,
+              templates: dbTemplates2,
               thesauris: thesauris2,
             },
             relationTypes
@@ -208,7 +208,7 @@ describe('pageAssets', () => {
         });
 
         it('should not add the inherited_relationships entry for entities with no relations', () => {
-          expect(entityData3.inherited_relationships.length).toBe(0);
+          expect(entityData3.inherited_relationships).toBeEmpty();
         });
 
         it('should contain a inherited_relationships entry for every multi-inherit type', () => {

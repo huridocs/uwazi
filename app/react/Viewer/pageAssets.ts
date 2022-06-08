@@ -25,8 +25,21 @@ const aggregateRelationships = (
     return [];
   }
   const relationshipGroups = groupBy(entity.relations, 'template');
-  delete relationshipGroups.null;
-  return 'something';
+
+  const namedRelationshipGroups = Object.entries(relationshipGroups).reduce(
+    (memo, [relationshipId, relations]) => {
+      const relationship = relationTypes.find(({ _id }) => _id === relationshipId);
+      if (relationship) {
+        const { template } = relations[0].entityData;
+        const groupname = `${relationship.name}-${template}`;
+        return { [groupname]: relations, ...memo };
+      }
+      return {};
+    },
+    {}
+  );
+
+  return namedRelationshipGroups;
 };
 
 const pickEntityFields = (entity: FormattedEntity) =>
