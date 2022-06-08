@@ -38,7 +38,7 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
-const updateIxSuggestionsTrigger = async newEntity => {
+const updateIxSuggestionsTrigger = async (existingEntity, newEntity) => {
   let extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
   if (!extractionTemplates || !newEntity.metadata) return false;
   extractionTemplates = objectIndex(
@@ -46,15 +46,17 @@ const updateIxSuggestionsTrigger = async newEntity => {
     d => d.template.toString(),
     d => new Set(d.properties)
   );
-  const [existing] = await model.getUnrestricted({ _id: newEntity._id });
-  if (!existing || !(existing.template?.toString() in extractionTemplates)) return false;
-  const extractedProperties = extractionTemplates[existing.template.toString()];
-  const changedMetadata = shallowObjectDiff(newEntity.metadata, existing.metadata).all;
+  if (!existingEntity || !(existingEntity.template?.toString() in extractionTemplates)) {
+    return false;
+  }
+  const extractedProperties = extractionTemplates[existingEntity.template.toString()];
+  const changedMetadata = shallowObjectDiff(newEntity.metadata, existingEntity.metadata).all;
   return changedMetadata.some(m => extractedProperties.has(m));
 };
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
+  const existingEntity = docLanguages.find(e => e._id.toString() === entity._id);
   if (
     docLanguages[0].template &&
     entity.template &&
@@ -74,7 +76,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
   const thesauriByKey = await templates.getRelatedThesauri(template);
 
-  const result = Promise.all(
+  const result = await Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
         const toSave = { ...entity };
@@ -141,7 +143,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
     })
   );
 
-  if (await updateIxSuggestionsTrigger(entity)) {
+  if (await updateIxSuggestionsTrigger(existingEntity, entity)) {
     await Suggestions.updateStates({ entityId: entity.sharedId });
   }
 

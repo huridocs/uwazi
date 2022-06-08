@@ -107,7 +107,7 @@ const getCalculateStateStage = () => [
             },
             {
               case: {
-                $and: [{ $eq: ['$suggestedValue', '$currentValue'] }],
+                $eq: ['$suggestedValue', '$currentValue'],
               },
               then: SuggestionState.valueMatch,
             },
