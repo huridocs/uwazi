@@ -40,6 +40,7 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
 import { preserveSync } from './api/services/preserve/preserveSync';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
+import { tocService } from 'api/toc_generation/tocService';
 
 mongoose.Promise = Promise;
 
@@ -197,6 +198,12 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         twitterRepeater.start();
 
         new DistributedLoop('preserve_integration', async () => preserveSync.syncAllTenants(), {
+          port: config.redis.port,
+          host: config.redis.host,
+          delayTimeBetweenTasks: 30000,
+        }).start();
+
+        new DistributedLoop('toc_service', async () => tocService.processAllTenants(), {
           port: config.redis.port,
           host: config.redis.host,
           delayTimeBetweenTasks: 30000,

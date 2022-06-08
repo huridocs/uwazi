@@ -46,7 +46,7 @@ const handleError = async (e: { code?: string; message: string }, file: FileType
 };
 
 const tocService = () => ({
-  async processNextAllTenants() {
+  async processAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
       return tenants.run(async () => {

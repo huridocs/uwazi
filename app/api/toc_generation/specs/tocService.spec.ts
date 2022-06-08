@@ -50,23 +50,23 @@ describe('tocService', () => {
     });
 
     it('should use the service url configured', async () => {
-      await service.processNextAllTenants();
+      await service.processAllTenants();
       await tenants.run(async () => {
         expect(requestMock).toHaveBeenCalledWith('url', 'pdf1.pdf', uploadsPath('pdf1.pdf'));
       }, 'tenant1');
     });
 
     it('should not fail when there is no more to process', async () => {
-      await service.processNextAllTenants();
-      await service.processNextAllTenants();
-      await service.processNextAllTenants();
-      await expect(service.processNextAllTenants()).resolves.not.toThrow();
+      await service.processAllTenants();
+      await service.processAllTenants();
+      await service.processAllTenants();
+      await expect(service.processAllTenants()).resolves.not.toThrow();
     });
 
     it('should send the next pdfFile and save toc generated', async () => {
-      await service.processNextAllTenants();
-      await service.processNextAllTenants();
-      await service.processNextAllTenants();
+      await service.processAllTenants();
+      await service.processAllTenants();
+      await service.processAllTenants();
 
       await tenants.run(async () => {
         let [fileProcessed] = await files.get({ filename: 'pdf1.pdf' });
@@ -93,7 +93,7 @@ describe('tocService', () => {
   describe('error handling', () => {
     it('should save a fake TOC when generated one is empty', async () => {
       requestMock.mockImplementation(async () => Promise.resolve({ text: JSON.stringify([]) }));
-      await service.processNextAllTenants();
+      await service.processAllTenants();
       await tenants.run(async () => {
         const [fileProcessed] = await files.get({ filename: 'pdf1.pdf' });
         expect(fileProcessed.toc).toEqual([
@@ -111,7 +111,7 @@ describe('tocService', () => {
       requestMock.mockImplementation(async () => {
         throw new Error('request error');
       });
-      await service.processNextAllTenants();
+      await service.processAllTenants();
 
       await tenants.run(async () => {
         const [fileProcessed] = await files.get({ filename: 'pdf1.pdf' });
@@ -136,7 +136,7 @@ describe('tocService', () => {
         // eslint-disable-next-line no-throw-literal
         throw { code: 'ECONNREFUSED' };
       });
-      await service.processNextAllTenants();
+      await service.processAllTenants();
 
       await tenants.run(async () => {
         const [fileProcessed] = await files.get({ filename: 'pdf1.pdf' });

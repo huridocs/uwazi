@@ -18,12 +18,7 @@ async function startLegacyServicesNoMultiTenant() {
     const vaultSyncRepeater = new Repeater(() => vaultSync.sync(evidencesVault), 10000);
     vaultSyncRepeater.start();
   }
-  if (features && features.tocGeneration && features.tocGeneration.url) {
-    console.info('==> 🗂️ automatically generating TOCs using external service');
-    const service = tocService(features.tocGeneration.url);
-    const tocServiceRepeater = new Repeater(() => service.processNext(), 10000);
-    tocServiceRepeater.start();
-  }
+
   const anHour = 3600000;
   const topicClassificationRepeater = new Repeater(
     () =>
