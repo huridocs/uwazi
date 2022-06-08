@@ -5,6 +5,8 @@ import request from 'shared/JSONRequest';
 import entities from 'api/entities';
 import { TocSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
+import { tenants } from 'api/tenants';
+import settings from 'api/settings';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
@@ -43,6 +45,18 @@ const handleError = async (e: { code?: string; message: string }, file: FileType
 };
 
 const tocService = (serviceUrl: string) => ({
+  async processNextAllTenants() {
+    return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
+      await previous;
+      return tenants.run(async () => {
+        const { features } = await settings.get({}, 'features.tocGeneration');
+        if (features?.tocGeneration) {
+          await this.processNext();
+        }
+      }, tenantName);
+    }, Promise.resolve());
+  },
+
   async processNext() {
     const [nextFile] = await files.get(
       {
