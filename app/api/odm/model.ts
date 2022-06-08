@@ -7,6 +7,7 @@ import mongoose, {
   QueryOptions,
 } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ModelBulkWriteStream } from './modelBulkWriteStream';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 
@@ -169,6 +170,10 @@ export class OdmModel<T> {
 
   async facet(aggregations: any[], pipelines: any, project: any) {
     return this.db.facet(aggregations, pipelines, project);
+  }
+
+  openBulkWriteStream(stackLimit?: number, ordered?: boolean) {
+    return new ModelBulkWriteStream(this, stackLimit, ordered);
   }
 }
 
