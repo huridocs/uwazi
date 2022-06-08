@@ -2,11 +2,11 @@
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { prepareAssets } from '../pageAssets';
-import { dbEntity, dbTemplates, thesauri, expectedFormattedEntity } from './fixtures/pageAssets';
+import { dbEntity, dbTemplates, thesauris, expectedFormattedEntity } from './fixtures/pageAssets';
 import {
   rawEntities,
   dbTemplates as dbTemplates2,
-  thesauri as thesauri2,
+  thesauris as thesauris2,
 } from './fixtures/pageAssetsRelationsAggregations';
 
 describe('pageAssets', () => {
@@ -19,9 +19,12 @@ describe('pageAssets', () => {
     beforeAll(() => {
       ({ entity, entityRaw, entityData, template } = prepareAssets(
         dbEntity,
-        dbTemplates[0],
-        dbTemplates,
-        thesauri
+        dbTemplates.get(0),
+        {
+          templates: dbTemplates,
+          thesauris,
+        },
+        {}
       ));
     });
 
@@ -34,7 +37,7 @@ describe('pageAssets', () => {
     });
 
     it('should transform the template from inmmutable to plain javascript', () => {
-      expect(template).toEqual(dbTemplates[0].toJS());
+      expect(template).toEqual(dbTemplates.get(0).toJS());
     });
 
     describe('entityData', () => {
@@ -189,19 +192,24 @@ describe('pageAssets', () => {
         ]);
       });
 
-      // eslint-disable-next-line jest/no-focused-tests
-      fdescribe('aggregated relations data', () => {
+      describe('aggregated relations data', () => {
         const { entityData: entityData1 } = prepareAssets(
           rawEntities[0],
-          dbTemplates2[0],
-          dbTemplates2,
-          thesauri2
+          dbTemplates2.get(0),
+          {
+            templates: dbTemplates,
+            thesauris: thesauris2,
+          },
+          {}
         );
         const { entityData: entityData2 } = prepareAssets(
           rawEntities[1],
-          dbTemplates2[0],
-          dbTemplates2,
-          thesauri2
+          dbTemplates2.get(0),
+          {
+            templates: dbTemplates,
+            thesauris: thesauris2,
+          },
+          {}
         );
 
         it('should contain a inherited_relationships entry for every multi-inherit type', () => {

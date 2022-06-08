@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
+import { ClientTemplateSchema } from 'app/istore';
 import Immutable from 'immutable';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
-import { TemplateSchema } from 'shared/types/templateType';
 
-const dbTemplates: IImmutable<TemplateSchema>[] = [
-  Immutable.fromJS({
+const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
+  {
     _id: '5bfbb1a0471dd0fc16ada146',
     name: 'Document',
     commonProperties: [
@@ -154,8 +154,8 @@ const dbTemplates: IImmutable<TemplateSchema>[] = [
     default: true,
     color: '#e46841',
     entityViewPage: '8x8b1bzsj1i',
-  }),
-  Immutable.fromJS({
+  },
+  {
     _id: '626c19238a46c11701b49a55',
     name: 'Document2',
     properties: [
@@ -170,8 +170,8 @@ const dbTemplates: IImmutable<TemplateSchema>[] = [
     default: true,
     color: '#e46841',
     entityViewPage: '8x8b1bzsj1i',
-  }),
-];
+  },
+]);
 
 const dbEntity: EntitySchema = {
   _id: '6267e69026904c252518f946',
@@ -544,7 +544,7 @@ const dbEntity: EntitySchema = {
   ],
 };
 
-const thesauri = Immutable.fromJS([
+const thesauris = Immutable.fromJS([
   {
     _id: '626825379c8a75a1ea9a821e',
     values: [
@@ -1374,4 +1374,4 @@ const expectedFormattedEntity = {
   documentType: 'Document',
 };
 
-export { dbTemplates, dbEntity, thesauri, expectedFormattedEntity };
+export { dbTemplates, dbEntity, thesauris, expectedFormattedEntity };

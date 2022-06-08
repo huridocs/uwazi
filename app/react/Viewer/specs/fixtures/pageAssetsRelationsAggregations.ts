@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
+import { ClientTemplateSchema } from 'app/istore';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
-import { TemplateSchema } from 'shared/types/templateType';
 
-const dbTemplates: IImmutable<TemplateSchema>[] = [
-  Immutable.fromJS({
+const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
+  {
     _id: '629e567fd4242c571392f548',
     color: '#D9534F',
     entityViewPage: 'hetu84j0k47',
@@ -95,8 +95,8 @@ const dbTemplates: IImmutable<TemplateSchema>[] = [
         prioritySorting: false,
       },
     ],
-  }),
-  Immutable.fromJS({
+  },
+  {
     _id: '5bfbb1a0471dd0fc16ada146',
     name: 'Document',
     commonProperties: [
@@ -143,8 +143,8 @@ const dbTemplates: IImmutable<TemplateSchema>[] = [
     ],
     default: true,
     color: '#c03b22',
-  }),
-  Immutable.fromJS({
+  },
+  {
     _id: '629f900638ef5b3343848e80',
     color: '#E91E63',
     entityViewPage: '',
@@ -191,10 +191,10 @@ const dbTemplates: IImmutable<TemplateSchema>[] = [
         prioritySorting: false,
       },
     ],
-  }),
-];
+  },
+]);
 
-const thesauri = Immutable.fromJS([
+const thesauris = Immutable.fromJS([
   {
     _id: '629e5625d4242c571392e824',
     values: [
@@ -212,6 +212,219 @@ const thesauri = Immutable.fromJS([
       },
     ],
     name: 'Selector',
+    __v: 0,
+  },
+  {
+    default: true,
+    values: [
+      { id: 'f27fwxhlsqo', label: 'Document 1' },
+      { id: 'u4uclgwzcp', label: 'Document 2' },
+      { id: '844ts659a7', label: 'Document 3' },
+      { id: '4qkgragsevq', label: 'Document 4' },
+    ],
+    color: '#c03b22',
+    name: 'Document',
+    optionsCount: 4,
+    properties: [
+      {
+        _id: '629e5634d4242c571392f43e',
+        label: 'Text',
+        type: 'text',
+        name: 'text',
+        showInCard: true,
+      },
+      {
+        _id: '629e5634d4242c571392f43f',
+        label: 'Numeric',
+        type: 'numeric',
+        name: 'numeric',
+        showInCard: true,
+      },
+      {
+        _id: '629e5634d4242c571392f440',
+        label: 'Select',
+        type: 'select',
+        content: '629e5625d4242c571392e824',
+        name: 'select',
+        showInCard: true,
+      },
+    ],
+    __v: 0,
+    _id: '5bfbb1a0471dd0fc16ada146',
+    type: 'template',
+    commonProperties: [
+      {
+        _id: '5bfbb1a0471dd0fc16ada148',
+        label: 'Title',
+        name: 'title',
+        isCommonProperty: true,
+        type: 'text',
+        prioritySorting: false,
+      },
+      {
+        _id: '5bfbb1a0471dd0fc16ada147',
+        label: 'Date added',
+        name: 'creationDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+    ],
+  },
+  {
+    values: [
+      { id: 's07ki698a69', label: 'iDocument 1' },
+      { id: 'ayvlz9vy4vq', label: 'iDocument 2' },
+    ],
+    color: '#D9534F',
+    name: 'Document with relations',
+    optionsCount: 2,
+    properties: [
+      {
+        _id: '629e567fd4242c571392f549',
+        label: 'iText',
+        type: 'relationship',
+        inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
+        content: '5bfbb1a0471dd0fc16ada146',
+        relationType: '629e55f1d4242c571392d5fc',
+        showInCard: true,
+        name: 'itext',
+      },
+      {
+        _id: '629e567fd4242c571392f54a',
+        label: 'iNumeric',
+        type: 'relationship',
+        inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
+        content: '5bfbb1a0471dd0fc16ada146',
+        relationType: '629e55f1d4242c571392d5fc',
+        showInCard: true,
+        name: 'inumeric',
+      },
+      {
+        _id: '629e567fd4242c571392f54b',
+        label: 'iSelect',
+        type: 'relationship',
+        inherit: { property: '629e5634d4242c571392f440', type: 'select' },
+        content: '5bfbb1a0471dd0fc16ada146',
+        relationType: '629e55f1d4242c571392d5fc',
+        showInCard: true,
+        name: 'iselect',
+      },
+      {
+        _id: '629f8fa7988b5431324d858b',
+        label: 'Description',
+        type: 'markdown',
+        name: 'description',
+      },
+      {
+        _id: '629f905738ef5b334384a85c',
+        label: 'iGeolocation',
+        type: 'relationship',
+        inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
+        content: '629f900638ef5b3343848e80',
+        relationType: '629f902238ef5b3343849b62',
+        showInCard: true,
+        name: 'igeolocation',
+      },
+      {
+        _id: '629f905738ef5b334384a85d',
+        label: 'iSelect-country',
+        type: 'relationship',
+        inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
+        content: '629f900638ef5b3343848e80',
+        relationType: '629f902238ef5b3343849b62',
+        showInCard: true,
+        name: 'iselect-country',
+      },
+    ],
+    __v: 0,
+    entityViewPage: 'hetu84j0k47',
+    _id: '629e567fd4242c571392f548',
+    type: 'template',
+    commonProperties: [
+      {
+        _id: '629e567fd4242c571392f54c',
+        label: 'Title',
+        name: 'title',
+        isCommonProperty: true,
+        type: 'text',
+        prioritySorting: false,
+        generatedId: false,
+      },
+      {
+        _id: '629e567fd4242c571392f54d',
+        label: 'Date added',
+        name: 'creationDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+      {
+        _id: '629e567fd4242c571392f54e',
+        label: 'Date modified',
+        name: 'editDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+    ],
+  },
+  {
+    values: [
+      { id: '9e13muy08kl', label: 'Argentina' },
+      { id: '3zeqx3aptzi', label: 'Peru' },
+      { id: 'ckww13sin9', label: 'Bolivia' },
+      { id: 'mp9v2ugx1un', label: 'Venezuela' },
+    ],
+    color: '#E91E63',
+    name: 'Countries',
+    optionsCount: 4,
+    properties: [
+      {
+        _id: '629f900638ef5b3343848e81',
+        label: 'Geolocation',
+        type: 'geolocation',
+        name: 'geolocation_geolocation',
+      },
+      {
+        _id: '629f900d38ef5b3343849aeb',
+        label: 'Select',
+        type: 'select',
+        content: '629e5625d4242c571392e824',
+        name: 'select',
+      },
+    ],
+    __v: 0,
+    entityViewPage: '',
+    _id: '629f900638ef5b3343848e80',
+    type: 'template',
+    commonProperties: [
+      {
+        _id: '629f900638ef5b3343848e82',
+        label: 'Title',
+        name: 'title',
+        isCommonProperty: true,
+        type: 'text',
+        prioritySorting: false,
+        generatedId: false,
+      },
+      {
+        _id: '629f900638ef5b3343848e83',
+        label: 'Date added',
+        name: 'creationDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+      {
+        _id: '629f900638ef5b3343848e84',
+        label: 'Date modified',
+        name: 'editDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+    ],
   },
 ]);
 
@@ -998,4 +1211,4 @@ const rawEntities: EntitySchema[] = [
   },
 ];
 
-export { dbTemplates, rawEntities, thesauri };
+export { dbTemplates, rawEntities, thesauris };

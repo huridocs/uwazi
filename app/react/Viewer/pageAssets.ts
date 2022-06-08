@@ -1,14 +1,14 @@
+import { IStore } from 'app/istore';
 import { formater as formatter } from 'app/Metadata';
 import { pick, isArray, isObject, isEmpty, toPairs, take, get, groupBy } from 'lodash';
 import {
   MetadataObjectSchema,
-  PropertySchema,
+  MetadataSchema,
   PropertyValueSchema,
 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 type FormattedEntity = EntitySchema & {
   metadata: MetadataObjectSchema[];
@@ -22,10 +22,9 @@ type FormattedPropertyValueSchema = Partial<MetadataObjectSchema> & {
 
 const aggregateRelationships = (
   entity: Partial<FormattedEntity>,
-  formattedEntity: FormattedEntity,
-  templateProperties: PropertySchema[]
+  relationTypes: MetadataSchema
 ) => {
-  const relationshipGroups = groupBy(formattedEntity.relations, 'template');
+  const relationshipGroups = groupBy(entity.relations, 'template');
   delete relationshipGroups.null;
   return 'something';
 };
@@ -102,26 +101,16 @@ const formatProperty = (item: FormattedPropertyValueSchema) => {
   return formattedItem;
 };
 
-const formatEntityData = (
-  formattedEntity: FormattedEntity,
-  templateProperties: PropertySchema[]
-) => {
+const formatEntityData = (formattedEntity: FormattedEntity) => {
   const entity = pickEntityFields(formattedEntity);
   const formattedMetadata = formattedEntity.metadata.reduce((memo, property) => {
     const formattedProperty = formatProperty(property);
     return { ...memo, [property.name as string]: formattedProperty };
   }, {});
 
-  const relationshipsAggregations = aggregateRelationships(
-    { entity, formattedMetadata },
-    formattedEntity,
-    templateProperties
-  );
-
   return {
     ...entity,
     metadata: formattedMetadata,
-    inherited_relationships: relationshipsAggregations,
   };
 };
 
@@ -140,12 +129,15 @@ const formatEntity = (formattedEntity: FormattedEntity) => {
 const prepareAssets = (
   entityRaw: EntitySchema,
   template: IImmutable<TemplateSchema>,
-  templates: IImmutable<TemplateSchema>[],
-  thesauris: ThesaurusSchema[]
+  state: Pick<IStore, 'templates' | 'thesauris'>,
+  relationTypes: MetadataSchema
 ) => {
-  const formattedEntity = formatter.prepareMetadata(entityRaw, templates, thesauris);
+  const formattedEntity = formatter.prepareMetadata(entityRaw, state.templates, state.thesauris);
   const entity = formatEntity(formattedEntity);
-  const entityData = formatEntityData(formattedEntity, template.get('properties').toJS());
+  const entityData = {
+    ...formatEntityData(formattedEntity),
+    inherited_relationships: aggregateRelationships(formattedEntity, relationTypes),
+  };
   return {
     entity,
     entityRaw,
