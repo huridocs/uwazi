@@ -1,7 +1,7 @@
 import { AggregationCursor } from 'mongoose';
 
 import settings from 'api/settings';
-import { ModelBulkWriteStream } from 'api/utils/modelBulkWriteStream';
+import { ModelBulkWriteStream } from 'api/odm/modelBulkWriteStream';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
