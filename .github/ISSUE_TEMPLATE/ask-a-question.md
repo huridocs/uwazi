@@ -1,5 +1,5 @@
 ---
-name: Ask a question
+name: ":question: Ask a question"
 about: Do you need help?
 title: ''
 labels: Support
