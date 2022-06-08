@@ -22,6 +22,7 @@ export const createEntity = async (templateName: string, files: FilesOptions) =>
   await expect(page).toClick('button', { text: 'Create entity' });
   await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', templateName);
   let options: ElementHandle<Element>[] = [];
+  await page.waitForSelector('select.form-control > option');
   options = await page.$$('select.form-control > option');
 
   // @ts-ignore
