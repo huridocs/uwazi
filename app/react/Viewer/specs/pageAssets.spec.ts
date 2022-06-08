@@ -208,7 +208,7 @@ describe('pageAssets', () => {
         });
 
         it('should not add the inherited_relationships entry for entities with no relations', () => {
-          expect(entityData3.inherited_relationships).toBeEmpty();
+          expect(entityData3.inherited_relationships).toEqual({});
         });
 
         it('should contain a inherited_relationships entry for every multi-inherit type', () => {

@@ -17,31 +17,6 @@ type FormattedPropertyValueSchema = Partial<MetadataObjectSchema> & {
   value?: PropertyValueSchema;
 };
 
-const aggregateRelationships = (
-  entity: FormattedEntity,
-  relationTypes: { _id: string; name: string }[]
-) => {
-  if (!entity.relations || entity.relations.length === 0) {
-    return [];
-  }
-  const relationshipGroups = groupBy(entity.relations, 'template');
-
-  const namedRelationshipGroups = Object.entries(relationshipGroups).reduce(
-    (memo, [relationshipId, relations]) => {
-      const relationship = relationTypes.find(({ _id }) => _id === relationshipId);
-      if (relationship) {
-        const { template } = relations[0].entityData;
-        const groupname = `${relationship.name}-${template}`;
-        return { [groupname]: relations, ...memo };
-      }
-      return {};
-    },
-    {}
-  );
-
-  return namedRelationshipGroups;
-};
-
 const pickEntityFields = (entity: FormattedEntity) =>
   pick(entity, [
     'title',
@@ -114,16 +89,55 @@ const formatProperty = (item: FormattedPropertyValueSchema) => {
   return formattedItem;
 };
 
-const formatEntityData = (formattedEntity: FormattedEntity) => {
+const aggregateRelationships = (
+  entity: FormattedEntity,
+  relationTypes: { _id: string; name: string }[]
+) => {
+  if (!entity.relations || entity.relations.length === 0) {
+    return {};
+  }
+  const relationshipGroups = groupBy(entity.relations, 'template');
+
+  const namedRelationshipGroups = Object.entries(relationshipGroups).reduce(
+    (memo, [relationshipId, relations]) => {
+      const relationship = relationTypes.find(({ _id }) => _id === relationshipId);
+      if (relationship) {
+        const { template } = relations[0].entityData;
+        const groupname = `${relationship.name}-${template}`;
+        const relationContent = relations.map(relation => {
+          const { metadata } = relation.entityData;
+          return {
+            title: relation.entityData.title,
+            sharedId: relation.entityData.sharedId,
+            metadata,
+          };
+        });
+        return { [groupname]: relationContent, ...memo };
+      }
+      return {};
+    },
+    {}
+  );
+
+  return namedRelationshipGroups;
+};
+
+const formatEntityData = (
+  formattedEntity: FormattedEntity,
+  relationTypes: { _id: string; name: string }[]
+) => {
   const entity = pickEntityFields(formattedEntity);
   const formattedMetadata = formattedEntity.metadata.reduce((memo, property) => {
     const formattedProperty = formatProperty(property);
     return { ...memo, [property.name as string]: formattedProperty };
   }, {});
 
+  const relationshipAggregations = aggregateRelationships(formattedEntity, relationTypes);
+
   return {
     ...entity,
     metadata: formattedMetadata,
+    inherited_relationships: relationshipAggregations,
   };
 };
 
@@ -147,10 +161,7 @@ const prepareAssets = (
 ) => {
   const formattedEntity = formatter.prepareMetadata(entityRaw, state.templates, state.thesauris);
   const entity = formatEntity(formattedEntity);
-  const entityData = {
-    ...formatEntityData(formattedEntity),
-    inherited_relationships: aggregateRelationships(formattedEntity, relationTypes),
-  };
+  const entityData = formatEntityData(formattedEntity, relationTypes);
   return {
     entity,
     entityRaw,
