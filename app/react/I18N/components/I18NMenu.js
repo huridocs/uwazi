@@ -65,10 +65,12 @@ class I18NMenu extends Component {
         {!i18nmode && (
           <DropdownList
             data={languages}
+            id="key"
             defaultValue={selectedLanguage}
             textField="label"
             className="menuNav-language"
             itemComponent={({ item }) => listItem(item)}
+            valueField="key"
             valueComponent={({ item }) => listItem(item)}
             onSelect={selected => {
               if (selected.type === 'livetranslate') {

@@ -100,7 +100,7 @@ class Menu extends Component {
                 <li className="menuNav-item only-mobile">
                   <a href="/logout" className="menuNav-btn btn btn-default">
                     <Icon icon="power-off" />
-                    <span className="tab-link-label">{t('System', 'Sign out')}</span>
+                    <span className="tab-link-label">{t('System', 'Logout')}</span>
                   </a>
                 </li>
               </NeedAuthorization>

@@ -28,20 +28,25 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
     setShowing(false);
   }, []);
 
+  const toggleShowing = (e: { stopPropagation: () => void }) => {
+    setShowing(!showing);
+    e.stopPropagation();
+  };
+
   useOnClickOutsideElement<HTMLLIElement>(dropdownRef, onClickOutside);
 
   return (
     <li className="menuNav-item" key={position} ref={dropdownRef}>
-      <a
+      <button
         type="button"
         className="btn menuNav-btn menuNav-link dropdown-toggle"
         id="navbarDropdownMenuLink"
-        onClick={() => setShowing(!showing)}
+        onClick={toggleShowing}
       >
         <Translate context="Menu">{link.get('title')}</Translate>
         &nbsp; <Icon icon="caret-down" />
-      </a>
-      <ul className={`dropdown-menu ${showing ? 'show' : ''} mobile`}>
+      </button>
+      <ul className={`dropdown-menu ${showing ? 'show' : ''} `}>
         {link.get('sublinks').map((sublink?: IImmutable<ISublink>, index?: number) => {
           const url = sublink?.get('url') || '/';
           if (url.startsWith('http')) {
