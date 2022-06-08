@@ -137,6 +137,14 @@ describe('suggestions', () => {
       await Suggestions.updateStates({});
     });
 
+    it('should not fail on 0 suggestions', async () => {
+      const { suggestions } = await Suggestions.get(
+        { propertyName: 'non_existing_property' },
+        { page: { size: 50, number: 1 } }
+      );
+      expect(suggestions.length).toBe(0);
+    });
+
     it('should return all title suggestions', async () => {
       const { suggestions } = await Suggestions.get(
         { propertyName: 'title' },

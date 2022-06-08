@@ -87,10 +87,9 @@ export const Suggestions = {
 
     const { language, ...filters } = filter;
 
-    const [{ count }] = await IXSuggestionsModel.db.aggregate([
-      { $match: { ...filters, status: { $ne: 'processing' } } },
-      { $count: 'count' },
-    ]);
+    const count = await IXSuggestionsModel.db
+      .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
+      .then(result => (result?.length ? result[0].count : 0));
 
     const suggestions = await IXSuggestionsModel.db.aggregate([
       { $match: { ...filters, status: { $ne: 'processing' } } },
