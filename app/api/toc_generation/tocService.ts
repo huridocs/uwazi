@@ -7,6 +7,7 @@ import { TocSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import { tenants } from 'api/tenants';
 import settings from 'api/settings';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
@@ -44,20 +45,21 @@ const handleError = async (e: { code?: string; message: string }, file: FileType
   }
 };
 
-const tocService = (serviceUrl: string) => ({
+const tocService = () => ({
   async processNextAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
       return tenants.run(async () => {
+        permissionsContext.setCommandContext();
         const { features } = await settings.get({}, 'features.tocGeneration');
         if (features?.tocGeneration) {
-          await this.processNext();
+          await this.processNext(features.tocGeneration.url);
         }
       }, tenantName);
     }, Promise.resolve());
   },
 
-  async processNext() {
+  async processNext(url: string) {
     const [nextFile] = await files.get(
       {
         type: 'document',
@@ -70,7 +72,7 @@ const tocService = (serviceUrl: string) => ({
 
     if (nextFile) {
       try {
-        await saveToc(nextFile, await generateToc(serviceUrl, nextFile));
+        await saveToc(nextFile, await generateToc(url, nextFile));
       } catch (e) {
         await handleError(e, nextFile);
         errorLog.error(prettifyError(e).prettyMessage);
