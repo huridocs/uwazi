@@ -12,7 +12,7 @@ import { Icon } from 'UI';
 import { libraryViewInfo } from 'app/App/libraryViewInfo';
 import { DropdownMenu } from './DropdownMenu';
 
-export class Menu extends Component {
+class Menu extends Component {
   libraryUrl() {
     const { location, librarySearch, libraryFilters, defaultLibraryView } = this.props;
     const { searchTerm } = location.query;
@@ -81,7 +81,7 @@ export class Menu extends Component {
                   aria-label={t('System', 'Library', null, false)}
                 >
                   <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
-                  <span className="tab-link-tooltip">{t('System', 'Library')}</span>
+                  <span className="tab-link-label">{t('System', 'Library')}</span>
                 </I18NLink>
               </li>
               <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
@@ -92,8 +92,16 @@ export class Menu extends Component {
                     aria-label={t('System', 'Account settings', null, false)}
                   >
                     <Icon icon="cog" />
-                    <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
+                    <span className="tab-link-label">{t('System', 'Account settings')}</span>
                   </I18NLink>
+                </li>
+              </NeedAuthorization>
+              <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+                <li className="menuNav-item only-mobile">
+                  <a href="/logout" className="menuNav-btn btn btn-default">
+                    <Icon icon="power-off" />
+                    <span className="tab-link-label">{t('System', 'Sign out')}</span>
+                  </a>
                 </li>
               </NeedAuthorization>
               {(() => {
@@ -106,7 +114,7 @@ export class Menu extends Component {
                         aria-label={t('System', 'Sign in', null, false)}
                       >
                         <Icon icon="power-off" />
-                        <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
+                        <span className="tab-link-label">{t('System', 'Sign in')}</span>
                       </I18NLink>
                     </li>
                   );
@@ -139,7 +147,7 @@ Menu.propTypes = {
   defaultLibraryView: PropTypes.string,
 };
 
-export function mapStateToProps({ user, settings, library, uploads }) {
+function mapStateToProps({ user, settings, library, uploads }) {
   return {
     user,
     librarySearch: library.search,
@@ -152,7 +160,7 @@ export function mapStateToProps({ user, settings, library, uploads }) {
   };
 }
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       showSemanticSearch,
@@ -161,4 +169,5 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
+export { Menu, mapStateToProps, mapDispatchToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);
