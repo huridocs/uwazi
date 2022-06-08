@@ -2478,13 +2478,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/qrcode.react@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/@types/qrcode.react/-/qrcode.react-1.0.1.tgz"
-  integrity sha512-PcVCjpsiT2KFKfJibOgTQtkt0QQT/6GbQUp1Np/hMPhwUzMJ2DRUkR9j7tXN9Q8X06qukw+RbaJ8lJ22SBod+Q==
-  dependencies:
-    "@types/react" "*"
-
 "@types/qs@^6.9.6":
   version "6.9.6"
   resolved "https://registry.npmjs.org/@types/qs/-/qs-6.9.6.tgz"

@@ -252,7 +252,6 @@
     "@types/node-uuid": "^0.0.28",
     "@types/nodemailer": "^6.4.4",
     "@types/prop-types": "^15.7.3",
-    "@types/qrcode.react": "^1.0.1",
     "@types/qs": "^6.9.6",
     "@types/react": "^16.8.6",
     "@types/react-dnd": "^3.0.2",
