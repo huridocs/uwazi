@@ -56,7 +56,9 @@ const updateIxSuggestionsTrigger = async (existingEntity, newEntity) => {
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
-  const existingEntity = docLanguages.find(e => e._id.toString() === entity._id);
+  const existingEntity = docLanguages.find(e =>
+    e._id.toString() === (typeof entity._id === 'string') ? entity._id : entity._id.toString()
+  );
   if (
     docLanguages[0].template &&
     entity.template &&
