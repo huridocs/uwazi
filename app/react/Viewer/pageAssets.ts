@@ -1,14 +1,20 @@
 import { IStore } from 'app/istore';
 import { formater as formatter } from 'app/Metadata';
-import { pick, isArray, isObject, isEmpty, toPairs, take, get, groupBy } from 'lodash';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { pick, isArray, isObject, isEmpty, toPairs, take, get, groupBy, has } from 'lodash';
+import {
+  MetadataObjectSchema,
+  MetadataSchema,
+  PropertyValueSchema,
+} from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 
+type Relation = { template: string; entityData: EntitySchema };
+
 type FormattedEntity = EntitySchema & {
   metadata: MetadataObjectSchema[];
-  relations: any[];
+  relations: Relation[];
 };
 
 type FormattedPropertyValueSchema = Partial<MetadataObjectSchema> & {
@@ -89,14 +95,31 @@ const formatProperty = (item: FormattedPropertyValueSchema) => {
   return formattedItem;
 };
 
-const reletationsAggregationsMetadata = (metadata: MetadataObjectSchema) =>
+const reletationsAggregationsMetadata = (metadata: MetadataSchema) =>
   Object.entries(metadata).reduce((memo, [propertyName, values]) => {
-    const formmatedValues = values.map(value =>
+    const formmatedValues = (values as FormattedPropertyValueSchema[]).map(value =>
       value.label && value.label.length ? value.label : value.value
     );
     const result = { [propertyName]: formmatedValues };
     return { ...memo, ...result };
   }, {});
+
+const aggregateByTemplate = (relations: Relation[], relationship: { _id: string; name: string }) =>
+  relations.reduce((groupedRelations, relation) => {
+    const { template } = relation.entityData;
+    const groupName = `${relationship.name}-${template}`;
+    const metadata = reletationsAggregationsMetadata(relation.entityData.metadata || {});
+
+    const relatedEntity = {
+      title: relation.entityData.title,
+      sharedId: relation.entityData.sharedId,
+      metadata,
+    };
+
+    return !has(groupedRelations, groupName)
+      ? { ...groupedRelations, [groupName]: [relatedEntity] }
+      : { ...groupedRelations, [groupName]: [...groupedRelations[groupName], relatedEntity] };
+  }, {} as { [key: string]: EntitySchema[] });
 
 const aggregateRelationships = (
   entity: FormattedEntity,
@@ -105,28 +128,23 @@ const aggregateRelationships = (
   if (!entity.relations || entity.relations.length === 0) {
     return {};
   }
+
   const relationshipGroups = groupBy(entity.relations, 'template');
 
   const namedRelationshipGroups = Object.entries(relationshipGroups).reduce(
-    (memo, [relationshipId, relations]) => {
+    (aggregated, [relationshipId, relations]) => {
       const relationship = relationTypes.find(({ _id }) => _id === relationshipId);
+
       if (relationship) {
-        const { template } = relations[0].entityData;
-        const groupname = `${relationship.name}-${template}`;
-        const relationContent = relations.map(relation => {
-          const metadata = reletationsAggregationsMetadata(relation.entityData.metadata);
-          return {
-            title: relation.entityData.title,
-            sharedId: relation.entityData.sharedId,
-            metadata,
-          };
-        });
-        return { [groupname]: relationContent, ...memo };
+        const result = aggregateByTemplate(relations, relationship);
+
+        return { ...result, ...aggregated };
       }
       return {};
     },
     {}
   );
+
   return namedRelationshipGroups;
 };
 
