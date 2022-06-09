@@ -5,7 +5,7 @@ import disableTransitions from './disableTransitions';
 
 export async function login(username: string, password: string) {
   await page.goto(host);
-  await expect(page).toClick('.tab-link-label', { text: 'Sign in' });
+  await expect(page).toClick('a[aria-label="Sign in"]');
   await expect(page).toFill('input[name=username]', username);
   await expect(page).toFill('input[name=password]', password);
   await expect(page).toClick('button', { text: 'Login' });
