@@ -5,15 +5,9 @@ import urljoin from 'url-join';
 import { prettifyError } from 'api/utils/handleError';
 import { errorLog } from 'api/log';
 import request from 'shared/JSONRequest';
-import settings from 'api/settings';
 import synchronizer from './synchronizer';
 import createSyncConfig from './syncConfig';
 import syncsModel from './syncsModel';
-
-const timeout = async interval =>
-  new Promise(resolve => {
-    setTimeout(resolve, interval);
-  });
 
 const updateSyncs = async (name, lastSync) =>
   syncsModel._updateMany({ name }, { $set: { lastSync } });
@@ -22,77 +16,59 @@ export default {
   stopped: false,
   cookies: {},
 
-  async syncronize({ url, name, config, batchSize }) {
+  async syncronize({ url, name, config: _config, batchSize }) {
     try {
-      const configArray = Array.isArray(config) ? config : [config];
-
+      const configs = Array.isArray(_config) ? _config : [_config];
       // eslint-disable-next-line no-restricted-syntax
-      for await (const aConfig of configArray) {
-        const syncs = await syncsModel.find({ name: aConfig.name });
+      for await (const config of configs) {
+        const syncs = await syncsModel.find({ name: config.name });
         if (syncs.length === 0) {
-          await syncsModel.create({ lastSync: 0, name: aConfig.name });
+          await syncsModel.create({ lastSync: 0, name: config.name });
         }
-      }
 
-      const syncConfig = await createSyncConfig(config, name);
-      const { lastSync } = syncConfig;
+        const syncConfig = await createSyncConfig(config, name);
+        const { lastSync } = syncConfig;
 
-      const lastChanges = await syncConfig.lastChanges(batchSize);
+        const lastChanges = await syncConfig.lastChanges(batchSize);
 
-      await lastChanges.reduce(async (prev, change) => {
-        await prev;
+        await lastChanges.reduce(async (prev, change) => {
+          await prev;
 
-        if (change.deleted) {
-          await synchronizer.syncData(
-            { url, change, data: { _id: change.mongoId }, cookie: this.cookies[name] },
-            'delete'
-          );
+          if (change.deleted) {
+            await synchronizer.syncData(
+              { url, change, data: { _id: change.mongoId }, cookie: this.cookies[name] },
+              'delete'
+            );
+            return updateSyncs(name, change.timestamp);
+          }
+
+          const { skip, data } = await syncConfig.shouldSync(change);
+
+          if (skip) {
+            await synchronizer.syncData(
+              { url, change, data: { _id: change.mongoId }, cookie: this.cookies[name] },
+              'delete'
+            );
+          }
+
+          if (data) {
+            await synchronizer.syncData(
+              { url, change, data, cookie: this.cookies[name] },
+              'post',
+              lastSync
+            );
+          }
+
           return updateSyncs(name, change.timestamp);
-        }
-
-        const { skip, data } = await syncConfig.shouldSync(change);
-
-        if (skip) {
-          await synchronizer.syncData(
-            { url, change, data: { _id: change.mongoId }, cookie: this.cookies[name] },
-            'delete'
-          );
-        }
-
-        if (data) {
-          await synchronizer.syncData(
-            { url, change, data, cookie: this.cookies[name] },
-            'post',
-            lastSync
-          );
-        }
-
-        return updateSyncs(name, change.timestamp);
-      }, Promise.resolve());
+        }, Promise.resolve());
+      }
     } catch (e) {
       if (e.status === 401) {
-        return this.login(config);
+        return this.login(_config);
       }
       throw e;
     }
   },
-
-  // async intervalSync(config, interval = 5000) {
-  //   if (this.stopped) {
-  //     return;
-  //   }
-  //   try {
-  //     await this.syncronize(config);
-  //   } catch (e) {
-  //     if (e.status === 401) {
-  //       await this.login(config);
-  //     } else {
-  //       errorLog.error(prettifyError(e).prettyMessage);
-  //     }
-  //   }
-  //   await timeout(interval);
-  //   await this.intervalSync(config, interval);
-  // },
 
   async login({ url, username, password, name }) {
     try {
@@ -101,27 +77,5 @@ export default {
     } catch (e) {
       errorLog.error(prettifyError(e).prettyMessage);
     }
-  },
-
-  // async start(interval) {
-  //   const { sync } = await settings.get({}, { sync: 1 });
-  //   if (sync) {
-  //     const syncArray = Array.isArray(sync) ? sync : [sync];
-  //     await syncArray.reduce(async (prev, targetConfig) => {
-  //       await prev;
-  //       if (targetConfig.active) {
-  //         const syncs = await syncsModel.find({ name: targetConfig.name });
-  //         if (syncs.length === 0) {
-  //           await syncsModel.create({ lastSync: 0, name: targetConfig.name });
-  //         }
-  //         this.intervalSync(targetConfig, interval);
-  //       }
-  //       return Promise.resolve();
-  //     }, Promise.resolve());
-  //   }
-  // },
-
-  stop() {
-    this.stopped = true;
   },
 };

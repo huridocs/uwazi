@@ -9,8 +9,6 @@ import 'api/relationships';
 
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
-import settings from 'api/settings';
-import { settingsModel } from 'api/settings/settingsModel';
 import { fs, attachmentsPath, customUploadsPath } from 'api/files';
 
 import fixtures, {
@@ -174,6 +172,29 @@ describe('syncWorker', () => {
       };
       await syncWorkerWithConfig(syncConfig);
       expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
+    });
+
+    it('should allow multiple configs', async () => {
+      const deletedTemplate = db.id();
+      const deletedProperty = db.id();
+      const deletedRelationtype = db.id();
+
+      await syncWorkerWithConfig([
+        {
+          templates: {
+            [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+            [deletedTemplate.toString()]: [],
+            [template2.toString()]: [],
+          },
+          relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
+        },
+      ]);
+
+      const { callsCount: templateCalls } = getCallsToIds('templates', []);
+      const { callsCount: relationtypesCalls } = getCallsToIds('relationtypes', []);
+
+      expect(templateCalls).toBe(2);
+      expect(relationtypesCalls).toBe(1);
     });
 
     it('should sanitize the config to prevent deleted values to affect the process', async () => {
@@ -773,41 +794,5 @@ describe('syncWorker', () => {
       await syncWorker.login({ url: 'http://localhost', name: 'service', username, password });
       expect(errorLog.error.calls.argsFor(0)[0]).toMatch('post failed');
     });
-  });
-
-  describe('start', () => {
-    // it('should not fail when sync not in settings', async () => {
-    //   await settingsModel.updateMany({}, { $unset: { sync: '' } });
-    //   spyOn(syncWorker, 'intervalSync');
-    //   const interval = 2000;
-
-    //   let thrown;
-    //   try {
-    //     await syncWorker.start(interval);
-    //   } catch (e) {
-    //     thrown = e;
-    //   }
-    //   expect(thrown).not.toBeDefined();
-    // });
-
-    // it('should get sync config and start the sync', async () => {
-    //   spyOn(syncWorker, 'intervalSync');
-    //   const interval = 2000;
-
-    //   await syncWorker.start(interval);
-    //   expect(syncWorker.intervalSync).toHaveBeenCalledWith(
-    //     { url: 'url1', name: 'slave1', active: true, config: {} },
-    //     interval
-    //   );
-    // });
-
-    // describe('when there is no sync config', () => {
-    //   it('should not start the intervalSync', async () => {
-    //     spyOn(syncWorker, 'intervalSync');
-    //     await settings.save({ sync: {} });
-    //     await syncWorker.start();
-    //     expect(syncWorker.intervalSync).not.toHaveBeenCalled();
-    //   });
-    // });
   });
 });
