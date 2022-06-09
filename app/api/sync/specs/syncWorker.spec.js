@@ -47,7 +47,7 @@ import fixtures, {
   translation1,
 } from './fixtures';
 
-import syncWorker from '../syncWorker';
+import { syncWorker } from '../syncWorker';
 import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {

@@ -20,10 +20,8 @@ class InvalidSyncConfig extends Error {
   }
 }
 
-const cookies: { [k: string]: string } = {};
-
-export default {
-  stopped: false,
+export const syncWorker = {
+  cookies: {} as { [k: string]: string },
   async syncronize(syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) {
     const configs = Array.isArray(syncSettings) ? syncSettings : [syncSettings];
     // eslint-disable-next-line no-restricted-syntax
@@ -49,29 +47,34 @@ export default {
                 url: config.url,
                 change,
                 data: { _id: change.mongoId },
-                cookie: cookies[config.name],
+                cookie: this.cookies[config.name],
               },
               'delete'
             );
-            await updateSyncs(config.name, change.timestamp as number);
+            await updateSyncs(config.name, change.timestamp);
           } else {
-            const { skip, data } = await syncConfig.shouldSync(change);
+            const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
 
-            if (skip) {
+            if (shouldSync.skip) {
               await synchronizer.syncData(
                 {
                   url: config.url,
                   change,
                   data: { _id: change.mongoId },
-                  cookie: cookies[config.name],
+                  cookie: this.cookies[config.name],
                 },
                 'delete'
               );
             }
 
-            if (data) {
+            if (shouldSync.data) {
               await synchronizer.syncData(
-                { url: config.url, change, data, cookie: cookies[config.name] },
+                {
+                  url: config.url,
+                  change,
+                  data: shouldSync.data,
+                  cookie: this.cookies[config.name],
+                },
                 'post',
                 lastSync
               );
@@ -81,17 +84,22 @@ export default {
         }
       } catch (error) {
         if (error.status === 401) {
-          return this.login(config);
+          await this.login(config);
+        } else {
+          throw error;
         }
-        throw error;
       }
     }
   },
 
   async login({ url, username, password, name }: SettingsSyncSchema) {
+    if (!name) throw new InvalidSyncConfig('name is not defined on sync config');
+    if (!url) throw new InvalidSyncConfig('url is not defined on sync config');
+
     try {
       const response = await request.post(urljoin(url, 'api/login'), { username, password });
-      cookies[name] = response.cookie;
+      if (!response.cookie) throw new InvalidSyncConfig('no cookie returned after a login try');
+      this.cookies[name] = response.cookie;
     } catch (e) {
       errorLog.error(prettifyError(e).prettyMessage);
     }
