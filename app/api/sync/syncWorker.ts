@@ -13,6 +13,13 @@ import syncsModel from './syncsModel';
 const updateSyncs = async (name: string, lastSync: number) =>
   syncsModel._updateMany({ name }, { $set: { lastSync } }, {});
 
+async function createSyncIfNotExists(config: SettingsSyncSchema) {
+  const syncs = await syncsModel.find({ name: config.name });
+  if (syncs.length === 0) {
+    await syncsModel.create({ lastSync: 0, name: config.name });
+  }
+}
+
 class InvalidSyncConfig extends Error {
   constructor(message: string) {
     super(message);
@@ -22,72 +29,52 @@ class InvalidSyncConfig extends Error {
 
 export const syncWorker = {
   cookies: {} as { [k: string]: string },
+
   async syncronize(syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) {
     const configs = Array.isArray(syncSettings) ? syncSettings : [syncSettings];
     // eslint-disable-next-line no-restricted-syntax
     for await (const config of configs) {
-      if (!config.name) throw new InvalidSyncConfig('Name is not defined on sync config');
-
       try {
-        const syncs = await syncsModel.find({ name: config.name });
-        if (syncs.length === 0) {
-          await syncsModel.create({ lastSync: 0, name: config.name });
-        }
-
-        const syncConfig = await createSyncConfig(config, config.name);
-        const { lastSync } = syncConfig;
-
-        const lastChanges = await syncConfig.lastChanges();
-
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const change of lastChanges) {
-          if (change.deleted) {
-            await synchronizer.syncData(
-              {
-                url: config.url,
-                change,
-                data: { _id: change.mongoId },
-                cookie: this.cookies[config.name],
-              },
-              'delete'
-            );
-            await updateSyncs(config.name, change.timestamp);
-          } else {
-            const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
-
-            if (shouldSync.skip) {
-              await synchronizer.syncData(
-                {
-                  url: config.url,
-                  change,
-                  data: { _id: change.mongoId },
-                  cookie: this.cookies[config.name],
-                },
-                'delete'
-              );
-            }
-
-            if (shouldSync.data) {
-              await synchronizer.syncData(
-                {
-                  url: config.url,
-                  change,
-                  data: shouldSync.data,
-                  cookie: this.cookies[config.name],
-                },
-                'post',
-                lastSync
-              );
-            }
-            await updateSyncs(config.name, change.timestamp);
-          }
-        }
+        await this.syncronizeConfig(config);
       } catch (error) {
         if (error.status === 401) {
           await this.login(config);
         } else {
           throw error;
         }
+      }
+    }
+  },
+
+  async syncronizeConfig(config: SettingsSyncSchema) {
+    if (!config.name) throw new InvalidSyncConfig('Name is not defined on sync config');
+    await createSyncIfNotExists(config);
+
+    const syncConfig = await createSyncConfig(config, config.name);
+    const { lastSync } = syncConfig;
+
+    const lastChanges = await syncConfig.lastChanges();
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const change of lastChanges) {
+      if (change.deleted) {
+        await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
+        await updateSyncs(config.name, change.timestamp);
+      } else {
+        const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
+
+        if (shouldSync.skip) {
+          await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
+        }
+
+        if (shouldSync.data) {
+          await synchronizer.syncData(
+            { url: config.url, change, data: shouldSync.data, cookie: this.cookies[config.name] },
+            'post',
+            lastSync
+          );
+        }
+        await updateSyncs(config.name, change.timestamp);
       }
     }
   },
