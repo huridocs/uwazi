@@ -82,7 +82,7 @@ export default async (config, targetName) => {
 
     config: await sanitizeConfig(config),
 
-    async lastChanges(initialBatchSize = 50) {
+    async lastChanges() {
       const approvedCollections = getApprovedCollections(this.config);
       const firstBatch = await updateLog.find(
         {
@@ -92,7 +92,7 @@ export default async (config, targetName) => {
         null,
         {
           sort: { timestamp: 1 },
-          limit: initialBatchSize,
+          limit: 50,
           lean: true,
         }
       );

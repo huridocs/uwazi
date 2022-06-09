@@ -9,23 +9,34 @@ import 'api/relationships';
 
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
-import { fs, attachmentsPath, customUploadsPath } from 'api/files';
+import { attachmentsPath, customUploadsPath, fs } from 'api/files';
 
 import fixtures, {
-  settingsId,
   newDoc1,
   newDoc2,
   newDoc4,
+  relationship1,
+  relationship10,
+  relationship11,
+  relationship2,
+  relationship5,
+  relationship7,
+  relationship9,
+  relationtype1,
+  relationtype3,
+  relationtype4,
+  relationtype7,
+  settingsId,
   template1,
   template1Property1,
   template1Property2,
   template1Property3,
+  template1PropertyRelationship1,
   template1PropertyThesauri1Select,
   template1PropertyThesauri3MultiSelect,
-  template1PropertyRelationship1,
   template2,
-  template2PropertyThesauri5Select,
   template2PropertyRelationship2,
+  template2PropertyThesauri5Select,
   template3,
   thesauri1,
   thesauri1Value1,
@@ -33,17 +44,6 @@ import fixtures, {
   thesauri3,
   thesauri4,
   thesauri5,
-  relationship1,
-  relationship2,
-  relationship5,
-  relationship7,
-  relationship9,
-  relationship10,
-  relationship11,
-  relationtype1,
-  relationtype3,
-  relationtype4,
-  relationtype7,
   translation1,
 } from './fixtures';
 
@@ -74,24 +74,14 @@ describe('syncWorker', () => {
     await fs.unlink(customUploadsPath('customUpload.gif'));
   });
 
-  const syncWorkerWithConfig = async config =>
-    syncWorker.syncronize({
-      url: 'url-slave1',
-      name: 'slave1',
-      config,
-    });
-
-  const syncAllTemplates = async (name = 'slave1', batchSize) =>
+  const syncAllTemplates = async (name = 'slave1') =>
     syncWorker.syncronize({
       url: `url-${name}`,
       name,
-      batchSize,
-      config: {
-        templates: {
-          [template1.toString()]: [],
-          [template2.toString()]: [],
-          [template3.toString()]: [],
-        },
+      templates: {
+        [template1.toString()]: [],
+        [template2.toString()]: [],
+        [template3.toString()]: [],
       },
     });
 
@@ -140,8 +130,10 @@ describe('syncWorker', () => {
     it('should lazy create lastSync entries if they not already exist', async () => {
       await syncsModel.deleteMany({ name: 'slave3' });
 
-      const syncConfig = [{ name: 'slave3' }, { name: 'slave1' }];
-      await syncWorkerWithConfig(syncConfig);
+      await syncWorker.syncronize([
+        { url: 'url-slave1', name: 'slave1' },
+        { url: 'url-slave3', name: 'slave3' },
+      ]);
 
       const syncs = await syncsModel.find().sort({ lastSync: 1 });
       expect(syncs).toMatchObject([
@@ -163,6 +155,8 @@ describe('syncWorker', () => {
       const deletedRelationtype = db.id();
 
       const syncConfig = {
+        url: 'url-slave1',
+        name: 'slave1',
         templates: {
           [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
           [deletedTemplate.toString()]: [],
@@ -170,7 +164,7 @@ describe('syncWorker', () => {
         },
         relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
       };
-      await syncWorkerWithConfig(syncConfig);
+      await syncWorker.syncronize(syncConfig);
       expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
     });
 
@@ -179,8 +173,10 @@ describe('syncWorker', () => {
       const deletedProperty = db.id();
       const deletedRelationtype = db.id();
 
-      await syncWorkerWithConfig([
+      await syncWorker.syncronize([
         {
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
             [deletedTemplate.toString()]: [],
@@ -202,7 +198,9 @@ describe('syncWorker', () => {
       const deletedProperty = db.id();
       const deletedRelationtype = db.id();
 
-      await syncWorkerWithConfig({
+      await syncWorker.syncronize({
+        url: 'url-slave1',
+        name: 'slave1',
         templates: {
           [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
           [deletedTemplate.toString()]: [],
@@ -219,7 +217,11 @@ describe('syncWorker', () => {
     });
 
     it('should only sync whitelisted collections (forbidding certain collections even if present)', async () => {
-      await syncWorkerWithConfig({ migrations: {}, sessions: {} });
+      await syncWorker.syncronize({
+        url: 'url-slave1',
+        name: 'slave1',
+        config: { migrations: {}, sessions: {} },
+      });
 
       expect(request.post.calls.count()).toBe(0);
       expect(request.delete.calls.count()).toBe(0);
@@ -227,7 +229,9 @@ describe('syncWorker', () => {
 
     describe('settings', () => {
       it('should only include languages from settings', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {},
         });
 
@@ -248,7 +252,9 @@ describe('syncWorker', () => {
     describe('templates', () => {
       it('should only sync whitelisted templates and properties', async () => {
         const deletedProperty = db.id();
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [
               template1Property1.toString(),
@@ -281,7 +287,9 @@ describe('syncWorker', () => {
       });
 
       it('should not sync the entity view page foreign key', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
           },
@@ -298,7 +306,9 @@ describe('syncWorker', () => {
       });
 
       it('should mark the template as synced', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
           },
@@ -317,7 +327,9 @@ describe('syncWorker', () => {
 
     describe('thesauris (dictionaries collection)', () => {
       it('should sync whitelisted thesauris through template configs (deleting non-whitelisted ones)', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [
               template1Property2.toString(),
@@ -354,7 +366,9 @@ describe('syncWorker', () => {
 
     describe('relationtypes', () => {
       it('should sync whitelisted relationtypes and those from approved metadata properties', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [template1PropertyRelationship1.toString()],
             [template2.toString()]: [template2PropertyRelationship2.toString()],
@@ -380,7 +394,9 @@ describe('syncWorker', () => {
       });
 
       it('should allow syncing only from templates, without whitelisting a whole relationtype', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] },
         });
 
@@ -396,7 +412,11 @@ describe('syncWorker', () => {
 
     describe('translations', () => {
       it('should include System context and exclude non-whitelisted templates, thesauris and relationtypes', async () => {
-        await syncWorkerWithConfig({ templates: {} });
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
+          templates: {},
+        });
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
@@ -409,7 +429,9 @@ describe('syncWorker', () => {
       });
 
       it('should include from whitelisted templates and relationstypes, as well as derived thesauris and relationstypes', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [
               template1PropertyRelationship1.toString(),
@@ -467,7 +489,9 @@ describe('syncWorker', () => {
 
     describe('uploadFile', () => {
       it('should upload attachments, documents and thumbnails belonging to entities that are of an allowed template, and customs', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [],
           },
@@ -484,7 +508,9 @@ describe('syncWorker', () => {
       });
 
       it('should upload files belonging to entities that are not filtered out, and customs', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: {
               properties: [],
@@ -510,6 +536,8 @@ describe('syncWorker', () => {
 
       beforeEach(() => {
         baseConfig = {
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [
               template1Property2.toString(),
@@ -522,7 +550,7 @@ describe('syncWorker', () => {
       });
 
       it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
-        await syncWorkerWithConfig(baseConfig);
+        await syncWorker.syncronize(baseConfig);
 
         const {
           calls: [entity1Call, entity2Call],
@@ -570,7 +598,7 @@ describe('syncWorker', () => {
         });
 
         it('should allow filtering entities based on filter function', async () => {
-          await syncWorkerWithConfig(filterConfig);
+          await syncWorker.syncronize(filterConfig);
 
           const {
             callsCount,
@@ -583,7 +611,7 @@ describe('syncWorker', () => {
         it('should fail on error', async () => {
           filterConfig.templates[template1.toString()].filter = 'return missing;';
           try {
-            await syncWorkerWithConfig(filterConfig);
+            await syncWorker.syncronize(filterConfig);
             fail('should not pass');
           } catch (err) {
             expect(err.message).toContain('JSON');
@@ -603,7 +631,7 @@ describe('syncWorker', () => {
 
             const [savedEntity] = await entitesModel.saveMultiple([nonMatchingEntity]);
 
-            await syncWorkerWithConfig(filterConfig);
+            await syncWorker.syncronize(filterConfig);
 
             expectCallWith(
               request.delete,
@@ -617,7 +645,9 @@ describe('syncWorker', () => {
 
     describe('relationships (connections collection)', () => {
       it('should sync from approved template / entities and raw whitelisted relationtypes', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [],
             [template2.toString()]: [],
@@ -636,7 +666,9 @@ describe('syncWorker', () => {
       });
 
       it('should allow including null relationTypes', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [],
           },
@@ -653,7 +685,9 @@ describe('syncWorker', () => {
       });
 
       it('should include from specific types inlcuded through metadata (taking null left hand-side relationships)', async () => {
-        await syncWorkerWithConfig({
+        await syncWorker.syncronize({
+          url: 'url-slave1',
+          name: 'slave1',
           templates: {
             [template1.toString()]: [template1PropertyRelationship1.toString()],
             [template2.toString()]: [template2PropertyRelationship2.toString()],
@@ -718,23 +752,6 @@ describe('syncWorker', () => {
       expect(lastSync3).toBe(22000);
 
       expectCallWith(request.post, 'entities', expect.objectContaining({ _id: newDoc2 }), 'slave3');
-    });
-
-    it('should allow smaller batches for large amount of changes (but process all identical timestamps)', async () => {
-      await syncAllTemplates('slave1', 2);
-      let [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
-      expect(lastSync).toBe(9000);
-      expect(request.post.calls.count()).toBe(10);
-      expect(request.delete.calls.count()).toBe(1);
-
-      request.post.calls.reset();
-      request.delete.calls.reset();
-
-      await syncAllTemplates('slave1', 5);
-      [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
-      expect(lastSync).toBe(9003);
-      expect(request.post.calls.count()).toBe(2);
-      expect(request.delete.calls.count()).toBe(3);
     });
 
     it('should update lastSync on each operation', async () => {
