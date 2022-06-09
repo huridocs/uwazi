@@ -89,6 +89,15 @@ const formatProperty = (item: FormattedPropertyValueSchema) => {
   return formattedItem;
 };
 
+const reletationsAggregationsMetadata = (metadata: MetadataObjectSchema) =>
+  Object.entries(metadata).reduce((memo, [propertyName, values]) => {
+    const formmatedValues = values.map(value =>
+      value.label && value.label.length ? value.label : value.value
+    );
+    const result = { [propertyName]: formmatedValues };
+    return { ...memo, ...result };
+  }, {});
+
 const aggregateRelationships = (
   entity: FormattedEntity,
   relationTypes: { _id: string; name: string }[]
@@ -105,7 +114,7 @@ const aggregateRelationships = (
         const { template } = relations[0].entityData;
         const groupname = `${relationship.name}-${template}`;
         const relationContent = relations.map(relation => {
-          const { metadata } = relation.entityData;
+          const metadata = reletationsAggregationsMetadata(relation.entityData.metadata);
           return {
             title: relation.entityData.title,
             sharedId: relation.entityData.sharedId,
@@ -118,7 +127,6 @@ const aggregateRelationships = (
     },
     {}
   );
-
   return namedRelationshipGroups;
 };
 

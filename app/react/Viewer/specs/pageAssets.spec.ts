@@ -8,6 +8,8 @@ import {
   relationTypes,
   dbTemplates as dbTemplates2,
   thesauris as thesauris2,
+  entityData1RelationsAggregations,
+  entityData2RelationsAggregations,
 } from './fixtures/pageAssetsRelationsAggregations';
 
 describe('pageAssets', () => {
@@ -207,13 +209,12 @@ describe('pageAssets', () => {
           return result;
         });
 
-        it('should not add the inherited_relationships entry for entities with no relations', () => {
-          expect(entityData3.inherited_relationships).toEqual({});
-        });
-
         it('should contain a inherited_relationships entry for every multi-inherit type', () => {
-          expect(entityData1.inherited_relationships).toBeDefined();
-          expect(entityData2.inherited_relationships).toBeDefined();
+          expect(entityData1.inherited_relationships).toEqual(entityData1RelationsAggregations);
+
+          expect(entityData2.inherited_relationships).toEqual(entityData2RelationsAggregations);
+
+          expect(entityData3.inherited_relationships).toEqual({});
         });
       });
     });

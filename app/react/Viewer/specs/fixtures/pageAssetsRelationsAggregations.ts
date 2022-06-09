@@ -1253,4 +1253,101 @@ const relationTypes = [
   },
 ];
 
-export { dbTemplates, rawEntities, thesauris, relationTypes };
+const entityData1RelationsAggregations = {
+  'Multi-inherit-2-629f900638ef5b3343848e80': [
+    {
+      title: 'Argentina',
+      sharedId: '9e13muy08kl',
+      metadata: {
+        select: ['Option D 3'],
+        geolocation_geolocation: [
+          {
+            lat: -36.19286487671368,
+            lon: -64.29199218750001,
+            label: '',
+          },
+        ],
+      },
+    },
+    {
+      title: 'Peru',
+      sharedId: '3zeqx3aptzi',
+      metadata: {
+        select: ['Option B'],
+        geolocation_geolocation: [
+          {
+            lat: -10.189511603370525,
+            lon: -74.97070312500001,
+            label: '',
+          },
+        ],
+      },
+    },
+  ],
+  'Multi-inherit-5bfbb1a0471dd0fc16ada146': [
+    {
+      title: 'Document 3',
+      sharedId: '844ts659a7',
+      metadata: {
+        text: ['Three'],
+        numeric: [3],
+        select: ['Option C'],
+      },
+    },
+    {
+      title: 'Document 1',
+      sharedId: 'f27fwxhlsqo',
+      metadata: {
+        text: ['One'],
+        numeric: [1],
+        select: ['Option A'],
+      },
+    },
+    {
+      title: 'Document 2',
+      sharedId: 'u4uclgwzcp',
+      metadata: {
+        text: ['Two'],
+        numeric: [2],
+        select: ['Option B'],
+      },
+    },
+    {
+      title: 'Document 4',
+      sharedId: '4qkgragsevq',
+      metadata: {
+        text: ['Four'],
+        numeric: [4],
+        select: ['Option D 1'],
+      },
+    },
+  ],
+};
+
+const entityData2RelationsAggregations = {
+  'Multi-inherit-2-629f900638ef5b3343848e80': [
+    {
+      title: 'Venezuela',
+      sharedId: 'mp9v2ugx1un',
+      metadata: {
+        select: ['Option D 2'],
+        geolocation_geolocation: [
+          {
+            lat: 7.9243233190236015,
+            lon: -65.47851562500001,
+            label: '',
+          },
+        ],
+      },
+    },
+  ],
+};
+
+export {
+  dbTemplates,
+  rawEntities,
+  thesauris,
+  relationTypes,
+  entityData1RelationsAggregations,
+  entityData2RelationsAggregations,
+};
