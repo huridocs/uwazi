@@ -139,6 +139,43 @@ describe('syncWorker', () => {
       spyOn(request, 'delete').and.callFake(ensureHeaders);
     });
 
+    it('should lazy create lastSync entries if they not already exist', async () => {
+      await syncsModel.deleteMany({ name: 'slave3' });
+
+      const syncConfig = [{ name: 'slave3' }, { name: 'slave1' }];
+      await syncWorkerWithConfig(syncConfig);
+
+      const syncs = await syncsModel.find().sort({ lastSync: 1 });
+      expect(syncs).toMatchObject([
+        { name: 'slave3', lastSync: 0 },
+        { name: 'slave1', lastSync: 8999 },
+      ]);
+    });
+
+    it('should login when a sync response is "Unauthorized"', async () => {
+      spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
+      request.post.and.callFake(() => {
+        const responseError = new Error('error');
+        responseError.status = 401;
+        return Promise.reject(responseError);
+      });
+
+      const deletedTemplate = db.id();
+      const deletedProperty = db.id();
+      const deletedRelationtype = db.id();
+
+      const syncConfig = {
+        templates: {
+          [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+          [deletedTemplate.toString()]: [],
+          [template2.toString()]: [],
+        },
+        relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
+      };
+      await syncWorkerWithConfig(syncConfig);
+      expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
+    });
+
     it('should sanitize the config to prevent deleted values to affect the process', async () => {
       const deletedTemplate = db.id();
       const deletedProperty = db.id();
@@ -700,61 +737,6 @@ describe('syncWorker', () => {
     });
   });
 
-  describe('intervalSync', () => {
-    it('should syncronize every x seconds', async () => {
-      let syncCalls = 0;
-      spyOn(syncWorker, 'syncronize').and.callFake(() => {
-        if (syncCalls === 2) {
-          syncWorker.stop();
-        }
-        syncCalls += 1;
-        return Promise.resolve();
-      });
-
-      const interval = 0;
-      await syncWorker.intervalSync({ url: 'url' }, interval);
-      expect(syncWorker.syncronize).toHaveBeenCalledWith({ url: 'url' });
-      expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
-    });
-
-    it('should retry when syncronize returns a request error', async () => {
-      let syncCalls = 0;
-      spyOn(syncWorker, 'syncronize').and.callFake(() => {
-        if (syncCalls === 2) {
-          syncWorker.stop();
-        }
-        syncCalls += 1;
-        const responseError = new Error('error');
-        responseError.status = 500;
-        return Promise.reject(responseError);
-      });
-
-      const interval = 0;
-      await syncWorker.intervalSync({ url: 'url' }, interval);
-      expect(syncWorker.syncronize).toHaveBeenCalledWith({ url: 'url' });
-      expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
-    });
-
-    it('should login when a sync response is "Unauthorized"', async () => {
-      spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
-      let syncCalls = 0;
-      spyOn(syncWorker, 'syncronize').and.callFake(() => {
-        if (syncCalls === 1) {
-          syncWorker.stop();
-        }
-        syncCalls += 1;
-        const responseError = new Error('error');
-        responseError.status = 401;
-        return Promise.reject(responseError);
-      });
-
-      const interval = 0;
-      const syncConfig = { url: 'url', username: 'configUser', password: 'configPassword' };
-      await syncWorker.intervalSync(syncConfig, interval);
-      expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
-    });
-  });
-
   describe('login', () => {
     const username = 'username';
     const password = 'password';
@@ -794,50 +776,38 @@ describe('syncWorker', () => {
   });
 
   describe('start', () => {
-    it('should not fail when sync not in settings', async () => {
-      await settingsModel.updateMany({}, { $unset: { sync: '' } });
-      spyOn(syncWorker, 'intervalSync');
-      const interval = 2000;
+    // it('should not fail when sync not in settings', async () => {
+    //   await settingsModel.updateMany({}, { $unset: { sync: '' } });
+    //   spyOn(syncWorker, 'intervalSync');
+    //   const interval = 2000;
 
-      let thrown;
-      try {
-        await syncWorker.start(interval);
-      } catch (e) {
-        thrown = e;
-      }
-      expect(thrown).not.toBeDefined();
-    });
+    //   let thrown;
+    //   try {
+    //     await syncWorker.start(interval);
+    //   } catch (e) {
+    //     thrown = e;
+    //   }
+    //   expect(thrown).not.toBeDefined();
+    // });
 
-    it('should lazy create lastSync entries if they not already exist', async () => {
-      await syncsModel.deleteMany({ name: 'slave3' });
+    // it('should get sync config and start the sync', async () => {
+    //   spyOn(syncWorker, 'intervalSync');
+    //   const interval = 2000;
 
-      syncWorker.stop();
-      await syncWorker.start();
-      const syncs = await syncsModel.find().sort({ lastSync: 1 });
-      expect(syncs).toEqual([
-        expect.objectContaining({ name: 'slave3', lastSync: 0 }),
-        expect.objectContaining({ name: 'slave1', lastSync: 8999 }),
-      ]);
-    });
+    //   await syncWorker.start(interval);
+    //   expect(syncWorker.intervalSync).toHaveBeenCalledWith(
+    //     { url: 'url1', name: 'slave1', active: true, config: {} },
+    //     interval
+    //   );
+    // });
 
-    it('should get sync config and start the sync', async () => {
-      spyOn(syncWorker, 'intervalSync');
-      const interval = 2000;
-
-      await syncWorker.start(interval);
-      expect(syncWorker.intervalSync).toHaveBeenCalledWith(
-        { url: 'url1', name: 'slave1', active: true, config: {} },
-        interval
-      );
-    });
-
-    describe('when there is no sync config', () => {
-      it('should not start the intervalSync', async () => {
-        spyOn(syncWorker, 'intervalSync');
-        await settings.save({ sync: {} });
-        await syncWorker.start();
-        expect(syncWorker.intervalSync).not.toHaveBeenCalled();
-      });
-    });
+    // describe('when there is no sync config', () => {
+    //   it('should not start the intervalSync', async () => {
+    //     spyOn(syncWorker, 'intervalSync');
+    //     await settings.save({ sync: {} });
+    //     await syncWorker.start();
+    //     expect(syncWorker.intervalSync).not.toHaveBeenCalled();
+    //   });
+    // });
   });
 });
