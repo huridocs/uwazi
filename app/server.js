@@ -20,6 +20,7 @@ import { TwitterIntegration } from 'api/services/twitterintegration/TwitterInteg
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
+import { tocService } from 'api/toc_generation/tocService';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -197,6 +198,12 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         twitterRepeater.start();
 
         new DistributedLoop('preserve_integration', async () => preserveSync.syncAllTenants(), {
+          port: config.redis.port,
+          host: config.redis.host,
+          delayTimeBetweenTasks: 30000,
+        }).start();
+
+        new DistributedLoop('toc_service', async () => tocService.processAllTenants(), {
           port: config.redis.port,
           host: config.redis.host,
           delayTimeBetweenTasks: 30000,
