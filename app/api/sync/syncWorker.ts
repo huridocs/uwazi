@@ -20,6 +20,9 @@ async function createSyncIfNotExists(config: SettingsSyncSchema) {
   }
 }
 
+const getConfigs = (syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) =>
+  Array.isArray(syncSettings) ? syncSettings : [syncSettings];
+
 class InvalidSyncConfig extends Error {
   constructor(message: string) {
     super(message);
@@ -30,18 +33,21 @@ class InvalidSyncConfig extends Error {
 export const syncWorker = {
   cookies: {} as { [k: string]: string },
 
+  async catchSyncErrors(error: any, config: SettingsSyncSchema) {
+    if (error.status === 401) {
+      await this.login(config);
+    } else {
+      throw error;
+    }
+  },
+
   async syncronize(syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) {
-    const configs = Array.isArray(syncSettings) ? syncSettings : [syncSettings];
     // eslint-disable-next-line no-restricted-syntax
-    for await (const config of configs) {
+    for await (const config of getConfigs(syncSettings)) {
       try {
         await this.syncronizeConfig(config);
       } catch (error) {
-        if (error.status === 401) {
-          await this.login(config);
-        } else {
-          throw error;
-        }
+        await this.catchSyncErrors(error, config);
       }
     }
   },
@@ -51,31 +57,25 @@ export const syncWorker = {
     await createSyncIfNotExists(config);
 
     const syncConfig = await createSyncConfig(config, config.name);
-    const { lastSync } = syncConfig;
-
-    const lastChanges = await syncConfig.lastChanges();
 
     // eslint-disable-next-line no-restricted-syntax
-    for await (const change of lastChanges) {
+    for await (const change of await syncConfig.lastChanges()) {
       if (change.deleted) {
         await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
-        await updateSyncs(config.name, change.timestamp);
-      } else {
-        const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
-
-        if (shouldSync.skip) {
-          await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
-        }
-
-        if (shouldSync.data) {
-          await synchronizer.syncData(
-            { url: config.url, change, data: shouldSync.data, cookie: this.cookies[config.name] },
-            'post',
-            lastSync
-          );
-        }
-        await updateSyncs(config.name, change.timestamp);
       }
+      const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
+      if (!change.deleted && shouldSync.skip) {
+        await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
+      }
+
+      if (shouldSync.data) {
+        await synchronizer.syncData(
+          { url: config.url, change, data: shouldSync.data, cookie: this.cookies[config.name] },
+          'post',
+          syncConfig.lastSync
+        );
+      }
+      await updateSyncs(config.name, change.timestamp);
     }
   },
 
