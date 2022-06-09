@@ -60,11 +60,8 @@ export const syncWorker = {
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const change of await syncConfig.lastChanges()) {
-      if (change.deleted) {
-        await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
-      }
       const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
-      if (!change.deleted && shouldSync.skip) {
+      if (shouldSync.skip) {
         await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
       }
 

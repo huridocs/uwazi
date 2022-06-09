@@ -119,6 +119,7 @@ export default async (config, targetName) => {
     },
 
     async shouldSync(change) {
+      if (change.deleted) return { skip: true };
       const templatesConfig = this.config.templates || {};
       const relationtypesConfig = this.config.relationtypes || [];
 
