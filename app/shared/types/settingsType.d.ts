@@ -119,6 +119,7 @@ export interface SettingsSyncSchema {
   active?: boolean;
   username?: boolean;
   password?: boolean;
+  name?: string;
   config?: {
     templates?: {
       [k: string]:
