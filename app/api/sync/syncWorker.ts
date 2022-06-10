@@ -1,9 +1,5 @@
 import 'api/entities';
-
 import urljoin from 'url-join';
-
-import { prettifyError } from 'api/utils/handleError';
-import { errorLog } from 'api/log';
 import request from 'shared/JSONRequest';
 import { SettingsSyncSchema } from 'shared/types/settingsType';
 import synchronizer from './synchronizer';
@@ -20,7 +16,7 @@ async function createSyncIfNotExists(config: SettingsSyncSchema) {
   }
 }
 
-const getConfigs = (syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) =>
+const ensureArray = (syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) =>
   Array.isArray(syncSettings) ? syncSettings : [syncSettings];
 
 class InvalidSyncConfig extends Error {
@@ -30,10 +26,18 @@ class InvalidSyncConfig extends Error {
   }
 }
 
+type SyncConfig = SettingsSyncSchema & { url: string; name: string };
+
+const validateConfig = (config: SettingsSyncSchema) => {
+  if (!config.name) throw new InvalidSyncConfig('Name is not defined on sync config');
+  if (!config.url) throw new InvalidSyncConfig('url is not defined on sync config');
+  return config as SyncConfig;
+};
+
 export const syncWorker = {
   cookies: {} as { [k: string]: string },
 
-  async catchSyncErrors(error: any, config: SettingsSyncSchema) {
+  async catchSyncErrors(error: any, config: SyncConfig) {
     if (error.status === 401) {
       await this.login(config);
     } else {
@@ -43,17 +47,17 @@ export const syncWorker = {
 
   async syncronize(syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) {
     // eslint-disable-next-line no-restricted-syntax
-    for await (const config of getConfigs(syncSettings)) {
+    for await (const config of ensureArray(syncSettings)) {
+      const syncConfig = validateConfig(config);
       try {
-        await this.syncronizeConfig(config);
+        await this.syncronizeConfig(syncConfig);
       } catch (error) {
-        await this.catchSyncErrors(error, config);
+        await this.catchSyncErrors(error, syncConfig);
       }
     }
   },
 
-  async syncronizeConfig(config: SettingsSyncSchema) {
-    if (!config.name) throw new InvalidSyncConfig('Name is not defined on sync config');
+  async syncronizeConfig(config: SyncConfig) {
     await createSyncIfNotExists(config);
 
     const syncConfig = await createSyncConfig(config, config.name);
@@ -67,7 +71,12 @@ export const syncWorker = {
 
       if (shouldSync.data) {
         await synchronizer.syncData(
-          { url: config.url, change, data: shouldSync.data, cookie: this.cookies[config.name] },
+          {
+            url: config.url,
+            change,
+            data: shouldSync.data,
+            cookie: this.cookies[config.name],
+          },
           'post',
           syncConfig.lastSync
         );
@@ -76,16 +85,8 @@ export const syncWorker = {
     }
   },
 
-  async login({ url, username, password, name }: SettingsSyncSchema) {
-    if (!name) throw new InvalidSyncConfig('name is not defined on sync config');
-    if (!url) throw new InvalidSyncConfig('url is not defined on sync config');
-
-    try {
-      const response = await request.post(urljoin(url, 'api/login'), { username, password });
-      if (!response.cookie) throw new InvalidSyncConfig('no cookie returned after a login try');
-      this.cookies[name] = response.cookie;
-    } catch (e) {
-      errorLog.error(prettifyError(e).prettyMessage);
-    }
+  async login({ url, username, password, name }: SyncConfig) {
+    const response = await request.post(urljoin(url, 'api/login'), { username, password });
+    this.cookies[name] = response.cookie || '';
   },
 };

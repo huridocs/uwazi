@@ -805,11 +805,5 @@ describe('syncWorker', () => {
       expect(syncWorker.cookies.service1).toBe('cookie1');
       expect(syncWorker.cookies.service2).toBe('cookie2');
     });
-
-    it('should catch errors and log them', async () => {
-      spyOn(request, 'post').and.callFake(() => Promise.reject(new Error('post failed')));
-      await syncWorker.login({ url: 'http://localhost', name: 'service', username, password });
-      expect(errorLog.error.calls.argsFor(0)[0]).toMatch('post failed');
-    });
   });
 });
