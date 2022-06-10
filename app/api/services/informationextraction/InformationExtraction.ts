@@ -29,7 +29,7 @@ import {
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { dateToSeconds } from 'shared/data_utils/deepEquals';
+import { dateToSeconds } from 'shared/dateToSeconds';
 import ixmodels from './ixmodels';
 
 type RawSuggestion = {
