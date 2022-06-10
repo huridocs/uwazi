@@ -60,7 +60,7 @@ describe('Uploads', () => {
         page.waitForFileChooser(),
         page.click('label[for="pdf-upload-button"]'),
       ]);
-      await fileChooser.accept([`${__dirname}/test_files/valid.pdf`]);
+      await fileChooser.accept([`${__dirname}/../test_files/valid.pdf`]);
       await expectDocumentCountAfterSearch(page, 2);
 
       const title = await getText(entityTitle(firstEntitySelector));
@@ -78,7 +78,7 @@ describe('Uploads', () => {
         page.waitForFileChooser(),
         page.click('label[for="pdf-upload-button"]'),
       ]);
-      await fileChooser.accept([`${__dirname}/test_files/invalid.pdf`]);
+      await fileChooser.accept([`${__dirname}/../test_files/invalid.pdf`]);
       await expectDocumentCountAfterSearch(page, 3);
 
       const title = await getText(entityTitle(firstEntitySelector));

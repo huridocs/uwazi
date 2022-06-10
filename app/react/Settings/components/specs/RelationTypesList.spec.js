@@ -28,6 +28,7 @@ describe('RelationTypesList', () => {
 
     context = {
       confirm: jasmine.createSpy('confirm'),
+      store: { getState: () => ({}) },
     };
   });
 
