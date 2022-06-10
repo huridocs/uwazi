@@ -1,4 +1,4 @@
-import { deepEquals } from './deepEquals';
+import _ from 'lodash';
 
 type PropNameType = string | number;
 
@@ -18,7 +18,7 @@ const shallowObjectDiff = (left: PropObject, right: PropObject): ShallowDiffResu
   const missing = Object.keys(left).filter(p => !rightProps.has(p));
   const extra = Object.keys(right).filter(p => !leftProps.has(p));
   const inBoth = Object.keys(left).filter(p => rightProps.has(p));
-  const differentValue = inBoth.filter(p => !deepEquals(left[p], right[p]));
+  const differentValue = inBoth.filter(p => !_.isEqual(left[p], right[p]));
   const all = missing.concat(extra, differentValue);
   return {
     isDifferent: !!all.length,

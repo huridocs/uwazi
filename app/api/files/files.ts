@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import entities from 'api/entities';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { deleteUploadedFiles } from 'api/files/filesystem';
@@ -5,7 +7,6 @@ import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { deepEquals } from 'shared/data_utils/deepEquals';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { filesModel } from './filesModel';
@@ -14,7 +15,7 @@ const suggestionUpdateTrigger = (
   existingFile: FileType | null | undefined,
   savedFile: FileType
 ): boolean =>
-  !!existingFile && !deepEquals(existingFile.extractedMetadata, savedFile.extractedMetadata);
+  !!existingFile && !_.isEqual(existingFile.extractedMetadata, savedFile.extractedMetadata);
 
 export const files = {
   async save(_file: FileType, index = true) {
