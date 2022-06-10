@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { IStore } from 'app/istore';
 import { formater as formatter } from 'app/Metadata';
 import {
@@ -146,14 +147,42 @@ const aggregateRelationships = (
   const inheritingProperties = template
     .get('properties')
     ?.filter(property => property.get('inherit') !== undefined)
-    .map(property =>
-      properties.find(
+    .map(property => {
+      const inheritedProperty = properties.find(
         propertyDefinition => propertyDefinition._id === property.get('inherit').get('property')
-      )
-    );
+      );
+      return { parent: property?.toJS(), inheritedProperty };
+    });
 
-  const inheritingRelations = entity.relations.filter(relation => {});
-  const relationshipGroups = groupBy(inheritingRelations, 'template');
+  const targetProperties = entity.metadata.filter(property =>
+    inheritingProperties?.find(p => p.parent?.name === property.name)
+  );
+
+  const targetEntities = flatMap(targetProperties, property =>
+    property.value.map(value => value.relatedEntity)
+  );
+
+  const inheritingRelations = entity.relations.filter(relation =>
+    targetEntities.find(te => te.sharedId === relation.entityData.sharedId)
+  );
+
+  const inheritingPropertiesJS = inheritingProperties?.toJS().map(i => i.inheritedProperty);
+
+  const finalRelations = inheritingRelations.map(relation => {
+    relation.entityData.metadata = Object.keys(relation.entityData.metadata).reduce((memo, key) => {
+      const targetProperty = inheritingPropertiesJS.find(
+        inheritedProperty => inheritedProperty.name === key
+      );
+      if (targetProperty) {
+        const targetValue = relation.entityData.metadata[key];
+        return { ...memo, [key]: targetValue };
+      }
+      return memo;
+    }, {});
+    return relation;
+  });
+
+  const relationshipGroups = groupBy(finalRelations, 'template');
 
   const namedRelationshipGroups = Object.entries(relationshipGroups).reduce(
     (aggregated, [relationshipId, relations]) => {
