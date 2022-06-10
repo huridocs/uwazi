@@ -26,7 +26,13 @@ jest.mock('app/MetadataExtraction/PDFSidePanel', () => ({
   PDFSidePanel: (props: any) => (
     <button
       type="button"
-      onClick={() => props.handleSave({ title: 'abc', other_title: filledPropertyValue })}
+      onClick={() =>
+        props.handleSave({
+          title: 'abc',
+          other_title: filledPropertyValue,
+          __extractedMetadata: { selections: [] },
+        })
+      }
     >
       {mockedPDFSidePanelContent}
     </button>
