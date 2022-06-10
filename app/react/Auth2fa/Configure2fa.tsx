@@ -10,7 +10,12 @@ import { t, I18NLink, Translate } from 'app/I18N';
 import { enable2fa as enable2faAction, enable2faType } from './actions/actions';
 import Auth2faAPI from './Auth2faAPI';
 
-const QRCode = loadable(async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
+const QRCodeSVG = loadable(
+  async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),
+  {
+    resolveComponent: components => components.QRCodeSVG,
+  }
+);
 
 type Configure2faProps = {
   userUsing2fa: boolean;
@@ -120,11 +125,10 @@ class Configure2fa extends Component<Configure2faProps, State> {
                       </Translate>
                       <div className="qr-code">
                         {otpauth && (
-                          <QRCode
+                          <QRCodeSVG
                             value={otpauth}
                             level="Q"
                             includeMargin={false}
-                            renderAs="svg"
                             size={200}
                             bgColor="white"
                             fgColor="black"
