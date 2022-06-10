@@ -10,12 +10,10 @@ import fixtures, {
 import { checkIfReindex } from '../reindex';
 import templates from '../templates';
 
-const getAndUpdateTemplate = async props => {
-  const [template] = await templates.get({ _id: templateWithContents });
-  Object.keys(props).forEach(key => {
-    template[key] = props[key];
-  });
-  return { reindex: await checkIfReindex(template), template };
+const expectReindex = async (template, reindex) => {
+  expect(await checkIfReindex(template)).toBe(reindex);
+  await templates.save(template, 'en');
+  expect(search.indexEntities).toHaveBeenCalledTimes(reindex ? 1 : 0);
 };
 
 describe('reindex', () => {
@@ -29,177 +27,92 @@ describe('reindex', () => {
   });
 
   describe('Not Reindex', () => {
-    it('should not reindex if name has changed', async () => {
-      const { reindex, template } = await getAndUpdateTemplate({ name: 'Updated name' });
-
-      expect(reindex).toEqual(false);
-
-      await templates.save(template, 'en', reindex);
-      expect(search.indexEntities).not.toHaveBeenCalled();
-    });
-
-    it('should not reindex if entityViewPage has changed', async () => {
-      const { reindex, template } = await getAndUpdateTemplate({ entityViewPage: pageSharedId });
-
-      expect(reindex).toEqual(false);
-
-      await templates.save(template, 'en', reindex);
-      expect(search.indexEntities).not.toHaveBeenCalled();
-    });
-    it('should not reindex if color has changed', async () => {
-      const { reindex, template } = await getAndUpdateTemplate({ color: '#222222' });
-
-      expect(reindex).toEqual(false);
-
-      await templates.save(template, 'en', reindex);
-      expect(search.indexEntities).not.toHaveBeenCalled();
-    });
-    describe('Properties', () => {
-      const getAndUpdateTemplateProps = async props => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        Object.keys(props).forEach(key => {
-          template.properties[0][key] = props[key];
-        });
-        return { reindex: await checkIfReindex(template), template };
+    it.each([
+      { change: 'name has changed', templateChange: { name: 'Updated name' } },
+      { change: 'entityViewPage has changed', templateChange: { entityViewPage: pageSharedId } },
+      { change: 'color has changed', templateChange: { color: '#222222' } },
+    ])('should not reindex if $change', async ({ templateChange }) => {
+      let [template] = await templates.get({ _id: templateWithContents });
+      template = {
+        ...template,
+        ...templateChange,
       };
-      it('should not reindex if use as filter is checked', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ filter: true });
+      await expectReindex(template, false);
+    });
 
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
-      });
-      it('should not reindex if default filter is checked', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ defaultfilter: true });
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
-      });
-      it('should not reindex if hide label is checked', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ noLabel: true });
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
-      });
-      it('should not reindex if show in card is checked', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ showInCard: true });
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
-      });
-      it('should not reindex if required property is checked', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ required: true });
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
-      });
-      it('should not reindex if image full width is checked', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ fullWidth: true });
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
-      });
-      it('should not reindex if image style is changed', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({ style: 'cover' });
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
-      });
-      it('should not reindex if nested properties is changed', async () => {
-        const { reindex, template } = await getAndUpdateTemplateProps({
-          nestedProperties: ['something'],
-        });
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
+    describe('Properties', () => {
+      it.each([
+        { change: 'use as filter is checked', propChange: { filter: true } },
+        { change: 'default filter is checked', propChange: { defaultFilter: true } },
+        { change: 'hide label is checked', propChange: { noLabel: true } },
+        { change: 'show in card is checked', propChange: { showInCard: true } },
+        { change: 'required property is checked', propChange: { required: true } },
+        { change: 'image full width is checked', propChange: { fullWidth: true } },
+        { change: 'image style is changed', propChange: { style: 'cover' } },
+        { change: 'nested properties is changed', propChange: { nestedProperties: ['something'] } },
+      ])('should not reindex if $change', async ({ propChange }) => {
+        const [template] = await templates.get({ _id: templateWithContents });
+        template.properties[0] = { ...template.properties[0], ...propChange };
+        await expectReindex(template, false);
       });
 
       it('should not find structural changes on unchanged inherit', async () => {
         const [template] = await templates.get({ _id: templateInheritingFromAnother });
-        const reindex = await checkIfReindex(template);
-
-        expect(reindex).toEqual(false);
+        await expectReindex(template, false);
       });
     });
     describe('commonProperties', () => {
       it('should not reindex if priority sorting has changed', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.commonProperties[0].prioritySorting = true;
-
-        const reindex = await checkIfReindex(template);
-
-        expect(reindex).toEqual(false);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).not.toHaveBeenCalled();
+        await expectReindex(template, false);
       });
     });
   });
 
   describe('Reindex', () => {
     describe('Property', () => {
-      it('should reindex if a property has been deleted', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties = [template.properties[1], template.properties[2]];
-        const reindex = await checkIfReindex(template);
-        expect(reindex).toEqual(true);
+      let template;
 
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).toHaveBeenCalled();
+      beforeAll(async () => {
+        [template] = await templates.get({ _id: templateWithContents });
       });
-      it('should reindex when a property name has been changed', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties[0].name = 'New property name';
-        const reindex = await checkIfReindex(template);
-        expect(reindex).toEqual(true);
 
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).toHaveBeenCalled();
-      });
-      it('has a new property added', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.properties.push({ type: propertyTypes.text, label: 'text' });
-
-        const reindex = await checkIfReindex(template);
-        expect(reindex).toEqual(true);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).toHaveBeenCalled();
+      it.each([
+        {
+          change: 'a property has been deleted',
+          getProperties: props => props.slice(1),
+        },
+        {
+          change: 'a property name has been changed',
+          getProperties: props => [{ ...props[0], name: 'New property name' }, ...props.slice(1)],
+        },
+        {
+          change: 'new property has been added',
+          getProperties: props => props.concat([{ type: propertyTypes.text, label: 'text' }]),
+        },
+      ])('should reindex when $change', async ({ getProperties }) => {
+        const newTemplate = {
+          ...template,
+          properties: getProperties(template.properties),
+        };
+        await expectReindex(newTemplate, true);
       });
 
       it('should find structural changes on changed inherit', async () => {
-        const [template] = await templates.get({ _id: templateInheritingFromAnother });
-        template.properties[0].inherit = {
+        const [inheritingTemplate] = await templates.get({ _id: templateInheritingFromAnother });
+        inheritingTemplate.properties[0].inherit = {
           property: propertyToBeInherited2.toString(),
           type: 'text',
         };
-        expect(await checkIfReindex(template)).toEqual(true);
+        await expectReindex(inheritingTemplate, true);
       });
     });
     describe('commonProperty', () => {
       it('should reindex if commonProperty name has changed', async () => {
         const [template] = await templates.get({ _id: templateWithContents });
         template.commonProperties[0].label = 'Label Changed';
-        const reindex = await checkIfReindex(template);
-        expect(reindex).toEqual(true);
-
-        await templates.save(template, 'en', reindex);
-        expect(search.indexEntities).toHaveBeenCalled();
+        await expectReindex(template, true);
       });
     });
   });
