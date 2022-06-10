@@ -10,6 +10,7 @@ import {
   thesauris as thesauris2,
   entityData1RelationsAggregations,
   entityData2RelationsAggregations,
+  entityData4RelationsAggregations,
 } from './fixtures/pageAssetsRelationsAggregations';
 
 describe('pageAssets', () => {
@@ -215,6 +216,19 @@ describe('pageAssets', () => {
           expect(entityData2.inherited_relationships).toEqual(entityData2RelationsAggregations);
 
           expect(entityData3.inherited_relationships).toEqual({});
+        });
+
+        it('should separte same type of relations by template and only aggregated inherited metadata', () => {
+          const { entityData: entityData4 } = prepareAssets(
+            rawEntities[3],
+            dbTemplates2.get(3),
+            {
+              templates: dbTemplates2,
+              thesauris: thesauris2,
+            },
+            relationTypes
+          );
+          expect(entityData4.inherited_relationships).toEqual(entityData4RelationsAggregations);
         });
       });
     });

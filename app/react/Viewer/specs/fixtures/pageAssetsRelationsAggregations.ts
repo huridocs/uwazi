@@ -192,6 +192,81 @@ const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
       },
     ],
   },
+  {
+    _id: '62a34533100b901027a250e6',
+    color: '#A03AB1',
+    entityViewPage: 'hetu84j0k47',
+    name: 'Other document with relations',
+    properties: [
+      {
+        _id: '62a34533100b901027a250e7',
+        label: 'Multi-inherit text',
+        type: 'relationship',
+        inherit: {
+          property: '629e5634d4242c571392f43e',
+          type: 'text',
+        },
+        content: '5bfbb1a0471dd0fc16ada146',
+        relationType: '629e55f1d4242c571392d5fc',
+        showInCard: true,
+        name: 'multi-inherit_text',
+      },
+      {
+        _id: '62a34533100b901027a250e8',
+        label: 'Multi-inherit number',
+        type: 'relationship',
+        inherit: {
+          property: '629e5634d4242c571392f43f',
+          type: 'numeric',
+        },
+        content: '5bfbb1a0471dd0fc16ada146',
+        relationType: '629e55f1d4242c571392d5fc',
+        showInCard: true,
+        name: 'multi-inherit_number',
+      },
+      {
+        _id: '62a34533100b901027a250e9',
+        label: 'Multi-inherit geo',
+        type: 'relationship',
+        inherit: {
+          property: '629f900638ef5b3343848e81',
+          type: 'geolocation',
+        },
+        content: '629f900638ef5b3343848e80',
+        relationType: '629e55f1d4242c571392d5fc',
+        showInCard: true,
+        name: 'multi-inherit_geo',
+      },
+    ],
+    commonProperties: [
+      {
+        _id: '62a34533100b901027a250ea',
+        label: 'Title',
+        name: 'title',
+        isCommonProperty: true,
+        type: 'text',
+        prioritySorting: false,
+        generatedId: false,
+      },
+      {
+        _id: '62a34533100b901027a250eb',
+        label: 'Date added',
+        name: 'creationDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+      {
+        _id: '62a34533100b901027a250ec',
+        label: 'Date modified',
+        name: 'editDate',
+        isCommonProperty: true,
+        type: 'date',
+        prioritySorting: false,
+      },
+    ],
+    __v: 0,
+  },
 ]);
 
 const thesauris = Immutable.fromJS([
@@ -1232,6 +1307,382 @@ const rawEntities: EntitySchema[] = [
     },
     relations: [],
   },
+  {
+    _id: '62a3459f25e55412954d774b',
+    template: '62a34533100b901027a250e6',
+    title: 'Other iDcoument 1',
+    user: '58ada34d299e82674854510f',
+    creationDate: 1654867359008,
+    published: false,
+    editDate: 1654867359009,
+    language: 'en',
+    sharedId: 'k60i7wxo9vc',
+    permissions: [
+      {
+        refId: '58ada34d299e82674854510f',
+        type: 'user',
+        level: 'write',
+      },
+    ],
+    documents: [],
+    attachments: [],
+    relations: [
+      {
+        template: '629e55f1d4242c571392d5fc',
+        entityData: {
+          _id: '629e56c4d4242c571392fc6d',
+          metadata: {
+            text: [
+              {
+                value: 'Three',
+              },
+            ],
+            numeric: [
+              {
+                value: 3,
+              },
+            ],
+            select: [
+              {
+                value: 'e5cgnczmfys',
+                label: 'Option C',
+              },
+            ],
+            multi_select: [
+              {
+                value: 'e5cgnczmfys',
+                label: 'Option C',
+              },
+              {
+                value: 'aot0horszdt',
+                label: 'Option A',
+              },
+            ],
+          },
+          template: '5bfbb1a0471dd0fc16ada146',
+          title: 'Document 3',
+          creationDate: 1654544068027,
+          published: false,
+          sharedId: '844ts659a7',
+          documents: [],
+          attachments: [],
+        },
+        _id: '62a3459f25e55412954d7763',
+        entity: '844ts659a7',
+        hub: '62a3459f25e55412954d775a',
+      },
+      {
+        template: null,
+        entityData: {
+          _id: '62a3459f25e55412954d774b',
+          metadata: {
+            'multi-inherit_text': [
+              {
+                value: 'f27fwxhlsqo',
+                label: 'Document 1',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 'One',
+                  },
+                ],
+                inheritedType: 'text',
+              },
+              {
+                value: '844ts659a7',
+                label: 'Document 3',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 'Three',
+                  },
+                ],
+                inheritedType: 'text',
+              },
+            ],
+            'multi-inherit_number': [
+              {
+                value: 'f27fwxhlsqo',
+                label: 'Document 1',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 1,
+                  },
+                ],
+                inheritedType: 'numeric',
+              },
+              {
+                value: '844ts659a7',
+                label: 'Document 3',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 3,
+                  },
+                ],
+                inheritedType: 'numeric',
+              },
+            ],
+            'multi-inherit_geo': [
+              {
+                value: '3zeqx3aptzi',
+                label: 'Peru',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: {
+                      lat: -10.189511603370525,
+                      lon: -74.97070312500001,
+                      label: '',
+                    },
+                  },
+                ],
+                inheritedType: 'geolocation',
+              },
+            ],
+          },
+          template: '62a34533100b901027a250e6',
+          title: 'Other iDcoument 1',
+          creationDate: 1654867359008,
+          published: false,
+          sharedId: 'k60i7wxo9vc',
+          documents: [],
+          attachments: [],
+        },
+        _id: '62a3459f25e55412954d7761',
+        entity: 'k60i7wxo9vc',
+        hub: '62a3459f25e55412954d775a',
+      },
+      {
+        template: '629e55f1d4242c571392d5fc',
+        entityData: {
+          _id: '629e56a1d4242c571392fc07',
+          metadata: {
+            text: [
+              {
+                value: 'One',
+              },
+            ],
+            numeric: [
+              {
+                value: 1,
+              },
+            ],
+            select: [
+              {
+                value: 'aot0horszdt',
+                label: 'Option A',
+              },
+            ],
+            multi_select: [
+              {
+                value: 'e5cgnczmfys',
+                label: 'Option C',
+              },
+              {
+                value: 'aot0horszdt',
+                label: 'Option A',
+              },
+            ],
+          },
+          template: '5bfbb1a0471dd0fc16ada146',
+          title: 'Document 1',
+          creationDate: 1654544033340,
+          published: false,
+          sharedId: 'f27fwxhlsqo',
+          documents: [],
+          attachments: [],
+        },
+        _id: '62a3459f25e55412954d7762',
+        entity: 'f27fwxhlsqo',
+        hub: '62a3459f25e55412954d775a',
+      },
+      {
+        template: '629e55f1d4242c571392d5fc',
+        entityData: {
+          _id: '629f907f38ef5b334384a919',
+          metadata: {
+            select: [
+              {
+                value: '92lfe31qc3n',
+                label: 'Option B',
+              },
+            ],
+            geolocation_geolocation: [
+              {
+                value: {
+                  lat: -10.189511603370525,
+                  lon: -74.97070312500001,
+                  label: '',
+                },
+              },
+            ],
+          },
+          template: '629f900638ef5b3343848e80',
+          title: 'Peru',
+          creationDate: 1654624383651,
+          published: false,
+          sharedId: '3zeqx3aptzi',
+          documents: [],
+          attachments: [],
+        },
+        _id: '62a3459f25e55412954d7765',
+        entity: '3zeqx3aptzi',
+        hub: '62a3459f25e55412954d775c',
+      },
+      {
+        template: null,
+        entityData: {
+          _id: '62a3459f25e55412954d774b',
+          metadata: {
+            'multi-inherit_text': [
+              {
+                value: 'f27fwxhlsqo',
+                label: 'Document 1',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 'One',
+                  },
+                ],
+                inheritedType: 'text',
+              },
+              {
+                value: '844ts659a7',
+                label: 'Document 3',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 'Three',
+                  },
+                ],
+                inheritedType: 'text',
+              },
+            ],
+            'multi-inherit_number': [
+              {
+                value: 'f27fwxhlsqo',
+                label: 'Document 1',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 1,
+                  },
+                ],
+                inheritedType: 'numeric',
+              },
+              {
+                value: '844ts659a7',
+                label: 'Document 3',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: 3,
+                  },
+                ],
+                inheritedType: 'numeric',
+              },
+            ],
+            'multi-inherit_geo': [
+              {
+                value: '3zeqx3aptzi',
+                label: 'Peru',
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: {
+                      lat: -10.189511603370525,
+                      lon: -74.97070312500001,
+                      label: '',
+                    },
+                  },
+                ],
+                inheritedType: 'geolocation',
+              },
+            ],
+          },
+          template: '62a34533100b901027a250e6',
+          title: 'Other iDcoument 1',
+          creationDate: 1654867359008,
+          published: false,
+          sharedId: 'k60i7wxo9vc',
+          documents: [],
+          attachments: [],
+        },
+        _id: '62a3459f25e55412954d7764',
+        entity: 'k60i7wxo9vc',
+        hub: '62a3459f25e55412954d775c',
+      },
+    ],
+    metadata: {
+      'multi-inherit_text': [
+        {
+          value: 'f27fwxhlsqo',
+          label: 'Document 1',
+          type: 'entity',
+          inheritedValue: [
+            {
+              value: 'One',
+            },
+          ],
+          inheritedType: 'text',
+        },
+        {
+          value: '844ts659a7',
+          label: 'Document 3',
+          type: 'entity',
+          inheritedValue: [
+            {
+              value: 'Three',
+            },
+          ],
+          inheritedType: 'text',
+        },
+      ],
+      'multi-inherit_number': [
+        {
+          value: 'f27fwxhlsqo',
+          label: 'Document 1',
+          type: 'entity',
+          inheritedValue: [
+            {
+              value: 1,
+            },
+          ],
+          inheritedType: 'numeric',
+        },
+        {
+          value: '844ts659a7',
+          label: 'Document 3',
+          type: 'entity',
+          inheritedValue: [
+            {
+              value: 3,
+            },
+          ],
+          inheritedType: 'numeric',
+        },
+      ],
+      'multi-inherit_geo': [
+        {
+          value: '3zeqx3aptzi',
+          label: 'Peru',
+          type: 'entity',
+          inheritedValue: [
+            {
+              value: {
+                lat: -10.189511603370525,
+                lon: -74.97070312500001,
+                label: '',
+              },
+            },
+          ],
+          inheritedType: 'geolocation',
+        },
+      ],
+    },
+  },
 ];
 
 const relationTypes = [
@@ -1343,6 +1794,36 @@ const entityData2RelationsAggregations = {
   ],
 };
 
+const entityData4RelationsAggregations = {
+  'Multi-inherit-5bfbb1a0471dd0fc16ada146': [
+    {
+      title: 'Document 3',
+      sharedId: '844ts659a7',
+      metadata: {
+        text: ['Three'],
+        numeric: [3],
+      },
+    },
+    {
+      title: 'Document 1',
+      sharedId: 'f27fwxhlsqo',
+      metadata: {
+        text: ['One'],
+        numeric: [1],
+      },
+    },
+  ],
+  'Multi-inherit-629f900638ef5b3343848e80': [
+    {
+      title: 'Peru',
+      sharedId: '3zeqx3aptzi',
+      metadata: {
+        geolocation_geolocation: [{ lat: -10.189511603370525, lon: -74.97070312500001, label: '' }],
+      },
+    },
+  ],
+};
+
 export {
   dbTemplates,
   rawEntities,
@@ -1350,4 +1831,5 @@ export {
   relationTypes,
   entityData1RelationsAggregations,
   entityData2RelationsAggregations,
+  entityData4RelationsAggregations,
 };

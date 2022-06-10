@@ -138,9 +138,9 @@ const aggregateRelationships = (
       if (relationship) {
         const result = aggregateByTemplate(relations, relationship);
 
-        return { ...result, ...aggregated };
+        return { ...aggregated, ...result };
       }
-      return {};
+      return aggregated;
     },
     {}
   );
