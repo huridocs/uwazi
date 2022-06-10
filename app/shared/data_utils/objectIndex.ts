@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const enum IndexTargetTypes {
   one = 'one',
   array = 'array',
@@ -6,25 +8,10 @@ const enum IndexTargetTypes {
 
 type IndexTypes = string | number;
 
-const IndexTargetImplementations = {
-  one: {
-    default: () => undefined,
-    add: (indexed: any, key: IndexTypes, data: any) => {
-      if (!indexed[key]) indexed[key] = data;
-    },
-  },
-  array: {
-    default: () => [],
-    add: (indexed: any, key: IndexTypes, data: any) => {
-      indexed[key].push(data);
-    },
-  },
-  set: {
-    default: () => new Set(),
-    add: (indexed: any, key: IndexTypes, data: any) => {
-      indexed[key].add(data);
-    },
-  },
+const IndexTargetTransformations = {
+  one: (group: any[]) => (group.length ? group[0] : undefined),
+  array: (group: any[]) => group,
+  set: (group: any[]) => new Set(group),
 };
 
 function objectIndex(
@@ -33,17 +20,15 @@ function objectIndex(
   dataTransformation: (data: any) => any = (data: any) => data,
   targetType: IndexTargetTypes = IndexTargetTypes.one
 ) {
-  const target = IndexTargetImplementations[targetType];
-  const indexed: {
-    [k in IndexTypes]: any;
-  } = {};
-  dataArray.forEach(data => {
-    const key = indexingFunction(data);
-    const value = dataTransformation(data);
-    if (!(key in indexed)) indexed[key] = target.default();
-    target.add(indexed, key, value);
-  });
-  return indexed;
+  // const  = IndexTargetTransformations[targetType];
+  const grouped = _.groupBy(dataArray, indexingFunction);
+  const transformed = Object.fromEntries(
+    Object.entries(grouped).map(([key, group]) => [
+      key,
+      IndexTargetTransformations[targetType](group.map(value => dataTransformation(value))),
+    ])
+  );
+  return transformed;
 }
 
 export { IndexTargetTypes, objectIndex };

@@ -23,19 +23,19 @@ const sourceArray = [
 
 describe('objectIndex()', () => {
   it('should index one to one by default, keep the first option on overlap', () => {
-    expect(objectIndex(sourceArray, d => d.text)).toMatchObject({
+    expect(objectIndex(sourceArray, d => d.text)).toEqual({
       A: sourceArray[0],
       B: sourceArray[1],
       C: sourceArray[2],
       D: sourceArray[3],
     });
-    expect(objectIndex(sourceArray, d => d.nested.value)).toMatchObject({
+    expect(objectIndex(sourceArray, d => d.nested.value)).toEqual({
       NA: sourceArray[0],
       NB: sourceArray[1],
       NC: sourceArray[2],
       ND: sourceArray[3],
     });
-    expect(objectIndex(sourceArray, d => d.number)).toMatchObject({
+    expect(objectIndex(sourceArray, d => d.number)).toEqual({
       0: sourceArray[0],
       1: sourceArray[2],
     });
@@ -48,7 +48,7 @@ describe('objectIndex()', () => {
         d => d.text,
         d => d.nested.value
       )
-    ).toMatchObject({
+    ).toEqual({
       A: 'NA',
       B: 'NB',
       C: 'NC',
@@ -64,7 +64,7 @@ describe('objectIndex()', () => {
         d => d.text,
         IndexTargetTypes.array
       )
-    ).toMatchObject({
+    ).toEqual({
       0: ['A', 'B'],
       1: ['C', 'D'],
     });
@@ -76,9 +76,9 @@ describe('objectIndex()', () => {
         sourceArray,
         d => d.number,
         d => d.text,
-        IndexTargetTypes.array
+        IndexTargetTypes.set
       )
-    ).toMatchObject({
+    ).toEqual({
       0: new Set(['A', 'B']),
       1: new Set(['C', 'D']),
     });
