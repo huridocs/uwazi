@@ -79,14 +79,16 @@ header {
   padding: 0;
   margin: 0;
   list-style: none;
+
   @media (max-width: 1023px) {
     position: fixed;
-    width: 360px;
+    width: 85vw;
+    max-width: 360px;
+    min-width: 250px;
     top: 50px;
     height: calc(100% - 50px);
     background: $c-theme;
     background-color: #eceff1;
-    max-width: 100%;
     border-top: 1px solid transparentize($c-black, 0.6);
     overflow: auto;
     transition: all 225ms;
@@ -114,6 +116,28 @@ header {
       // overflow: hidden;
       white-space: nowrap;
     }
+  }
+}
+
+.menuNav::before {
+  @media (max-width: 1023px) {
+    top: 50px;
+    left: calc(min(85vw, 360px));
+    z-index: 10;
+
+    content: '';
+    display: block;
+    opacity: 0.4;
+    min-height: 60%;
+    width: 120%;
+    overflow: visible;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    position: fixed;
+    background-color: #c2c2c2;
+    -webkit-filter: contrast(125%) brightness(75%);
+    filter: contrast(125%) brightness(75%);
   }
 }
 
@@ -440,6 +464,11 @@ header {
   }
   @media (max-width: 1023px) {
     padding: 20px 15px;
+    &.only-language {
+      .rw-list-option:last-child {
+        display: none;
+      }
+    }
   }
   .menuNav-btn {
     font-size: $f-size-sm;
