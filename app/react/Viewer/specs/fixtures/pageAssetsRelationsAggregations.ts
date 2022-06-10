@@ -237,6 +237,13 @@ const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
         showInCard: true,
         name: 'multi-inherit_geo',
       },
+      {
+        _id: '62a34533100b901027a65bh4',
+        label: 'Plaintext',
+        type: 'text',
+        showInCard: true,
+        name: 'plaintext',
+      },
     ],
     commonProperties: [
       {

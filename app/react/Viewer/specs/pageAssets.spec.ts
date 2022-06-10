@@ -197,18 +197,18 @@ describe('pageAssets', () => {
       });
 
       describe('aggregated relations data', () => {
-        const [entityData1, entityData2, entityData3] = rawEntities.map(rawEntity => {
-          const { entityData: result } = prepareAssets(
-            rawEntity,
-            dbTemplates2.get(0),
-            {
-              templates: dbTemplates2,
-              thesauris: thesauris2,
-            },
-            relationTypes
-          );
-          return result;
-        });
+        // const [entityData1, entityData2, entityData3] = rawEntities.map(rawEntity => {
+        //   const { entityData: result } = prepareAssets(
+        //     rawEntity,
+        //     dbTemplates2.get(0),
+        //     {
+        //       templates: dbTemplates2,
+        //       thesauris: thesauris2,
+        //     },
+        //     relationTypes
+        //   );
+        //   return result;
+        // });
 
         it('should contain a inherited_relationships entry for every multi-inherit type', () => {
           expect(entityData1.inherited_relationships).toEqual(entityData1RelationsAggregations);
@@ -218,7 +218,7 @@ describe('pageAssets', () => {
           expect(entityData3.inherited_relationships).toEqual({});
         });
 
-        it('should separte same type of relations by template and only aggregated inherited metadata', () => {
+        fit('should separte same type of relations by template and only aggregated inherited metadata', () => {
           const { entityData: entityData4 } = prepareAssets(
             rawEntities[3],
             dbTemplates2.get(3),
