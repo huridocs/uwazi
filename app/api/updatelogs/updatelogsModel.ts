@@ -10,10 +10,10 @@ const updateLogSchema = new mongoose.Schema({
 });
 
 export interface UpdateLog extends mongoose.Document {
-  timestamp: Number;
-  namespace: String;
+  timestamp: number;
+  namespace: string;
   mongoId: ObjectIdSchema;
-  deleted: Boolean;
+  deleted: boolean;
 }
 
 export const model = new MultiTenantMongooseModel<UpdateLog>('updatelogs', updateLogSchema);
