@@ -1899,10 +1899,10 @@
     socket.io-adapter "~2.3.0"
     uid2 "0.0.3"
 
-"@socket.io/redis-emitter@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/@socket.io/redis-emitter/-/redis-emitter-4.1.0.tgz"
-  integrity sha512-zZkoVfWY3zlbGk8sXFBqQy7CdH/Zg9cPq1EYuIdpVFybEWKfFxyguqsInMZCvjwotAsaICnIO2d9s8/DmY2DAw==
+"@socket.io/redis-emitter@4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@socket.io/redis-emitter/-/redis-emitter-4.1.1.tgz#f274cf03cc9de7961b3224682479c27dc0ad9ade"
+  integrity sha512-N0wfcfcVJvPF1AjIlZ5efxGCz+8uY6qeCwIaRU+QUCNdqvtXQtlC/MtUJQCwVqs1MWP6Bv3TDuZGC04gIj7YuQ==
   dependencies:
     debug "~4.3.1"
     notepack.io "~2.1.0"
