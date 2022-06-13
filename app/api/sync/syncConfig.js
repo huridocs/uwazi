@@ -4,7 +4,7 @@ import syncsModel from './syncsModel';
 import { ProcessNamespaces } from './processNamespaces';
 
 const sanitizeConfig = async config =>
-  Object.keys(config).reduce(async (prev, key) => {
+  Object.keys(config || {}).reduce(async (prev, key) => {
     const sanitized = await prev;
     if (key === 'templates') {
       const templatesData = await models.templates.get({});
@@ -80,7 +80,7 @@ export default async (config, targetName) => {
   return {
     lastSync,
 
-    config: await sanitizeConfig(config),
+    config: await sanitizeConfig(config.config),
 
     async lastChanges() {
       const approvedCollections = getApprovedCollections(this.config);

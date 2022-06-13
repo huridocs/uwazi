@@ -65,6 +65,10 @@ export const EntitySuggestions = ({
     return className;
   };
 
+  const isRequiredFieldWithoutSuggestion = (row: EntitySuggestionType) =>
+    (row.propertyName === 'title' && row.suggestedValue === '') ||
+    (reviewedProperty.required && row.suggestedValue === '');
+
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.values;
     const { state } = suggestion;
@@ -80,7 +84,8 @@ export const EntitySuggestions = ({
             state === SuggestionState.obsolete ||
             state === SuggestionState.labelMatch ||
             state === SuggestionState.valueMatch ||
-            state === SuggestionState.error
+            state === SuggestionState.error ||
+            isRequiredFieldWithoutSuggestion(row.original)
           }
           onClick={async () => showConfirmationModal(row)}
         >
@@ -156,15 +161,51 @@ export const EntitySuggestions = ({
     toggleAllRowsSelected(false);
   };
 
+  const userHasSelectedLabel = (entity: any) => {
+    if (entity.__extractedMetadata.selections.length === 0) return false;
+    const selection = entity.__extractedMetadata.selections.find(
+      (s: any) => s.name === reviewedProperty.name
+    );
+    if (!selection) return false;
+    return selection.selection.text === entity.title;
+  };
+
+  const calculateTemporaryState = (
+    entity: ClientEntitySchema,
+    suggestedValue: string,
+    state: SuggestionState
+  ) => {
+    if (state === SuggestionState.obsolete) return state;
+    const selected = userHasSelectedLabel(entity);
+    const currentValue = entity.title;
+    if (suggestedValue === '') {
+      return selected ? SuggestionState.labelEmpty : SuggestionState.valueEmpty;
+    }
+
+    if (currentValue === suggestedValue) {
+      return selected ? SuggestionState.labelMatch : SuggestionState.valueMatch;
+    }
+
+    return selected ? SuggestionState.labelMismatch : SuggestionState.valueMismatch;
+  };
+
+  // eslint-disable-next-line max-statements
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
-    const changedPropertyValue =
-      entity[reviewedProperty.name] || entity.metadata?.[reviewedProperty.name];
+    const changedPropertyValue = (entity[reviewedProperty.name] ||
+      entity.metadata?.[reviewedProperty.name]) as string;
     selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
       ? changedPropertyValue[0].value || '-'
       : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
+    const { suggestedValue, state } = selectedFlatRows[0].original;
+    selectedFlatRows[0].values.state = calculateTemporaryState(
+      entity,
+      suggestedValue as string,
+      state as SuggestionState
+    );
+    selectedFlatRows[0].setState({});
   };
 
   const _trainModel = async () => {
