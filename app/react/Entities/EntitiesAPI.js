@@ -2,13 +2,14 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 
 export default {
-  get(requestParams = new RequestParams()) {
+  get(requestParams = new RequestParams(), language) {
     const params = requestParams.add({
       include:
         requestParams.data && requestParams.data.include
           ? requestParams.data.include.concat(['permissions'])
           : ['permissions'],
     });
+    if (language) api.locale(language);
     return api.get('entities', params).then(response => response.json.rows);
   },
 

@@ -19,11 +19,11 @@ function mapDispatchToProps(dispatch, ownProps) {
   return bindActionCreators(
     {
       changeTemplate: actions.changeTemplate,
-      onSubmit: doc => (disp, state) =>
-        saveDocument(doc, fileID)(disp, state).then(() => {
-          disp(relationshipActions.reloadRelationships(doc.sharedId));
-          onEntitySave(doc);
-        }),
+      onSubmit: doc => async (disp, state) => {
+        const updateDoc = await saveDocument(doc, fileID)(disp, state);
+        disp(relationshipActions.reloadRelationships(doc.sharedId));
+        onEntitySave(updateDoc);
+      },
     },
     dispatch
   );
