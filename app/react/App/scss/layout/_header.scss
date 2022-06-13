@@ -374,6 +374,16 @@ header {
     min-width: 150px;
     width: 100%;
     gap: 10px;
+    height: $header-height;
+
+    .rw-popup {
+      min-width: 150px;
+      width: 20ch;
+
+      ul {
+        max-height: 50vh;
+      }
+    }
 
     @media (max-width: 1023px) {
       border: 1px solid rgba(0, 0, 0, 0.2);
@@ -410,9 +420,10 @@ header {
     .rw-input,
     .rw-select,
     .rw-btn-select {
+      cursor: pointer;
       @media (min-width: 1024px) {
         background-color: $c-theme;
-        color: $c-white;
+        color: $c-white;     
         height: $header-height;
       }
       @media (max-width: 1023px) {
@@ -436,15 +447,21 @@ header {
     }
 
     .rw-list-option {
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: break-spaces;
       overflow: hidden;
+      padding: 0.4em 0.75em;
+    }
+
+    button.singleItem {
+      padding-left: 1em;
     }
 
     .singleItem {
       @media (min-width: 1024px) {
         color: $c-white;
         background-color: $c-theme;
+        color: $c-white;
+        align-self: center;
       }
       @media (max-width: 1023px) {
         background-color: #eceff1;
@@ -461,6 +478,7 @@ header {
     float: left;
     border-top: 0;
     border-right: 1px solid transparentize($c-black, 0.6);
+    border-left: 1px solid transparentize($c-black, 0.6);
   }
   @media (max-width: 1023px) {
     padding: 20px 15px;

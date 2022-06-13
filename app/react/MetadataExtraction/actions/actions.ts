@@ -8,9 +8,9 @@ import { acceptEntitySuggestion } from 'app/MetadataExtraction/SuggestionsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import scroller from 'app/Viewer/utils/Scroller';
 
-const fetchEntity = async (entitySharedId: string) => {
-  const entityRequest = new RequestParams({ sharedId: entitySharedId });
-  return EntitiesAPI.get(entityRequest);
+const fetchEntity = async (entityId: string, language: string) => {
+  const entityRequest = new RequestParams({ _id: entityId });
+  return EntitiesAPI.get(entityRequest, language);
 };
 
 const fetchFile = async (fileId: string) => {

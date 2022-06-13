@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();
@@ -84,7 +84,7 @@ const file4 = db.id();
 const file5 = db.id();
 const customUpload = db.id();
 
-export default {
+export const fixtures: DBFixture = {
   syncs: [
     {
       lastSync: 8999,
@@ -426,9 +426,12 @@ export default {
         t1Property1: [{ value: 'sync property 1' }],
         t1Property2: [{ value: 'sync property 2' }],
         t1Property3: [{ value: 'sync property 3' }],
-        t1Thesauri1Select: [{ value: thesauri1Value2 }],
-        t1Thesauri2Select: [{ value: db.id() }],
-        t1Thesauri3MultiSelect: [{ value: thesauri3Value2 }, { value: thesauri3Value1 }],
+        t1Thesauri1Select: [{ value: thesauri1Value2.toString() }],
+        t1Thesauri2Select: [{ value: db.id().toString() }],
+        t1Thesauri3MultiSelect: [
+          { value: thesauri3Value2.toString() },
+          { value: thesauri3Value1.toString() },
+        ],
       },
     },
     {
@@ -439,7 +442,7 @@ export default {
       metadata: {
         t1Property1: [{ value: 'another doc property 1' }],
         t1Property2: [{ value: 'another doc property 2' }],
-        t1Thesauri3MultiSelect: [{ value: thesauri3Value2 }],
+        t1Thesauri3MultiSelect: [{ value: thesauri3Value2.toString() }],
       },
     },
     {
@@ -482,7 +485,7 @@ export default {
       _id: newDoc10,
       sharedId: 'newDoc10SharedId',
       title: 'New Doc 10',
-      template: null,
+      template: undefined,
     },
   ],
 
@@ -672,6 +675,7 @@ export default {
   dictionaries: [
     {
       _id: thesauri1,
+      name: 'thesauri1',
       values: [
         {
           _id: thesauri1Value1,
@@ -685,9 +689,11 @@ export default {
     },
     {
       _id: thesauri2,
+      name: 'thesauri2',
     },
     {
       _id: thesauri3,
+      name: 'thesauri3',
       values: [
         {
           _id: thesauri3Value1,
@@ -701,9 +707,11 @@ export default {
     },
     {
       _id: thesauri4,
+      name: 'thesauri4',
     },
     {
       _id: thesauri5,
+      name: 'thesauri5',
     },
   ],
 
@@ -781,7 +789,7 @@ export default {
   settings: [
     {
       _id: settingsId,
-      languages: [{ key: 'es', default: true }],
+      languages: [{ key: 'es', default: true, label: 'es' }],
       sync: [
         {
           url: 'url1',
