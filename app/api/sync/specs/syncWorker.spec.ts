@@ -94,20 +94,6 @@ describe('syncWorker', () => {
       },
     });
 
-  const expectCallToEqual = (call: any, namespace: string, data: object, name = 'slave1') => {
-    expect(call).toEqual([
-      [`url-${name}/api/sync`, { namespace, data }, { cookie: `${name} cookie` }],
-    ]);
-  };
-
-  const expectCallWith = (spy: jasmine.Spy, namespace: string, data: object, name = 'slave1') => {
-    expect(spy).toHaveBeenCalledWith(
-      `url-${name}/api/sync`,
-      { namespace, data },
-      { cookie: `${name} cookie` }
-    );
-  };
-
   const getCallsToIds = (namespace: string, ids: ObjectIdSchema[]) => {
     const namespaceCallsOnly = requestPostSpy.calls
       .allArgs()
@@ -174,7 +160,7 @@ describe('syncWorker', () => {
             [deletedTemplate.toString()]: [],
             [template2.toString()]: [],
           },
-          relationTypes: [relationtype1.toString(), deletedRelationtype.toString()],
+          relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
         },
       };
       await syncWorker.syncronize(syncConfig);
@@ -196,7 +182,7 @@ describe('syncWorker', () => {
               [deletedTemplate.toString()]: [],
               [template2.toString()]: [],
             },
-            relationTypes: [relationtype1.toString(), deletedRelationtype.toString()],
+            relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
           },
         },
       ]);
@@ -222,7 +208,7 @@ describe('syncWorker', () => {
             [deletedTemplate.toString()]: [],
             [template2.toString()]: [],
           },
-          relationTypes: [relationtype1.toString(), deletedRelationtype.toString()],
+          relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
         },
       });
 
@@ -260,10 +246,19 @@ describe('syncWorker', () => {
 
         expect(callsCount).toBe(1);
 
-        expectCallToEqual(settingsCall, 'settings', {
-          _id: settingsId,
-          languages: [{ key: 'es', default: true }],
-        });
+        expect(settingsCall).toEqual([
+          [
+            `url-${'slave1'}/api/sync`,
+            {
+              namespace: 'settings',
+              data: {
+                _id: settingsId,
+                languages: [{ key: 'es', default: true, label: 'es' }],
+              },
+            },
+            { cookie: `${'slave1'} cookie` },
+          ],
+        ]);
       });
     });
 
@@ -292,18 +287,32 @@ describe('syncWorker', () => {
 
         expect(callsCount).toBe(2);
 
-        expectCallToEqual(
-          template1Call,
-          'templates',
-          expect.objectContaining({
-            properties: [
-              expect.objectContaining({ _id: template1Property1 }),
-              expect.objectContaining({ _id: template1Property3 }),
-            ],
-          })
-        );
+        expect(template1Call).toEqual([
+          [
+            `url-${'slave1'}/api/sync`,
+            {
+              namespace: 'templates',
+              data: expect.objectContaining({
+                properties: [
+                  expect.objectContaining({ _id: template1Property1 }),
+                  expect.objectContaining({ _id: template1Property3 }),
+                ],
+              }),
+            },
+            { cookie: `${'slave1'} cookie` },
+          ],
+        ]);
 
-        expectCallToEqual(template2Call, 'templates', expect.objectContaining({ _id: template2 }));
+        expect(template2Call).toEqual([
+          [
+            `url-${'slave1'}/api/sync`,
+            {
+              namespace: 'templates',
+              data: expect.objectContaining({ _id: template2 }),
+            },
+            { cookie: `${'slave1'} cookie` },
+          ],
+        ]);
       });
 
       it('should not sync the entity view page foreign key', async () => {
@@ -379,23 +388,25 @@ describe('syncWorker', () => {
 
         expect(callsCount).toBe(3);
 
-        expectCallToEqual(
-          thesauri1Call,
-          'dictionaries',
-          expect.objectContaining({
-            values: [
-              expect.objectContaining({ _id: thesauri1Value1 }),
-              expect.objectContaining({ _id: thesauri1Value2 }),
-            ],
-          })
-        );
+        expect(thesauri1Call).toMatchObject([
+          [
+            `url-${'slave1'}/api/sync`,
+            {
+              namespace: 'dictionaries',
+              data: {
+                values: [{ _id: thesauri1Value1 }, { _id: thesauri1Value2 }],
+              },
+            },
+            { cookie: `${'slave1'} cookie` },
+          ],
+        ]);
 
         expect(thesauri3Call).toBeDefined();
         expect(thesauri5Call).toBeDefined();
-        expectCallWith(
-          requestDeleteSpy,
-          'dictionaries',
-          expect.objectContaining({ _id: thesauri4 })
+        expect(requestDeleteSpy).toHaveBeenCalledWith(
+          `url-${'slave1'}/api/sync`,
+          { namespace: 'dictionaries', data: expect.objectContaining({ _id: thesauri4 }) },
+          { cookie: `${'slave1'} cookie` }
         );
       });
     });
@@ -410,7 +421,7 @@ describe('syncWorker', () => {
               [template1.toString()]: [template1PropertyRelationship1.toString()],
               [template2.toString()]: [template2PropertyRelationship2.toString()],
             },
-            relationTypes: [relationtype1.toString(), relationtype3.toString()],
+            relationtypes: [relationtype1.toString(), relationtype3.toString()],
           },
         });
 
@@ -480,7 +491,7 @@ describe('syncWorker', () => {
               ],
               [template2.toString()]: [template2PropertyRelationship2.toString()],
             },
-            relationTypes: [relationtype1.toString()],
+            relationtypes: [relationtype1.toString()],
           },
         });
 
@@ -607,25 +618,35 @@ describe('syncWorker', () => {
 
         expect(callsCount).toBe(2);
 
-        expectCallToEqual(
-          entity1Call,
-          'entities',
-          expect.objectContaining({
-            metadata: {
-              t1Property2: [{ value: 'sync property 2' }],
-              t1Property3: [{ value: 'sync property 3' }],
-              t1Thesauri1Select: [{ value: thesauri1Value2 }],
+        expect(entity1Call).toMatchObject([
+          [
+            `url-${'slave1'}/api/sync`,
+            {
+              namespace: 'entities',
+              data: {
+                metadata: {
+                  t1Property2: [{ value: 'sync property 2' }],
+                  t1Property3: [{ value: 'sync property 3' }],
+                  t1Thesauri1Select: [{ value: thesauri1Value2.toString() }],
+                },
+              },
             },
-          })
-        );
+            { cookie: `${'slave1'} cookie` },
+          ],
+        ]);
 
-        expectCallToEqual(
-          entity2Call,
-          'entities',
-          expect.objectContaining({
-            metadata: { t1Property2: [{ value: 'another doc property 2' }] },
-          })
-        );
+        expect(entity2Call).toMatchObject([
+          [
+            `url-${'slave1'}/api/sync`,
+            {
+              namespace: 'entities',
+              data: {
+                metadata: { t1Property2: [{ value: 'another doc property 2' }] },
+              },
+            },
+            { cookie: `${'slave1'} cookie` },
+          ],
+        ]);
 
         expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
           namespace: 'entities',
@@ -691,10 +712,10 @@ describe('syncWorker', () => {
 
             await syncWorker.syncronize(filterConfig);
 
-            expectCallWith(
-              requestDeleteSpy,
-              'entities',
-              expect.objectContaining({ _id: savedEntity._id })
+            expect(requestDeleteSpy).toHaveBeenCalledWith(
+              `url-${'slave1'}/api/sync`,
+              { namespace: 'entities', data: expect.objectContaining({ _id: savedEntity._id }) },
+              { cookie: `${'slave1'} cookie` }
             );
           });
         });
@@ -711,7 +732,7 @@ describe('syncWorker', () => {
               [template1.toString()]: [],
               [template2.toString()]: [],
             },
-            relationTypes: [relationtype1.toString(), relationtype3.toString()],
+            relationtypes: [relationtype1.toString(), relationtype3.toString()],
           },
         });
 
@@ -725,7 +746,7 @@ describe('syncWorker', () => {
         expect(relationship2Call).toBeDefined();
       });
 
-      it('should allow including null relationTypes', async () => {
+      it('should allow including null relationtypes', async () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
@@ -734,7 +755,7 @@ describe('syncWorker', () => {
               [template1.toString()]: [],
             },
             // @ts-ignore
-            relationTypes: [null],
+            relationtypes: [null],
           },
         });
 
@@ -813,11 +834,10 @@ describe('syncWorker', () => {
       [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
       expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(22000);
-      expectCallWith(
-        requestPostSpy,
-        'entities',
-        expect.objectContaining({ _id: newDoc2 }),
-        'slave3'
+      expect(requestPostSpy).toHaveBeenCalledWith(
+        `url-${'slave3'}/api/sync`,
+        { namespace: 'entities', data: expect.objectContaining({ _id: newDoc2 }) },
+        { cookie: `${'slave3'} cookie` }
       );
     });
 

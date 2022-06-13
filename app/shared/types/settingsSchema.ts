@@ -96,7 +96,7 @@ const settingsSyncSchema = {
             anyOf: [settingsSyncTemplateSchema, { type: 'array', items: { type: 'string' } }],
           },
         },
-        relationTypes: settingsSyncRelationtypesSchema,
+        relationtypes: settingsSyncRelationtypesSchema,
       },
       additionalProperties: false,
     },

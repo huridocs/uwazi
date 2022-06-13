@@ -132,7 +132,7 @@ export interface SettingsSyncSchema {
           )
         | undefined;
     };
-    relationTypes?: string[];
+    relationtypes?: string[];
   };
 }
 
