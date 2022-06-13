@@ -274,6 +274,7 @@ header {
       border: none;
       background: none;
     }
+
     .live-translate {
       display: flex;
       gap: 10px;
@@ -311,6 +312,10 @@ header {
       padding: 0.4em 0.75em;
     }
 
+    button.singleItem {
+      padding-left: 1em;
+    }
+
     .singleItem {
       color: $c-white;
       align-self: center;
@@ -326,6 +331,7 @@ header {
     float: left;
     border-top: 0;
     border-right: 1px solid transparentize($c-black, 0.6);
+    border-left: 1px solid transparentize($c-black, 0.6);
   }
 
   .menuNav-btn {
