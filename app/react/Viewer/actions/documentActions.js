@@ -54,17 +54,17 @@ export function saveDocument(doc, fileID) {
     }
   });
 
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
     const entityFileId = fileID || getState().documentViewer.doc.toJS().defaultDoc._id;
     updateDoc.__extractedMetadata = { fileID: entityFileId, ...extractredMetadata };
-    return saveEntityWithFiles(updateDoc, dispatch).then(updatedDoc => {
-      dispatch(notificationActions.notify('Document updated', 'success'));
-      dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
-      dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
-      dispatch(actions.update('viewer/doc', updatedDoc.entity));
-      dispatch(relationshipActions.reloadRelationships(updatedDoc.entity.sharedId));
-    });
+    const updatedDoc = await saveEntityWithFiles(updateDoc, dispatch);
+    dispatch(notificationActions.notify('Document updated', 'success'));
+    dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
+    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
+    dispatch(actions.update('viewer/doc', updatedDoc.entity));
+    dispatch(relationshipActions.reloadRelationships(updatedDoc.entity.sharedId));
+    return updateDoc;
   };
 }
 

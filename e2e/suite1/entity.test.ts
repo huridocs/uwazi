@@ -56,8 +56,8 @@ describe('Entities', () => {
     url: 'https://fonts.googleapis.com/icon?family=Material+Icons',
   };
   const filesAttachments = [
-    `${__dirname}/test_files/valid.pdf`,
-    `${__dirname}/test_files/batman.jpg`,
+    `${__dirname}/../test_files/valid.pdf`,
+    `${__dirname}/../test_files/batman.jpg`,
   ];
 
   it('Should create new entity', async () => {
@@ -126,7 +126,7 @@ describe('Entities', () => {
         '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > div > div > div > button'
       );
       await uploadFileInMetadataField(
-        `${__dirname}/test_files/batman.jpg`,
+        `${__dirname}/../test_files/batman.jpg`,
         'input[aria-label=fileInput]'
       );
       await saveEntityAndClosePanel();
@@ -141,7 +141,7 @@ describe('Entities', () => {
         '#metadataForm > div:nth-child(3) > div.form-group.media > ul > li.wide > div > div > div > button'
       );
       await uploadFileInMetadataField(
-        `${__dirname}/test_files/short-video.mp4`,
+        `${__dirname}/../test_files/short-video.mp4`,
         'input[aria-label=fileInput]'
       );
       await saveEntityAndClosePanel();

@@ -13,8 +13,8 @@ const setupPreFlights = async (): Promise<void> => {
 const setupTest = async () => {
   await createTemplate('With image');
   await createEntity('With image', {
-    pdf: `${__dirname}/test_files/valid.pdf`,
-    supportingFile: `${__dirname}/test_files/batman.jpg`,
+    pdf: `${__dirname}/../test_files/valid.pdf`,
+    supportingFile: `${__dirname}/../test_files/batman.jpg`,
   });
 };
 
@@ -29,12 +29,12 @@ describe('Image is rendered when editing an entity in document view', () => {
   });
 
   it('Should select image for image property from supporting files', async () => {
-    await expect(page).toClick('a[type="button"]');
+    await expect(page).toClick('.metadata-sidepanel.is-active a', { text: 'View' });
 
     await expect(page).toClick('.metadata-sidepanel button.edit-metadata', {
       text: 'Edit',
     });
-    await expect(page).toClick('span', { text: 'Add file' });
+    await expect(page).toClick('.form-group.image span', { text: 'Add file' });
     await expect(page).toMatchElement('div.media-grid-card-header > h5', { text: 'batman.jpg' });
   });
 });
