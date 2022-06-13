@@ -283,6 +283,18 @@ describe('EntitySuggestions', () => {
         });
         expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
       });
+      it('should not accept an empty suggestion of a required property', async () => {
+        const prop: PropertySchema = {
+          required: true,
+          name: 'property1',
+          label: 'title_label',
+          type: 'text',
+        };
+        await act(async () => renderComponent(prop));
+        const rows = screen.getAllByRole('row');
+        const acceptButton = within(rows[7]).getByLabelText('Accept suggestion');
+        expect(acceptButton).toBeDisabled();
+      });
     });
 
     describe('date property', () => {
