@@ -11,7 +11,11 @@ import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import { attachmentsPath, customUploadsPath, fs } from 'api/files';
 
-import fixtures, {
+import { SettingsSyncSchema } from 'shared/types/settingsType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { TranslationType } from 'shared/translationType';
+import {
+  fixtures,
   newDoc1,
   newDoc2,
   newDoc4,
@@ -51,11 +55,14 @@ import { syncWorker } from '../syncWorker';
 import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {
+  let requestPostSpy: jasmine.Spy;
+  let requestDeleteSpy: jasmine.Spy;
+  let requestUploadSpy: jasmine.Spy;
+
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
+    requestUploadSpy = spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
-    syncWorker.stopped = false;
     await fs.writeFile(attachmentsPath(`${newDoc1.toString()}.jpg`), '');
     await fs.writeFile(attachmentsPath('test_attachment.txt'), '');
     await fs.writeFile(attachmentsPath('test_attachment2.txt'), '');
@@ -78,20 +85,22 @@ describe('syncWorker', () => {
     syncWorker.syncronize({
       url: `url-${name}`,
       name,
-      templates: {
-        [template1.toString()]: [],
-        [template2.toString()]: [],
-        [template3.toString()]: [],
+      config: {
+        templates: {
+          [template1.toString()]: [],
+          [template2.toString()]: [],
+          [template3.toString()]: [],
+        },
       },
     });
 
-  const expectCallToEqual = (call, namespace, data, name = 'slave1') => {
+  const expectCallToEqual = (call: any, namespace: string, data: object, name = 'slave1') => {
     expect(call).toEqual([
       [`url-${name}/api/sync`, { namespace, data }, { cookie: `${name} cookie` }],
     ]);
   };
 
-  const expectCallWith = (spy, namespace, data, name = 'slave1') => {
+  const expectCallWith = (spy: jasmine.Spy, namespace: string, data: object, name = 'slave1') => {
     expect(spy).toHaveBeenCalledWith(
       `url-${name}/api/sync`,
       { namespace, data },
@@ -99,22 +108,25 @@ describe('syncWorker', () => {
     );
   };
 
-  const getCallsToIds = (namespace, ids) => {
-    const namespaceCallsOnly = request.post.calls
+  const getCallsToIds = (namespace: string, ids: ObjectIdSchema[]) => {
+    const namespaceCallsOnly = requestPostSpy.calls
       .allArgs()
       .filter(args => args[1].namespace === namespace);
     return {
       calls: ids.map(id =>
-        namespaceCallsOnly.filter(c => c[1].data._id.toString() === id.toString())
+        namespaceCallsOnly.filter((c: any) => c[1].data._id.toString() === id.toString())
       ),
       callsCount: namespaceCallsOnly.length,
     };
   };
 
   describe('syncronize', () => {
-    const expectedCookies = { 'url-slave1': 'slave1 cookie', 'url-slave3': 'slave3 cookie' };
+    const expectedCookies: { [k: string]: string } = {
+      'url-slave1': 'slave1 cookie',
+      'url-slave3': 'slave3 cookie',
+    };
 
-    const ensureHeaders = (url, _data, headers) => {
+    const ensureHeaders = async (url: string, _data: object, headers: { cookie: string }) => {
       const domain = url.split('/')[0];
       return headers.cookie === expectedCookies[domain]
         ? Promise.resolve()
@@ -123,8 +135,8 @@ describe('syncWorker', () => {
 
     beforeEach(() => {
       syncWorker.cookies = { slave1: 'slave1 cookie', slave3: 'slave3 cookie' };
-      spyOn(request, 'post').and.callFake(ensureHeaders);
-      spyOn(request, 'delete').and.callFake(ensureHeaders);
+      requestPostSpy = spyOn(request, 'post').and.callFake(ensureHeaders);
+      requestDeleteSpy = spyOn(request, 'delete').and.callFake(ensureHeaders);
     });
 
     it('should lazy create lastSync entries if they not already exist', async () => {
@@ -135,7 +147,7 @@ describe('syncWorker', () => {
         { url: 'url-slave3', name: 'slave3' },
       ]);
 
-      const syncs = await syncsModel.find().sort({ lastSync: 1 });
+      const syncs = await syncsModel.find({}).sort({ lastSync: 1 });
       expect(syncs).toMatchObject([
         { name: 'slave3', lastSync: 0 },
         { name: 'slave1', lastSync: 8999 },
@@ -144,9 +156,8 @@ describe('syncWorker', () => {
 
     it('should login when a sync response is "Unauthorized"', async () => {
       spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
-      request.post.and.callFake(() => {
-        const responseError = new Error('error');
-        responseError.status = 401;
+      requestPostSpy.and.callFake(async () => {
+        const responseError = { status: 401 };
         return Promise.reject(responseError);
       });
 
@@ -154,15 +165,17 @@ describe('syncWorker', () => {
       const deletedProperty = db.id();
       const deletedRelationtype = db.id();
 
-      const syncConfig = {
+      const syncConfig: SettingsSyncSchema = {
         url: 'url-slave1',
         name: 'slave1',
-        templates: {
-          [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
-          [deletedTemplate.toString()]: [],
-          [template2.toString()]: [],
+        config: {
+          templates: {
+            [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+            [deletedTemplate.toString()]: [],
+            [template2.toString()]: [],
+          },
+          relationTypes: [relationtype1.toString(), deletedRelationtype.toString()],
         },
-        relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
       };
       await syncWorker.syncronize(syncConfig);
       expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
@@ -177,12 +190,14 @@ describe('syncWorker', () => {
         {
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
-            [deletedTemplate.toString()]: [],
-            [template2.toString()]: [],
+          config: {
+            templates: {
+              [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+              [deletedTemplate.toString()]: [],
+              [template2.toString()]: [],
+            },
+            relationTypes: [relationtype1.toString(), deletedRelationtype.toString()],
           },
-          relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
         },
       ]);
 
@@ -201,12 +216,14 @@ describe('syncWorker', () => {
       await syncWorker.syncronize({
         url: 'url-slave1',
         name: 'slave1',
-        templates: {
-          [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
-          [deletedTemplate.toString()]: [],
-          [template2.toString()]: [],
+        config: {
+          templates: {
+            [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+            [deletedTemplate.toString()]: [],
+            [template2.toString()]: [],
+          },
+          relationTypes: [relationtype1.toString(), deletedRelationtype.toString()],
         },
-        relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
       });
 
       const { callsCount: templateCalls } = getCallsToIds('templates', []);
@@ -220,11 +237,12 @@ describe('syncWorker', () => {
       await syncWorker.syncronize({
         url: 'url-slave1',
         name: 'slave1',
+        // @ts-ignore
         config: { migrations: {}, sessions: {} },
       });
 
-      expect(request.post.calls.count()).toBe(0);
-      expect(request.delete.calls.count()).toBe(0);
+      expect(requestPostSpy.calls.count()).toBe(0);
+      expect(requestDeleteSpy.calls.count()).toBe(0);
     });
 
     describe('settings', () => {
@@ -232,7 +250,7 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {},
+          config: { templates: {} },
         });
 
         const {
@@ -255,13 +273,15 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [
-              template1Property1.toString(),
-              template1Property3.toString(),
-              deletedProperty.toString(),
-            ],
-            [template2.toString()]: [],
+          config: {
+            templates: {
+              [template1.toString()]: [
+                template1Property1.toString(),
+                template1Property3.toString(),
+                deletedProperty.toString(),
+              ],
+              [template2.toString()]: [],
+            },
           },
         });
 
@@ -290,8 +310,13 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
+          config: {
+            templates: {
+              [template1.toString()]: [
+                template1Property1.toString(),
+                template1Property3.toString(),
+              ],
+            },
           },
         });
 
@@ -309,8 +334,13 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
+          config: {
+            templates: {
+              [template1.toString()]: [
+                template1Property1.toString(),
+                template1Property3.toString(),
+              ],
+            },
           },
         });
 
@@ -330,13 +360,15 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [
-              template1Property2.toString(),
-              template1PropertyThesauri1Select.toString(),
-              template1PropertyThesauri3MultiSelect.toString(),
-            ],
-            [template2.toString()]: [template2PropertyThesauri5Select.toString()],
+          config: {
+            templates: {
+              [template1.toString()]: [
+                template1Property2.toString(),
+                template1PropertyThesauri1Select.toString(),
+                template1PropertyThesauri3MultiSelect.toString(),
+              ],
+              [template2.toString()]: [template2PropertyThesauri5Select.toString()],
+            },
           },
         });
 
@@ -360,7 +392,11 @@ describe('syncWorker', () => {
 
         expect(thesauri3Call).toBeDefined();
         expect(thesauri5Call).toBeDefined();
-        expectCallWith(request.delete, 'dictionaries', expect.objectContaining({ _id: thesauri4 }));
+        expectCallWith(
+          requestDeleteSpy,
+          'dictionaries',
+          expect.objectContaining({ _id: thesauri4 })
+        );
       });
     });
 
@@ -369,11 +405,13 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [template1PropertyRelationship1.toString()],
-            [template2.toString()]: [template2PropertyRelationship2.toString()],
+          config: {
+            templates: {
+              [template1.toString()]: [template1PropertyRelationship1.toString()],
+              [template2.toString()]: [template2PropertyRelationship2.toString()],
+            },
+            relationTypes: [relationtype1.toString(), relationtype3.toString()],
           },
-          relationtypes: [relationtype1.toString(), relationtype3.toString()],
         });
 
         const {
@@ -397,7 +435,9 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] },
+          config: {
+            templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] },
+          },
         });
 
         const {
@@ -415,14 +455,14 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {},
+          config: { templates: {} },
         });
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
         const { contexts } = translation1Call[0][1].data;
 
-        expect(contexts.find(c => c.id === 'System').values).toEqual([
+        expect(contexts.find((c: any) => c.id === 'System').values).toEqual([
           { key: 'Sytem Key', value: 'System Value' },
         ]);
         expect(contexts.length).toBe(1);
@@ -432,54 +472,56 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [
-              template1PropertyRelationship1.toString(),
-              template1PropertyThesauri3MultiSelect.toString(),
-            ],
-            [template2.toString()]: [template2PropertyRelationship2.toString()],
+          config: {
+            templates: {
+              [template1.toString()]: [
+                template1PropertyRelationship1.toString(),
+                template1PropertyThesauri3MultiSelect.toString(),
+              ],
+              [template2.toString()]: [template2PropertyRelationship2.toString()],
+            },
+            relationTypes: [relationtype1.toString()],
           },
-          relationtypes: [relationtype1.toString()],
         });
 
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
-        const { contexts } = translation1Call[0][1].data;
+        const { contexts }: { contexts: TranslationType['contexts'] } = translation1Call[0][1].data;
 
-        expect(contexts.find(c => c.id.toString() === template1.toString()).values).toEqual([
+        expect(contexts?.find(c => c.id?.toString() === template1.toString())?.values).toEqual([
           { key: 'template1', value: 'template1T' },
           { key: 't1Relationship1L', value: 't1Relationship1T' },
           { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
           { key: 'Template Title', value: 'Template Title translated' },
         ]);
-        expect(contexts.find(c => c.id.toString() === template2.toString()).values).toEqual([
+        expect(contexts?.find(c => c.id?.toString() === template2.toString())?.values).toEqual([
           { key: 'template2', value: 'template2T' },
           { key: 't2Relationship2L', value: 't2Relationship2T' },
         ]);
-        expect(contexts.find(c => c.id.toString() === relationtype1.toString()).values).toBe(
+        expect(contexts?.find(c => c.id?.toString() === relationtype1.toString())?.values).toBe(
           'All values from r1'
         );
-        expect(contexts.find(c => c.id.toString() === relationtype4.toString()).values).toBe(
+        expect(contexts?.find(c => c.id?.toString() === relationtype4.toString())?.values).toBe(
           'All values from r4'
         );
-        expect(contexts.find(c => c.id.toString() === relationtype7.toString()).values).toBe(
+        expect(contexts?.find(c => c.id?.toString() === relationtype7.toString())?.values).toBe(
           'All values from r7'
         );
-        expect(contexts.find(c => c.id.toString() === thesauri3.toString()).values).toBe(
+        expect(contexts?.find(c => c.id?.toString() === thesauri3.toString())?.values).toBe(
           'All values from t3'
         );
-        expect(contexts.length).toBe(7);
+        expect(contexts?.length).toBe(7);
       });
     });
 
     const expectUploadFile = async (
-      path,
-      filename,
+      path: string,
+      filename: string,
       pathFunction = attachmentsPath,
       name = 'slave1'
     ) => {
-      expect(request.uploadFile).toHaveBeenCalledWith(
+      expect(requestUploadSpy).toHaveBeenCalledWith(
         `url-${name}${path}`,
         filename,
         await fs.readFile(pathFunction(filename)),
@@ -492,12 +534,14 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [],
+          config: {
+            templates: {
+              [template1.toString()]: [],
+            },
           },
         });
 
-        expect(request.uploadFile.calls.count()).toBe(6);
+        expect(requestUploadSpy.calls.count()).toBe(6);
 
         await expectUploadFile('/api/sync/upload', 'test2.txt');
         await expectUploadFile('/api/sync/upload', 'test.txt');
@@ -511,17 +555,19 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: {
-              properties: [],
-              filter: JSON.stringify({
-                'metadata.t1Property1': { $elemMatch: { value: 'sync property 1' } },
-              }),
+          config: {
+            templates: {
+              [template1.toString()]: {
+                properties: [],
+                filter: JSON.stringify({
+                  'metadata.t1Property1': { $elemMatch: { value: 'sync property 1' } },
+                }),
+              },
             },
           },
         });
 
-        expect(request.uploadFile.calls.count()).toBe(5);
+        expect(requestUploadSpy.calls.count()).toBe(5);
 
         await expectUploadFile('/api/sync/upload', 'test2.txt');
         await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
@@ -532,19 +578,21 @@ describe('syncWorker', () => {
     });
 
     describe('entities', () => {
-      let baseConfig;
+      let baseConfig: SettingsSyncSchema;
 
       beforeEach(() => {
         baseConfig = {
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [
-              template1Property2.toString(),
-              template1Property3.toString(),
-              template1PropertyThesauri1Select.toString(),
-            ],
-            [template2.toString()]: [],
+          config: {
+            templates: {
+              [template1.toString()]: [
+                template1Property2.toString(),
+                template1Property3.toString(),
+                template1PropertyThesauri1Select.toString(),
+              ],
+              [template2.toString()]: [],
+            },
           },
         };
       });
@@ -586,14 +634,23 @@ describe('syncWorker', () => {
       });
 
       describe('Filtering', () => {
-        let filterConfig;
+        let filterConfig: SettingsSyncSchema;
 
         beforeEach(() => {
-          filterConfig = { ...baseConfig, templates: { ...baseConfig.templates } };
-          filterConfig.templates[template1.toString()] = {
-            properties: baseConfig.templates[template1.toString()],
-            filter:
-              '{ "metadata.t1Property2": { "$elemMatch": { "value": "another doc property 2" } } }',
+          filterConfig = { ...baseConfig };
+          filterConfig.config = {
+            templates: {
+              ...baseConfig.config?.templates,
+              [template1.toString()]: {
+                properties: [
+                  template1Property2.toString(),
+                  template1Property3.toString(),
+                  template1PropertyThesauri1Select.toString(),
+                ],
+                filter:
+                  '{ "metadata.t1Property2": { "$elemMatch": { "value": "another doc property 2" } } }',
+              },
+            },
           };
         });
 
@@ -609,7 +666,8 @@ describe('syncWorker', () => {
         });
 
         it('should fail on error', async () => {
-          filterConfig.templates[template1.toString()].filter = 'return missing;';
+          // @ts-ignore
+          filterConfig.config.templates[template1.toString()].filter = 'return missing;';
           try {
             await syncWorker.syncronize(filterConfig);
             fail('should not pass');
@@ -634,7 +692,7 @@ describe('syncWorker', () => {
             await syncWorker.syncronize(filterConfig);
 
             expectCallWith(
-              request.delete,
+              requestDeleteSpy,
               'entities',
               expect.objectContaining({ _id: savedEntity._id })
             );
@@ -648,11 +706,13 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [],
-            [template2.toString()]: [],
+          config: {
+            templates: {
+              [template1.toString()]: [],
+              [template2.toString()]: [],
+            },
+            relationTypes: [relationtype1.toString(), relationtype3.toString()],
           },
-          relationtypes: [relationtype1.toString(), relationtype3.toString()],
         });
 
         const {
@@ -669,10 +729,13 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [],
+          config: {
+            templates: {
+              [template1.toString()]: [],
+            },
+            // @ts-ignore
+            relationTypes: [null],
           },
-          relationtypes: [null],
         });
 
         const {
@@ -688,9 +751,11 @@ describe('syncWorker', () => {
         await syncWorker.syncronize({
           url: 'url-slave1',
           name: 'slave1',
-          templates: {
-            [template1.toString()]: [template1PropertyRelationship1.toString()],
-            [template2.toString()]: [template2PropertyRelationship2.toString()],
+          config: {
+            templates: {
+              [template1.toString()]: [template1PropertyRelationship1.toString()],
+              [template2.toString()]: [template2PropertyRelationship2.toString()],
+            },
           },
         });
 
@@ -723,16 +788,15 @@ describe('syncWorker', () => {
     it('should process the log records newer than the last synced entity', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(14);
-      expect(request.delete.calls.count()).toBe(27);
+      expect(requestPostSpy.calls.count()).toBe(14);
+      expect(requestDeleteSpy.calls.count()).toBe(27);
 
-      request.post.calls.reset();
-      request.delete.calls.reset();
+      requestPostSpy.calls.reset();
+      requestDeleteSpy.calls.reset();
 
       await syncAllTemplates();
-
-      expect(request.post.calls.count()).toBe(0);
-      expect(request.delete.calls.count()).toBe(0);
+      expect(requestPostSpy.calls.count()).toBe(0);
+      expect(requestDeleteSpy.calls.count()).toBe(0);
     });
 
     it('should update lastSync timestamp with the last change', async () => {
@@ -741,26 +805,29 @@ describe('syncWorker', () => {
       let [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
       expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(1000);
+      requestPostSpy.calls.reset();
 
-      request.post.calls.reset();
-
-      await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } });
+      await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } }, {});
       await syncAllTemplates('slave3');
       [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
       expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(22000);
-
-      expectCallWith(request.post, 'entities', expect.objectContaining({ _id: newDoc2 }), 'slave3');
+      expectCallWith(
+        requestPostSpy,
+        'entities',
+        expect.objectContaining({ _id: newDoc2 }),
+        'slave3'
+      );
     });
 
     it('should update lastSync on each operation', async () => {
-      request.post.and.callFake((_url, body) =>
+      requestPostSpy.and.callFake(async (_url, body) =>
         body.data._id.equals(relationship1)
           ? Promise.reject(new Error('post failed'))
           : Promise.resolve()
       );
-      request.delete.and.callFake((_url, body) =>
+      requestDeleteSpy.and.callFake(async (_url, body) =>
         body.data._id.equals(newDoc4)
           ? Promise.reject(new Error('delete failed'))
           : Promise.resolve()
@@ -769,7 +836,7 @@ describe('syncWorker', () => {
       try {
         await syncAllTemplates();
       } catch (e) {
-        const [{ lastSync }] = await syncsModel.find();
+        const [{ lastSync }] = await syncsModel.find({});
         expect(lastSync).toBe(12000);
       }
     });
@@ -779,7 +846,7 @@ describe('syncWorker', () => {
     const username = 'username';
     const password = 'password';
 
-    const mockLoginPost = (url, cookie) => {
+    const mockLoginPost = (url: string, cookie: string) => {
       backend.post(url, (_url, opts) => {
         if (opts.body === JSON.stringify({ username, password })) {
           return {
