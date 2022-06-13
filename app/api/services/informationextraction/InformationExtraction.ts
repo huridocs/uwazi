@@ -28,6 +28,7 @@ import {
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
+import { IXModelType } from 'shared/types/IXModelType';
 import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
@@ -238,6 +239,7 @@ class InformationExtraction {
             return rect;
           }),
         };
+
         return IXSuggestionsModel.save(suggestion);
       })
     );
@@ -372,33 +374,52 @@ class InformationExtraction {
 
   processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
+      const [currentModel] = await IXModelsModel.get({
+        propertyName: message.params!.property_name,
+      });
       if (message.task === 'create_model' && message.success) {
-        const [currentModel] = await IXModelsModel.get({
-          propertyName: message.params!.property_name,
-        });
-
         await IXModelsModel.save({
           ...currentModel,
           status: 'ready',
           creationDate: new Date().getTime(),
         });
-
-        emitToTenant(
-          message.tenant,
-          'ix_model_status',
-          message.params!.property_name,
-          'processing_suggestions',
-          'Getting suggestions'
-        );
-
+        await this.updateSuggestionStatus(message, currentModel);
         await this.getSuggestions(message.params!.property_name);
       }
 
       if (message.task === 'suggestions') {
         await this.saveSuggestions(message);
+        await this.updateSuggestionStatus(message, currentModel);
         await this.getSuggestions(message.params!.property_name);
       }
     }, message.tenant);
+  };
+
+  getSuggestionsStatus = async (propertyName: string, modelCreationDate: number) => {
+    const totalSuggestions = await IXSuggestionsModel.count({ propertyName });
+    const processedSuggestions = await IXSuggestionsModel.count({
+      propertyName,
+      date: { $gt: modelCreationDate },
+    });
+    return {
+      total: totalSuggestions,
+      processed: processedSuggestions,
+    };
+  };
+
+  updateSuggestionStatus = async (message: ResultsMessage, currentModel: IXModelType) => {
+    const suggestionsStatus = await this.getSuggestionsStatus(
+      message.params!.property_name,
+      currentModel.creationDate
+    );
+    emitToTenant(
+      message.tenant,
+      'ix_model_status',
+      message.params!.property_name,
+      'processing_suggestions',
+      '',
+      suggestionsStatus
+    );
   };
 }
 
