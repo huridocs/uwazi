@@ -119,17 +119,17 @@ describe('Public forms', () => {
     it('should fill the media and image fields', async () => {
       await expect(page).toClick(buttonForFotografia);
       await uploadFileInMetadataField(
-        `${__dirname}/test_files/batman.jpg`,
+        `${__dirname}/../test_files/batman.jpg`,
         'input[aria-label=fileInput]'
       );
       await expect(page).toClick(buttonForVideo);
       await uploadFileInMetadataField(
-        `${__dirname}/test_files/short-video.mp4`,
+        `${__dirname}/../test_files/short-video.mp4`,
         'input[aria-label=fileInput]'
       );
       await expect(page).toClick(buttonForImagenAdicional);
       await uploadFileInMetadataField(
-        `${__dirname}/test_files/batman.jpg`,
+        `${__dirname}/../test_files/batman.jpg`,
         'input[aria-label=fileInput]'
       );
     });

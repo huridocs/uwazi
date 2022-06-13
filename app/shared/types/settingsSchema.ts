@@ -86,6 +86,7 @@ const settingsSyncSchema = {
     active: { type: 'boolean' },
     username: { type: 'boolean' },
     password: { type: 'boolean' },
+    name: { type: 'string' },
     config: {
       type: 'object',
       properties: {

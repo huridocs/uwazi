@@ -22,8 +22,8 @@ describe('Table view', () => {
   describe('Table actions', () => {
     it('Should show only selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
-      await page.waitForSelector('#rw_1_listbox li');
-      const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
+      await page.waitForSelector('#rw_2_listbox li');
+      const columnsOptions = await page.$$eval('#rw_2_listbox li', options =>
         options.map(option => ({
           checked: (<HTMLInputElement>option.children[0]).checked,
           option: option.textContent,
@@ -45,7 +45,7 @@ describe('Table view', () => {
 
     it('Should show new selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
-      const newColumn = await page.$$eval('#rw_1_listbox li:nth-child(9)', option => {
+      const newColumn = await page.$$eval('#rw_2_listbox li:nth-child(9)', option => {
         (<HTMLInputElement>option[0]).click();
         return option[0].textContent;
       });
@@ -59,13 +59,13 @@ describe('Table view', () => {
 
     it('Should show all properties if all of them are selected', async () => {
       await page.click('.hidden-columns-dropdown');
-      const showAllSelector = "#rw_1_listbox > li:nth-child(1) > input[type='checkbox']";
+      const showAllSelector = "#rw_2_listbox > li:nth-child(1) > input[type='checkbox']";
       await page.$$eval(showAllSelector, item => {
         (<HTMLInputElement>item[0]).checked = false;
         (<HTMLInputElement>item[0]).click();
       });
       await page.waitForSelector('.tableview-wrapper th:nth-child(6)');
-      const optionsSelector = '#rw_1_listbox li';
+      const optionsSelector = '#rw_2_listbox li';
       const headerColumnSelector = '.tableview-wrapper th';
       const optionsCount = await page.$$eval(optionsSelector, options => options.length);
       const columnsCount = await page.$$eval(headerColumnSelector, columns => columns.length);
