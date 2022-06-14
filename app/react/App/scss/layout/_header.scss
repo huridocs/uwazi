@@ -259,11 +259,22 @@ header {
     min-width: 150px;
     width: 20ch;
     gap: 10px;
+    height: $header-height;
+
+    .rw-popup {
+      min-width: 150px;
+      width: 20ch;
+
+      ul {
+        max-height: 50vh;
+      }
+    }
 
     button {
       border: none;
       background: none;
     }
+
     .live-translate {
       display: flex;
       gap: 10px;
@@ -281,9 +292,9 @@ header {
     .rw-input,
     .rw-select,
     .rw-btn-select {
-      background-color: $c-theme;
       color: $c-white;
       height: $header-height;
+      cursor: pointer;
     }
 
     .rw-widget-input {
@@ -296,14 +307,18 @@ header {
     }
 
     .rw-list-option {
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: break-spaces;
       overflow: hidden;
+      padding: 0.4em 0.75em;
+    }
+
+    button.singleItem {
+      padding-left: 1em;
     }
 
     .singleItem {
       color: $c-white;
-      background-color: #60748b;
+      align-self: center;
     }
   }
 }
@@ -316,6 +331,7 @@ header {
     float: left;
     border-top: 0;
     border-right: 1px solid transparentize($c-black, 0.6);
+    border-left: 1px solid transparentize($c-black, 0.6);
   }
 
   .menuNav-btn {

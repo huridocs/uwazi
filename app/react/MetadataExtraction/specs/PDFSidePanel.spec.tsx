@@ -59,7 +59,10 @@ describe('PDFSidePanel', () => {
 
   it('should load the entity with the corresponding pdf', async () => {
     await act(async () => renderComponent(mocks.suggestionForEntityA));
-    expect(EntitiesAPI.get).toHaveBeenCalledWith({ data: { sharedId: 'sharedA' }, headers: {} });
+    expect(EntitiesAPI.get).toHaveBeenCalledWith(
+      { data: { _id: '_idEntityA' }, headers: {} },
+      'English'
+    );
     expect(api.get).toHaveBeenCalledWith('files', { data: { _id: '_idFileA' }, headers: {} });
   });
 
