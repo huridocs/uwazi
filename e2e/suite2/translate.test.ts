@@ -30,7 +30,7 @@ describe('Translations', () => {
 
   describe('Translations from settings', () => {
     it('should translate a text from settings', async () => {
-      await expect(page).toClick('a', { text: 'Account settings' });
+      await expect(page).toClick('a', { text: 'Settings' });
       await expect(page).toClick('span', { text: 'Translations' });
       await expect(page).toClick('a', { text: 'Mecanismo' });
 

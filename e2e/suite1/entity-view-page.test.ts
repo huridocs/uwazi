@@ -14,7 +14,7 @@ describe('Entity Page view', () => {
   });
 
   it('should create a basic page and enable it for entity view', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
     await expect(page).toFill('input[name="page.data.title"]', 'My entity view page');
@@ -30,7 +30,7 @@ describe('Entity Page view', () => {
   });
 
   it('should set the template as entity view', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Templates' });
     await expect(page).toClick('a', { text: 'Medida Provisional' });
     await expect(page).toClick('.slider');

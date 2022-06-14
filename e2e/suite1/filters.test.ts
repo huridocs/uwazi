@@ -16,7 +16,7 @@ describe('Filters', () => {
   });
 
   it('should go to the settings filters menu', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Filters' });
   });
 
