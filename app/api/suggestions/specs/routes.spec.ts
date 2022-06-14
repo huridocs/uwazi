@@ -21,7 +21,6 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import settings from 'api/settings/settings';
-import { Suggestions } from '../suggestions';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -69,19 +68,6 @@ describe('suggestions routes', () => {
         .query({ filter: { propertyName: 'super_powers' } })
         .expect(200);
       expect(response.body.suggestions).toMatchObject([
-        {
-          propertyName: 'super_powers',
-          suggestedValue: 'NOT_READY',
-          segment: 'Red Robin, a variation on the traditional Robin persona.',
-          language: 'en',
-          date: 2,
-          page: 3,
-          currentValue: 'scientific knowledge',
-          state: SuggestionState.valueMismatch,
-          entityId: shared2enId.toString(),
-          sharedId: 'shared2',
-          entityTitle: 'Batman en',
-        },
         {
           entityId: shared2esId.toString(),
           sharedId: 'shared2',
@@ -328,48 +314,49 @@ describe('suggestions routes', () => {
     ];
 
     const removeSuggestionsFromDBAndSaveConfigs = async () => {
+      user = { username: 'user 1', role: 'admin' };
       await IXSuggestionsModel.delete({});
       await request(app).post('/api/suggestions/configurations').send(payload).expect(200);
     };
 
-    it('should save configurations in settings', async () => {
+    beforeAll(async () => {
       await removeSuggestionsFromDBAndSaveConfigs();
+    });
+
+    it('should save configurations in settings', async () => {
+      // await removeSuggestionsFromDBAndSaveConfigs();
       const set = await settings.get();
       expect(set.features?.metadataExtraction?.templates).toMatchObject(payload);
     });
     it('should create placeholder suggestions', async () => {
-      await removeSuggestionsFromDBAndSaveConfigs();
-      const { suggestions: superPowerSugg } = await Suggestions.get(
-        { propertyName: 'super_powers' },
-        { page: { size: 5, number: 1 } }
-      );
+      // await removeSuggestionsFromDBAndSaveConfigs();
+      const superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+
       expect(superPowerSugg).toMatchObject([
         {
-          sharedId: 'shared2',
+          entityId: 'shared2',
           propertyName: 'super_powers',
           segment: '',
           suggestedValue: '',
-          entityTitle: 'Batman en',
+          status: SuggestionState.labelEmpty,
         },
         {
-          sharedId: 'shared2',
+          entityId: 'shared2',
           propertyName: 'super_powers',
           segment: '',
           suggestedValue: '',
-          entityTitle: 'Batman es',
+          status: SuggestionState.labelEmpty,
         },
       ]);
-      const { suggestions: enemySugg } = await Suggestions.get(
-        { propertyName: 'enemy' },
-        { page: { size: 5, number: 1 } }
-      );
+      const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
       expect(enemySugg).toMatchObject([
         {
-          sharedId: 'shared6',
+          entityId: 'shared6',
           propertyName: 'enemy',
           segment: '',
           suggestedValue: '',
-          entityTitle: 'The Penguin',
         },
       ]);
     });
