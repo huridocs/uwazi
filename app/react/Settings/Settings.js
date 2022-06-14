@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NApi, t } from 'app/I18N';
-import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
@@ -17,10 +16,9 @@ import SettingsAPI from './SettingsAPI';
 export class Settings extends RouteHandler {
   static async requestState(requestParams) {
     const request = requestParams.onlyHeaders();
-    const [user, thesauri, relationTypes, translations, collection, templates] = await Promise.all([
+    const [user, thesauri, translations, collection, templates] = await Promise.all([
       UsersAPI.currentUser(request),
       ThesauriAPI.getThesauri(request),
-      RelationTypesAPI.get(request),
       I18NApi.get(request),
       SettingsAPI.get(request),
       TemplatesAPI.get(requestParams.onlyHeaders()),
@@ -62,7 +60,6 @@ export class Settings extends RouteHandler {
     return [
       actions.set('auth/user', user),
       actions.set('dictionaries', thesauri),
-      actions.set('relationTypes', relationTypes),
       actions.set('translations', translations),
       actions.set('settings/collection', collection),
     ];

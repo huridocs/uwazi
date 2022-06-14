@@ -32,6 +32,18 @@ const syncAttachments = async (url, data, lastSync, cookie) => {
 };
 
 const syncronizer = {
+  async syncDelete(change, url, cookie) {
+    await this.syncData(
+      {
+        url,
+        change,
+        data: { _id: change.mongoId },
+        cookie,
+      },
+      'delete'
+    );
+  },
+
   async syncData({ url, change, data, cookie }, action, lastSync) {
     await request[action](
       urljoin(url, 'api/sync'),

@@ -29,19 +29,13 @@ export const EntitySuggestions = ({
 }: EntitySuggestionsProps) => {
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [status, setStatus] = useState('ready');
+  const [status, setStatus] = useState<{ key: string; data?: undefined }>({
+    key: 'ready',
+  });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
 
-  socket.on('ix_model_status', (propertyName: string, modelStatus: string) => {
-    if (propertyName === reviewedProperty.name) {
-      setStatus(modelStatus);
-    }
-  });
-
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    toggleAllRowsSelected(false);
     row.toggleRowSelected();
     setAcceptingSuggestion(true);
   };
@@ -71,6 +65,10 @@ export const EntitySuggestions = ({
     return className;
   };
 
+  const isRequiredFieldWithoutSuggestion = (row: EntitySuggestionType) =>
+    (row.propertyName === 'title' && row.suggestedValue === '') ||
+    (reviewedProperty.required && row.suggestedValue === '');
+
   const actionsCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.values;
     const { state } = suggestion;
@@ -86,7 +84,8 @@ export const EntitySuggestions = ({
             state === SuggestionState.obsolete ||
             state === SuggestionState.labelMatch ||
             state === SuggestionState.valueMatch ||
-            state === SuggestionState.error
+            state === SuggestionState.error ||
+            isRequiredFieldWithoutSuggestion(row.original)
           }
           onClick={async () => showConfirmationModal(row)}
         >
@@ -149,7 +148,6 @@ export const EntitySuggestions = ({
   };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
-    setAcceptingSuggestion(false);
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
@@ -158,27 +156,69 @@ export const EntitySuggestions = ({
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
+
+    setAcceptingSuggestion(false);
+    toggleAllRowsSelected(false);
   };
 
+  const userHasSelectedLabel = (entity: any) => {
+    if (entity.__extractedMetadata.selections.length === 0) return false;
+    const selection = entity.__extractedMetadata.selections.find(
+      (s: any) => s.name === reviewedProperty.name
+    );
+    if (!selection) return false;
+    return selection.selection.text === entity.title;
+  };
+
+  const calculateTemporaryState = (
+    entity: ClientEntitySchema,
+    suggestedValue: string,
+    state: SuggestionState
+  ) => {
+    if (state === SuggestionState.obsolete) return state;
+    const selected = userHasSelectedLabel(entity);
+    const currentValue = entity.title;
+    if (suggestedValue === '') {
+      return selected ? SuggestionState.labelEmpty : SuggestionState.valueEmpty;
+    }
+
+    if (currentValue === suggestedValue) {
+      return selected ? SuggestionState.labelMatch : SuggestionState.valueMatch;
+    }
+
+    return selected ? SuggestionState.labelMismatch : SuggestionState.valueMismatch;
+  };
+
+  // eslint-disable-next-line max-statements
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
-    const changedPropertyValue =
-      entity[reviewedProperty.name] || entity.metadata?.[reviewedProperty.name];
-    selectedFlatRows[0].values.currentValue = changedPropertyValue;
+    const changedPropertyValue = (entity[reviewedProperty.name] ||
+      entity.metadata?.[reviewedProperty.name]) as string;
+    selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
+      ? changedPropertyValue[0].value || '-'
+      : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
+    const { suggestedValue, state } = selectedFlatRows[0].original;
+    selectedFlatRows[0].values.state = calculateTemporaryState(
+      entity,
+      suggestedValue as string,
+      state as SuggestionState
+    );
+    selectedFlatRows[0].setState({});
   };
 
   const _trainModel = async () => {
+    setStatus({ key: 'sending_labeled_data' });
     const params = new RequestParams({
       property: reviewedProperty.name,
     });
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
-    setStatus(response.status);
+    setStatus({ key: response.status });
     store?.dispatch(notify(response.message, type));
-    if (status === 'ready') {
+    if (status.key === 'ready') {
       await retrieveSuggestions();
     }
   };
@@ -190,19 +230,35 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus(response.status);
+        setStatus({ key: response.status });
       })
       .catch(() => {
-        setStatus('error');
+        setStatus({ key: 'error' });
       });
+
+    socket.on(
+      'ix_model_status',
+      (propertyName: string, modelStatus: string, _: string, data: any) => {
+        if (propertyName === reviewedProperty.name) {
+          setStatus({ key: modelStatus, data });
+        }
+      }
+    );
+    return () => {
+      socket.off('ix_model_status');
+    };
   }, []);
 
   const ixmessages: { [k: string]: string } = {
     ready: 'Find suggestions',
+    sending_labeled_data: 'Sending labeled data...',
     processing_model: 'Training model...',
-    processing_suggestions: 'Finding suggestions...',
+    processing_suggestions: 'Finding suggestions',
     error: 'Error',
   };
+
+  const formatData = (data: { total: number; processed: number } | undefined) =>
+    data ? `${data.processed}/${data.total}` : '';
 
   return (
     <>
@@ -227,7 +283,7 @@ export const EntitySuggestions = ({
             className={`btn service-request-button ${status}`}
             onClick={_trainModel}
           >
-            <Translate>{ixmessages[status]}</Translate>
+            <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
           </button>
         </div>
         <table {...getTableProps()}>
@@ -271,6 +327,7 @@ export const EntitySuggestions = ({
         />
         <SuggestionAcceptanceModal
           isOpen={acceptingSuggestion}
+          propertyType={reviewedProperty.type}
           onClose={() => setAcceptingSuggestion(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />

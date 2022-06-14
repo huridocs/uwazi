@@ -24,6 +24,18 @@ describe('attachments path', () => {
     });
   });
 
+  describe('Only published', () => {
+    it('should show only published documents', done => {
+      nightmare
+        .waitToClick(selectors.libraryView.filtersRestricted)
+        .waitForCardToMatchTitle(selectors.libraryView.librarySecondDocument, 'Batman')
+        .then(() => {
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+  });
+
   describe('main document pdf', () => {
     it('should open the second document', done => {
       nightmare

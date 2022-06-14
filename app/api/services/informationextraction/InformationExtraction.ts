@@ -20,14 +20,15 @@ import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
+import { dateToSeconds } from 'shared/dataUtils';
 import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
+import { IXModelType } from 'shared/types/IXModelType';
 import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
@@ -166,22 +167,16 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  coerceSuggestionValue = (suggestion: RawSuggestion, templates: TemplateSchema[]) => {
-    const allProps: PropertySchema[] = _.flatMap(templates, template => template.properties || []);
-
-    const property = allProps.find(p => p.name === suggestion.property_name);
-
-    let suggestedValue: any = suggestion.text.trim();
-
-    if (property?.type === 'date') {
-      suggestedValue = new Date(suggestion.text).getTime() / 1000;
+  coerceSuggestionValue = (suggestion: RawSuggestion, property?: PropertySchema) => {
+    const suggestedValue = suggestion.text.trim();
+    switch (property?.type) {
+      case 'numeric':
+        return parseFloat(suggestedValue) || null;
+      case 'date':
+        return dateToSeconds(suggestedValue);
+      default:
+        return suggestedValue;
     }
-
-    if (Number.isNaN(suggestedValue)) {
-      return null;
-    }
-
-    return suggestedValue;
   };
 
   saveSuggestions = async (message: ResultsMessage) => {
@@ -212,7 +207,14 @@ class InformationExtraction {
         let status: 'ready' | 'failed' = 'ready';
         let error = '';
 
-        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, templates);
+        const allProps: PropertySchema[] = _.flatMap(
+          templates,
+          template => template.properties || []
+        );
+        const property = allProps.find(p => p.name === rawSuggestion.property_name);
+
+        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, property);
+
         if (suggestedValue === null) {
           status = 'failed';
           error = 'Invalid value for property type';
@@ -226,6 +228,7 @@ class InformationExtraction {
         const suggestion: IXSuggestionType = {
           ...currentSuggestion,
           suggestedValue,
+          ...(property?.type === 'date' ? { suggestedText: rawSuggestion.text } : {}),
           segment: rawSuggestion.segment_text,
           status,
           error,
@@ -236,6 +239,7 @@ class InformationExtraction {
             return rect;
           }),
         };
+
         return IXSuggestionsModel.save(suggestion);
       })
     );
@@ -370,33 +374,52 @@ class InformationExtraction {
 
   processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
+      const [currentModel] = await IXModelsModel.get({
+        propertyName: message.params!.property_name,
+      });
       if (message.task === 'create_model' && message.success) {
-        const [currentModel] = await IXModelsModel.get({
-          propertyName: message.params!.property_name,
-        });
-
         await IXModelsModel.save({
           ...currentModel,
           status: 'ready',
           creationDate: new Date().getTime(),
         });
-
-        emitToTenant(
-          message.tenant,
-          'ix_model_status',
-          message.params!.property_name,
-          'processing_suggestions',
-          'Getting suggestions'
-        );
-
+        await this.updateSuggestionStatus(message, currentModel);
         await this.getSuggestions(message.params!.property_name);
       }
 
       if (message.task === 'suggestions') {
         await this.saveSuggestions(message);
+        await this.updateSuggestionStatus(message, currentModel);
         await this.getSuggestions(message.params!.property_name);
       }
     }, message.tenant);
+  };
+
+  getSuggestionsStatus = async (propertyName: string, modelCreationDate: number) => {
+    const totalSuggestions = await IXSuggestionsModel.count({ propertyName });
+    const processedSuggestions = await IXSuggestionsModel.count({
+      propertyName,
+      date: { $gt: modelCreationDate },
+    });
+    return {
+      total: totalSuggestions,
+      processed: processedSuggestions,
+    };
+  };
+
+  updateSuggestionStatus = async (message: ResultsMessage, currentModel: IXModelType) => {
+    const suggestionsStatus = await this.getSuggestionsStatus(
+      message.params!.property_name,
+      currentModel.creationDate
+    );
+    emitToTenant(
+      message.tenant,
+      'ix_model_status',
+      message.params!.property_name,
+      'processing_suggestions',
+      '',
+      suggestionsStatus
+    );
   };
 }
 

@@ -4,7 +4,7 @@ import syncsModel from './syncsModel';
 import { ProcessNamespaces } from './processNamespaces';
 
 const sanitizeConfig = async config =>
-  Object.keys(config).reduce(async (prev, key) => {
+  Object.keys(config || {}).reduce(async (prev, key) => {
     const sanitized = await prev;
     if (key === 'templates') {
       const templatesData = await models.templates.get({});
@@ -80,9 +80,9 @@ export default async (config, targetName) => {
   return {
     lastSync,
 
-    config: await sanitizeConfig(config),
+    config: await sanitizeConfig(config.config),
 
-    async lastChanges(initialBatchSize = 50) {
+    async lastChanges() {
       const approvedCollections = getApprovedCollections(this.config);
       const firstBatch = await updateLog.find(
         {
@@ -92,7 +92,7 @@ export default async (config, targetName) => {
         null,
         {
           sort: { timestamp: 1 },
-          limit: initialBatchSize,
+          limit: 50,
           lean: true,
         }
       );
@@ -119,6 +119,7 @@ export default async (config, targetName) => {
     },
 
     async shouldSync(change) {
+      if (change.deleted) return { skip: true };
       const templatesConfig = this.config.templates || {};
       const relationtypesConfig = this.config.relationtypes || [];
 

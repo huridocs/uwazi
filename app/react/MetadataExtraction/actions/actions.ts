@@ -19,9 +19,9 @@ const saveConfigurations =
     dispatch(notificationActions.notify(t('System', 'Settings updated'), 'success'));
   };
 
-const fetchEntity = async (entitySharedId: string) => {
-  const entityRequest = new RequestParams({ sharedId: entitySharedId });
-  return EntitiesAPI.get(entityRequest);
+const fetchEntity = async (entityId: string, language: string) => {
+  const entityRequest = new RequestParams({ _id: entityId });
+  return EntitiesAPI.get(entityRequest, language);
 };
 
 const fetchFile = async (fileId: string) => {

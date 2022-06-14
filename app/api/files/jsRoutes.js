@@ -96,7 +96,7 @@ const routes = app => {
   app.post('/api/remotepublic', async (req, res, next) => {
     const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
     proxy(publicFormDestination, {
-      limit: '20mb',
+      limit: '500mb',
       proxyReqPathResolver() {
         return '/api/public';
       },

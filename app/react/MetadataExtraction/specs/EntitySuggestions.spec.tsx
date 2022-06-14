@@ -5,7 +5,7 @@
 import 'mutationobserver-shim';
 import '@testing-library/jest-dom';
 import React from 'react';
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, RenderResult, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import {
   dateSuggestion,
@@ -16,6 +16,7 @@ import {
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { socket } from 'app/socket';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
 
@@ -26,7 +27,13 @@ jest.mock('app/MetadataExtraction/PDFSidePanel', () => ({
   PDFSidePanel: (props: any) => (
     <button
       type="button"
-      onClick={() => props.handleSave({ title: 'abc', other_title: filledPropertyValue })}
+      onClick={() =>
+        props.handleSave({
+          title: 'abc',
+          other_title: filledPropertyValue,
+          __extractedMetadata: { selections: [] },
+        })
+      }
     >
       {mockedPDFSidePanelContent}
     </button>
@@ -35,12 +42,13 @@ jest.mock('app/MetadataExtraction/PDFSidePanel', () => ({
 
 describe('EntitySuggestions', () => {
   const acceptIXSuggestion = jest.fn();
+  let renderResult: RenderResult;
 
   const renderComponent = (property = reviewedProperty) => {
-    renderConnectedContainer(
+    ({ renderResult } = renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
       () => defaultState
-    );
+    ));
   };
 
   describe('Render table', () => {
@@ -228,53 +236,99 @@ describe('EntitySuggestions', () => {
   });
 
   describe('Accepting suggestion', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
-      await act(async () => renderComponent());
+    describe('text property', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+        await act(async () => renderComponent());
+        const rows = screen.getAllByRole('row');
+        const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
+        await act(async () => {
+          fireEvent.click(acceptButton);
+        });
+      });
 
-      const rows = screen.getAllByRole('row');
-      const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
-      await act(async () => {
-        fireEvent.click(acceptButton);
+      it('should accept a suggestion for all languages of an entity', async () => {
+        const languageCheck = screen.getByRole('checkbox') as HTMLInputElement;
+        expect(languageCheck.checked).toBe(true);
+        const confirmButton = screen.getByText('Confirm').parentElement!;
+        await act(async () => {
+          fireEvent.click(confirmButton);
+        });
+        expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], true);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
       });
-    });
-    it('should accept a suggestion for all languages of an entity', async () => {
-      const languageCheck = screen.getByRole('checkbox') as HTMLInputElement;
-      expect(languageCheck.checked).toBe(true);
-      const confirmButton = screen.getByText('Confirm').parentElement!;
-      await act(async () => {
-        fireEvent.click(confirmButton);
-      });
-      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], true);
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
-    });
-    it('should accept a suggestion for only the current language of an entity', async () => {
-      const pendingRow = within(screen.getAllByRole('row')[1])
-        .getAllByRole('cell')
-        .map(cell => cell.textContent);
-      expect(pendingRow[6]).toEqual(SuggestionState.labelMismatch);
-      const languageCheck = screen.getByRole('checkbox');
-      await act(async () => {
-        fireEvent.click(languageCheck);
-      });
-      const confirmButton = screen.getByText('Confirm').parentElement!;
-      await act(async () => {
-        fireEvent.click(confirmButton);
-      });
-      expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], false);
+      it('should accept a suggestion for only the current language of an entity', async () => {
+        const pendingRow = within(screen.getAllByRole('row')[1])
+          .getAllByRole('cell')
+          .map(cell => cell.textContent);
+        expect(pendingRow[6]).toEqual(SuggestionState.labelMismatch);
+        const languageCheck = screen.getByRole('checkbox');
+        await act(async () => {
+          fireEvent.click(languageCheck);
+        });
+        const confirmButton = screen.getByText('Confirm').parentElement!;
+        await act(async () => {
+          fireEvent.click(confirmButton);
+        });
+        expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], false);
 
-      const selectedRow = within(screen.getAllByRole('row')[1])
-        .getAllByRole('cell')
-        .map(cell => cell.textContent);
-      expect(selectedRow[6]).toEqual(SuggestionState.labelMatch);
-    });
-    it('should not accept a suggestion in confirmation is cancelled', async () => {
-      const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
-      await act(async () => {
-        fireEvent.click(cancelButton);
+        const selectedRow = within(screen.getAllByRole('row')[1])
+          .getAllByRole('cell')
+          .map(cell => cell.textContent);
+        expect(selectedRow[6]).toEqual(SuggestionState.labelMatch);
       });
-      expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
+      it('should not accept a suggestion in confirmation is cancelled', async () => {
+        const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
+        await act(async () => {
+          fireEvent.click(cancelButton);
+        });
+        expect(acceptIXSuggestion).not.toBeCalledWith(suggestionsData.suggestions[1], false);
+      });
+      it('should not accept an empty suggestion of a required property', async () => {
+        const prop: PropertySchema = {
+          required: true,
+          name: 'property1',
+          label: 'title_label',
+          type: 'text',
+        };
+        await act(async () => renderComponent(prop));
+        const rows = screen.getAllByRole('row');
+        const acceptButton = within(rows[7]).getByLabelText('Accept suggestion');
+        expect(acceptButton).toBeDisabled();
+      });
+    });
+
+    describe('date property', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(
+          Promise.resolve({ suggestions: [{ ...dateSuggestion }], totalPages: 1 })
+        );
+        await act(async () =>
+          renderComponent({
+            name: 'fecha',
+            type: 'date',
+            label: 'Fecha',
+          })
+        );
+        const rows = screen.getAllByRole('row');
+        const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
+        await act(async () => {
+          fireEvent.click(acceptButton);
+        });
+      });
+
+      it('should accept a suggestion for all languages of an entity', async () => {
+        const languageCheck = screen.queryByRole('checkbox');
+        expect(languageCheck).toBeNull();
+        const confirmButton = screen.getByText('Confirm').parentElement!;
+        await act(async () => {
+          fireEvent.click(confirmButton);
+        });
+        expect(acceptIXSuggestion).toBeCalledWith(dateSuggestion, true);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -298,6 +352,22 @@ describe('EntitySuggestions', () => {
         .getAllByRole('cell')
         .map(cell => cell.textContent);
       expect(updatedRow[2]).toEqual(`Other title${filledPropertyValue}`);
+    });
+  });
+
+  describe('Sockets', () => {
+    it('should subscribe to a socket event only once', async () => {
+      spyOn(socket, 'on').and.returnValue(() => {});
+      await act(async () => renderComponent());
+      expect(socket.on).toHaveBeenCalledTimes(1);
+      expect(socket.on).toHaveBeenCalledWith('ix_model_status', expect.any(Function));
+    });
+    it('should remove subscription to a socket when unmounting', async () => {
+      spyOn(socket, 'off').and.returnValue(() => {});
+      await act(async () => renderComponent());
+      renderResult.unmount();
+      expect(socket.off).toHaveBeenCalledTimes(1);
+      expect(socket.off).toHaveBeenCalledWith('ix_model_status');
     });
   });
 });

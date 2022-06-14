@@ -347,6 +347,12 @@ describe('Relationships actions', () => {
                 type: 'NOTIFY',
                 notification: { message: 'Relationships saved', type: 'success', id: 'unique_id' },
               },
+              {
+                type: 'SET_REFERENCES',
+                references: {
+                  rows: ['entity'],
+                },
+              },
             ]);
             done();
           });
@@ -575,6 +581,18 @@ describe('Relationships actions', () => {
             done();
           });
       });
+    });
+
+    it('should dispatch only saving status action on a failed save', async () => {
+      const error = new Error('error');
+      api.post = jest.fn().mockRejectedValue(error);
+
+      await actions.saveRelationships()(store.dispatch, getState);
+
+      expect(store.getActions()).toEqual([
+        { type: types.SAVING_RELATIONSHIPS },
+        { type: 'SAVED_RELATIONSHIPS', e: error },
+      ]);
     });
   });
 

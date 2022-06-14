@@ -74,16 +74,25 @@ const initMongoServer = async (dbName: string) => {
 const testingDB: {
   mongodb: Db | null;
   dbName: string;
+  UserInContextMockFactory: UserInContextMockFactory;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
   id: (id?: string | undefined) => ObjectIdSchema;
   clear: (collections?: string[] | undefined) => Promise<void>;
+  /**
+   * @deprecated
+   */
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
-  setupFixturesAndContext: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
-  clearAllAndLoadFixtures: (fixtures: DBFixture) => Promise<void>;
+  setupFixturesAndContext: (
+    fixtures: DBFixture,
+    elasticIndex?: string,
+    dbName?: string
+  ) => Promise<void>;
+  clearAllAndLoadFixtures: (fixtures: DBFixture, dbName?: string) => Promise<void>;
 } = {
   mongodb: null,
   dbName: '',
+  UserInContextMockFactory: new UserInContextMockFactory(),
 
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
@@ -123,10 +132,14 @@ const testingDB: {
     await fixturer.clear(mongodb, collections);
   },
 
-  async setupFixturesAndContext(fixtures: DBFixture, elasticIndex?: string) {
+  async setupFixturesAndContext(fixtures: DBFixture, elasticIndex?: string, dbName?: string) {
     await this.connect();
-    await fixturer.clearAllAndLoad(mongodb, fixtures);
-    new UserInContextMockFactory().mockEditorUser();
+    let optionalMongo: Db | null = null;
+    if (dbName) {
+      optionalMongo = DB.connectionForDB(dbName).db;
+    }
+    await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
+    this.UserInContextMockFactory.mockEditorUser();
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });

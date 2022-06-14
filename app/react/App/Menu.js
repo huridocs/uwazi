@@ -53,69 +53,71 @@ export class Menu extends Component {
     });
 
     return (
-      <ul onClick={this.props.onClick} className={this.props.className}>
-        <li className="menuItems">
-          <ul className="menuNav-list">{navLinks}</ul>
-        </li>
-        <li className="menuActions mobile-menuActions">
-          <ul className="menuNav-list">
-            <FeatureToggleSemanticSearch>
-              <li className="menuNav-item semantic-search">
-                <button
-                  type="button"
-                  onClick={this.props.showSemanticSearch}
-                  className="menuNav-btn btn btn-default"
-                  aria-label={t('System', 'Semantic search', null, false)}
-                >
-                  <Icon icon="flask" />
-                  <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
-                </button>
-              </li>
-            </FeatureToggleSemanticSearch>
-            <li className="menuNav-item">
-              <I18NLink
-                to={this.libraryUrl()}
-                className="menuNav-btn btn btn-default public-documents"
-                aria-label={t('System', 'Library', null, false)}
-              >
-                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
-                <span className="tab-link-tooltip">{t('System', 'Library')}</span>
-              </I18NLink>
-            </li>
-            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+      <>
+        <ul className={this.props.className}>
+          <li className="menuItems" onClick={this.props.onClick}>
+            <ul className="menuNav-list">{navLinks}</ul>
+          </li>
+          <I18NMenu />
+          <li className="menuActions mobile-menuActions" onClick={this.props.onClick}>
+            <ul className="menuNav-list">
+              <FeatureToggleSemanticSearch>
+                <li className="menuNav-item semantic-search">
+                  <button
+                    type="button"
+                    onClick={this.props.showSemanticSearch}
+                    className="menuNav-btn btn btn-default"
+                    aria-label={t('System', 'Semantic search', null, false)}
+                  >
+                    <Icon icon="flask" />
+                    <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+                  </button>
+                </li>
+              </FeatureToggleSemanticSearch>
               <li className="menuNav-item">
                 <I18NLink
-                  to="/settings/account"
-                  className="menuNav-btn btn btn-default settings-section"
-                  aria-label={t('System', 'Account settings', null, false)}
+                  to={this.libraryUrl()}
+                  className="menuNav-btn btn btn-default public-documents"
+                  aria-label={t('System', 'Library', null, false)}
                 >
-                  <Icon icon="cog" />
-                  <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
+                  <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
+                  <span className="tab-link-tooltip">{t('System', 'Library')}</span>
                 </I18NLink>
               </li>
-            </NeedAuthorization>
-            {(() => {
-              if (!user._id) {
-                return (
-                  <li className="menuNav-item">
-                    <I18NLink
-                      to="/login"
-                      className="menuNav-btn btn btn-default"
-                      aria-label={t('System', 'Sign in', null, false)}
-                    >
-                      <Icon icon="power-off" />
-                      <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
-                    </I18NLink>
-                  </li>
-                );
-              }
+              <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+                <li className="menuNav-item">
+                  <I18NLink
+                    to="/settings/account"
+                    className="menuNav-btn btn btn-default settings-section"
+                    aria-label={t('System', 'Account settings', null, false)}
+                  >
+                    <Icon icon="cog" />
+                    <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
+                  </I18NLink>
+                </li>
+              </NeedAuthorization>
+              {(() => {
+                if (!user._id) {
+                  return (
+                    <li className="menuNav-item">
+                      <I18NLink
+                        to="/login"
+                        className="menuNav-btn btn btn-default"
+                        aria-label={t('System', 'Sign in', null, false)}
+                      >
+                        <Icon icon="power-off" />
+                        <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
+                      </I18NLink>
+                    </li>
+                  );
+                }
 
-              return null;
-            })()}
-          </ul>
-          <I18NMenu />
-        </li>
-      </ul>
+                return null;
+              })()}
+            </ul>
+          </li>
+        </ul>
+      </>
     );
   }
 }
