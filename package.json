@@ -297,7 +297,7 @@
     "jest": "27.5.1",
     "jest-environment-jsdom": "^27.0.6",
     "jest-extended": "2.0.0",
-    "jest-image-snapshot": "^4.5.1",
+    "jest-image-snapshot": "^5.1.0",
     "jest-puppeteer": "6.1.0",
     "mini-css-extract-plugin": "^1.6.2",
     "mongodb-memory-server": "^8.4.1",
