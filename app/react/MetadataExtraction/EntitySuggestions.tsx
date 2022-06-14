@@ -241,6 +241,9 @@ export const EntitySuggestions = ({
       (propertyName: string, modelStatus: string, _: string, data: any) => {
         if (propertyName === reviewedProperty.name) {
           setStatus({ key: modelStatus, data });
+          if (data && data.total === data.processed) {
+            retrieveSuggestions();
+          }
         }
       }
     );

@@ -474,20 +474,29 @@ export const Suggestions = {
         }
 
         const fetchedFiles = await files.get(
-          { entity: { $in: entitiesSharedIds } },
-          '_id entity language'
+          { entity: { $in: entitiesSharedIds }, type: 'document' },
+          '_id entity language extractedMetadata'
         );
 
         const blankSuggestions: any[] = [];
         fetchedFiles.forEach((file: any) => {
           const language = languages.get(file.language, 'ISO639_1') || defaultLanguage;
           template.properties.forEach((propertyName: string) => {
+            let status = SuggestionState.valueEmpty;
+            if (file.extractedMetadata) {
+              const metadata = file.extractedMetadata.find(
+                (md: ExtractedMetadataSchema) => md.name === propertyName
+              );
+              if (metadata) {
+                status = SuggestionState.labelEmpty;
+              }
+            }
             blankSuggestions.push({
               language,
               fileId: file._id,
               entityId: file.entity,
               propertyName,
-              status: 'processing',
+              status,
               error: '',
               segment: '',
               suggestedValue: '',

@@ -30,6 +30,25 @@ describe('suggestions', () => {
     });
   });
 
+  describe('createBlankStates()', () => {
+    it('should create blank states based on settings', async () => {
+      await IXSuggestionsModel.delete({});
+      const settings = [
+        {
+          template: personTemplateId,
+          properties: ['title'],
+        },
+      ];
+      await Suggestions.createBlankState(settings, 'en');
+      const newSuggestions = await IXSuggestionsModel.get({
+        propertyName: 'title',
+      });
+      expect(newSuggestions.length).toBe(2);
+      expect(newSuggestions[0].status).toBe(SuggestionState.valueEmpty);
+      expect(newSuggestions[1].status).toBe(SuggestionState.valueEmpty);
+    });
+  });
+
   describe('get()', () => {
     it('should return all title suggestions', async () => {
       const { suggestions } = await Suggestions.get(
@@ -39,12 +58,12 @@ describe('suggestions', () => {
       expect(suggestions.length).toBe(6);
     });
 
-    it('should return all suggestions', async () => {
+    it('should return all suggestions not processing', async () => {
       const { suggestions } = await Suggestions.get(
         { propertyName: 'super_powers' },
         { page: { size: 50, number: 1 } }
       );
-      expect(suggestions.length).toBe(3);
+      expect(suggestions.length).toBe(2);
     });
 
     it('should return match status', async () => {
@@ -52,7 +71,7 @@ describe('suggestions', () => {
 
       expect(
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
-      ).toBe(SuggestionState.valueMismatch);
+      ).toBe(SuggestionState.labelMatch);
 
       const { suggestions: enemySuggestions } = await getSuggestions('enemy');
 
@@ -142,7 +161,7 @@ describe('suggestions', () => {
           },
           true
         );
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toBe('Suggestion has an error');
       }
     });
