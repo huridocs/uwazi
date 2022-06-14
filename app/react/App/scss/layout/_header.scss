@@ -50,12 +50,13 @@ header {
     text-align: center;
     font-size: $f-size-lg;
     cursor: pointer;
-    @if $theme == light {
-      color: $c-black;
-    } @else {
-      color: $c-white;
-    }
+
     @media (min-width: 1024px) {
+      @if $theme == light {
+        color: $c-black;
+      } @else {
+        color: $c-white;
+      }
       display: none;
     }
   }
@@ -87,7 +88,8 @@ header {
     min-width: 250px;
     top: 50px;
     height: calc(100% - 50px);
-    background-color: var(--c-menu-mobile);
+    background-color: var(--c-bg-menu-mobile);
+    color: var(--c-text-menu-mobile);
     border-top: 1px solid transparentize($c-black, 0.6);
     overflow: auto;
     transition: all 225ms;
@@ -243,6 +245,7 @@ header {
       &.expanded {
         display: flex;
         background-color: inherit;
+        color: inherit;
         box-shadow: none;
         border: 0;
         position: relative;
@@ -255,6 +258,7 @@ header {
           a {
             text-align: left;
             width: 100%;
+            color: inherit;
             &:hover {
               background-color: #cfd8dc;
               width: 95%;
@@ -266,7 +270,7 @@ header {
     }
   }
   &.only-mobile {
-    @media (min-width: 1023px) {
+    @media (min-width: 1024px) {
       display: none;
     }
   }
@@ -306,9 +310,8 @@ header {
   @media (max-width: 1023px) {
     line-height: 38px;
     height: 2.65em;
-
+    color: inherit;
     text-align: left;
-    color: black;
     &.active-link {
       background-color: var(--c-menu-active-link);
       border: 1px;
@@ -336,6 +339,9 @@ header {
         color: $c-white;
       }
     }
+    @media (max-width: 1023px) {
+      color: inherit;
+    }
   }
 }
 
@@ -360,6 +366,7 @@ header {
           display: inline-flex;
           align-items: center;
           gap: 10px;
+          color: inherit;
         }
         :hover {
           border: 1px;
@@ -383,18 +390,21 @@ header {
       padding-right: 5px;
     }
   }
-  .Dropdown:not(.is-active) {
-    .Dropdown-label {
-      @if $theme != light {
-        color: $c-white;
-      }
-    }
 
-    a {
-      @if $theme == light {
-        color: $c-black;
-      } @else {
-        color: $c-white;
+  @media (min-width: 1024px) {
+    .Dropdown:not(.is-active) {
+      .Dropdown-label {
+        @if $theme != light {
+          color: $c-white;
+        }
+      }
+
+      a {
+        @if $theme == light {
+          color: $c-black;
+        } @else {
+          color: $c-white;
+        }
       }
     }
   }
@@ -424,6 +434,7 @@ header {
     @media (max-width: 1023px) {
       border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 3px;
+      color: inherit;
       background-color: transparent;
       .rw-widget-picker {
         height: 1.5em;
@@ -472,6 +483,9 @@ header {
       @media (min-width: 1024px) {
         color: $c-white;
         height: $header-height;
+      }
+      @media (max-width: 1023px) {
+        color: var(--c-text-menu-mobile);
       }
     }
 
