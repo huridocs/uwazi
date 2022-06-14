@@ -29,13 +29,6 @@ const templateToSave = {
   commonProperties: templateCommonProperties,
 };
 
-const syncedTemplateToSave = {
-  name: 'template5',
-  properties: [],
-  commonProperties: templateCommonProperties,
-  synced: true,
-};
-
 const emitToCurrentTenantSpy = jasmine.createSpy('emitToCurrentTenant');
 
 describe('templates routes', () => {
