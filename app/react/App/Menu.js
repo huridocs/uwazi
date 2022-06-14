@@ -34,7 +34,7 @@ class Menu extends Component {
         if (url.startsWith('http')) {
           return (
             <li key={link.get('_id')} className="menuNav-item">
-              <a href={url} className="btn menuNav-btn" target="_blank" rel="noreferrer">
+              <a href={url} className="btn menuNav-btn" activeClassName="active-link" target="_blank" rel="noreferrer">
                 {t('Menu', link.get('title'))}
               </a>
             </li>
@@ -42,7 +42,7 @@ class Menu extends Component {
         }
         return (
           <li key={link.get('_id')} className="menuNav-item">
-            <I18NLink to={url} className="btn menuNav-btn">
+            <I18NLink to={url} className="btn menuNav-btn" activeClassName="active-link">
               {t('Menu', link.get('title'))}
             </I18NLink>
           </li>
@@ -78,6 +78,7 @@ class Menu extends Component {
                 <I18NLink
                   to={this.libraryUrl()}
                   className="menuNav-btn btn btn-default public-documents"
+                  activeClassName="active-link"
                   aria-label={t('System', 'Library', null, false)}
                 >
                   <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
@@ -89,6 +90,7 @@ class Menu extends Component {
                   <I18NLink
                     to="/settings/account"
                     className="menuNav-btn btn btn-default settings-section"
+                    activeClassName="active-link"
                     aria-label={t('System', 'Account settings', null, false)}
                   >
                     <Icon icon="cog" />

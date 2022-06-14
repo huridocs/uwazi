@@ -87,8 +87,7 @@ header {
     min-width: 250px;
     top: 50px;
     height: calc(100% - 50px);
-    background: $c-theme;
-    background-color: #eceff1;
+    background-color: var(--c-menu-mobile);
     border-top: 1px solid transparentize($c-black, 0.6);
     overflow: auto;
     transition: all 225ms;
@@ -100,6 +99,7 @@ header {
     &:not(.is-active) {
       display: none;
     }
+    padding-bottom: 35px;
   }
   @media (min-width: 1024px) {
     display: flex;
@@ -135,7 +135,7 @@ header {
     height: 100vh;
     object-fit: cover;
     position: fixed;
-    background-color: #c2c2c2;
+    background-color: $c-filter-film;
     -webkit-filter: contrast(125%) brightness(75%);
     filter: contrast(125%) brightness(75%);
   }
@@ -147,7 +147,7 @@ header {
   @media (max-width: 1023px) {
     display: flex;
     overflow: auto;
-    scrollbar-color: #cfd8dc #eceff1;
+    scrollbar-color: transparent transparent;
     scrollbar-width: thin;
     order: 1;
     padding-left: 15px;
@@ -209,10 +209,27 @@ header {
       .fa-caret-down {
         order: -1;
         height: inherit;
+        -webkit-transform: rotate(-90deg);
+        -moz-transform: rotate(-90deg);
+        -ms-transform: rotate(-90deg);
+        -o-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+      }
+
+      &.expanded {
+        .fa-caret-down {
+          order: -1;
+          height: inherit;
+          -webkit-transform: rotate(0);
+          -moz-transform: rotate(0);
+          -ms-transform: rotate(0);
+          -o-transform: rotate(0);
+          transform: rotate(0);
+        }
       }
 
       &:hover {
-        background-color: #cfd8dc;
+        background-color: var(--c-menu-highlight);
         width: 95%;
         border-radius: 5px;
       }
@@ -223,7 +240,7 @@ header {
     }
 
     .dropdown-menu {
-      &.show {
+      &.expanded {
         display: flex;
         background-color: inherit;
         box-shadow: none;
@@ -236,6 +253,7 @@ header {
           display: flex;
           flex-direction: column;
           a {
+            text-align: left;
             width: 100%;
             &:hover {
               background-color: #cfd8dc;
@@ -288,8 +306,20 @@ header {
   @media (max-width: 1023px) {
     line-height: 38px;
     height: 2.65em;
+
     text-align: left;
     color: black;
+    &.active-link {
+      background-color: var(--c-menu-active-link);
+      border: 1px;
+      border-radius: 5px;
+    }
+    &:hover {
+      background-color: var(--c-menu-highlight);
+      border: 1px;
+      border-radius: 5px;
+      width: 95%;
+    }
   }
 
   &:hover,
@@ -325,6 +355,7 @@ header {
 
       .menuNav-item {
         height: 2.65em;
+        width: 95%;
         a {
           display: inline-flex;
           align-items: center;
@@ -333,7 +364,8 @@ header {
         :hover {
           border: 1px;
           border-radius: 5px;
-          background-color: #cfd8dc;
+          width: 100%;
+          background-color: var(--c-menu-highlight);
         }
       }
     }
@@ -374,22 +406,38 @@ header {
     min-width: 150px;
     width: 100%;
     gap: 10px;
-    height: $header-height;
 
     .rw-popup {
-      min-width: 150px;
-      width: 20ch;
-
       ul {
         max-height: 50vh;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      height: $header-height;
+      .rw-popup {
+        min-width: 150px;
+        width: 20ch;
       }
     }
 
     @media (max-width: 1023px) {
       border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 3px;
+      background-color: transparent;
       .rw-widget-picker {
         height: 1.5em;
+      }
+
+      &:not.singleItem {
+        margin-top: 15px;
+        margin-bottom: 25px;
+      }
+
+      &.singleItem {
+        width: 85%;
+        margin-top: 20px;
+        margin-bottom: 30px;
       }
     }
 
@@ -422,12 +470,8 @@ header {
     .rw-btn-select {
       cursor: pointer;
       @media (min-width: 1024px) {
-        background-color: $c-theme;
-        color: $c-white;     
+        color: $c-white;
         height: $header-height;
-      }
-      @media (max-width: 1023px) {
-        background-color: #eceff1;
       }
     }
 
@@ -460,11 +504,10 @@ header {
       @media (min-width: 1024px) {
         color: $c-white;
         background-color: $c-theme;
-        color: $c-white;
         align-self: center;
       }
       @media (max-width: 1023px) {
-        background-color: #eceff1;
+        background-color: transparent;
       }
     }
   }
@@ -494,21 +537,4 @@ header {
 }
 .hide {
   display: none;
-}
-
-.dropdown-menu {
-  li {
-    a {
-      display: flex;
-      justify-content: flex-start;
-      width: auto;
-      min-width: 100px;
-      padding: 12px;
-      height: 40px;
-
-      &:hover {
-        background: #f8f8f8;
-      }
-    }
-  }
 }

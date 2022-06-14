@@ -39,14 +39,14 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
     <li className="menuNav-item" key={position} ref={dropdownRef}>
       <button
         type="button"
-        className="btn menuNav-btn menuNav-link dropdown-toggle"
+        className={`btn menuNav-btn menuNav-link dropdown-toggle ${showing ? 'expanded' : ''} `}
         id="navbarDropdownMenuLink"
         onClick={toggleShowing}
       >
         <Translate context="Menu">{link.get('title')}</Translate>
         &nbsp; <Icon icon="caret-down" />
       </button>
-      <ul className={`dropdown-menu ${showing ? 'show' : ''} `}>
+      <ul className={`dropdown-menu ${showing ? 'expanded' : ''} `}>
         {link.get('sublinks').map((sublink?: IImmutable<ISublink>, index?: number) => {
           const url = sublink?.get('url') || '/';
           if (url.startsWith('http')) {

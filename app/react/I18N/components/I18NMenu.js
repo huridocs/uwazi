@@ -103,9 +103,7 @@ class I18NMenu extends Component {
               onClick={toggleInlineEdit}
               aria-label={t('System', 'Turn off inline translation', null, false)}
             >
-              <div className="live-translate">
-                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-              </div>
+                <Icon className="live-translate" icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
             </button>
             <span className="singleItem">
               <Translate>Live translate</Translate>
@@ -114,7 +112,7 @@ class I18NMenu extends Component {
         )}
       </div>
     ) : (
-      <div className="menuNav-language">
+      <div className="menuNav-language singleItem">
         <span className="singleItem">{selectedLanguage.label}</span>
       </div>
     );
