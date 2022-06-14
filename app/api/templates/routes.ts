@@ -2,25 +2,13 @@ import { Application } from 'express';
 import settings from 'api/settings';
 import { reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
-import { TemplateSchema } from 'shared/types/templateType';
 import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
-import { checkIfReindex } from './reindex';
 
 const reindexAllTemplates = async () => {
   const allTemplates = await templates.get();
   return reindexAll(allTemplates, search);
-};
-
-const saveTemplate = async (template: TemplateSchema, language: string, fullReindex?: boolean) => {
-  const templateStructureChanges = await checkIfReindex(template);
-  return templates.save(
-    template,
-    language,
-    !fullReindex && !template.synced,
-    templateStructureChanges
-  );
 };
 
 const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
@@ -40,7 +28,7 @@ export default (app: Application) => {
       const { reindex: fullReindex, ...template } = req.body;
 
       const response = await handleMappingConflict(async () =>
-        saveTemplate(template, req.language, fullReindex)
+        templates.save(template, req.language, !fullReindex)
       );
 
       req.sockets.emitToCurrentTenant('templateChange', response);
