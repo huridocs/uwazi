@@ -34,7 +34,13 @@ class Menu extends Component {
         if (url.startsWith('http')) {
           return (
             <li key={link.get('_id')} className="menuNav-item">
-              <a href={url} className="btn menuNav-btn" activeClassName="active-link" target="_blank" rel="noreferrer">
+              <a
+                href={url}
+                className="btn menuNav-btn"
+                activeClassName="active-link"
+                target="_blank"
+                rel="noreferrer"
+              >
                 {t('Menu', link.get('title'))}
               </a>
             </li>
@@ -91,10 +97,10 @@ class Menu extends Component {
                     to="/settings/account"
                     className="menuNav-btn btn btn-default settings-section"
                     activeClassName="active-link"
-                    aria-label={t('System', 'Account settings', null, false)}
+                    aria-label={t('System', 'Settings', null, false)}
                   >
                     <Icon icon="cog" />
-                    <span className="tab-link-label">{t('System', 'Account settings')}</span>
+                    <span className="tab-link-label">{t('System', 'Settings')}</span>
                   </I18NLink>
                 </li>
               </NeedAuthorization>

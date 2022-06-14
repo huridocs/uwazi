@@ -51,12 +51,13 @@ header {
     font-size: $f-size-lg;
     cursor: pointer;
 
+    @if $theme == light {
+      color: $c-black;
+    } @else {
+      color: $c-white;
+    }
+
     @media (min-width: 1024px) {
-      @if $theme == light {
-        color: $c-black;
-      } @else {
-        color: $c-white;
-      }
       display: none;
     }
   }
