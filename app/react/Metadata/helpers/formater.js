@@ -8,7 +8,7 @@ import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedPro
 const prepareRelatedEntity = (options, propValue, templates, property) => {
   const relation =
     options.doc && options.doc.relations
-      ? options.doc.relations.find(rel => rel.entity === propValue[0].value)
+      ? options.doc.relations.find(rel => rel.entity === propValue.value)
       : undefined;
 
   if (relation && relation.entityData) {
@@ -296,7 +296,7 @@ export default {
             return null;
           }
 
-          const relatedEntity = prepareRelatedEntity(options, propValue, templates, property);
+          const relatedEntity = prepareRelatedEntity(options, v, templates, property);
 
           const formattedValue = this[methodType](
             propertyInfo,
