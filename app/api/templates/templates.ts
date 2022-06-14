@@ -1,16 +1,18 @@
-import entities from 'api/entities';
-import translations from 'api/i18n/translations';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
-import createError from 'api/utils/Error';
-import { TemplateSchema } from 'shared/types/templateType';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { updateMapping } from 'api/search/entitiesIndex';
-import { ensure } from 'shared/tsUtils';
 import { ObjectID } from 'mongodb';
 
-import { validateTemplate } from 'shared/types/templateSchema';
-import { propertyTypes } from 'shared/propertyTypes';
+import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
+import translations from 'api/i18n/translations';
+import { updateMapping } from 'api/search/entitiesIndex';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
+import createError from 'api/utils/Error';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { propertyTypes } from 'shared/propertyTypes';
+import { TemplateSchema } from 'shared/types/templateType';
+import { validateTemplate } from 'shared/types/templateSchema';
+import { ensure } from 'shared/tsUtils';
+
+import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
   generateNames,
@@ -154,12 +156,7 @@ const getRelatedThesauri = async (template: TemplateSchema) => {
 };
 
 export default {
-  async save(
-    template: TemplateSchema,
-    language: string,
-    reindex = true,
-    templateStructureChanges = true
-  ) {
+  async save(template: TemplateSchema, language: string, reindex = true) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
@@ -173,9 +170,7 @@ export default {
       await updateMapping([template]);
     }
 
-    return template._id
-      ? this._update(template, language, reindex, templateStructureChanges)
-      : _save(template);
+    return template._id ? this._update(template, language, reindex) : _save(template);
   },
 
   async swapNamesValidation(template: TemplateSchema) {
@@ -196,12 +191,9 @@ export default {
     });
   },
 
-  async _update(
-    template: TemplateSchema,
-    language: string,
-    reindex = true,
-    templateStructureChanges = true
-  ) {
+  async _update(template: TemplateSchema, language: string, _reindex = true) {
+    const reindex = _reindex && !template.synced;
+    const templateStructureChanges = await checkIfReindex(template);
     const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
     if (templateStructureChanges || currentTemplate.name !== template.name) {
       await updateTranslation(currentTemplate, template);
