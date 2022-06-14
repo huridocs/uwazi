@@ -19,6 +19,7 @@ describe('Private instance', () => {
 
   it('should log in as admin, and toggle private instance in collection settings', async () => {
     await adminLogin();
+    await page.goto(`${host}/settings/account`);
     await expect(page).toMatchElement('span', { text: 'Account' });
     await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Collection' });
