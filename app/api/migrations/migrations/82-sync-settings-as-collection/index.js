@@ -12,7 +12,7 @@ export default {
     process.stdout.write(`${this.name}...\r\n`);
     const [settings] = await db.collection('settings').find({}).toArray();
 
-    if (Array.isArray(settings.sync)) return;
+    if (!settings.sync || Array.isArray(settings.sync)) return;
 
     await db.collection('settings').updateOne({}, { $set: { sync: [settings.sync] } });
   },

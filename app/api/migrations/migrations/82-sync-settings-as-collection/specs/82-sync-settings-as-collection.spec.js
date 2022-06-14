@@ -51,6 +51,8 @@ describe('migration sync-settings-as-collection', () => {
       ],
     });
 
+    await migration.up(testingDB.mongodb);
+
     const [settings] = await testingDB.mongodb.collection('settings').find().toArray();
 
     expect(settings.sync).not.toBeDefined();
