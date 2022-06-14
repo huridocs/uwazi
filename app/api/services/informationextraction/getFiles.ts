@@ -35,20 +35,16 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
 
   const segmentationDictionary = Object.assign(
     {},
-    ...segmentationForFiles.map(segmentation => {
-      return { [segmentation.filename]: segmentation };
-    })
+    ...segmentationForFiles.map(segmentation => ({ [segmentation.filename]: segmentation }))
   );
 
-  return files.map(file => {
-    return {
-      _id: file._id,
-      language: file.language,
-      extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
-      entity: file.entity,
-      segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
-    };
-  });
+  return files.map(file => ({
+    _id: file._id,
+    language: file.language,
+    extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
+    entity: file.entity,
+    segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
+  }));
 }
 
 async function getSegmentedFilesIds() {

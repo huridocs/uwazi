@@ -56,7 +56,6 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
                   fgColor="black"
                   includeMargin={false}
                   level="Q"
-                  renderAs="svg"
                   size={200}
                   value="otpAuthURL"
                 />
@@ -221,7 +220,6 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
                   fgColor="black"
                   includeMargin={false}
                   level="Q"
-                  renderAs="svg"
                   size={200}
                   value="otpAuthURL"
                 />

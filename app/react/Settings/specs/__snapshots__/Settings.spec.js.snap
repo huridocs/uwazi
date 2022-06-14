@@ -18,15 +18,6 @@ Array [
     ],
   },
   Object {
-    "type": "relationTypes/SET",
-    "value": Array [
-      Object {
-        "_id": 1,
-        "name": "Supports",
-      },
-    ],
-  },
-  Object {
     "type": "translations/SET",
     "value": Array [
       Object {

@@ -1,8 +1,5 @@
-/** @format */
-
 import UsersAPI from 'app/Users/UsersAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
-import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import { I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
@@ -14,7 +11,6 @@ describe('Settings', () => {
   describe('requestState', () => {
     const user = { name: 'doe' };
     const dictionaries = [{ _id: 1, name: 'Countries' }];
-    const relationTypes = [{ _id: 1, name: 'Supports' }];
     const models = [];
     const translations = [{ _id: 1, locale: 'es', values: {} }];
     const templates = [];
@@ -25,7 +21,6 @@ describe('Settings', () => {
       spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
       spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(dictionaries));
       spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
-      spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
       spyOn(I18NApi, 'get').and.returnValue(Promise.resolve(translations));
       spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve(settings));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
