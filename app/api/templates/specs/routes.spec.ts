@@ -109,17 +109,6 @@ describe('templates routes', () => {
 
       expect(emitToCurrentTenantSpy).not.toHaveBeenCalledWith('updateSettings');
     });
-
-    it('should not reindex when saving a synced template', async () => {
-      const templateSaveSpy = spyOn(templates, 'save').and.returnValue({
-        _id: 'savedid',
-        name: 'template5',
-      });
-
-      await postToEndpoint('/api/templates', syncedTemplateToSave);
-
-      expect(templateSaveSpy).toHaveBeenCalledWith(syncedTemplateToSave, undefined, false, false);
-    });
   });
 
   describe('/templates/count_by_thesauri', () => {

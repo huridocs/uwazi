@@ -40,10 +40,21 @@ describe('reindex', () => {
       await expectReindex(template, false);
     });
 
+    it('should not reindex synced template', async () => {
+      const [template] = await templates.get({ _id: templateWithContents });
+      const newTemplate = {
+        ...template,
+        synced: true,
+        properties: template.properties.slice(1),
+      };
+      await templates.save(newTemplate, 'en');
+      expect(search.indexEntities).toHaveBeenCalledTimes(0);
+    });
+
     describe('Properties', () => {
       it.each([
         { change: 'use as filter is checked', propChange: { filter: true } },
-        { change: 'default filter is checked', propChange: { defaultFilter: true } },
+        { change: 'default filter is checked', propChange: { defaultfilter: true } },
         { change: 'hide label is checked', propChange: { noLabel: true } },
         { change: 'show in card is checked', propChange: { showInCard: true } },
         { change: 'required property is checked', propChange: { required: true } },
@@ -72,12 +83,6 @@ describe('reindex', () => {
 
   describe('Reindex', () => {
     describe('Property', () => {
-      let template;
-
-      beforeAll(async () => {
-        [template] = await templates.get({ _id: templateWithContents });
-      });
-
       it.each([
         {
           change: 'a property has been deleted',
@@ -85,13 +90,14 @@ describe('reindex', () => {
         },
         {
           change: 'a property name has been changed',
-          getProperties: props => [{ ...props[0], name: 'New property name' }, ...props.slice(1)],
+          getProperties: props => [{ ...props[0], label: 'New property name' }, ...props.slice(1)],
         },
         {
           change: 'new property has been added',
           getProperties: props => props.concat([{ type: propertyTypes.text, label: 'text' }]),
         },
       ])('should reindex when $change', async ({ getProperties }) => {
+        const [template] = await templates.get({ _id: templateWithContents });
         const newTemplate = {
           ...template,
           properties: getProperties(template.properties),
@@ -105,7 +111,7 @@ describe('reindex', () => {
           property: propertyToBeInherited2.toString(),
           type: 'text',
         };
-        await expectReindex(inheritingTemplate, true);
+        expect(await checkIfReindex(inheritingTemplate)).toBe(true);
       });
     });
     describe('commonProperty', () => {
