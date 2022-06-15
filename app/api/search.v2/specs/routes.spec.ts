@@ -12,9 +12,11 @@ import {
   entity1en,
   entity2en,
   entity3en,
+  entity4en,
   entity1es,
   entity2es,
   entity3es,
+  entity4es,
 } from './fixturesTitleSearch';
 
 describe('entities get searchString', () => {
@@ -57,6 +59,12 @@ describe('entities get searchString', () => {
           title: 'title to search 2',
           template: 'template1',
         },
+        {
+          _id: entity4en.toString(),
+          sharedId: 'entity4SharedId',
+          title: 'entity with short fullText',
+          template: 'template1',
+        },
       ]);
 
       expect(body.links.self).toBe('/api/v2/entities');
@@ -78,10 +86,15 @@ describe('entities get searchString', () => {
           language: 'es',
         }),
         expect.objectContaining({ _id: entity3es.toString(), title: 'title without busqueda' }),
+        expect.objectContaining({
+          _id: entity4es.toString(),
+          title: 'entidad con texto completo corto',
+        }),
       ]);
     });
 
-    it('should return entities that match the searchString', async () => {
+    // eslint-disable-next-line jest/no-focused-tests
+    fit('should return entities that match the searchString', async () => {
       const { body: bodyEn } = await request(app)
         .get('/api/v2/entities')
         .query({ filter: { searchString: 'search' } })
@@ -99,6 +112,17 @@ describe('entities get searchString', () => {
         .expect(200);
 
       expect(bodyEs.data).toEqual([expect.objectContaining({ title: 'titulo to search' })]);
+
+      const { body: bodyFull } = await request(app)
+        .get('/api/v2/entities')
+        .query({ filter: { searchString: 'unique' } })
+        .expect(200);
+
+      console.log(bodyFull);
+
+      expect(bodyFull.data).toEqual([
+        expect.objectContaining({ title: 'entity with short fullText' }),
+      ]);
     });
 
     it('should return entities that match the searchString, when it is a number', async () => {
@@ -133,6 +157,7 @@ describe('entities get searchString', () => {
         },
         { _id: entity2en.toString(), sharedId: 'entity2SharedId', language: 'en' },
         { _id: entity3en.toString(), sharedId: 'entity3SharedId', language: 'en' },
+        { _id: entity4en.toString(), sharedId: 'entity4SharedId', language: 'en' },
       ]);
     });
 
