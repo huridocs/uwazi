@@ -68,15 +68,6 @@ header {
   }
 }
 
-@media (min-width: 1024px) {
-  .menuActions {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row-reverse;
-    flex-direction: row-reverse;
-  }
-}
-
 .menuNav {
   padding: 0;
   margin: 0;
@@ -109,6 +100,10 @@ header {
     justify-content: space-between;
     align-items: center;
     height: $header-height;
+  }
+
+  .no-i18nmenu {
+    padding-top: 20px;
   }
 
   ul {
@@ -159,17 +154,17 @@ header {
     ::-webkit-scrollbar {
       height: 12px;
       width: 12px;
-      background: #cfd8dc;
+      background: var(--c-bg-menu-mobile);
     }
 
     ::-webkit-scrollbar-thumb {
-      background: #eceff1;
+      background: var(--c-bg-menu-mobile);
       -webkit-border-radius: 1ex;
-      -webkit-box-shadow: 0px 1px 2px #eceff1;
+      -webkit-box-shadow: 0px 1px 2px var(--c-bg-menu-mobile);
     }
 
     ::-webkit-scrollbar-corner {
-      background: #eceff1;
+      background: var(--c-bg-menu-mobile);
     }
   }
 }
@@ -196,6 +191,23 @@ header {
     display: inline-block;
     width: auto;
     min-width: $header-height;
+
+    .dropdown-menu {
+      &.expanded {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: $header-height + 2px;
+        li {
+          display: flex;
+          flex-direction: column;
+          a {
+            padding: 8px 10px;
+            text-align: left;
+          }
+        }
+      }
+    }
   }
 
   @media (max-width: 1023px) {
@@ -203,11 +215,12 @@ header {
     flex-direction: column;
     width: auto;
     flex-grow: 1;
+    width: 95%;
 
     button {
-      width: 100%;
       display: flex;
       gap: 10px;
+      color: inherit;
 
       .fa-caret-down {
         order: -1;
@@ -231,11 +244,6 @@ header {
         }
       }
 
-      &:hover {
-        background-color: var(--c-menu-highlight);
-        width: 95%;
-        border-radius: 5px;
-      }
       .tab-link-label {
         padding: 0;
         line-height: 1em;
@@ -258,10 +266,11 @@ header {
           flex-direction: column;
           a {
             text-align: left;
+            padding: 8px 10px;
             width: 100%;
             color: inherit;
             &:hover {
-              background-color: #cfd8dc;
+              background-color: var(--c-menu-highlight);
               width: 95%;
               border-radius: 5px;
             }
@@ -279,12 +288,6 @@ header {
   .tab-link-label {
     @media (min-width: 1024px) {
       @include tooltip('bottom');
-    }
-  }
-
-  &:hover .tab-link-label {
-    @media (min-width: 1024px) {
-      display: block;
     }
   }
 }
@@ -311,18 +314,21 @@ header {
   @media (max-width: 1023px) {
     line-height: 38px;
     height: 2.65em;
-    color: inherit;
     text-align: left;
-    &.active-link {
-      background-color: var(--c-menu-active-link);
+    &:not(:hover) {
+      color: inherit;
+    }
+    &.active-link,
+    &:hover {
       border: 1px;
+      color: var(--c-text-active-link) !important;
       border-radius: 5px;
+    }
+    &.active-link {
+      background-color: var(--c-bg-active-link);
     }
     &:hover {
       background-color: var(--c-menu-highlight);
-      border: 1px;
-      border-radius: 5px;
-      width: 95%;
     }
   }
 
@@ -348,6 +354,14 @@ header {
 
 .menuActions {
   padding-top: 5px;
+
+  @media (min-width: 1024px) {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+  }
+
   .menuNav-list {
     display: flex;
     @media (min-width: 1024px) {
@@ -368,12 +382,10 @@ header {
           align-items: center;
           gap: 10px;
           color: inherit;
-        }
-        :hover {
-          border: 1px;
-          border-radius: 5px;
-          width: 100%;
-          background-color: var(--c-menu-highlight);
+
+          &.active-link {
+            color: var(--c-text-active-link);
+          }
         }
       }
     }
@@ -531,7 +543,7 @@ header {
 .menuNav-I18NMenu {
   display: flex;
   text-transform: uppercase;
-  border-top: 1px solid transparentize($c-black, 0.6);
+
   @media (min-width: 1024px) {
     float: left;
     border-top: 0;
@@ -540,10 +552,14 @@ header {
   }
   @media (max-width: 1023px) {
     padding: 20px 15px;
+
     &.only-language {
       .rw-list-option:last-child {
         display: none;
       }
+    }
+    &.one-language {
+      display: none;
     }
   }
   .menuNav-btn {

@@ -69,7 +69,9 @@ class I18NMenu extends Component {
     }
     return languageMap.count() > 1 || user.size ? (
       <div
-        className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : ''}`}
+        className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : ' '} ${
+          languageMap.count() === 1 ? ' one-language' : ' '
+        } `}
         role="navigation"
         aria-label="Languages"
       >
@@ -114,9 +116,7 @@ class I18NMenu extends Component {
         )}
       </div>
     ) : (
-      <div className="menuNav-language singleItem">
-        <span className="singleItem">{selectedLanguage.label}</span>
-      </div>
+      <div className="no-i18nmenu" />
     );
   }
 }
