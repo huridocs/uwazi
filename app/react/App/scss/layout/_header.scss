@@ -173,17 +173,6 @@ header {
       .rw-widget-picker {
         height: 1.5em;
       }
-
-      &:not.singleItem {
-        margin-top: 15px;
-        margin-bottom: 25px;
-      }
-
-      &.singleItem {
-        width: 85%;
-        margin-top: 20px;
-        margin-bottom: 30px;
-      }
     }
 
     button {
@@ -253,9 +242,6 @@ header {
         color: $c-white;
         background-color: $c-theme;
         align-self: center;
-      }
-      @media (max-width: 1023px) {
-        background-color: transparent;
       }
     }
   }
@@ -561,7 +547,10 @@ header {
       }
     }
     &.one-language {
-      display: none;
+      padding: 10px;
+      div {
+        display: none;
+      }
     }
   }
   .menuNav-btn {
