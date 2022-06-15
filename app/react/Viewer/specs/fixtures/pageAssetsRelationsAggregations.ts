@@ -1688,6 +1688,7 @@ const rawEntities: EntitySchema[] = [
           inheritedType: 'geolocation',
         },
       ],
+      plaintext: [{ value: 'Some long text' }],
     },
   },
 ];
