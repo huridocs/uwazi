@@ -88,11 +88,11 @@ export const fixtures: DBFixture = {
   syncs: [
     {
       lastSync: 8999,
-      name: 'slave1',
+      name: 'target1',
     },
     {
       lastSync: 1000,
-      name: 'slave3',
+      name: 'target3',
     },
   ],
 
@@ -793,19 +793,19 @@ export const fixtures: DBFixture = {
       sync: [
         {
           url: 'url1',
-          name: 'slave1',
+          name: 'target1',
           active: true,
           config: {},
         },
         {
           url: 'url2',
-          name: 'slave2',
+          name: 'target2',
           active: false,
           config: {},
         },
         {
           url: 'url3',
-          name: 'slave3',
+          name: 'target3',
           active: true,
           config: {},
         },

@@ -10,13 +10,6 @@ async function startLegacyServicesNoMultiTenant() {
     return;
   }
 
-  const { sync } = await settings.get({}, 'sync');
-  if (sync) {
-    console.info('==> 📥  sync config config detected, started sync ....');
-    const syncRepeater = new Repeater(() => syncWorker.syncronize(sync), 10000);
-    syncRepeater.start();
-  }
-
   const { evidencesVault } = await settings.get({}, '+evidencesVault');
   if (evidencesVault) {
     console.info('==> 📥  evidences vault config detected, started sync ....');

@@ -26,6 +26,7 @@ import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
+import { syncWorker } from './api/sync/syncWorker';
 
 import { migrator } from './api/migrations/migrator';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
@@ -204,6 +205,12 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         }).start();
 
         new DistributedLoop('toc_service', async () => tocService.processAllTenants(), {
+          port: config.redis.port,
+          host: config.redis.host,
+          delayTimeBetweenTasks: 30000,
+        }).start();
+
+        new DistributedLoop('sync_job', async () => syncWorker.runAllTenants(), {
           port: config.redis.port,
           host: config.redis.host,
           delayTimeBetweenTasks: 30000,

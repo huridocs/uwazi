@@ -10,6 +10,7 @@ import 'api/relationships';
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import { attachmentsPath, customUploadsPath, fs } from 'api/files';
+import { tenants } from 'api/tenants';
 
 import { SettingsSyncSchema } from 'shared/types/settingsType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
@@ -53,46 +54,89 @@ import {
 
 import { syncWorker } from '../syncWorker';
 import syncsModel from '../syncsModel';
+import settings from 'api/settings';
+import { settingsModel } from 'api/settings/settingsModel';
+import { EntitySchema } from 'shared/types/entityType';
+import { DB, WithId } from 'api/odm';
 
 describe('syncWorker', () => {
   let requestPostSpy: jasmine.Spy;
   let requestDeleteSpy: jasmine.Spy;
   let requestUploadSpy: jasmine.Spy;
 
+  beforeAll(async () => {
+    await db.connect({ defaultTenant: false });
+    tenants.add({ name: 'tenant1', dbName: 'tenant1', indexName: 'tenant1' });
+    tenants.add({ name: 'tenant2', dbName: 'tenant2', indexName: 'tenant2' });
+  });
+
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures, undefined, 'tenant1');
+    await db.setupFixturesAndContext(
+      {
+        settings: [
+          {
+            _id: settingsId,
+            languages: [{ key: 'es', default: true, label: 'es' }],
+            sync: [
+              {
+                url: 'default_url',
+                name: 'default',
+                active: true,
+                config: {},
+              },
+            ],
+          },
+        ],
+      },
+      undefined,
+      'tenant2'
+    );
+    db.UserInContextMockFactory.restore();
+
     requestUploadSpy = spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
-    await fs.writeFile(attachmentsPath(`${newDoc1.toString()}.jpg`), '');
-    await fs.writeFile(attachmentsPath('test_attachment.txt'), '');
-    await fs.writeFile(attachmentsPath('test_attachment2.txt'), '');
-    await fs.writeFile(attachmentsPath('test.txt'), '');
-    await fs.writeFile(attachmentsPath('test2.txt'), '');
-    await fs.writeFile(customUploadsPath('customUpload.gif'), '');
+    await tenants.run(async () => {
+      await fs.writeFile(attachmentsPath(`${newDoc1.toString()}.jpg`), '');
+      await fs.writeFile(attachmentsPath('test_attachment.txt'), '');
+      await fs.writeFile(attachmentsPath('test_attachment2.txt'), '');
+      await fs.writeFile(attachmentsPath('test.txt'), '');
+      await fs.writeFile(attachmentsPath('test2.txt'), '');
+      await fs.writeFile(customUploadsPath('customUpload.gif'), '');
+    }, 'tenant1');
   });
 
   afterAll(async () => {
     await db.disconnect();
-    await fs.unlink(attachmentsPath(`${newDoc1.toString()}.jpg`));
-    await fs.unlink(attachmentsPath('test_attachment.txt'));
-    await fs.unlink(attachmentsPath('test_attachment2.txt'));
-    await fs.unlink(attachmentsPath('test1.txt'));
-    await fs.unlink(attachmentsPath('test2.txt'));
-    await fs.unlink(customUploadsPath('customUpload.gif'));
+    await tenants.run(async () => {
+      await fs.unlink(attachmentsPath(`${newDoc1.toString()}.jpg`));
+      await fs.unlink(attachmentsPath('test_attachment.txt'));
+      await fs.unlink(attachmentsPath('test_attachment2.txt'));
+      await fs.unlink(attachmentsPath('test1.txt'));
+      await fs.unlink(attachmentsPath('test2.txt'));
+      await fs.unlink(customUploadsPath('customUpload.gif'));
+    }, 'tenant1');
   });
 
-  const syncAllTemplates = async (name = 'slave1') =>
-    syncWorker.syncronize({
-      url: `url-${name}`,
-      name,
-      config: {
-        templates: {
-          [template1.toString()]: [],
-          [template2.toString()]: [],
-          [template3.toString()]: [],
+  const syncAllTemplates = async (name = 'target1') => {
+    const syncConfig = [
+      {
+        url: `url-${name}`,
+        name,
+        config: {
+          templates: {
+            [template1.toString()]: [],
+            [template2.toString()]: [],
+            [template3.toString()]: [],
+          },
         },
       },
-    });
+    ];
+    await DB.connectionForDB('tenant1')
+      .db.collection('settings')
+      .updateOne({}, { $set: { sync: syncConfig } });
+    return syncWorker.runAllTenants();
+  };
 
   const getCallsToIds = (namespace: string, ids: ObjectIdSchema[]) => {
     const namespaceCallsOnly = requestPostSpy.calls
@@ -108,8 +152,8 @@ describe('syncWorker', () => {
 
   describe('syncronize', () => {
     const expectedCookies: { [k: string]: string } = {
-      'url-slave1': 'slave1 cookie',
-      'url-slave3': 'slave3 cookie',
+      'url-target1': 'target1 cookie',
+      'url-target3': 'target3 cookie',
     };
 
     const ensureHeaders = async (url: string, _data: object, headers: { cookie: string }) => {
@@ -120,51 +164,64 @@ describe('syncWorker', () => {
     };
 
     beforeEach(() => {
-      syncWorker.cookies = { slave1: 'slave1 cookie', slave3: 'slave3 cookie' };
+      syncWorker.cookies = { target1: 'target1 cookie', target3: 'target3 cookie' };
       requestPostSpy = spyOn(request, 'post').and.callFake(ensureHeaders);
       requestDeleteSpy = spyOn(request, 'delete').and.callFake(ensureHeaders);
     });
 
-    it('should lazy create lastSync entries if they not already exist', async () => {
-      await syncsModel.deleteMany({ name: 'slave3' });
+    it('should run sync on all tenants', async () => {
+      await tenants.run(async () => {
+        await syncsModel.deleteMany({ name: 'target3' });
+      }, 'tenant1');
 
-      await syncWorker.syncronize([
-        { url: 'url-slave1', name: 'slave1' },
-        { url: 'url-slave3', name: 'slave3' },
-      ]);
+      await syncWorker.runAllTenants();
 
-      const syncs = await syncsModel.find({}).sort({ lastSync: 1 });
-      expect(syncs).toMatchObject([
-        { name: 'slave3', lastSync: 0 },
-        { name: 'slave1', lastSync: 8999 },
-      ]);
+      await tenants.run(async () => {
+        const syncs = await syncsModel.find({}).sort({ name: 1 });
+        expect(syncs).toMatchObject([{ name: 'default', lastSync: 0 }]);
+      }, 'tenant2');
+
+      await tenants.run(async () => {
+        const syncs = await syncsModel.find({}).sort({ name: 1 });
+        expect(syncs).toMatchObject([
+          { name: 'target1', lastSync: 8999 },
+          { name: 'target2', lastSync: 0 },
+          { name: 'target3', lastSync: 0 },
+        ]);
+      }, 'tenant1');
     });
 
     it('should login when a sync response is "Unauthorized"', async () => {
-      spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
-      requestPostSpy.and.callFake(async () => {
-        const responseError = { status: 401 };
-        return Promise.reject(responseError);
-      });
+      await tenants.run(async () => {
+        spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
+        requestPostSpy.and.callFake(async () => {
+          const responseError = { status: 401 };
+          return Promise.reject(responseError);
+        });
 
-      const deletedTemplate = db.id();
-      const deletedProperty = db.id();
-      const deletedRelationtype = db.id();
+        const deletedTemplate = db.id();
+        const deletedProperty = db.id();
+        const deletedRelationtype = db.id();
 
-      const syncConfig: SettingsSyncSchema = {
-        url: 'url-slave1',
-        name: 'slave1',
-        config: {
-          templates: {
-            [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
-            [deletedTemplate.toString()]: [],
-            [template2.toString()]: [],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+                [deletedTemplate.toString()]: [],
+                [template2.toString()]: [],
+              },
+              relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
+            },
           },
-          relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
-        },
-      };
-      await syncWorker.syncronize(syncConfig);
-      expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
+        ];
+
+        await settings.save({ sync: syncConfig });
+        await syncWorker.runAllTenants();
+        expect(syncWorker.login).toHaveBeenCalledWith(syncConfig[0]);
+      }, 'tenant1');
     });
 
     it('should allow multiple configs', async () => {
@@ -172,10 +229,10 @@ describe('syncWorker', () => {
       const deletedProperty = db.id();
       const deletedRelationtype = db.id();
 
-      await syncWorker.syncronize([
+      const syncConfig = [
         {
-          url: 'url-slave1',
-          name: 'slave1',
+          url: 'url-target1',
+          name: 'target1',
           config: {
             templates: {
               [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
@@ -185,7 +242,13 @@ describe('syncWorker', () => {
             relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
           },
         },
-      ]);
+      ];
+
+      await tenants.run(async () => {
+        await settings.save({ sync: syncConfig });
+      }, 'tenant1');
+
+      await syncWorker.runAllTenants();
 
       const { callsCount: templateCalls } = getCallsToIds('templates', []);
       const { callsCount: relationtypesCalls } = getCallsToIds('relationtypes', []);
@@ -199,18 +262,26 @@ describe('syncWorker', () => {
       const deletedProperty = db.id();
       const deletedRelationtype = db.id();
 
-      await syncWorker.syncronize({
-        url: 'url-slave1',
-        name: 'slave1',
-        config: {
-          templates: {
-            [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
-            [deletedTemplate.toString()]: [],
-            [template2.toString()]: [],
+      const syncConfig = [
+        {
+          url: 'url-target1',
+          name: 'target1',
+          config: {
+            templates: {
+              [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+              [deletedTemplate.toString()]: [],
+              [template2.toString()]: [],
+            },
+            relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
           },
-          relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
         },
-      });
+      ];
+
+      await tenants.run(async () => {
+        await settings.save({ sync: syncConfig });
+      }, 'tenant1');
+
+      await syncWorker.runAllTenants();
 
       const { callsCount: templateCalls } = getCallsToIds('templates', []);
       const { callsCount: relationtypesCalls } = getCallsToIds('relationtypes', []);
@@ -220,12 +291,20 @@ describe('syncWorker', () => {
     });
 
     it('should only sync whitelisted collections (forbidding certain collections even if present)', async () => {
-      await syncWorker.syncronize({
-        url: 'url-slave1',
-        name: 'slave1',
+      const syncConfig = [
+        {
+          url: 'url-target1',
+          name: 'target1',
+          config: { migrations: {}, sessions: {} },
+        },
+      ];
+
+      await tenants.run(async () => {
         // @ts-ignore
-        config: { migrations: {}, sessions: {} },
-      });
+        await settingsModel.save({ sync: syncConfig });
+      }, 'tenant1');
+
+      await syncWorker.runAllTenants();
 
       expect(requestPostSpy.calls.count()).toBe(0);
       expect(requestDeleteSpy.calls.count()).toBe(0);
@@ -233,11 +312,17 @@ describe('syncWorker', () => {
 
     describe('settings', () => {
       it('should only include languages from settings', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: { templates: {} },
-        });
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: { templates: {} },
+          },
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [settingsCall],
@@ -248,7 +333,7 @@ describe('syncWorker', () => {
 
         expect(settingsCall).toEqual([
           [
-            `url-${'slave1'}/api/sync`,
+            `url-${'target1'}/api/sync`,
             {
               namespace: 'settings',
               data: {
@@ -256,7 +341,7 @@ describe('syncWorker', () => {
                 languages: [{ key: 'es', default: true, label: 'es' }],
               },
             },
-            { cookie: `${'slave1'} cookie` },
+            { cookie: `${'target1'} cookie` },
           ],
         ]);
       });
@@ -265,20 +350,26 @@ describe('syncWorker', () => {
     describe('templates', () => {
       it('should only sync whitelisted templates and properties', async () => {
         const deletedProperty = db.id();
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [
-                template1Property1.toString(),
-                template1Property3.toString(),
-                deletedProperty.toString(),
-              ],
-              [template2.toString()]: [],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [
+                  template1Property1.toString(),
+                  template1Property3.toString(),
+                  deletedProperty.toString(),
+                ],
+                [template2.toString()]: [],
+              },
             },
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [template1Call, template2Call],
@@ -289,7 +380,7 @@ describe('syncWorker', () => {
 
         expect(template1Call).toEqual([
           [
-            `url-${'slave1'}/api/sync`,
+            `url-${'target1'}/api/sync`,
             {
               namespace: 'templates',
               data: expect.objectContaining({
@@ -299,35 +390,41 @@ describe('syncWorker', () => {
                 ],
               }),
             },
-            { cookie: `${'slave1'} cookie` },
+            { cookie: `${'target1'} cookie` },
           ],
         ]);
 
         expect(template2Call).toEqual([
           [
-            `url-${'slave1'}/api/sync`,
+            `url-${'target1'}/api/sync`,
             {
               namespace: 'templates',
               data: expect.objectContaining({ _id: template2 }),
             },
-            { cookie: `${'slave1'} cookie` },
+            { cookie: `${'target1'} cookie` },
           ],
         ]);
       });
 
       it('should not sync the entity view page foreign key', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [
-                template1Property1.toString(),
-                template1Property3.toString(),
-              ],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [
+                  template1Property1.toString(),
+                  template1Property3.toString(),
+                ],
+              },
             },
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [templateCall],
@@ -340,18 +437,24 @@ describe('syncWorker', () => {
       });
 
       it('should mark the template as synced', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [
-                template1Property1.toString(),
-                template1Property3.toString(),
-              ],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [
+                  template1Property1.toString(),
+                  template1Property3.toString(),
+                ],
+              },
             },
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [templateCall],
@@ -366,20 +469,26 @@ describe('syncWorker', () => {
 
     describe('thesauris (dictionaries collection)', () => {
       it('should sync whitelisted thesauris through template configs (deleting non-whitelisted ones)', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [
-                template1Property2.toString(),
-                template1PropertyThesauri1Select.toString(),
-                template1PropertyThesauri3MultiSelect.toString(),
-              ],
-              [template2.toString()]: [template2PropertyThesauri5Select.toString()],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [
+                  template1Property2.toString(),
+                  template1PropertyThesauri1Select.toString(),
+                  template1PropertyThesauri3MultiSelect.toString(),
+                ],
+                [template2.toString()]: [template2PropertyThesauri5Select.toString()],
+              },
             },
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [thesauri1Call, thesauri3Call, thesauri5Call],
@@ -390,40 +499,46 @@ describe('syncWorker', () => {
 
         expect(thesauri1Call).toMatchObject([
           [
-            `url-${'slave1'}/api/sync`,
+            `url-${'target1'}/api/sync`,
             {
               namespace: 'dictionaries',
               data: {
                 values: [{ _id: thesauri1Value1 }, { _id: thesauri1Value2 }],
               },
             },
-            { cookie: `${'slave1'} cookie` },
+            { cookie: `${'target1'} cookie` },
           ],
         ]);
 
         expect(thesauri3Call).toBeDefined();
         expect(thesauri5Call).toBeDefined();
         expect(requestDeleteSpy).toHaveBeenCalledWith(
-          `url-${'slave1'}/api/sync`,
+          `url-${'target1'}/api/sync`,
           { namespace: 'dictionaries', data: expect.objectContaining({ _id: thesauri4 }) },
-          { cookie: `${'slave1'} cookie` }
+          { cookie: `${'target1'} cookie` }
         );
       });
     });
 
     describe('relationtypes', () => {
       it('should sync whitelisted relationtypes and those from approved metadata properties', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [template1PropertyRelationship1.toString()],
-              [template2.toString()]: [template2PropertyRelationship2.toString()],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [template1PropertyRelationship1.toString()],
+                [template2.toString()]: [template2PropertyRelationship2.toString()],
+              },
+              relationtypes: [relationtype1.toString(), relationtype3.toString()],
             },
-            relationtypes: [relationtype1.toString(), relationtype3.toString()],
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [relationtype1Call, relationtype3Call, relationtype4Call, relationtype7Call],
@@ -443,13 +558,19 @@ describe('syncWorker', () => {
       });
 
       it('should allow syncing only from templates, without whitelisting a whole relationtype', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] },
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] },
+            },
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [relationtype4Call],
@@ -463,11 +584,17 @@ describe('syncWorker', () => {
 
     describe('translations', () => {
       it('should include System context and exclude non-whitelisted templates, thesauris and relationtypes', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: { templates: {} },
-        });
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: { templates: {} },
+          },
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
@@ -480,20 +607,26 @@ describe('syncWorker', () => {
       });
 
       it('should include from whitelisted templates and relationstypes, as well as derived thesauris and relationstypes', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [
-                template1PropertyRelationship1.toString(),
-                template1PropertyThesauri3MultiSelect.toString(),
-              ],
-              [template2.toString()]: [template2PropertyRelationship2.toString()],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [
+                  template1PropertyRelationship1.toString(),
+                  template1PropertyThesauri3MultiSelect.toString(),
+                ],
+                [template2.toString()]: [template2PropertyRelationship2.toString()],
+              },
+              relationtypes: [relationtype1.toString()],
             },
-            relationtypes: [relationtype1.toString()],
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [translation1Call],
@@ -530,7 +663,7 @@ describe('syncWorker', () => {
       path: string,
       filename: string,
       pathFunction = attachmentsPath,
-      name = 'slave1'
+      name = 'target1'
     ) => {
       expect(requestUploadSpy).toHaveBeenCalledWith(
         `url-${name}${path}`,
@@ -542,49 +675,65 @@ describe('syncWorker', () => {
 
     describe('uploadFile', () => {
       it('should upload attachments, documents and thumbnails belonging to entities that are of an allowed template, and customs', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [],
-            },
-          },
-        });
-
-        expect(requestUploadSpy.calls.count()).toBe(6);
-
-        await expectUploadFile('/api/sync/upload', 'test2.txt');
-        await expectUploadFile('/api/sync/upload', 'test.txt');
-        await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
-        await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
-        await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
-        await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
-      });
-
-      it('should upload files belonging to entities that are not filtered out, and customs', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: {
-                properties: [],
-                filter: JSON.stringify({
-                  'metadata.t1Property1': { $elemMatch: { value: 'sync property 1' } },
-                }),
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [],
               },
             },
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
+
+        expect(requestUploadSpy.calls.count()).toBe(6);
+
+        await tenants.run(async () => {
+          await expectUploadFile('/api/sync/upload', 'test2.txt');
+          await expectUploadFile('/api/sync/upload', 'test.txt');
+          await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
+          await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
+          await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
+          await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
+        }, 'tenant1');
+      });
+
+      it('should upload files belonging to entities that are not filtered out, and customs', async () => {
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: {
+                  properties: [],
+                  filter: JSON.stringify({
+                    'metadata.t1Property1': { $elemMatch: { value: 'sync property 1' } },
+                  }),
+                },
+              },
+            },
+          },
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         expect(requestUploadSpy.calls.count()).toBe(5);
 
-        await expectUploadFile('/api/sync/upload', 'test2.txt');
-        await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
-        await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
-        await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
-        await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
+        await tenants.run(async () => {
+          await expectUploadFile('/api/sync/upload', 'test2.txt');
+          await expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
+          await expectUploadFile('/api/sync/upload', 'test_attachment.txt');
+          await expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
+          await expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
+        }, 'tenant1');
       });
     });
 
@@ -593,8 +742,8 @@ describe('syncWorker', () => {
 
       beforeEach(() => {
         baseConfig = {
-          url: 'url-slave1',
-          name: 'slave1',
+          url: 'url-target1',
+          name: 'target1',
           config: {
             templates: {
               [template1.toString()]: [
@@ -609,7 +758,11 @@ describe('syncWorker', () => {
       });
 
       it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
-        await syncWorker.syncronize(baseConfig);
+        const syncConfig = baseConfig;
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [entity1Call, entity2Call],
@@ -620,7 +773,7 @@ describe('syncWorker', () => {
 
         expect(entity1Call).toMatchObject([
           [
-            `url-${'slave1'}/api/sync`,
+            `url-${'target1'}/api/sync`,
             {
               namespace: 'entities',
               data: {
@@ -631,20 +784,20 @@ describe('syncWorker', () => {
                 },
               },
             },
-            { cookie: `${'slave1'} cookie` },
+            { cookie: `${'target1'} cookie` },
           ],
         ]);
 
         expect(entity2Call).toMatchObject([
           [
-            `url-${'slave1'}/api/sync`,
+            `url-${'target1'}/api/sync`,
             {
               namespace: 'entities',
               data: {
                 metadata: { t1Property2: [{ value: 'another doc property 2' }] },
               },
             },
-            { cookie: `${'slave1'} cookie` },
+            { cookie: `${'target1'} cookie` },
           ],
         ]);
 
@@ -676,7 +829,11 @@ describe('syncWorker', () => {
         });
 
         it('should allow filtering entities based on filter function', async () => {
-          await syncWorker.syncronize(filterConfig);
+          const syncConfig = filterConfig;
+          await tenants.run(async () => {
+            await settings.save({ sync: syncConfig });
+          }, 'tenant1');
+          await syncWorker.runAllTenants();
 
           const {
             callsCount,
@@ -690,7 +847,11 @@ describe('syncWorker', () => {
           // @ts-ignore
           filterConfig.config.templates[template1.toString()].filter = 'return missing;';
           try {
-            await syncWorker.syncronize(filterConfig);
+            const syncConfig = filterConfig;
+            await tenants.run(async () => {
+              await settings.save({ sync: syncConfig });
+            }, 'tenant1');
+            await syncWorker.runAllTenants();
             fail('should not pass');
           } catch (err) {
             expect(err.message).toContain('JSON');
@@ -707,16 +868,20 @@ describe('syncWorker', () => {
                 t1Property2: [{ value: 'will not pass filter' }],
               },
             };
+            const syncConfig = filterConfig;
 
-            const [savedEntity] = await entitesModel.saveMultiple([nonMatchingEntity]);
+            await tenants.run(async () => {
+              const [savedEntity] = await entitesModel.saveMultiple([nonMatchingEntity]);
+              await settings.save({ sync: syncConfig });
 
-            await syncWorker.syncronize(filterConfig);
+              await syncWorker.runAllTenants();
 
-            expect(requestDeleteSpy).toHaveBeenCalledWith(
-              `url-${'slave1'}/api/sync`,
-              { namespace: 'entities', data: expect.objectContaining({ _id: savedEntity._id }) },
-              { cookie: `${'slave1'} cookie` }
-            );
+              expect(requestDeleteSpy).toHaveBeenCalledWith(
+                `url-${'target1'}/api/sync`,
+                { namespace: 'entities', data: expect.objectContaining({ _id: savedEntity?._id }) },
+                { cookie: `${'target1'} cookie` }
+              );
+            }, 'tenant1');
           });
         });
       });
@@ -724,17 +889,23 @@ describe('syncWorker', () => {
 
     describe('relationships (connections collection)', () => {
       it('should sync from approved template / entities and raw whitelisted relationtypes', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [],
-              [template2.toString()]: [],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [],
+                [template2.toString()]: [],
+              },
+              relationtypes: [relationtype1.toString(), relationtype3.toString()],
             },
-            relationtypes: [relationtype1.toString(), relationtype3.toString()],
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [relationship1Call, relationship2Call],
@@ -747,17 +918,24 @@ describe('syncWorker', () => {
       });
 
       it('should allow including null relationtypes', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [],
+              },
+              relationtypes: [null],
             },
-            // @ts-ignore
-            relationtypes: [null],
           },
-        });
+        ];
+
+        await DB.connectionForDB('tenant1')
+          .db.collection('settings')
+          .updateOne({}, { $set: { sync: syncConfig } });
+
+        await syncWorker.runAllTenants();
 
         const {
           calls: [relationship9Call],
@@ -769,16 +947,22 @@ describe('syncWorker', () => {
       });
 
       it('should include from specific types inlcuded through metadata (taking null left hand-side relationships)', async () => {
-        await syncWorker.syncronize({
-          url: 'url-slave1',
-          name: 'slave1',
-          config: {
-            templates: {
-              [template1.toString()]: [template1PropertyRelationship1.toString()],
-              [template2.toString()]: [template2PropertyRelationship2.toString()],
+        const syncConfig = [
+          {
+            url: 'url-target1',
+            name: 'target1',
+            config: {
+              templates: {
+                [template1.toString()]: [template1PropertyRelationship1.toString()],
+                [template2.toString()]: [template2PropertyRelationship2.toString()],
+              },
             },
           },
-        });
+        ];
+        await tenants.run(async () => {
+          await settings.save({ sync: syncConfig });
+        }, 'tenant1');
+        await syncWorker.runAllTenants();
 
         const {
           calls: [
@@ -822,23 +1006,28 @@ describe('syncWorker', () => {
 
     it('should update lastSync timestamp with the last change', async () => {
       await syncAllTemplates();
-      let [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
-      let [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
-      expect(lastSync1).toBe(22000);
-      expect(lastSync3).toBe(1000);
-      requestPostSpy.calls.reset();
+      await tenants.run(async () => {
+        const [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'target1' });
+        const [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'target3' });
+        expect(lastSync1).toBe(22000);
+        expect(lastSync3).toBe(1000);
+        requestPostSpy.calls.reset();
+      }, 'tenant1');
 
-      await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } }, {});
-      await syncAllTemplates('slave3');
-      [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
-      [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
-      expect(lastSync1).toBe(22000);
-      expect(lastSync3).toBe(22000);
-      expect(requestPostSpy).toHaveBeenCalledWith(
-        `url-${'slave3'}/api/sync`,
-        { namespace: 'entities', data: expect.objectContaining({ _id: newDoc2 }) },
-        { cookie: `${'slave3'} cookie` }
-      );
+      await tenants.run(async () => {
+        await syncsModel._updateMany({ name: 'target3' }, { $set: { lastSync: 8999 } }, {});
+        await syncAllTemplates('target3');
+
+        const [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'target1' });
+        const [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'target3' });
+        expect(lastSync1).toBe(22000);
+        expect(lastSync3).toBe(22000);
+        expect(requestPostSpy).toHaveBeenCalledWith(
+          `url-${'target3'}/api/sync`,
+          { namespace: 'entities', data: expect.objectContaining({ _id: newDoc2 }) },
+          { cookie: `${'target3'} cookie` }
+        );
+      }, 'tenant1');
     });
 
     it('should update lastSync on each operation', async () => {
@@ -856,8 +1045,10 @@ describe('syncWorker', () => {
       try {
         await syncAllTemplates();
       } catch (e) {
-        const [{ lastSync }] = await syncsModel.find({});
-        expect(lastSync).toBe(12000);
+        await tenants.run(async () => {
+          const [{ lastSync }] = await syncsModel.find({});
+          expect(lastSync).toBe(12000);
+        }, 'tenant1');
       }
     });
   });

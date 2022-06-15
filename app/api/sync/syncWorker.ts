@@ -5,6 +5,9 @@ import { SettingsSyncSchema } from 'shared/types/settingsType';
 import synchronizer from './synchronizer';
 import createSyncConfig from './syncConfig';
 import syncsModel from './syncsModel';
+import { tenants } from 'api/tenants';
+import settings from 'api/settings';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const updateSyncs = async (name: string, lastSync: number) =>
   syncsModel._updateMany({ name }, { $set: { lastSync } }, {});
@@ -43,6 +46,19 @@ export const syncWorker = {
     } else {
       throw error;
     }
+  },
+
+  async runAllTenants() {
+    return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
+      await previous;
+      return tenants.run(async () => {
+        permissionsContext.setCommandContext();
+        const { sync } = await settings.get({}, 'sync');
+        if (sync) {
+          await this.syncronize(sync);
+        }
+      }, tenantName);
+    }, Promise.resolve());
   },
 
   async syncronize(syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) {
