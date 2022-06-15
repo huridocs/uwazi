@@ -398,16 +398,11 @@ export const Suggestions = {
     }
   },
 
-  getTemplateDifference: (
-    currentSettingsTemplates: ISettingsTemplate[],
-    settingsTemplates: ISettingsTemplate[]
-  ) => {
-    const newTemplates = settingsTemplates.filter(temp => {
-      const oldTemplateIds = currentSettingsTemplates?.map(oldTemp => oldTemp.template) || [];
-      return !oldTemplateIds.includes(temp.template);
-    });
-
-    const combedNewTemplates = settingsTemplates
+  getTemplatesWithNewProps: (
+    settingsTemplates: ISettingsTemplate[],
+    currentSettingsTemplates: ISettingsTemplate[]
+  ) =>
+    settingsTemplates
       .map(newTemp => {
         const oldTemplate = currentSettingsTemplates?.find(
           oldTemp => oldTemp.template === newTemp.template
@@ -422,7 +417,21 @@ export const Suggestions = {
           .filter(p => p);
         return { ...newTemp, properties: addedProps };
       })
-      .filter(t => t);
+      .filter(t => t),
+
+  getTemplateDifference: (
+    currentSettingsTemplates: ISettingsTemplate[],
+    settingsTemplates: ISettingsTemplate[]
+  ) => {
+    const newTemplates = settingsTemplates.filter(temp => {
+      const oldTemplateIds = currentSettingsTemplates?.map(oldTemp => oldTemp.template) || [];
+      return !oldTemplateIds.includes(temp.template);
+    });
+
+    const combedNewTemplates = Suggestions.getTemplatesWithNewProps(
+      settingsTemplates,
+      currentSettingsTemplates
+    );
 
     return newTemplates.concat(combedNewTemplates as ISettingsTemplate[]);
   },
