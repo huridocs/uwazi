@@ -1,4 +1,5 @@
 @import '../config/colors';
+@import '../elements/tooltip';
 
 header {
   width: 100%;
@@ -337,6 +338,16 @@ header {
     width: auto;
     min-width: $header-height;
 
+    .tab-link-label {
+      @include tooltip('bottom');
+    }
+
+    &:hover {
+      .tab-link-label {
+        display: block;
+      }
+    }
+
     .dropdown-menu {
       &.expanded {
         display: flex;
@@ -427,12 +438,6 @@ header {
   &.only-mobile {
     @media (min-width: 1024px) {
       display: none;
-    }
-  }
-
-  .tab-link-label {
-    @media (min-width: 1024px) {
-      @include tooltip('bottom');
     }
   }
 }
