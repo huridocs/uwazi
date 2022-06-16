@@ -58,14 +58,9 @@ const propertyDisplayType = (property: FormattedPropertyValueSchema) => {
   }
 };
 
-type MetadataFieldValues = {
-  displayValue: string;
-  value: string | string[];
-};
-
 const formatPropertyValue = (
   target: FormattedPropertyValueSchema,
-  metadataField: MetadataFieldValues
+  metadataField: { displayValue: string; value: string | string[] }
 ) => {
   const availableProperties = pick(target, metadataField.value);
   const firstValue =
@@ -129,6 +124,29 @@ const aggregateByTemplate = (
       : { ...groupedRelations, [groupName]: [...groupedRelations[groupName], relatedEntity] };
   }, {} as { [key: string]: EntitySchema[] });
 
+const getInheritingProperties = (
+  templates: TemplateSchema[],
+  entityTemplate: IImmutable<TemplateSchema>
+) =>
+  templates.reduce((inheriting: { [key: string]: string[] }, template: TemplateSchema) => {
+    const inheritedProperties = entityTemplate
+      .get('properties')
+      ?.map(entityProperty => {
+        if (entityProperty?.get('inherit')) {
+          const inheritingPropertyName = template.properties!.find(
+            property => property?._id === entityProperty?.get('inherit')?.get('property')
+          );
+          return inheritingPropertyName && inheritingPropertyName.name;
+        }
+        return undefined;
+      })
+      .filter(value => !!value)
+      .toJS();
+    return inheritedProperties.length
+      ? { ...inheriting, [template._id as string]: inheritedProperties }
+      : inheriting;
+  }, {});
+
 const aggregateRelationships = (
   entity: FormattedEntity,
   relationTypes: { _id: string; name: string }[],
@@ -143,27 +161,7 @@ const aggregateRelationships = (
     .filter(template => template?.get('_id') !== entityTemplate.get('_id'))
     .toJS();
 
-  const inheritingProperties = templates.reduce(
-    (inheriting: { [key: string]: string[] }, template: TemplateSchema) => {
-      const inheritedProperties = entityTemplate
-        .get('properties')
-        ?.map(entityProperty => {
-          if (entityProperty?.get('inherit')) {
-            const inheritingPropertyName = template.properties!.find(
-              property => property?._id === entityProperty?.get('inherit')?.get('property')
-            );
-            return inheritingPropertyName && inheritingPropertyName.name;
-          }
-          return undefined;
-        })
-        .filter(value => !!value)
-        .toJS();
-      return inheritedProperties.length
-        ? { ...inheriting, [template._id as string]: inheritedProperties }
-        : inheriting;
-    },
-    {}
-  );
+  const inheritingProperties = getInheritingProperties(templates, entityTemplate);
 
   const filteredRelations = entity.relations.filter(relation =>
     has(inheritingProperties, relation.entityData.template as string)
