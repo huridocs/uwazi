@@ -62,6 +62,152 @@ const DocumentWithRelations = Immutable.fromJS({
   ],
 });
 
+const iDocument1Metadata = {
+  itext: [
+    {
+      value: '844ts659a7',
+      label: 'Document 3',
+      type: 'entity',
+      inheritedValue: [{ value: 'Three' }],
+      inheritedType: 'text',
+    },
+    {
+      value: 'f27fwxhlsqo',
+      label: 'Document 1',
+      type: 'entity',
+      inheritedValue: [{ value: 'One' }],
+      inheritedType: 'text',
+    },
+    {
+      value: 'u4uclgwzcp',
+      label: 'Document 2',
+      type: 'entity',
+      inheritedValue: [{ value: 'Two' }],
+      inheritedType: 'text',
+    },
+    {
+      value: '4qkgragsevq',
+      label: 'Document 4',
+      type: 'entity',
+      inheritedValue: [{ value: 'Four' }],
+      inheritedType: 'text',
+    },
+  ],
+  inumeric: [
+    {
+      value: '844ts659a7',
+      label: 'Document 3',
+      type: 'entity',
+      inheritedValue: [{ value: 3 }],
+      inheritedType: 'numeric',
+    },
+    {
+      value: 'f27fwxhlsqo',
+      label: 'Document 1',
+      type: 'entity',
+      inheritedValue: [{ value: 1 }],
+      inheritedType: 'numeric',
+    },
+    {
+      value: 'u4uclgwzcp',
+      label: 'Document 2',
+      type: 'entity',
+      inheritedValue: [{ value: 2 }],
+      inheritedType: 'numeric',
+    },
+    {
+      value: '4qkgragsevq',
+      label: 'Document 4',
+      type: 'entity',
+      inheritedValue: [{ value: 4 }],
+      inheritedType: 'numeric',
+    },
+  ],
+  iselect: [
+    {
+      value: '844ts659a7',
+      label: 'Document 3',
+      type: 'entity',
+      inheritedValue: [{ value: 'e5cgnczmfys', label: 'Option C' }],
+      inheritedType: 'select',
+    },
+    {
+      value: 'f27fwxhlsqo',
+      label: 'Document 1',
+      type: 'entity',
+      inheritedValue: [{ value: 'aot0horszdt', label: 'Option A' }],
+      inheritedType: 'select',
+    },
+    {
+      value: 'u4uclgwzcp',
+      label: 'Document 2',
+      type: 'entity',
+      inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
+      inheritedType: 'select',
+    },
+    {
+      value: '4qkgragsevq',
+      label: 'Document 4',
+      type: 'entity',
+      inheritedValue: [
+        {
+          value: 'c9cf2utpe8u',
+          label: 'Option D 1',
+          parent: { value: 'craucpftwy', label: 'Option D' },
+        },
+      ],
+      inheritedType: 'select',
+    },
+  ],
+  'iselect-country': [
+    {
+      value: '9e13muy08kl',
+      label: 'Argentina',
+      type: 'entity',
+      inheritedValue: [
+        {
+          value: 'xtevnrb2x1o',
+          label: 'Option D 3',
+          parent: { value: 'craucpftwy', label: 'Option D' },
+        },
+      ],
+      inheritedType: 'select',
+    },
+    {
+      value: '3zeqx3aptzi',
+      label: 'Peru',
+      type: 'entity',
+      inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
+      inheritedType: 'select',
+    },
+  ],
+  igeolocation: [
+    {
+      value: '9e13muy08kl',
+      label: 'Argentina',
+      type: 'entity',
+      inheritedValue: [{ value: { lat: -36.19286487671368, lon: -64.29199218750001, label: '' } }],
+      inheritedType: 'geolocation',
+    },
+    {
+      value: '3zeqx3aptzi',
+      label: 'Peru',
+      type: 'entity',
+      inheritedValue: [{ value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } }],
+      inheritedType: 'geolocation',
+    },
+  ],
+};
+
+const iDocument1EntityData = {
+  _id: '629e5712d4242c571392fcd4',
+  metadata: iDocument1Metadata,
+  template: '629e567fd4242c571392f548',
+  title: 'iDocument 1',
+  creationDate: 1654544146164,
+  sharedId: 's07ki698a69',
+};
+
 const OtherDocumentWithRelations = Immutable.fromJS({
   _id: '62a34533100b901027a250e6',
   name: 'Other document with relations',
@@ -364,22 +510,10 @@ const thesaurisForAggregations = Immutable.fromJS([
 ]);
 
 const relationTypes = [
-  {
-    _id: '629e55f1d4242c571392d5fc',
-    name: 'Multi-inherit',
-  },
-  {
-    _id: '629e55f8d4242c571392dbf1',
-    name: 'Inherit',
-  },
-  {
-    _id: '629e55fed4242c571392e1e8',
-    name: 'Related to',
-  },
-  {
-    _id: '629f902238ef5b3343849b62',
-    name: 'Multi-inherit-2',
-  },
+  { _id: '629e55f1d4242c571392d5fc', name: 'Multi-inherit' },
+  { _id: '629e55f8d4242c571392dbf1', name: 'Inherit' },
+  { _id: '629e55fed4242c571392e1e8', name: 'Related to' },
+  { _id: '629f902238ef5b3343849b62', name: 'Multi-inherit-2' },
   { _id: '62ab58bdedafa48e2c7718c3', name: 'Inheriting' },
 ];
 
@@ -530,295 +664,11 @@ const otherEntities: EntitySchema[] = [
     template: '629e567fd4242c571392f548',
     title: 'iDocument 1',
     sharedId: 's07ki698a69',
-    metadata: {
-      itext: [
-        {
-          value: '844ts659a7',
-          label: 'Document 3',
-          type: 'entity',
-          inheritedValue: [{ value: 'Three' }],
-          inheritedType: 'text',
-        },
-        {
-          value: 'f27fwxhlsqo',
-          label: 'Document 1',
-          type: 'entity',
-          inheritedValue: [{ value: 'One' }],
-          inheritedType: 'text',
-        },
-        {
-          value: 'u4uclgwzcp',
-          label: 'Document 2',
-          type: 'entity',
-          inheritedValue: [{ value: 'Two' }],
-          inheritedType: 'text',
-        },
-        {
-          value: '4qkgragsevq',
-          label: 'Document 4',
-          type: 'entity',
-          inheritedValue: [{ value: 'Four' }],
-          inheritedType: 'text',
-        },
-      ],
-      inumeric: [
-        {
-          value: '844ts659a7',
-          label: 'Document 3',
-          type: 'entity',
-          inheritedValue: [{ value: 3 }],
-          inheritedType: 'numeric',
-        },
-        {
-          value: 'f27fwxhlsqo',
-          label: 'Document 1',
-          type: 'entity',
-          inheritedValue: [{ value: 1 }],
-          inheritedType: 'numeric',
-        },
-        {
-          value: 'u4uclgwzcp',
-          label: 'Document 2',
-          type: 'entity',
-          inheritedValue: [{ value: 2 }],
-          inheritedType: 'numeric',
-        },
-        {
-          value: '4qkgragsevq',
-          label: 'Document 4',
-          type: 'entity',
-          inheritedValue: [{ value: 4 }],
-          inheritedType: 'numeric',
-        },
-      ],
-      iselect: [
-        {
-          value: '844ts659a7',
-          label: 'Document 3',
-          type: 'entity',
-          inheritedValue: [{ value: 'e5cgnczmfys', label: 'Option C' }],
-          inheritedType: 'select',
-        },
-        {
-          value: 'f27fwxhlsqo',
-          label: 'Document 1',
-          type: 'entity',
-          inheritedValue: [{ value: 'aot0horszdt', label: 'Option A' }],
-          inheritedType: 'select',
-        },
-        {
-          value: 'u4uclgwzcp',
-          label: 'Document 2',
-          type: 'entity',
-          inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
-          inheritedType: 'select',
-        },
-        {
-          value: '4qkgragsevq',
-          label: 'Document 4',
-          type: 'entity',
-          inheritedValue: [
-            {
-              value: 'c9cf2utpe8u',
-              label: 'Option D 1',
-              parent: { value: 'craucpftwy', label: 'Option D' },
-            },
-          ],
-          inheritedType: 'select',
-        },
-      ],
-      'iselect-country': [
-        {
-          value: '9e13muy08kl',
-          label: 'Argentina',
-          type: 'entity',
-          inheritedValue: [
-            {
-              value: 'xtevnrb2x1o',
-              label: 'Option D 3',
-              parent: { value: 'craucpftwy', label: 'Option D' },
-            },
-          ],
-          inheritedType: 'select',
-        },
-        {
-          value: '3zeqx3aptzi',
-          label: 'Peru',
-          type: 'entity',
-          inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
-          inheritedType: 'select',
-        },
-      ],
-      igeolocation: [
-        {
-          value: '9e13muy08kl',
-          label: 'Argentina',
-          type: 'entity',
-          inheritedValue: [
-            { value: { lat: -36.19286487671368, lon: -64.29199218750001, label: '' } },
-          ],
-          inheritedType: 'geolocation',
-        },
-        {
-          value: '3zeqx3aptzi',
-          label: 'Peru',
-          type: 'entity',
-          inheritedValue: [
-            { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
-          ],
-          inheritedType: 'geolocation',
-        },
-      ],
-    },
+    metadata: iDocument1Metadata,
     relations: [
       {
         template: null,
-        entityData: {
-          _id: '629e5712d4242c571392fcd4',
-          metadata: {
-            itext: [
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [{ value: 'Three' }],
-                inheritedType: 'text',
-              },
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [{ value: 'One' }],
-                inheritedType: 'text',
-              },
-              {
-                value: 'u4uclgwzcp',
-                label: 'Document 2',
-                type: 'entity',
-                inheritedValue: [{ value: 'Two' }],
-                inheritedType: 'text',
-              },
-              {
-                value: '4qkgragsevq',
-                label: 'Document 4',
-                type: 'entity',
-                inheritedValue: [{ value: 'Four' }],
-                inheritedType: 'text',
-              },
-            ],
-            inumeric: [
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [{ value: 3 }],
-                inheritedType: 'numeric',
-              },
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [{ value: 1 }],
-                inheritedType: 'numeric',
-              },
-              {
-                value: 'u4uclgwzcp',
-                label: 'Document 2',
-                type: 'entity',
-                inheritedValue: [{ value: 2 }],
-                inheritedType: 'numeric',
-              },
-              {
-                value: '4qkgragsevq',
-                label: 'Document 4',
-                type: 'entity',
-                inheritedValue: [{ value: 4 }],
-                inheritedType: 'numeric',
-              },
-            ],
-            iselect: [
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [{ value: 'e5cgnczmfys', label: 'Option C' }],
-                inheritedType: 'select',
-              },
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [{ value: 'aot0horszdt', label: 'Option A' }],
-                inheritedType: 'select',
-              },
-              {
-                value: 'u4uclgwzcp',
-                label: 'Document 2',
-                type: 'entity',
-                inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
-                inheritedType: 'select',
-              },
-              {
-                value: '4qkgragsevq',
-                label: 'Document 4',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'c9cf2utpe8u',
-                    label: 'Option D 1',
-                    parent: { value: 'craucpftwy', label: 'Option D' },
-                  },
-                ],
-                inheritedType: 'select',
-              },
-            ],
-            'iselect-country': [
-              {
-                value: '9e13muy08kl',
-                label: 'Argentina',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'xtevnrb2x1o',
-                    label: 'Option D 3',
-                    parent: { value: 'craucpftwy', label: 'Option D' },
-                  },
-                ],
-                inheritedType: 'select',
-              },
-              {
-                value: '3zeqx3aptzi',
-                label: 'Peru',
-                type: 'entity',
-                inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
-                inheritedType: 'select',
-              },
-            ],
-            igeolocation: [
-              {
-                value: '9e13muy08kl',
-                label: 'Argentina',
-                type: 'entity',
-                inheritedValue: [
-                  { value: { lat: -36.19286487671368, lon: -64.29199218750001, label: '' } },
-                ],
-                inheritedType: 'geolocation',
-              },
-              {
-                value: '3zeqx3aptzi',
-                label: 'Peru',
-                type: 'entity',
-                inheritedValue: [
-                  { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
-                ],
-                inheritedType: 'geolocation',
-              },
-            ],
-          },
-          template: '629e567fd4242c571392f548',
-          title: 'iDocument 1',
-          sharedId: 's07ki698a69',
-        },
+        entityData: iDocument1EntityData,
         _id: '629e5712d4242c571392fce2',
         entity: 's07ki698a69',
         hub: '629e5712d4242c571392fcdd',
@@ -899,152 +749,7 @@ const otherEntities: EntitySchema[] = [
       },
       {
         template: null,
-        entityData: {
-          _id: '629e5712d4242c571392fcd4',
-          metadata: {
-            itext: [
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [{ value: 'Three' }],
-                inheritedType: 'text',
-              },
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [{ value: 'One' }],
-                inheritedType: 'text',
-              },
-              {
-                value: 'u4uclgwzcp',
-                label: 'Document 2',
-                type: 'entity',
-                inheritedValue: [{ value: 'Two' }],
-                inheritedType: 'text',
-              },
-              {
-                value: '4qkgragsevq',
-                label: 'Document 4',
-                type: 'entity',
-                inheritedValue: [{ value: 'Four' }],
-                inheritedType: 'text',
-              },
-            ],
-            inumeric: [
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [{ value: 3 }],
-                inheritedType: 'numeric',
-              },
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [{ value: 1 }],
-                inheritedType: 'numeric',
-              },
-              {
-                value: 'u4uclgwzcp',
-                label: 'Document 2',
-                type: 'entity',
-                inheritedValue: [{ value: 2 }],
-                inheritedType: 'numeric',
-              },
-              {
-                value: '4qkgragsevq',
-                label: 'Document 4',
-                type: 'entity',
-                inheritedValue: [{ value: 4 }],
-                inheritedType: 'numeric',
-              },
-            ],
-            iselect: [
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [{ value: 'e5cgnczmfys', label: 'Option C' }],
-                inheritedType: 'select',
-              },
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [{ value: 'aot0horszdt', label: 'Option A' }],
-                inheritedType: 'select',
-              },
-              {
-                value: 'u4uclgwzcp',
-                label: 'Document 2',
-                type: 'entity',
-                inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
-                inheritedType: 'select',
-              },
-              {
-                value: '4qkgragsevq',
-                label: 'Document 4',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'c9cf2utpe8u',
-                    label: 'Option D 1',
-                    parent: { value: 'craucpftwy', label: 'Option D' },
-                  },
-                ],
-                inheritedType: 'select',
-              },
-            ],
-            'iselect-country': [
-              {
-                value: '9e13muy08kl',
-                label: 'Argentina',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'xtevnrb2x1o',
-                    label: 'Option D 3',
-                    parent: { value: 'craucpftwy', label: 'Option D' },
-                  },
-                ],
-                inheritedType: 'select',
-              },
-              {
-                value: '3zeqx3aptzi',
-                label: 'Peru',
-                type: 'entity',
-                inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
-                inheritedType: 'select',
-              },
-            ],
-            igeolocation: [
-              {
-                value: '9e13muy08kl',
-                label: 'Argentina',
-                type: 'entity',
-                inheritedValue: [
-                  { value: { lat: -36.19286487671368, lon: -64.29199218750001, label: '' } },
-                ],
-                inheritedType: 'geolocation',
-              },
-              {
-                value: '3zeqx3aptzi',
-                label: 'Peru',
-                type: 'entity',
-                inheritedValue: [
-                  { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
-                ],
-                inheritedType: 'geolocation',
-              },
-            ],
-          },
-          template: '629e567fd4242c571392f548',
-          title: 'iDocument 1',
-          sharedId: 's07ki698a69',
-        },
+        entityData: iDocument1EntityData,
         _id: '629f90b438ef5b334384a9e9',
         entity: 's07ki698a69',
         hub: '629f90b438ef5b334384a9e4',
