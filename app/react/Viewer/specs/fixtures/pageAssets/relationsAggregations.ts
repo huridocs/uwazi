@@ -6,8 +6,6 @@ import { IImmutable } from 'shared/types/Immutable';
 
 const DocumentWithRelations = Immutable.fromJS({
   _id: '629e567fd4242c571392f548',
-  color: '#D9534F',
-  entityViewPage: 'hetu84j0k47',
   name: 'Document with relations',
   properties: [
     {
@@ -17,7 +15,6 @@ const DocumentWithRelations = Immutable.fromJS({
       inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
       content: '5bfbb1a0471dd0fc16ada146',
       relationType: '629e55f1d4242c571392d5fc',
-      showInCard: true,
       name: 'itext',
     },
     {
@@ -27,7 +24,6 @@ const DocumentWithRelations = Immutable.fromJS({
       inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
       content: '5bfbb1a0471dd0fc16ada146',
       relationType: '629e55f1d4242c571392d5fc',
-      showInCard: true,
       name: 'inumeric',
     },
     {
@@ -37,7 +33,6 @@ const DocumentWithRelations = Immutable.fromJS({
       inherit: { property: '629e5634d4242c571392f440', type: 'select' },
       content: '5bfbb1a0471dd0fc16ada146',
       relationType: '629e55f1d4242c571392d5fc',
-      showInCard: true,
       name: 'iselect',
     },
     {
@@ -53,7 +48,6 @@ const DocumentWithRelations = Immutable.fromJS({
       inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
       content: '629f900638ef5b3343848e80',
       relationType: '629f902238ef5b3343849b62',
-      showInCard: true,
       name: 'igeolocation',
     },
     {
@@ -63,43 +57,13 @@ const DocumentWithRelations = Immutable.fromJS({
       inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
       content: '629f900638ef5b3343848e80',
       relationType: '629f902238ef5b3343849b62',
-      showInCard: true,
       name: 'iselect-country',
-    },
-  ],
-  commonProperties: [
-    {
-      _id: '629e567fd4242c571392f54c',
-      label: 'Title',
-      name: 'title',
-      isCommonProperty: true,
-      type: 'text',
-      prioritySorting: false,
-      generatedId: false,
-    },
-    {
-      _id: '629e567fd4242c571392f54d',
-      label: 'Date added',
-      name: 'creationDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
-    },
-    {
-      _id: '629e567fd4242c571392f54e',
-      label: 'Date modified',
-      name: 'editDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
     },
   ],
 });
 
 const OtherDocumentWithRelations = Immutable.fromJS({
   _id: '62a34533100b901027a250e6',
-  color: '#A03AB1',
-  entityViewPage: 'hetu84j0k47',
   name: 'Other document with relations',
   properties: [
     {
@@ -112,7 +76,6 @@ const OtherDocumentWithRelations = Immutable.fromJS({
       },
       content: '5bfbb1a0471dd0fc16ada146',
       relationType: '629e55f1d4242c571392d5fc',
-      showInCard: true,
       name: 'multi-inherit_text',
     },
     {
@@ -125,7 +88,6 @@ const OtherDocumentWithRelations = Immutable.fromJS({
       },
       content: '5bfbb1a0471dd0fc16ada146',
       relationType: '629e55f1d4242c571392d5fc',
-      showInCard: true,
       name: 'multi-inherit_number',
     },
     {
@@ -138,50 +100,19 @@ const OtherDocumentWithRelations = Immutable.fromJS({
       },
       content: '629f900638ef5b3343848e80',
       relationType: '629e55f1d4242c571392d5fc',
-      showInCard: true,
       name: 'multi-inherit_geo',
     },
     {
       _id: '62a34533100b901027a65bh4',
       label: 'Plaintext',
       type: 'text',
-      showInCard: true,
       name: 'plaintext',
-    },
-  ],
-  commonProperties: [
-    {
-      _id: '62a34533100b901027a250ea',
-      label: 'Title',
-      name: 'title',
-      isCommonProperty: true,
-      type: 'text',
-      prioritySorting: false,
-      generatedId: false,
-    },
-    {
-      _id: '62a34533100b901027a250eb',
-      label: 'Date added',
-      name: 'creationDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
-    },
-    {
-      _id: '62a34533100b901027a250ec',
-      label: 'Date modified',
-      name: 'editDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
     },
   ],
 });
 
 const myTemplate = Immutable.fromJS({
   _id: '62ab63ce9480d0a7ebb32f41',
-  color: '#3F51B5',
-  entityViewPage: 'm1m443y9oxh',
   name: 'My template',
   properties: [
     {
@@ -203,33 +134,6 @@ const myTemplate = Immutable.fromJS({
       name: 'inhertied_number_from_template_b',
     },
   ],
-  commonProperties: [
-    {
-      _id: '62ab63ce9480d0a7ebb32f42',
-      label: 'Title',
-      name: 'title',
-      isCommonProperty: true,
-      type: 'text',
-      prioritySorting: false,
-      generatedId: false,
-    },
-    {
-      _id: '62ab63ce9480d0a7ebb32f43',
-      label: 'Date added',
-      name: 'creationDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
-    },
-    {
-      _id: '62ab63ce9480d0a7ebb32f44',
-      label: 'Date modified',
-      name: 'editDate',
-      isCommonProperty: true,
-      type: 'date',
-      prioritySorting: false,
-    },
-  ],
 });
 
 const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
@@ -239,38 +143,18 @@ const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.f
   {
     _id: '5bfbb1a0471dd0fc16ada146',
     name: 'Document',
-    commonProperties: [
-      {
-        _id: '5bfbb1a0471dd0fc16ada148',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-      },
-      {
-        _id: '5bfbb1a0471dd0fc16ada147',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
     properties: [
       {
         _id: '629e5634d4242c571392f43e',
         label: 'Text',
         type: 'text',
         name: 'text',
-        showInCard: true,
       },
       {
         _id: '629e5634d4242c571392f43f',
         label: 'Numeric',
         type: 'numeric',
         name: 'numeric',
-        showInCard: true,
       },
       {
         _id: '629e5634d4242c571392f440',
@@ -278,16 +162,11 @@ const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.f
         type: 'select',
         content: '629e5625d4242c571392e824',
         name: 'select',
-        showInCard: true,
       },
     ],
-    default: true,
-    color: '#c03b22',
   },
   {
     _id: '629f900638ef5b3343848e80',
-    color: '#E91E63',
-    entityViewPage: '',
     name: 'Countries',
     properties: [
       {
@@ -304,149 +183,30 @@ const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.f
         name: 'select',
       },
     ],
-    commonProperties: [
-      {
-        _id: '629f900638ef5b3343848e82',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '629f900638ef5b3343848e83',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '629f900638ef5b3343848e84',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
   },
   {
     _id: '62ab58c7edafa48e2c771ec7',
-    color: '#D9534F',
-    entityViewPage: '',
     name: 'Template A',
     properties: [
       { _id: '62ab58c7edafa48e2c771ec8', label: 'Text', type: 'text', name: 'text' },
       { _id: '62ab58c7edafa48e2c771ec9', label: 'Numeric', type: 'numeric', name: 'numeric' },
     ],
-    commonProperties: [
-      {
-        _id: '62ab58c7edafa48e2c771eca',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '62ab58c7edafa48e2c771ecb',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '62ab58c7edafa48e2c771ecc',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-    __v: 0,
   },
   {
     _id: '62ab58cfedafa48e2c7724ec',
-    color: '#E91E63',
-    entityViewPage: '',
     name: 'Template B',
     properties: [
       { _id: '62ab58cfedafa48e2c7724ed', label: 'Text', type: 'text', name: 'text' },
       { _id: '62ab58cfedafa48e2c7724ee', label: 'Numeric', type: 'numeric', name: 'numeric' },
     ],
-    commonProperties: [
-      {
-        _id: '62ab58cfedafa48e2c7724ef',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '62ab58cfedafa48e2c7724f0',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '62ab58cfedafa48e2c7724f1',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-    __v: 0,
   },
   {
     _id: '62ab60ea1bf79aa526174311',
-    color: '#A03AB1',
-    entityViewPage: '',
     name: 'Template C',
     properties: [{ _id: '62ab60ea1bf79aa526174312', label: 'Date', type: 'date', name: 'date' }],
-    commonProperties: [
-      {
-        _id: '62ab60ea1bf79aa526174313',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '62ab60ea1bf79aa526174314',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '62ab60ea1bf79aa526174315',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-    __v: 0,
   },
   {
     _id: '62ab624d1bf79aa5261750a5',
-    color: '#6F46B8',
-    entityViewPage: '',
     name: 'Template D',
     properties: [
       {
@@ -459,34 +219,6 @@ const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.f
         name: 'inheriting_from_my_template',
       },
     ],
-    commonProperties: [
-      {
-        _id: '62ab624d1bf79aa5261750a7',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '62ab624d1bf79aa5261750a8',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '62ab624d1bf79aa5261750a9',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-    __v: 0,
   },
 ]);
 
@@ -510,30 +242,25 @@ const thesaurisForAggregations = Immutable.fromJS([
     name: 'Selector',
   },
   {
-    default: true,
     values: [
       { id: 'f27fwxhlsqo', label: 'Document 1' },
       { id: 'u4uclgwzcp', label: 'Document 2' },
       { id: '844ts659a7', label: 'Document 3' },
       { id: '4qkgragsevq', label: 'Document 4' },
     ],
-    color: '#c03b22',
     name: 'Document',
-    optionsCount: 4,
     properties: [
       {
         _id: '629e5634d4242c571392f43e',
         label: 'Text',
         type: 'text',
         name: 'text',
-        showInCard: true,
       },
       {
         _id: '629e5634d4242c571392f43f',
         label: 'Numeric',
         type: 'numeric',
         name: 'numeric',
-        showInCard: true,
       },
       {
         _id: '629e5634d4242c571392f440',
@@ -541,39 +268,17 @@ const thesaurisForAggregations = Immutable.fromJS([
         type: 'select',
         content: '629e5625d4242c571392e824',
         name: 'select',
-        showInCard: true,
       },
     ],
-
     _id: '5bfbb1a0471dd0fc16ada146',
     type: 'template',
-    commonProperties: [
-      {
-        _id: '5bfbb1a0471dd0fc16ada148',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-      },
-      {
-        _id: '5bfbb1a0471dd0fc16ada147',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
   },
   {
     values: [
       { id: 's07ki698a69', label: 'iDocument 1' },
       { id: 'ayvlz9vy4vq', label: 'iDocument 2' },
     ],
-    color: '#D9534F',
     name: 'Document with relations',
-    optionsCount: 2,
     properties: [
       {
         _id: '629e567fd4242c571392f549',
@@ -582,7 +287,6 @@ const thesaurisForAggregations = Immutable.fromJS([
         inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
         content: '5bfbb1a0471dd0fc16ada146',
         relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
         name: 'itext',
       },
       {
@@ -592,7 +296,6 @@ const thesaurisForAggregations = Immutable.fromJS([
         inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
         content: '5bfbb1a0471dd0fc16ada146',
         relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
         name: 'inumeric',
       },
       {
@@ -602,7 +305,6 @@ const thesaurisForAggregations = Immutable.fromJS([
         inherit: { property: '629e5634d4242c571392f440', type: 'select' },
         content: '5bfbb1a0471dd0fc16ada146',
         relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
         name: 'iselect',
       },
       {
@@ -618,7 +320,6 @@ const thesaurisForAggregations = Immutable.fromJS([
         inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
         content: '629f900638ef5b3343848e80',
         relationType: '629f902238ef5b3343849b62',
-        showInCard: true,
         name: 'igeolocation',
       },
       {
@@ -628,41 +329,11 @@ const thesaurisForAggregations = Immutable.fromJS([
         inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
         content: '629f900638ef5b3343848e80',
         relationType: '629f902238ef5b3343849b62',
-        showInCard: true,
         name: 'iselect-country',
       },
     ],
-
-    entityViewPage: 'hetu84j0k47',
     _id: '629e567fd4242c571392f548',
     type: 'template',
-    commonProperties: [
-      {
-        _id: '629e567fd4242c571392f54c',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '629e567fd4242c571392f54d',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '629e567fd4242c571392f54e',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
   },
   {
     values: [
@@ -671,9 +342,7 @@ const thesaurisForAggregations = Immutable.fromJS([
       { id: 'ckww13sin9', label: 'Bolivia' },
       { id: 'mp9v2ugx1un', label: 'Venezuela' },
     ],
-    color: '#E91E63',
     name: 'Countries',
-    optionsCount: 4,
     properties: [
       {
         _id: '629f900638ef5b3343848e81',
@@ -689,37 +358,8 @@ const thesaurisForAggregations = Immutable.fromJS([
         name: 'select',
       },
     ],
-
-    entityViewPage: '',
     _id: '629f900638ef5b3343848e80',
     type: 'template',
-    commonProperties: [
-      {
-        _id: '629f900638ef5b3343848e82',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '629f900638ef5b3343848e83',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '629f900638ef5b3343848e84',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
   },
 ]);
 
@@ -891,20 +531,14 @@ const otherEntities: EntitySchema[] = [
     title: 'iDocument 1',
     user: '58ada34d299e82674854510f',
     creationDate: 1654544146164,
-    published: false,
     editDate: 1654624436122,
     language: 'en',
     sharedId: 's07ki698a69',
-    permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
-
-    documents: [],
-    attachments: [],
     metadata: {
       itext: [
         {
           value: '844ts659a7',
           label: 'Document 3',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 'Three' }],
           inheritedType: 'text',
@@ -912,7 +546,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: 'f27fwxhlsqo',
           label: 'Document 1',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 'One' }],
           inheritedType: 'text',
@@ -920,7 +553,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: 'u4uclgwzcp',
           label: 'Document 2',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 'Two' }],
           inheritedType: 'text',
@@ -928,7 +560,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '4qkgragsevq',
           label: 'Document 4',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 'Four' }],
           inheritedType: 'text',
@@ -938,7 +569,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '844ts659a7',
           label: 'Document 3',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 3 }],
           inheritedType: 'numeric',
@@ -946,7 +576,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: 'f27fwxhlsqo',
           label: 'Document 1',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 1 }],
           inheritedType: 'numeric',
@@ -954,7 +583,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: 'u4uclgwzcp',
           label: 'Document 2',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 2 }],
           inheritedType: 'numeric',
@@ -962,7 +590,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '4qkgragsevq',
           label: 'Document 4',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 4 }],
           inheritedType: 'numeric',
@@ -972,7 +599,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '844ts659a7',
           label: 'Document 3',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 'e5cgnczmfys', label: 'Option C' }],
           inheritedType: 'select',
@@ -980,7 +606,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: 'f27fwxhlsqo',
           label: 'Document 1',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: 'aot0horszdt', label: 'Option A' }],
           inheritedType: 'select',
@@ -988,7 +613,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: 'u4uclgwzcp',
           label: 'Document 2',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
           inheritedType: 'select',
@@ -996,7 +620,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '4qkgragsevq',
           label: 'Document 4',
-          icon: null,
           type: 'entity',
           inheritedValue: [
             {
@@ -1012,7 +635,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '9e13muy08kl',
           label: 'Argentina',
-          icon: null,
           type: 'entity',
           inheritedValue: [
             {
@@ -1026,7 +648,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '3zeqx3aptzi',
           label: 'Peru',
-          icon: null,
           type: 'entity',
           inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
           inheritedType: 'select',
@@ -1036,7 +657,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '9e13muy08kl',
           label: 'Argentina',
-          icon: null,
           type: 'entity',
           inheritedValue: [
             { value: { lat: -36.19286487671368, lon: -64.29199218750001, label: '' } },
@@ -1046,7 +666,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: '3zeqx3aptzi',
           label: 'Peru',
-          icon: null,
           type: 'entity',
           inheritedValue: [
             { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
@@ -1065,7 +684,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '844ts659a7',
                 label: 'Document 3',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'Three' }],
                 inheritedType: 'text',
@@ -1073,7 +691,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'f27fwxhlsqo',
                 label: 'Document 1',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'One' }],
                 inheritedType: 'text',
@@ -1081,7 +698,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'u4uclgwzcp',
                 label: 'Document 2',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'Two' }],
                 inheritedType: 'text',
@@ -1089,7 +705,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '4qkgragsevq',
                 label: 'Document 4',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'Four' }],
                 inheritedType: 'text',
@@ -1099,7 +714,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '844ts659a7',
                 label: 'Document 3',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 3 }],
                 inheritedType: 'numeric',
@@ -1107,7 +721,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'f27fwxhlsqo',
                 label: 'Document 1',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 1 }],
                 inheritedType: 'numeric',
@@ -1115,7 +728,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'u4uclgwzcp',
                 label: 'Document 2',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 2 }],
                 inheritedType: 'numeric',
@@ -1123,7 +735,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '4qkgragsevq',
                 label: 'Document 4',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 4 }],
                 inheritedType: 'numeric',
@@ -1133,7 +744,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '844ts659a7',
                 label: 'Document 3',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'e5cgnczmfys', label: 'Option C' }],
                 inheritedType: 'select',
@@ -1141,7 +751,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'f27fwxhlsqo',
                 label: 'Document 1',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'aot0horszdt', label: 'Option A' }],
                 inheritedType: 'select',
@@ -1149,7 +758,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'u4uclgwzcp',
                 label: 'Document 2',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
                 inheritedType: 'select',
@@ -1157,7 +765,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '4qkgragsevq',
                 label: 'Document 4',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   {
@@ -1173,7 +780,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '9e13muy08kl',
                 label: 'Argentina',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   {
@@ -1187,7 +793,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '3zeqx3aptzi',
                 label: 'Peru',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
                 inheritedType: 'select',
@@ -1197,7 +802,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '9e13muy08kl',
                 label: 'Argentina',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   { value: { lat: -36.19286487671368, lon: -64.29199218750001, label: '' } },
@@ -1207,7 +811,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '3zeqx3aptzi',
                 label: 'Peru',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
@@ -1219,10 +822,7 @@ const otherEntities: EntitySchema[] = [
           template: '629e567fd4242c571392f548',
           title: 'iDocument 1',
           creationDate: 1654544146164,
-          published: false,
           sharedId: 's07ki698a69',
-          documents: [],
-          attachments: [],
         },
         _id: '629e5712d4242c571392fce2',
         entity: 's07ki698a69',
@@ -1240,10 +840,7 @@ const otherEntities: EntitySchema[] = [
           template: '5bfbb1a0471dd0fc16ada146',
           title: 'Document 3',
           creationDate: 1654544068027,
-          published: false,
           sharedId: '844ts659a7',
-          documents: [],
-          attachments: [],
         },
         _id: '629e5712d4242c571392fce4',
         entity: '844ts659a7',
@@ -1261,10 +858,7 @@ const otherEntities: EntitySchema[] = [
           template: '5bfbb1a0471dd0fc16ada146',
           title: 'Document 1',
           creationDate: 1654544033340,
-          published: false,
           sharedId: 'f27fwxhlsqo',
-          documents: [],
-          attachments: [],
         },
         _id: '629e5712d4242c571392fce3',
         entity: 'f27fwxhlsqo',
@@ -1282,10 +876,7 @@ const otherEntities: EntitySchema[] = [
           template: '5bfbb1a0471dd0fc16ada146',
           title: 'Document 2',
           creationDate: 1654544046076,
-          published: false,
           sharedId: 'u4uclgwzcp',
-          documents: [],
-          attachments: [],
         },
         _id: '629e5712d4242c571392fce5',
         entity: 'u4uclgwzcp',
@@ -1309,10 +900,7 @@ const otherEntities: EntitySchema[] = [
           template: '5bfbb1a0471dd0fc16ada146',
           title: 'Document 4',
           creationDate: 1654544082896,
-          published: false,
           sharedId: '4qkgragsevq',
-          documents: [],
-          attachments: [],
         },
         _id: '629e5712d4242c571392fce6',
         entity: '4qkgragsevq',
@@ -1327,7 +915,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '844ts659a7',
                 label: 'Document 3',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'Three' }],
                 inheritedType: 'text',
@@ -1335,7 +922,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'f27fwxhlsqo',
                 label: 'Document 1',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'One' }],
                 inheritedType: 'text',
@@ -1343,7 +929,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'u4uclgwzcp',
                 label: 'Document 2',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'Two' }],
                 inheritedType: 'text',
@@ -1351,7 +936,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '4qkgragsevq',
                 label: 'Document 4',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'Four' }],
                 inheritedType: 'text',
@@ -1361,7 +945,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '844ts659a7',
                 label: 'Document 3',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 3 }],
                 inheritedType: 'numeric',
@@ -1369,7 +952,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'f27fwxhlsqo',
                 label: 'Document 1',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 1 }],
                 inheritedType: 'numeric',
@@ -1377,7 +959,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'u4uclgwzcp',
                 label: 'Document 2',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 2 }],
                 inheritedType: 'numeric',
@@ -1385,7 +966,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '4qkgragsevq',
                 label: 'Document 4',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 4 }],
                 inheritedType: 'numeric',
@@ -1395,7 +975,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '844ts659a7',
                 label: 'Document 3',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'e5cgnczmfys', label: 'Option C' }],
                 inheritedType: 'select',
@@ -1403,7 +982,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'f27fwxhlsqo',
                 label: 'Document 1',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: 'aot0horszdt', label: 'Option A' }],
                 inheritedType: 'select',
@@ -1411,7 +989,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'u4uclgwzcp',
                 label: 'Document 2',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
                 inheritedType: 'select',
@@ -1419,7 +996,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '4qkgragsevq',
                 label: 'Document 4',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   {
@@ -1435,7 +1011,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '9e13muy08kl',
                 label: 'Argentina',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   {
@@ -1449,7 +1024,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '3zeqx3aptzi',
                 label: 'Peru',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [{ value: '92lfe31qc3n', label: 'Option B' }],
                 inheritedType: 'select',
@@ -1459,7 +1033,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '9e13muy08kl',
                 label: 'Argentina',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   { value: { lat: -36.19286487671368, lon: -64.29199218750001, label: '' } },
@@ -1469,7 +1042,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: '3zeqx3aptzi',
                 label: 'Peru',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
@@ -1481,10 +1053,7 @@ const otherEntities: EntitySchema[] = [
           template: '629e567fd4242c571392f548',
           title: 'iDocument 1',
           creationDate: 1654544146164,
-          published: false,
           sharedId: 's07ki698a69',
-          documents: [],
-          attachments: [],
         },
         _id: '629f90b438ef5b334384a9e9',
         entity: 's07ki698a69',
@@ -1509,10 +1078,7 @@ const otherEntities: EntitySchema[] = [
           template: '629f900638ef5b3343848e80',
           title: 'Argentina',
           creationDate: 1654624366082,
-          published: false,
           sharedId: '9e13muy08kl',
-          documents: [],
-          attachments: [],
         },
         _id: '629f90b438ef5b334384a9ea',
         entity: '9e13muy08kl',
@@ -1531,10 +1097,7 @@ const otherEntities: EntitySchema[] = [
           template: '629f900638ef5b3343848e80',
           title: 'Peru',
           creationDate: 1654624383651,
-          published: false,
           sharedId: '3zeqx3aptzi',
-          documents: [],
-          attachments: [],
         },
         _id: '629f90b438ef5b334384a9eb',
         entity: '3zeqx3aptzi',
@@ -1548,20 +1111,14 @@ const otherEntities: EntitySchema[] = [
     title: 'iDocument 2',
     user: '58ada34d299e82674854510f',
     creationDate: 1654623944592,
-    published: false,
     editDate: 1654624452397,
     language: 'en',
     sharedId: 'ayvlz9vy4vq',
-    permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
-
-    documents: [],
-    attachments: [],
     metadata: {
       'iselect-country': [
         {
           value: 'mp9v2ugx1un',
           label: 'Venezuela',
-          icon: null,
           type: 'entity',
           inheritedValue: [
             {
@@ -1577,7 +1134,6 @@ const otherEntities: EntitySchema[] = [
         {
           value: 'mp9v2ugx1un',
           label: 'Venezuela',
-          icon: null,
           type: 'entity',
           inheritedValue: [
             { value: { lat: 7.9243233190236015, lon: -65.47851562500001, label: '' } },
@@ -1597,7 +1153,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'mp9v2ugx1un',
                 label: 'Venezuela',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   {
@@ -1613,7 +1168,6 @@ const otherEntities: EntitySchema[] = [
               {
                 value: 'mp9v2ugx1un',
                 label: 'Venezuela',
-                icon: null,
                 type: 'entity',
                 inheritedValue: [
                   { value: { lat: 7.9243233190236015, lon: -65.47851562500001, label: '' } },
@@ -1626,10 +1180,7 @@ const otherEntities: EntitySchema[] = [
           template: '629e567fd4242c571392f548',
           title: 'iDocument 2',
           creationDate: 1654623944592,
-          published: false,
           sharedId: 'ayvlz9vy4vq',
-          documents: [],
-          attachments: [],
         },
         _id: '629f90c438ef5b334384aa4b',
         entity: 'ayvlz9vy4vq',
@@ -1654,10 +1205,7 @@ const otherEntities: EntitySchema[] = [
           template: '629f900638ef5b3343848e80',
           title: 'Venezuela',
           creationDate: 1654624421257,
-          published: false,
           sharedId: 'mp9v2ugx1un',
-          documents: [],
-          attachments: [],
         },
         _id: '629f90c438ef5b334384aa4c',
         entity: 'mp9v2ugx1un',
@@ -1671,14 +1219,9 @@ const otherEntities: EntitySchema[] = [
     title: 'iDocument 3',
     user: '58ada34d299e82674854510f',
     creationDate: 1654706738101,
-    published: false,
     editDate: 1654706738103,
     language: 'en',
     sharedId: '6vad5znb6c',
-    permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
-
-    documents: [],
-    attachments: [],
     metadata: {
       itext: [],
       inumeric: [],
@@ -1687,7 +1230,6 @@ const otherEntities: EntitySchema[] = [
       igeolocation: [],
       'iselect-country': [],
     },
-    relations: [],
   },
 ];
 
@@ -1697,19 +1239,9 @@ const inheritingDocument: EntitySchema = {
   title: 'Other iDcoument 1',
   user: '58ada34d299e82674854510f',
   creationDate: 1654867359008,
-  published: false,
   editDate: 1654867359009,
   language: 'en',
   sharedId: 'k60i7wxo9vc',
-  permissions: [
-    {
-      refId: '58ada34d299e82674854510f',
-      type: 'user',
-      level: 'write',
-    },
-  ],
-  documents: [],
-  attachments: [],
   relations: [
     {
       template: '629e55f1d4242c571392d5fc',
@@ -1746,10 +1278,7 @@ const inheritingDocument: EntitySchema = {
         template: '5bfbb1a0471dd0fc16ada146',
         title: 'Document 3',
         creationDate: 1654544068027,
-        published: false,
         sharedId: '844ts659a7',
-        documents: [],
-        attachments: [],
       },
       _id: '62a3459f25e55412954d7763',
       entity: '844ts659a7',
@@ -1829,10 +1358,7 @@ const inheritingDocument: EntitySchema = {
         template: '62a34533100b901027a250e6',
         title: 'Other iDcoument 1',
         creationDate: 1654867359008,
-        published: false,
         sharedId: 'k60i7wxo9vc',
-        documents: [],
-        attachments: [],
       },
       _id: '62a3459f25e55412954d7761',
       entity: 'k60i7wxo9vc',
@@ -1873,10 +1399,7 @@ const inheritingDocument: EntitySchema = {
         template: '5bfbb1a0471dd0fc16ada146',
         title: 'Document 1',
         creationDate: 1654544033340,
-        published: false,
         sharedId: 'f27fwxhlsqo',
-        documents: [],
-        attachments: [],
       },
       _id: '62a3459f25e55412954d7762',
       entity: 'f27fwxhlsqo',
@@ -1906,10 +1429,7 @@ const inheritingDocument: EntitySchema = {
         template: '629f900638ef5b3343848e80',
         title: 'Peru',
         creationDate: 1654624383651,
-        published: false,
         sharedId: '3zeqx3aptzi',
-        documents: [],
-        attachments: [],
       },
       _id: '62a3459f25e55412954d7765',
       entity: '3zeqx3aptzi',
@@ -1989,10 +1509,7 @@ const inheritingDocument: EntitySchema = {
         template: '62a34533100b901027a250e6',
         title: 'Other iDcoument 1',
         creationDate: 1654867359008,
-        published: false,
         sharedId: 'k60i7wxo9vc',
-        documents: [],
-        attachments: [],
       },
       _id: '62a3459f25e55412954d7764',
       entity: 'k60i7wxo9vc',
@@ -2076,7 +1593,6 @@ const myEntity: EntitySchema = {
       {
         value: 'n6a1ulcmwa',
         label: 'A1',
-        icon: null,
         type: 'entity',
         inheritedValue: [{ value: 'A' }],
         inheritedType: 'text',
@@ -2086,7 +1602,6 @@ const myEntity: EntitySchema = {
       {
         value: 'rnid5ejh3vd',
         label: 'B1',
-        icon: null,
         type: 'entity',
         inheritedValue: [{ value: 10 }],
         inheritedType: 'numeric',
@@ -2097,14 +1612,9 @@ const myEntity: EntitySchema = {
   title: 'My entity 1',
   user: '58ada34d299e82674854510f',
   creationDate: 1655399467072,
-  published: false,
   editDate: 1655399467073,
   language: 'en',
   sharedId: 'fewuvrs4xo',
-  permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
-  __v: 0,
-  documents: [],
-  attachments: [],
   relations: [
     {
       template: null,
@@ -2115,7 +1625,6 @@ const myEntity: EntitySchema = {
             {
               value: 'n6a1ulcmwa',
               label: 'A1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 'A' }],
               inheritedType: 'text',
@@ -2125,7 +1634,6 @@ const myEntity: EntitySchema = {
             {
               value: 'rnid5ejh3vd',
               label: 'B1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 10 }],
               inheritedType: 'numeric',
@@ -2135,10 +1643,7 @@ const myEntity: EntitySchema = {
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         creationDate: 1655399467072,
-        published: false,
         sharedId: 'fewuvrs4xo',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab642b9480d0a7ebb35558',
       entity: 'fewuvrs4xo',
@@ -2152,10 +1657,7 @@ const myEntity: EntitySchema = {
         template: '62ab58c7edafa48e2c771ec7',
         title: 'A1',
         creationDate: 1655396616486,
-        published: false,
         sharedId: 'n6a1ulcmwa',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab642b9480d0a7ebb35559',
       entity: 'n6a1ulcmwa',
@@ -2170,7 +1672,6 @@ const myEntity: EntitySchema = {
             {
               value: 'n6a1ulcmwa',
               label: 'A1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 'A' }],
               inheritedType: 'text',
@@ -2180,7 +1681,6 @@ const myEntity: EntitySchema = {
             {
               value: 'rnid5ejh3vd',
               label: 'B1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 10 }],
               inheritedType: 'numeric',
@@ -2190,10 +1690,7 @@ const myEntity: EntitySchema = {
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         creationDate: 1655399467072,
-        published: false,
         sharedId: 'fewuvrs4xo',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab642b9480d0a7ebb3555a',
       entity: 'fewuvrs4xo',
@@ -2207,10 +1704,7 @@ const myEntity: EntitySchema = {
         template: '62ab58cfedafa48e2c7724ec',
         title: 'B1',
         creationDate: 1655396632495,
-        published: false,
         sharedId: 'rnid5ejh3vd',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab642b9480d0a7ebb3555b',
       entity: 'rnid5ejh3vd',
@@ -2225,7 +1719,6 @@ const myEntity: EntitySchema = {
             {
               value: 'n6a1ulcmwa',
               label: 'A1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 'A' }],
               inheritedType: 'text',
@@ -2235,7 +1728,6 @@ const myEntity: EntitySchema = {
             {
               value: 'rnid5ejh3vd',
               label: 'B1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 10 }],
               inheritedType: 'numeric',
@@ -2245,10 +1737,7 @@ const myEntity: EntitySchema = {
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         creationDate: 1655399467072,
-        published: false,
         sharedId: 'fewuvrs4xo',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab643e9480d0a7ebb355b6',
       entity: 'fewuvrs4xo',
@@ -2262,10 +1751,7 @@ const myEntity: EntitySchema = {
         template: '62ab60ea1bf79aa526174311',
         title: 'C1',
         creationDate: 1655398872761,
-        published: false,
         sharedId: '6liuhix9td',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab643e9480d0a7ebb355b7',
       entity: '6liuhix9td',
@@ -2285,7 +1771,6 @@ const myEntity: EntitySchema = {
                 {
                   value: 'n6a1ulcmwa',
                   label: 'A1',
-                  icon: null,
                   type: 'entity',
                   inheritedValue: [{ value: 'A' }],
                   inheritedType: 'text',
@@ -2298,10 +1783,7 @@ const myEntity: EntitySchema = {
         template: '62ab624d1bf79aa5261750a5',
         title: 'D1',
         creationDate: 1655399500510,
-        published: false,
         sharedId: 'vh3rrsrqq1g',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab644c9480d0a7ebb35633',
       entity: 'vh3rrsrqq1g',
@@ -2316,7 +1798,6 @@ const myEntity: EntitySchema = {
             {
               value: 'n6a1ulcmwa',
               label: 'A1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 'A' }],
               inheritedType: 'text',
@@ -2326,7 +1807,6 @@ const myEntity: EntitySchema = {
             {
               value: 'rnid5ejh3vd',
               label: 'B1',
-              icon: null,
               type: 'entity',
               inheritedValue: [{ value: 10 }],
               inheritedType: 'numeric',
@@ -2336,10 +1816,7 @@ const myEntity: EntitySchema = {
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         creationDate: 1655399467072,
-        published: false,
         sharedId: 'fewuvrs4xo',
-        documents: [],
-        attachments: [],
       },
       _id: '62ab644c9480d0a7ebb35634',
       entity: 'fewuvrs4xo',
