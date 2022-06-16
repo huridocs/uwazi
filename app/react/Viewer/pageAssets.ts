@@ -95,7 +95,7 @@ const formatProperty = (item: FormattedPropertyValueSchema) => {
   return formattedItem;
 };
 
-const reletationsAggregationsMetadata = (metadata: MetadataSchema) =>
+const formatAggregationsMetadata = (metadata: MetadataSchema) =>
   Object.entries(metadata).reduce((memo, [propertyName, values]) => {
     const formmatedValues = (values as FormattedPropertyValueSchema[]).map(value =>
       value.label && value.label.length ? value.label : value.value
@@ -104,11 +104,19 @@ const reletationsAggregationsMetadata = (metadata: MetadataSchema) =>
     return { ...memo, ...result };
   }, {});
 
-const aggregateByTemplate = (relations: Relation[], relationship: { _id: string; name: string }) =>
+const aggregateByTemplate = (
+  relations: Relation[],
+  relationship: { _id: string; name: string },
+  inheritingProperties: { [key: string]: string[] }
+) =>
   relations.reduce((groupedRelations, relation) => {
     const { template } = relation.entityData;
     const groupName = `${relationship.name}-${template}`;
-    const metadata = reletationsAggregationsMetadata(relation.entityData.metadata || {});
+    const relationMetadata = pick(
+      relation.entityData.metadata,
+      inheritingProperties[template as string]
+    );
+    const metadata = formatAggregationsMetadata(relationMetadata || {});
 
     const relatedEntity = {
       title: relation.entityData.title,
@@ -123,20 +131,56 @@ const aggregateByTemplate = (relations: Relation[], relationship: { _id: string;
 
 const aggregateRelationships = (
   entity: FormattedEntity,
-  relationTypes: { _id: string; name: string }[]
+  relationTypes: { _id: string; name: string }[],
+  entityTemplate: IImmutable<TemplateSchema>,
+  _templates: IImmutable<TemplateSchema[]>
 ) => {
-  if (!entity.relations || entity.relations.length === 0) {
+  if (!entity.relations || !entity.relations.length || !entityTemplate) {
     return {};
   }
 
-  const relationshipGroups = groupBy(entity.relations, 'template');
+  const templates = _templates
+    .filter(template => template?.get('_id') !== entityTemplate.get('_id'))
+    .toJS();
+
+  const inheritingProperties = templates.reduce(
+    (inheriting: { [key: string]: string[] }, template: TemplateSchema) => {
+      const inheritedProperties = entityTemplate
+        .get('properties')
+        ?.map(entityProperty => {
+          if (entityProperty?.get('inherit')) {
+            const inheritingPropertyName = template.properties!.find(
+              property => property?._id === entityProperty?.get('inherit')?.get('property')
+            );
+            return inheritingPropertyName && inheritingPropertyName.name;
+          }
+          return undefined;
+        })
+        .filter(value => !!value)
+        .toJS();
+      return inheritedProperties.length
+        ? { ...inheriting, [template._id as string]: inheritedProperties }
+        : inheriting;
+    },
+    {}
+  );
+
+  const filteredRelations = entity.relations.filter(relation =>
+    has(inheritingProperties, relation.entityData.template as string)
+  );
+
+  const relationshipGroups = groupBy(filteredRelations, 'template');
 
   const namedRelationshipGroups = Object.entries(relationshipGroups).reduce(
     (aggregated, [relationshipId, relations]) => {
       const relationship = relationTypes.find(({ _id }) => _id === relationshipId);
 
       if (relationship) {
-        const aggregatedByTemplate = aggregateByTemplate(relations, relationship);
+        const aggregatedByTemplate = aggregateByTemplate(
+          relations,
+          relationship,
+          inheritingProperties
+        );
         return { ...aggregated, ...aggregatedByTemplate };
       }
       return aggregated;
@@ -149,7 +193,9 @@ const aggregateRelationships = (
 
 const formatEntityData = (
   formattedEntity: FormattedEntity,
-  relationTypes: { _id: string; name: string }[]
+  relationTypes: { _id: string; name: string }[],
+  entityTemplate: IImmutable<TemplateSchema>,
+  templates: IImmutable<TemplateSchema[]>
 ) => {
   const entity = pickEntityFields(formattedEntity);
   const formattedMetadata = formattedEntity.metadata.reduce((memo, property) => {
@@ -157,7 +203,12 @@ const formatEntityData = (
     return { ...memo, [property.name]: formattedProperty };
   }, {});
 
-  const relationshipAggregations = aggregateRelationships(formattedEntity, relationTypes);
+  const relationshipAggregations = aggregateRelationships(
+    formattedEntity,
+    relationTypes,
+    entityTemplate,
+    templates
+  );
 
   return {
     ...entity,
@@ -186,7 +237,7 @@ const prepareAssets = (
 ) => {
   const formattedEntity = formatter.prepareMetadata(entityRaw, state.templates, state.thesauris);
   const entity = formatEntity(formattedEntity);
-  const entityData = formatEntityData(formattedEntity, relationTypes);
+  const entityData = formatEntityData(formattedEntity, relationTypes, template, state.templates);
   return {
     entity,
     entityRaw,
