@@ -13,7 +13,7 @@ describe('navlinks', () => {
   });
 
   it('should create an item menu', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Menu' });
     await expect(page).toClick('button', { text: 'Add link' });
     await expect(page).toFill('input[name="settings.navlinksData.links[0].title"]', 'NavLink1');
@@ -36,7 +36,7 @@ describe('navlinks', () => {
   });
 
   it('should load the form with the values previously saved', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Menu' });
     await expect(page).toMatchElement('span', { text: 'NavLink1' });
     await expect(page).toMatchElement('span', { text: 'NavLink2' });

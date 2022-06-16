@@ -114,12 +114,12 @@ describe('I18NMenu', () => {
     expect(screen.queryByRole('listbox')).toBeNull();
   });
 
-  it('should display only the current language if there is only one language and no user', () => {
+  it('should not display the language section if there is only one language and no user', () => {
     props.languages = Immutable.fromJS([{ key: 'en', label: 'English', default: true }]);
     props.user = Immutable.fromJS({});
     render();
     expect(screen.queryByRole('listbox')).toBeNull();
-    expect(screen.getByText('English')).toBeInTheDocument();
+    expect(screen.queryByText('English')).not.toBeInTheDocument();
   });
 
   it('should change to a button when live translating', async () => {
