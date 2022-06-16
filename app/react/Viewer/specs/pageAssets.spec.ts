@@ -10,6 +10,7 @@ import {
   entityData1RelationsAggregations,
   entityData2RelationsAggregations,
   entityData4RelationsAggregations,
+  entityData5RelationsAggregations,
 } from './fixtures/pageAssetsRelationsAggregations';
 
 describe('pageAssets', () => {
@@ -228,6 +229,19 @@ describe('pageAssets', () => {
             relationTypes
           );
           expect(entityData4.inherited_relationships).toEqual(entityData4RelationsAggregations);
+        });
+
+        it('should exclude relations that are not part of the metadata', () => {
+          const { entityData: entityData5 } = prepareAssets(
+            rawEntities[4],
+            dbTemplates2.get(8),
+            {
+              templates: dbTemplates2,
+              thesauris: thesauris2,
+            },
+            relationTypes
+          );
+          expect(entityData5.inherited_relationships).toEqual(entityData5RelationsAggregations);
         });
       });
     });
