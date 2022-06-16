@@ -93,8 +93,7 @@ describe('entities get searchString', () => {
       ]);
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fit('should return entities that match the searchString', async () => {
+    it('should return entities that match the searchString', async () => {
       const { body: bodyEn } = await request(app)
         .get('/api/v2/entities')
         .query({ filter: { searchString: 'search' } })

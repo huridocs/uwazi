@@ -84,7 +84,7 @@ export const fixturesTitleSearch: DBFixture = {
       language: 'eng',
       type: 'document',
       fullText: {
-        1: 'Some[[1]] short[[1]] text[[1]] searched[[1]] for[[1]] unique[[1]] term[[1]].',
+        1: 'Some[[1]] short[[1]] text[[1]] with[[1]] unique[[1]] term[[1]].',
       },
     },
   ],
