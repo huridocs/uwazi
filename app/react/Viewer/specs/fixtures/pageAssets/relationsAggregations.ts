@@ -4,62 +4,64 @@ import { ClientTemplateSchema } from 'app/istore';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 
+const propertiesDocumentWithRelations = [
+  {
+    _id: '629e567fd4242c571392f549',
+    label: 'iText',
+    type: 'relationship',
+    inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
+    content: '5bfbb1a0471dd0fc16ada146',
+    relationType: '629e55f1d4242c571392d5fc',
+    name: 'itext',
+  },
+  {
+    _id: '629e567fd4242c571392f54a',
+    label: 'iNumeric',
+    type: 'relationship',
+    inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
+    content: '5bfbb1a0471dd0fc16ada146',
+    relationType: '629e55f1d4242c571392d5fc',
+    name: 'inumeric',
+  },
+  {
+    _id: '629e567fd4242c571392f54b',
+    label: 'iSelect',
+    type: 'relationship',
+    inherit: { property: '629e5634d4242c571392f440', type: 'select' },
+    content: '5bfbb1a0471dd0fc16ada146',
+    relationType: '629e55f1d4242c571392d5fc',
+    name: 'iselect',
+  },
+  {
+    _id: '629f8fa7988b5431324d858b',
+    label: 'Description',
+    type: 'markdown',
+    name: 'description',
+  },
+  {
+    _id: '629f905738ef5b334384a85c',
+    label: 'iGeolocation',
+    type: 'relationship',
+    inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
+    content: '629f900638ef5b3343848e80',
+    relationType: '629f902238ef5b3343849b62',
+    name: 'igeolocation',
+  },
+  {
+    _id: '629f905738ef5b334384a85d',
+    label: 'iSelect-country',
+    type: 'relationship',
+    inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
+    content: '629f900638ef5b3343848e80',
+    relationType: '629f902238ef5b3343849b62',
+    name: 'iselect-country',
+  },
+];
+
 const DocumentWithRelations = Immutable.fromJS({
   _id: '629e567fd4242c571392f548',
   name: 'Document with relations',
-  properties: [
-    {
-      _id: '629e567fd4242c571392f549',
-      label: 'iText',
-      type: 'relationship',
-      inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
-      content: '5bfbb1a0471dd0fc16ada146',
-      relationType: '629e55f1d4242c571392d5fc',
-      name: 'itext',
-    },
-    {
-      _id: '629e567fd4242c571392f54a',
-      label: 'iNumeric',
-      type: 'relationship',
-      inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
-      content: '5bfbb1a0471dd0fc16ada146',
-      relationType: '629e55f1d4242c571392d5fc',
-      name: 'inumeric',
-    },
-    {
-      _id: '629e567fd4242c571392f54b',
-      label: 'iSelect',
-      type: 'relationship',
-      inherit: { property: '629e5634d4242c571392f440', type: 'select' },
-      content: '5bfbb1a0471dd0fc16ada146',
-      relationType: '629e55f1d4242c571392d5fc',
-      name: 'iselect',
-    },
-    {
-      _id: '629f8fa7988b5431324d858b',
-      label: 'Description',
-      type: 'markdown',
-      name: 'description',
-    },
-    {
-      _id: '629f905738ef5b334384a85c',
-      label: 'iGeolocation',
-      type: 'relationship',
-      inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
-      content: '629f900638ef5b3343848e80',
-      relationType: '629f902238ef5b3343849b62',
-      name: 'igeolocation',
-    },
-    {
-      _id: '629f905738ef5b334384a85d',
-      label: 'iSelect-country',
-      type: 'relationship',
-      inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
-      content: '629f900638ef5b3343848e80',
-      relationType: '629f902238ef5b3343849b62',
-      name: 'iselect-country',
-    },
-  ],
+  properties: propertiesDocumentWithRelations,
 });
 
 const iDocument1Metadata = {
@@ -290,18 +292,8 @@ const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.f
     _id: '5bfbb1a0471dd0fc16ada146',
     name: 'Document',
     properties: [
-      {
-        _id: '629e5634d4242c571392f43e',
-        label: 'Text',
-        type: 'text',
-        name: 'text',
-      },
-      {
-        _id: '629e5634d4242c571392f43f',
-        label: 'Numeric',
-        type: 'numeric',
-        name: 'numeric',
-      },
+      { _id: '629e5634d4242c571392f43e', label: 'Text', type: 'text', name: 'text' },
+      { _id: '629e5634d4242c571392f43f', label: 'Numeric', type: 'numeric', name: 'numeric' },
       {
         _id: '629e5634d4242c571392f440',
         label: 'Select',
@@ -396,18 +388,8 @@ const thesaurisForAggregations = Immutable.fromJS([
     ],
     name: 'Document',
     properties: [
-      {
-        _id: '629e5634d4242c571392f43e',
-        label: 'Text',
-        type: 'text',
-        name: 'text',
-      },
-      {
-        _id: '629e5634d4242c571392f43f',
-        label: 'Numeric',
-        type: 'numeric',
-        name: 'numeric',
-      },
+      { _id: '629e5634d4242c571392f43e', label: 'Text', type: 'text', name: 'text' },
+      { _id: '629e5634d4242c571392f43f', label: 'Numeric', type: 'numeric', name: 'numeric' },
       {
         _id: '629e5634d4242c571392f440',
         label: 'Select',
@@ -425,59 +407,7 @@ const thesaurisForAggregations = Immutable.fromJS([
       { id: 'ayvlz9vy4vq', label: 'iDocument 2' },
     ],
     name: 'Document with relations',
-    properties: [
-      {
-        _id: '629e567fd4242c571392f549',
-        label: 'iText',
-        type: 'relationship',
-        inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        name: 'itext',
-      },
-      {
-        _id: '629e567fd4242c571392f54a',
-        label: 'iNumeric',
-        type: 'relationship',
-        inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        name: 'inumeric',
-      },
-      {
-        _id: '629e567fd4242c571392f54b',
-        label: 'iSelect',
-        type: 'relationship',
-        inherit: { property: '629e5634d4242c571392f440', type: 'select' },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        name: 'iselect',
-      },
-      {
-        _id: '629f8fa7988b5431324d858b',
-        label: 'Description',
-        type: 'markdown',
-        name: 'description',
-      },
-      {
-        _id: '629f905738ef5b334384a85c',
-        label: 'iGeolocation',
-        type: 'relationship',
-        inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
-        content: '629f900638ef5b3343848e80',
-        relationType: '629f902238ef5b3343849b62',
-        name: 'igeolocation',
-      },
-      {
-        _id: '629f905738ef5b334384a85d',
-        label: 'iSelect-country',
-        type: 'relationship',
-        inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
-        content: '629f900638ef5b3343848e80',
-        relationType: '629f902238ef5b3343849b62',
-        name: 'iselect-country',
-      },
-    ],
+    properties: propertiesDocumentWithRelations,
     _id: '629e567fd4242c571392f548',
     type: 'template',
   },
@@ -524,13 +454,7 @@ const entityData1RelationsAggregations = {
       sharedId: '9e13muy08kl',
       metadata: {
         select: ['Option D 3'],
-        geolocation_geolocation: [
-          {
-            lat: -36.19286487671368,
-            lon: -64.29199218750001,
-            label: '',
-          },
-        ],
+        geolocation_geolocation: [{ lat: -36.19286487671368, lon: -64.29199218750001, label: '' }],
       },
     },
     {
@@ -538,13 +462,7 @@ const entityData1RelationsAggregations = {
       sharedId: '3zeqx3aptzi',
       metadata: {
         select: ['Option B'],
-        geolocation_geolocation: [
-          {
-            lat: -10.189511603370525,
-            lon: -74.97070312500001,
-            label: '',
-          },
-        ],
+        geolocation_geolocation: [{ lat: -10.189511603370525, lon: -74.97070312500001, label: '' }],
       },
     },
   ],
@@ -552,38 +470,22 @@ const entityData1RelationsAggregations = {
     {
       title: 'Document 3',
       sharedId: '844ts659a7',
-      metadata: {
-        text: ['Three'],
-        numeric: [3],
-        select: ['Option C'],
-      },
+      metadata: { text: ['Three'], numeric: [3], select: ['Option C'] },
     },
     {
       title: 'Document 1',
       sharedId: 'f27fwxhlsqo',
-      metadata: {
-        text: ['One'],
-        numeric: [1],
-        select: ['Option A'],
-      },
+      metadata: { text: ['One'], numeric: [1], select: ['Option A'] },
     },
     {
       title: 'Document 2',
       sharedId: 'u4uclgwzcp',
-      metadata: {
-        text: ['Two'],
-        numeric: [2],
-        select: ['Option B'],
-      },
+      metadata: { text: ['Two'], numeric: [2], select: ['Option B'] },
     },
     {
       title: 'Document 4',
       sharedId: '4qkgragsevq',
-      metadata: {
-        text: ['Four'],
-        numeric: [4],
-        select: ['Option D 1'],
-      },
+      metadata: { text: ['Four'], numeric: [4], select: ['Option D 1'] },
     },
   ],
 };
@@ -595,13 +497,7 @@ const entityData2RelationsAggregations = {
       sharedId: 'mp9v2ugx1un',
       metadata: {
         select: ['Option D 2'],
-        geolocation_geolocation: [
-          {
-            lat: 7.9243233190236015,
-            lon: -65.47851562500001,
-            label: '',
-          },
-        ],
+        geolocation_geolocation: [{ lat: 7.9243233190236015, lon: -65.47851562500001, label: '' }],
       },
     },
   ],
@@ -612,18 +508,12 @@ const entityData4RelationsAggregations = {
     {
       title: 'Document 3',
       sharedId: '844ts659a7',
-      metadata: {
-        text: ['Three'],
-        numeric: [3],
-      },
+      metadata: { text: ['Three'], numeric: [3] },
     },
     {
       title: 'Document 1',
       sharedId: 'f27fwxhlsqo',
-      metadata: {
-        text: ['One'],
-        numeric: [1],
-      },
+      metadata: { text: ['One'], numeric: [1] },
     },
   ],
   'Multi-inherit-629f900638ef5b3343848e80': [
@@ -639,22 +529,10 @@ const entityData4RelationsAggregations = {
 
 const entityData5RelationsAggregations = {
   'Inheriting-62ab58c7edafa48e2c771ec7': [
-    {
-      title: 'A1',
-      sharedId: 'n6a1ulcmwa',
-      metadata: {
-        text: ['A'],
-      },
-    },
+    { title: 'A1', sharedId: 'n6a1ulcmwa', metadata: { text: ['A'] } },
   ],
   'Inheriting-62ab58cfedafa48e2c7724ec': [
-    {
-      title: 'B1',
-      sharedId: 'rnid5ejh3vd',
-      metadata: {
-        numeric: [10],
-      },
-    },
+    { title: 'B1', sharedId: 'rnid5ejh3vd', metadata: { numeric: [10] } },
   ],
 };
 
@@ -916,6 +794,51 @@ const otherEntities: EntitySchema[] = [
   },
 ];
 
+const inheritingDocumentMetadata = {
+  'multi-inherit_text': [
+    {
+      value: 'f27fwxhlsqo',
+      label: 'Document 1',
+      type: 'entity',
+      inheritedValue: [{ value: 'One' }],
+      inheritedType: 'text',
+    },
+    {
+      value: '844ts659a7',
+      label: 'Document 3',
+      type: 'entity',
+      inheritedValue: [{ value: 'Three' }],
+      inheritedType: 'text',
+    },
+  ],
+  'multi-inherit_number': [
+    {
+      value: 'f27fwxhlsqo',
+      label: 'Document 1',
+      type: 'entity',
+      inheritedValue: [{ value: 1 }],
+      inheritedType: 'numeric',
+    },
+    {
+      value: '844ts659a7',
+      label: 'Document 3',
+      type: 'entity',
+      inheritedValue: [{ value: 3 }],
+      inheritedType: 'numeric',
+    },
+  ],
+  'multi-inherit_geo': [
+    {
+      value: '3zeqx3aptzi',
+      label: 'Peru',
+      type: 'entity',
+      inheritedValue: [{ value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } }],
+      inheritedType: 'geolocation',
+    },
+  ],
+  plaintext: [{ value: 'Some long text' }],
+};
+
 const inheritingDocument: EntitySchema = {
   _id: '62a3459f25e55412954d774b',
   template: '62a34533100b901027a250e6',
@@ -927,31 +850,12 @@ const inheritingDocument: EntitySchema = {
       entityData: {
         _id: '629e56c4d4242c571392fc6d',
         metadata: {
-          text: [
-            {
-              value: 'Three',
-            },
-          ],
-          numeric: [
-            {
-              value: 3,
-            },
-          ],
-          select: [
-            {
-              value: 'e5cgnczmfys',
-              label: 'Option C',
-            },
-          ],
+          text: [{ value: 'Three' }],
+          numeric: [{ value: 3 }],
+          select: [{ value: 'e5cgnczmfys', label: 'Option C' }],
           multi_select: [
-            {
-              value: 'e5cgnczmfys',
-              label: 'Option C',
-            },
-            {
-              value: 'aot0horszdt',
-              label: 'Option A',
-            },
+            { value: 'e5cgnczmfys', label: 'Option C' },
+            { value: 'aot0horszdt', label: 'Option A' },
           ],
         },
         template: '5bfbb1a0471dd0fc16ada146',
@@ -966,73 +870,7 @@ const inheritingDocument: EntitySchema = {
       template: null,
       entityData: {
         _id: '62a3459f25e55412954d774b',
-        metadata: {
-          'multi-inherit_text': [
-            {
-              value: 'f27fwxhlsqo',
-              label: 'Document 1',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 'One',
-                },
-              ],
-              inheritedType: 'text',
-            },
-            {
-              value: '844ts659a7',
-              label: 'Document 3',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 'Three',
-                },
-              ],
-              inheritedType: 'text',
-            },
-          ],
-          'multi-inherit_number': [
-            {
-              value: 'f27fwxhlsqo',
-              label: 'Document 1',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 1,
-                },
-              ],
-              inheritedType: 'numeric',
-            },
-            {
-              value: '844ts659a7',
-              label: 'Document 3',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 3,
-                },
-              ],
-              inheritedType: 'numeric',
-            },
-          ],
-          'multi-inherit_geo': [
-            {
-              value: '3zeqx3aptzi',
-              label: 'Peru',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: {
-                    lat: -10.189511603370525,
-                    lon: -74.97070312500001,
-                    label: '',
-                  },
-                },
-              ],
-              inheritedType: 'geolocation',
-            },
-          ],
-        },
+        metadata: inheritingDocumentMetadata,
         template: '62a34533100b901027a250e6',
         title: 'Other iDcoument 1',
         sharedId: 'k60i7wxo9vc',
@@ -1046,31 +884,12 @@ const inheritingDocument: EntitySchema = {
       entityData: {
         _id: '629e56a1d4242c571392fc07',
         metadata: {
-          text: [
-            {
-              value: 'One',
-            },
-          ],
-          numeric: [
-            {
-              value: 1,
-            },
-          ],
-          select: [
-            {
-              value: 'aot0horszdt',
-              label: 'Option A',
-            },
-          ],
+          text: [{ value: 'One' }],
+          numeric: [{ value: 1 }],
+          select: [{ value: 'aot0horszdt', label: 'Option A' }],
           multi_select: [
-            {
-              value: 'e5cgnczmfys',
-              label: 'Option C',
-            },
-            {
-              value: 'aot0horszdt',
-              label: 'Option A',
-            },
+            { value: 'e5cgnczmfys', label: 'Option C' },
+            { value: 'aot0horszdt', label: 'Option A' },
           ],
         },
         template: '5bfbb1a0471dd0fc16ada146',
@@ -1086,20 +905,9 @@ const inheritingDocument: EntitySchema = {
       entityData: {
         _id: '629f907f38ef5b334384a919',
         metadata: {
-          select: [
-            {
-              value: '92lfe31qc3n',
-              label: 'Option B',
-            },
-          ],
+          select: [{ value: '92lfe31qc3n', label: 'Option B' }],
           geolocation_geolocation: [
-            {
-              value: {
-                lat: -10.189511603370525,
-                lon: -74.97070312500001,
-                label: '',
-              },
-            },
+            { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
           ],
         },
         template: '629f900638ef5b3343848e80',
@@ -1114,73 +922,7 @@ const inheritingDocument: EntitySchema = {
       template: null,
       entityData: {
         _id: '62a3459f25e55412954d774b',
-        metadata: {
-          'multi-inherit_text': [
-            {
-              value: 'f27fwxhlsqo',
-              label: 'Document 1',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 'One',
-                },
-              ],
-              inheritedType: 'text',
-            },
-            {
-              value: '844ts659a7',
-              label: 'Document 3',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 'Three',
-                },
-              ],
-              inheritedType: 'text',
-            },
-          ],
-          'multi-inherit_number': [
-            {
-              value: 'f27fwxhlsqo',
-              label: 'Document 1',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 1,
-                },
-              ],
-              inheritedType: 'numeric',
-            },
-            {
-              value: '844ts659a7',
-              label: 'Document 3',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 3,
-                },
-              ],
-              inheritedType: 'numeric',
-            },
-          ],
-          'multi-inherit_geo': [
-            {
-              value: '3zeqx3aptzi',
-              label: 'Peru',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: {
-                    lat: -10.189511603370525,
-                    lon: -74.97070312500001,
-                    label: '',
-                  },
-                },
-              ],
-              inheritedType: 'geolocation',
-            },
-          ],
-        },
+        metadata: inheritingDocumentMetadata,
         template: '62a34533100b901027a250e6',
         title: 'Other iDcoument 1',
         sharedId: 'k60i7wxo9vc',
@@ -1190,98 +932,33 @@ const inheritingDocument: EntitySchema = {
       hub: '62a3459f25e55412954d775c',
     },
   ],
-  metadata: {
-    'multi-inherit_text': [
-      {
-        value: 'f27fwxhlsqo',
-        label: 'Document 1',
-        type: 'entity',
-        inheritedValue: [
-          {
-            value: 'One',
-          },
-        ],
-        inheritedType: 'text',
-      },
-      {
-        value: '844ts659a7',
-        label: 'Document 3',
-        type: 'entity',
-        inheritedValue: [
-          {
-            value: 'Three',
-          },
-        ],
-        inheritedType: 'text',
-      },
-    ],
-    'multi-inherit_number': [
-      {
-        value: 'f27fwxhlsqo',
-        label: 'Document 1',
-        type: 'entity',
-        inheritedValue: [
-          {
-            value: 1,
-          },
-        ],
-        inheritedType: 'numeric',
-      },
-      {
-        value: '844ts659a7',
-        label: 'Document 3',
-        type: 'entity',
-        inheritedValue: [
-          {
-            value: 3,
-          },
-        ],
-        inheritedType: 'numeric',
-      },
-    ],
-    'multi-inherit_geo': [
-      {
-        value: '3zeqx3aptzi',
-        label: 'Peru',
-        type: 'entity',
-        inheritedValue: [
-          {
-            value: {
-              lat: -10.189511603370525,
-              lon: -74.97070312500001,
-              label: '',
-            },
-          },
-        ],
-        inheritedType: 'geolocation',
-      },
-    ],
-    plaintext: [{ value: 'Some long text' }],
-  },
+  metadata: inheritingDocumentMetadata,
+};
+
+const myEntityMetadata = {
+  inhertied_text_from_template_a: [
+    {
+      value: 'n6a1ulcmwa',
+      label: 'A1',
+      type: 'entity',
+      inheritedValue: [{ value: 'A' }],
+      inheritedType: 'text',
+    },
+  ],
+  inhertied_number_from_template_b: [
+    {
+      value: 'rnid5ejh3vd',
+      label: 'B1',
+      type: 'entity',
+      inheritedValue: [{ value: 10 }],
+      inheritedType: 'numeric',
+    },
+  ],
 };
 
 const myEntity: EntitySchema = {
   _id: '62ab642b9480d0a7ebb35546',
-  metadata: {
-    inhertied_text_from_template_a: [
-      {
-        value: 'n6a1ulcmwa',
-        label: 'A1',
-        type: 'entity',
-        inheritedValue: [{ value: 'A' }],
-        inheritedType: 'text',
-      },
-    ],
-    inhertied_number_from_template_b: [
-      {
-        value: 'rnid5ejh3vd',
-        label: 'B1',
-        type: 'entity',
-        inheritedValue: [{ value: 10 }],
-        inheritedType: 'numeric',
-      },
-    ],
-  },
+  metadata: myEntityMetadata,
   template: '62ab63ce9480d0a7ebb32f41',
   title: 'My entity 1',
   sharedId: 'fewuvrs4xo',
@@ -1290,26 +967,7 @@ const myEntity: EntitySchema = {
       template: null,
       entityData: {
         _id: '62ab642b9480d0a7ebb35546',
-        metadata: {
-          inhertied_text_from_template_a: [
-            {
-              value: 'n6a1ulcmwa',
-              label: 'A1',
-              type: 'entity',
-              inheritedValue: [{ value: 'A' }],
-              inheritedType: 'text',
-            },
-          ],
-          inhertied_number_from_template_b: [
-            {
-              value: 'rnid5ejh3vd',
-              label: 'B1',
-              type: 'entity',
-              inheritedValue: [{ value: 10 }],
-              inheritedType: 'numeric',
-            },
-          ],
-        },
+        metadata: myEntityMetadata,
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         sharedId: 'fewuvrs4xo',
@@ -1335,26 +993,7 @@ const myEntity: EntitySchema = {
       template: null,
       entityData: {
         _id: '62ab642b9480d0a7ebb35546',
-        metadata: {
-          inhertied_text_from_template_a: [
-            {
-              value: 'n6a1ulcmwa',
-              label: 'A1',
-              type: 'entity',
-              inheritedValue: [{ value: 'A' }],
-              inheritedType: 'text',
-            },
-          ],
-          inhertied_number_from_template_b: [
-            {
-              value: 'rnid5ejh3vd',
-              label: 'B1',
-              type: 'entity',
-              inheritedValue: [{ value: 10 }],
-              inheritedType: 'numeric',
-            },
-          ],
-        },
+        metadata: myEntityMetadata,
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         sharedId: 'fewuvrs4xo',
@@ -1380,26 +1019,7 @@ const myEntity: EntitySchema = {
       template: null,
       entityData: {
         _id: '62ab642b9480d0a7ebb35546',
-        metadata: {
-          inhertied_text_from_template_a: [
-            {
-              value: 'n6a1ulcmwa',
-              label: 'A1',
-              type: 'entity',
-              inheritedValue: [{ value: 'A' }],
-              inheritedType: 'text',
-            },
-          ],
-          inhertied_number_from_template_b: [
-            {
-              value: 'rnid5ejh3vd',
-              label: 'B1',
-              type: 'entity',
-              inheritedValue: [{ value: 10 }],
-              inheritedType: 'numeric',
-            },
-          ],
-        },
+        metadata: myEntityMetadata,
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         sharedId: 'fewuvrs4xo',
@@ -1456,26 +1076,7 @@ const myEntity: EntitySchema = {
       template: '62ab58bdedafa48e2c7718c3',
       entityData: {
         _id: '62ab642b9480d0a7ebb35546',
-        metadata: {
-          inhertied_text_from_template_a: [
-            {
-              value: 'n6a1ulcmwa',
-              label: 'A1',
-              type: 'entity',
-              inheritedValue: [{ value: 'A' }],
-              inheritedType: 'text',
-            },
-          ],
-          inhertied_number_from_template_b: [
-            {
-              value: 'rnid5ejh3vd',
-              label: 'B1',
-              type: 'entity',
-              inheritedValue: [{ value: 10 }],
-              inheritedType: 'numeric',
-            },
-          ],
-        },
+        metadata: myEntityMetadata,
         template: '62ab63ce9480d0a7ebb32f41',
         title: 'My entity 1',
         sharedId: 'fewuvrs4xo',
