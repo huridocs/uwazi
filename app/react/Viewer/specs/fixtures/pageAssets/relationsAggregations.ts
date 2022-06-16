@@ -4,98 +4,238 @@ import { ClientTemplateSchema } from 'app/istore';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 
-const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
-  {
-    _id: '629e567fd4242c571392f548',
-    color: '#D9534F',
-    entityViewPage: 'hetu84j0k47',
-    name: 'Document with relations',
-    properties: [
-      {
-        _id: '629e567fd4242c571392f549',
-        label: 'iText',
-        type: 'relationship',
-        inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
-        name: 'itext',
-      },
-      {
-        _id: '629e567fd4242c571392f54a',
-        label: 'iNumeric',
-        type: 'relationship',
-        inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
-        name: 'inumeric',
-      },
-      {
-        _id: '629e567fd4242c571392f54b',
-        label: 'iSelect',
-        type: 'relationship',
-        inherit: { property: '629e5634d4242c571392f440', type: 'select' },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
-        name: 'iselect',
-      },
-      {
-        _id: '629f8fa7988b5431324d858b',
-        label: 'Description',
-        type: 'markdown',
-        name: 'description',
-      },
-      {
-        _id: '629f905738ef5b334384a85c',
-        label: 'iGeolocation',
-        type: 'relationship',
-        inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
-        content: '629f900638ef5b3343848e80',
-        relationType: '629f902238ef5b3343849b62',
-        showInCard: true,
-        name: 'igeolocation',
-      },
-      {
-        _id: '629f905738ef5b334384a85d',
-        label: 'iSelect-country',
-        type: 'relationship',
-        inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
-        content: '629f900638ef5b3343848e80',
-        relationType: '629f902238ef5b3343849b62',
-        showInCard: true,
-        name: 'iselect-country',
-      },
-    ],
-    commonProperties: [
-      {
-        _id: '629e567fd4242c571392f54c',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
+const DocumentWithRelations = Immutable.fromJS({
+  _id: '629e567fd4242c571392f548',
+  color: '#D9534F',
+  entityViewPage: 'hetu84j0k47',
+  name: 'Document with relations',
+  properties: [
+    {
+      _id: '629e567fd4242c571392f549',
+      label: 'iText',
+      type: 'relationship',
+      inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      showInCard: true,
+      name: 'itext',
+    },
+    {
+      _id: '629e567fd4242c571392f54a',
+      label: 'iNumeric',
+      type: 'relationship',
+      inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      showInCard: true,
+      name: 'inumeric',
+    },
+    {
+      _id: '629e567fd4242c571392f54b',
+      label: 'iSelect',
+      type: 'relationship',
+      inherit: { property: '629e5634d4242c571392f440', type: 'select' },
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      showInCard: true,
+      name: 'iselect',
+    },
+    {
+      _id: '629f8fa7988b5431324d858b',
+      label: 'Description',
+      type: 'markdown',
+      name: 'description',
+    },
+    {
+      _id: '629f905738ef5b334384a85c',
+      label: 'iGeolocation',
+      type: 'relationship',
+      inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
+      content: '629f900638ef5b3343848e80',
+      relationType: '629f902238ef5b3343849b62',
+      showInCard: true,
+      name: 'igeolocation',
+    },
+    {
+      _id: '629f905738ef5b334384a85d',
+      label: 'iSelect-country',
+      type: 'relationship',
+      inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
+      content: '629f900638ef5b3343848e80',
+      relationType: '629f902238ef5b3343849b62',
+      showInCard: true,
+      name: 'iselect-country',
+    },
+  ],
+  commonProperties: [
+    {
+      _id: '629e567fd4242c571392f54c',
+      label: 'Title',
+      name: 'title',
+      isCommonProperty: true,
+      type: 'text',
+      prioritySorting: false,
+      generatedId: false,
+    },
+    {
+      _id: '629e567fd4242c571392f54d',
+      label: 'Date added',
+      name: 'creationDate',
+      isCommonProperty: true,
+      type: 'date',
+      prioritySorting: false,
+    },
+    {
+      _id: '629e567fd4242c571392f54e',
+      label: 'Date modified',
+      name: 'editDate',
+      isCommonProperty: true,
+      type: 'date',
+      prioritySorting: false,
+    },
+  ],
+});
+
+const OtherDocumentWithRelations = Immutable.fromJS({
+  _id: '62a34533100b901027a250e6',
+  color: '#A03AB1',
+  entityViewPage: 'hetu84j0k47',
+  name: 'Other document with relations',
+  properties: [
+    {
+      _id: '62a34533100b901027a250e7',
+      label: 'Multi-inherit text',
+      type: 'relationship',
+      inherit: {
+        property: '629e5634d4242c571392f43e',
         type: 'text',
-        prioritySorting: false,
-        generatedId: false,
       },
-      {
-        _id: '629e567fd4242c571392f54d',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      showInCard: true,
+      name: 'multi-inherit_text',
+    },
+    {
+      _id: '62a34533100b901027a250e8',
+      label: 'Multi-inherit number',
+      type: 'relationship',
+      inherit: {
+        property: '629e5634d4242c571392f43f',
+        type: 'numeric',
       },
-      {
-        _id: '629e567fd4242c571392f54e',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      showInCard: true,
+      name: 'multi-inherit_number',
+    },
+    {
+      _id: '62a34533100b901027a250e9',
+      label: 'Multi-inherit geo',
+      type: 'relationship',
+      inherit: {
+        property: '629f900638ef5b3343848e81',
+        type: 'geolocation',
       },
-    ],
-  },
+      content: '629f900638ef5b3343848e80',
+      relationType: '629e55f1d4242c571392d5fc',
+      showInCard: true,
+      name: 'multi-inherit_geo',
+    },
+    {
+      _id: '62a34533100b901027a65bh4',
+      label: 'Plaintext',
+      type: 'text',
+      showInCard: true,
+      name: 'plaintext',
+    },
+  ],
+  commonProperties: [
+    {
+      _id: '62a34533100b901027a250ea',
+      label: 'Title',
+      name: 'title',
+      isCommonProperty: true,
+      type: 'text',
+      prioritySorting: false,
+      generatedId: false,
+    },
+    {
+      _id: '62a34533100b901027a250eb',
+      label: 'Date added',
+      name: 'creationDate',
+      isCommonProperty: true,
+      type: 'date',
+      prioritySorting: false,
+    },
+    {
+      _id: '62a34533100b901027a250ec',
+      label: 'Date modified',
+      name: 'editDate',
+      isCommonProperty: true,
+      type: 'date',
+      prioritySorting: false,
+    },
+  ],
+});
+
+const myTemplate = Immutable.fromJS({
+  _id: '62ab63ce9480d0a7ebb32f41',
+  color: '#3F51B5',
+  entityViewPage: 'm1m443y9oxh',
+  name: 'My template',
+  properties: [
+    {
+      _id: '62ab64039480d0a7ebb34df5',
+      label: 'Inhertied text from Template A',
+      type: 'relationship',
+      inherit: { property: '62ab58c7edafa48e2c771ec8', type: 'text' },
+      content: '62ab58c7edafa48e2c771ec7',
+      relationType: '62ab58bdedafa48e2c7718c3',
+      name: 'inhertied_text_from_template_a',
+    },
+    {
+      _id: '62ab64039480d0a7ebb34df6',
+      label: 'Inhertied number from Template B',
+      type: 'relationship',
+      inherit: { property: '62ab58cfedafa48e2c7724ee', type: 'numeric' },
+      content: '62ab58cfedafa48e2c7724ec',
+      relationType: '62ab58bdedafa48e2c7718c3',
+      name: 'inhertied_number_from_template_b',
+    },
+  ],
+  commonProperties: [
+    {
+      _id: '62ab63ce9480d0a7ebb32f42',
+      label: 'Title',
+      name: 'title',
+      isCommonProperty: true,
+      type: 'text',
+      prioritySorting: false,
+      generatedId: false,
+    },
+    {
+      _id: '62ab63ce9480d0a7ebb32f43',
+      label: 'Date added',
+      name: 'creationDate',
+      isCommonProperty: true,
+      type: 'date',
+      prioritySorting: false,
+    },
+    {
+      _id: '62ab63ce9480d0a7ebb32f44',
+      label: 'Date modified',
+      name: 'editDate',
+      isCommonProperty: true,
+      type: 'date',
+      prioritySorting: false,
+    },
+  ],
+});
+
+const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
+  DocumentWithRelations,
+  OtherDocumentWithRelations,
+  myTemplate,
   {
     _id: '5bfbb1a0471dd0fc16ada146',
     name: 'Document',
@@ -191,88 +331,6 @@ const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
         prioritySorting: false,
       },
     ],
-  },
-  {
-    _id: '62a34533100b901027a250e6',
-    color: '#A03AB1',
-    entityViewPage: 'hetu84j0k47',
-    name: 'Other document with relations',
-    properties: [
-      {
-        _id: '62a34533100b901027a250e7',
-        label: 'Multi-inherit text',
-        type: 'relationship',
-        inherit: {
-          property: '629e5634d4242c571392f43e',
-          type: 'text',
-        },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
-        name: 'multi-inherit_text',
-      },
-      {
-        _id: '62a34533100b901027a250e8',
-        label: 'Multi-inherit number',
-        type: 'relationship',
-        inherit: {
-          property: '629e5634d4242c571392f43f',
-          type: 'numeric',
-        },
-        content: '5bfbb1a0471dd0fc16ada146',
-        relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
-        name: 'multi-inherit_number',
-      },
-      {
-        _id: '62a34533100b901027a250e9',
-        label: 'Multi-inherit geo',
-        type: 'relationship',
-        inherit: {
-          property: '629f900638ef5b3343848e81',
-          type: 'geolocation',
-        },
-        content: '629f900638ef5b3343848e80',
-        relationType: '629e55f1d4242c571392d5fc',
-        showInCard: true,
-        name: 'multi-inherit_geo',
-      },
-      {
-        _id: '62a34533100b901027a65bh4',
-        label: 'Plaintext',
-        type: 'text',
-        showInCard: true,
-        name: 'plaintext',
-      },
-    ],
-    commonProperties: [
-      {
-        _id: '62a34533100b901027a250ea',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '62a34533100b901027a250eb',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '62a34533100b901027a250ec',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-    __v: 0,
   },
   {
     _id: '62ab58c7edafa48e2c771ec7',
@@ -430,64 +488,9 @@ const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
     ],
     __v: 0,
   },
-  {
-    _id: '62ab63ce9480d0a7ebb32f41',
-    color: '#3F51B5',
-    entityViewPage: 'm1m443y9oxh',
-    name: 'My template',
-    properties: [
-      {
-        _id: '62ab64039480d0a7ebb34df5',
-        label: 'Inhertied text from Template A',
-        type: 'relationship',
-        inherit: { property: '62ab58c7edafa48e2c771ec8', type: 'text' },
-        content: '62ab58c7edafa48e2c771ec7',
-        relationType: '62ab58bdedafa48e2c7718c3',
-        name: 'inhertied_text_from_template_a',
-      },
-      {
-        _id: '62ab64039480d0a7ebb34df6',
-        label: 'Inhertied number from Template B',
-        type: 'relationship',
-        inherit: { property: '62ab58cfedafa48e2c7724ee', type: 'numeric' },
-        content: '62ab58cfedafa48e2c7724ec',
-        relationType: '62ab58bdedafa48e2c7718c3',
-        name: 'inhertied_number_from_template_b',
-      },
-    ],
-    commonProperties: [
-      {
-        _id: '62ab63ce9480d0a7ebb32f42',
-        label: 'Title',
-        name: 'title',
-        isCommonProperty: true,
-        type: 'text',
-        prioritySorting: false,
-        generatedId: false,
-      },
-      {
-        _id: '62ab63ce9480d0a7ebb32f43',
-        label: 'Date added',
-        name: 'creationDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-      {
-        _id: '62ab63ce9480d0a7ebb32f44',
-        label: 'Date modified',
-        name: 'editDate',
-        isCommonProperty: true,
-        type: 'date',
-        prioritySorting: false,
-      },
-    ],
-    __v: 0,
-    default: true,
-  },
 ]);
 
-const thesauris = Immutable.fromJS([
+const thesaurisForAggregations = Immutable.fromJS([
   {
     _id: '629e5625d4242c571392e824',
     values: [
@@ -720,7 +723,168 @@ const thesauris = Immutable.fromJS([
   },
 ]);
 
-const rawEntities: EntitySchema[] = [
+const relationTypes = [
+  {
+    _id: '629e55f1d4242c571392d5fc',
+    name: 'Multi-inherit',
+  },
+  {
+    _id: '629e55f8d4242c571392dbf1',
+    name: 'Inherit',
+  },
+  {
+    _id: '629e55fed4242c571392e1e8',
+    name: 'Related to',
+  },
+  {
+    _id: '629f902238ef5b3343849b62',
+    name: 'Multi-inherit-2',
+  },
+  { _id: '62ab58bdedafa48e2c7718c3', name: 'Inheriting' },
+];
+
+const entityData1RelationsAggregations = {
+  'Multi-inherit-2-629f900638ef5b3343848e80': [
+    {
+      title: 'Argentina',
+      sharedId: '9e13muy08kl',
+      metadata: {
+        select: ['Option D 3'],
+        geolocation_geolocation: [
+          {
+            lat: -36.19286487671368,
+            lon: -64.29199218750001,
+            label: '',
+          },
+        ],
+      },
+    },
+    {
+      title: 'Peru',
+      sharedId: '3zeqx3aptzi',
+      metadata: {
+        select: ['Option B'],
+        geolocation_geolocation: [
+          {
+            lat: -10.189511603370525,
+            lon: -74.97070312500001,
+            label: '',
+          },
+        ],
+      },
+    },
+  ],
+  'Multi-inherit-5bfbb1a0471dd0fc16ada146': [
+    {
+      title: 'Document 3',
+      sharedId: '844ts659a7',
+      metadata: {
+        text: ['Three'],
+        numeric: [3],
+        select: ['Option C'],
+      },
+    },
+    {
+      title: 'Document 1',
+      sharedId: 'f27fwxhlsqo',
+      metadata: {
+        text: ['One'],
+        numeric: [1],
+        select: ['Option A'],
+      },
+    },
+    {
+      title: 'Document 2',
+      sharedId: 'u4uclgwzcp',
+      metadata: {
+        text: ['Two'],
+        numeric: [2],
+        select: ['Option B'],
+      },
+    },
+    {
+      title: 'Document 4',
+      sharedId: '4qkgragsevq',
+      metadata: {
+        text: ['Four'],
+        numeric: [4],
+        select: ['Option D 1'],
+      },
+    },
+  ],
+};
+
+const entityData2RelationsAggregations = {
+  'Multi-inherit-2-629f900638ef5b3343848e80': [
+    {
+      title: 'Venezuela',
+      sharedId: 'mp9v2ugx1un',
+      metadata: {
+        select: ['Option D 2'],
+        geolocation_geolocation: [
+          {
+            lat: 7.9243233190236015,
+            lon: -65.47851562500001,
+            label: '',
+          },
+        ],
+      },
+    },
+  ],
+};
+
+const entityData4RelationsAggregations = {
+  'Multi-inherit-5bfbb1a0471dd0fc16ada146': [
+    {
+      title: 'Document 3',
+      sharedId: '844ts659a7',
+      metadata: {
+        text: ['Three'],
+        numeric: [3],
+      },
+    },
+    {
+      title: 'Document 1',
+      sharedId: 'f27fwxhlsqo',
+      metadata: {
+        text: ['One'],
+        numeric: [1],
+      },
+    },
+  ],
+  'Multi-inherit-629f900638ef5b3343848e80': [
+    {
+      title: 'Peru',
+      sharedId: '3zeqx3aptzi',
+      metadata: {
+        geolocation_geolocation: [{ lat: -10.189511603370525, lon: -74.97070312500001, label: '' }],
+      },
+    },
+  ],
+};
+
+const entityData5RelationsAggregations = {
+  'Inheriting-62ab58c7edafa48e2c771ec7': [
+    {
+      title: 'A1',
+      sharedId: 'n6a1ulcmwa',
+      metadata: {
+        text: ['A'],
+      },
+    },
+  ],
+  'Inheriting-62ab58cfedafa48e2c7724ec': [
+    {
+      title: 'B1',
+      sharedId: 'rnid5ejh3vd',
+      metadata: {
+        numeric: [10],
+      },
+    },
+  ],
+};
+
+const otherEntities: EntitySchema[] = [
   {
     _id: '629e5712d4242c571392fcd4',
     template: '629e567fd4242c571392f548',
@@ -1525,369 +1689,211 @@ const rawEntities: EntitySchema[] = [
     },
     relations: [],
   },
-  {
-    _id: '62a3459f25e55412954d774b',
-    template: '62a34533100b901027a250e6',
-    title: 'Other iDcoument 1',
-    user: '58ada34d299e82674854510f',
-    creationDate: 1654867359008,
-    published: false,
-    editDate: 1654867359009,
-    language: 'en',
-    sharedId: 'k60i7wxo9vc',
-    permissions: [
-      {
-        refId: '58ada34d299e82674854510f',
-        type: 'user',
-        level: 'write',
-      },
-    ],
-    documents: [],
-    attachments: [],
-    relations: [
-      {
-        template: '629e55f1d4242c571392d5fc',
-        entityData: {
-          _id: '629e56c4d4242c571392fc6d',
-          metadata: {
-            text: [
-              {
-                value: 'Three',
-              },
-            ],
-            numeric: [
-              {
-                value: 3,
-              },
-            ],
-            select: [
-              {
-                value: 'e5cgnczmfys',
-                label: 'Option C',
-              },
-            ],
-            multi_select: [
-              {
-                value: 'e5cgnczmfys',
-                label: 'Option C',
-              },
-              {
-                value: 'aot0horszdt',
-                label: 'Option A',
-              },
-            ],
-          },
-          template: '5bfbb1a0471dd0fc16ada146',
-          title: 'Document 3',
-          creationDate: 1654544068027,
-          published: false,
-          sharedId: '844ts659a7',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62a3459f25e55412954d7763',
-        entity: '844ts659a7',
-        hub: '62a3459f25e55412954d775a',
-      },
-      {
-        template: null,
-        entityData: {
-          _id: '62a3459f25e55412954d774b',
-          metadata: {
-            'multi-inherit_text': [
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'One',
-                  },
-                ],
-                inheritedType: 'text',
-              },
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'Three',
-                  },
-                ],
-                inheritedType: 'text',
-              },
-            ],
-            'multi-inherit_number': [
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 1,
-                  },
-                ],
-                inheritedType: 'numeric',
-              },
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 3,
-                  },
-                ],
-                inheritedType: 'numeric',
-              },
-            ],
-            'multi-inherit_geo': [
-              {
-                value: '3zeqx3aptzi',
-                label: 'Peru',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: {
-                      lat: -10.189511603370525,
-                      lon: -74.97070312500001,
-                      label: '',
-                    },
-                  },
-                ],
-                inheritedType: 'geolocation',
-              },
-            ],
-          },
-          template: '62a34533100b901027a250e6',
-          title: 'Other iDcoument 1',
-          creationDate: 1654867359008,
-          published: false,
-          sharedId: 'k60i7wxo9vc',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62a3459f25e55412954d7761',
-        entity: 'k60i7wxo9vc',
-        hub: '62a3459f25e55412954d775a',
-      },
-      {
-        template: '629e55f1d4242c571392d5fc',
-        entityData: {
-          _id: '629e56a1d4242c571392fc07',
-          metadata: {
-            text: [
-              {
-                value: 'One',
-              },
-            ],
-            numeric: [
-              {
-                value: 1,
-              },
-            ],
-            select: [
-              {
-                value: 'aot0horszdt',
-                label: 'Option A',
-              },
-            ],
-            multi_select: [
-              {
-                value: 'e5cgnczmfys',
-                label: 'Option C',
-              },
-              {
-                value: 'aot0horszdt',
-                label: 'Option A',
-              },
-            ],
-          },
-          template: '5bfbb1a0471dd0fc16ada146',
-          title: 'Document 1',
-          creationDate: 1654544033340,
-          published: false,
-          sharedId: 'f27fwxhlsqo',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62a3459f25e55412954d7762',
-        entity: 'f27fwxhlsqo',
-        hub: '62a3459f25e55412954d775a',
-      },
-      {
-        template: '629e55f1d4242c571392d5fc',
-        entityData: {
-          _id: '629f907f38ef5b334384a919',
-          metadata: {
-            select: [
-              {
-                value: '92lfe31qc3n',
-                label: 'Option B',
-              },
-            ],
-            geolocation_geolocation: [
-              {
-                value: {
-                  lat: -10.189511603370525,
-                  lon: -74.97070312500001,
-                  label: '',
-                },
-              },
-            ],
-          },
-          template: '629f900638ef5b3343848e80',
-          title: 'Peru',
-          creationDate: 1654624383651,
-          published: false,
-          sharedId: '3zeqx3aptzi',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62a3459f25e55412954d7765',
-        entity: '3zeqx3aptzi',
-        hub: '62a3459f25e55412954d775c',
-      },
-      {
-        template: null,
-        entityData: {
-          _id: '62a3459f25e55412954d774b',
-          metadata: {
-            'multi-inherit_text': [
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'One',
-                  },
-                ],
-                inheritedType: 'text',
-              },
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'Three',
-                  },
-                ],
-                inheritedType: 'text',
-              },
-            ],
-            'multi-inherit_number': [
-              {
-                value: 'f27fwxhlsqo',
-                label: 'Document 1',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 1,
-                  },
-                ],
-                inheritedType: 'numeric',
-              },
-              {
-                value: '844ts659a7',
-                label: 'Document 3',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 3,
-                  },
-                ],
-                inheritedType: 'numeric',
-              },
-            ],
-            'multi-inherit_geo': [
-              {
-                value: '3zeqx3aptzi',
-                label: 'Peru',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: {
-                      lat: -10.189511603370525,
-                      lon: -74.97070312500001,
-                      label: '',
-                    },
-                  },
-                ],
-                inheritedType: 'geolocation',
-              },
-            ],
-          },
-          template: '62a34533100b901027a250e6',
-          title: 'Other iDcoument 1',
-          creationDate: 1654867359008,
-          published: false,
-          sharedId: 'k60i7wxo9vc',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62a3459f25e55412954d7764',
-        entity: 'k60i7wxo9vc',
-        hub: '62a3459f25e55412954d775c',
-      },
-    ],
-    metadata: {
-      'multi-inherit_text': [
-        {
-          value: 'f27fwxhlsqo',
-          label: 'Document 1',
-          type: 'entity',
-          inheritedValue: [
-            {
-              value: 'One',
-            },
-          ],
-          inheritedType: 'text',
-        },
-        {
-          value: '844ts659a7',
-          label: 'Document 3',
-          type: 'entity',
-          inheritedValue: [
+];
+
+const inheritingDocument: EntitySchema = {
+  _id: '62a3459f25e55412954d774b',
+  template: '62a34533100b901027a250e6',
+  title: 'Other iDcoument 1',
+  user: '58ada34d299e82674854510f',
+  creationDate: 1654867359008,
+  published: false,
+  editDate: 1654867359009,
+  language: 'en',
+  sharedId: 'k60i7wxo9vc',
+  permissions: [
+    {
+      refId: '58ada34d299e82674854510f',
+      type: 'user',
+      level: 'write',
+    },
+  ],
+  documents: [],
+  attachments: [],
+  relations: [
+    {
+      template: '629e55f1d4242c571392d5fc',
+      entityData: {
+        _id: '629e56c4d4242c571392fc6d',
+        metadata: {
+          text: [
             {
               value: 'Three',
             },
           ],
-          inheritedType: 'text',
-        },
-      ],
-      'multi-inherit_number': [
-        {
-          value: 'f27fwxhlsqo',
-          label: 'Document 1',
-          type: 'entity',
-          inheritedValue: [
-            {
-              value: 1,
-            },
-          ],
-          inheritedType: 'numeric',
-        },
-        {
-          value: '844ts659a7',
-          label: 'Document 3',
-          type: 'entity',
-          inheritedValue: [
+          numeric: [
             {
               value: 3,
             },
           ],
-          inheritedType: 'numeric',
+          select: [
+            {
+              value: 'e5cgnczmfys',
+              label: 'Option C',
+            },
+          ],
+          multi_select: [
+            {
+              value: 'e5cgnczmfys',
+              label: 'Option C',
+            },
+            {
+              value: 'aot0horszdt',
+              label: 'Option A',
+            },
+          ],
         },
-      ],
-      'multi-inherit_geo': [
-        {
-          value: '3zeqx3aptzi',
-          label: 'Peru',
-          type: 'entity',
-          inheritedValue: [
+        template: '5bfbb1a0471dd0fc16ada146',
+        title: 'Document 3',
+        creationDate: 1654544068027,
+        published: false,
+        sharedId: '844ts659a7',
+        documents: [],
+        attachments: [],
+      },
+      _id: '62a3459f25e55412954d7763',
+      entity: '844ts659a7',
+      hub: '62a3459f25e55412954d775a',
+    },
+    {
+      template: null,
+      entityData: {
+        _id: '62a3459f25e55412954d774b',
+        metadata: {
+          'multi-inherit_text': [
+            {
+              value: 'f27fwxhlsqo',
+              label: 'Document 1',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'One',
+                },
+              ],
+              inheritedType: 'text',
+            },
+            {
+              value: '844ts659a7',
+              label: 'Document 3',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'Three',
+                },
+              ],
+              inheritedType: 'text',
+            },
+          ],
+          'multi-inherit_number': [
+            {
+              value: 'f27fwxhlsqo',
+              label: 'Document 1',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 1,
+                },
+              ],
+              inheritedType: 'numeric',
+            },
+            {
+              value: '844ts659a7',
+              label: 'Document 3',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 3,
+                },
+              ],
+              inheritedType: 'numeric',
+            },
+          ],
+          'multi-inherit_geo': [
+            {
+              value: '3zeqx3aptzi',
+              label: 'Peru',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: {
+                    lat: -10.189511603370525,
+                    lon: -74.97070312500001,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
+            },
+          ],
+        },
+        template: '62a34533100b901027a250e6',
+        title: 'Other iDcoument 1',
+        creationDate: 1654867359008,
+        published: false,
+        sharedId: 'k60i7wxo9vc',
+        documents: [],
+        attachments: [],
+      },
+      _id: '62a3459f25e55412954d7761',
+      entity: 'k60i7wxo9vc',
+      hub: '62a3459f25e55412954d775a',
+    },
+    {
+      template: '629e55f1d4242c571392d5fc',
+      entityData: {
+        _id: '629e56a1d4242c571392fc07',
+        metadata: {
+          text: [
+            {
+              value: 'One',
+            },
+          ],
+          numeric: [
+            {
+              value: 1,
+            },
+          ],
+          select: [
+            {
+              value: 'aot0horszdt',
+              label: 'Option A',
+            },
+          ],
+          multi_select: [
+            {
+              value: 'e5cgnczmfys',
+              label: 'Option C',
+            },
+            {
+              value: 'aot0horszdt',
+              label: 'Option A',
+            },
+          ],
+        },
+        template: '5bfbb1a0471dd0fc16ada146',
+        title: 'Document 1',
+        creationDate: 1654544033340,
+        published: false,
+        sharedId: 'f27fwxhlsqo',
+        documents: [],
+        attachments: [],
+      },
+      _id: '62a3459f25e55412954d7762',
+      entity: 'f27fwxhlsqo',
+      hub: '62a3459f25e55412954d775a',
+    },
+    {
+      template: '629e55f1d4242c571392d5fc',
+      entityData: {
+        _id: '629f907f38ef5b334384a919',
+        metadata: {
+          select: [
+            {
+              value: '92lfe31qc3n',
+              label: 'Option B',
+            },
+          ],
+          geolocation_geolocation: [
             {
               value: {
                 lat: -10.189511603370525,
@@ -1896,460 +1902,464 @@ const rawEntities: EntitySchema[] = [
               },
             },
           ],
-          inheritedType: 'geolocation',
         },
-      ],
-      plaintext: [{ value: 'Some long text' }],
+        template: '629f900638ef5b3343848e80',
+        title: 'Peru',
+        creationDate: 1654624383651,
+        published: false,
+        sharedId: '3zeqx3aptzi',
+        documents: [],
+        attachments: [],
+      },
+      _id: '62a3459f25e55412954d7765',
+      entity: '3zeqx3aptzi',
+      hub: '62a3459f25e55412954d775c',
     },
-  },
-  {
-    _id: '62ab642b9480d0a7ebb35546',
-    metadata: {
-      inhertied_text_from_template_a: [
-        {
-          value: 'n6a1ulcmwa',
-          label: 'A1',
-          icon: null,
-          type: 'entity',
-          inheritedValue: [{ value: 'A' }],
-          inheritedType: 'text',
-        },
-      ],
-      inhertied_number_from_template_b: [
-        {
-          value: 'rnid5ejh3vd',
-          label: 'B1',
-          icon: null,
-          type: 'entity',
-          inheritedValue: [{ value: 10 }],
-          inheritedType: 'numeric',
-        },
-      ],
-    },
-    template: '62ab63ce9480d0a7ebb32f41',
-    title: 'My entity 1',
-    user: '58ada34d299e82674854510f',
-    creationDate: 1655399467072,
-    published: false,
-    editDate: 1655399467073,
-    language: 'en',
-    sharedId: 'fewuvrs4xo',
-    permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
-    __v: 0,
-    documents: [],
-    attachments: [],
-    relations: [
-      {
-        template: null,
-        entityData: {
-          _id: '62ab642b9480d0a7ebb35546',
-          metadata: {
-            inhertied_text_from_template_a: [
-              {
-                value: 'n6a1ulcmwa',
-                label: 'A1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 'A' }],
-                inheritedType: 'text',
-              },
-            ],
-            inhertied_number_from_template_b: [
-              {
-                value: 'rnid5ejh3vd',
-                label: 'B1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 10 }],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
-          template: '62ab63ce9480d0a7ebb32f41',
-          title: 'My entity 1',
-          creationDate: 1655399467072,
-          published: false,
-          sharedId: 'fewuvrs4xo',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62ab642b9480d0a7ebb35558',
-        entity: 'fewuvrs4xo',
-        hub: '62ab642b9480d0a7ebb35551',
-      },
-      {
-        template: '62ab58bdedafa48e2c7718c3',
-        entityData: {
-          _id: '62ab5908edafa48e2c7731a7',
-          metadata: { text: [{ value: 'A' }], numeric: [{ value: 1 }] },
-          template: '62ab58c7edafa48e2c771ec7',
-          title: 'A1',
-          creationDate: 1655396616486,
-          published: false,
-          sharedId: 'n6a1ulcmwa',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62ab642b9480d0a7ebb35559',
-        entity: 'n6a1ulcmwa',
-        hub: '62ab642b9480d0a7ebb35551',
-      },
-      {
-        template: null,
-        entityData: {
-          _id: '62ab642b9480d0a7ebb35546',
-          metadata: {
-            inhertied_text_from_template_a: [
-              {
-                value: 'n6a1ulcmwa',
-                label: 'A1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 'A' }],
-                inheritedType: 'text',
-              },
-            ],
-            inhertied_number_from_template_b: [
-              {
-                value: 'rnid5ejh3vd',
-                label: 'B1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 10 }],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
-          template: '62ab63ce9480d0a7ebb32f41',
-          title: 'My entity 1',
-          creationDate: 1655399467072,
-          published: false,
-          sharedId: 'fewuvrs4xo',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62ab642b9480d0a7ebb3555a',
-        entity: 'fewuvrs4xo',
-        hub: '62ab642b9480d0a7ebb35553',
-      },
-      {
-        template: '62ab58bdedafa48e2c7718c3',
-        entityData: {
-          _id: '62ab5918edafa48e2c773205',
-          metadata: { text: [{ value: 'B' }], numeric: [{ value: 10 }] },
-          template: '62ab58cfedafa48e2c7724ec',
-          title: 'B1',
-          creationDate: 1655396632495,
-          published: false,
-          sharedId: 'rnid5ejh3vd',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62ab642b9480d0a7ebb3555b',
-        entity: 'rnid5ejh3vd',
-        hub: '62ab642b9480d0a7ebb35553',
-      },
-      {
-        template: null,
-        entityData: {
-          _id: '62ab642b9480d0a7ebb35546',
-          metadata: {
-            inhertied_text_from_template_a: [
-              {
-                value: 'n6a1ulcmwa',
-                label: 'A1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 'A' }],
-                inheritedType: 'text',
-              },
-            ],
-            inhertied_number_from_template_b: [
-              {
-                value: 'rnid5ejh3vd',
-                label: 'B1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 10 }],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
-          template: '62ab63ce9480d0a7ebb32f41',
-          title: 'My entity 1',
-          creationDate: 1655399467072,
-          published: false,
-          sharedId: 'fewuvrs4xo',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62ab643e9480d0a7ebb355b6',
-        entity: 'fewuvrs4xo',
-        hub: '62ab643e9480d0a7ebb355b3',
-      },
-      {
-        template: '62ab58bdedafa48e2c7718c3',
-        entityData: {
-          _id: '62ab61d81bf79aa526174e56',
-          metadata: { date: [{ value: 1654041600 }] },
-          template: '62ab60ea1bf79aa526174311',
-          title: 'C1',
-          creationDate: 1655398872761,
-          published: false,
-          sharedId: '6liuhix9td',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62ab643e9480d0a7ebb355b7',
-        entity: '6liuhix9td',
-        hub: '62ab643e9480d0a7ebb355b3',
-      },
-      {
-        template: null,
-        entityData: {
-          _id: '62ab644c9480d0a7ebb35623',
-          metadata: {
-            inheriting_from_my_template: [
-              {
-                value: 'fewuvrs4xo',
-                label: 'My entity 1',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'n6a1ulcmwa',
-                    label: 'A1',
-                    icon: null,
-                    type: 'entity',
-                    inheritedValue: [{ value: 'A' }],
-                    inheritedType: 'text',
+    {
+      template: null,
+      entityData: {
+        _id: '62a3459f25e55412954d774b',
+        metadata: {
+          'multi-inherit_text': [
+            {
+              value: 'f27fwxhlsqo',
+              label: 'Document 1',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'One',
+                },
+              ],
+              inheritedType: 'text',
+            },
+            {
+              value: '844ts659a7',
+              label: 'Document 3',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'Three',
+                },
+              ],
+              inheritedType: 'text',
+            },
+          ],
+          'multi-inherit_number': [
+            {
+              value: 'f27fwxhlsqo',
+              label: 'Document 1',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 1,
+                },
+              ],
+              inheritedType: 'numeric',
+            },
+            {
+              value: '844ts659a7',
+              label: 'Document 3',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 3,
+                },
+              ],
+              inheritedType: 'numeric',
+            },
+          ],
+          'multi-inherit_geo': [
+            {
+              value: '3zeqx3aptzi',
+              label: 'Peru',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: {
+                    lat: -10.189511603370525,
+                    lon: -74.97070312500001,
+                    label: '',
                   },
-                ],
-                inheritedType: 'relationship',
-              },
-            ],
-          },
-          template: '62ab624d1bf79aa5261750a5',
-          title: 'D1',
-          creationDate: 1655399500510,
-          published: false,
-          sharedId: 'vh3rrsrqq1g',
-          documents: [],
-          attachments: [],
+                },
+              ],
+              inheritedType: 'geolocation',
+            },
+          ],
         },
-        _id: '62ab644c9480d0a7ebb35633',
-        entity: 'vh3rrsrqq1g',
-        hub: '62ab644c9480d0a7ebb3562e',
+        template: '62a34533100b901027a250e6',
+        title: 'Other iDcoument 1',
+        creationDate: 1654867359008,
+        published: false,
+        sharedId: 'k60i7wxo9vc',
+        documents: [],
+        attachments: [],
+      },
+      _id: '62a3459f25e55412954d7764',
+      entity: 'k60i7wxo9vc',
+      hub: '62a3459f25e55412954d775c',
+    },
+  ],
+  metadata: {
+    'multi-inherit_text': [
+      {
+        value: 'f27fwxhlsqo',
+        label: 'Document 1',
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: 'One',
+          },
+        ],
+        inheritedType: 'text',
       },
       {
-        template: '62ab58bdedafa48e2c7718c3',
-        entityData: {
-          _id: '62ab642b9480d0a7ebb35546',
-          metadata: {
-            inhertied_text_from_template_a: [
-              {
-                value: 'n6a1ulcmwa',
-                label: 'A1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 'A' }],
-                inheritedType: 'text',
-              },
-            ],
-            inhertied_number_from_template_b: [
-              {
-                value: 'rnid5ejh3vd',
-                label: 'B1',
-                icon: null,
-                type: 'entity',
-                inheritedValue: [{ value: 10 }],
-                inheritedType: 'numeric',
-              },
-            ],
+        value: '844ts659a7',
+        label: 'Document 3',
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: 'Three',
           },
-          template: '62ab63ce9480d0a7ebb32f41',
-          title: 'My entity 1',
-          creationDate: 1655399467072,
-          published: false,
-          sharedId: 'fewuvrs4xo',
-          documents: [],
-          attachments: [],
-        },
-        _id: '62ab644c9480d0a7ebb35634',
-        entity: 'fewuvrs4xo',
-        hub: '62ab644c9480d0a7ebb3562e',
+        ],
+        inheritedType: 'text',
+      },
+    ],
+    'multi-inherit_number': [
+      {
+        value: 'f27fwxhlsqo',
+        label: 'Document 1',
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: 1,
+          },
+        ],
+        inheritedType: 'numeric',
+      },
+      {
+        value: '844ts659a7',
+        label: 'Document 3',
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: 3,
+          },
+        ],
+        inheritedType: 'numeric',
+      },
+    ],
+    'multi-inherit_geo': [
+      {
+        value: '3zeqx3aptzi',
+        label: 'Peru',
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: {
+              lat: -10.189511603370525,
+              lon: -74.97070312500001,
+              label: '',
+            },
+          },
+        ],
+        inheritedType: 'geolocation',
+      },
+    ],
+    plaintext: [{ value: 'Some long text' }],
+  },
+};
+
+const myEntity: EntitySchema = {
+  _id: '62ab642b9480d0a7ebb35546',
+  metadata: {
+    inhertied_text_from_template_a: [
+      {
+        value: 'n6a1ulcmwa',
+        label: 'A1',
+        icon: null,
+        type: 'entity',
+        inheritedValue: [{ value: 'A' }],
+        inheritedType: 'text',
+      },
+    ],
+    inhertied_number_from_template_b: [
+      {
+        value: 'rnid5ejh3vd',
+        label: 'B1',
+        icon: null,
+        type: 'entity',
+        inheritedValue: [{ value: 10 }],
+        inheritedType: 'numeric',
       },
     ],
   },
-];
-
-const relationTypes = [
-  {
-    _id: '629e55f1d4242c571392d5fc',
-    name: 'Multi-inherit',
-  },
-  {
-    _id: '629e55f8d4242c571392dbf1',
-    name: 'Inherit',
-  },
-  {
-    _id: '629e55fed4242c571392e1e8',
-    name: 'Related to',
-  },
-  {
-    _id: '629f902238ef5b3343849b62',
-    name: 'Multi-inherit-2',
-  },
-  { _id: '62ab58bdedafa48e2c7718c3', name: 'Inheriting' },
-];
-
-const entityData1RelationsAggregations = {
-  'Multi-inherit-2-629f900638ef5b3343848e80': [
+  template: '62ab63ce9480d0a7ebb32f41',
+  title: 'My entity 1',
+  user: '58ada34d299e82674854510f',
+  creationDate: 1655399467072,
+  published: false,
+  editDate: 1655399467073,
+  language: 'en',
+  sharedId: 'fewuvrs4xo',
+  permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
+  __v: 0,
+  documents: [],
+  attachments: [],
+  relations: [
     {
-      title: 'Argentina',
-      sharedId: '9e13muy08kl',
-      metadata: {
-        select: ['Option D 3'],
-        geolocation_geolocation: [
-          {
-            lat: -36.19286487671368,
-            lon: -64.29199218750001,
-            label: '',
-          },
-        ],
+      template: null,
+      entityData: {
+        _id: '62ab642b9480d0a7ebb35546',
+        metadata: {
+          inhertied_text_from_template_a: [
+            {
+              value: 'n6a1ulcmwa',
+              label: 'A1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 'A' }],
+              inheritedType: 'text',
+            },
+          ],
+          inhertied_number_from_template_b: [
+            {
+              value: 'rnid5ejh3vd',
+              label: 'B1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 10 }],
+              inheritedType: 'numeric',
+            },
+          ],
+        },
+        template: '62ab63ce9480d0a7ebb32f41',
+        title: 'My entity 1',
+        creationDate: 1655399467072,
+        published: false,
+        sharedId: 'fewuvrs4xo',
+        documents: [],
+        attachments: [],
       },
+      _id: '62ab642b9480d0a7ebb35558',
+      entity: 'fewuvrs4xo',
+      hub: '62ab642b9480d0a7ebb35551',
     },
     {
-      title: 'Peru',
-      sharedId: '3zeqx3aptzi',
-      metadata: {
-        select: ['Option B'],
-        geolocation_geolocation: [
-          {
-            lat: -10.189511603370525,
-            lon: -74.97070312500001,
-            label: '',
-          },
-        ],
+      template: '62ab58bdedafa48e2c7718c3',
+      entityData: {
+        _id: '62ab5908edafa48e2c7731a7',
+        metadata: { text: [{ value: 'A' }], numeric: [{ value: 1 }] },
+        template: '62ab58c7edafa48e2c771ec7',
+        title: 'A1',
+        creationDate: 1655396616486,
+        published: false,
+        sharedId: 'n6a1ulcmwa',
+        documents: [],
+        attachments: [],
       },
-    },
-  ],
-  'Multi-inherit-5bfbb1a0471dd0fc16ada146': [
-    {
-      title: 'Document 3',
-      sharedId: '844ts659a7',
-      metadata: {
-        text: ['Three'],
-        numeric: [3],
-        select: ['Option C'],
-      },
+      _id: '62ab642b9480d0a7ebb35559',
+      entity: 'n6a1ulcmwa',
+      hub: '62ab642b9480d0a7ebb35551',
     },
     {
-      title: 'Document 1',
-      sharedId: 'f27fwxhlsqo',
-      metadata: {
-        text: ['One'],
-        numeric: [1],
-        select: ['Option A'],
+      template: null,
+      entityData: {
+        _id: '62ab642b9480d0a7ebb35546',
+        metadata: {
+          inhertied_text_from_template_a: [
+            {
+              value: 'n6a1ulcmwa',
+              label: 'A1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 'A' }],
+              inheritedType: 'text',
+            },
+          ],
+          inhertied_number_from_template_b: [
+            {
+              value: 'rnid5ejh3vd',
+              label: 'B1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 10 }],
+              inheritedType: 'numeric',
+            },
+          ],
+        },
+        template: '62ab63ce9480d0a7ebb32f41',
+        title: 'My entity 1',
+        creationDate: 1655399467072,
+        published: false,
+        sharedId: 'fewuvrs4xo',
+        documents: [],
+        attachments: [],
       },
+      _id: '62ab642b9480d0a7ebb3555a',
+      entity: 'fewuvrs4xo',
+      hub: '62ab642b9480d0a7ebb35553',
     },
     {
-      title: 'Document 2',
-      sharedId: 'u4uclgwzcp',
-      metadata: {
-        text: ['Two'],
-        numeric: [2],
-        select: ['Option B'],
+      template: '62ab58bdedafa48e2c7718c3',
+      entityData: {
+        _id: '62ab5918edafa48e2c773205',
+        metadata: { text: [{ value: 'B' }], numeric: [{ value: 10 }] },
+        template: '62ab58cfedafa48e2c7724ec',
+        title: 'B1',
+        creationDate: 1655396632495,
+        published: false,
+        sharedId: 'rnid5ejh3vd',
+        documents: [],
+        attachments: [],
       },
+      _id: '62ab642b9480d0a7ebb3555b',
+      entity: 'rnid5ejh3vd',
+      hub: '62ab642b9480d0a7ebb35553',
     },
     {
-      title: 'Document 4',
-      sharedId: '4qkgragsevq',
-      metadata: {
-        text: ['Four'],
-        numeric: [4],
-        select: ['Option D 1'],
+      template: null,
+      entityData: {
+        _id: '62ab642b9480d0a7ebb35546',
+        metadata: {
+          inhertied_text_from_template_a: [
+            {
+              value: 'n6a1ulcmwa',
+              label: 'A1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 'A' }],
+              inheritedType: 'text',
+            },
+          ],
+          inhertied_number_from_template_b: [
+            {
+              value: 'rnid5ejh3vd',
+              label: 'B1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 10 }],
+              inheritedType: 'numeric',
+            },
+          ],
+        },
+        template: '62ab63ce9480d0a7ebb32f41',
+        title: 'My entity 1',
+        creationDate: 1655399467072,
+        published: false,
+        sharedId: 'fewuvrs4xo',
+        documents: [],
+        attachments: [],
       },
-    },
-  ],
-};
-
-const entityData2RelationsAggregations = {
-  'Multi-inherit-2-629f900638ef5b3343848e80': [
-    {
-      title: 'Venezuela',
-      sharedId: 'mp9v2ugx1un',
-      metadata: {
-        select: ['Option D 2'],
-        geolocation_geolocation: [
-          {
-            lat: 7.9243233190236015,
-            lon: -65.47851562500001,
-            label: '',
-          },
-        ],
-      },
-    },
-  ],
-};
-
-const entityData4RelationsAggregations = {
-  'Multi-inherit-5bfbb1a0471dd0fc16ada146': [
-    {
-      title: 'Document 3',
-      sharedId: '844ts659a7',
-      metadata: {
-        text: ['Three'],
-        numeric: [3],
-      },
+      _id: '62ab643e9480d0a7ebb355b6',
+      entity: 'fewuvrs4xo',
+      hub: '62ab643e9480d0a7ebb355b3',
     },
     {
-      title: 'Document 1',
-      sharedId: 'f27fwxhlsqo',
-      metadata: {
-        text: ['One'],
-        numeric: [1],
+      template: '62ab58bdedafa48e2c7718c3',
+      entityData: {
+        _id: '62ab61d81bf79aa526174e56',
+        metadata: { date: [{ value: 1654041600 }] },
+        template: '62ab60ea1bf79aa526174311',
+        title: 'C1',
+        creationDate: 1655398872761,
+        published: false,
+        sharedId: '6liuhix9td',
+        documents: [],
+        attachments: [],
       },
+      _id: '62ab643e9480d0a7ebb355b7',
+      entity: '6liuhix9td',
+      hub: '62ab643e9480d0a7ebb355b3',
     },
-  ],
-  'Multi-inherit-629f900638ef5b3343848e80': [
     {
-      title: 'Peru',
-      sharedId: '3zeqx3aptzi',
-      metadata: {
-        geolocation_geolocation: [{ lat: -10.189511603370525, lon: -74.97070312500001, label: '' }],
+      template: null,
+      entityData: {
+        _id: '62ab644c9480d0a7ebb35623',
+        metadata: {
+          inheriting_from_my_template: [
+            {
+              value: 'fewuvrs4xo',
+              label: 'My entity 1',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'n6a1ulcmwa',
+                  label: 'A1',
+                  icon: null,
+                  type: 'entity',
+                  inheritedValue: [{ value: 'A' }],
+                  inheritedType: 'text',
+                },
+              ],
+              inheritedType: 'relationship',
+            },
+          ],
+        },
+        template: '62ab624d1bf79aa5261750a5',
+        title: 'D1',
+        creationDate: 1655399500510,
+        published: false,
+        sharedId: 'vh3rrsrqq1g',
+        documents: [],
+        attachments: [],
       },
+      _id: '62ab644c9480d0a7ebb35633',
+      entity: 'vh3rrsrqq1g',
+      hub: '62ab644c9480d0a7ebb3562e',
     },
-  ],
-};
-
-const entityData5RelationsAggregations = {
-  'Inheriting-62ab58c7edafa48e2c771ec7': [
     {
-      title: 'A1',
-      sharedId: 'n6a1ulcmwa',
-      metadata: {
-        text: ['A'],
+      template: '62ab58bdedafa48e2c7718c3',
+      entityData: {
+        _id: '62ab642b9480d0a7ebb35546',
+        metadata: {
+          inhertied_text_from_template_a: [
+            {
+              value: 'n6a1ulcmwa',
+              label: 'A1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 'A' }],
+              inheritedType: 'text',
+            },
+          ],
+          inhertied_number_from_template_b: [
+            {
+              value: 'rnid5ejh3vd',
+              label: 'B1',
+              icon: null,
+              type: 'entity',
+              inheritedValue: [{ value: 10 }],
+              inheritedType: 'numeric',
+            },
+          ],
+        },
+        template: '62ab63ce9480d0a7ebb32f41',
+        title: 'My entity 1',
+        creationDate: 1655399467072,
+        published: false,
+        sharedId: 'fewuvrs4xo',
+        documents: [],
+        attachments: [],
       },
-    },
-  ],
-  'Inheriting-62ab58cfedafa48e2c7724ec': [
-    {
-      title: 'B1',
-      sharedId: 'rnid5ejh3vd',
-      metadata: {
-        numeric: [10],
-      },
+      _id: '62ab644c9480d0a7ebb35634',
+      entity: 'fewuvrs4xo',
+      hub: '62ab644c9480d0a7ebb3562e',
     },
   ],
 };
 
 export {
-  dbTemplates,
-  rawEntities,
-  thesauris,
+  templatesForAggregations,
+  thesaurisForAggregations,
+  otherEntities,
   relationTypes,
   entityData1RelationsAggregations,
   entityData2RelationsAggregations,
   entityData4RelationsAggregations,
   entityData5RelationsAggregations,
+  DocumentWithRelations,
+  OtherDocumentWithRelations,
+  myTemplate,
+  inheritingDocument,
+  myEntity,
 };

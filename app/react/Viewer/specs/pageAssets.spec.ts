@@ -1,17 +1,27 @@
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { prepareAssets } from '../pageAssets';
-import { dbEntity, dbTemplates, thesauris, expectedFormattedEntity } from './fixtures/pageAssets';
 import {
-  rawEntities,
+  dbEntity,
+  dbTemplates,
+  thesauris,
+  expectedFormattedEntity,
+} from './fixtures/pageAssets/pageAssets';
+import {
+  otherEntities,
   relationTypes,
-  dbTemplates as dbTemplates2,
-  thesauris as thesauris2,
+  templatesForAggregations,
+  thesaurisForAggregations,
   entityData1RelationsAggregations,
   entityData2RelationsAggregations,
   entityData4RelationsAggregations,
   entityData5RelationsAggregations,
-} from './fixtures/pageAssetsRelationsAggregations';
+  DocumentWithRelations,
+  OtherDocumentWithRelations,
+  myTemplate,
+  inheritingDocument,
+  myEntity,
+} from './fixtures/pageAssets/relationsAggregations';
 
 describe('pageAssets', () => {
   describe('prepareAssets', () => {
@@ -195,55 +205,55 @@ describe('pageAssets', () => {
           },
         ]);
       });
+    });
+  });
 
-      describe('aggregated relations data', () => {
-        const [entityData1, entityData2, entityData3] = rawEntities.map(rawEntity => {
-          const { entityData: result } = prepareAssets(
-            rawEntity,
-            dbTemplates2.get(0),
-            {
-              templates: dbTemplates2,
-              thesauris: thesauris2,
-            },
-            relationTypes
-          );
-          return result;
-        });
+  describe('aggregated relations data', () => {
+    const [entityData1, entityData2, entityData3] = otherEntities.map(rawEntity => {
+      const { entityData: result } = prepareAssets(
+        rawEntity,
+        DocumentWithRelations,
+        {
+          templates: templatesForAggregations,
+          thesauris: thesaurisForAggregations,
+        },
+        relationTypes
+      );
+      return result;
+    });
 
-        it('should contain a inherited_relationships entry for every multi-inherit type', () => {
-          expect(entityData1.inherited_relationships).toEqual(entityData1RelationsAggregations);
+    it('should contain a inherited_relationships entry for every multi-inherit type', () => {
+      expect(entityData1.inherited_relationships).toEqual(entityData1RelationsAggregations);
 
-          expect(entityData2.inherited_relationships).toEqual(entityData2RelationsAggregations);
+      expect(entityData2.inherited_relationships).toEqual(entityData2RelationsAggregations);
 
-          expect(entityData3.inherited_relationships).toEqual({});
-        });
+      expect(entityData3.inherited_relationships).toEqual({});
+    });
 
-        it('should separte same type of relations by template and only aggregate inherited metadata', () => {
-          const { entityData: entityData4 } = prepareAssets(
-            rawEntities[3],
-            dbTemplates2.get(3),
-            {
-              templates: dbTemplates2,
-              thesauris: thesauris2,
-            },
-            relationTypes
-          );
-          expect(entityData4.inherited_relationships).toEqual(entityData4RelationsAggregations);
-        });
+    it('should separte same type of relations by template and only aggregate inherited metadata', () => {
+      const { entityData } = prepareAssets(
+        inheritingDocument,
+        OtherDocumentWithRelations,
+        {
+          templates: templatesForAggregations,
+          thesauris: thesaurisForAggregations,
+        },
+        relationTypes
+      );
+      expect(entityData.inherited_relationships).toEqual(entityData4RelationsAggregations);
+    });
 
-        it('should exclude relations that are not part of the metadata', () => {
-          const { entityData: entityData5 } = prepareAssets(
-            rawEntities[4],
-            dbTemplates2.get(8),
-            {
-              templates: dbTemplates2,
-              thesauris: thesauris2,
-            },
-            relationTypes
-          );
-          expect(entityData5.inherited_relationships).toEqual(entityData5RelationsAggregations);
-        });
-      });
+    it('should exclude relations that are not part of the metadata', () => {
+      const { entityData } = prepareAssets(
+        myEntity,
+        myTemplate,
+        {
+          templates: templatesForAggregations,
+          thesauris: thesaurisForAggregations,
+        },
+        relationTypes
+      );
+      expect(entityData.inherited_relationships).toEqual(entityData5RelationsAggregations);
     });
   });
 });
