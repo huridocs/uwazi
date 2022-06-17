@@ -15,6 +15,7 @@ describe('Login', () => {
 
   it('Should login as admin', async () => {
     await adminLogin();
+    await page.goto(`${host}/settings/account`);
     await expect(page).toMatchElement('span', { text: 'Account' });
   });
 
