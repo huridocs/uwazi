@@ -43,7 +43,7 @@ describe('Graphs in Page ', () => {
   });
 
   it('should create a basic page', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
     await expect(page).toFill('input[name="page.data.title"]', 'Bar chart graph');

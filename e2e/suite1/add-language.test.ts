@@ -15,7 +15,7 @@ describe('Add language', () => {
 
   // eslint-disable-next-line max-statements
   it('Should add a language successfully even after templates values are changed', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('span', { text: 'Templates' });
     await expect(page).toClick('a', { text: 'País' });
     await expect(page).toClick(

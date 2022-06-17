@@ -46,7 +46,7 @@ describe('Public forms', () => {
 
   it('should white list the templates', async () => {
     await adminLogin();
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toClick(
       '#collectionSettings > div:nth-child(16) > div > div.toggle-children-button'
@@ -88,7 +88,7 @@ describe('Public forms', () => {
 
   describe('public form with image and media files', () => {
     it('should go back a use the other template for the form', async () => {
-      await expect(page).toClick('a', { text: 'Account settings' });
+      await expect(page).toClick('a', { text: 'Settings' });
       await expect(page).toClick('a', { text: 'Pages' });
       await expect(page).toClick('a', { text: 'Public Form Page' });
       await waitForTemplateToBeLoaded();
