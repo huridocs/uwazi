@@ -427,6 +427,7 @@ const relationTypes = [
   { _id: '629e55fed4242c571392e1e8', name: 'Related to' },
   { _id: '629f902238ef5b3343849b62', name: 'Multi-inherit-2' },
   { _id: '62ab58bdedafa48e2c7718c3', name: 'Inheriting' },
+  { _id: '62ace3f4d0a3915cd7e6d4c3', name: 'Friend' },
 ];
 
 const entityData1RelationsAggregations = {
@@ -877,26 +878,18 @@ const myEntityMetadata = {
   ],
 };
 
-const myEntity: EntitySchema = {
+const myEntity1Entity = {
   _id: '62ab642b9480d0a7ebb35546',
   metadata: myEntityMetadata,
   template: '62ab63ce9480d0a7ebb32f41',
   title: 'My entity 1',
   sharedId: 'fewuvrs4xo',
+};
+
+const myEntity: EntitySchema = {
+  ...myEntity1Entity,
   relations: [
-    {
-      template: null,
-      entityData: {
-        _id: '62ab642b9480d0a7ebb35546',
-        metadata: myEntityMetadata,
-        template: '62ab63ce9480d0a7ebb32f41',
-        title: 'My entity 1',
-        sharedId: 'fewuvrs4xo',
-      },
-      _id: '62ab642b9480d0a7ebb35558',
-      entity: 'fewuvrs4xo',
-      hub: '62ab642b9480d0a7ebb35551',
-    },
+    myEntity1Entity,
     {
       template: '62ab58bdedafa48e2c7718c3',
       entityData: {
@@ -912,13 +905,7 @@ const myEntity: EntitySchema = {
     },
     {
       template: null,
-      entityData: {
-        _id: '62ab642b9480d0a7ebb35546',
-        metadata: myEntityMetadata,
-        template: '62ab63ce9480d0a7ebb32f41',
-        title: 'My entity 1',
-        sharedId: 'fewuvrs4xo',
-      },
+      entityData: myEntity1Entity,
       _id: '62ab642b9480d0a7ebb3555a',
       entity: 'fewuvrs4xo',
       hub: '62ab642b9480d0a7ebb35553',
@@ -938,13 +925,7 @@ const myEntity: EntitySchema = {
     },
     {
       template: null,
-      entityData: {
-        _id: '62ab642b9480d0a7ebb35546',
-        metadata: myEntityMetadata,
-        template: '62ab63ce9480d0a7ebb32f41',
-        title: 'My entity 1',
-        sharedId: 'fewuvrs4xo',
-      },
+      entityData: myEntity1Entity,
       _id: '62ab643e9480d0a7ebb355b6',
       entity: 'fewuvrs4xo',
       hub: '62ab643e9480d0a7ebb355b3',
@@ -995,16 +976,23 @@ const myEntity: EntitySchema = {
     },
     {
       template: '62ab58bdedafa48e2c7718c3',
-      entityData: {
-        _id: '62ab642b9480d0a7ebb35546',
-        metadata: myEntityMetadata,
-        template: '62ab63ce9480d0a7ebb32f41',
-        title: 'My entity 1',
-        sharedId: 'fewuvrs4xo',
-      },
+      entityData: myEntity1Entity,
       _id: '62ab644c9480d0a7ebb35634',
       entity: 'fewuvrs4xo',
       hub: '62ab644c9480d0a7ebb3562e',
+    },
+    {
+      _id: '62ace86ad0a3915cd7e6dafe',
+      template: '62ace3f4d0a3915cd7e6d4c3',
+      entityData: {
+        _id: '62ab8fff53c83535c3312e88',
+        metadata: { text: [{ value: 'A1_1' }], numeric: [{ value: 100 }] },
+        template: '62ab58c7edafa48e2c771ec7',
+        title: 'A1_1',
+        sharedId: '5vburd9y3ba',
+      },
+      entity: '5vburd9y3ba',
+      hub: '62ab8fb653c83535c3312ad8',
     },
   ],
 };

@@ -209,12 +209,8 @@ describe('pageAssets', () => {
   });
 
   describe('aggregated relations data', () => {
-    let entityData1: EntitySchema;
-    let entityData2: EntitySchema;
-    let entityData3: EntitySchema;
-
-    beforeAll(() => {
-      [entityData1, entityData2, entityData3] = otherEntities.map(rawEntity => {
+    it('should contain a inherited_relationships entry for every multi-inherit type', () => {
+      const [entityData1, entityData2, entityData3] = otherEntities.map(rawEntity => {
         const { entityData: result } = prepareAssets(
           rawEntity,
           DocumentWithRelationsTemplate,
@@ -226,9 +222,7 @@ describe('pageAssets', () => {
         );
         return result;
       });
-    });
 
-    it('should contain a inherited_relationships entry for every multi-inherit type', () => {
       expect(entityData1.inherited_relationships).toEqual(entityData1RelationsAggregations);
 
       expect(entityData2.inherited_relationships).toEqual(entityData2RelationsAggregations);
