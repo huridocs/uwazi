@@ -14,12 +14,15 @@ const prepareDropdownValues = (languageMap, locale, user) => {
   const selectedLanguage =
     languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
 
-  if (user.get('_id') && user.get('role') !== 'collaborator') {
+  const loggedUser = user.get('_id') && user.get('role') !== 'collaborator';
+
+  if (loggedUser) {
     languages.push({ label: 'Live translate', key: 'livetranslate', type: 'livetranslate' });
   }
 
-  return { languages, selectedLanguage };
+  return { languages, selectedLanguage, loggedUser };
 };
+
 const listItem = (item, i18nmode) => {
   if (!item.type) {
     return <span>{item.label}</span>;
@@ -46,7 +49,12 @@ class I18NMenu extends Component {
       toggleInlineEdit,
       user,
     } = this.props;
-    const { languages, selectedLanguage } = prepareDropdownValues(languageMap, locale, user);
+
+    const { languages, selectedLanguage, loggedUser } = prepareDropdownValues(
+      languageMap,
+      locale,
+      user
+    );
 
     if (location.search.match(/page=/)) {
       const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
@@ -59,16 +67,23 @@ class I18NMenu extends Component {
     if (languageMap.size === 0) {
       return null;
     }
-
     return languageMap.count() > 1 || user.size ? (
-      <div className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
+      <div
+        className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : ' '} ${
+          languageMap.count() === 1 ? ' one-language' : ' '
+        } `}
+        role="navigation"
+        aria-label="Languages"
+      >
         {!i18nmode && (
           <DropdownList
             data={languages}
+            id="key"
             defaultValue={selectedLanguage}
             textField="label"
             className="menuNav-language"
             itemComponent={({ item }) => listItem(item)}
+            valueField="key"
             valueComponent={({ item }) => listItem(item)}
             onSelect={selected => {
               if (selected.type === 'livetranslate') {
@@ -101,9 +116,7 @@ class I18NMenu extends Component {
         )}
       </div>
     ) : (
-      <div className="menuNav-language">
-        <span className="singleItem">{selectedLanguage.label}</span>
-      </div>
+      <div className="no-i18nmenu" />
     );
   }
 }
