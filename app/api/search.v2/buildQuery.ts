@@ -44,9 +44,9 @@ const metadataFilters = (query: SearchQuery) =>
 const fullTextSearch = (
   searchString: string | undefined,
   query: SearchQuery,
-  searchMethod: string
+  searchMethod: string | undefined
 ) =>
-  searchString
+  searchString && searchMethod
     ? [
         {
           has_child: {
@@ -69,8 +69,8 @@ const fullTextSearch = (
 
 const languageFilter = (language: string) => [{ term: { language } }];
 
-const textSearch = (searchString: string | undefined, searchMethod: string) =>
-  searchString ? [{ [searchMethod]: { query: searchString } }] : [];
+const textSearch = (searchString: string | undefined, searchMethod: string | undefined) =>
+  searchString && searchMethod ? [{ [searchMethod]: { query: searchString } }] : [];
 
 const termsFilter = (query: SearchQuery, propertyName: string) =>
   query.filter?.[propertyName] ? [{ terms: { [propertyName]: [query.filter[propertyName]] } }] : [];
@@ -96,7 +96,7 @@ const buildSortQuery = (query: SearchQuery) => {
 };
 
 export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
-  const { searchString, fullTextSearchString, searchMethod } = await extractSearchParams(query);
+  const searchParams = await extractSearchParams(query);
 
   return {
     _source: {
@@ -113,8 +113,18 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
           ...termsFilter(query, 'sharedId'),
         ],
         must: [
-          ...fullTextSearch(fullTextSearchString, query, searchMethod),
-          ...textSearch(searchString, searchMethod),
+          {
+            bool: {
+              should: [
+                ...fullTextSearch(
+                  searchParams.fullText?.string,
+                  query,
+                  searchParams.fullText?.method
+                ),
+                ...textSearch(searchParams.search?.string, searchParams.search?.method),
+              ],
+            },
+          },
         ],
       },
     },
