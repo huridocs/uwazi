@@ -4,64 +4,62 @@ import { ClientTemplateSchema } from 'app/istore';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 
-const propertiesDocumentWithRelations = [
-  {
-    _id: '629e567fd4242c571392f549',
-    label: 'iText',
-    type: 'relationship',
-    inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
-    content: '5bfbb1a0471dd0fc16ada146',
-    relationType: '629e55f1d4242c571392d5fc',
-    name: 'itext',
-  },
-  {
-    _id: '629e567fd4242c571392f54a',
-    label: 'iNumeric',
-    type: 'relationship',
-    inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
-    content: '5bfbb1a0471dd0fc16ada146',
-    relationType: '629e55f1d4242c571392d5fc',
-    name: 'inumeric',
-  },
-  {
-    _id: '629e567fd4242c571392f54b',
-    label: 'iSelect',
-    type: 'relationship',
-    inherit: { property: '629e5634d4242c571392f440', type: 'select' },
-    content: '5bfbb1a0471dd0fc16ada146',
-    relationType: '629e55f1d4242c571392d5fc',
-    name: 'iselect',
-  },
-  {
-    _id: '629f8fa7988b5431324d858b',
-    label: 'Description',
-    type: 'markdown',
-    name: 'description',
-  },
-  {
-    _id: '629f905738ef5b334384a85c',
-    label: 'iGeolocation',
-    type: 'relationship',
-    inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
-    content: '629f900638ef5b3343848e80',
-    relationType: '629f902238ef5b3343849b62',
-    name: 'igeolocation',
-  },
-  {
-    _id: '629f905738ef5b334384a85d',
-    label: 'iSelect-country',
-    type: 'relationship',
-    inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
-    content: '629f900638ef5b3343848e80',
-    relationType: '629f902238ef5b3343849b62',
-    name: 'iselect-country',
-  },
-];
-
-const DocumentWithRelations = Immutable.fromJS({
+const DocumentWithRelationsTemplate = Immutable.fromJS({
   _id: '629e567fd4242c571392f548',
   name: 'Document with relations',
-  properties: propertiesDocumentWithRelations,
+  properties: [
+    {
+      _id: '629e567fd4242c571392f549',
+      label: 'iText',
+      type: 'relationship',
+      inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      name: 'itext',
+    },
+    {
+      _id: '629e567fd4242c571392f54a',
+      label: 'iNumeric',
+      type: 'relationship',
+      inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      name: 'inumeric',
+    },
+    {
+      _id: '629e567fd4242c571392f54b',
+      label: 'iSelect',
+      type: 'relationship',
+      inherit: { property: '629e5634d4242c571392f440', type: 'select' },
+      content: '5bfbb1a0471dd0fc16ada146',
+      relationType: '629e55f1d4242c571392d5fc',
+      name: 'iselect',
+    },
+    {
+      _id: '629f8fa7988b5431324d858b',
+      label: 'Description',
+      type: 'markdown',
+      name: 'description',
+    },
+    {
+      _id: '629f905738ef5b334384a85c',
+      label: 'iGeolocation',
+      type: 'relationship',
+      inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
+      content: '629f900638ef5b3343848e80',
+      relationType: '629f902238ef5b3343849b62',
+      name: 'igeolocation',
+    },
+    {
+      _id: '629f905738ef5b334384a85d',
+      label: 'iSelect-country',
+      type: 'relationship',
+      inherit: { property: '629f900d38ef5b3343849aeb', type: 'select' },
+      content: '629f900638ef5b3343848e80',
+      relationType: '629f902238ef5b3343849b62',
+      name: 'iselect-country',
+    },
+  ],
 });
 
 const iDocument1Metadata = {
@@ -218,10 +216,7 @@ const OtherDocumentWithRelations = Immutable.fromJS({
       _id: '62a34533100b901027a250e7',
       label: 'Multi-inherit text',
       type: 'relationship',
-      inherit: {
-        property: '629e5634d4242c571392f43e',
-        type: 'text',
-      },
+      inherit: { property: '629e5634d4242c571392f43e', type: 'text' },
       content: '5bfbb1a0471dd0fc16ada146',
       relationType: '629e55f1d4242c571392d5fc',
       name: 'multi-inherit_text',
@@ -230,10 +225,7 @@ const OtherDocumentWithRelations = Immutable.fromJS({
       _id: '62a34533100b901027a250e8',
       label: 'Multi-inherit number',
       type: 'relationship',
-      inherit: {
-        property: '629e5634d4242c571392f43f',
-        type: 'numeric',
-      },
+      inherit: { property: '629e5634d4242c571392f43f', type: 'numeric' },
       content: '5bfbb1a0471dd0fc16ada146',
       relationType: '629e55f1d4242c571392d5fc',
       name: 'multi-inherit_number',
@@ -242,20 +234,12 @@ const OtherDocumentWithRelations = Immutable.fromJS({
       _id: '62a34533100b901027a250e9',
       label: 'Multi-inherit geo',
       type: 'relationship',
-      inherit: {
-        property: '629f900638ef5b3343848e81',
-        type: 'geolocation',
-      },
+      inherit: { property: '629f900638ef5b3343848e81', type: 'geolocation' },
       content: '629f900638ef5b3343848e80',
       relationType: '629e55f1d4242c571392d5fc',
       name: 'multi-inherit_geo',
     },
-    {
-      _id: '62a34533100b901027a65bh4',
-      label: 'Plaintext',
-      type: 'text',
-      name: 'plaintext',
-    },
+    { _id: '62a34533100b901027a65bh4', label: 'Plaintext', type: 'text', name: 'plaintext' },
   ],
 });
 
@@ -285,7 +269,7 @@ const myTemplate = Immutable.fromJS({
 });
 
 const templatesForAggregations: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
-  DocumentWithRelations,
+  DocumentWithRelationsTemplate,
   OtherDocumentWithRelations,
   myTemplate,
   {
@@ -406,9 +390,7 @@ const thesaurisForAggregations = Immutable.fromJS([
       { id: 's07ki698a69', label: 'iDocument 1' },
       { id: 'ayvlz9vy4vq', label: 'iDocument 2' },
     ],
-    name: 'Document with relations',
-    properties: propertiesDocumentWithRelations,
-    _id: '629e567fd4242c571392f548',
+    ...DocumentWithRelationsTemplate,
     type: 'template',
   },
   {
@@ -505,16 +487,8 @@ const entityData2RelationsAggregations = {
 
 const entityData4RelationsAggregations = {
   'Multi-inherit-5bfbb1a0471dd0fc16ada146': [
-    {
-      title: 'Document 3',
-      sharedId: '844ts659a7',
-      metadata: { text: ['Three'], numeric: [3] },
-    },
-    {
-      title: 'Document 1',
-      sharedId: 'f27fwxhlsqo',
-      metadata: { text: ['One'], numeric: [1] },
-    },
+    { title: 'Document 3', sharedId: '844ts659a7', metadata: { text: ['Three'], numeric: [3] } },
+    { title: 'Document 1', sharedId: 'f27fwxhlsqo', metadata: { text: ['One'], numeric: [1] } },
   ],
   'Multi-inherit-629f900638ef5b3343848e80': [
     {
@@ -536,6 +510,99 @@ const entityData5RelationsAggregations = {
   ],
 };
 
+const document1Entity = {
+  _id: '629e56a1d4242c571392fc07',
+  metadata: {
+    text: [{ value: 'One' }],
+    multi_select: [
+      { value: 'e5cgnczmfys', label: 'Option C' },
+      { value: 'aot0horszdt', label: 'Option A' },
+    ],
+    numeric: [{ value: 1 }],
+    select: [{ value: 'aot0horszdt', label: 'Option A' }],
+  },
+  template: '5bfbb1a0471dd0fc16ada146',
+  title: 'Document 1',
+  sharedId: 'f27fwxhlsqo',
+};
+
+const document2Entity = {
+  _id: '629e56aed4242c571392fc3f',
+  metadata: {
+    text: [{ value: 'Two' }],
+    numeric: [{ value: 2 }],
+    select: [{ value: '92lfe31qc3n', label: 'Option B' }],
+  },
+  template: '5bfbb1a0471dd0fc16ada146',
+  title: 'Document 2',
+  sharedId: 'u4uclgwzcp',
+};
+
+const document3Entity = {
+  _id: '629e56c4d4242c571392fc6d',
+  template: '5bfbb1a0471dd0fc16ada146',
+  title: 'Document 3',
+  sharedId: '844ts659a7',
+  metadata: {
+    text: [{ value: 'Three' }],
+    numeric: [{ value: 3 }],
+    select: [{ value: 'e5cgnczmfys', label: 'Option C' }],
+    multi_select: [
+      { value: 'e5cgnczmfys', label: 'Option C' },
+      { value: 'aot0horszdt', label: 'Option A' },
+    ],
+  },
+};
+
+const iDocument2Entity = {
+  _id: '629f8ec82157cf2c185e0bf1',
+  metadata: {
+    'iselect-country': [
+      {
+        value: 'mp9v2ugx1un',
+        label: 'Venezuela',
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: 'eeb2dlx1bu6',
+            label: 'Option D 2',
+            parent: { value: 'craucpftwy', label: 'Option D' },
+          },
+        ],
+        inheritedType: 'select',
+      },
+    ],
+    igeolocation: [
+      {
+        value: 'mp9v2ugx1un',
+        label: 'Venezuela',
+        type: 'entity',
+        inheritedValue: [
+          { value: { lat: 7.9243233190236015, lon: -65.47851562500001, label: '' } },
+        ],
+        inheritedType: 'geolocation',
+      },
+    ],
+    description: [{ value: 'Some long text' }],
+  },
+  template: '629e567fd4242c571392f548',
+  title: 'iDocument 2',
+  sharedId: 'ayvlz9vy4vq',
+};
+
+const peruEntity = {
+  _id: '629f907f38ef5b334384a919',
+  metadata: {
+    select: [{ value: '92lfe31qc3n', label: 'Option B' }],
+    geolocation_geolocation: [
+      { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
+    ],
+  },
+  template: '629f900638ef5b3343848e80',
+  title: 'Peru',
+  sharedId: '3zeqx3aptzi',
+};
+
 const otherEntities: EntitySchema[] = [
   {
     _id: '629e5712d4242c571392fcd4',
@@ -553,51 +620,21 @@ const otherEntities: EntitySchema[] = [
       },
       {
         template: '629e55f1d4242c571392d5fc',
-        entityData: {
-          _id: '629e56c4d4242c571392fc6d',
-          metadata: {
-            text: [{ value: 'Three' }],
-            numeric: [{ value: 3 }],
-            select: [{ value: 'e5cgnczmfys', label: 'Option C' }],
-          },
-          template: '5bfbb1a0471dd0fc16ada146',
-          title: 'Document 3',
-          sharedId: '844ts659a7',
-        },
+        entityData: document3Entity,
         _id: '629e5712d4242c571392fce4',
         entity: '844ts659a7',
         hub: '629e5712d4242c571392fcdd',
       },
       {
         template: '629e55f1d4242c571392d5fc',
-        entityData: {
-          _id: '629e56a1d4242c571392fc07',
-          metadata: {
-            text: [{ value: 'One' }],
-            numeric: [{ value: 1 }],
-            select: [{ value: 'aot0horszdt', label: 'Option A' }],
-          },
-          template: '5bfbb1a0471dd0fc16ada146',
-          title: 'Document 1',
-          sharedId: 'f27fwxhlsqo',
-        },
+        entityData: document1Entity,
         _id: '629e5712d4242c571392fce3',
         entity: 'f27fwxhlsqo',
         hub: '629e5712d4242c571392fcdd',
       },
       {
         template: '629e55f1d4242c571392d5fc',
-        entityData: {
-          _id: '629e56aed4242c571392fc3f',
-          metadata: {
-            text: [{ value: 'Two' }],
-            numeric: [{ value: 2 }],
-            select: [{ value: '92lfe31qc3n', label: 'Option B' }],
-          },
-          template: '5bfbb1a0471dd0fc16ada146',
-          title: 'Document 2',
-          sharedId: 'u4uclgwzcp',
-        },
+        entityData: document2Entity,
         _id: '629e5712d4242c571392fce5',
         entity: 'u4uclgwzcp',
         hub: '629e5712d4242c571392fcdd',
@@ -658,18 +695,7 @@ const otherEntities: EntitySchema[] = [
       },
       {
         template: '629f902238ef5b3343849b62',
-        entityData: {
-          _id: '629f907f38ef5b334384a919',
-          metadata: {
-            select: [{ value: '92lfe31qc3n', label: 'Option B' }],
-            geolocation_geolocation: [
-              { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
-            ],
-          },
-          template: '629f900638ef5b3343848e80',
-          title: 'Peru',
-          sharedId: '3zeqx3aptzi',
-        },
+        entityData: peruEntity,
         _id: '629f90b438ef5b334384a9eb',
         entity: '3zeqx3aptzi',
         hub: '629f90b438ef5b334384a9e4',
@@ -677,77 +703,11 @@ const otherEntities: EntitySchema[] = [
     ],
   },
   {
-    _id: '629f8ec82157cf2c185e0bf1',
-    template: '629e567fd4242c571392f548',
-    title: 'iDocument 2',
-    sharedId: 'ayvlz9vy4vq',
-    metadata: {
-      'iselect-country': [
-        {
-          value: 'mp9v2ugx1un',
-          label: 'Venezuela',
-          type: 'entity',
-          inheritedValue: [
-            {
-              value: 'eeb2dlx1bu6',
-              label: 'Option D 2',
-              parent: { value: 'craucpftwy', label: 'Option D' },
-            },
-          ],
-          inheritedType: 'select',
-        },
-      ],
-      igeolocation: [
-        {
-          value: 'mp9v2ugx1un',
-          label: 'Venezuela',
-          type: 'entity',
-          inheritedValue: [
-            { value: { lat: 7.9243233190236015, lon: -65.47851562500001, label: '' } },
-          ],
-          inheritedType: 'geolocation',
-        },
-      ],
-      description: [{ value: 'Some long text' }],
-    },
+    ...iDocument2Entity,
     relations: [
       {
         template: null,
-        entityData: {
-          _id: '629f8ec82157cf2c185e0bf1',
-          metadata: {
-            'iselect-country': [
-              {
-                value: 'mp9v2ugx1un',
-                label: 'Venezuela',
-                type: 'entity',
-                inheritedValue: [
-                  {
-                    value: 'eeb2dlx1bu6',
-                    label: 'Option D 2',
-                    parent: { value: 'craucpftwy', label: 'Option D' },
-                  },
-                ],
-                inheritedType: 'select',
-              },
-            ],
-            igeolocation: [
-              {
-                value: 'mp9v2ugx1un',
-                label: 'Venezuela',
-                type: 'entity',
-                inheritedValue: [
-                  { value: { lat: 7.9243233190236015, lon: -65.47851562500001, label: '' } },
-                ],
-                inheritedType: 'geolocation',
-              },
-            ],
-            description: [{ value: 'Some long text' }],
-          },
-          template: '629e567fd4242c571392f548',
-          title: 'iDocument 2',
-          sharedId: 'ayvlz9vy4vq',
-        },
+        entityData: iDocument2Entity,
         _id: '629f90c438ef5b334384aa4b',
         entity: 'ayvlz9vy4vq',
         hub: '629f90c438ef5b334384aa46',
@@ -847,21 +807,7 @@ const inheritingDocument: EntitySchema = {
   relations: [
     {
       template: '629e55f1d4242c571392d5fc',
-      entityData: {
-        _id: '629e56c4d4242c571392fc6d',
-        metadata: {
-          text: [{ value: 'Three' }],
-          numeric: [{ value: 3 }],
-          select: [{ value: 'e5cgnczmfys', label: 'Option C' }],
-          multi_select: [
-            { value: 'e5cgnczmfys', label: 'Option C' },
-            { value: 'aot0horszdt', label: 'Option A' },
-          ],
-        },
-        template: '5bfbb1a0471dd0fc16ada146',
-        title: 'Document 3',
-        sharedId: '844ts659a7',
-      },
+      entityData: document3Entity,
       _id: '62a3459f25e55412954d7763',
       entity: '844ts659a7',
       hub: '62a3459f25e55412954d775a',
@@ -881,39 +827,14 @@ const inheritingDocument: EntitySchema = {
     },
     {
       template: '629e55f1d4242c571392d5fc',
-      entityData: {
-        _id: '629e56a1d4242c571392fc07',
-        metadata: {
-          text: [{ value: 'One' }],
-          numeric: [{ value: 1 }],
-          select: [{ value: 'aot0horszdt', label: 'Option A' }],
-          multi_select: [
-            { value: 'e5cgnczmfys', label: 'Option C' },
-            { value: 'aot0horszdt', label: 'Option A' },
-          ],
-        },
-        template: '5bfbb1a0471dd0fc16ada146',
-        title: 'Document 1',
-        sharedId: 'f27fwxhlsqo',
-      },
+      entityData: document1Entity,
       _id: '62a3459f25e55412954d7762',
       entity: 'f27fwxhlsqo',
       hub: '62a3459f25e55412954d775a',
     },
     {
       template: '629e55f1d4242c571392d5fc',
-      entityData: {
-        _id: '629f907f38ef5b334384a919',
-        metadata: {
-          select: [{ value: '92lfe31qc3n', label: 'Option B' }],
-          geolocation_geolocation: [
-            { value: { lat: -10.189511603370525, lon: -74.97070312500001, label: '' } },
-          ],
-        },
-        template: '629f900638ef5b3343848e80',
-        title: 'Peru',
-        sharedId: '3zeqx3aptzi',
-      },
+      entityData: peruEntity,
       _id: '62a3459f25e55412954d7765',
       entity: '3zeqx3aptzi',
       hub: '62a3459f25e55412954d775c',
@@ -1097,7 +1018,7 @@ export {
   entityData2RelationsAggregations,
   entityData4RelationsAggregations,
   entityData5RelationsAggregations,
-  DocumentWithRelations,
+  DocumentWithRelationsTemplate,
   OtherDocumentWithRelations,
   myTemplate,
   inheritingDocument,

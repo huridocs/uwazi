@@ -16,7 +16,7 @@ import {
   entityData2RelationsAggregations,
   entityData4RelationsAggregations,
   entityData5RelationsAggregations,
-  DocumentWithRelations,
+  DocumentWithRelationsTemplate,
   OtherDocumentWithRelations,
   myTemplate,
   inheritingDocument,
@@ -209,17 +209,23 @@ describe('pageAssets', () => {
   });
 
   describe('aggregated relations data', () => {
-    const [entityData1, entityData2, entityData3] = otherEntities.map(rawEntity => {
-      const { entityData: result } = prepareAssets(
-        rawEntity,
-        DocumentWithRelations,
-        {
-          templates: templatesForAggregations,
-          thesauris: thesaurisForAggregations,
-        },
-        relationTypes
-      );
-      return result;
+    let entityData1: EntitySchema;
+    let entityData2: EntitySchema;
+    let entityData3: EntitySchema;
+
+    beforeAll(() => {
+      [entityData1, entityData2, entityData3] = otherEntities.map(rawEntity => {
+        const { entityData: result } = prepareAssets(
+          rawEntity,
+          DocumentWithRelationsTemplate,
+          {
+            templates: templatesForAggregations,
+            thesauris: thesaurisForAggregations,
+          },
+          relationTypes
+        );
+        return result;
+      });
     });
 
     it('should contain a inherited_relationships entry for every multi-inherit type', () => {

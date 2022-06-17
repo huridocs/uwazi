@@ -1,7 +1,96 @@
-/* eslint-disable max-lines */ import { ClientTemplateSchema } from 'app/istore';
+/* eslint-disable max-lines */
+import { ClientTemplateSchema } from 'app/istore';
 import Immutable from 'immutable';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+
+const test1Attachments = [
+  {
+    _id: '62717723ff128cfd6de09ab5',
+    originalname: 'mars.jpeg',
+    mimetype: 'image/jpeg',
+    size: 3405,
+    filename: '1651603234992smwovxz1mq.jpeg',
+    entity: 'mtpkxxe1uom',
+    type: 'attachment',
+    creationDate: 1651603235065,
+  },
+  {
+    _id: '62717723ff128cfd6de09ab7',
+    originalname: 'sample video.mp4',
+    mimetype: 'video/mp4',
+    size: 1570024,
+    filename: '1651603234992ndu8pskupzp.mp4',
+    entity: 'mtpkxxe1uom',
+    type: 'attachment',
+    creationDate: 1651603235066,
+  },
+];
+
+const test1Entity = {
+  _id: '6267e69026904c252518f946',
+  metadata: {
+    text: [{ value: 'one' }],
+    numeric: [{ value: 1 }],
+    select: [{ value: 'f5t0ah6aluq', label: 'Argentina' }],
+    multi_select: [
+      { value: 'k9vqx1bkkso', label: 'Colombia' },
+      { value: 'f5t0ah6aluq', label: 'Argentina' },
+    ],
+    inherit: [
+      {
+        value: 'zse9gkdu27',
+        label: 'Test 5',
+        icon: null,
+        type: 'entity',
+        inheritedValue: [{ value: 1650412800 }],
+        inheritedType: 'date',
+      },
+    ],
+    date: [{ value: 1651536000 }],
+    date_range: [{ value: { from: 1651536000, to: 1651708799 } }],
+    multi_date: [{ value: 1651622400 }, { value: 1651708800 }],
+    multi_date_range: [
+      { value: { from: 1651968000, to: 1652486399 } },
+      { value: { from: 1652572800, to: 1653091199 } },
+    ],
+    rich_text: [{ value: '# one\n\n## two\n\n### three' }],
+    link: [{ value: { label: 'test', url: 'https://google.com' } }],
+    image: [{ value: '/api/files/1651603234992smwovxz1mq.jpeg' }],
+    media: [{ value: '/api/files/1651603234992ndu8pskupzp.mp4' }],
+    geolocation_geolocation: [
+      { value: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' } },
+    ],
+    relationship: [{ value: 'e9oxs8zgyc9', label: 'Test 6', icon: null, type: 'entity' }],
+  },
+  template: '5bfbb1a0471dd0fc16ada146',
+  title: 'Test 1',
+  user: '58ada34d299e82674854510f',
+  creationDate: 1650976400574,
+  published: true,
+  editDate: 1651694706834,
+  language: 'en',
+  sharedId: 'mtpkxxe1uom',
+  permissions: [
+    { refId: '58ada34d299e82674854510f', type: PermissionType.USER, level: AccessLevels.WRITE },
+  ],
+  documents: [],
+  attachments: test1Attachments,
+};
+
+const test6Entity = {
+  _id: '6272dc514c077e92cc2b78a9',
+  metadata: { text: [{ value: 'Some text' }] },
+  template: '6272dc3e4c077e92cc2b72ed',
+  title: 'Test 6',
+  creationDate: 1651694673470,
+  published: false,
+  sharedId: 'e9oxs8zgyc9',
+  documents: [],
+  attachments: [],
+  inheritedProperty: 'title',
+};
 
 const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
   {
@@ -104,187 +193,49 @@ const dbTemplates: IImmutable<ClientTemplateSchema[]> = Immutable.fromJS([
     entityViewPage: '8x8b1bzsj1i',
   },
 ]);
-const test5EntityMetadata = {
-  date: [{ value: 1650412800 }],
-  relationship_2: [{ value: 'l8rnfv6qss', label: 'Test 4', icon: null, type: 'entity' }],
-};
-const dbEntity: EntitySchema = {
-  _id: '6267e69026904c252518f946',
+
+const test5Entity = {
+  _id: '626c195b8a46c11701b4aaaf',
   metadata: {
-    text: [{ value: 'one' }],
-    numeric: [{ value: 1 }],
-    select: [{ value: 'f5t0ah6aluq', label: 'Argentina' }],
-    multi_select: [
-      { value: 'k9vqx1bkkso', label: 'Colombia' },
-      { value: 'f5t0ah6aluq', label: 'Argentina' },
-    ],
-    inherit: [
-      {
-        value: 'zse9gkdu27',
-        label: 'Test 5',
-        icon: null,
-        type: 'entity',
-        inheritedValue: [{ value: 1650412800 }],
-        inheritedType: 'date',
-      },
-    ],
-    date: [{ value: 1651536000 }],
-    date_range: [{ value: { from: 1651536000, to: 1651708799 } }],
-    multi_date: [{ value: 1651622400 }, { value: 1651708800 }],
-    multi_date_range: [
-      { value: { from: 1651968000, to: 1652486399 } },
-      { value: { from: 1652572800, to: 1653091199 } },
-    ],
-    rich_text: [{ value: '# one\n\n## two\n\n### three' }],
-    link: [{ value: { label: 'test', url: 'https://google.com' } }],
-    image: [{ value: '/api/files/1651603234992smwovxz1mq.jpeg' }],
-    media: [{ value: '/api/files/1651603234992ndu8pskupzp.mp4' }],
-    geolocation_geolocation: [
-      { value: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' } },
-    ],
-    relationship: [{ value: 'e9oxs8zgyc9', label: 'Test 6', icon: null, type: 'entity' }],
+    date: [{ value: 1650412800 }],
+    relationship_2: [{ value: 'l8rnfv6qss', label: 'Test 4', icon: null, type: 'entity' }],
   },
-  template: '5bfbb1a0471dd0fc16ada146',
-  title: 'Test 1',
-  user: '58ada34d299e82674854510f',
-  creationDate: 1650976400574,
+  template: '626c19238a46c11701b49a55',
+  title: 'Test 5',
+  creationDate: 1651251547653,
   published: true,
-  editDate: 1651694706834,
-  language: 'en',
-  sharedId: 'mtpkxxe1uom',
-  permissions: [{ refId: '58ada34d299e82674854510f', type: 'user', level: 'write' }],
+  sharedId: 'zse9gkdu27',
   documents: [],
-  attachments: [
-    {
-      _id: '62717723ff128cfd6de09ab5',
-      originalname: 'mars.jpeg',
-      mimetype: 'image/jpeg',
-      size: 3405,
-      filename: '1651603234992smwovxz1mq.jpeg',
-      entity: 'mtpkxxe1uom',
-      type: 'attachment',
-      creationDate: 1651603235065,
-    },
-    {
-      _id: '62717723ff128cfd6de09ab7',
-      originalname: 'sample video.mp4',
-      mimetype: 'video/mp4',
-      size: 1570024,
-      filename: '1651603234992ndu8pskupzp.mp4',
-      entity: 'mtpkxxe1uom',
-      type: 'attachment',
-      creationDate: 1651603235066,
-    },
-  ],
+  attachments: [],
+};
+
+const dbEntity: EntitySchema = {
+  ...test1Entity,
   relations: [
     {
       template: '626c19088a46c11701b493e6',
-      entityData: {
-        _id: '626c195b8a46c11701b4aaaf',
-        metadata: test5EntityMetadata,
-        template: '626c19238a46c11701b49a55',
-        title: 'Test 5',
-        creationDate: 1651251547653,
-        published: true,
-        sharedId: 'zse9gkdu27',
-        documents: [],
-        attachments: [],
-      },
+      entityData: test5Entity,
       _id: '626c19658a46c11701b4aafb',
       entity: 'zse9gkdu27',
       hub: '626c19658a46c11701b4aaf5',
     },
     {
       template: null,
-      entityData: {
-        _id: '6267e69026904c252518f946',
-        metadata: {
-          text: [{ value: 'one' }],
-          numeric: [{ value: 1 }],
-          select: [{ value: 'f5t0ah6aluq', label: 'Argentina' }],
-          multi_select: [
-            { value: 'k9vqx1bkkso', label: 'Colombia' },
-            { value: 'f5t0ah6aluq', label: 'Argentina' },
-          ],
-          inherit: [
-            {
-              value: 'zse9gkdu27',
-              label: 'Test 5',
-              icon: null,
-              type: 'entity',
-              inheritedValue: [{ value: 1650412800 }],
-              inheritedType: 'date',
-            },
-          ],
-          date: [{ value: 1651536000 }],
-          date_range: [{ value: { from: 1651536000, to: 1651708799 } }],
-          multi_date: [{ value: 1651622400 }, { value: 1651708800 }],
-          multi_date_range: [
-            { value: { from: 1651968000, to: 1652486399 } },
-            { value: { from: 1652572800, to: 1653091199 } },
-          ],
-          rich_text: [{ value: 'Test 1 long text' }],
-          link: [{ value: { label: 'test', url: 'https://google.com' } }],
-          image: [{ value: '/api/files/1651603234992smwovxz1mq.jpeg' }],
-          media: [{ value: '/api/files/1651603234992ndu8pskupzp.mp4' }],
-          geolocation_geolocation: [
-            { value: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' } },
-          ],
-          relationship: [{ value: 'e9oxs8zgyc9', label: 'Test 6', icon: null, type: 'entity' }],
-        },
-        template: '5bfbb1a0471dd0fc16ada146',
-        title: 'Test 1',
-        creationDate: 1650976400574,
-        published: true,
-        sharedId: 'mtpkxxe1uom',
-        documents: [],
-        attachments: [
-          {
-            _id: '62717723ff128cfd6de09ab5',
-            originalname: 'mars.jpeg',
-            mimetype: 'image/jpeg',
-            size: 3405,
-            filename: '1651603234992smwovxz1mq.jpeg',
-            entity: 'mtpkxxe1uom',
-            type: 'attachment',
-            creationDate: 1651603235065,
-          },
-          {
-            _id: '62717723ff128cfd6de09ab7',
-            originalname: 'sample video.mp4',
-            mimetype: 'video/mp4',
-            size: 1570024,
-            filename: '1651603234992ndu8pskupzp.mp4',
-            entity: 'mtpkxxe1uom',
-            type: 'attachment',
-            creationDate: 1651603235066,
-          },
-        ],
-      },
+      entityData: test1Entity,
       _id: '626c19658a46c11701b4aafa',
       entity: 'mtpkxxe1uom',
       hub: '626c19658a46c11701b4aaf5',
     },
     {
       template: '626c19088a46c11701b493e6',
-      entityData: {
-        _id: '6272dc514c077e92cc2b78a9',
-        metadata: { text: [{ value: 'Some text' }] },
-        template: '6272dc3e4c077e92cc2b72ed',
-        title: 'Test 6',
-        creationDate: 1651694673470,
-        published: false,
-        sharedId: 'e9oxs8zgyc9',
-        documents: [],
-        attachments: [],
-        inheritedProperty: 'title',
-      },
+      entityData: test6Entity,
       _id: '6272dc724c077e92cc2b7fb8',
       entity: 'e9oxs8zgyc9',
       hub: '626c19658a46c11701b4aaf5',
     },
   ],
 };
+
 const thesauris = Immutable.fromJS([
   {
     _id: '626825379c8a75a1ea9a821e',
@@ -412,6 +363,7 @@ const thesauris = Immutable.fromJS([
     type: 'template',
   },
 ]);
+
 const expectedFormattedEntity = {
   _id: '6267e69026904c252518f946',
   template: '5bfbb1a0471dd0fc16ada146',
@@ -501,18 +453,7 @@ const expectedFormattedEntity = {
           url: '/entity/e9oxs8zgyc9',
           icon: null,
           parent: undefined,
-          relatedEntity: {
-            _id: '6272dc514c077e92cc2b78a9',
-            metadata: { text: [{ value: 'Some text' }] },
-            template: '6272dc3e4c077e92cc2b72ed',
-            title: 'Test 6',
-            creationDate: 1651694673470,
-            published: false,
-            sharedId: 'e9oxs8zgyc9',
-            documents: [],
-            attachments: [],
-            inheritedProperty: 'title',
-          },
+          relatedEntity: test6Entity,
         },
       ],
     },
@@ -528,18 +469,7 @@ const expectedFormattedEntity = {
           name: 'inherit',
           value: 'Apr 20, 2022',
           timestamp: 1650412800,
-          relatedEntity: {
-            _id: '626c195b8a46c11701b4aaaf',
-            attachments: [],
-            creationDate: 1651251547653,
-            documents: [],
-            published: true,
-            sharedId: 'zse9gkdu27',
-            template: '626c19238a46c11701b49a55',
-            title: 'Test 5',
-            metadata: test5EntityMetadata,
-            inheritedProperty: 'date',
-          },
+          relatedEntity: { ...test5Entity, inheritedProperty: 'date' },
         },
       ],
       inheritedType: 'date',
@@ -666,134 +596,25 @@ const expectedFormattedEntity = {
       value: [],
     },
   },
-  attachments: [
-    {
-      _id: '62717723ff128cfd6de09ab5',
-      originalname: 'mars.jpeg',
-      mimetype: 'image/jpeg',
-      size: 3405,
-      filename: '1651603234992smwovxz1mq.jpeg',
-      entity: 'mtpkxxe1uom',
-      type: 'attachment',
-      creationDate: 1651603235065,
-    },
-    {
-      _id: '62717723ff128cfd6de09ab7',
-      originalname: 'sample video.mp4',
-      mimetype: 'video/mp4',
-      size: 1570024,
-      filename: '1651603234992ndu8pskupzp.mp4',
-      entity: 'mtpkxxe1uom',
-      type: 'attachment',
-      creationDate: 1651603235066,
-    },
-  ],
+  attachments: test1Attachments,
   relations: [
     {
       template: '626c19088a46c11701b493e6',
-      entityData: {
-        _id: '626c195b8a46c11701b4aaaf',
-        metadata: {
-          date: [{ value: 1650412800 }],
-          relationship_2: [{ value: 'l8rnfv6qss', label: 'Test 4', icon: null, type: 'entity' }],
-        },
-        template: '626c19238a46c11701b49a55',
-        title: 'Test 5',
-        creationDate: 1651251547653,
-        published: true,
-        sharedId: 'zse9gkdu27',
-        documents: [],
-        attachments: [],
-      },
+      entityData: test5Entity,
       _id: '626c19658a46c11701b4aafb',
       entity: 'zse9gkdu27',
       hub: '626c19658a46c11701b4aaf5',
     },
     {
       template: null,
-      entityData: {
-        _id: '6267e69026904c252518f946',
-        metadata: {
-          text: [{ value: 'one' }],
-          numeric: [{ value: 1 }],
-          select: [{ value: 'f5t0ah6aluq', label: 'Argentina' }],
-          multi_select: [
-            { value: 'k9vqx1bkkso', label: 'Colombia' },
-            { value: 'f5t0ah6aluq', label: 'Argentina' },
-          ],
-          inherit: [
-            {
-              value: 'zse9gkdu27',
-              label: 'Test 5',
-              icon: null,
-              type: 'entity',
-              inheritedValue: [{ value: 1650412800 }],
-              inheritedType: 'date',
-            },
-          ],
-          date: [{ value: 1651536000 }],
-          date_range: [{ value: { from: 1651536000, to: 1651708799 } }],
-          multi_date: [{ value: 1651622400 }, { value: 1651708800 }],
-          multi_date_range: [
-            { value: { from: 1651968000, to: 1652486399 } },
-            { value: { from: 1652572800, to: 1653091199 } },
-          ],
-          rich_text: [{ value: 'Test 1 long text' }],
-          link: [{ value: { label: 'test', url: 'https://google.com' } }],
-          image: [{ value: '/api/files/1651603234992smwovxz1mq.jpeg' }],
-          media: [{ value: '/api/files/1651603234992ndu8pskupzp.mp4' }],
-          geolocation_geolocation: [
-            { value: { lat: 46.660244945286394, lon: 8.283691406250002, label: '' } },
-          ],
-          relationship: [{ value: 'e9oxs8zgyc9', label: 'Test 6', icon: null, type: 'entity' }],
-        },
-        template: '5bfbb1a0471dd0fc16ada146',
-        title: 'Test 1',
-        creationDate: 1650976400574,
-        published: true,
-        sharedId: 'mtpkxxe1uom',
-        documents: [],
-        attachments: [
-          {
-            _id: '62717723ff128cfd6de09ab5',
-            originalname: 'mars.jpeg',
-            mimetype: 'image/jpeg',
-            size: 3405,
-            filename: '1651603234992smwovxz1mq.jpeg',
-            entity: 'mtpkxxe1uom',
-            type: 'attachment',
-            creationDate: 1651603235065,
-          },
-          {
-            _id: '62717723ff128cfd6de09ab7',
-            originalname: 'sample video.mp4',
-            mimetype: 'video/mp4',
-            size: 1570024,
-            filename: '1651603234992ndu8pskupzp.mp4',
-            entity: 'mtpkxxe1uom',
-            type: 'attachment',
-            creationDate: 1651603235066,
-          },
-        ],
-      },
+      entityData: test1Entity,
       _id: '626c19658a46c11701b4aafa',
       entity: 'mtpkxxe1uom',
       hub: '626c19658a46c11701b4aaf5',
     },
     {
       template: '626c19088a46c11701b493e6',
-      entityData: {
-        _id: '6272dc514c077e92cc2b78a9',
-        metadata: { text: [{ value: 'Some text' }] },
-        template: '6272dc3e4c077e92cc2b72ed',
-        title: 'Test 6',
-        creationDate: 1651694673470,
-        published: false,
-        sharedId: 'e9oxs8zgyc9',
-        documents: [],
-        attachments: [],
-        inheritedProperty: 'title',
-      },
+      entityData: test6Entity,
       _id: '6272dc724c077e92cc2b7fb8',
       entity: 'e9oxs8zgyc9',
       hub: '626c19658a46c11701b4aaf5',
@@ -801,4 +622,5 @@ const expectedFormattedEntity = {
   ],
   documentType: 'Document',
 };
+
 export { dbTemplates, dbEntity, thesauris, expectedFormattedEntity };
