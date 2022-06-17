@@ -229,5 +229,8 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
+  // relationTypes and dictionaries get automatically synced when a property of that type is whitelisted !
+  // But you can also include syncs for this data arbitrarily !
+
   // it('should sync relationTypes that match template properties whitelist', async () => {});
 });
