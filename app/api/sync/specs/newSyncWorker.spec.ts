@@ -21,7 +21,7 @@ import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 import bodyParser from 'body-parser';
-import express, { NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { rmdir, writeFile } from 'fs/promises';
 import { Server } from 'http';
 import 'isomorphic-fetch';
@@ -31,16 +31,21 @@ import {
   fixtures,
   newDoc1,
   newDoc3,
+  relationtype1,
   template1,
   template1Property1,
   template1Property2,
   template1PropertyRelationship1,
   template1PropertyThesauri1Select,
+  template2,
+  template3,
+  template3PropertyRelationship1,
   thesauri1Value2,
 } from './newFixtures';
 
 describe('syncWorker', () => {
   let server: Server;
+  let server2: Server;
   beforeAll(async () => {
     const app = express();
     await db.connect({ defaultTenant: false });
@@ -54,35 +59,103 @@ describe('syncWorker', () => {
     });
 
     tenants.add({
+      name: 'host2',
+      dbName: 'host2',
+      indexName: 'host2',
+      ...(await testingUploadPaths()),
+    });
+
+    tenants.add({
       name: 'target1',
       dbName: 'target1',
       indexName: 'target1',
-      ...(await testingUploadPaths('syncWorker_target_files')),
+      ...(await testingUploadPaths('syncWorker_target1_files')),
     });
 
-    //@ts-ignore
-    fixtures.settings[0].sync = [
+    tenants.add({
+      name: 'target2',
+      dbName: 'target2',
+      indexName: 'target2',
+      ...(await testingUploadPaths('syncWorker_target2_files')),
+    });
+
+    await db.setupFixturesAndContext(
       {
-        url: 'http://localhost:6667',
-        name: 'target1',
-        active: true,
-        username: 'user',
-        password: 'password',
-        config: {
-          templates: {
-            [template1.toString()]: [
-              template1Property1.toString(),
-              template1Property2.toString(),
-              template1PropertyThesauri1Select.toString(),
-              template1PropertyRelationship1.toString(),
+        ...fixtures,
+        updatelogs: fixtures.updatelogs.filter(
+          log => log.mongoId.toString() !== template3.toString()
+        ),
+        settings: [
+          {
+            ...fixtures.settings[0],
+            sync: [
+              {
+                url: 'http://localhost:6667',
+                name: 'target1',
+                active: true,
+                username: 'user',
+                password: 'password',
+                config: {
+                  templates: {
+                    [template1.toString()]: [
+                      template1Property1.toString(),
+                      template1Property2.toString(),
+                      template1PropertyThesauri1Select.toString(),
+                      template1PropertyRelationship1.toString(),
+                    ],
+                  },
+                },
+              },
+              {
+                url: 'http://localhost:6668',
+                name: 'target2',
+                active: true,
+                username: 'user2',
+                password: 'password2',
+                config: {
+                  templates: {
+                    [template2.toString()]: [],
+                  },
+                },
+              },
             ],
           },
-        },
+        ],
       },
-    ];
+      undefined,
+      'host1'
+    );
 
-    await db.setupFixturesAndContext(fixtures, undefined, 'host1');
+    await db.setupFixturesAndContext(
+      {
+        ...fixtures,
+        updatelogs: fixtures.updatelogs.filter(
+          log => log.mongoId.toString() === template3.toString()
+        ),
+        settings: [
+          {
+            ...fixtures.settings[0],
+            sync: {
+              url: 'http://localhost:6668',
+              name: 'target2',
+              active: true,
+              username: 'user2',
+              password: 'password2',
+              config: {
+                templates: {
+                  [template3.toString()]: [],
+                },
+              },
+            },
+          },
+        ],
+      },
+      undefined,
+      'host2'
+    );
+
     await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
+    await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
     db.UserInContextMockFactory.restore();
 
     await tenants.run(async () => {
@@ -95,11 +168,26 @@ describe('syncWorker', () => {
       });
     }, 'target1');
 
+    await tenants.run(async () => {
+      await elasticTesting.reindex();
+      await users.newUser({
+        username: 'user2',
+        password: 'password2',
+        role: 'admin',
+        email: 'user2@testing',
+      });
+    }, 'target2');
+
     app.use(bodyParser.json());
     app.use(appContextMiddleware);
 
-    const multitenantMiddleware = (_req: Request, _res: Response, next: NextFunction) => {
-      appContext.set('tenant', 'target1');
+    const multitenantMiddleware = (req: Request, _res: Response, next: NextFunction) => {
+      if (req.get('host') === 'localhost:6667') {
+        appContext.set('tenant', 'target1');
+      }
+      if (req.get('host') === 'localhost:6668') {
+        appContext.set('tenant', 'target2');
+      }
       next();
     };
 
@@ -118,6 +206,7 @@ describe('syncWorker', () => {
       await writeFile(customUploadsPath('customUpload.gif'), '');
     }, 'host1');
     server = app.listen(6667);
+    server2 = app.listen(6668);
 
     try {
       await syncWorker.runAllTenants();
@@ -134,7 +223,11 @@ describe('syncWorker', () => {
     await tenants.run(async () => {
       await rmdir(attachmentsPath(), { recursive: true });
     }, 'target1');
+    await tenants.run(async () => {
+      await rmdir(attachmentsPath(), { recursive: true });
+    }, 'target2');
     await new Promise(resolve => server.close(resolve));
+    await new Promise(resolve => server2.close(resolve));
     await db.disconnect();
   });
 
@@ -151,6 +244,12 @@ describe('syncWorker', () => {
         { name: 't1Relationship1' },
       ]);
     }, 'target1');
+
+    await tenants.run(async () => {
+      const [syncedTemplate3, syncedTemplate2] = await templates.get();
+      expect(syncedTemplate2).toMatchObject({ name: 'template2' });
+      expect(syncedTemplate3).toMatchObject({ name: 'template3' });
+    }, 'target2');
   });
 
   it('should sync entities that belong to the configured templates', async () => {
@@ -210,6 +309,22 @@ describe('syncWorker', () => {
         },
       ]);
     }, 'target1');
+
+    await tenants.run(async () => {
+      permissionsContext.setCommandContext();
+      expect(await entities.get({}, {}, { sort: { title: 'asc' } })).toEqual([
+        {
+          __v: 0,
+          _id: expect.anything(),
+          attachments: [],
+          documents: [],
+          metadata: {},
+          sharedId: 'newDoc3SharedId',
+          template: template2,
+          title: 'New Doc 3',
+        },
+      ]);
+    }, 'target2');
   });
 
   it('should sync files belonging to the entities synced', async () => {
@@ -253,4 +368,7 @@ describe('syncWorker', () => {
       ]);
     }, 'target1');
   });
+
+  // encapsulate per tenant fixtures
+  // if an id is not present in the config, sync should send a delete for that id (test this.)
 });

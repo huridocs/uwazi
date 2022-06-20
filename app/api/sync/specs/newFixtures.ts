@@ -194,6 +194,12 @@ export const fixtures: DBFixture = {
       deleted: false,
     },
     {
+      timestamp: 16000,
+      namespace: 'entities',
+      mongoId: newDoc3,
+      deleted: false,
+    },
+    {
       timestamp: 9000,
       namespace: 'entities',
       mongoId: newDoc6,
@@ -648,6 +654,7 @@ export const fixtures: DBFixture = {
     },
     {
       _id: template3,
+      name: 'template3',
       properties: [
         {
           _id: template3PropertyRelationship1,

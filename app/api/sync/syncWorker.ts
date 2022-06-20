@@ -62,15 +62,25 @@ export const syncWorker = {
   },
 
   async syncronize(syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) {
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const config of ensureArray(syncSettings)) {
+    await ensureArray(syncSettings).reduce(async (previousSync, config) => {
+      await previousSync;
       const syncConfig = validateConfig(config);
       try {
         await this.syncronizeConfig(syncConfig);
       } catch (error) {
         await this.catchSyncErrors(error, syncConfig);
       }
-    }
+    }, Promise.resolve());
+
+    // eslint-disable-next-line no-restricted-syntax
+    // for await (const config of ensureArray(syncSettings)) {
+    //   const syncConfig = validateConfig(config);
+    //   try {
+    //     await this.syncronizeConfig(syncConfig);
+    //   } catch (error) {
+    //     await this.catchSyncErrors(error, syncConfig);
+    //   }
+    // }
   },
 
   async syncronizeConfig(config: SyncConfig) {
@@ -78,8 +88,10 @@ export const syncWorker = {
 
     const syncConfig = await createSyncConfig(config, config.name);
 
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const change of await syncConfig.lastChanges()) {
+    await (
+      await syncConfig.lastChanges()
+    ).reduce(async (previousChange, change) => {
+      await previousChange;
       const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
       if (shouldSync.skip) {
         await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
@@ -98,7 +110,11 @@ export const syncWorker = {
         );
       }
       await updateSyncs(config.name, change.timestamp);
-    }
+    }, Promise.resolve());
+
+    // eslint-disable-next-line no-restricted-syntax
+    // for await (const change of await syncConfig.lastChanges()) {
+    // }
   },
 
   async login({ url, username, password, name }: SyncConfig) {
