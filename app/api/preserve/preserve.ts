@@ -10,11 +10,12 @@ export const Preserve = {
   async setup(language: string) {
     const currentSettings: any = await settings.get({});
     const { features } = currentSettings;
-    const preserve = currentSettings.features?.preserve;
+    const preserve = features?.preserve;
+    preserve.config = preserve.config || [];
 
-    if (!features || !preserve) {
+    if (!features || !preserve || !preserve.config.length) {
       const host = preserve?.host || '';
-      let templateId = preserve ? preserve.config[0].template : false;
+      let templateId = preserve?.config.length ? preserve.config[0].template : false;
       if (!templateId) {
         templateId = await (await this.createTemplate(language))._id;
       }
@@ -23,8 +24,8 @@ export const Preserve = {
         config: [
           {
             template: templateId,
-            token: preserve?.config[0].token || 'AAA-BBB-CCC-000-111',
-            user: preserve?.config[0].user,
+            token: preserve?.config.length ? preserve.config[0].token : 'AAA-BBB-CCC-000-111',
+            user: preserve?.config.length ? preserve.config[0].user : undefined,
           },
         ],
       };
@@ -37,29 +38,16 @@ export const Preserve = {
     const toSave: TemplateSchema = {
       name: 'Preserve',
       commonProperties: [
-        {
-          label: 'Title',
-          name: 'title',
-          isCommonProperty: true,
-          type: 'text',
-        },
-        {
-          label: 'Date added',
-          name: 'creationDate',
-          isCommonProperty: true,
-          type: 'date',
-        },
+        { label: 'Title', name: 'title', type: 'text' },
+        { name: 'creationDate', label: 'Date added', type: 'date' },
+        { name: 'editDate', label: 'Date modified', type: 'date' },
       ],
       properties: [
-        {
-          type: 'link',
-          name: 'url',
-          label: 'url',
-        },
+        { type: 'link', name: 'url', label: 'Url' },
         {
           type: 'select',
           name: 'source',
-          label: 'source',
+          label: 'Source',
           content: fetchedThesauri._id.toString(),
         },
       ],
