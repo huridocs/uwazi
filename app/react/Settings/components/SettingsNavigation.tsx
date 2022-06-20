@@ -90,10 +90,14 @@ const SettingsNavigation = () => (
         <Translate>Tools</Translate>
       </div>
       <div className="list-group">
+        <FeatureToggle feature="preserve.host">
+          <NeedAuthorization roles={['admin']}>
+            <I18NLink to="/settings/preserve" activeClassName="active" className="list-group-item">
+              <Translate>Preserve Extension</Translate> <Icon icon="square" />
+            </I18NLink>
+          </NeedAuthorization>
+        </FeatureToggle>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="/settings/preserve" activeClassName="active" className="list-group-item">
-            <Translate>Preserve Extension</Translate> <Icon icon="square" />
-          </I18NLink>
           <I18NLink to="settings/activitylog" activeClassName="active" className="list-group-item">
             <Translate>Activity log</Translate>
           </I18NLink>
