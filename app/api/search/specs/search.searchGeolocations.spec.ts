@@ -346,7 +346,7 @@ describe('search.searchGeolocations', () => {
     expect(results.totalRows).toBe(3);
   });
 
-  it('should not fetch unpublished inherited metadata if request is not authenticated', async () => {
+  it('should fetch unpublished inherited metadata even if request is not authenticated', async () => {
     const results = await search.searchGeolocations(
       { types: [ids.template3], order: 'asc', sort: 'sharedId' },
       'en'
@@ -355,9 +355,30 @@ describe('search.searchGeolocations', () => {
     const entity = results.rows.find(
       (e: EntitySchema) => e.sharedId === 'entity_isLinkedToPrivateEntity'
     );
-    expect(entity).toBeFalsy();
-    expect(results.rows.length).toBe(2);
-    expect(results.totalRows).toBe(2);
+    expect(entity).toMatchObject({
+      metadata: {
+        null_geolocation_geolocation: [],
+        inherited_country: [
+          {
+            label: 'Country A en',
+            value: 'entityPrivate01',
+            inherit_geolocation: [
+              {
+                value: {
+                  lat: 24,
+                  lon: 8,
+                  label: '',
+                },
+              },
+            ],
+          },
+        ],
+      },
+      sharedId: 'entity_isLinkedToPrivateEntity',
+      title: 'Inheriting private country',
+    });
+    expect(results.rows.length).toBe(3);
+    expect(results.totalRows).toBe(3);
   });
 
   it('should return empty results if there are no templates with geolocation fields', async () => {
