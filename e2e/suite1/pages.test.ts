@@ -11,18 +11,27 @@ const selectors = {
 };
 
 describe('Custom home page and styles', () => {
+  const newPageUrl = async () => {
+    await expect(page).toMatchElement('div.alert-info', {
+      text: /\/page\/.*\(view page\)/g,
+      visible: true,
+    });
+    const newPageUrlData = await page.$eval('div.alert-info', e => e.textContent);
+    const url = newPageUrlData?.match(/\/page\/[a-z,A-Z,0-9]*/gm);
+    return url?.[0] || '';
+  };
+
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
-    await disableTransitions();
+    await adminLogin();
   });
 
   afterAll(async () => {
     await logout();
   });
 
-  it('should log in and create add page', async () => {
-    await adminLogin();
+  it('should log in and create a page', async () => {
     await expect(page).toClick('a', { text: 'Account settings' });
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
@@ -35,19 +44,21 @@ describe('Custom home page and styles', () => {
       '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>'
     );
     await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('span', { text: 'Saved successfully.' });
+    const pageUrl = await newPageUrl();
+    await page.goto(`${host}${pageUrl}`);
+    await disableTransitions();
+    await expect(page).toMatch('Custom HomePage header');
   });
 
   it('should allow setting the page as custom home page', async () => {
-    await expect(page).toMatchElement('div.alert-info', {
-      text: /\/page\/.*\(view page\)/g,
-      visible: true,
-    });
-    const newPageUrlData = await page.$eval('div.alert-info', e => e.textContent);
+    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Pages' });
+    await expect(page).toClick('a', { text: 'Custom home page' });
+    const pageUrl = await newPageUrl();
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toClick(selectors.useCustomLandingPage);
-
-    const newPageUrl = newPageUrlData?.match(/\/page\/[a-z,A-Z,0-9]*/gm);
-    await expect(page).toFill('input[name="home_page"]', newPageUrl?.[0] || '');
+    await expect(page).toFill('input[name="home_page"]', pageUrl);
     await expect(page).toClick('button', { text: 'Save' });
   });
 
@@ -63,6 +74,7 @@ describe('Custom home page and styles', () => {
   it('should render the custom page as home page with the custom CSS styles', async () => {
     await page.goto(`${host}`);
     await page.reload();
+    await disableTransitions();
     await expect(page).toMatchElement('h1', { text: 'Custom HomePage header' });
 
     const elements = await page.$$('div.myDiv');
