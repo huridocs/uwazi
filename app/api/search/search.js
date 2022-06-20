@@ -9,6 +9,7 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { checkWritePermissions } from 'shared/permissionsUtils';
 import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
+import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
@@ -772,7 +773,27 @@ const search = {
         user
       );
       results = processGeolocationResults(results, templatesInheritedProperties, inheritedEntities);
+      // results.rows = results.rows
+      //   .filter(row => row.metadata)
+      //   .map(row => {
+      //     const newMetadata = Object.fromEntries(
+      //       Object.entries(row.metadata).map(([key, valueList]) => [
+      //         key,
+      //         valueList.map(value => {
+      //           const newValue = { ...value };
+      //           if (value.inheritedType === propertyTypes.geolocation) {
+      //             newValue.inherit_geolocation = value.inheritedValue;
+      //           }
+      //           return newValue;
+      //         }),
+      //       ])
+      //     );
+      //     const newRow = { ...row, metadata: newMetadata };
+      //     return newRow;
+      //   })
+      //   .filter(row => entityHasGeolocation(row));
     }
+    // results.totalRows = results.rows.length;
 
     return results;
   },
