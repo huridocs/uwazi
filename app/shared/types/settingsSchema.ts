@@ -84,8 +84,9 @@ const settingsSyncSchema = {
   properties: {
     url: { type: 'string' },
     active: { type: 'boolean' },
-    username: { type: 'boolean' },
-    password: { type: 'boolean' },
+    username: { type: 'string' },
+    password: { type: 'string' },
+    name: { type: 'string' },
     config: {
       type: 'object',
       properties: {
@@ -95,7 +96,7 @@ const settingsSyncSchema = {
             anyOf: [settingsSyncTemplateSchema, { type: 'array', items: { type: 'string' } }],
           },
         },
-        relationTypes: settingsSyncRelationtypesSchema,
+        relationtypes: settingsSyncRelationtypesSchema,
       },
       additionalProperties: false,
     },
@@ -191,7 +192,7 @@ const settingsSchema = {
     newNameGeneration: { type: 'boolean', enum: [true] },
     ocrServiceEnabled: { type: 'boolean' },
 
-    sync: settingsSyncSchema,
+    sync: { oneOf: [settingsSyncSchema, { type: 'array', items: settingsSyncSchema }] },
 
     evidencesVault: settingsEvidencesVaultSchema,
 

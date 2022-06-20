@@ -1,12 +1,19 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { shallow } from 'enzyme';
+import '@testing-library/jest-dom/extend-expect';
 import Immutable from 'immutable';
-
+import { act, fireEvent, screen, within } from '@testing-library/react';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import I18NMenu from '../I18NMenu';
 
 describe('I18NMenu', () => {
-  let component;
   let props;
+  let renderResult;
+  const reloadMock = jest.fn();
+  const toggleInlineEditMock = jest.fn();
+  I18NMenu.WrappedComponent.reload = reloadMock;
 
   beforeEach(() => {
     const languages = [
@@ -16,117 +23,114 @@ describe('I18NMenu', () => {
 
     props = {
       languages: Immutable.fromJS(languages),
-      toggleInlineEdit: jasmine.createSpy('toggleInlineEdit'),
+      toggleInlineEdit: toggleInlineEditMock,
       i18nmode: false,
       location: {
         pathname: '/templates/2452345',
         search: '?query=weneedmoreclerics',
       },
       locale: 'es',
+      user: Immutable.fromJS({ _id: 'user1', role: 'admin' }),
     };
   });
-
   const render = () => {
-    component = shallow(<I18NMenu.WrappedComponent {...props} />);
-    spyOn(I18NMenu, 'reload');
+    const reduxStore = {
+      ...defaultState,
+    };
+    ({ renderResult } = renderConnectedContainer(
+      <I18NMenu.WrappedComponent {...props} />,
+      () => reduxStore
+    ));
   };
 
-  it('should not render searchQuery when on documents path', () => {
-    props.location.pathname = '/es/documents';
-    props.location.search = '?search';
+  describe('documents path', () => {
+    it('should not show live transtions for not authorized user', async () => {
+      props.user = Immutable.fromJS({ _id: 'user1', role: 'collaborator' });
+      render();
+      fireEvent.click(screen.getByTitle('open dropdown'));
+      const options = screen.getAllByRole('option');
+      expect(options.map(option => option.textContent)).toEqual(['English', 'Español']);
+    });
+
+    it('should show live transtions for authorized user', async () => {
+      render();
+      fireEvent.click(screen.getByTitle('open dropdown'));
+      const options = screen.getAllByRole('option');
+      expect(options.map(option => option.textContent)).toEqual([
+        'English',
+        'Español',
+        'Live translate',
+      ]);
+    });
+
+    it('should show as active the current locale', async () => {
+      render();
+      fireEvent.click(screen.getByTitle('open dropdown'));
+      const options = screen.getAllByRole('option');
+      expect(options[1].getAttribute('class')).toContain('rw-state-selected');
+    });
+
+    it.each`
+      locale  | pathName                   | search                        | selectedLanguage | expectedPath
+      ${'es'} | ${'/es/documents'}         | ${'?search'}                  | ${'English'}     | ${'/en/documents'}
+      ${'en'} | ${'/en/entity/r2dzptt7ts'} | ${'?page=2'}                  | ${'Español'}     | ${'/es/entity/r2dzptt7ts'}
+      ${null} | ${'/templates/2452345'}    | ${'?query=weneedmoreclerics'} | ${'English'}     | ${'/en/templates/2452345?query=weneedmoreclerics'}
+      ${null} | ${'/entity/2452345'}       | ${'?query=weneedmoreclerics'} | ${'Español'}     | ${'/es/entity/2452345?query=weneedmoreclerics'}
+      ${'es'} | ${'/es/templates/2452345'} | ${'?query=weneedmoreclerics'} | ${'English'}     | ${'/en/templates/2452345?query=weneedmoreclerics'}
+    `(
+      'should load the expected path $expectedPath when clicking on $selectedLanguage from $pathName ',
+      async ({ locale, pathName, search, selectedLanguage, expectedPath }) => {
+        reloadMock.mockClear();
+        props.locale = locale;
+        props.location.pathname = pathName;
+        props.location.search = search;
+        render();
+        fireEvent.click(screen.getByTitle('open dropdown'));
+        const options = screen.getByRole('listbox').parentElement;
+        await act(async () => {
+          fireEvent.click(within(options).getByText(selectedLanguage));
+        });
+        expect(reloadMock).toBeCalledWith(expectedPath);
+        expect(toggleInlineEditMock).not.toBeCalled();
+      }
+    );
+  });
+
+  it('should active toggle translation edit mode when clicking Live translate', async () => {
+    reloadMock.mockClear();
     render();
-    const links = component.find('a');
-    expect(links.length).toBe(2);
-    expect(links.first().props().href).toBe('/en/documents');
-    expect(links.last().props().href).toBe('/es/documents');
+    fireEvent.click(screen.getByTitle('open dropdown'));
+    const options = screen.getByRole('listbox').parentElement;
+    await act(async () => {
+      fireEvent.click(within(options).getByText('Live translate').parentElement);
+    });
+    expect(reloadMock).not.toBeCalled();
+    expect(toggleInlineEditMock).toBeCalled();
   });
 
-  describe('Page query', () => {
-    it('Should not add the document page to the URL when viewing entities', () => {
-      props.locale = 'en';
-      props.location.pathname = '/en/entity/r2dzptt7ts';
-      props.location.search = '?page=2';
-      render();
-      const links = component.find('a');
-      expect(links.length).toBe(2);
-      expect(links.first().props().href).toBe('/en/entity/r2dzptt7ts');
-      expect(links.last().props().href).toBe('/es/entity/r2dzptt7ts');
-    });
-
-    it('should remove the page query from the url without affecting other parameters', () => {
-      props.location.pathname = '/es/entity/r2dzptt7ts';
-      props.location.search = '?searchTerm=title&page=2';
-      render();
-      const links = component.find('a');
-      expect(links.length).toBe(2);
-      expect(links.last().props().href).toBe('/es/entity/r2dzptt7ts?searchTerm=title');
-      expect(links.first().props().href).toBe('/en/entity/r2dzptt7ts?searchTerm=title');
-    });
+  it('should return null if there are no languages', () => {
+    props.languages = Immutable.fromJS([]);
+    render();
+    expect(screen.queryByRole('listbox')).toBeNull();
   });
 
-  describe('when there is NO locale', () => {
-    beforeEach(() => {
-      props.locale = null;
-    });
-
-    it('should render links for each language', () => {
-      render();
-      const links = component.find('a');
-      expect(links.length).toBe(2);
-      expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
-      expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
-    });
-
-    it('should work fine with triky urls', () => {
-      props.location.pathname = '/entity/2452345';
-      render();
-      const links = component.find('a');
-      expect(links.length).toBe(2);
-      expect(links.first().props().href).toBe('/en/entity/2452345?query=weneedmoreclerics');
-      expect(links.last().props().href).toBe('/es/entity/2452345?query=weneedmoreclerics');
-    });
+  it('should not display the language section if there is only one language and no user', () => {
+    props.languages = Immutable.fromJS([{ key: 'en', label: 'English', default: true }]);
+    props.user = Immutable.fromJS({});
+    render();
+    expect(screen.queryByRole('listbox')).toBeNull();
+    expect(screen.queryByText('English')).not.toBeInTheDocument();
   });
 
-  describe('when there IS language in the url', () => {
-    it('should render links for each language', () => {
-      props.location.pathname = '/es/templates/2452345';
-      render();
-      const links = component.find('a');
-      expect(links.length).toBe(2);
-      expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
-      expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
-      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
-    });
+  it('should change to a button when live translating', async () => {
+    props.i18nmode = true;
 
-    it('should render as active the passed language when params.lang is not defined', () => {
-      props.params = {};
-      props.language = 'es';
-      render();
-      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
-    });
+    render();
+    expect(screen.queryByTitle('open dropdown')).toBeNull();
+    expect(screen.getByRole('button').parentElement.textContent).toEqual('Live translate');
+    expect(screen.getByRole('button').className).toContain('singleItem');
 
-    it('should render as active the selected language', () => {
-      props.location.pathname = '/es/templates/2452345';
-      render();
-      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
-    });
-
-    it('should render links for each language', () => {
-      props.location.pathname = '/es';
-      props.location.search = '';
-      render();
-      const links = component.find('a');
-      expect(links.length).toBe(2);
-      expect(links.first().props().href).toBe('/en/');
-      expect(links.last().props().href).toBe('/es/');
-    });
-  });
-
-  describe('when there is only one language', () => {
-    it('should only render the inline translation button', () => {
-      props.languages = Immutable.fromJS([{ key: 'en', label: 'English', default: true }]);
-      render();
-      expect(component).toMatchSnapshot();
-    });
+    const activeIcon = renderResult.container.getElementsByClassName('live-on');
+    expect(activeIcon.length).toBe(1);
   });
 });
