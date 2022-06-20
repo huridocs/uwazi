@@ -8,6 +8,7 @@ import {
   testingUploadPaths,
 } from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import relationtypes from 'api/relationtypes';
 import syncRoutes from 'api/sync/routes';
 import templates from 'api/templates';
 import { tenants } from 'api/tenants';
@@ -24,14 +25,18 @@ import express, { NextFunction } from 'express';
 import { rmdir, writeFile } from 'fs/promises';
 import { Server } from 'http';
 import 'isomorphic-fetch';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { syncWorker } from '../syncWorker';
 import {
   fixtures,
   newDoc1,
+  newDoc3,
   template1,
   template1Property1,
   template1Property2,
+  template1PropertyRelationship1,
   template1PropertyThesauri1Select,
+  thesauri1Value2,
 } from './newFixtures';
 
 describe('syncWorker', () => {
@@ -58,7 +63,7 @@ describe('syncWorker', () => {
     //@ts-ignore
     fixtures.settings[0].sync = [
       {
-        url: 'http://localhost:6666',
+        url: 'http://localhost:6667',
         name: 'target1',
         active: true,
         username: 'user',
@@ -69,6 +74,7 @@ describe('syncWorker', () => {
               template1Property1.toString(),
               template1Property2.toString(),
               template1PropertyThesauri1Select.toString(),
+              template1PropertyRelationship1.toString(),
             ],
           },
         },
@@ -111,9 +117,17 @@ describe('syncWorker', () => {
       await writeFile(attachmentsPath('test2.txt'), '');
       await writeFile(customUploadsPath('customUpload.gif'), '');
     }, 'host1');
-    server = app.listen(6666);
-    await syncWorker.runAllTenants();
-    await syncWorker.runAllTenants();
+    server = app.listen(6667);
+
+    try {
+      await syncWorker.runAllTenants();
+      await syncWorker.runAllTenants();
+    } catch (e) {
+      if (e instanceof FetchResponseError) {
+        throw e.json;
+      }
+      throw e;
+    }
   });
 
   afterAll(async () => {
@@ -134,6 +148,7 @@ describe('syncWorker', () => {
         { name: 't1Property1' },
         { name: 't1Property2' },
         { name: 't1Thesauri1Select' },
+        { name: 't1Relationship1' },
       ]);
     }, 'target1');
   });
@@ -146,11 +161,12 @@ describe('syncWorker', () => {
           _id: expect.anything(),
           sharedId: 'newDoc1SharedId',
           title: 'a new entity',
-          template: expect.anything(),
+          template: template1,
           metadata: {
             t1Property1: [{ value: 'sync property 1' }],
             t1Property2: [{ value: 'sync property 2' }],
-            t1Thesauri1Select: [{ value: expect.anything() }],
+            t1Thesauri1Select: [{ value: thesauri1Value2.toString() }],
+            t1Relationship1: [{ value: newDoc3.toString() }],
           },
           __v: 0,
           documents: [],
@@ -174,7 +190,7 @@ describe('syncWorker', () => {
         {
           _id: expect.anything(),
           title: 'another new entity',
-          template: expect.anything(),
+          template: template1,
           sharedId: 'entitytest.txt',
           metadata: {
             t1Property1: [{ value: 'another doc property 1' }],
@@ -217,20 +233,24 @@ describe('syncWorker', () => {
     await tenants.run(async () => {
       expect(await thesauri.get()).toMatchObject([
         {
-          _id: expect.anything(),
           name: 'thesauri1',
           values: [
             { _id: expect.anything(), label: 'th1value1' },
             { _id: expect.anything(), label: 'th1value2' },
           ],
-          __v: 0,
         },
       ]);
     }, 'target1');
   });
 
-  // relationTypes and dictionaries get automatically synced when a property of that type is whitelisted !
-  // But you can also include syncs for this data arbitrarily !
-
-  // it('should sync relationTypes that match template properties whitelist', async () => {});
+  it('should sync relationTypes that match template properties whitelist', async () => {
+    await tenants.run(async () => {
+      expect(await relationtypes.get()).toMatchObject([
+        {
+          _id: expect.anything(),
+          name: 'relationtype4',
+        },
+      ]);
+    }, 'target1');
+  });
 });

@@ -414,6 +414,7 @@ export const fixtures: DBFixture = {
         t1Property2: [{ value: 'sync property 2' }],
         t1Property3: [{ value: 'sync property 3' }],
         t1Thesauri1Select: [{ value: thesauri1Value2.toString() }],
+        t1Relationship1: [{ value: newDoc3.toString() }],
         t1Thesauri2Select: [{ value: db.id().toString() }],
         t1Thesauri3MultiSelect: [
           { value: thesauri3Value2.toString() },
@@ -549,7 +550,7 @@ export const fixtures: DBFixture = {
     { _id: relationtype1 },
     { _id: relationtype2 },
     { _id: relationtype3 },
-    { _id: relationtype4 },
+    { _id: relationtype4, name: 'relationtype4' },
     { _id: relationtype5 },
     { _id: relationtype6 },
     { _id: relationtype7 },
@@ -603,7 +604,7 @@ export const fixtures: DBFixture = {
           name: 't1Relationship1',
           label: 't1Relationship1L',
           type: 'relationship',
-          content: '',
+          content: template2,
           relationType: relationtype4,
         },
         {
@@ -721,6 +722,7 @@ export const fixtures: DBFixture = {
             { key: 't1Relationship2L', value: 't1Relationship2T' },
             { key: 't1Thesauri2SelectL', value: 't1Thesauri2SelectT' },
             { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
+            { key: 't1Relationship1', value: 't1Relationship1' },
             { key: 'Template Title', value: 'Template Title translated' },
           ],
         },
@@ -748,12 +750,12 @@ export const fixtures: DBFixture = {
         {
           type: 'Dictionary',
           id: thesauri3,
-          values: 'All values from t3',
+          values: [],
         },
         {
           type: 'Connection',
           id: relationtype1,
-          values: 'All values from r1',
+          values: [],
         },
         {
           type: 'Connection',
@@ -762,12 +764,12 @@ export const fixtures: DBFixture = {
         {
           type: 'Connection',
           id: relationtype4,
-          values: 'All values from r4',
+          values: [],
         },
         {
           type: 'Connection',
           id: relationtype7,
-          values: 'All values from r7',
+          values: [],
         },
       ],
     },
@@ -806,6 +808,7 @@ export const fixtures: DBFixture = {
 export {
   settingsId,
   newDoc1,
+  newDoc3,
   newDoc2,
   newDoc4,
   newDoc10,
