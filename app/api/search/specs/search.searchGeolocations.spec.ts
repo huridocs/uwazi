@@ -19,6 +19,7 @@ describe('search.searchGeolocations', () => {
 
   it('should include all geolocation finds, inheriting metadata', async () => {
     const results = await search.searchGeolocations({ order: 'asc', sort: 'sharedId' }, 'en', user);
+    expect(results.totalRows).toBe(8);
     expect(results.rows).toMatchObject([
       {
         metadata: {
@@ -226,7 +227,6 @@ describe('search.searchGeolocations', () => {
         title: 'Inheriting private country',
       },
     ]);
-    expect(results.totalRows).toBe(8);
   });
 
   it('should allow filtering as in normal search', async () => {
@@ -235,6 +235,7 @@ describe('search.searchGeolocations', () => {
       'en',
       user
     );
+    expect(results.totalRows).toBe(3);
     expect(results.rows).toMatchObject([
       {
         metadata: {
@@ -343,10 +344,9 @@ describe('search.searchGeolocations', () => {
         title: 'Inheriting private country',
       },
     ]);
-    expect(results.totalRows).toBe(3);
   });
 
-  it('should fetch unpublished inherited metadata even if request is not authenticated', async () => {
+  it('should use inherited and denormalized metadata even if request is not authenticated', async () => {
     const results = await search.searchGeolocations(
       { types: [ids.template3], order: 'asc', sort: 'sharedId' },
       'en'

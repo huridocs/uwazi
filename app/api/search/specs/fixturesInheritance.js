@@ -222,7 +222,7 @@ export default {
           {
             value: 'entity01',
             label: 'Entity with two geolocations en',
-            inheritedValue: [{ value: { lat: 333, lon: 444, label: '' } }],
+            inheritedValue: [{ value: { lat: 23, lon: 8, label: '' } }],
             inheritedType: 'geolocation',
           },
         ],
