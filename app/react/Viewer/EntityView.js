@@ -28,7 +28,7 @@ class Entity extends Component {
 
     const pageActions = [];
     if (entityTemplate.get('entityViewPage')) {
-      const assets = prepareAssets(entity, entityTemplate, state.templates, state.thesauris);
+      const assets = prepareAssets(entity, entityTemplate, state, relationTypes);
       const { pageView, itemLists, datasets, errors } = await getPageAssets(
         requestParams.set({ sharedId: entityTemplate.get('entityViewPage') }),
         undefined,

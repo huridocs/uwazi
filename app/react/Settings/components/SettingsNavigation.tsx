@@ -98,6 +98,9 @@ const SettingsNavigation = () => (
           </NeedAuthorization>
         </FeatureToggle>
         <NeedAuthorization roles={['admin']}>
+          <I18NLink to="/settings/preserve" activeClassName="active" className="list-group-item">
+            <Translate>Preserve Extension</Translate> <Icon icon="square" />
+          </I18NLink>
           <I18NLink to="settings/activitylog" activeClassName="active" className="list-group-item">
             <Translate>Activity log</Translate>
           </I18NLink>
