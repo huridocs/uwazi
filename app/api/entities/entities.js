@@ -12,18 +12,18 @@ import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
+import { applicationEventsBus } from 'api/eventsbus';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import settings from '../settings';
+import { EntitySavedEvent } from './events';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -37,22 +37,6 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.geolocation,
   propertyTypes.numeric,
 ];
-
-const updateIxSuggestionsTrigger = async (existingEntity, newEntity) => {
-  let extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
-  if (!extractionTemplates || !newEntity.metadata) return false;
-  extractionTemplates = objectIndex(
-    extractionTemplates,
-    d => d.template.toString(),
-    d => new Set(d.properties)
-  );
-  if (!existingEntity || !(existingEntity.template?.toString() in extractionTemplates)) {
-    return false;
-  }
-  const extractedProperties = extractionTemplates[existingEntity.template.toString()];
-  const changedMetadata = shallowObjectDiff(newEntity.metadata, existingEntity.metadata).all;
-  return changedMetadata.some(m => extractedProperties.has(m));
-};
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
@@ -145,9 +129,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
     })
   );
 
-  if (await updateIxSuggestionsTrigger(existingEntity, entity)) {
-    await Suggestions.updateStates({ entityId: entity.sharedId });
-  }
+  applicationEventsBus.emit(EntitySavedEvent, { existingEntity, entity });
 
   return result;
 }

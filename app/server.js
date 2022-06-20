@@ -41,6 +41,8 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
 import { preserveSync } from './api/services/preserve/preserveSync';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
+import { registerEventListeners } from 'api/eventListeners';
+import { applicationEventsBus } from 'api/eventsbus';
 
 mongoose.Promise = Promise;
 
@@ -152,6 +154,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     app.use(Sentry.Handlers.errorHandler());
   }
   app.use(errorHandlingMiddleware);
+  registerEventListeners(applicationEventsBus);
 
   if (!config.multiTenant && !config.clusterMode) {
     await tenants.run(async () => {

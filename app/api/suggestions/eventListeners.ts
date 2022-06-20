@@ -1,0 +1,41 @@
+import { EntitySavedEvent } from 'api/entities/events';
+import { EventsBus } from 'api/eventsbus';
+import settings from 'api/settings';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
+import { EntitySchema } from 'shared/types/entityType';
+import { Suggestions } from './suggestions';
+
+const updateIxSuggestionsTrigger = async (
+  existingEntity: EntitySchema,
+  newEntity: EntitySchema
+) => {
+  const extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
+  if (!extractionTemplates || !newEntity.metadata) return false;
+  const extractionTemplatesIndexed = objectIndex(
+    extractionTemplates,
+    d => d.template.toString(),
+    d => new Set(d.properties)
+  );
+  if (!existingEntity || !(existingEntity.template!.toString() in extractionTemplatesIndexed)) {
+    return false;
+  }
+  const extractedProperties = extractionTemplatesIndexed[existingEntity.template!.toString()];
+  const changedMetadata = shallowObjectDiff(newEntity.metadata, existingEntity.metadata || {}).all;
+  return changedMetadata.some(m => extractedProperties.has(m));
+};
+
+interface EntitySavedData {
+  existingEntity: EntitySchema;
+  entity: EntitySchema;
+}
+
+const handleEntitySaved = async ({ existingEntity, entity }: EntitySavedData) => {
+  if (await updateIxSuggestionsTrigger(existingEntity, entity)) {
+    await Suggestions.updateStates({ entityId: entity.sharedId });
+  }
+};
+
+export const registerEventListeners = (eventsBus: EventsBus) => {
+  eventsBus.on(EntitySavedEvent, handleEntitySaved);
+};

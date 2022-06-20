@@ -13,6 +13,7 @@ import {
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
+import { registerEventListeners } from './eventListeners';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -179,4 +180,5 @@ export const Suggestions = {
     }
   },
   delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
+  registerEventListeners,
 };
