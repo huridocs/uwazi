@@ -1,5 +1,4 @@
 import { config } from 'api/config';
-import { syncWorker } from 'api/sync/syncWorker';
 import settings from 'api/settings/settings';
 import { Repeater } from 'api/utils/Repeater';
 import { TaskProvider } from 'shared/tasks/tasks';
