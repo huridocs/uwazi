@@ -155,7 +155,7 @@ describe('syncWorker', () => {
   it('should sync the configured templates and its defined properties', async () => {
     await tenants.run(async () => {
       const syncedTemplates = await templates.get();
-      expect(syncedTemplates.length).toBe(1);
+      expect(syncedTemplates).toHaveLength(1);
       const [template] = syncedTemplates;
       expect(template.name).toBe('template1');
       expect(template.properties).toMatchObject([
@@ -290,24 +290,15 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
-  // encapsulate per tenant fixtures
-  // if an id is not present in the config, sync should send a DELETE for that id (test this.)
-  it('should delete properties not defined in the config', async () => {
-    host1Fixtures.settings[0].sync[0].config.templates[template1.toString()].pop();
-    await db.setupFixturesAndContext(host1Fixtures, undefined, 'host1');
+  it('should delete templates not defined in the config', async () => {
+    host1Fixtures.settings[0].sync[0].config.templates = {};
+    await db.setupFixturesAndContext({ ...host1Fixtures }, undefined, 'host1');
 
     await syncWorker.runAllTenants();
 
     await tenants.run(async () => {
       const syncedTemplates = await templates.get();
-      expect(syncedTemplates.length).toBe(1);
-      const [template] = syncedTemplates;
-      expect(template.name).toBe('template1');
-      expect(template.properties).toMatchObject([
-        { name: 't1Property1' },
-        { name: 't1Property2' },
-        { name: 't1Thesauri1Select' },
-      ]);
+      expect(syncedTemplates).toHaveLength(0);
     }, 'target1');
   });
 });
