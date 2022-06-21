@@ -50,10 +50,13 @@ describe('DropdownMenu', () => {
 
   it('should open drowpown when clicked', () => {
     const mountComp = shallow(<DropdownMenu link={immutableLinks.get(0)} position={1} />);
-    mountComp.find('li > a#navbarDropdownMenuLink').first().simulate('click');
+    mountComp
+      .find('li > button#navbarDropdownMenuLink')
+      .first()
+      .simulate('click', { stopPropagation: () => {} });
     expect(setShowing).toBeCalledWith(true);
   });
-  it('should have correct link ifthe link is internal', () => {
+  it('should have correct link if the link is internal', () => {
     const mountComp = shallow(<DropdownMenu link={immutableLinks.get(0)} position={1} />);
     expect(mountComp.find('ul').children().first().children().first().prop('to')).toBe('/some_url');
   });

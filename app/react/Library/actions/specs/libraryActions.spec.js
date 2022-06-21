@@ -448,7 +448,7 @@ describe('libraryActions', () => {
 
         expect(snippets).toEqual([]);
         const expectedParam = qs.stringify({
-          filter: { sharedId: 'sharedId', searchString: 'fullText:(query)' },
+          filter: { sharedId: 'sharedId', searchString: 'query' },
           fields: ['snippets'],
         });
         expect(SearchApi.searchSnippets).toHaveBeenCalledWith(new RequestParams(expectedParam));
