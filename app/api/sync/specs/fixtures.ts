@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 
 import db, { DBFixture } from 'api/utils/testing_db';
+import { UpdateLog } from 'api/updatelogs';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();
@@ -84,7 +85,7 @@ const file4 = db.id();
 const file5 = db.id();
 const customUpload = db.id();
 
-export const fixtures: DBFixture = {
+const fixtures: DBFixture = {
   syncs: [
     {
       lastSync: 8999,
@@ -188,9 +189,15 @@ export const fixtures: DBFixture = {
       deleted: false,
     },
     {
-      timestamp: 9000,
+      timestamp: 13000,
       namespace: 'entities',
       mongoId: newDoc1,
+      deleted: false,
+    },
+    {
+      timestamp: 16000,
+      namespace: 'entities',
+      mongoId: newDoc3,
       deleted: false,
     },
     {
@@ -356,8 +363,6 @@ export const fixtures: DBFixture = {
       deleted: false,
     },
     {
-      timestamp: 9000,
-      namespace: 'files',
       mongoId: file5,
       deleted: false,
     },
@@ -373,11 +378,13 @@ export const fixtures: DBFixture = {
     {
       _id: file1,
       entity: 'newDoc1SharedId',
+      type: 'attachment',
       filename: 'test2.txt',
     },
     {
       _id: file2,
       entity: 'entitytest.txt',
+      type: 'attachment',
       filename: 'test.txt',
     },
     {
@@ -388,6 +395,7 @@ export const fixtures: DBFixture = {
     {
       _id: file4,
       entity: 'newDoc1SharedId',
+      type: 'attachment',
       filename: `${newDoc1.toString()}.jpg`,
     },
     {
@@ -408,25 +416,12 @@ export const fixtures: DBFixture = {
       sharedId: 'newDoc1SharedId',
       title: 'a new entity',
       template: template1,
-      attachments: [
-        {
-          filename: 'test_attachment.txt',
-          timestamp: 10000,
-        },
-        {
-          filename: 'test_attachment2.txt',
-          timestamp: 9500,
-        },
-        {
-          filename: 'test_attachment3.txt',
-          timestamp: 7000,
-        },
-      ],
       metadata: {
         t1Property1: [{ value: 'sync property 1' }],
         t1Property2: [{ value: 'sync property 2' }],
         t1Property3: [{ value: 'sync property 3' }],
         t1Thesauri1Select: [{ value: thesauri1Value2.toString() }],
+        t1Relationship1: [{ value: newDoc3.toString() }],
         t1Thesauri2Select: [{ value: db.id().toString() }],
         t1Thesauri3MultiSelect: [
           { value: thesauri3Value2.toString() },
@@ -446,22 +441,16 @@ export const fixtures: DBFixture = {
       },
     },
     {
-      _id: newDoc3,
-      sharedId: 'newDoc3SharedId',
-      title: 'New Doc 3',
-      template: template2,
-    },
-    {
       _id: newDoc5,
       sharedId: 'newDoc5SharedId',
       title: 'New Doc 5',
       template: template1,
     },
     {
-      _id: newDoc6,
-      sharedId: 'newDoc6SharedId',
-      title: 'new doc 6',
-      template: template3,
+      _id: newDoc3,
+      sharedId: 'newDoc3SharedId',
+      title: 'New Doc 3',
+      template: template2,
     },
     {
       _id: newDoc7,
@@ -482,13 +471,18 @@ export const fixtures: DBFixture = {
       template: template2,
     },
     {
+      _id: newDoc6,
+      sharedId: 'newDoc6SharedId',
+      title: 'new doc 6',
+      template: template3,
+    },
+    {
       _id: newDoc10,
       sharedId: 'newDoc10SharedId',
       title: 'New Doc 10',
       template: undefined,
     },
   ],
-
   connections: [
     {
       _id: relationship1,
@@ -562,12 +556,130 @@ export const fixtures: DBFixture = {
     { _id: relationtype1 },
     { _id: relationtype2 },
     { _id: relationtype3 },
-    { _id: relationtype4 },
+    { _id: relationtype4, name: 'relationtype4' },
     { _id: relationtype5 },
     { _id: relationtype6 },
     { _id: relationtype7 },
   ],
 
+  dictionaries: [
+    {
+      _id: thesauri4,
+      name: 'thesauri4',
+    },
+    {
+      _id: thesauri5,
+      name: 'thesauri5',
+    },
+  ],
+
+  // translations: [
+  //   {
+  //     _id: translation1,
+  //     locale: 'en',
+  //     contexts: [
+  //       {
+  //         id: 'System',
+  //         values: [{ key: 'Sytem Key', value: 'System Value' }],
+  //       },
+  //       {
+  //         type: 'Entity',
+  //         id: template1,
+  //         values: [
+  //           { key: 'template1', value: 'template1T' },
+  //           { key: 't1Property1L', value: 't1Property1T' },
+  //           { key: 't1Relationship1L', value: 't1Relationship1T' },
+  //           { key: 't1Relationship2L', value: 't1Relationship2T' },
+  //           { key: 't1Thesauri2SelectL', value: 't1Thesauri2SelectT' },
+  //           { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
+  //           { key: 't1Relationship1', value: 't1Relationship1' },
+  //           { key: 'Template Title', value: 'Template Title translated' },
+  //         ],
+  //       },
+  //       {
+  //         type: 'Entity',
+  //         id: template2,
+  //         values: [
+  //           { key: 'template2', value: 'template2T' },
+  //           { key: 't2Relationship2L', value: 't2Relationship2T' },
+  //           { key: 'anotherL', value: 'anotherT' },
+  //         ],
+  //       },
+  //       {
+  //         type: 'Entity',
+  //         id: template3,
+  //       },
+  //       {
+  //         type: 'Dictionary',
+  //         id: thesauri1,
+  //       },
+  //       {
+  //         type: 'Dictionary',
+  //         id: thesauri2,
+  //       },
+  //       {
+  //         type: 'Dictionary',
+  //         id: thesauri3,
+  //         values: [],
+  //       },
+  //       {
+  //         type: 'Connection',
+  //         id: relationtype1,
+  //         values: [],
+  //       },
+  //       {
+  //         type: 'Connection',
+  //         id: relationtype2,
+  //       },
+  //       {
+  //         type: 'Connection',
+  //         id: relationtype4,
+  //         values: [],
+  //       },
+  //       {
+  //         type: 'Connection',
+  //         id: relationtype7,
+  //         values: [],
+  //       },
+  //     ],
+  //   },
+  // ],
+
+  // settings: [
+  //   {
+  //     _id: settingsId,
+  //     languages: [{ key: 'es', default: true, label: 'es' }],
+  //     sync: [
+  //       {
+  //         url: 'url1',
+  //         name: 'target1',
+  //         active: true,
+  //         config: {},
+  //       },
+  //       {
+  //         url: 'url2',
+  //         name: 'target2',
+  //         active: false,
+  //         config: {},
+  //       },
+  //       {
+  //         url: 'url3',
+  //         name: 'target3',
+  //         active: true,
+  //         config: {},
+  //       },
+  //     ],
+  //   },
+  // ],
+
+  // sessions: [{ _id: sessionsId }],
+};
+
+const host1Fixtures = {
+  ...fixtures,
+  updatelogs: fixtures.updatelogs.filter(
+    (log: UpdateLog) => log.mongoId.toString() !== template3.toString()
+  ),
   templates: [
     {
       _id: template1,
@@ -616,7 +728,7 @@ export const fixtures: DBFixture = {
           name: 't1Relationship1',
           label: 't1Relationship1L',
           type: 'relationship',
-          content: '',
+          content: template2,
           relationType: relationtype4,
         },
         {
@@ -658,20 +770,7 @@ export const fixtures: DBFixture = {
         },
       ],
     },
-    {
-      _id: template3,
-      properties: [
-        {
-          _id: template3PropertyRelationship1,
-          name: 't3Relationship2',
-          type: 'relationship',
-          content: '',
-          relationType: relationtype1,
-        },
-      ],
-    },
   ],
-
   dictionaries: [
     {
       _id: thesauri1,
@@ -705,164 +804,84 @@ export const fixtures: DBFixture = {
         },
       ],
     },
-    {
-      _id: thesauri4,
-      name: 'thesauri4',
-    },
-    {
-      _id: thesauri5,
-      name: 'thesauri5',
-    },
   ],
-
-  translations: [
-    {
-      _id: translation1,
-      locale: 'en',
-      contexts: [
-        {
-          id: 'System',
-          values: [{ key: 'Sytem Key', value: 'System Value' }],
-        },
-        {
-          type: 'Entity',
-          id: template1,
-          values: [
-            { key: 'template1', value: 'template1T' },
-            { key: 't1Property1L', value: 't1Property1T' },
-            { key: 't1Relationship1L', value: 't1Relationship1T' },
-            { key: 't1Relationship2L', value: 't1Relationship2T' },
-            { key: 't1Thesauri2SelectL', value: 't1Thesauri2SelectT' },
-            { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
-            { key: 'Template Title', value: 'Template Title translated' },
-          ],
-        },
-        {
-          type: 'Entity',
-          id: template2,
-          values: [
-            { key: 'template2', value: 'template2T' },
-            { key: 't2Relationship2L', value: 't2Relationship2T' },
-            { key: 'anotherL', value: 'anotherT' },
-          ],
-        },
-        {
-          type: 'Entity',
-          id: template3,
-        },
-        {
-          type: 'Dictionary',
-          id: thesauri1,
-        },
-        {
-          type: 'Dictionary',
-          id: thesauri2,
-        },
-        {
-          type: 'Dictionary',
-          id: thesauri3,
-          values: 'All values from t3',
-        },
-        {
-          type: 'Connection',
-          id: relationtype1,
-          values: 'All values from r1',
-        },
-        {
-          type: 'Connection',
-          id: relationtype2,
-        },
-        {
-          type: 'Connection',
-          id: relationtype4,
-          values: 'All values from r4',
-        },
-        {
-          type: 'Connection',
-          id: relationtype7,
-          values: 'All values from r7',
-        },
-      ],
-    },
-  ],
-
   settings: [
     {
       _id: settingsId,
       languages: [{ key: 'es', default: true, label: 'es' }],
       sync: [
         {
-          url: 'url1',
+          url: 'http://localhost:6667',
           name: 'target1',
           active: true,
-          config: {},
+          username: 'user',
+          password: 'password',
+          config: {
+            templates: {
+              [template1.toString()]: [
+                template1Property1.toString(),
+                template1Property2.toString(),
+                template1PropertyThesauri1Select.toString(),
+                template1PropertyRelationship1.toString(),
+              ],
+            },
+          },
         },
         {
-          url: 'url2',
+          url: 'http://localhost:6668',
           name: 'target2',
-          active: false,
-          config: {},
-        },
-        {
-          url: 'url3',
-          name: 'target3',
           active: true,
-          config: {},
+          username: 'user2',
+          password: 'password2',
+          config: {
+            templates: {
+              [template2.toString()]: [],
+            },
+          },
         },
       ],
     },
   ],
-
-  sessions: [{ _id: sessionsId }],
 };
 
-export {
-  settingsId,
-  newDoc1,
-  newDoc2,
-  newDoc4,
-  newDoc10,
-  template1,
-  template1Property1,
-  template1Property2,
-  template1Property3,
-  template1PropertyThesauri1Select,
-  template1PropertyThesauri2Select,
-  template1PropertyThesauri3MultiSelect,
-  template1PropertyRelationship1,
-  template1PropertyRelationship2,
-  template2,
-  template2PropertyThesauri5Select,
-  template2PropertyRelationship1,
-  template2PropertyRelationship2,
-  template3,
-  template3PropertyRelationship1,
-  thesauri1,
-  thesauri1Value1,
-  thesauri1Value2,
-  thesauri2,
-  thesauri3,
-  thesauri3Value1,
-  thesauri3Value2,
-  thesauri4,
-  thesauri5,
-  relationship1,
-  relationship2,
-  relationship3,
-  relationship4,
-  relationship5,
-  relationship6,
-  relationship7,
-  relationship8,
-  relationship9,
-  relationship10,
-  relationship11,
-  relationtype1,
-  relationtype2,
-  relationtype3,
-  relationtype4,
-  relationtype5,
-  relationtype6,
-  relationtype7,
-  translation1,
+const host2Fixtures = {
+  ...fixtures,
+  updatelogs: fixtures.updatelogs.filter(
+    (log: UpdateLog) => log.mongoId.toString() === template3.toString()
+  ),
+  templates: [
+    {
+      _id: template3,
+      name: 'template3',
+      properties: [
+        {
+          _id: template3PropertyRelationship1,
+          name: 't3Relationship2',
+          type: 'relationship',
+          content: '',
+          relationType: relationtype1,
+        },
+      ],
+    },
+  ],
+  settings: [
+    {
+      _id: settingsId,
+      languages: [{ key: 'es', default: true, label: 'es' }],
+      sync: {
+        url: 'http://localhost:6668',
+        name: 'target2',
+        active: true,
+        username: 'user2',
+        password: 'password2',
+        config: {
+          templates: {
+            [template3.toString()]: [],
+          },
+        },
+      },
+    },
+  ],
 };
+
+export { host1Fixtures, host2Fixtures, template1, template2, thesauri1Value2, newDoc1, newDoc3 };
