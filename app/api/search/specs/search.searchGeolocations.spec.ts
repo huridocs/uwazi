@@ -114,6 +114,16 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 13,
+                    lon: 7,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
             {
               label: 'Entity with single geolocation en',
@@ -127,16 +137,29 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 5,
+                    lon: 10,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
             {
               label: 'Entity without geolocation en',
               value: 'entity04',
               inherit_geolocation: [],
+              inheritedValue: [],
+              inheritedType: 'geolocation',
             },
             {
               label: 'entity without metadata',
               value: 'entity04.1',
               inherit_geolocation: [],
+              inheritedType: 'geolocation',
             },
           ],
           regular_geolocation_geolocation: [
@@ -152,6 +175,8 @@ describe('search.searchGeolocations', () => {
               label: 'Country A en',
               value: 'entity06',
               inherit_geolocation: [],
+              inheritedValue: [{ value: null }],
+              inheritedType: 'geolocation',
             },
           ],
         },
@@ -173,10 +198,21 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 111,
+                    lon: 222,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
             {
               value: 'noExiste',
               inherit_geolocation: [],
+              inheritedType: 'geolocation',
             },
           ],
         },
@@ -198,6 +234,16 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 23,
+                    lon: 8,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
           ],
         },
@@ -220,6 +266,16 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 24,
+                    lon: 8,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
           ],
         },
@@ -252,6 +308,16 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 13,
+                    lon: 7,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
             {
               label: 'Entity with single geolocation en',
@@ -265,16 +331,29 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 5,
+                    lon: 10,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
             {
               label: 'Entity without geolocation en',
               value: 'entity04',
               inherit_geolocation: [],
+              inheritedValue: [],
+              inheritedType: 'geolocation',
             },
             {
               label: 'entity without metadata',
               value: 'entity04.1',
               inherit_geolocation: [],
+              inheritedType: 'geolocation',
             },
           ],
           regular_geolocation_geolocation: [
@@ -290,6 +369,8 @@ describe('search.searchGeolocations', () => {
               label: 'Country A en',
               value: 'entity06',
               inherit_geolocation: [],
+              inheritedValue: [{ value: null }],
+              inheritedType: 'geolocation',
             },
           ],
         },
@@ -311,10 +392,21 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 111,
+                    lon: 222,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
             {
               value: 'noExiste',
               inherit_geolocation: [],
+              inheritedType: 'geolocation',
             },
           ],
         },
@@ -337,6 +429,16 @@ describe('search.searchGeolocations', () => {
                   },
                 },
               ],
+              inheritedValue: [
+                {
+                  value: {
+                    lat: 24,
+                    lon: 8,
+                    label: '',
+                  },
+                },
+              ],
+              inheritedType: 'geolocation',
             },
           ],
         },
@@ -371,6 +473,16 @@ describe('search.searchGeolocations', () => {
                 },
               },
             ],
+            inheritedValue: [
+              {
+                value: {
+                  lat: 24,
+                  lon: 8,
+                  label: '',
+                },
+              },
+            ],
+            inheritedType: 'geolocation',
           },
         ],
       },
