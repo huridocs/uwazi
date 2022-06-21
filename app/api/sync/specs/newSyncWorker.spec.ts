@@ -28,18 +28,12 @@ import 'isomorphic-fetch';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { syncWorker } from '../syncWorker';
 import {
-  fixtures,
+  host1Fixtures,
+  host2Fixtures,
   newDoc1,
   newDoc3,
-  relationtype1,
   template1,
-  template1Property1,
-  template1Property2,
-  template1PropertyRelationship1,
-  template1PropertyThesauri1Select,
   template2,
-  template3,
-  template3PropertyRelationship1,
   thesauri1Value2,
 } from './newFixtures';
 
@@ -79,81 +73,8 @@ describe('syncWorker', () => {
       ...(await testingUploadPaths('syncWorker_target2_files')),
     });
 
-    await db.setupFixturesAndContext(
-      {
-        ...fixtures,
-        updatelogs: fixtures.updatelogs.filter(
-          log => log.mongoId.toString() !== template3.toString()
-        ),
-        settings: [
-          {
-            ...fixtures.settings[0],
-            sync: [
-              {
-                url: 'http://localhost:6667',
-                name: 'target1',
-                active: true,
-                username: 'user',
-                password: 'password',
-                config: {
-                  templates: {
-                    [template1.toString()]: [
-                      template1Property1.toString(),
-                      template1Property2.toString(),
-                      template1PropertyThesauri1Select.toString(),
-                      template1PropertyRelationship1.toString(),
-                    ],
-                  },
-                },
-              },
-              {
-                url: 'http://localhost:6668',
-                name: 'target2',
-                active: true,
-                username: 'user2',
-                password: 'password2',
-                config: {
-                  templates: {
-                    [template2.toString()]: [],
-                  },
-                },
-              },
-            ],
-          },
-        ],
-      },
-      undefined,
-      'host1'
-    );
-
-    await db.setupFixturesAndContext(
-      {
-        ...fixtures,
-        updatelogs: fixtures.updatelogs.filter(
-          log => log.mongoId.toString() === template3.toString()
-        ),
-        settings: [
-          {
-            ...fixtures.settings[0],
-            sync: {
-              url: 'http://localhost:6668',
-              name: 'target2',
-              active: true,
-              username: 'user2',
-              password: 'password2',
-              config: {
-                templates: {
-                  [template3.toString()]: [],
-                },
-              },
-            },
-          },
-        ],
-      },
-      undefined,
-      'host2'
-    );
-
+    await db.setupFixturesAndContext(host1Fixtures, undefined, 'host1');
+    await db.setupFixturesAndContext(host2Fixtures, undefined, 'host2');
     await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
     await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
     db.UserInContextMockFactory.restore();
