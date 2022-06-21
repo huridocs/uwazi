@@ -291,5 +291,23 @@ describe('syncWorker', () => {
   });
 
   // encapsulate per tenant fixtures
-  // if an id is not present in the config, sync should send a delete for that id (test this.)
+  // if an id is not present in the config, sync should send a DELETE for that id (test this.)
+  it('should delete properties not set in the config', async () => {
+    host1Fixtures.settings[0].sync[0].config.templates[template1.toString()].pop();
+    await db.setupFixturesAndContext(host1Fixtures, undefined, 'host1');
+
+    await syncWorker.runAllTenants();
+
+    await tenants.run(async () => {
+      const syncedTemplates = await templates.get();
+      expect(syncedTemplates.length).toBe(1);
+      const [template] = syncedTemplates;
+      expect(template.name).toBe('template1');
+      expect(template.properties).toMatchObject([
+        { name: 't1Property1' },
+        { name: 't1Property2' },
+        { name: 't1Thesauri1Select' },
+      ]);
+    }, 'target1');
+  });
 });

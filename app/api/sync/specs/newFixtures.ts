@@ -85,7 +85,7 @@ const file4 = db.id();
 const file5 = db.id();
 const customUpload = db.id();
 
-export const fixtures: DBFixture = {
+const fixtures: DBFixture = {
   syncs: [
     {
       lastSync: 8999,
@@ -483,7 +483,6 @@ export const fixtures: DBFixture = {
       template: undefined,
     },
   ],
-
   connections: [
     {
       _id: relationship1,
@@ -676,7 +675,7 @@ export const fixtures: DBFixture = {
   // sessions: [{ _id: sessionsId }],
 };
 
-export const host1Fixtures = {
+const host1Fixtures = {
   ...fixtures,
   updatelogs: fixtures.updatelogs.filter(
     (log: UpdateLog) => log.mongoId.toString() !== template3.toString()
@@ -845,7 +844,7 @@ export const host1Fixtures = {
   ],
 };
 
-export const host2Fixtures = {
+const host2Fixtures = {
   ...fixtures,
   updatelogs: fixtures.updatelogs.filter(
     (log: UpdateLog) => log.mongoId.toString() === template3.toString()
@@ -885,54 +884,4 @@ export const host2Fixtures = {
   ],
 };
 
-export {
-  settingsId,
-  newDoc1,
-  newDoc3,
-  newDoc2,
-  newDoc4,
-  newDoc10,
-  template1,
-  template1Property1,
-  template1Property2,
-  template1Property3,
-  template1PropertyThesauri1Select,
-  template1PropertyThesauri2Select,
-  template1PropertyThesauri3MultiSelect,
-  template1PropertyRelationship1,
-  template1PropertyRelationship2,
-  template2,
-  template2PropertyThesauri5Select,
-  template2PropertyRelationship1,
-  template2PropertyRelationship2,
-  template3,
-  template3PropertyRelationship1,
-  thesauri1,
-  thesauri1Value1,
-  thesauri1Value2,
-  thesauri2,
-  thesauri3,
-  thesauri3Value1,
-  thesauri3Value2,
-  thesauri4,
-  thesauri5,
-  relationship1,
-  relationship2,
-  relationship3,
-  relationship4,
-  relationship5,
-  relationship6,
-  relationship7,
-  relationship8,
-  relationship9,
-  relationship10,
-  relationship11,
-  relationtype1,
-  relationtype2,
-  relationtype3,
-  relationtype4,
-  relationtype5,
-  relationtype6,
-  relationtype7,
-  translation1,
-};
+export { host1Fixtures, host2Fixtures, template1, template2, thesauri1Value2, newDoc1, newDoc3 };
