@@ -91,10 +91,10 @@ export const fixtures: DBFixture = {
       lastSync: 8999,
       name: 'target1',
     },
-    // {
-    //   lastSync: 1000,
-    //   name: 'target3',
-    // },
+    {
+      lastSync: 1000,
+      name: 'target3',
+    },
   ],
 
   updatelogs: [
@@ -565,38 +565,6 @@ export const fixtures: DBFixture = {
 
   dictionaries: [
     {
-      _id: thesauri1,
-      name: 'thesauri1',
-      values: [
-        {
-          _id: thesauri1Value1,
-          label: 'th1value1',
-        },
-        {
-          _id: thesauri1Value2,
-          label: 'th1value2',
-        },
-      ],
-    },
-    {
-      _id: thesauri2,
-      name: 'thesauri2',
-    },
-    {
-      _id: thesauri3,
-      name: 'thesauri3',
-      values: [
-        {
-          _id: thesauri3Value1,
-          label: 'th3value1',
-        },
-        {
-          _id: thesauri3Value2,
-          label: 'th3value2',
-        },
-      ],
-    },
-    {
       _id: thesauri4,
       name: 'thesauri4',
     },
@@ -800,6 +768,40 @@ export const host1Fixtures = {
           type: 'relationship',
           content: template1,
           relationType: relationtype7,
+        },
+      ],
+    },
+  ],
+  dictionaries: [
+    {
+      _id: thesauri1,
+      name: 'thesauri1',
+      values: [
+        {
+          _id: thesauri1Value1,
+          label: 'th1value1',
+        },
+        {
+          _id: thesauri1Value2,
+          label: 'th1value2',
+        },
+      ],
+    },
+    {
+      _id: thesauri2,
+      name: 'thesauri2',
+    },
+    {
+      _id: thesauri3,
+      name: 'thesauri3',
+      values: [
+        {
+          _id: thesauri3Value1,
+          label: 'th3value1',
+        },
+        {
+          _id: thesauri3Value2,
+          label: 'th3value2',
         },
       ],
     },
