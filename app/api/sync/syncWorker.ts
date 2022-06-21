@@ -71,16 +71,6 @@ export const syncWorker = {
         await this.catchSyncErrors(error, syncConfig);
       }
     }, Promise.resolve());
-
-    // eslint-disable-next-line no-restricted-syntax
-    // for await (const config of ensureArray(syncSettings)) {
-    //   const syncConfig = validateConfig(config);
-    //   try {
-    //     await this.syncronizeConfig(syncConfig);
-    //   } catch (error) {
-    //     await this.catchSyncErrors(error, syncConfig);
-    //   }
-    // }
   },
 
   async syncronizeConfig(config: SyncConfig) {
@@ -111,10 +101,6 @@ export const syncWorker = {
       }
       await updateSyncs(config.name, change.timestamp);
     }, Promise.resolve());
-
-    // eslint-disable-next-line no-restricted-syntax
-    // for await (const change of await syncConfig.lastChanges()) {
-    // }
   },
 
   async login({ url, username, password, name }: SyncConfig) {
