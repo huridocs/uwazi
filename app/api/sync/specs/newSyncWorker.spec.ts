@@ -152,7 +152,7 @@ describe('syncWorker', () => {
     await db.disconnect();
   });
 
-  it('should sync the configured templates and only the white listed properties', async () => {
+  it('should sync the configured templates and its defined properties', async () => {
     await tenants.run(async () => {
       const syncedTemplates = await templates.get();
       expect(syncedTemplates.length).toBe(1);
@@ -279,7 +279,7 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
-  it('should sync relationTypes that match template properties whitelist', async () => {
+  it('should sync relationTypes that match configured template properties', async () => {
     await tenants.run(async () => {
       expect(await relationtypes.get()).toMatchObject([
         {
@@ -292,7 +292,7 @@ describe('syncWorker', () => {
 
   // encapsulate per tenant fixtures
   // if an id is not present in the config, sync should send a DELETE for that id (test this.)
-  it('should delete properties not set in the config', async () => {
+  it('should delete properties not defined in the config', async () => {
     host1Fixtures.settings[0].sync[0].config.templates[template1.toString()].pop();
     await db.setupFixturesAndContext(host1Fixtures, undefined, 'host1');
 
