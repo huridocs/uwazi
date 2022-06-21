@@ -16,7 +16,7 @@ describe('Metadata Properties', () => {
 
   it('should log in as admin then click the settings nav button.', async () => {
     await adminLogin();
-    await waitForNavigation(expect(page).toClick('a', { text: 'Account settings' }));
+    await waitForNavigation(expect(page).toClick('a', { text: 'Settings' }));
     expect(page.url()).toBe(`${host}/en/settings/account`);
   });
 

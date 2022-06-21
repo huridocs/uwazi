@@ -17,7 +17,7 @@ describe('Metadata', () => {
   });
 
   beforeEach(async () => {
-    await waitForNavigation(expect(page).toClick('a', { text: 'Account settings' }));
+    await waitForNavigation(expect(page).toClick('a', { text: 'Settings' }));
     await disableTransitions();
     expect(page.url()).toBe(`${host}/en/settings/account`);
   });
