@@ -2,13 +2,14 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { DBFixture } from 'api/utils/testing_db';
 import fixtures from './fixtures.js';
 import { Preserve } from '../preserve';
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
 
 describe('Preserve', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'preserve-index');
+    await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
   });
   afterAll(async () => {
     await testingEnvironment.tearDown();
