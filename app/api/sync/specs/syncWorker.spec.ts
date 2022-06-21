@@ -35,7 +35,7 @@ import {
   template1,
   template2,
   thesauri1Value2,
-} from './newFixtures';
+} from './fixtures';
 
 describe('syncWorker', () => {
   let server: Server;
