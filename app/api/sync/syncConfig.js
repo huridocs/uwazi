@@ -79,7 +79,6 @@ export default async (config, targetName) => {
 
   return {
     lastSync,
-
     config: await sanitizeConfig(config.config),
 
     async lastChanges() {
