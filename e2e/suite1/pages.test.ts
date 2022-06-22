@@ -32,7 +32,7 @@ describe('Custom home page and styles', () => {
   });
 
   it('should log in and create a page', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
   });
@@ -52,7 +52,7 @@ describe('Custom home page and styles', () => {
   });
 
   it('should allow setting the page as custom home page', async () => {
-    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Custom home page' });
     const pageUrl = await newPageUrl();

@@ -10,27 +10,56 @@ const searchStringMethod = async (searchString: string) => {
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 };
 
+const FULLTEXTGROUP_MATCH_REGEX = /fullText:\(\s*[^,)]*\)/g;
+const FULLTEXTGROUP_CAPTURE_REGEX = /fullText:\(\s*([^,)]*)\)/;
+
+const extractFullTextGroups = (searchString: string) => {
+  const fullTextGroups = searchString.match(FULLTEXTGROUP_MATCH_REGEX) || [];
+  return fullTextGroups.map(s => s.match(FULLTEXTGROUP_CAPTURE_REGEX)).map(r => (r ? r[1] : ''));
+};
+
+// eslint-disable-next-line max-statements
 async function extractSearchParams(query: SearchQuery): Promise<{
-  searchString?: string;
-  fullTextSearchString?: string;
-  searchMethod: string;
+  fullText?: {
+    string?: string;
+    method: string;
+  };
+  search?: {
+    string?: string;
+    method: string;
+  };
 }> {
   if (query.filter && query.filter.searchString && typeof query.filter.searchString === 'string') {
-    let { searchString } = query.filter;
-    let searchTypeKey = 'searchString';
-    const fullTextGroups = /fullText:\(\s*([^,]*)\)/g.exec(searchString) || [''];
+    const { searchString } = query.filter;
+    const fullTextGroups = extractFullTextGroups(searchString);
 
-    if (fullTextGroups.length > 1) {
-      searchString = fullTextGroups[1].replace(fullTextGroups[0], '');
-      searchTypeKey = 'fullTextSearchString';
+    if (fullTextGroups.length) {
+      const fullTextSearchString = fullTextGroups.join(' ');
+      return {
+        fullText: {
+          string: fullTextSearchString,
+          method: await searchStringMethod(fullTextSearchString),
+        },
+      };
     }
 
     const searchMethod = await searchStringMethod(searchString);
-    return { [searchTypeKey]: searchString, searchMethod };
+    return {
+      search: {
+        string: searchString,
+        method: searchMethod,
+      },
+      fullText: {
+        string: searchString,
+        method: searchMethod,
+      },
+    };
   }
   return {
-    searchString: query.filter?.searchString,
-    searchMethod: 'query_string',
+    search: {
+      string: query.filter?.searchString,
+      method: 'query_string',
+    },
   };
 }
 

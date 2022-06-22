@@ -5,7 +5,7 @@ import disableTransitions from './disableTransitions';
 
 export async function login(username: string, password: string) {
   await page.goto(host);
-  await expect(page).toClick('a', { text: 'Sign in' });
+  await expect(page).toClick('a[aria-label="Sign in"]');
   await expect(page).toFill('input[name=username]', username);
   await expect(page).toFill('input[name=password]', password);
   await expect(page).toClick('button', { text: 'Login' });
@@ -18,6 +18,6 @@ export async function adminLogin() {
 }
 export async function logout() {
   await page.goto(`${host}/en/settings/account`);
-  await expect(page).toClick('a', { text: 'Logout' });
+  await expect(page).toClick('.btn-label', { text: 'Logout' });
   await page.waitForNavigation();
 }
