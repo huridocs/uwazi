@@ -116,10 +116,8 @@ app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '1mb' }));
 
 app.use(appContextMiddleware);
 
-//////
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
-//////
 app.use(requestIdMiddleware);
 let dbAuth = {};
 
