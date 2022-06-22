@@ -182,6 +182,7 @@ export default {
         description: [{ value: 'descriptionvalue' }],
         friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
         enemies: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+        select: [],
       },
     },
     {

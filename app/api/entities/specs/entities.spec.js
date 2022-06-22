@@ -542,12 +542,11 @@ describe('entities', () => {
       });
     });
 
-    fdescribe('events', () => {
+    describe('events', () => {
       it('should emit an event when an entity is updated', async () => {
         jest.spyOn(applicationEventsBus, 'emit');
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
         const after = { ...before, title: 'new title' };
-
         await entities.save(after, { language: 'en' });
 
         expect(applicationEventsBus.emit).toHaveBeenCalled();
