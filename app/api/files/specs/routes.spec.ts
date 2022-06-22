@@ -24,6 +24,8 @@ import {
 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
+import { applicationEventsBus } from 'api/eventsbus';
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
@@ -66,15 +68,10 @@ describe('files routes', () => {
       expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
     });
 
-    // eslint-disable-next-line jest/no-focused-tests, max-statements
-    fit('should update ix suggestions if extractedMetada changes', async () => {
-      const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+    it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
+      const emitySpy = jest.spyOn(applicationEventsBus, 'emit');
 
       const original = await db.mongodb?.collection('files').findOne({ _id: uploadId });
-      await request(app)
-        .post('/api/files')
-        .send({ ...original });
-      expect(updateSpy).not.toHaveBeenCalled();
 
       await request(app)
         .post('/api/files')
@@ -90,42 +87,11 @@ describe('files routes', () => {
             },
           ],
         });
-      expect(updateSpy).toHaveBeenCalledWith({ fileId: original._id });
 
-      updateSpy.mockClear();
-      const withExtractedMetadata = await db.mongodb
-        ?.collection('files')
-        .findOne({ _id: uploadId });
-      await request(app)
-        .post('/api/files')
-        .send({
-          ...withExtractedMetadata,
-        });
-      expect(updateSpy).not.toHaveBeenCalled();
-
-      await request(app)
-        .post('/api/files')
-        .send({
-          ...withExtractedMetadata,
-          extractedMetadata: [
-            {
-              name: 'propertyName',
-              selection: {
-                text: 'other something',
-                selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
-              },
-            },
-          ],
-        });
-      expect(updateSpy).toHaveBeenCalledWith({ fileId: original._id });
-
-      updateSpy.mockClear();
-      await request(app)
-        .post('/api/files')
-        .send({ ...withExtractedMetadata, extractedMetadata: [] });
-      expect(updateSpy).toHaveBeenCalledWith({ fileId: original._id });
-
-      updateSpy.mockRestore();
+      const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+      expect(emitySpy).toHaveBeenCalled();
+      expect(emitySpy.mock.calls[0][0]).toBeInstanceOf(FileUpdatedEvent);
+      expect(emitySpy.mock.calls[0][0].getData()).toEqual({ before: original, after });
     });
 
     describe('when external url file', () => {

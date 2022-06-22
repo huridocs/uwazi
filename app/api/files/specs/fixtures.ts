@@ -37,6 +37,7 @@ const fixtures: DBFixture = {
   files: [
     {
       _id: uploadId,
+      creationDate: 1,
       entity: 'sharedId1',
       generatedToc: true,
       originalname: 'upload1',

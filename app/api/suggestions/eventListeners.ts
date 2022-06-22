@@ -1,5 +1,7 @@
+import _ from 'lodash';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import settings from 'api/settings';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
@@ -26,9 +28,17 @@ const updateIxSuggestionsTrigger = async (
 };
 
 const registerEventListeners = (eventsBus: EventsBus) => {
-  eventsBus.on(EntityUpdatedEvent, async ({ before, after }) => {
-    if (await updateIxSuggestionsTrigger(before, after)) {
-      await Suggestions.updateStates({ entityId: after.sharedId });
+  eventsBus.on(EntityUpdatedEvent, async ({ before, after, targetLanguageKey }) => {
+    const originalDoc = before.find(doc => doc.language === targetLanguageKey)!;
+    const modifiedDoc = after.find(doc => doc.language === targetLanguageKey)!;
+    if (await updateIxSuggestionsTrigger(originalDoc, modifiedDoc)) {
+      await Suggestions.updateStates({ entityId: originalDoc.sharedId });
+    }
+  });
+
+  eventsBus.on(FileUpdatedEvent, async ({ before, after }) => {
+    if (!_.isEqual(before.extractedMetadata, after.extractedMetadata)) {
+      await Suggestions.updateStates({ fileId: after._id });
     }
   });
 };

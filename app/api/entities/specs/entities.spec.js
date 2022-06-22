@@ -15,6 +15,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
+import { applicationEventsBus } from 'api/eventsbus';
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -545,17 +546,23 @@ describe('entities', () => {
     });
 
     describe('events', () => {
-      // eslint-disable-next-line jest/no-focused-tests
-      fit('should emit an event when an entity is updated', async () => {
+      it('should emit an event when an entity is updated', async () => {
+        const emitySpy = jest.spyOn(applicationEventsBus, 'emit');
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
+        const beforeAllLanguages = fixtures.entities.filter(e => e.sharedId === before.sharedId);
         const after = { ...before, title: 'new title' };
-        await expect(async () => entities.save(after, { language: 'en' })).toEmitEvent(
-          EntityUpdatedEvent,
-          {
-            before,
-            after,
-          }
-        );
+
+        await entities.save(after, { language: 'en' });
+
+        const afterAllLanguages = await entities.getAllLanguages(before.sharedId);
+
+        expect(emitySpy).toHaveBeenCalled();
+        expect(emitySpy.mock.calls[0][0]).toBeInstanceOf(EntityUpdatedEvent);
+        expect(emitySpy.mock.calls[0][0].getData()).toEqual({
+          before: beforeAllLanguages,
+          after: afterAllLanguages,
+          targetLanguageKey: 'en',
+        });
       });
     });
   });

@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import entities from 'api/entities';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { deleteUploadedFiles } from 'api/files/filesystem';
@@ -9,30 +7,36 @@ import { search } from 'api/search';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
+import { applicationEventsBus } from 'api/eventsbus';
 import { filesModel } from './filesModel';
+import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 
-const suggestionUpdateTrigger = (
-  existingFile: FileType | null | undefined,
-  savedFile: FileType
-): boolean =>
-  !!existingFile && !_.isEqual(existingFile.extractedMetadata, savedFile.extractedMetadata);
+const deduceMimeType = (_file: FileType) => {
+  const file = { ..._file };
+  if (file.url && !file._id) {
+    const mimetype = mimeTypeFromUrl(file.url);
+    file.mimetype = mimetype;
+  }
+
+  return file;
+};
 
 export const files = {
   async save(_file: FileType, index = true) {
-    const file = { ..._file };
-    if (file.url && !file._id) {
-      const mimetype = mimeTypeFromUrl(file.url);
-      file.mimetype = mimetype;
-    }
+    const file = deduceMimeType(_file);
 
     const existingFile = file._id ? await filesModel.getById(file._id) : undefined;
     const savedFile = await filesModel.save(await validateFile(file));
     if (index) {
       await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
     }
-    if (suggestionUpdateTrigger(existingFile, savedFile)) {
-      await Suggestions.updateStates({ fileId: savedFile._id });
+
+    if (existingFile) {
+      await applicationEventsBus.emit(
+        new FileUpdatedEvent({ before: existingFile, after: savedFile })
+      );
     }
+
     return savedFile;
   },
 
