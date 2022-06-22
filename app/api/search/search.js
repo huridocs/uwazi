@@ -514,8 +514,8 @@ const entityHasGeolocation = entity =>
 
 const processGeolocationResults = _results => {
   const results = _results;
-  results.rows = results.rows.filter(r => r.metadata);
   results.rows = results.rows
+    .filter(r => r.metadata)
     .map(_row => ({
       ..._row,
       metadata: Object.fromEntries(
@@ -531,8 +531,7 @@ const processGeolocationResults = _results => {
         ])
       ),
     }))
-    .filter(r => r.metadata && Object.keys(r.metadata).length);
-  results.rows = results.rows.filter(r => entityHasGeolocation(r));
+    .filter(r => r.metadata && Object.keys(r.metadata).length && entityHasGeolocation(r));
   results.totalRows = results.rows.length;
   return results;
 };
