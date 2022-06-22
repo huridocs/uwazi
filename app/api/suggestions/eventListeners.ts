@@ -1,4 +1,4 @@
-import { EntitySavedEvent } from 'api/entities/events';
+import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import settings from 'api/settings';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -25,17 +25,10 @@ const updateIxSuggestionsTrigger = async (
   return changedMetadata.some(m => extractedProperties.has(m));
 };
 
-interface EntitySavedData {
-  existingEntity: EntitySchema;
-  entity: EntitySchema;
-}
-
-const handleEntitySaved = async ({ existingEntity, entity }: EntitySavedData) => {
-  if (await updateIxSuggestionsTrigger(existingEntity, entity)) {
-    await Suggestions.updateStates({ entityId: entity.sharedId });
-  }
-};
-
 export const registerEventListeners = (eventsBus: EventsBus) => {
-  eventsBus.on(EntitySavedEvent, handleEntitySaved);
+  eventsBus.on(EntityUpdatedEvent, async ({ before, after }) => {
+    if (await updateIxSuggestionsTrigger(before, after)) {
+      await Suggestions.updateStates({ entityId: after.sharedId });
+    }
+  });
 };

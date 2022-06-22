@@ -29,6 +29,8 @@ import fixtures, {
   unpublishedDocId,
   entityGetTestTemplateId,
 } from './fixtures.js';
+import { applicationEventsBus } from 'api/eventsbus';
+import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -537,6 +539,20 @@ describe('entities', () => {
         expect(createdEntity._id).not.toBeUndefined();
         expect(createdEntity.title).toEqual(entity.title);
         userFactory.mockEditorUser();
+      });
+    });
+
+    fdescribe('events', () => {
+      it('should emit an event when an entity is updated', async () => {
+        jest.spyOn(applicationEventsBus, 'emit');
+        const before = fixtures.entities.find(e => e._id === batmanFinishesId);
+        const after = { ...before, title: 'new title' };
+
+        await entities.save(after, { language: 'en' });
+
+        expect(applicationEventsBus.emit).toHaveBeenCalled();
+        expect(applicationEventsBus.emit.mock.calls[0][0]).toBeInstanceOf(EntityUpdatedEvent);
+        expect(applicationEventsBus.emit.mock.calls[0][0].getData()).toEqual({ before, after });
       });
     });
   });

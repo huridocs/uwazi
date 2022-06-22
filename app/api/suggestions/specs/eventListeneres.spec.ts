@@ -1,11 +1,11 @@
 /* eslint-disable max-statements */
 
 import entities from 'api/entities';
-import { EntitySavedEvent } from 'api/entities/events';
 import fixtures, { batmanFinishesId } from 'api/entities/specs/fixtures';
 import { applicationEventsBus } from 'api/eventsbus';
 import db from 'api/utils/testing_db';
 import { search } from 'api/search';
+import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { registerEventListeners } from '../eventListeners';
 import { Suggestions } from '../suggestions';
 
@@ -25,7 +25,7 @@ afterAll(async () => {
   await db.disconnect();
 });
 
-describe(`On ${EntitySavedEvent}`, () => {
+describe(`On ${EntityUpdatedEvent.name}`, () => {
   it('should update ix suggestions on entity update, if relevant metadata is changed', async () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 

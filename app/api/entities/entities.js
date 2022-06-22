@@ -23,7 +23,7 @@ import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import settings from '../settings';
-import { EntitySavedEvent } from './events';
+import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -129,7 +129,9 @@ async function updateEntity(entity, _template, unrestricted = false) {
     })
   );
 
-  applicationEventsBus.emit(EntitySavedEvent, { existingEntity, entity });
+  await applicationEventsBus.emit(
+    new EntityUpdatedEvent({ before: existingEntity, after: entity })
+  );
 
   return result;
 }
