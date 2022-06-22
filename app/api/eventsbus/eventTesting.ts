@@ -22,4 +22,18 @@ const toEmitEvent = async (
   return { pass: true };
 };
 
-export { toEmitEvent };
+const spyOnEmit = () => {
+  const spy = jest.spyOn(applicationEventsBus, 'emit');
+
+  return {
+    expectToEmitEvent: <T>(event: EventConstructor<T>, eventData: T) => {
+      expect(spy).toHaveBeenCalled();
+      expect(spy.mock.calls[0][0]).toBeInstanceOf(event);
+      expect(spy.mock.calls[0][0].getData()).toEqual(eventData);
+      spy.mockClear();
+    },
+    spy,
+  };
+};
+
+export { toEmitEvent, spyOnEmit };

@@ -25,6 +25,7 @@ import { files } from '../files';
 import uploadRoutes from '../routes';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
+import { spyOnEmit } from 'api/eventsbus/eventTesting';
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
@@ -68,7 +69,7 @@ describe('files routes', () => {
     });
 
     it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
-      const emitySpy = jest.spyOn(applicationEventsBus, 'emit');
+      const emitSpy = spyOnEmit();
 
       const original = await db.mongodb?.collection('files').findOne({ _id: uploadId });
 
@@ -88,9 +89,7 @@ describe('files routes', () => {
         });
 
       const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
-      expect(emitySpy).toHaveBeenCalled();
-      expect(emitySpy.mock.calls[0][0]).toBeInstanceOf(FileUpdatedEvent);
-      expect(emitySpy.mock.calls[0][0].getData()).toEqual({ before: original, after });
+      emitSpy.expectToEmitEvent(FileUpdatedEvent, { before: original, after });
     });
 
     describe('when external url file', () => {
@@ -231,14 +230,12 @@ describe('files routes', () => {
 
     describe('events', () => {
       it(`should emit a ${FilesDeletedEvent.name} when a file is deleted`, async () => {
-        const emitySpy = jest.spyOn(applicationEventsBus, 'emit');
+        const emitSpy = spyOnEmit();
 
         const file = await db.mongodb?.collection('files').findOne({ _id: uploadId });
         await request(app).delete('/api/files').query({ _id: uploadId.toString() });
 
-        expect(emitySpy).toHaveBeenCalled();
-        expect(emitySpy.mock.calls[0][0]).toBeInstanceOf(FilesDeletedEvent);
-        expect(emitySpy.mock.calls[0][0].getData()).toEqual({ files: [file] });
+        emitSpy.expectToEmitEvent(FilesDeletedEvent, { files: [file] });
       });
     });
 

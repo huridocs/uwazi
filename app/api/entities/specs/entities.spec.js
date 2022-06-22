@@ -4,7 +4,7 @@
 import Ajv from 'ajv';
 
 import entitiesModel from 'api/entities/entitiesModel';
-import { toEmitEvent } from 'api/eventsbus/eventTesting';
+import { spyOnEmit, toEmitEvent } from 'api/eventsbus/eventTesting';
 import { fs } from 'api/files';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import relationships from 'api/relationships';
@@ -547,7 +547,7 @@ describe('entities', () => {
 
     describe('events', () => {
       it('should emit an event when an entity is updated', async () => {
-        const emitySpy = jest.spyOn(applicationEventsBus, 'emit');
+        const emitSpy = spyOnEmit();
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
         const beforeAllLanguages = fixtures.entities.filter(e => e.sharedId === before.sharedId);
         const after = { ...before, title: 'new title' };
@@ -556,9 +556,7 @@ describe('entities', () => {
 
         const afterAllLanguages = await entities.getAllLanguages(before.sharedId);
 
-        expect(emitySpy).toHaveBeenCalled();
-        expect(emitySpy.mock.calls[0][0]).toBeInstanceOf(EntityUpdatedEvent);
-        expect(emitySpy.mock.calls[0][0].getData()).toEqual({
+        emitSpy.expectToEmitEvent(EntityUpdatedEvent, {
           before: beforeAllLanguages,
           after: afterAllLanguages,
           targetLanguageKey: 'en',
