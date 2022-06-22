@@ -27,15 +27,21 @@ import { Server } from 'http';
 import 'isomorphic-fetch';
 import { FetchResponseError } from 'shared/JSONRequest';
 import translations from 'api/i18n';
+import relationships from 'api/relationships';
+import { advancedSort } from 'app/utils/advancedSort';
 import { syncWorker } from '../syncWorker';
 import {
   host1Fixtures,
   host2Fixtures,
+  hub3,
   newDoc1,
-  newDoc3, relationtype4,
+  newDoc3,
+  relationship9,
+  relationtype4,
   template1,
-  template2, thesauri1,
-  thesauri1Value2
+  template2,
+  thesauri1,
+  thesauri1Value2,
 } from './fixtures';
 
 describe('syncWorker', () => {
@@ -132,7 +138,6 @@ describe('syncWorker', () => {
 
     try {
       await syncWorker.runAllTenants();
-      await syncWorker.runAllTenants();
     } catch (e) {
       if (e instanceof FetchResponseError) {
         throw e.json;
@@ -168,7 +173,11 @@ describe('syncWorker', () => {
     }, 'target1');
 
     await tenants.run(async () => {
-      const [syncedTemplate3, syncedTemplate2] = await templates.get();
+      const syncedTemplates = await templates.get();
+      const [syncedTemplate2, syncedTemplate3] = advancedSort(syncedTemplates, {
+        property: 'name',
+      });
+
       expect(syncedTemplate2).toMatchObject({ name: 'template2' });
       expect(syncedTemplate3).toMatchObject({ name: 'template3' });
     }, 'target2');
@@ -293,8 +302,8 @@ describe('syncWorker', () => {
 
   it('should syncronize translations that match configured properties', async () => {
     await tenants.run(async () => {
-      const translations1 = await translations.get({});
-      expect(translations1).toEqual([
+      const syncedTranslations = await translations.get({});
+      expect(syncedTranslations).toEqual([
         {
           __v: 0,
           _id: expect.anything(),
@@ -337,15 +346,31 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
-  it('should delete templates not defined in the config', async () => {
-    host1Fixtures.settings[0].sync[0].config.templates = {};
-    await db.setupFixturesAndContext({ ...host1Fixtures }, undefined, 'host1');
-
-    await syncWorker.runAllTenants();
-
+  it('should syncronize connections that match configured properties', async () => {
     await tenants.run(async () => {
-      const syncedTemplates = await templates.get();
-      expect(syncedTemplates).toHaveLength(0);
+      const syncedConnections = await relationships.get({});
+      expect(syncedConnections).toEqual([
+        {
+          _id: relationship9,
+          entity: 'newDoc1SharedId',
+          hub: hub3,
+          template: null,
+        },
+      ]);
     }, 'target1');
+  });
+
+  describe('after changing sync configurations', () => {
+    it('should delete templates not defined in the config', async () => {
+      host1Fixtures.settings[0].sync[0].config.templates = {};
+      await db.setupFixturesAndContext({ ...host1Fixtures }, undefined, 'host1');
+
+      await syncWorker.runAllTenants();
+
+      await tenants.run(async () => {
+        const syncedTemplates = await templates.get();
+        expect(syncedTemplates).toHaveLength(0);
+      }, 'target1');
+    });
   });
 });

@@ -2,12 +2,12 @@ import 'api/entities';
 import urljoin from 'url-join';
 import request from 'shared/JSONRequest';
 import { SettingsSyncSchema } from 'shared/types/settingsType';
-import synchronizer from './synchronizer';
-import createSyncConfig from './syncConfig';
-import syncsModel from './syncsModel';
 import { tenants } from 'api/tenants';
 import settings from 'api/settings';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import synchronizer from './synchronizer';
+import createSyncConfig from './syncConfig';
+import syncsModel from './syncsModel';
 
 const updateSyncs = async (name: string, lastSync: number) =>
   syncsModel._updateMany({ name }, { $set: { lastSync } }, {});
@@ -38,16 +38,6 @@ const validateConfig = (config: SettingsSyncSchema) => {
 };
 
 export const syncWorker = {
-  cookies: {} as { [k: string]: string },
-
-  async catchSyncErrors(error: any, config: SyncConfig) {
-    if (error.status === 401) {
-      await this.login(config);
-    } else {
-      throw error;
-    }
-  },
-
   async runAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
@@ -65,15 +55,12 @@ export const syncWorker = {
     await ensureArray(syncSettings).reduce(async (previousSync, config) => {
       await previousSync;
       const syncConfig = validateConfig(config);
-      try {
-        await this.syncronizeConfig(syncConfig);
-      } catch (error) {
-        await this.catchSyncErrors(error, syncConfig);
-      }
+      const cookie = await this.login(syncConfig);
+      await this.syncronizeConfig(syncConfig, cookie);
     }, Promise.resolve());
   },
 
-  async syncronizeConfig(config: SyncConfig) {
+  async syncronizeConfig(config: SyncConfig, cookie: string) {
     await createSyncIfNotExists(config);
 
     const syncConfig = await createSyncConfig(config, config.name);
@@ -84,7 +71,7 @@ export const syncWorker = {
       await previousChange;
       const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
       if (shouldSync.skip) {
-        await synchronizer.syncDelete(change, config.url, this.cookies[config.name]);
+        await synchronizer.syncDelete(change, config.url, cookie);
       }
 
       if (shouldSync.data) {
@@ -93,7 +80,7 @@ export const syncWorker = {
             url: config.url,
             change,
             data: shouldSync.data,
-            cookie: this.cookies[config.name],
+            cookie,
           },
           'post',
           syncConfig.lastSync
@@ -103,8 +90,9 @@ export const syncWorker = {
     }, Promise.resolve());
   },
 
-  async login({ url, username, password, name }: SyncConfig) {
+  async login({ url, username, password }: SyncConfig) {
     const response = await request.post(urljoin(url, 'api/login'), { username, password });
-    this.cookies[name] = response.cookie || '';
+
+    return response.cookie || '';
   },
 };

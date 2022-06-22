@@ -86,17 +86,6 @@ const file5 = db.id();
 const customUpload = db.id();
 
 const fixtures: DBFixture = {
-  syncs: [
-    {
-      lastSync: 8999,
-      name: 'target1',
-    },
-    {
-      lastSync: 1000,
-      name: 'target3',
-    },
-  ],
-
   updatelogs: [
     {
       timestamp: 20000,
@@ -671,12 +660,16 @@ const fixtures: DBFixture = {
       ],
     },
   ],
-
-  sessions: [{ _id: sessionsId }],
 };
 
 const host1Fixtures = {
   ...fixtures,
+  syncs: [
+    {
+      lastSync: 8999,
+      name: 'target1',
+    },
+  ],
   updatelogs: fixtures.updatelogs.filter(
     (log: UpdateLog) => log.mongoId.toString() !== template3.toString()
   ),
@@ -884,4 +877,16 @@ const host2Fixtures = {
   ],
 };
 
-export { host1Fixtures, host2Fixtures, template1, template2, thesauri1, thesauri1Value2, newDoc1, newDoc3, relationtype4 };
+export {
+  host1Fixtures,
+  host2Fixtures,
+  template1,
+  template2,
+  thesauri1,
+  thesauri1Value2,
+  newDoc1,
+  newDoc3,
+  relationtype4,
+  relationship9,
+  hub3,
+};
