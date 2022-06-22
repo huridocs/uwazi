@@ -362,8 +362,9 @@ describe('syncWorker', () => {
 
   describe('after changing sync configurations', () => {
     it('should delete templates not defined in the config', async () => {
-      host1Fixtures.settings[0].sync[0].config.templates = {};
-      await db.setupFixturesAndContext({ ...host1Fixtures }, undefined, 'host1');
+      const changedFixtures = { ...host1Fixtures };
+      changedFixtures.settings[0].sync[0].config.templates = {};
+      await db.setupFixturesAndContext({ ...changedFixtures }, undefined, 'host1');
 
       await syncWorker.runAllTenants();
 
