@@ -26,15 +26,16 @@ import { rmdir, writeFile } from 'fs/promises';
 import { Server } from 'http';
 import 'isomorphic-fetch';
 import { FetchResponseError } from 'shared/JSONRequest';
+import translations from 'api/i18n';
 import { syncWorker } from '../syncWorker';
 import {
   host1Fixtures,
   host2Fixtures,
   newDoc1,
-  newDoc3,
+  newDoc3, relationtype4,
   template1,
-  template2,
-  thesauri1Value2,
+  template2, thesauri1,
+  thesauri1Value2
 } from './fixtures';
 
 describe('syncWorker', () => {
@@ -285,6 +286,52 @@ describe('syncWorker', () => {
         {
           _id: expect.anything(),
           name: 'relationtype4',
+        },
+      ]);
+    }, 'target1');
+  });
+
+  it('should syncronize translations that match configured properties', async () => {
+    await tenants.run(async () => {
+      const translations1 = await translations.get({});
+      expect(translations1).toEqual([
+        {
+          __v: 0,
+          _id: expect.anything(),
+          contexts: [
+            {
+              _id: expect.anything(),
+              id: 'System',
+              type: 'Uwazi UI',
+              values: {
+                'Sytem Key': 'System Value',
+              },
+            },
+            {
+              _id: expect.anything(),
+              id: template1.toString(),
+              type: 'Entity',
+              values: {
+                'Template Title': 'Template Title translated',
+                t1Property1L: 't1Property1T',
+                t1Relationship1L: 't1Relationship1T',
+                template1: 'template1T',
+              },
+            },
+            {
+              _id: expect.anything(),
+              id: thesauri1.toString(),
+              type: 'Dictionary',
+              values: {},
+            },
+            {
+              _id: expect.anything(),
+              id: relationtype4.toString(),
+              type: 'Connection',
+              values: {},
+            },
+          ],
+          locale: 'en',
         },
       ]);
     }, 'target1');

@@ -884,4 +884,4 @@ const host2Fixtures = {
   ],
 };
 
-export { host1Fixtures, host2Fixtures, template1, template2, thesauri1Value2, newDoc1, newDoc3 };
+export { host1Fixtures, host2Fixtures, template1, template2, thesauri1, thesauri1Value2, newDoc1, newDoc3, relationtype4 };
