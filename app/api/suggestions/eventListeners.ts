@@ -6,6 +6,7 @@ import settings from 'api/settings';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { EntitySchema } from 'shared/types/entityType';
+import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { Suggestions } from './suggestions';
 
 const updateIxSuggestionsTrigger = async (
@@ -40,6 +41,10 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     if (!_.isEqual(before.extractedMetadata, after.extractedMetadata)) {
       await Suggestions.updateStates({ fileId: after._id });
     }
+  });
+
+  eventsBus.on(FilesDeletedEvent, async ({ files }) => {
+    await Suggestions.delete({ fileId: { $in: files.map(f => f._id) } });
   });
 };
 

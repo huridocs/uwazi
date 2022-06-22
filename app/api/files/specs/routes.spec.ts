@@ -12,12 +12,11 @@ import connections from 'api/relationships';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
-import { Suggestions } from 'api/suggestions/suggestions';
+import { applicationEventsBus } from 'api/eventsbus';
 import {
   fixtures,
   uploadId,
   uploadId2,
-  restrictedUploadId,
   restrictedUploadId2,
   adminUser,
   writerUser,
@@ -25,7 +24,7 @@ import {
 import { files } from '../files';
 import uploadRoutes from '../routes';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
-import { applicationEventsBus } from 'api/eventsbus';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
@@ -230,14 +229,17 @@ describe('files routes', () => {
       expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
     });
 
-    it('should delete related ix suggestions', async () => {
-      await request(app).delete('/api/files').query({ _id: uploadId.toString() });
-      expect(
-        await db.mongodb?.collection('ixsuggestions').find({ fileId: restrictedUploadId }).toArray()
-      ).toHaveLength(2);
-      expect(
-        await db.mongodb?.collection('ixsuggestions').find({ fileId: uploadId }).toArray()
-      ).toHaveLength(0);
+    describe('events', () => {
+      it(`should emit a ${FilesDeletedEvent.name} when a file is deleted`, async () => {
+        const emitySpy = jest.spyOn(applicationEventsBus, 'emit');
+
+        const file = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+        await request(app).delete('/api/files').query({ _id: uploadId.toString() });
+
+        expect(emitySpy).toHaveBeenCalled();
+        expect(emitySpy.mock.calls[0][0]).toBeInstanceOf(FilesDeletedEvent);
+        expect(emitySpy.mock.calls[0][0].getData()).toEqual({ files: [file] });
+      });
     });
 
     it('should validate _id as string', async () => {

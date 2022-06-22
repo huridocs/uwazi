@@ -10,6 +10,7 @@ import { FileType } from 'shared/types/fileType';
 import { applicationEventsBus } from 'api/eventsbus';
 import { filesModel } from './filesModel';
 import { FileUpdatedEvent } from './events/FileUpdatedEvent';
+import { FilesDeletedEvent } from './events/FilesDeletedEvent';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -52,7 +53,8 @@ export const files = {
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
         '+fullText'
       );
-      await Suggestions.delete({ fileId: { $in: toDeleteFiles.map(f => f._id) } });
+
+      await applicationEventsBus.emit(new FilesDeletedEvent({ files: toDeleteFiles }));
     }
 
     await cleanupRecordsOfFiles(toDeleteFiles.map(f => f._id));
