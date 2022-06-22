@@ -31,4 +31,4 @@ class EventsBus {
   }
 }
 
-export { EventsBus };
+export { EventsBus, EventConstructor };

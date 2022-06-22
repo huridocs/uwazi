@@ -4,7 +4,7 @@
 import Ajv from 'ajv';
 
 import entitiesModel from 'api/entities/entitiesModel';
-import { applicationEventsBus } from 'api/eventsbus';
+import { toEmitEvent } from 'api/eventsbus/eventTesting';
 import { fs } from 'api/files';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import relationships from 'api/relationships';
@@ -31,6 +31,8 @@ import fixtures, {
 } from './fixtures.js';
 import entities from '../entities.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
+
+expect.extend({ toEmitEvent });
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -543,15 +545,17 @@ describe('entities', () => {
     });
 
     describe('events', () => {
-      it('should emit an event when an entity is updated', async () => {
-        jest.spyOn(applicationEventsBus, 'emit');
+      // eslint-disable-next-line jest/no-focused-tests
+      fit('should emit an event when an entity is updated', async () => {
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
         const after = { ...before, title: 'new title' };
-        await entities.save(after, { language: 'en' });
-
-        expect(applicationEventsBus.emit).toHaveBeenCalled();
-        expect(applicationEventsBus.emit.mock.calls[0][0]).toBeInstanceOf(EntityUpdatedEvent);
-        expect(applicationEventsBus.emit.mock.calls[0][0].getData()).toEqual({ before, after });
+        await expect(async () => entities.save(after, { language: 'en' })).toEmitEvent(
+          EntityUpdatedEvent,
+          {
+            before,
+            after,
+          }
+        );
       });
     });
   });
