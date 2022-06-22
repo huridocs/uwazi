@@ -81,6 +81,7 @@ const settingsSyncRelationtypesSchema = {
 const settingsSyncSchema = {
   type: 'object',
   additionalProperties: false,
+  required: ['url', 'username', 'password', 'name', 'config'],
   properties: {
     url: { type: 'string' },
     active: { type: 'boolean' },

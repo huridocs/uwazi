@@ -29,11 +29,15 @@ class InvalidSyncConfig extends Error {
   }
 }
 
-type SyncConfig = SettingsSyncSchema & { url: string; name: string };
+export type SyncConfig = SettingsSyncSchema & {
+  url: string;
+  name: string;
+};
 
 const validateConfig = (config: SettingsSyncSchema) => {
   if (!config.name) throw new InvalidSyncConfig('Name is not defined on sync config');
   if (!config.url) throw new InvalidSyncConfig('url is not defined on sync config');
+  if (!config.config) throw new InvalidSyncConfig('config is not defined on sync config');
   return config as SyncConfig;
 };
 

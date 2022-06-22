@@ -1,17 +1,20 @@
-import { models } from 'api/odm';
-import { model as updateLog } from 'api/updatelogs';
+import { DataType, models } from 'api/odm';
+import { model as updateLog, UpdateLog } from 'api/updatelogs';
+import { SyncConfig } from 'api/sync/syncWorker';
+import templatesModel from 'api/templates/templatesModel';
 import syncsModel from './syncsModel';
 import { ProcessNamespaces } from './processNamespaces';
+import { PropertySchema } from 'shared/types/commonTypes';
 
-const sanitizeConfig = async config =>
-  Object.keys(config || {}).reduce(async (prev, key) => {
+const sanitizeConfig = async (config: SyncConfig['config']) =>
+  (Object.keys(config) as Array<keyof SyncConfig['config']>).reduce(async (prev, key) => {
     const sanitized = await prev;
     if (key === 'templates') {
       const templatesData = await models.templates.get({});
 
-      sanitized.templates = Object.keys(config.templates).reduce((templates, templateId) => {
+      sanitized.templates = Object.keys(config.templates || {}).reduce((templates, templateId) => {
         if (templatesData.find(t => t._id.toString() === templateId)) {
-          const templateConfig = config.templates[templateId] || { properties: [] };
+          const templateConfig = config.templates?.[templateId] || { properties: [] };
           const isArray = Array.isArray(templateConfig);
           const configObject = isArray ? { properties: templateConfig } : templateConfig;
           return { ...templates, [templateId]: configObject };
@@ -23,26 +26,37 @@ const sanitizeConfig = async config =>
     }
 
     return sanitized;
-  }, Promise.resolve({}));
+  }, Promise.resolve({} as SyncConfig['config']));
 
-const getValuesFromTemplateProperties = async (config, validTypes, valueProperty) => {
+const getValuesFromTemplateProperties = async (
+  config: SyncConfig['config'],
+  validTypes: string[],
+  valueProperty: keyof PropertySchema
+) => {
   const templatesConfig = config.templates || {};
 
   return Object.keys(templatesConfig).reduce(async (prev, templateId) => {
     const validList = await prev;
-    const template = await models.templates.getById(templateId);
-    const templateConfigProperties = templatesConfig[templateId].properties;
-    (template.properties || []).forEach(p => {
-      if (templateConfigProperties.includes(p._id.toString()) && validTypes.includes(p.type)) {
-        validList.push(p[valueProperty].toString());
+    const template = await templatesModel.getById(templateId);
+    // @ts-ignore
+    const templateConfigProperties = templatesConfig?.[templateId]?.properties;
+    (template?.properties || []).forEach(property => {
+      if (
+        templateConfigProperties.includes(property._id?.toString()) &&
+        validTypes.includes(property.type) &&
+        property[valueProperty] &&
+        property[valueProperty] !== undefined
+      ) {
+        // @ts-ignore
+        validList.push(property[valueProperty].toString());
       }
     });
 
     return Promise.resolve(validList);
-  }, Promise.resolve([]));
+  }, Promise.resolve([] as Array<string>));
 };
 
-const getApprovedCollections = config => {
+const getApprovedCollections = (config: SyncConfig['config']) => {
   const collections = Object.keys(config);
   const whitelistedCollections = collections.includes('templates')
     ? collections.concat([
@@ -61,10 +75,10 @@ const getApprovedCollections = config => {
   return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
 };
 
-const getApprovedThesauri = async config =>
+const getApprovedThesauri = async (config: SyncConfig['config']) =>
   getValuesFromTemplateProperties(config, ['select', 'multiselect'], 'content');
 
-const getApprovedRelationtypes = async config => {
+const getApprovedRelationtypes = async (config: SyncConfig['config']) => {
   const relationtypesConfig = config.relationtypes || [];
   const validTemplateRelationtypes = await getValuesFromTemplateProperties(
     config,
@@ -74,7 +88,7 @@ const getApprovedRelationtypes = async config => {
   return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
-export default async (config, targetName) => {
+export default async (config: SyncConfig, targetName: string) => {
   const [{ lastSync }] = await syncsModel.find({ name: targetName });
 
   return {
@@ -88,7 +102,7 @@ export default async (config, targetName) => {
           timestamp: { $gt: lastSync },
           namespace: { $in: approvedCollections },
         },
-        null,
+        undefined,
         {
           sort: { timestamp: 1 },
           limit: 50,
@@ -107,7 +121,7 @@ export default async (config, targetName) => {
           $and: [{ timestamp: { $gt: lastSync } }, { timestamp: { $lte: endTimestamp } }],
           namespace: { $in: approvedCollections },
         },
-        null,
+        undefined,
         {
           sort: {
             timestamp: 1,
@@ -117,7 +131,7 @@ export default async (config, targetName) => {
       );
     },
 
-    async shouldSync(change) {
+    async shouldSync(change: DataType<UpdateLog>) {
       if (change.deleted) return { skip: true };
       const templatesConfig = this.config.templates || {};
       const relationtypesConfig = this.config.relationtypes || [];

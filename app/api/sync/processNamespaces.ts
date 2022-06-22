@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import sift from 'sift';
-import { models, WithId } from 'api/odm';
+import { DataType, models, WithId } from 'api/odm';
 import {
   SettingsSyncTemplateSchema,
   SettingsSyncRelationtypesSchema,
@@ -15,6 +15,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import { EntitySchema } from 'shared/types/entityType';
 import { filesModel } from 'api/files/filesModel';
 import { FileType } from 'shared/types/fileType';
+import { UpdateLog } from 'api/updatelogs';
 
 const noDataFound = 'NO_DATA_FOUND';
 
@@ -32,7 +33,7 @@ type NamespaceNames = typeof namespaces[number];
 type MethodNames = NamespaceNames | 'default';
 
 interface Options {
-  change: { namespace: NamespaceNames; mongoId: ObjectIdSchema };
+  change: DataType<UpdateLog>;
   templatesConfig: {
     [k: string]: SettingsSyncTemplateSchema;
   };

@@ -115,12 +115,12 @@ export interface Settings {
 export type SettingsSyncRelationtypesSchema = string[];
 
 export interface SettingsSyncSchema {
-  url?: string;
+  url: string;
   active?: boolean;
-  username?: string;
-  password?: string;
-  name?: string;
-  config?: {
+  username: string;
+  password: string;
+  name: string;
+  config: {
     templates?: {
       [k: string]:
         | (
