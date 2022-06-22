@@ -2,19 +2,19 @@
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
-import { catchErrors } from 'api/utils/jasmineHelpers';
-import date from 'api/utils/date.js';
-import db from 'api/utils/testing_db';
+
 import entitiesModel from 'api/entities/entitiesModel';
+import { applicationEventsBus } from 'api/eventsbus';
 import { fs } from 'api/files';
+import { uploadsPath, fileExists } from 'api/files/filesystem';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
-import { uploadsPath, fileExists } from 'api/files/filesystem';
-
 import { Suggestions } from 'api/suggestions/suggestions';
+import date from 'api/utils/date.js';
+import { catchErrors } from 'api/utils/jasmineHelpers';
+import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
-import entities from '../entities.js';
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -29,7 +29,7 @@ import fixtures, {
   unpublishedDocId,
   entityGetTestTemplateId,
 } from './fixtures.js';
-import { applicationEventsBus } from 'api/eventsbus';
+import entities from '../entities.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
 
 describe('entities', () => {

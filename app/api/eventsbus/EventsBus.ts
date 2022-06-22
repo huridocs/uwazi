@@ -11,7 +11,7 @@ interface EventConstructor<T> {
 interface EventListenersMap {
   [event: string]: Array<Listener<any>>;
 }
-export class EventsBus {
+class EventsBus {
   private listeners: EventListenersMap = {};
 
   async emit(event: AbstractEvent<unknown>) {
@@ -30,3 +30,5 @@ export class EventsBus {
     this.listeners[event.name].push(listener);
   }
 }
+
+export { EventsBus };

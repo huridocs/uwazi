@@ -6,4 +6,6 @@ interface EntityUpdatedData {
   after: EntitySchema;
 }
 
-export class EntityUpdatedEvent extends AbstractEvent<EntityUpdatedData> {}
+class EntityUpdatedEvent extends AbstractEvent<EntityUpdatedData> {}
+
+export { EntityUpdatedEvent };

@@ -25,10 +25,12 @@ const updateIxSuggestionsTrigger = async (
   return changedMetadata.some(m => extractedProperties.has(m));
 };
 
-export const registerEventListeners = (eventsBus: EventsBus) => {
+const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(EntityUpdatedEvent, async ({ before, after }) => {
     if (await updateIxSuggestionsTrigger(before, after)) {
       await Suggestions.updateStates({ entityId: after.sharedId });
     }
   });
 };
+
+export { registerEventListeners };

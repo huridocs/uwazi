@@ -1,4 +1,4 @@
-export abstract class AbstractEvent<T> {
+abstract class AbstractEvent<T> {
   private data: T;
 
   constructor(data: T) {
@@ -13,3 +13,5 @@ export abstract class AbstractEvent<T> {
     return this.constructor.name;
   }
 }
+
+export { AbstractEvent };

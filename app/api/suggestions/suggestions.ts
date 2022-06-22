@@ -2,18 +2,18 @@ import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
-import { EntitySchema } from 'shared/types/entityType';
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import { updateStates } from './updateState';
+import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
+import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
-import { registerEventListeners } from './eventListeners';
+import { updateStates } from './updateState';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;

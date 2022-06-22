@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign,max-statements */
 import path from 'path';
 
+import { applicationEventsBus } from 'api/eventsbus';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -16,14 +17,13 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
-import { applicationEventsBus } from 'api/eventsbus';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
+import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import settings from '../settings';
-import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
