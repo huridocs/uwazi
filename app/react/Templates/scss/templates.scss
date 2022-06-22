@@ -1,12 +1,12 @@
-@import "../../App/scss/config/_colors.scss";
-@import "../../App/scss/config/_typography.scss";
-@import "../../App/scss/config/_materials.scss";
+@import '../../App/scss/config/_colors.scss';
+@import '../../App/scss/config/_typography.scss';
+@import '../../App/scss/config/_materials.scss';
 
 .metadataTemplate-list {
   .no-properties {
     text-align: center;
     font-size: 14px;
-    color: #AFAFAF;
+    color: #afafaf;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-top: 15px;
@@ -29,15 +29,15 @@
       display: inline-block;
       font-size: 12px;
 
-      @media(max-width: 1310px) {
+      @media (max-width: 1310px) {
         font-size: 10px;
       }
 
-      @media(max-width: 1080px) {
+      @media (max-width: 1080px) {
         padding: 10px 5px;
       }
 
-      @media(max-width: 1043px) {
+      @media (max-width: 1043px) {
         font-size: 9px;
       }
     }
@@ -52,13 +52,17 @@
         background-color: #eee;
       }
 
-      @media(max-width: 1310px) {
+      @media (max-width: 1310px) {
         font-size: 10px;
       }
 
-      @media(max-width: 1080px) {
+      @media (max-width: 1080px) {
         font-size: 9px;
       }
+    }
+
+    .translation {
+      padding: 0;
     }
   }
 }
@@ -137,7 +141,7 @@
     }
 
     .geolocation-grouping-alert {
-      background: #FFF2D0;
+      background: #fff2d0;
       border: 1px solid rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
       border-radius: 2px;

@@ -1,17 +1,14 @@
-/**
- * @jest-environment jsdom
- */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { DragSource } from 'react-dnd';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
-
+import { Translate } from 'app/I18N';
 import { removeProperty, addProperty } from 'app/Templates/actions/templateActions';
 import Icons from './Icons';
 
-export class PropertyOption extends Component {
+class PropertyOption extends Component {
   constructor(props) {
     super(props);
     this.addProperty = this.addProperty.bind(this);
@@ -34,7 +31,9 @@ export class PropertyOption extends Component {
           <Icon icon="plus" />
         </button>
         <span>
-          <Icon icon={iconClass} /> {label}
+          <Icon icon={iconClass} />
+          &nbsp;
+          <Translate translationKey={type}>{label}</Translate>
         </span>
       </li>
     );
@@ -71,10 +70,10 @@ const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
   connectDragSource: connector.dragSource(),
 }))(PropertyOption);
 
-export { dragSource };
-
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeProperty, addProperty }, dispatch);
 }
 
+export { dragSource };
+export { PropertyOption };
 export default connect(null, mapDispatchToProps, null, { withRef: true })(dragSource);
