@@ -1,16 +1,15 @@
 import entities from 'api/entities';
+import { applicationEventsBus } from 'api/eventsbus';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { deleteUploadedFiles } from 'api/files/filesystem';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import connections from 'api/relationships';
 import { search } from 'api/search';
-import { Suggestions } from 'api/suggestions/suggestions';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
-import { applicationEventsBus } from 'api/eventsbus';
-import { filesModel } from './filesModel';
 import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent';
+import { filesModel } from './filesModel';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };

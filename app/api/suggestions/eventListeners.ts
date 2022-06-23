@@ -1,12 +1,13 @@
 import _ from 'lodash';
+
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
+import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import settings from 'api/settings';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { EntitySchema } from 'shared/types/entityType';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { Suggestions } from './suggestions';
 
 const updateIxSuggestionsTrigger = async (

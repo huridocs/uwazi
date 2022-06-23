@@ -1,15 +1,15 @@
 /* eslint-disable max-statements */
 
 import entities from 'api/entities';
+import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import fixtures, { batmanFinishesId } from 'api/entities/specs/fixtures';
 import { applicationEventsBus } from 'api/eventsbus';
-import db from 'api/utils/testing_db';
-import { search } from 'api/search';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FileType } from 'shared/types/fileType';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
+import { search } from 'api/search';
+import db from 'api/utils/testing_db';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
 import { registerEventListeners } from '../eventListeners';
 import { Suggestions } from '../suggestions';
 

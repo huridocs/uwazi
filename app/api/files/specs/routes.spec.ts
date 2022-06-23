@@ -1,18 +1,17 @@
+import { Application, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from 'api/search';
+import entities from 'api/entities';
+import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
+import connections from 'api/relationships';
+import { search } from 'api/search';
+import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import db from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import connections from 'api/relationships';
-
 import { FileType } from 'shared/types/fileType';
-import entities from 'api/entities';
-import * as ocrRecords from 'api/services/ocr/ocrRecords';
-import { applicationEventsBus } from 'api/eventsbus';
 import {
   fixtures,
   uploadId,
@@ -21,11 +20,10 @@ import {
   adminUser,
   writerUser,
 } from './fixtures';
-import { files } from '../files';
-import uploadRoutes from '../routes';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
-import { spyOnEmit } from 'api/eventsbus/eventTesting';
+import { files } from '../files';
+import uploadRoutes from '../routes';
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');

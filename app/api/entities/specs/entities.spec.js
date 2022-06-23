@@ -15,7 +15,6 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
-import { applicationEventsBus } from 'api/eventsbus';
 import fixtures, {
   adminId,
   batmanFinishesId,
