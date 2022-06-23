@@ -65,6 +65,7 @@ const enterOnLibrary = (_nxtState, replace) => {
   }
 
   trackPage();
+  return () => {};
 };
 
 const getDefaultLibraryComponent = defaultLibraryView => {
@@ -115,21 +116,17 @@ const libraryDefaults = (callBack, state, defaultView) => {
 const getIndexRoute = (_nextState, callBack) => {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page') || '';
+  const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
   const defaultView = state.settings.collection.get('defaultLibraryView');
 
-  if (validateHomePageRoute(homePageSetting)) {
-    const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
-    if (customHomePage.includes('page')) {
-      return callBack(null, getPageIndexRoute(customHomePage));
-    }
-
-    if (customHomePage.length) {
-      return callBack(null, {
-        onEnter: (_nxtState, replace) => {
-          replace(customHomePage.join('/'));
-        },
-      });
-    }
+  if (validateHomePageRoute(homePageSetting) && customHomePage.length > 0) {
+    return customHomePage.includes('page')
+      ? callBack(null, getPageIndexRoute(customHomePage))
+      : callBack(null, {
+          onEnter: (_nxtState, replace) => {
+            replace(customHomePage.join('/'));
+          },
+        });
   }
   return libraryDefaults(callBack, state, defaultView);
 };
