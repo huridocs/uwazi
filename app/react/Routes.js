@@ -119,16 +119,16 @@ const getIndexRoute = (_nextState, callBack) => {
   const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
   const defaultView = state.settings.collection.get('defaultLibraryView');
 
-  if (validateHomePageRoute(homePageSetting) && customHomePage.length > 0) {
-    return customHomePage.includes('page')
-      ? callBack(null, getPageIndexRoute(customHomePage))
-      : callBack(null, {
-          onEnter: (_nxtState, replace) => {
-            replace(customHomePage.join('/'));
-          },
-        });
+  if (!validateHomePageRoute(homePageSetting) || customHomePage.length === 0) {
+    return libraryDefaults(callBack, state, defaultView);
   }
-  return libraryDefaults(callBack, state, defaultView);
+  return customHomePage.includes('page')
+    ? callBack(null, getPageIndexRoute(customHomePage))
+    : callBack(null, {
+        onEnter: (_nxtState, replace) => {
+          replace(customHomePage.join('/'));
+        },
+      });
 };
 
 const routes = (
