@@ -4,7 +4,7 @@
 import Ajv from 'ajv';
 
 import entitiesModel from 'api/entities/entitiesModel';
-import { spyOnEmit, toEmitEvent } from 'api/eventsbus/eventTesting';
+import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import { fs } from 'api/files';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import relationships from 'api/relationships';
@@ -31,8 +31,6 @@ import fixtures, {
 } from './fixtures.js';
 import entities from '../entities.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
-
-expect.extend({ toEmitEvent });
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
