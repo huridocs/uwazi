@@ -1,10 +1,10 @@
 import { DataType, models } from 'api/odm';
-import { model as updateLog, UpdateLog } from 'api/updatelogs';
 import { SyncConfig } from 'api/sync/syncWorker';
 import templatesModel from 'api/templates/templatesModel';
-import syncsModel from './syncsModel';
-import { ProcessNamespaces } from './processNamespaces';
+import { model as updateLog, UpdateLog } from 'api/updatelogs';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { ProcessNamespaces } from './processNamespaces';
+import syncsModel from './syncsModel';
 
 const sanitizeConfig = async (config: SyncConfig['config']) =>
   (Object.keys(config) as Array<keyof SyncConfig['config']>).reduce(async (prev, key) => {
@@ -42,7 +42,7 @@ const getValuesFromTemplateProperties = async (
     const templateConfigProperties = templatesConfig?.[templateId]?.properties;
     (template?.properties || []).forEach(property => {
       if (
-        templateConfigProperties.includes(property._id?.toString()) &&
+        templateConfigProperties.includes(property._id?.toString() || '') &&
         validTypes.includes(property.type) &&
         property[valueProperty] &&
         property[valueProperty] !== undefined
@@ -88,7 +88,7 @@ const getApprovedRelationtypes = async (config: SyncConfig['config']) => {
   return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
-export default async (config: SyncConfig, targetName: string) => {
+export const createSyncConfig = async (config: SyncConfig, targetName: string) => {
   const [{ lastSync }] = await syncsModel.find({ name: targetName });
 
   return {
@@ -134,6 +134,7 @@ export default async (config: SyncConfig, targetName: string) => {
     async shouldSync(change: DataType<UpdateLog>) {
       if (change.deleted) return { skip: true };
       const templatesConfig = this.config.templates || {};
+
       const relationtypesConfig = this.config.relationtypes || [];
 
       const whitelistedThesauri = await getApprovedThesauri(this.config);

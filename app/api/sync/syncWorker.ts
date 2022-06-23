@@ -5,8 +5,8 @@ import { SettingsSyncSchema } from 'shared/types/settingsType';
 import { tenants } from 'api/tenants';
 import settings from 'api/settings';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import synchronizer from './synchronizer';
-import createSyncConfig from './syncConfig';
+import { synchronizer } from './synchronizer';
+import { createSyncConfig } from './syncConfig';
 import syncsModel from './syncsModel';
 
 const updateSyncs = async (name: string, lastSync: number) =>
@@ -29,10 +29,22 @@ class InvalidSyncConfig extends Error {
   }
 }
 
-export type SyncConfig = SettingsSyncSchema & {
+export interface SyncConfig {
   url: string;
+  active?: boolean;
+  username: string;
+  password: string;
   name: string;
-};
+  config: {
+    templates?: {
+      [k: string]: {
+        properties: string[];
+        filter?: string;
+      };
+    };
+    relationtypes?: string[];
+  };
+}
 
 const validateConfig = (config: SettingsSyncSchema) => {
   if (!config.name) throw new InvalidSyncConfig('Name is not defined on sync config');

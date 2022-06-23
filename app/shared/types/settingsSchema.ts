@@ -93,9 +93,7 @@ const settingsSyncSchema = {
       properties: {
         templates: {
           type: 'object',
-          additionalProperties: {
-            anyOf: [settingsSyncTemplateSchema, { type: 'array', items: { type: 'string' } }],
-          },
+          additionalProperties: settingsSyncTemplateSchema,
         },
         relationtypes: settingsSyncRelationtypesSchema,
       },
@@ -193,7 +191,7 @@ const settingsSchema = {
     newNameGeneration: { type: 'boolean', enum: [true] },
     ocrServiceEnabled: { type: 'boolean' },
 
-    sync: { oneOf: [settingsSyncSchema, { type: 'array', items: settingsSyncSchema }] },
+    sync: { type: 'array', items: settingsSyncSchema },
 
     evidencesVault: settingsEvidencesVaultSchema,
 
