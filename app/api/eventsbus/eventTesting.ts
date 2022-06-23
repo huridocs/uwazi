@@ -29,8 +29,11 @@ const spyOnEmit = () => {
   return {
     expectToEmitEvent: <T>(event: EventConstructor<T>, eventData: T) => {
       expect(spy).toHaveBeenCalled();
-      expect(spy.mock.calls[0][0]).toBeInstanceOf(event);
-      expect(spy.mock.calls[0][0].getData()).toEqual(eventData);
+      const expectedCall = spy.mock.calls.find(call => call[0] instanceof event);
+      if (typeof expectedCall === 'undefined') {
+        fail(`No event of type ${event.name} was emitted.`);
+      }
+      expect(expectedCall[0].getData()).toEqual(eventData);
       spy.mockClear();
     },
     spy,

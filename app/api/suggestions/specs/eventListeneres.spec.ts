@@ -1,5 +1,4 @@
-/* eslint-disable max-statements */
-
+import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
@@ -149,6 +148,32 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     } else {
       expect(updateSpy).not.toHaveBeenCalled();
     }
+  });
+});
+
+describe(`On ${EntityDeletedEvent.name}`, () => {
+  it('should delete all files that triggered the event', async () => {
+    const deleteSpy = jest.spyOn(Suggestions, 'deleteByEntityId');
+
+    const doc1Id = db.id();
+    const doc2Id = db.id();
+
+    await applicationEventsBus.emit(
+      new EntityDeletedEvent({
+        entity: [
+          {
+            _id: doc1Id,
+            sharedId: 'shared',
+          },
+          {
+            _id: doc2Id,
+            sharedId: 'shared',
+          },
+        ],
+      })
+    );
+
+    expect(deleteSpy).toHaveBeenCalledWith('shared');
   });
 });
 

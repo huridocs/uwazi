@@ -8,7 +8,6 @@ import * as filesystem from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
-import { Suggestions } from 'api/suggestions/suggestions';
 import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
@@ -20,6 +19,7 @@ import ID from 'shared/uniqueID';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
+import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
@@ -685,8 +685,10 @@ export default {
       files.delete({ entity: sharedId }),
       this.deleteFiles(docs),
       this.deleteRelatedEntityFromMetadata(docs[0]),
-      Suggestions.deleteByEntityId(sharedId),
     ]);
+
+    await applicationEventsBus.emit(new EntityDeletedEvent({ entity: docs }));
+
     return docs;
   },
 

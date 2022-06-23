@@ -1,5 +1,4 @@
 import _ from 'lodash';
-
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
@@ -8,12 +7,10 @@ import settings from 'api/settings';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { EntitySchema } from 'shared/types/entityType';
+import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { Suggestions } from './suggestions';
 
-const updateIxSuggestionsTrigger = async (
-  existingEntity: EntitySchema,
-  newEntity: EntitySchema
-) => {
+const extractedMetadataChanged = async (existingEntity: EntitySchema, newEntity: EntitySchema) => {
   const extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
   if (!extractionTemplates || !newEntity.metadata) return false;
   const extractionTemplatesIndexed = objectIndex(
@@ -33,9 +30,14 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(EntityUpdatedEvent, async ({ before, after, targetLanguageKey }) => {
     const originalDoc = before.find(doc => doc.language === targetLanguageKey)!;
     const modifiedDoc = after.find(doc => doc.language === targetLanguageKey)!;
-    if (await updateIxSuggestionsTrigger(originalDoc, modifiedDoc)) {
+
+    if (await extractedMetadataChanged(originalDoc, modifiedDoc)) {
       await Suggestions.updateStates({ entityId: originalDoc.sharedId });
     }
+  });
+
+  eventsBus.on(EntityDeletedEvent, async ({ entity }) => {
+    await Suggestions.deleteByEntityId(entity[0].sharedId!);
   });
 
   eventsBus.on(FileUpdatedEvent, async ({ before, after }) => {

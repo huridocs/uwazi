@@ -9,7 +9,6 @@ import { fs } from 'api/files';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
-import { Suggestions } from 'api/suggestions/suggestions';
 import date from 'api/utils/date.js';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
@@ -31,6 +30,7 @@ import fixtures, {
 } from './fixtures.js';
 import entities from '../entities.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
+import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -1366,10 +1366,14 @@ describe('entities', () => {
     });
 
     it('should delete the suggestions with the entity sharedId', async () => {
+      const emitSpy = spyOnEmit();
       await entities.delete('shared');
-      const entitySuggestions = await Suggestions.getByEntityId('shared');
-      expect(entitySuggestions.length).toBe(0);
-      expect((await Suggestions.getByEntityId('other')).length).toBe(1);
+      emitSpy.expectToEmitEvent(EntityDeletedEvent, {
+        entity: fixtures.entities
+          .filter(entity => entity.sharedId === 'shared')
+          .map(entity => expect.objectContaining({ _id: entity._id })),
+      });
+      emitSpy.restore();
     });
   });
 
