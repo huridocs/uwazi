@@ -121,12 +121,38 @@ export default {
         text: [{ value: 'Text content' }],
         regular_geolocation_geolocation: [{ value: { lat: 18, lon: 7 } }],
         regular_relationship: [{ value: 'entity02' }],
-        inherited_country: [{ value: 'entity06', label: 'Country A en' }],
+        inherited_country: [
+          {
+            value: 'entity06',
+            label: 'Country A en',
+            inheritedValue: [{ value: null }],
+            inheritedType: 'geolocation',
+          },
+        ],
         inherited_home: [
-          { value: 'entity01', label: 'Entity with two geolocations en' },
-          { value: 'entity03', label: 'Entity with single geolocation en' },
-          { value: 'entity04', label: 'Entity without geolocation en' },
-          { value: 'entity04.1', label: 'entity without metadata' },
+          {
+            value: 'entity01',
+            label: 'Entity with two geolocations en',
+            inheritedValue: [{ value: { lat: 13, lon: 7, label: '' } }],
+            inheritedType: 'geolocation',
+          },
+          {
+            value: 'entity03',
+            label: 'Entity with single geolocation en',
+            inheritedValue: [{ value: { lat: 5, lon: 10, label: '' } }],
+            inheritedType: 'geolocation',
+          },
+          {
+            value: 'entity04',
+            label: 'Entity without geolocation en',
+            inheritedValue: [],
+            inheritedType: 'geolocation',
+          },
+          {
+            value: 'entity04.1',
+            label: 'entity without metadata',
+            inheritedType: 'geolocation',
+          },
         ],
       },
       published: true,
@@ -141,8 +167,13 @@ export default {
       metadata: {
         text: [{ value: 'Text content' }],
         inherited_home: [
-          { value: 'entity02', label: 'Entity not always inherited en' },
-          { value: 'noExiste' },
+          {
+            value: 'entity02',
+            label: 'Entity not always inherited en',
+            inheritedValue: [{ value: { lat: 111, lon: 222, label: '' } }],
+            inheritedType: 'geolocation',
+          },
+          { value: 'noExiste', inheritedType: 'geolocation' },
         ],
       },
       published: true,
@@ -157,7 +188,14 @@ export default {
       metadata: {
         text: [{ value: 'Text content' }],
         null_geolocation_geolocation: [],
-        inherited_country: [{ value: 'entityPrivate01', label: 'Country A en' }],
+        inherited_country: [
+          {
+            value: 'entityPrivate01',
+            label: 'Country A en',
+            inheritedValue: [{ value: { lat: 24, lon: 8, label: '' } }],
+            inheritedType: 'geolocation',
+          },
+        ],
       },
       published: true,
       user: userId,
@@ -180,7 +218,14 @@ export default {
       title: 'Entity with other property inherited en',
       metadata: {
         text: [{ value: 'Text content' }],
-        inherited_work: [{ value: 'entity01', label: 'Entity with two geolocations en' }],
+        inherited_work: [
+          {
+            value: 'entity01',
+            label: 'Entity with two geolocations en',
+            inheritedValue: [{ value: { lat: 23, lon: 8, label: '' } }],
+            inheritedType: 'geolocation',
+          },
+        ],
       },
       published: true,
       user: userId,
@@ -191,7 +236,16 @@ export default {
       template: template4,
       language: 'en',
       title: 'Entity linking a null en',
-      metadata: { inherited_work: [{ value: 'entity06', label: 'Country A en' }] },
+      metadata: {
+        inherited_work: [
+          {
+            value: 'entity06',
+            label: 'Country A en',
+            inheritedValue: [],
+            inheritedType: 'geolocation',
+          },
+        ],
+      },
       published: true,
       user: userId,
     },
