@@ -640,18 +640,24 @@ const fixtures: DBFixture = {
       languages: [{ key: 'es', default: true, label: 'es' }],
       sync: [
         {
+          username: 'user1',
+          password: 'password1',
           url: 'url1',
           name: 'target1',
           active: true,
           config: {},
         },
         {
+          username: 'user2',
+          password: 'password2',
           url: 'url2',
           name: 'target2',
           active: false,
           config: {},
         },
         {
+          username: 'user3',
+          password: 'password3',
           url: 'url3',
           name: 'target3',
           active: true,
@@ -662,7 +668,7 @@ const fixtures: DBFixture = {
   ],
 };
 
-const host1Fixtures = {
+const host1Fixtures: DBFixture = {
   ...fixtures,
   syncs: [
     {
@@ -811,12 +817,14 @@ const host1Fixtures = {
           password: 'password',
           config: {
             templates: {
-              [template1.toString()]: [
-                template1Property1.toString(),
-                template1Property2.toString(),
-                template1PropertyThesauri1Select.toString(),
-                template1PropertyRelationship1.toString(),
-              ],
+              [template1.toString()]: {
+                properties: [
+                  template1Property1.toString(),
+                  template1Property2.toString(),
+                  template1PropertyThesauri1Select.toString(),
+                  template1PropertyRelationship1.toString(),
+                ],
+              },
             },
           },
         },
@@ -828,7 +836,7 @@ const host1Fixtures = {
           password: 'password2',
           config: {
             templates: {
-              [template2.toString()]: [],
+              [template2.toString()]: { properties: [] },
             },
           },
         },
@@ -837,7 +845,7 @@ const host1Fixtures = {
   ],
 };
 
-const host2Fixtures = {
+const host2Fixtures: DBFixture = {
   ...fixtures,
   updatelogs: fixtures.updatelogs.filter(
     (log: UpdateLog) => log.mongoId.toString() === template3.toString()
@@ -869,7 +877,7 @@ const host2Fixtures = {
         password: 'password2',
         config: {
           templates: {
-            [template3.toString()]: [],
+            [template3.toString()]: { properties: [] },
           },
         },
       },

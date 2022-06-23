@@ -71,8 +71,10 @@ export const syncWorker = {
     await ensureArray(syncSettings).reduce(async (previousSync, config) => {
       await previousSync;
       const syncConfig = validateConfig(config);
-      const cookie = await this.login(syncConfig);
-      await this.syncronizeConfig(syncConfig, cookie);
+      if (syncConfig.active) {
+        const cookie = await this.login(syncConfig);
+        await this.syncronizeConfig(syncConfig, cookie);
+      }
     }, Promise.resolve());
   },
 

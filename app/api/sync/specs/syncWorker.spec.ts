@@ -7,7 +7,9 @@ import {
   files,
   testingUploadPaths,
 } from 'api/files';
+import translations from 'api/i18n';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import relationships from 'api/relationships';
 import relationtypes from 'api/relationtypes';
 import syncRoutes from 'api/sync/routes';
 import templates from 'api/templates';
@@ -20,15 +22,14 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
+import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { rmdir, writeFile } from 'fs/promises';
 import { Server } from 'http';
 import 'isomorphic-fetch';
+import _ from 'lodash';
 import { FetchResponseError } from 'shared/JSONRequest';
-import translations from 'api/i18n';
-import relationships from 'api/relationships';
-import { advancedSort } from 'app/utils/advancedSort';
 import { syncWorker } from '../syncWorker';
 import {
   host1Fixtures,
@@ -360,9 +361,28 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
+  describe('when active is false', () => {
+    it('should not sync anything', async () => {
+      const changedFixtures = _.cloneDeep(host1Fixtures);
+      //@ts-ignore
+      changedFixtures.settings[0].sync[0].config.templates = {};
+      //@ts-ignore
+      changedFixtures.settings[0].sync[0].active = false;
+      await db.setupFixturesAndContext({ ...changedFixtures }, undefined, 'host1');
+
+      await syncWorker.runAllTenants();
+
+      await tenants.run(async () => {
+        const syncedTemplates = await templates.get();
+        expect(syncedTemplates).toHaveLength(1);
+      }, 'target1');
+    });
+  });
+
   describe('after changing sync configurations', () => {
     it('should delete templates not defined in the config', async () => {
-      const changedFixtures = { ...host1Fixtures };
+      const changedFixtures = _.cloneDeep(host1Fixtures);
+      //@ts-ignore
       changedFixtures.settings[0].sync[0].config.templates = {};
       await db.setupFixturesAndContext({ ...changedFixtures }, undefined, 'host1');
 
