@@ -43,7 +43,9 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
         </thead>
         <tbody>
           {sortedUsers.map((user: UserSchema) => {
-            const protection = user.using2fa ? 'Password + 2FA' : 'Password';
+            const roleTranslationKey = `${user.role[0].toUpperCase()}${user.role
+              .slice(1)
+              .toLowerCase()}`;
             return (
               <tr
                 className={selectedId === user._id ? 'selected' : ''}
@@ -52,10 +54,15 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
               >
                 <td>{user.username}</td>
                 <td>
-                  <Pill color={user.using2fa ? 'palegreen' : 'lightgray'}>{protection}</Pill>
+                  <Pill color={user.using2fa ? 'palegreen' : 'lightgray'}>
+                    <Translate translationKey="Password">Password</Translate>
+                    {user.using2fa && ' + 2FA'}
+                  </Pill>
                 </td>
                 <td>
-                  <Pill color="white">{user.role}</Pill>
+                  <Pill color="white">
+                    <Translate translationKey={roleTranslationKey}>{user.role}</Translate>
+                  </Pill>
                 </td>
                 <td>
                   {user.groups?.map(group => (
