@@ -9,10 +9,10 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { checkWritePermissions } from 'shared/permissionsUtils';
 import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
+import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
-import entities from '../entities';
 import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
@@ -496,94 +496,6 @@ const processResponse = async (response, templates, dictionaries, language, filt
   };
 };
 
-const determineInheritedProperties = templates =>
-  templates.reduce((memo, template) => {
-    const inheritedProperties = memo;
-    template.properties.forEach(property => {
-      if (
-        property.type === 'relationship' &&
-        property.inherit &&
-        property.inherit.type === 'geolocation'
-      ) {
-        const contentTemplate = templates.find(
-          t => t._id.toString() === property.content.toString()
-        );
-        const inheritedProperty = contentTemplate.properties.find(
-          p => p._id.toString() === property.inherit.property.toString()
-        );
-        if (inheritedProperty) {
-          inheritedProperties[template._id.toString()] =
-            inheritedProperties[template._id.toString()] || {};
-          inheritedProperties[template._id.toString()][property.name] = {
-            base: property,
-            target: inheritedProperty,
-          };
-        }
-      }
-    });
-    return inheritedProperties;
-  }, {});
-
-const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
-  const toFetchByTemplate = {};
-
-  baseResults.rows.forEach(row => {
-    Object.keys(row.metadata || {}).forEach(name => {
-      if (Object.keys(templatesInheritedProperties[row.template.toString()] || []).includes(name)) {
-        const inheritedProperty = templatesInheritedProperties[row.template.toString()][name];
-        const template = inheritedProperty.base.content;
-        toFetchByTemplate[template] = toFetchByTemplate[template] || {
-          entities: [],
-          properties: [],
-        };
-        toFetchByTemplate[template].entities = toFetchByTemplate[template].entities.concat(
-          row.metadata[name].map(mo => mo.value)
-        );
-        if (!toFetchByTemplate[template].properties.includes(inheritedProperty.target.name)) {
-          toFetchByTemplate[template].properties.push(inheritedProperty.target.name);
-        }
-      }
-    });
-  });
-
-  return toFetchByTemplate;
-};
-
-const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
-  Promise.all(
-    Object.keys(toFetchByTemplate).map(t => {
-      const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
-      if (!user) {
-        query.published = true;
-      }
-      return entities.get(query, {
-        ...toFetchByTemplate[t].properties.reduce(
-          (memo, n) =>
-            Object.assign(memo, { [`metadata.${n}.value`]: true, [`metadata.${n}.label`]: true }),
-          {}
-        ),
-        sharedId: true,
-        title: true,
-      });
-    })
-  );
-
-const getInheritedEntities = async (results, language, user) => {
-  const templates = await templatesModel.get();
-  const templatesInheritedProperties = determineInheritedProperties(templates);
-  const toFetchByTemplate = whatToFetchByTemplate(results, templatesInheritedProperties);
-  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language, user);
-  const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
-    const memo = _memo;
-    templateEntities.forEach(e => {
-      memo[e.sharedId] = e;
-    });
-    return memo;
-  }, {});
-
-  return { templatesInheritedProperties, inheritedEntities };
-};
-
 const entityHasGeolocation = entity =>
   entity.metadata &&
   !!Object.keys(entity.metadata)
@@ -600,40 +512,27 @@ const entityHasGeolocation = entity =>
       return false;
     });
 
-const processGeolocationResults = (_results, templatesInheritedProperties, inheritedEntities) => {
+const processGeolocationResults = _results => {
   const results = _results;
-  const processedRows = [];
-  const affectedTemplates = Object.keys(templatesInheritedProperties);
-
-  results.rows.forEach(_row => {
-    const row = _row;
-    if (affectedTemplates.includes(row.template)) {
-      Object.keys(row.metadata).forEach(property => {
-        if (templatesInheritedProperties[row.template][property]) {
-          row.metadata[property].forEach(({ value: entity }, index) => {
-            const targetProperty = templatesInheritedProperties[row.template][property].target.name;
-            const inherited = inheritedEntities[entity]
-              ? inheritedEntities[entity]
-              : { metadata: {} };
-            inherited.metadata = inherited.metadata || {};
-            row.metadata[property][index] = row.metadata[property][index] || {};
-            row.metadata[property][index] = {
-              ...row.metadata[property][index],
-              value: entity,
-              // geolocation may not be sanitized...
-              inherit_geolocation: (inherited.metadata[targetProperty] || []).filter(p => p.value),
-            };
-          });
-        }
-      });
-    }
-    if (entityHasGeolocation(row)) {
-      processedRows.push(row);
-    }
-  });
-
-  results.rows = processedRows;
-  results.totalRows = processedRows.length;
+  results.rows = results.rows
+    .filter(r => r.metadata)
+    .map(_row => ({
+      ..._row,
+      metadata: Object.fromEntries(
+        Object.entries(_row.metadata).map(([key, values]) => [
+          key,
+          values.map(_v => {
+            const newValue = { ..._v };
+            if (_v.inheritedType === propertyTypes.geolocation) {
+              newValue.inherit_geolocation = (_v.inheritedValue || []).filter(iv => iv.value);
+            }
+            return newValue;
+          }),
+        ])
+      ),
+    }))
+    .filter(r => r.metadata && Object.keys(r.metadata).length && entityHasGeolocation(r));
+  results.totalRows = results.rows.length;
   return results;
 };
 
@@ -766,12 +665,7 @@ const search = {
     let results = await this.search({ ...query, geolocation: true }, language, user);
 
     if (results.rows.length) {
-      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(
-        results,
-        language,
-        user
-      );
-      results = processGeolocationResults(results, templatesInheritedProperties, inheritedEntities);
+      results = processGeolocationResults(results);
     }
 
     return results;
