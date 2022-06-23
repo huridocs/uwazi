@@ -869,18 +869,20 @@ const host2Fixtures: DBFixture = {
     {
       _id: settingsId,
       languages: [{ key: 'es', default: true, label: 'es' }],
-      sync: {
-        url: 'http://localhost:6668',
-        name: 'target2',
-        active: true,
-        username: 'user2',
-        password: 'password2',
-        config: {
-          templates: {
-            [template3.toString()]: { properties: [] },
+      sync: [
+        {
+          url: 'http://localhost:6668',
+          name: 'target2',
+          active: true,
+          username: 'user2',
+          password: 'password2',
+          config: {
+            templates: {
+              [template3.toString()]: { properties: [] },
+            },
           },
         },
-      },
+      ],
     },
   ],
 };

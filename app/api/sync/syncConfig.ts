@@ -6,27 +6,23 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { ProcessNamespaces } from './processNamespaces';
 import syncsModel from './syncsModel';
 
-const sanitizeConfig = async (config: SyncConfig['config']) =>
-  (Object.keys(config) as Array<keyof SyncConfig['config']>).reduce(async (prev, key) => {
-    const sanitized = await prev;
-    if (key === 'templates') {
-      const templatesData = await models.templates.get({});
-
-      sanitized.templates = Object.keys(config.templates || {}).reduce((templates, templateId) => {
-        if (templatesData.find(t => t._id.toString() === templateId)) {
-          const templateConfig = config.templates?.[templateId] || { properties: [] };
-          const isArray = Array.isArray(templateConfig);
-          const configObject = isArray ? { properties: templateConfig } : templateConfig;
-          return { ...templates, [templateId]: configObject };
-        }
-        return templates;
-      }, {});
-    } else {
-      sanitized[key] = config[key];
-    }
-
-    return sanitized;
-  }, Promise.resolve({} as SyncConfig['config']));
+const removeDeletedTemplatesFromConfig = async (config: SyncConfig['config']) => {
+  const newConfig = { ...config };
+  const templatesIds = (await templatesModel.get({}, { _id: 1 })).map(template =>
+    template._id.toString()
+  );
+  newConfig.templates = Object.keys(newConfig.templates || {}).reduce(
+    (newTemplatesConfig, templateId) => {
+      if (newTemplatesConfig && templatesIds.includes(templateId)) {
+        // eslint-disable-next-line no-param-reassign
+        newTemplatesConfig[templateId] = config.templates?.[templateId] || { properties: [] };
+      }
+      return newTemplatesConfig;
+    },
+    {} as SyncConfig['config']['templates']
+  );
+  return newConfig;
+};
 
 const getValuesFromTemplateProperties = async (
   config: SyncConfig['config'],
@@ -93,7 +89,7 @@ export const createSyncConfig = async (config: SyncConfig, targetName: string) =
 
   return {
     lastSync,
-    config: await sanitizeConfig(config.config),
+    config: await removeDeletedTemplatesFromConfig(config.config),
 
     async lastChanges() {
       const approvedCollections = getApprovedCollections(this.config);

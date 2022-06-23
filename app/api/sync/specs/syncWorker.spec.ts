@@ -1,5 +1,6 @@
 import authRoutes from 'api/auth/routes';
 import entities from 'api/entities';
+import entitiesModel from 'api/entities/entitiesModel';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -45,9 +46,49 @@ import {
   thesauri1Value2,
 } from './fixtures';
 
+async function runAllTenants() {
+  try {
+    await syncWorker.runAllTenants();
+  } catch (e) {
+    if (e instanceof FetchResponseError) {
+      throw e.json;
+    }
+    throw e;
+  }
+}
+
+async function applyFixtures() {
+  await db.setupFixturesAndContext(host1Fixtures, undefined, 'host1');
+  await db.setupFixturesAndContext(host2Fixtures, undefined, 'host2');
+  await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
+  await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
+  db.UserInContextMockFactory.restore();
+
+  await tenants.run(async () => {
+    await elasticTesting.reindex();
+    await users.newUser({
+      username: 'user',
+      password: 'password',
+      role: 'admin',
+      email: 'user@testing',
+    });
+  }, 'target1');
+
+  await tenants.run(async () => {
+    await elasticTesting.reindex();
+    await users.newUser({
+      username: 'user2',
+      password: 'password2',
+      role: 'admin',
+      email: 'user2@testing',
+    });
+  }, 'target2');
+}
+
 describe('syncWorker', () => {
   let server: Server;
   let server2: Server;
+
   beforeAll(async () => {
     const app = express();
     await db.connect({ defaultTenant: false });
@@ -81,31 +122,7 @@ describe('syncWorker', () => {
       ...(await testingUploadPaths('syncWorker_target2_files')),
     });
 
-    await db.setupFixturesAndContext(host1Fixtures, undefined, 'host1');
-    await db.setupFixturesAndContext(host2Fixtures, undefined, 'host2');
-    await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
-    await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
-    db.UserInContextMockFactory.restore();
-
-    await tenants.run(async () => {
-      await elasticTesting.reindex();
-      await users.newUser({
-        username: 'user',
-        password: 'password',
-        role: 'admin',
-        email: 'user@testing',
-      });
-    }, 'target1');
-
-    await tenants.run(async () => {
-      await elasticTesting.reindex();
-      await users.newUser({
-        username: 'user2',
-        password: 'password2',
-        role: 'admin',
-        email: 'user2@testing',
-      });
-    }, 'target2');
+    await applyFixtures();
 
     app.use(bodyParser.json());
     app.use(appContextMiddleware);
@@ -136,15 +153,6 @@ describe('syncWorker', () => {
     }, 'host1');
     server = app.listen(6667);
     server2 = app.listen(6668);
-
-    try {
-      await syncWorker.runAllTenants();
-    } catch (e) {
-      if (e instanceof FetchResponseError) {
-        throw e.json;
-      }
-      throw e;
-    }
   });
 
   afterAll(async () => {
@@ -160,6 +168,7 @@ describe('syncWorker', () => {
   });
 
   it('should sync the configured templates and its defined properties', async () => {
+    await runAllTenants();
     await tenants.run(async () => {
       const syncedTemplates = await templates.get();
       expect(syncedTemplates).toHaveLength(1);
@@ -185,6 +194,7 @@ describe('syncWorker', () => {
   });
 
   it('should sync entities that belong to the configured templates', async () => {
+    await runAllTenants();
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
       expect(await entities.get({}, {}, { sort: { title: 'asc' } })).toEqual([
@@ -260,6 +270,7 @@ describe('syncWorker', () => {
   });
 
   it('should sync files belonging to the entities synced', async () => {
+    await runAllTenants();
     await tenants.run(async () => {
       const syncedFiles = await files.get();
       expect(syncedFiles).toMatchObject([
@@ -277,6 +288,7 @@ describe('syncWorker', () => {
   });
 
   it('should sync dictionaries that match template properties whitelist', async () => {
+    await runAllTenants();
     await tenants.run(async () => {
       expect(await thesauri.get()).toMatchObject([
         {
@@ -291,6 +303,7 @@ describe('syncWorker', () => {
   });
 
   it('should sync relationTypes that match configured template properties', async () => {
+    await runAllTenants();
     await tenants.run(async () => {
       expect(await relationtypes.get()).toMatchObject([
         {
@@ -302,6 +315,7 @@ describe('syncWorker', () => {
   });
 
   it('should syncronize translations that match configured properties', async () => {
+    await runAllTenants();
     await tenants.run(async () => {
       const syncedTranslations = await translations.get({});
       expect(syncedTranslations).toEqual([
@@ -348,6 +362,7 @@ describe('syncWorker', () => {
   });
 
   it('should syncronize connections that match configured properties', async () => {
+    await runAllTenants();
     await tenants.run(async () => {
       const syncedConnections = await relationships.get({});
       expect(syncedConnections).toEqual([
@@ -361,26 +376,21 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
-  describe('when active is false', () => {
-    it('should not sync anything', async () => {
-      const changedFixtures = _.cloneDeep(host1Fixtures);
-      //@ts-ignore
-      changedFixtures.settings[0].sync[0].config.templates = {};
-      //@ts-ignore
-      changedFixtures.settings[0].sync[0].active = false;
-      await db.setupFixturesAndContext({ ...changedFixtures }, undefined, 'host1');
-
-      await syncWorker.runAllTenants();
-
+  describe('when a template that is configured has been deleted', () => {
+    it('should not throw an error', async () => {
       await tenants.run(async () => {
-        const syncedTemplates = await templates.get();
-        expect(syncedTemplates).toHaveLength(1);
-      }, 'target1');
+        await entitiesModel.delete({ template: template1 });
+        //@ts-ignore
+        await templates.delete({ _id: template1 });
+      }, 'host1');
+
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrowError();
     });
   });
 
   describe('after changing sync configurations', () => {
     it('should delete templates not defined in the config', async () => {
+      await runAllTenants();
       const changedFixtures = _.cloneDeep(host1Fixtures);
       //@ts-ignore
       changedFixtures.settings[0].sync[0].config.templates = {};
@@ -391,6 +401,26 @@ describe('syncWorker', () => {
       await tenants.run(async () => {
         const syncedTemplates = await templates.get();
         expect(syncedTemplates).toHaveLength(0);
+      }, 'target1');
+    });
+  });
+
+  describe('when active is false', () => {
+    it('should not sync anything', async () => {
+      await applyFixtures();
+      await runAllTenants();
+      const changedFixtures = _.cloneDeep(host1Fixtures);
+      //@ts-ignore
+      changedFixtures.settings[0].sync[0].config.templates = {};
+      //@ts-ignore
+      changedFixtures.settings[0].sync[0].active = false;
+      await db.setupFixturesAndContext({ ...changedFixtures }, undefined, 'host1');
+
+      await runAllTenants();
+
+      await tenants.run(async () => {
+        const syncedTemplates = await templates.get();
+        expect(syncedTemplates).toHaveLength(1);
       }, 'target1');
     });
   });
