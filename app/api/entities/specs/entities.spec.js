@@ -558,6 +558,7 @@ describe('entities', () => {
           after: afterAllLanguages,
           targetLanguageKey: 'en',
         });
+        emitSpy.restore();
       });
     });
   });

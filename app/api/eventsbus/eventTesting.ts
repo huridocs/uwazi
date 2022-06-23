@@ -33,6 +33,9 @@ const spyOnEmit = () => {
       spy.mockClear();
     },
     spy,
+    restore: () => {
+      spy.mockRestore();
+    },
   };
 };
 

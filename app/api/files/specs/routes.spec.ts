@@ -88,6 +88,7 @@ describe('files routes', () => {
 
       const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
       emitSpy.expectToEmitEvent(FileUpdatedEvent, { before: original, after });
+      emitSpy.restore();
     });
 
     describe('when external url file', () => {
@@ -234,6 +235,7 @@ describe('files routes', () => {
         await request(app).delete('/api/files').query({ _id: uploadId.toString() });
 
         emitSpy.expectToEmitEvent(FilesDeletedEvent, { files: [file] });
+        emitSpy.restore();
       });
     });
 
