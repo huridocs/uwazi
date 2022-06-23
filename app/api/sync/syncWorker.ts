@@ -100,8 +100,7 @@ export const syncWorker = {
             data: shouldSync.data,
             cookie,
           },
-          'post',
-          syncConfig.lastSync
+          'post'
         );
       }
       await updateSyncs(config.name, change.timestamp);
