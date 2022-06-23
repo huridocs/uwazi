@@ -509,16 +509,6 @@ export default {
     {
       _id: db.id(),
       languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
-      features: {
-        metadataExtraction: {
-          templates: [
-            {
-              template: templateId.toString(),
-              properties: ['property2', 'description'],
-            },
-          ],
-        },
-      },
     },
   ],
   templates: [

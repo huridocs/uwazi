@@ -1,19 +1,18 @@
 /* eslint-disable max-statements */
 
-import entities from 'api/entities';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import fixtures, { batmanFinishesId } from 'api/entities/specs/fixtures';
 import { applicationEventsBus } from 'api/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { search } from 'api/search';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db from 'api/utils/testing_db';
-import { EntitySchema } from 'shared/types/entityType';
+import { propertyTypes } from 'shared/propertyTypes';
 import { FileType } from 'shared/types/fileType';
 import { registerEventListeners } from '../eventListeners';
 import { Suggestions } from '../suggestions';
 
-// TODO: this needs to use its own fixtures
+const fixturesFactory = getFixturesFactory();
 
 beforeAll(() => {
   registerEventListeners(applicationEventsBus);
@@ -21,8 +20,6 @@ beforeAll(() => {
 
 beforeEach(async () => {
   spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-  // @ts-ignore
-  await db.setupFixturesAndContext(fixtures);
 });
 
 afterAll(async () => {
@@ -30,55 +27,128 @@ afterAll(async () => {
 });
 
 describe(`On ${EntityUpdatedEvent.name}`, () => {
-  it('should update ix suggestions on entity update, if relevant metadata is changed', async () => {
-    const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+  let updateSpy: jest.SpyInstance;
+  const notExtractedTemplateName = 'not_extracted_template';
+  const extractedTemplateName = 'extracted_template';
+  const extractedBefore = {
+    _id: db.id(),
+    sharedId: 'sid',
+    title: 'title',
+    template: fixturesFactory.id(extractedTemplateName),
+    metadata: {
+      not_extracted_property_1: [{ value: 'text' }],
+      not_extracted_property_2: [{ value: 0 }],
+      extracted_property_1: [{ value: 'text' }],
+      extracted_property_2: [{ value: 0 }],
+    },
+    language: 'en',
+  };
 
-    const doc: EntitySchema = {
-      _id: batmanFinishesId,
-      sharedId: 'shared',
-      title: 'Batman finishes in other words',
-      language: 'en',
-    };
-    const user = { _id: db.id() };
-    let saved = await entities.save(doc, { user, language: 'en' });
-    expect(updateSpy).not.toHaveBeenCalled();
+  beforeAll(async () => {
+    updateSpy = jest.spyOn(Suggestions, 'updateStates');
+    await db.setupFixturesAndContext({
+      templates: [
+        fixturesFactory.template(notExtractedTemplateName, [
+          fixturesFactory.property('some_property', propertyTypes.text),
+        ]),
+        fixturesFactory.template(extractedTemplateName, [
+          fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+          fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+          fixturesFactory.property('extracted_property_1', propertyTypes.text),
+          fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+        ]),
+      ],
+      settings: [
+        {
+          _id: db.id(),
+          languages: [{ key: 'en', default: true, label: 'English' }],
+          features: {
+            metadataExtraction: {
+              url: 'service-url',
+              templates: [
+                {
+                  template: fixturesFactory.id(extractedTemplateName),
+                  properties: ['extracted_property_1', 'extracted_property_2'],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    });
+  });
 
-    let toSave = {
-      ...doc,
-      metadata: {
-        ...saved.metadata,
-        text: [{ value: 'new text value' }],
-        property1: [{ value: 'new property 1 value' }],
-      },
-    };
-    saved = await entities.save(toSave, { user, language: 'en' });
-    expect(updateSpy).not.toHaveBeenCalled();
-
-    toSave = {
-      ...doc,
-      metadata: {
-        ...saved.metadata,
-        property2: [{ value: 'new property 2 value' }],
-      },
-    };
-    saved = await entities.save(toSave, { user, language: 'en' });
-    expect(updateSpy).toHaveBeenCalledWith({ entityId: saved.sharedId });
-
+  beforeEach(() => {
     updateSpy.mockClear();
-    toSave = {
-      ...doc,
-      metadata: {
-        ...saved.metadata,
-        text: [{ value: 'second new text value' }],
-        property1: [{ value: 'second new property 1 value' }],
-        property2: [{ value: 'second new property 2 value' }],
-        description: [{ value: 'new description value' }],
-      },
-    };
-    saved = await entities.save(toSave, { user, language: 'en' });
-    expect(updateSpy).toHaveBeenCalledWith({ entityId: saved.sharedId });
+  });
 
+  afterAll(() => {
     updateSpy.mockRestore();
+  });
+
+  it.each([
+    {
+      before: {
+        _id: db.id(),
+        sharedId: 'sid',
+        title: 'title',
+        template: fixturesFactory.id(notExtractedTemplateName),
+        metadata: { some_property: [{ value: 'text' }] },
+        language: 'en',
+      },
+      afterMetadata: { some_property: [{ value: 'other_text' }] },
+      called: false,
+      message: 'should not update suggestions, if template is not set up',
+    },
+    {
+      before: extractedBefore,
+      afterMetadata: extractedBefore.metadata,
+      called: false,
+      message: 'should not update suggestions, if no metadata changed',
+    },
+    {
+      before: extractedBefore,
+      afterMetadata: {
+        ...extractedBefore.metadata,
+        not_extracted_property_1: [{ value: 'new text' }],
+        not_extracted_property_2: [{ value: 1 }],
+      },
+      called: false,
+      message: 'should not update suggestions, if no relevant metadata changed',
+    },
+    {
+      before: extractedBefore,
+      afterMetadata: {
+        ...extractedBefore.metadata,
+        extracted_property_1: [{ value: 'new text' }],
+      },
+      called: true,
+      message: 'should update suggestions, if only relevant metadata changed',
+    },
+    {
+      before: extractedBefore,
+      afterMetadata: {
+        not_extracted_property_1: [{ value: 'new text' }],
+        not_extracted_property_2: [{ value: 1 }],
+        extracted_property_1: [{ value: 'new text' }],
+        extracted_property_2: [{ value: 1 }],
+      },
+      called: true,
+      message: 'should update suggestions, if relevant metadata is also changed',
+    },
+  ])('$message', async ({ before, afterMetadata, called }) => {
+    const after = {
+      ...before,
+      metadata: afterMetadata,
+    };
+    await applicationEventsBus.emit(
+      new EntityUpdatedEvent({ before: [before], after: [after], targetLanguageKey: 'en' })
+    );
+    if (called) {
+      expect(updateSpy).toHaveBeenCalled();
+    } else {
+      expect(updateSpy).not.toHaveBeenCalled();
+    }
   });
 });
 

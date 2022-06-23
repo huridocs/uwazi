@@ -2,6 +2,7 @@ import { applicationEventsBus } from '.';
 import { EventConstructor } from './EventsBus';
 
 const toEmitEvent = async (
+  //use this with expect.extend
   callable: (...args: any[]) => any | Promise<any>,
   event: EventConstructor<unknown>,
   eventData: any
