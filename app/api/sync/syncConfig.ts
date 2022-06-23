@@ -1,4 +1,4 @@
-import { DataType, models } from 'api/odm';
+import { DataType } from 'api/odm';
 import { SyncConfig } from 'api/sync/syncWorker';
 import templatesModel from 'api/templates/templatesModel';
 import { model as updateLog, UpdateLog } from 'api/updatelogs';
