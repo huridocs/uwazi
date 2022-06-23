@@ -34,8 +34,7 @@ const getValuesFromTemplateProperties = async (
   return Object.keys(templatesConfig).reduce(async (prev, templateId) => {
     const validList = await prev;
     const template = await templatesModel.getById(templateId);
-    // @ts-ignore
-    const templateConfigProperties = templatesConfig?.[templateId]?.properties;
+    const templateConfigProperties = templatesConfig[templateId].properties;
     (template?.properties || []).forEach(property => {
       if (
         templateConfigProperties.includes(property._id?.toString() || '') &&
