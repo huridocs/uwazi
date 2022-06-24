@@ -21,6 +21,8 @@ import { TwitterIntegration } from 'api/services/twitterintegration/TwitterInteg
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { tocService } from 'api/toc_generation/tocService';
+import { registerEventListeners } from 'api/eventListeners';
+import { applicationEventsBus } from 'api/eventsbus';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -41,8 +43,6 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
 import { preserveSync } from './api/services/preserve/preserveSync';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
-import { registerEventListeners } from 'api/eventListeners';
-import { applicationEventsBus } from 'api/eventsbus';
 
 mongoose.Promise = Promise;
 
