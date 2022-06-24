@@ -14,17 +14,10 @@ import { reset2fa } from 'app/Auth2fa/actions/actions';
 import { recoverPassword } from 'app/Auth/actions';
 import { t } from 'app/I18N';
 
-const roleTranslationKey = (role: string) => {
-  switch (role) {
-    case 'admin':
-      return 'Admin';
-    case 'editor':
-      return 'Editor';
-    case 'collaborator':
-      return 'Collaborator';
-    default:
-      return '';
-  }
+const roleTranslationKey: { [role: string]: string } = {
+  admin: 'Admin',
+  editor: 'Editor',
+  collaborator: 'Collaborator',
 };
 
 interface UserProps {

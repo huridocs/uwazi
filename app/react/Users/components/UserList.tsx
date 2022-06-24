@@ -58,7 +58,7 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
               </td>
               <td>
                 <Pill color="white">
-                  <Translate translationKey={roleTranslationKey(user.role)}>{user.role}</Translate>
+                  <Translate translationKey={roleTranslationKey[user.role]}>{user.role}</Translate>
                 </Pill>
               </td>
               <td>
