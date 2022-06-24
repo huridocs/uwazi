@@ -37,6 +37,7 @@ const fixtures: DBFixture = {
   files: [
     {
       _id: uploadId,
+      creationDate: 1,
       entity: 'sharedId1',
       generatedToc: true,
       originalname: 'upload1',
@@ -127,6 +128,52 @@ const fixtures: DBFixture = {
     },
   ],
   users: [collabUser, writerUser, adminUser],
+  ixsuggestions: [
+    {
+      status: 'ready',
+      entityId: 'sharedId1',
+      fileId: uploadId,
+      language: 'en',
+      propertyName: 'property 1',
+      date: 1654002449676,
+      state: 'Empty / Label',
+      segment: '',
+      suggestedValue: '',
+    },
+    {
+      status: 'ready',
+      entityId: 'sharedId1',
+      fileId: uploadId,
+      language: 'en',
+      propertyName: 'property 2',
+      date: 1654002449676,
+      state: 'Empty / Label',
+      segment: '',
+      suggestedValue: '',
+    },
+    {
+      status: 'ready',
+      entityId: 'restrictedSharedId',
+      fileId: restrictedUploadId,
+      language: 'en',
+      propertyName: 'property 1',
+      date: 1654002449676,
+      state: 'Empty / Label',
+      segment: '',
+      suggestedValue: '',
+    },
+    {
+      status: 'ready',
+      entityId: 'restrictedSharedId',
+      fileId: restrictedUploadId,
+      language: 'en',
+      propertyName: 'property 2',
+      date: 1654002449676,
+      state: 'Empty / Label',
+      segment: '',
+      suggestedValue: '',
+    },
+  ],
 };
 
 export {
@@ -137,6 +184,7 @@ export {
   restrictedFileName,
   uploadId,
   uploadId2,
+  restrictedUploadId,
   restrictedUploadId2,
   templateId,
   importTemplate,

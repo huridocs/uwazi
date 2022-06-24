@@ -1,17 +1,17 @@
+import { Application, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from 'api/search';
-import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
-import db from 'api/utils/testing_db';
-import { setUpApp } from 'api/utils/testingRoutes';
-import connections from 'api/relationships';
-
-import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
+import { spyOnEmit } from 'api/eventsbus/eventTesting';
+import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
+import connections from 'api/relationships';
+import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
+import db from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { FileType } from 'shared/types/fileType';
 import {
   fixtures,
   uploadId,
@@ -20,6 +20,8 @@ import {
   adminUser,
   writerUser,
 } from './fixtures';
+import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -62,6 +64,31 @@ describe('files routes', () => {
 
     it('should reindex all entities that are related to the saved file', async () => {
       expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
+    });
+
+    it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
+      const emitSpy = spyOnEmit();
+
+      const original = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+
+      await request(app)
+        .post('/api/files')
+        .send({
+          ...original,
+          extractedMetadata: [
+            {
+              name: 'propertyName',
+              selection: {
+                text: 'something',
+                selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+              },
+            },
+          ],
+        });
+
+      const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+      emitSpy.expectToEmitEvent(FileUpdatedEvent, { before: original, after });
+      emitSpy.restore();
     });
 
     describe('when external url file', () => {
@@ -198,6 +225,18 @@ describe('files routes', () => {
       const ocrCleanupSpy = jest.spyOn(ocrRecords, 'cleanupRecordsOfFiles');
       await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
       expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
+    });
+
+    describe('events', () => {
+      it(`should emit a ${FilesDeletedEvent.name} when a file is deleted`, async () => {
+        const emitSpy = spyOnEmit();
+
+        const file = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+        await request(app).delete('/api/files').query({ _id: uploadId.toString() });
+
+        emitSpy.expectToEmitEvent(FilesDeletedEvent, { files: [file] });
+        emitSpy.restore();
+      });
     });
 
     it('should validate _id as string', async () => {

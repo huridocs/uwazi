@@ -17,6 +17,9 @@ const suggestionSharedId6Title = testingDB.id();
 const suggestionSharedId6Enemy = testingDB.id();
 const suggestionSharedId6EnemyEs = testingDB.id();
 
+const file2Id = factory.id('F2');
+const file3Id = factory.id('F3');
+
 const fixtures: DBFixture = {
   settings: [
     {
@@ -192,6 +195,7 @@ const fixtures: DBFixture = {
     {
       entityId: 'shared5',
       propertyName: 'title',
+      fileId: factory.id('Fshared5').toString(),
       suggestedValue: 'Poison Ivy',
       segment: 'Poison Ivy is a fictional character appearing in comic books',
       language: 'en',
@@ -203,6 +207,7 @@ const fixtures: DBFixture = {
     {
       entityId: 'shared5',
       propertyName: 'age',
+      fileId: factory.id('Fshared5').toString(),
       suggestedValue: 25,
       segment: 'Poison Ivy 45 years old',
       language: 'en',
@@ -237,6 +242,7 @@ const fixtures: DBFixture = {
     },
     {
       _id: suggestionSharedId6EnemyEs,
+      fileId: factory.id('F4'),
       entityId: 'shared6',
       propertyName: 'enemy',
       suggestedValue: '',
@@ -368,6 +374,15 @@ const fixtures: DBFixture = {
         },
       },
     ]),
+    factory.file('Fshared5', 'shared5', 'document', 'documentPoisonIvy.pdf', 'eng', '', [
+      {
+        name: 'enemy',
+        selection: {
+          text: 'Poison Ivy',
+          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        },
+      },
+    ]),
     factory.file('F4', 'shared6', 'document', 'documentD.pdf', 'eng', '', [
       {
         name: 'enemy',
@@ -423,6 +438,8 @@ const fixtures: DBFixture = {
 };
 
 export {
+  file2Id,
+  file3Id,
   fixtures,
   shared2esId,
   shared2enId,

@@ -6,6 +6,18 @@ const file1ID = testingDB.id();
 const file2ID = testingDB.id();
 
 const fixture = {
+  settings: [
+    {
+      languages: [
+        {
+          _id: testingDB.id(),
+          label: 'English',
+          key: 'en',
+          default: true,
+        },
+      ],
+    },
+  ],
   files: [
     {
       _id: file1ID,

@@ -1,14 +1,19 @@
-/* eslint-disable max-lines */
-/* eslint-disable no-await-in-loop */
 import entities from 'api/entities/entities';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
-import { EntitySchema } from 'shared/types/entityType';
-import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
-import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
-import { SuggestionState } from 'shared/types/suggestionSchema';
-import settings from 'api/settings/settings';
 import { files } from 'api/files/files';
+import settings from 'api/settings/settings';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
+import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
+import { registerEventListeners } from './eventListeners';
+import {
+  getCurrentValueStage,
+  getEntityStage,
+  getFileStage,
+  getLabeledValueStage,
+} from './pipelineStages';
+import { updateStates } from './updateState';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -75,239 +80,72 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
-  // eslint-disable-next-line max-statements
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
-    const [model] = await IXModelsModel.get({
-      propertyName: filter.propertyName,
-      status: 'ready',
-    });
     const { languages } = await settings.get();
-    // @ts-ignore
-    const defaultLanguage = languages.find(l => l.default).key;
-    //@ts-ignore
-    const configuredLanguages = languages.map(l => l.key);
-    const { state, language, ...filters } = filter;
-    const [{ data, count }] = await IXSuggestionsModel.facet(
-      [
-        { $match: { ...filters, status: { $ne: 'processing' } } },
-        {
-          $lookup: {
-            from: 'entities',
-            let: {
-              localFieldEntityId: '$entityId',
-              localFieldLanguage: {
-                $cond: [
-                  {
-                    $not: [{ $in: ['$language', configuredLanguages] }],
-                  },
-                  defaultLanguage,
-                  '$language',
-                ],
-              },
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ['$sharedId', '$$localFieldEntityId'] },
-                      { $eq: ['$language', '$$localFieldLanguage'] },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: 'entity',
-          },
-        },
-        {
-          $addFields: { entity: { $arrayElemAt: ['$entity', 0] } },
-        },
-        {
-          $addFields: {
-            currentValue: {
-              $cond: [
-                { $eq: ['$propertyName', 'title'] },
-                { v: [{ value: '$entity.title' }] },
-                {
-                  $arrayElemAt: [
-                    {
-                      $filter: {
-                        input: {
-                          $objectToArray: '$entity.metadata',
-                        },
-                        as: 'property',
-                        cond: {
-                          $eq: ['$$property.k', '$propertyName'],
-                        },
-                      },
-                    },
-                    0,
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
-          },
-        },
-        {
-          $addFields: {
-            currentValue: { $ifNull: ['$currentValue.value', ''] },
-          },
-        },
-        {
-          $lookup: {
-            from: 'files',
-            let: {
-              localFieldFileId: '$fileId',
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $eq: ['$_id', '$$localFieldFileId'],
-                  },
-                },
-              },
-            ],
-            as: 'file',
-          },
-        },
-        {
-          $addFields: { file: { $arrayElemAt: ['$file', 0] } },
-        },
-        {
-          $addFields: {
-            labeledValue: {
-              $arrayElemAt: [
-                {
-                  $filter: {
-                    input: '$file.extractedMetadata',
-                    as: 'label',
-                    cond: {
-                      $eq: ['$propertyName', '$$label.name'],
-                    },
-                  },
-                },
-                0,
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            labeledValue: '$labeledValue.selection.text',
-          },
-        },
-        {
-          $addFields: {
-            state: {
-              $switch: {
-                branches: [
-                  {
-                    case: {
-                      $ne: ['$error', ''],
-                    },
-                    then: 'Error',
-                  },
-                  {
-                    case: {
-                      $lte: ['$date', model.creationDate],
-                    },
-                    then: SuggestionState.obsolete,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $lte: ['$labeledValue', null] },
-                        { $eq: ['$suggestedValue', ''] },
-                        { $ne: ['$currentValue', ''] },
-                      ],
-                    },
-                    then: SuggestionState.valueEmpty,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $eq: ['$suggestedValue', '$currentValue'] },
-                        { $eq: ['$suggestedValue', '$labeledValue'] },
-                      ],
-                    },
-                    then: SuggestionState.labelMatch,
-                  },
-                  {
-                    case: {
-                      $and: [{ $eq: ['$currentValue', ''] }, { $eq: ['$suggestedValue', ''] }],
-                    },
-                    then: SuggestionState.empty,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $eq: ['$labeledValue', '$currentValue'] },
-                        { $ne: ['$labeledValue', '$suggestedValue'] },
-                        { $eq: ['$suggestedValue', ''] },
-                      ],
-                    },
-                    then: SuggestionState.labelEmpty,
-                  },
-                  {
-                    case: {
-                      $and: [
-                        { $eq: ['$labeledValue', '$currentValue'] },
-                        { $ne: ['$labeledValue', '$suggestedValue'] },
-                      ],
-                    },
-                    then: SuggestionState.labelMismatch,
-                  },
-                  {
-                    case: {
-                      $and: [{ $eq: ['$suggestedValue', '$currentValue'] }],
-                    },
-                    then: SuggestionState.valueMatch,
-                  },
-                ],
-                default: SuggestionState.valueMismatch,
-              },
-            },
-          },
-        },
-        ...(state ? [{ $match: { $expr: { $eq: ['$state', state] } } }] : []),
-        { $sort: { date: 1, state: -1 } },
-        {
-          $project: {
-            entityId: '$entity._id',
-            sharedId: '$entity.sharedId',
-            entityTitle: '$entity.title',
-            fileId: 1,
-            language: 1,
-            propertyName: 1,
-            suggestedValue: 1,
-            segment: 1,
-            currentValue: 1,
-            state: 1,
-            page: 1,
-            date: 1,
-            labeledValue: 1,
-          },
-        },
-      ],
-      {
-        stage1: [{ $group: { _id: null, count: { $sum: 1 } } }],
-        stage2: [{ $skip: offset }, { $limit: limit }],
-      },
-      { count: '$stage1.count', data: '$stage2' }
-    );
 
-    const totalPages = Math.ceil(count[0] / limit);
-    return { suggestions: data, totalPages };
+    const { language, ...filters } = filter;
+
+    const count = await IXSuggestionsModel.db
+      .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
+      .then(result => (result?.length ? result[0].count : 0));
+
+    const suggestions = await IXSuggestionsModel.db.aggregate([
+      { $match: { ...filters, status: { $ne: 'processing' } } },
+      { $sort: { date: 1, state: -1 } },
+      { $skip: offset },
+      { $limit: limit },
+      ...getEntityStage(languages!),
+      ...getCurrentValueStage(),
+      ...getFileStage(),
+      ...getLabeledValueStage(),
+      {
+        $project: {
+          entityId: '$entity._id',
+          sharedId: '$entity.sharedId',
+          entityTitle: '$entity.title',
+          fileId: 1,
+          language: 1,
+          propertyName: 1,
+          suggestedValue: 1,
+          segment: 1,
+          currentValue: 1,
+          state: 1,
+          page: 1,
+          date: 1,
+          labeledValue: 1,
+        },
+      },
+    ]);
+
+    const totalPages = Math.ceil(count / limit);
+    return { suggestions, totalPages };
+  },
+
+  updateStates,
+
+  setObsolete: async (query: any) =>
+    IXSuggestionsModel.updateMany(query, { $set: { state: SuggestionState.obsolete } }),
+
+  save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
+
+  saveMultiple: async (_suggestions: IXSuggestionType[]) => {
+    const toSave: IXSuggestionType[] = [];
+    const update: IXSuggestionType[] = [];
+    _suggestions.forEach(s => {
+      if (s.status === 'failed') {
+        toSave.push({ ...s, state: SuggestionState.error });
+      } else if (s.status === 'processing') {
+        toSave.push({ ...s, state: SuggestionState.processing });
+      } else {
+        toSave.push(s);
+        update.push(s);
+      }
+    });
+    await IXSuggestionsModel.saveMultiple(toSave);
+    if (update.length > 0) await updateStates({ _id: { $in: update.map(s => s._id) } });
   },
 
   accept: async (acceptedSuggestion: AcceptedSuggestion, allLanguages: boolean) => {
@@ -320,6 +158,7 @@ export const Suggestions = {
     }
     await updateEntitiesWithSuggestion(allLanguages, acceptedSuggestion, suggestion);
     await updateExtractedMetadata(suggestion);
+    await Suggestions.updateStates({ _id: acceptedSuggestion._id });
   },
 
   deleteByEntityId: async (sharedId: string) => {
@@ -329,6 +168,7 @@ export const Suggestions = {
   deleteByProperty: async (propertyName: string, templateId: string) => {
     const cursor = IXSuggestionsModel.db.find({ propertyName }).cursor();
 
+    // eslint-disable-next-line no-await-in-loop
     for (let suggestion = await cursor.next(); suggestion; suggestion = await cursor.next()) {
       const sharedId = suggestion.entityId;
       // eslint-disable-next-line no-await-in-loop
@@ -339,4 +179,6 @@ export const Suggestions = {
       }
     }
   },
+  delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
+  registerEventListeners,
 };

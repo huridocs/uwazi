@@ -21,6 +21,8 @@ import { TwitterIntegration } from 'api/services/twitterintegration/TwitterInteg
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { tocService } from 'api/toc_generation/tocService';
+import { registerEventListeners } from 'api/eventListeners';
+import { applicationEventsBus } from 'api/eventsbus';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -152,6 +154,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     app.use(Sentry.Handlers.errorHandler());
   }
   app.use(errorHandlingMiddleware);
+  registerEventListeners(applicationEventsBus);
 
   if (!config.multiTenant && !config.clusterMode) {
     await tenants.run(async () => {

@@ -34,6 +34,7 @@ const mongoSchema = new mongoose.Schema(
 //mongodb types not updated yet for language_override?
 //@ts-ignore
 mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
+mongoSchema.index({ sharedId: 1, language: 1 });
 
 const Model = instanceModelWithPermissions<EntitySchema>('entities', mongoSchema);
 

@@ -3,6 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { fs } from 'api/files';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
@@ -218,6 +219,7 @@ describe('InformationExtraction', () => {
         expect.objectContaining({
           entityId: 'A1',
           status: 'processing',
+          state: SuggestionState.processing,
         })
       );
     });
@@ -258,6 +260,7 @@ describe('InformationExtraction', () => {
           suggestedValue: 'suggestion_text_1',
           segment: 'segment_text_1',
           status: 'ready',
+          state: SuggestionState.valueMismatch,
         })
       );
     });
@@ -322,6 +325,7 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_other_language',
+          state: SuggestionState.valueMismatch,
         })
       );
 
@@ -331,6 +335,7 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_eng_language',
+          state: SuggestionState.valueMismatch,
         })
       );
     });
@@ -367,6 +372,7 @@ describe('InformationExtraction', () => {
           segment: '',
           status: 'failed',
           error: 'Issue calculation suggestion',
+          state: SuggestionState.error,
         })
       );
     });

@@ -20,15 +20,18 @@ import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
-import { dateToSeconds } from 'shared/dataUtils';
 import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
+import { Suggestions } from 'api/suggestions/suggestions';
+import { dateToSeconds } from 'shared/dateToSeconds';
 import { IXModelType } from 'shared/types/IXModelType';
+import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
@@ -240,14 +243,13 @@ class InformationExtraction {
           }),
         };
 
-        return IXSuggestionsModel.save(suggestion);
+        return Suggestions.save(suggestion);
       })
     );
   };
 
   saveSuggestionProcess = async (file: FileWithAggregation, propertyName: string) => {
     const entity = await this._getEntityFromFile(file);
-
     const [existingSuggestions] = await IXSuggestionsModel.get({
       entityId: entity.sharedId,
       propertyName,
@@ -263,7 +265,7 @@ class InformationExtraction {
       date: new Date().getTime(),
     };
 
-    return IXSuggestionsModel.save(suggestion);
+    return Suggestions.save(suggestion);
   };
 
   serviceUrl = async () => {
@@ -321,18 +323,18 @@ class InformationExtraction {
   };
 
   status = async (property: string) => {
-    const [currentModel] = await IXModelsModel.get({
+    const [currentModel] = await ixmodels.get({
       propertyName: property,
-      status: 'processing',
+      status: ModelStatus.processing,
     });
 
     if (currentModel) {
       return { status: 'processing_model', message: 'Training model' };
     }
 
-    const [suggestion] = await IXSuggestionsModel.get({
+    const [suggestion] = await ixmodels.get({
       propertyName: property,
-      status: 'processing',
+      status: ModelStatus.processing,
     });
 
     if (suggestion) {
@@ -352,13 +354,13 @@ class InformationExtraction {
   };
 
   saveModelProcess = async (property: string) => {
-    const [currentModel] = await IXModelsModel.get({
+    const [currentModel] = await ixmodels.get({
       propertyName: property,
     });
 
-    await IXModelsModel.save({
+    await ixmodels.save({
       ...currentModel,
-      status: 'processing',
+      status: ModelStatus.processing,
       creationDate: new Date().getTime(),
       propertyName: property,
     });
@@ -377,10 +379,11 @@ class InformationExtraction {
       const [currentModel] = await IXModelsModel.get({
         propertyName: message.params!.property_name,
       });
+
       if (message.task === 'create_model' && message.success) {
-        await IXModelsModel.save({
+        await ixmodels.save({
           ...currentModel,
-          status: 'ready',
+          status: ModelStatus.ready,
           creationDate: new Date().getTime(),
         });
         await this.updateSuggestionStatus(message, currentModel);
