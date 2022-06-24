@@ -8,7 +8,7 @@ import { UserSchema } from 'shared/types/userType';
 import { MultiSelect } from 'app/Forms/components/MultiSelect';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
-import { roleTranslationKey } from './Users';
+import { roleTranslationKey } from '../UserManagement';
 
 export interface UserSidePanelProps {
   user: UserSchema;

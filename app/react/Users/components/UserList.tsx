@@ -3,7 +3,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { Pill } from 'app/Metadata/components/Pill';
 import { UserSchema } from 'shared/types/userType';
-import { roleTranslationKey } from './Users';
+import { roleTranslationKey } from '../UserManagement';
 
 export interface UserListProps {
   users: UserSchema[];

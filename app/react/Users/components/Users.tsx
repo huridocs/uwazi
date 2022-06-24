@@ -14,12 +14,6 @@ import { reset2fa } from 'app/Auth2fa/actions/actions';
 import { recoverPassword } from 'app/Auth/actions';
 import { t } from 'app/I18N';
 
-const roleTranslationKey: { [role: string]: string } = {
-  admin: 'Admin',
-  editor: 'Editor',
-  collaborator: 'Collaborator',
-};
-
 interface UserProps {
   users: IImmutable<UserSchema[]>;
   userGroups: IImmutable<UserGroupSchema[]>;
@@ -146,5 +140,4 @@ const mapDispatchToProps = {
 };
 
 export type { UserProps };
-export { roleTranslationKey };
 export const Users = connect(mapStateToProps, mapDispatchToProps)(UsersComponent);
