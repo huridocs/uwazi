@@ -8,6 +8,7 @@ import { UserSchema } from 'shared/types/userType';
 import { MultiSelect } from 'app/Forms/components/MultiSelect';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
+import { roleTranslationKey } from './Users';
 
 export interface UserSidePanelProps {
   user: UserSchema;
@@ -114,7 +115,7 @@ export const UserSidePanel = ({
             <select name="role" className="form-control" ref={register}>
               {userRoles.map(role => (
                 <option key={role} value={role}>
-                  {role}
+                  {t('System', roleTranslationKey(role), null, false)}
                 </option>
               ))}
             </select>

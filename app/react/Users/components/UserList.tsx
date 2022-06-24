@@ -3,19 +3,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { Pill } from 'app/Metadata/components/Pill';
 import { UserSchema } from 'shared/types/userType';
-
-const roleTranslationKey = (role: string) => {
-  switch (role) {
-    case 'admin':
-      return 'Admin';
-    case 'editor':
-      return 'Editor';
-    case 'collaborator':
-      return 'Collaborator';
-    default:
-      return '';
-  }
-};
+import { roleTranslationKey } from './Users';
 
 export interface UserListProps {
   users: UserSchema[];
