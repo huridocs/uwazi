@@ -4,16 +4,14 @@ import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
-
 import * as actions from '../actions/actions';
 import * as uiActions from '../actions/uiActions';
-
 import HubRelationshipMetadata from './HubRelationshipMetadata';
 
-export class RightRelationship extends Component {
+class RightRelationship extends Component {
   constructor(props) {
     super(props);
     this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
@@ -245,10 +243,11 @@ RightRelationship.propTypes = {
 
 const selectRelationTypes = createSelector(
   state => state.relationTypes,
-  relationTypes => [{ _id: null, name: 'No label' }].concat(relationTypes.toJS())
+  relationTypes =>
+    [{ _id: null, name: t('System', 'No Label', null, false) }].concat(relationTypes.toJS())
 );
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   const { relationships } = state;
   return {
     search: relationships.list.sort,
@@ -274,4 +273,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { RightRelationship, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(RightRelationship);

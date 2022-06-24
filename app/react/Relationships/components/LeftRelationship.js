@@ -5,15 +5,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from 'immutable';
 import { Icon } from 'UI';
-
+import { t } from 'app/I18N';
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
-
 import * as actions from '../actions/actions';
-
 import HubRelationshipMetadata from './HubRelationshipMetadata';
 
-export class LeftRelationship extends Component {
+class LeftRelationship extends Component {
   static renderFigure() {
     return (
       <div key="figure" className="hubRelationship">
@@ -127,10 +125,11 @@ LeftRelationship.propTypes = {
 
 const selectRelationTypes = createSelector(
   state => state.relationTypes,
-  relationTypes => [{ _id: null, name: 'No label' }].concat(relationTypes.toJS())
+  relationTypes =>
+    [{ _id: null, name: t('System', 'No Label', null, false) }].concat(relationTypes.toJS())
 );
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   const { relationships } = state;
   return {
     parentEntity: relationships.list.entity,
@@ -151,4 +150,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { LeftRelationship, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(LeftRelationship);
