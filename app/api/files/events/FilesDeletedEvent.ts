@@ -7,4 +7,4 @@ interface FilesDeletedData {
 
 class FilesDeletedEvent extends AbstractEvent<FilesDeletedData> {}
 
-export { FilesDeletedEvent }
+export { FilesDeletedEvent };
