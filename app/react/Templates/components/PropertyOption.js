@@ -33,7 +33,7 @@ class PropertyOption extends Component {
         <span>
           <Icon icon={iconClass} />
           &nbsp;
-          <Translate translationKey={type}>{label}</Translate>
+          <Translate translationKey={`property ${type}`}>{label}</Translate>
         </span>
       </li>
     );
