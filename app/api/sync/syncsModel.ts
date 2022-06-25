@@ -7,8 +7,8 @@ const syncSchema = new mongoose.Schema({
 });
 
 export interface Sync extends mongoose.Document {
-  lastSync: Number;
-  name: String;
+  lastSync: number;
+  name: string;
 }
 
 export default new MultiTenantMongooseModel<Sync>('syncs', syncSchema);
