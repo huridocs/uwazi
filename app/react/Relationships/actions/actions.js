@@ -227,9 +227,12 @@ const selectRelationTypes = createSelector(
       const [translationContext] = translationContexts
         .get('contexts')
         .filter(context => context.get('id') === rel._id);
+      const name = translationContext
+        ? t(translationContext.get('id'), rel.name, null, false)
+        : rel.name;
       return {
         ...rel,
-        name: t(translationContext.get('id'), rel.name, null, false),
+        name,
       };
     });
     return [{ _id: null, name: t('System', 'No Label', null, false) }].concat(relations);
