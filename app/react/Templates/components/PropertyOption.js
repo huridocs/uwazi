@@ -4,7 +4,7 @@ import { DragSource } from 'react-dnd';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { removeProperty, addProperty } from 'app/Templates/actions/templateActions';
 import Icons from './Icons';
 
@@ -17,7 +17,7 @@ class PropertyOption extends Component {
   addProperty() {
     const { disabled, label, type, addProperty: addPropertyAction } = this.props;
     if (!disabled) {
-      addPropertyAction({ label, type });
+      addPropertyAction({ label: t('System', `property ${type}`, label, false), type });
     }
   }
 
@@ -50,7 +50,7 @@ PropertyOption.propTypes = {
 
 const optionSource = {
   beginDrag({ ...props }) {
-    return props;
+    return { ...props, label: t('System', `property ${props.type}`, props.label, false) };
   },
 
   canDrag(props) {
@@ -66,9 +66,11 @@ const optionSource = {
   },
 };
 
-const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
-  connectDragSource: connector.dragSource(),
-}))(PropertyOption);
+const dragSource = DragSource('METADATA_OPTION', optionSource, connector => {
+  return {
+    connectDragSource: connector.dragSource(),
+  };
+})(PropertyOption);
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeProperty, addProperty }, dispatch);
