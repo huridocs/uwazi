@@ -66,11 +66,9 @@ const optionSource = {
   },
 };
 
-const dragSource = DragSource('METADATA_OPTION', optionSource, connector => {
-  return {
-    connectDragSource: connector.dragSource(),
-  };
-})(PropertyOption);
+const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
+  connectDragSource: connector.dragSource(),
+}))(PropertyOption);
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeProperty, addProperty }, dispatch);
