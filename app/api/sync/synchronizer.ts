@@ -2,10 +2,10 @@ import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
 import { fs, customUploadsPath, uploadsPath } from 'api/files';
+import { DataType } from 'api/odm';
+import { UpdateLog } from 'api/updatelogs';
 
-const oneSecond = 1000;
-
-const uploadFile = async (url, filename, type = 'document', cookie) => {
+const uploadFile = async (url: string, filename: string, type = 'document', cookie: string) => {
   let pathFunction = uploadsPath;
   let apiEndpoint = 'api/sync/upload';
 
@@ -19,20 +19,8 @@ const uploadFile = async (url, filename, type = 'document', cookie) => {
   return request.uploadFile(urljoin(url, apiEndpoint), filename, file, cookie);
 };
 
-const syncAttachments = async (url, data, lastSync, cookie) => {
-  if (data.attachments && data.attachments.length) {
-    await data.attachments.reduce(async (prev, attachment) => {
-      await prev;
-      if (attachment.timestamp >= lastSync - oneSecond) {
-        await uploadFile(url, attachment.filename, undefined, cookie);
-      }
-      return Promise.resolve();
-    }, Promise.resolve());
-  }
-};
-
-const syncronizer = {
-  async syncDelete(change, url, cookie) {
+export const synchronizer = {
+  async syncDelete(change: DataType<UpdateLog>, url: string, cookie: string) {
     await this.syncData(
       {
         url,
@@ -44,19 +32,23 @@ const syncronizer = {
     );
   },
 
-  async syncData({ url, change, data, cookie }, action, lastSync) {
+  async syncData(
+    {
+      url,
+      change,
+      data,
+      cookie,
+    }: { url: string; change: DataType<UpdateLog>; data: DataType<any>; cookie: string },
+    action: keyof typeof request
+  ) {
     await request[action](
       urljoin(url, 'api/sync'),
       { namespace: change.namespace, data },
       { cookie }
     );
 
-    await syncAttachments(url, data, lastSync, cookie);
-
     if (change.namespace === 'files' && data.filename) {
       await uploadFile(url, data.filename, data.type, cookie);
     }
   },
 };
-
-export default syncronizer;

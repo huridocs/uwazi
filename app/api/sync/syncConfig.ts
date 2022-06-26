@@ -1,48 +1,57 @@
-import { models } from 'api/odm';
-import { model as updateLog } from 'api/updatelogs';
-import syncsModel from './syncsModel';
+import { DataType } from 'api/odm';
+import { SyncConfig } from 'api/sync/syncWorker';
+import templatesModel from 'api/templates/templatesModel';
+import { model as updateLog, UpdateLog } from 'api/updatelogs';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { ProcessNamespaces } from './processNamespaces';
+import syncsModel from './syncsModel';
 
-const sanitizeConfig = async config =>
-  Object.keys(config || {}).reduce(async (prev, key) => {
-    const sanitized = await prev;
-    if (key === 'templates') {
-      const templatesData = await models.templates.get({});
+const removeDeletedTemplatesFromConfig = async (config: SyncConfig['config']) => {
+  const newConfig = { ...config };
+  const templatesIds = (await templatesModel.get({}, { _id: 1 })).map(template =>
+    template._id.toString()
+  );
+  newConfig.templates = Object.keys(newConfig.templates || {}).reduce(
+    (newTemplatesConfig, templateId) => {
+      if (newTemplatesConfig && templatesIds.includes(templateId)) {
+        // eslint-disable-next-line no-param-reassign
+        newTemplatesConfig[templateId] = config.templates?.[templateId] || { properties: [] };
+      }
+      return newTemplatesConfig;
+    },
+    {} as SyncConfig['config']['templates']
+  );
+  return newConfig;
+};
 
-      sanitized.templates = Object.keys(config.templates).reduce((templates, templateId) => {
-        if (templatesData.find(t => t._id.toString() === templateId)) {
-          const templateConfig = config.templates[templateId] || { properties: [] };
-          const isArray = Array.isArray(templateConfig);
-          const configObject = isArray ? { properties: templateConfig } : templateConfig;
-          return { ...templates, [templateId]: configObject };
-        }
-        return templates;
-      }, {});
-    } else {
-      sanitized[key] = config[key];
-    }
-
-    return sanitized;
-  }, Promise.resolve({}));
-
-const getValuesFromTemplateProperties = async (config, validTypes, valueProperty) => {
+const getValuesFromTemplateProperties = async (
+  config: SyncConfig['config'],
+  validTypes: string[],
+  valueProperty: keyof PropertySchema
+) => {
   const templatesConfig = config.templates || {};
 
   return Object.keys(templatesConfig).reduce(async (prev, templateId) => {
     const validList = await prev;
-    const template = await models.templates.getById(templateId);
+    const template = await templatesModel.getById(templateId);
     const templateConfigProperties = templatesConfig[templateId].properties;
-    (template.properties || []).forEach(p => {
-      if (templateConfigProperties.includes(p._id.toString()) && validTypes.includes(p.type)) {
-        validList.push(p[valueProperty].toString());
+    (template?.properties || []).forEach(property => {
+      if (
+        templateConfigProperties.includes(property._id?.toString() || '') &&
+        validTypes.includes(property.type) &&
+        property[valueProperty] &&
+        property[valueProperty] !== undefined
+      ) {
+        // @ts-ignore
+        validList.push(property[valueProperty].toString());
       }
     });
 
     return Promise.resolve(validList);
-  }, Promise.resolve([]));
+  }, Promise.resolve([] as Array<string>));
 };
 
-const getApprovedCollections = config => {
+const getApprovedCollections = (config: SyncConfig['config']) => {
   const collections = Object.keys(config);
   const whitelistedCollections = collections.includes('templates')
     ? collections.concat([
@@ -61,10 +70,10 @@ const getApprovedCollections = config => {
   return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
 };
 
-const getApprovedThesauri = async config =>
+const getApprovedThesauri = async (config: SyncConfig['config']) =>
   getValuesFromTemplateProperties(config, ['select', 'multiselect'], 'content');
 
-const getApprovedRelationtypes = async config => {
+const getApprovedRelationtypes = async (config: SyncConfig['config']) => {
   const relationtypesConfig = config.relationtypes || [];
   const validTemplateRelationtypes = await getValuesFromTemplateProperties(
     config,
@@ -74,13 +83,12 @@ const getApprovedRelationtypes = async config => {
   return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
-export default async (config, targetName) => {
+export const createSyncConfig = async (config: SyncConfig, targetName: string) => {
   const [{ lastSync }] = await syncsModel.find({ name: targetName });
 
   return {
     lastSync,
-
-    config: await sanitizeConfig(config.config),
+    config: await removeDeletedTemplatesFromConfig(config.config),
 
     async lastChanges() {
       const approvedCollections = getApprovedCollections(this.config);
@@ -89,7 +97,7 @@ export default async (config, targetName) => {
           timestamp: { $gt: lastSync },
           namespace: { $in: approvedCollections },
         },
-        null,
+        undefined,
         {
           sort: { timestamp: 1 },
           limit: 50,
@@ -108,7 +116,7 @@ export default async (config, targetName) => {
           $and: [{ timestamp: { $gt: lastSync } }, { timestamp: { $lte: endTimestamp } }],
           namespace: { $in: approvedCollections },
         },
-        null,
+        undefined,
         {
           sort: {
             timestamp: 1,
@@ -118,9 +126,10 @@ export default async (config, targetName) => {
       );
     },
 
-    async shouldSync(change) {
+    async shouldSync(change: DataType<UpdateLog>) {
       if (change.deleted) return { skip: true };
       const templatesConfig = this.config.templates || {};
+
       const relationtypesConfig = this.config.relationtypes || [];
 
       const whitelistedThesauri = await getApprovedThesauri(this.config);

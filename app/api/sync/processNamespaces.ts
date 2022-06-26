@@ -1,13 +1,12 @@
 /* eslint-disable max-lines */
 import sift from 'sift';
-import { models, WithId } from 'api/odm';
+import { DataType, models, WithId } from 'api/odm';
 import {
   SettingsSyncTemplateSchema,
   SettingsSyncRelationtypesSchema,
   Settings,
 } from 'shared/types/settingsType';
 import { ensure } from 'shared/tsUtils';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { settingsModel } from 'api/settings/settingsModel';
 import templatesModel from 'api/templates/templatesModel';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -15,6 +14,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import { EntitySchema } from 'shared/types/entityType';
 import { filesModel } from 'api/files/filesModel';
 import { FileType } from 'shared/types/fileType';
+import { UpdateLog } from 'api/updatelogs';
 
 const noDataFound = 'NO_DATA_FOUND';
 
@@ -27,12 +27,20 @@ const namespaces = [
   'dictionaries',
   'relationtypes',
   'translations',
-] as const;
-type NamespaceNames = typeof namespaces[number];
-type MethodNames = NamespaceNames | 'default';
+];
+
+type MethodNames =
+  | 'settings'
+  | 'templates'
+  | 'entities'
+  | 'connections'
+  | 'files'
+  | 'dictionaries'
+  | 'relationtypes'
+  | 'translations';
 
 interface Options {
-  change: { namespace: NamespaceNames; mongoId: ObjectIdSchema };
+  change: DataType<UpdateLog>;
   templatesConfig: {
     [k: string]: SettingsSyncTemplateSchema;
   };
@@ -355,13 +363,13 @@ class ProcessNamespaces {
 
   public async process() {
     const { namespace } = this.change;
-    let method: MethodNames = namespace;
+    let method: string = namespace;
     if (!namespaces.includes(namespace)) {
       method = 'default';
     }
 
     try {
-      return await this[method]();
+      return await this[method as MethodNames]();
     } catch (err) {
       if (err.message === noDataFound) {
         return { skip: true };
