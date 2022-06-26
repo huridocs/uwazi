@@ -1,5 +1,7 @@
 key,optionalValue,
 "Show in cards","Show in cards",
+"Use as filter","Use as filter",
+"Hide label","Hide label",
 "Collection name","Collection name",
 "Custom favicon","Custom favicon",
 "Use custom landing page","Use custom landing page",
