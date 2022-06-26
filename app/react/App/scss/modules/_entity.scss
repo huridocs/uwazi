@@ -9,11 +9,11 @@
   //overflow-y: scroll;
   overflow: auto;
 
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     height: calc(100% - 51px);
   }
 
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     &.with-panel,
     &.is-active {
       width: calc(100% - 400px) !important;
@@ -35,8 +35,9 @@
   padding-bottom: 120px;
 }
 
-.entity-connections, .connections-metadata, .entity-create-connection-panel {
-  z-index: 6;
+.entity-connections,
+.connections-metadata,
+.entity-create-connection-panel {
   top: 0;
   @media (min-width: 1024px) {
     top: $header-height + 1 !important;
@@ -97,7 +98,7 @@
 
 .create-reference {
   z-index: 6;
-  @media(max-width: 1023px) {
+  @media (max-width: 1023px) {
     top: 0;
   }
 }
