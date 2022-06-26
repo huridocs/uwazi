@@ -1,10 +1,9 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
 import * as actions from '../actions/actions';
@@ -241,19 +240,13 @@ RightRelationship.propTypes = {
   selectConnection: PropTypes.func.isRequired,
 };
 
-const selectRelationTypes = createSelector(
-  state => state.relationTypes,
-  relationTypes =>
-    [{ _id: null, name: t('System', 'No Label', null, false) }].concat(relationTypes.toJS())
-);
-
 function mapStateToProps(state) {
   const { relationships } = state;
   return {
     search: relationships.list.sort,
     hubs: relationships.hubs,
     hubActions: relationships.hubActions,
-    relationTypes: selectRelationTypes(state),
+    relationTypes: actions.selectRelationTypes(state),
   };
 }
 
