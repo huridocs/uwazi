@@ -1,19 +1,15 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from 'immutable';
 import { Icon } from 'UI';
-
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
-
 import * as actions from '../actions/actions';
-
 import HubRelationshipMetadata from './HubRelationshipMetadata';
 
-export class LeftRelationship extends Component {
+class LeftRelationship extends Component {
   static renderFigure() {
     return (
       <div key="figure" className="hubRelationship">
@@ -125,18 +121,13 @@ LeftRelationship.propTypes = {
   selectConnection: PropTypes.func.isRequired,
 };
 
-const selectRelationTypes = createSelector(
-  state => state.relationTypes,
-  relationTypes => [{ _id: null, name: 'No label' }].concat(relationTypes.toJS())
-);
-
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   const { relationships } = state;
   return {
     parentEntity: relationships.list.entity,
     search: relationships.list.sort,
     editing: relationships.hubActions.get('editing'),
-    relationTypes: selectRelationTypes(state),
+    relationTypes: actions.selectRelationTypes(state),
   };
 }
 
@@ -151,4 +142,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { LeftRelationship, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(LeftRelationship);

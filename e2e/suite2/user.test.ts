@@ -26,8 +26,8 @@ describe('User', () => {
   it('Should list all the users', async () => {
     await page.waitForSelector('tbody tr:nth-child(1)');
     const userRows = await getListRows();
-    expect(userRows[0]).toEqual(['admin', 'Password', 'admin', ' Activistas']);
-    expect(userRows[1]).toEqual(['editor', 'Password', 'editor', ' Activistas Asesores legales']);
+    expect(userRows[0]).toEqual(['admin', 'Password', 'Admin', ' Activistas']);
+    expect(userRows[1]).toEqual(['editor', 'Password', 'Editor', ' Activistas Asesores legales']);
   });
 
   describe('Editing user', () => {
@@ -67,7 +67,7 @@ describe('User', () => {
       expect(userRows[0]).toEqual([
         'administrator',
         'Password',
-        'admin',
+        'Admin',
         ' Activistas Asesores legales',
       ]);
     });
