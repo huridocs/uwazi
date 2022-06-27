@@ -79,6 +79,91 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
   }
   return files.save(file);
 };
+
+const deleteSuggestionsNotConfigured = async (
+  currentSettingsTemplates: any[],
+  settingsTemplates: any[]
+) => {
+  const deletedTemplates = currentSettingsTemplates.filter(
+    set => !settingsTemplates.find((st: any) => st.template === set.template)
+  );
+
+  const deletedTemplateProps = currentSettingsTemplates
+    .map(currentTemplate => {
+      const currentTemplateId = currentTemplate.template;
+      const property: any = {};
+      const template = settingsTemplates.find((st: any) => st.template === currentTemplateId);
+      if (template) {
+        property.template = currentTemplateId;
+        property.properties = [];
+        currentTemplate.properties.forEach((prop: string) => {
+          if (!template.properties.includes(prop)) {
+            property.properties.push(prop);
+          }
+        });
+      }
+      return property;
+    })
+    .filter(prop => prop.template && prop.properties.length);
+
+  const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
+
+  if (deletedTemplatesAndDeletedTemplateProps.length > 0) {
+    const deletedTemplateIds = deletedTemplatesAndDeletedTemplateProps.map(temps => temps.template);
+
+    const entitiesDoc = await entities.get({ template: { $in: deletedTemplateIds } }, 'sharedId');
+
+    const entitiesSharedIds = entitiesDoc.map((entity: any) => entity.sharedId);
+    const propNames: string[] = deletedTemplatesAndDeletedTemplateProps.reduce(
+      (acc, curr) => [...acc, ...curr.properties],
+      []
+    );
+    const uniquePropNames: string[] = [...new Set<string>(propNames)];
+
+    await IXSuggestionsModel.db.deleteMany({
+      $and: [{ entityId: { $in: entitiesSharedIds } }, { propertyName: { $in: uniquePropNames } }],
+    });
+  }
+};
+
+const getTemplatesWithNewProps = (
+  settingsTemplates: ISettingsTemplate[],
+  currentSettingsTemplates: ISettingsTemplate[]
+) =>
+  settingsTemplates
+    .map(newTemp => {
+      const oldTemplate = currentSettingsTemplates?.find(
+        oldTemp => oldTemp.template === newTemp.template
+      );
+      if (newTemp.properties.length === oldTemplate?.properties.length || !oldTemplate) {
+        return null;
+      }
+      const newProps = newTemp.properties;
+      const oldProps = oldTemplate?.properties || [];
+      const addedProps: string[] = newProps
+        .map((prop: any) => (!oldProps.includes(prop) ? prop : false))
+        .filter(p => p);
+      return { ...newTemp, properties: addedProps };
+    })
+    .filter(t => t);
+
+const getTemplateDifference = (
+  currentSettingsTemplates: ISettingsTemplate[],
+  settingsTemplates: ISettingsTemplate[]
+) => {
+  const newTemplates = settingsTemplates.filter(temp => {
+    const oldTemplateIds = currentSettingsTemplates?.map(oldTemp => oldTemp.template) || [];
+    return !oldTemplateIds.includes(temp.template);
+  });
+
+  const combedNewTemplates = getTemplatesWithNewProps(settingsTemplates, currentSettingsTemplates);
+
+  return newTemplates.concat(combedNewTemplates as ISettingsTemplate[]);
+};
+
+const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
+  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).exec();
+
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -347,95 +432,6 @@ export const Suggestions = {
     }
   },
 
-  deleteSuggestionsNotConfigured: async (
-    currentSettingsTemplates: any[],
-    settingsTemplates: any[]
-  ) => {
-    const deletedTemplates = currentSettingsTemplates.filter(
-      set => !settingsTemplates.find((st: any) => st.template === set.template)
-    );
-
-    const deletedTemplateProps = currentSettingsTemplates
-      .map(currentTemplate => {
-        const currentTemplateId = currentTemplate.template;
-        const property: any = {};
-        const template = settingsTemplates.find((st: any) => st.template === currentTemplateId);
-        if (template) {
-          property.template = currentTemplateId;
-          property.properties = [];
-          currentTemplate.properties.forEach((prop: string) => {
-            if (!template.properties.includes(prop)) {
-              property.properties.push(prop);
-            }
-          });
-        }
-        return property;
-      })
-      .filter(prop => prop.template && prop.properties.length);
-
-    const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
-
-    if (deletedTemplatesAndDeletedTemplateProps.length > 0) {
-      const deletedTemplateIds = deletedTemplatesAndDeletedTemplateProps.map(
-        temps => temps.template
-      );
-
-      const entitiesDoc = await entities.get({ template: { $in: deletedTemplateIds } }, 'sharedId');
-
-      const entitiesSharedIds = entitiesDoc.map((entity: any) => entity.sharedId);
-      const propNames: string[] = deletedTemplatesAndDeletedTemplateProps.reduce(
-        (acc, curr) => [...acc, ...curr.properties],
-        []
-      );
-      const uniquePropNames: string[] = [...new Set<string>(propNames)];
-
-      await IXSuggestionsModel.db.deleteMany({
-        $and: [
-          { entityId: { $in: entitiesSharedIds } },
-          { propertyName: { $in: uniquePropNames } },
-        ],
-      });
-    }
-  },
-
-  getTemplatesWithNewProps: (
-    settingsTemplates: ISettingsTemplate[],
-    currentSettingsTemplates: ISettingsTemplate[]
-  ) =>
-    settingsTemplates
-      .map(newTemp => {
-        const oldTemplate = currentSettingsTemplates?.find(
-          oldTemp => oldTemp.template === newTemp.template
-        );
-        if (newTemp.properties.length === oldTemplate?.properties.length || !oldTemplate) {
-          return null;
-        }
-        const newProps = newTemp.properties;
-        const oldProps = oldTemplate?.properties || [];
-        const addedProps: string[] = newProps
-          .map((prop: any) => (!oldProps.includes(prop) ? prop : false))
-          .filter(p => p);
-        return { ...newTemp, properties: addedProps };
-      })
-      .filter(t => t),
-
-  getTemplateDifference: (
-    currentSettingsTemplates: ISettingsTemplate[],
-    settingsTemplates: ISettingsTemplate[]
-  ) => {
-    const newTemplates = settingsTemplates.filter(temp => {
-      const oldTemplateIds = currentSettingsTemplates?.map(oldTemp => oldTemp.template) || [];
-      return !oldTemplateIds.includes(temp.template);
-    });
-
-    const combedNewTemplates = Suggestions.getTemplatesWithNewProps(
-      settingsTemplates,
-      currentSettingsTemplates
-    );
-
-    return newTemplates.concat(combedNewTemplates as ISettingsTemplate[]);
-  },
-
   saveConfigurations: async (settingsTemplates: ISettingsTemplate[]) => {
     const currentSettings = await settings.get();
     const defaultLanguage = currentSettings?.languages?.find(lang => lang.default)?.key;
@@ -443,22 +439,16 @@ export const Suggestions = {
       currentSettings.features?.metadataExtraction?.templates;
     currentSettingsTemplates = currentSettingsTemplates || [];
 
-    await Suggestions.deleteSuggestionsNotConfigured(currentSettingsTemplates, settingsTemplates);
+    await deleteSuggestionsNotConfigured(currentSettingsTemplates, settingsTemplates);
     // @ts-ignore
     currentSettings.features.metadataExtraction.templates = settingsTemplates;
     await settings.save(currentSettings);
 
-    const newTemplates = Suggestions.getTemplateDifference(
-      currentSettingsTemplates,
-      settingsTemplates
-    );
+    const newTemplates = getTemplateDifference(currentSettingsTemplates, settingsTemplates);
     await Suggestions.createBlankState(newTemplates, defaultLanguage as string);
 
     return currentSettings;
   },
-
-  fetchEntitiesBatch: async (query: any, limit: number = 100) =>
-    entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).exec(),
 
   createBlankState: async (settingsTemplates: any[], defaultLanguage: string) => {
     const templatesPromises = settingsTemplates.map(
@@ -471,7 +461,7 @@ export const Suggestions = {
 
         const entitiesSharedIds: string[] = [];
 
-        let fetchedEntities = await Suggestions.fetchEntitiesBatch(query, BATCH_SIZE);
+        let fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
         while (fetchedEntities.length) {
           const sharedIds = fetchedEntities.map(entity => entity.sharedId);
           entitiesSharedIds.push(...(sharedIds as string[]));
@@ -479,7 +469,7 @@ export const Suggestions = {
             ...query,
             _id: { $gt: fetchedEntities[fetchedEntities.length - 1]._id },
           };
-          fetchedEntities = await Suggestions.fetchEntitiesBatch(query, BATCH_SIZE);
+          fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
         }
 
         const fetchedFiles = await files.get(
