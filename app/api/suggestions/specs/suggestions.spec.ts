@@ -146,8 +146,8 @@ describe('suggestions', () => {
         propertyName: 'title',
       });
       expect(newSuggestions.length).toBe(2);
-      expect(newSuggestions[0].status).toBe(SuggestionState.valueEmpty);
-      expect(newSuggestions[1].status).toBe(SuggestionState.valueEmpty);
+      expect(newSuggestions[0].state).toBe(SuggestionState.valueEmpty);
+      expect(newSuggestions[1].state).toBe(SuggestionState.valueEmpty);
     });
   });
 

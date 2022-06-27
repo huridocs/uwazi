@@ -339,18 +339,26 @@ describe('suggestions routes', () => {
           propertyName: 'super_powers',
           segment: '',
           suggestedValue: '',
-          status: SuggestionState.labelEmpty,
+          state: SuggestionState.labelEmpty,
+          status: 'ready',
         },
         {
           entityId: 'shared2',
           propertyName: 'super_powers',
           segment: '',
           suggestedValue: '',
-          status: SuggestionState.labelEmpty,
+          state: SuggestionState.labelEmpty,
+          status: 'ready'
         },
       ]);
       const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
       expect(enemySugg).toMatchObject([
+        {
+          entityId: 'shared5',
+          propertyName: 'enemy',
+          segment: '',
+          suggestedValue: '',
+        },
         {
           entityId: 'shared6',
           propertyName: 'enemy',
