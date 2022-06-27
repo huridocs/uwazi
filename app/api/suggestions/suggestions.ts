@@ -11,6 +11,7 @@ import settings from 'api/settings/settings';
 import { files } from 'api/files/files';
 import entitiesModel from 'api/entities/entitiesModel';
 import languages from 'shared/languages';
+import { FileType } from 'shared/types/fileType';
 
 interface ISettingsTemplate {
   template: string | ObjectIdSchema;
@@ -167,7 +168,7 @@ const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
-  // eslint-disable-next-line max-statements
+
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
@@ -477,30 +478,35 @@ export const Suggestions = {
           '_id entity language extractedMetadata'
         );
 
-        const blankSuggestions: any[] = [];
-        fetchedFiles.forEach((file: any) => {
-          const language = languages.get(file.language, 'ISO639_1') || defaultLanguage;
+        const blankSuggestions: IXSuggestionType[] = [];
+        fetchedFiles.forEach((file: FileType) => {
+          const language = file.language
+            ? languages.get(file.language, 'ISO639_1') || defaultLanguage
+            : defaultLanguage;
           template.properties.forEach((propertyName: string) => {
-            let status = SuggestionState.valueEmpty;
+            let state = SuggestionState.valueEmpty;
             if (file.extractedMetadata) {
               const metadata = file.extractedMetadata.find(
                 (md: ExtractedMetadataSchema) => md.name === propertyName
               );
               if (metadata) {
-                status = SuggestionState.labelEmpty;
+                state = SuggestionState.labelEmpty;
               }
             }
-            blankSuggestions.push({
-              language,
-              fileId: file._id,
-              entityId: file.entity,
-              propertyName,
-              status,
-              error: '',
-              segment: '',
-              suggestedValue: '',
-              date: new Date().getTime(),
-            });
+            if (file.entity) {
+              blankSuggestions.push({
+                language,
+                fileId: file._id,
+                entityId: file.entity,
+                propertyName,
+                state,
+                status: 'ready',
+                error: '',
+                segment: '',
+                suggestedValue: '',
+                date: new Date().getTime(),
+              });
+            }
           });
         });
 
