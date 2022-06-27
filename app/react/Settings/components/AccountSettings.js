@@ -11,8 +11,9 @@ import { t, I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { createSelector } from 'reselect';
 import { Pill } from 'app/Metadata/components/Pill';
+import { roleTranslationKey } from 'app/Users/UserManagement';
 
-export class AccountSettings extends Component {
+class AccountSettings extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -108,7 +109,9 @@ export class AccountSettings extends Component {
               </div>
               <div className="user-details-role">
                 <Translate>Role</Translate>:&nbsp;&nbsp;
-                <Pill>{role}</Pill>
+                <Pill>
+                  <Translate translationKey={roleTranslationKey[role]}>{role}</Translate>
+                </Pill>
               </div>
               {groups.length > 0 && (
                 <div>
@@ -216,12 +219,12 @@ AccountSettings.propTypes = {
   setUser: PropTypes.func.isRequired,
 };
 
-export const selectUser = createSelector(
+const selectUser = createSelector(
   state => state.user,
   user => user.toJS()
 );
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return { user: selectUser(state) };
 }
 
@@ -232,4 +235,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { AccountSettings, mapStateToProps, createSelector };
 export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);
