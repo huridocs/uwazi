@@ -323,12 +323,10 @@ describe('suggestions routes', () => {
     });
 
     it('should save configurations in settings', async () => {
-      // await removeSuggestionsFromDBAndSaveConfigs();
       const set = await settings.get();
       expect(set.features?.metadataExtraction?.templates).toMatchObject(payload);
     });
     it('should create placeholder suggestions', async () => {
-      // await removeSuggestionsFromDBAndSaveConfigs();
       const superPowerSugg = await IXSuggestionsModel.get({
         propertyName: 'super_powers',
       });
