@@ -38,7 +38,6 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   },
 }));
 
-// eslint-disable-next-line max-statements
 describe('suggestions routes', () => {
   let user: { username: string; role: string } | undefined;
   const getUser = () => user;

@@ -141,7 +141,6 @@ export default {
     );
   },
 
-  // eslint-disable-next-line max-statements
   async save(settings: Settings) {
     await validateSettings(settings);
     const currentSettings = await this.get();
