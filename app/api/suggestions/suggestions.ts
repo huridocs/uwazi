@@ -1,9 +1,12 @@
 import entities from 'api/entities/entities';
+import entitiesModel from 'api/entities/entitiesModel';
 import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import languages from 'shared/languages';
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
 import { registerEventListeners } from './eventListeners';
@@ -14,6 +17,11 @@ import {
   getLabeledValueStage,
 } from './pipelineStages';
 import { updateStates } from './updateState';
+
+interface ISettingsTemplate {
+  template: string | ObjectIdSchema;
+  properties: string[];
+}
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -77,14 +85,100 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
   }
   return files.save(file);
 };
+
+const deleteSuggestionsNotConfigured = async (
+  currentSettingsTemplates: any[],
+  settingsTemplates: any[]
+) => {
+  const deletedTemplates = currentSettingsTemplates.filter(
+    set => !settingsTemplates.find((st: any) => st.template === set.template)
+  );
+
+  const deletedTemplateProps = currentSettingsTemplates
+    .map(currentTemplate => {
+      const currentTemplateId = currentTemplate.template;
+      const property: any = {};
+      const template = settingsTemplates.find((st: any) => st.template === currentTemplateId);
+      if (template) {
+        property.template = currentTemplateId;
+        property.properties = [];
+        currentTemplate.properties.forEach((prop: string) => {
+          if (!template.properties.includes(prop)) {
+            property.properties.push(prop);
+          }
+        });
+      }
+      return property;
+    })
+    .filter(prop => prop.template && prop.properties.length);
+
+  const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
+
+  if (deletedTemplatesAndDeletedTemplateProps.length > 0) {
+    const deletedTemplateIds = deletedTemplatesAndDeletedTemplateProps.map(temps => temps.template);
+
+    const entitiesDoc = await entities.get({ template: { $in: deletedTemplateIds } }, 'sharedId');
+
+    const entitiesSharedIds = entitiesDoc.map((entity: any) => entity.sharedId);
+    const propNames: string[] = deletedTemplatesAndDeletedTemplateProps.reduce(
+      (acc, curr) => [...acc, ...curr.properties],
+      []
+    );
+    const uniquePropNames: string[] = [...new Set<string>(propNames)];
+
+    await IXSuggestionsModel.db.deleteMany({
+      $and: [{ entityId: { $in: entitiesSharedIds } }, { propertyName: { $in: uniquePropNames } }],
+    });
+  }
+};
+
+const getTemplatesWithNewProps = (
+  settingsTemplates: ISettingsTemplate[],
+  currentSettingsTemplates: ISettingsTemplate[]
+) =>
+  settingsTemplates
+    .map(newTemp => {
+      const oldTemplate = currentSettingsTemplates?.find(
+        oldTemp => oldTemp.template === newTemp.template
+      );
+      if (newTemp.properties.length === oldTemplate?.properties.length || !oldTemplate) {
+        return null;
+      }
+      const newProps = newTemp.properties;
+      const oldProps = oldTemplate?.properties || [];
+      const addedProps: string[] = newProps
+        .map((prop: any) => (!oldProps.includes(prop) ? prop : false))
+        .filter(p => p);
+      return { ...newTemp, properties: addedProps };
+    })
+    .filter(t => t);
+
+const getTemplateDifference = (
+  currentSettingsTemplates: ISettingsTemplate[],
+  settingsTemplates: ISettingsTemplate[]
+) => {
+  const newTemplates = settingsTemplates.filter(temp => {
+    const oldTemplateIds = currentSettingsTemplates?.map(oldTemp => oldTemp.template) || [];
+    return !oldTemplateIds.includes(temp.template);
+  });
+
+  const combedNewTemplates = getTemplatesWithNewProps(settingsTemplates, currentSettingsTemplates);
+
+  return newTemplates.concat(combedNewTemplates as ISettingsTemplate[]);
+};
+
+const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
+  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).exec();
+
 export const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
+
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
-    const { languages } = await settings.get();
+    const { languages: setLanguages } = await settings.get();
 
     const { language, ...filters } = filter;
 
@@ -97,7 +191,7 @@ export const Suggestions = {
       { $sort: { date: 1, state: -1 } },
       { $skip: offset },
       { $limit: limit },
-      ...getEntityStage(languages!),
+      ...getEntityStage(setLanguages!),
       ...getCurrentValueStage(),
       ...getFileStage(),
       ...getLabeledValueStage(),
@@ -181,4 +275,89 @@ export const Suggestions = {
   },
   delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
   registerEventListeners,
+  saveConfigurations: async (settingsTemplates: ISettingsTemplate[]) => {
+    const currentSettings = await settings.get();
+    const defaultLanguage = currentSettings?.languages?.find(lang => lang.default)?.key;
+    let currentSettingsTemplates: ISettingsTemplate[] | undefined =
+      currentSettings.features?.metadataExtraction?.templates;
+    currentSettingsTemplates = currentSettingsTemplates || [];
+
+    await deleteSuggestionsNotConfigured(currentSettingsTemplates, settingsTemplates);
+    // @ts-ignore
+    currentSettings.features.metadataExtraction.templates = settingsTemplates;
+    await settings.save(currentSettings);
+
+    const newTemplates = getTemplateDifference(currentSettingsTemplates, settingsTemplates);
+    await Suggestions.createBlankState(newTemplates, defaultLanguage as string);
+
+    return currentSettings;
+  },
+
+  createBlankState: async (settingsTemplates: any[], defaultLanguage: string) => {
+    const templatesPromises = settingsTemplates.map(
+      async (template: { template: string; properties: string[] }) => {
+        const BATCH_SIZE = 2000;
+        let query: any = {
+          template: template.template,
+          language: defaultLanguage,
+        };
+
+        const entitiesSharedIds: string[] = [];
+
+        let fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
+        while (fetchedEntities.length) {
+          const sharedIds = fetchedEntities.map(entity => entity.sharedId);
+          entitiesSharedIds.push(...(sharedIds as string[]));
+          query = {
+            ...query,
+            _id: { $gt: fetchedEntities[fetchedEntities.length - 1]._id },
+          };
+          // eslint-disable-next-line no-await-in-loop
+          fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
+        }
+
+        const fetchedFiles = await files.get(
+          { entity: { $in: entitiesSharedIds }, type: 'document' },
+          '_id entity language extractedMetadata'
+        );
+
+        const blankSuggestions: IXSuggestionType[] = [];
+        fetchedFiles.forEach((file: FileType) => {
+          const language = file.language
+            ? languages.get(file.language, 'ISO639_1') || defaultLanguage
+            : defaultLanguage;
+          template.properties.forEach((propertyName: string) => {
+            let state = SuggestionState.valueEmpty;
+            if (file.extractedMetadata) {
+              const metadata = file.extractedMetadata.find(
+                (md: ExtractedMetadataSchema) => md.name === propertyName
+              );
+              if (metadata) {
+                state = SuggestionState.labelEmpty;
+              }
+            }
+            if (file.entity) {
+              blankSuggestions.push({
+                language,
+                fileId: file._id,
+                entityId: file.entity,
+                propertyName,
+                state,
+                status: 'ready',
+                error: '',
+                segment: '',
+                suggestedValue: '',
+                date: new Date().getTime(),
+              });
+            }
+          });
+        });
+
+        await IXSuggestionsModel.db
+          .dbForCurrentTenant()
+          .insertMany(blankSuggestions, { lean: true });
+      }
+    );
+    await Promise.all(templatesPromises);
+  },
 };

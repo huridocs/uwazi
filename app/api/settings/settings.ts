@@ -7,7 +7,6 @@ import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commo
 
 import { TemplateSchema } from 'shared/types/templateType';
 import { validateSettings } from 'shared/types/settingsSchema';
-import { Suggestions } from 'api/suggestions/suggestions';
 import { settingsModel } from './settingsModel';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
@@ -149,43 +148,6 @@ export default {
     await saveFiltersTranslations(settings.filters, currentSettings.filters);
 
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
-
-    const settingsTemplates = settings.features?.metadataExtraction?.templates;
-    const currentSettingsTemplates = currentSettings.features?.metadataExtraction?.templates;
-
-    if (settingsTemplates && currentSettingsTemplates) {
-      const deletedTemplates = currentSettingsTemplates.filter(
-        set => !settingsTemplates.find(st => st.template === set.template)
-      );
-
-      const deletedTemplateProps = currentSettingsTemplates
-        .map(currentTemplate => {
-          const currentTemplateId = currentTemplate.template;
-          const property: any = {};
-          const template = settingsTemplates.find(st => st.template === currentTemplateId);
-          if (template) {
-            property.template = currentTemplateId;
-            property.properties = [];
-            currentTemplate.properties.forEach(prop => {
-              if (!template.properties.includes(prop)) {
-                property.properties.push(prop);
-              }
-            });
-          }
-          return property;
-        })
-        .filter(prop => prop.template && prop.properties.length);
-
-      const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
-
-      deletedTemplatesAndDeletedTemplateProps.forEach(template => {
-        const templateId = template.template;
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        template.properties.forEach(async prop => {
-          await Suggestions.deleteByProperty(prop, templateId.toString());
-        });
-      });
-    }
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
       await (

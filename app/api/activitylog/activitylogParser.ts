@@ -190,6 +190,19 @@ const entryValues: { [key: string]: EntryValue } = {
     method: Methods.Create,
     extra: data => ` property ${data.property} `,
   },
+  'POST/api/suggestions/configurations': {
+    desc: 'Saved template configurations for suggestions',
+    method: Methods.Update,
+    extra: data => {
+      const configs = Object.values(data);
+      const props = configs.reduce((acc: string[], curr: any) => {
+        const currProps = curr.properties;
+        return [...acc, ...currProps];
+      }, []);
+      const uniqueProps = Array.from(new Set(props));
+      return ` Properties changed: ${uniqueProps}`;
+    },
+  },
 };
 
 const getSemanticData = async (data: any) => {

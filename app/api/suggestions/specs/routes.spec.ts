@@ -1,23 +1,26 @@
-/* eslint-disable max-lines */
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
-import entities from 'api/entities';
 
-import { search } from 'api/search';
+import entities from 'api/entities';
 import { WithId } from 'api/odm';
-import { suggestionsRoutes } from 'api/suggestions/routes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { search } from 'api/search';
+import settings from 'api/settings/settings';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import {
   fixtures,
+  heroTemplateId,
+  personTemplateId,
   shared2enId,
   shared2esId,
   shared6enId,
   suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
+import { suggestionsRoutes } from 'api/suggestions/routes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 import { EntitySchema } from 'shared/types/entityType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
 
 jest.mock(
@@ -296,6 +299,65 @@ describe('suggestions routes', () => {
         })
         .expect(401);
       expect(response.unauthorized).toBe(true);
+    });
+  });
+
+  describe('POST /api/suggestions/configurations', () => {
+    const payload = [
+      {
+        template: personTemplateId.toString(),
+        properties: ['super_powers'],
+      },
+      {
+        template: heroTemplateId.toString(),
+        properties: ['enemy'],
+      },
+    ];
+
+    const removeSuggestionsFromDBAndSaveConfigs = async () => {
+      user = { username: 'user 1', role: 'admin' };
+      await IXSuggestionsModel.delete({});
+      await request(app).post('/api/suggestions/configurations').send(payload).expect(200);
+    };
+
+    beforeAll(async () => {
+      await removeSuggestionsFromDBAndSaveConfigs();
+    });
+
+    it('should save configurations in settings', async () => {
+      const set = await settings.get();
+      expect(set.features?.metadataExtraction?.templates).toMatchObject(payload);
+    });
+    it('should create placeholder suggestions', async () => {
+      const superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+
+      expect(superPowerSugg).toMatchObject([
+        {
+          entityId: 'shared2',
+          propertyName: 'super_powers',
+          segment: '',
+          suggestedValue: '',
+          status: SuggestionState.labelEmpty,
+        },
+        {
+          entityId: 'shared2',
+          propertyName: 'super_powers',
+          segment: '',
+          suggestedValue: '',
+          status: SuggestionState.labelEmpty,
+        },
+      ]);
+      const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      expect(enemySugg).toMatchObject([
+        {
+          entityId: 'shared6',
+          propertyName: 'enemy',
+          segment: '',
+          suggestedValue: '',
+        },
+      ]);
     });
   });
 });

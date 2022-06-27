@@ -132,6 +132,25 @@ describe('suggestions', () => {
     });
   });
 
+  describe('createBlankStates()', () => {
+    it('should create blank states based on settings', async () => {
+      await IXSuggestionsModel.delete({});
+      const settings = [
+        {
+          template: personTemplateId,
+          properties: ['title'],
+        },
+      ];
+      await Suggestions.createBlankState(settings, 'en');
+      const newSuggestions = await IXSuggestionsModel.get({
+        propertyName: 'title',
+      });
+      expect(newSuggestions.length).toBe(2);
+      expect(newSuggestions[0].status).toBe(SuggestionState.valueEmpty);
+      expect(newSuggestions[1].status).toBe(SuggestionState.valueEmpty);
+    });
+  });
+
   describe('get()', () => {
     beforeEach(async () => {
       await Suggestions.updateStates({});
