@@ -13,7 +13,9 @@ exports[`Tip should render children 1`] = `
       type="checkbox"
     />
      
-    <Connect(Translate)>
+    <Connect(Translate)
+      translationKey="label"
+    >
       label
     </Connect(Translate)>
   </label>
@@ -34,7 +36,9 @@ exports[`Tip should render label and input for the model 1`] = `
       type="checkbox"
     />
      
-    <Connect(Translate)>
+    <Connect(Translate)
+      translationKey="label"
+    >
       label
     </Connect(Translate)>
   </label>

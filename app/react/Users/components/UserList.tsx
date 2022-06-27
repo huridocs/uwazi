@@ -3,6 +3,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { Pill } from 'app/Metadata/components/Pill';
 import { UserSchema } from 'shared/types/userType';
+import { roleTranslationKey } from '../UserManagement';
 
 export interface UserListProps {
   users: UserSchema[];
@@ -42,34 +43,36 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
           </tr>
         </thead>
         <tbody>
-          {sortedUsers.map((user: UserSchema) => {
-            const protection = user.using2fa ? 'Password + 2FA' : 'Password';
-            return (
-              <tr
-                className={selectedId === user._id ? 'selected' : ''}
-                key={user._id?.toString()}
-                onClick={() => selectRow(user)}
-              >
-                <td>{user.username}</td>
-                <td>
-                  <Pill color={user.using2fa ? 'palegreen' : 'lightgray'}>{protection}</Pill>
-                </td>
-                <td>
-                  <Pill color="white">{user.role}</Pill>
-                </td>
-                <td>
-                  {user.groups?.map(group => (
-                    <Pill key={group._id?.toString()} color="white">
-                      <>
-                        <Icon icon="users" />
-                        {` ${group.name}`}
-                      </>
-                    </Pill>
-                  ))}
-                </td>
-              </tr>
-            );
-          })}
+          {sortedUsers.map((user: UserSchema) => (
+            <tr
+              className={selectedId === user._id ? 'selected' : ''}
+              key={user._id?.toString()}
+              onClick={() => selectRow(user)}
+            >
+              <td>{user.username}</td>
+              <td>
+                <Pill color={user.using2fa ? 'palegreen' : 'lightgray'}>
+                  <Translate translationKey="Password">Password</Translate>
+                  {user.using2fa && ' + 2FA'}
+                </Pill>
+              </td>
+              <td>
+                <Pill color="white">
+                  <Translate translationKey={roleTranslationKey[user.role]}>{user.role}</Translate>
+                </Pill>
+              </td>
+              <td>
+                {user.groups?.map(group => (
+                  <Pill key={group._id?.toString()} color="white">
+                    <>
+                      <Icon icon="users" />
+                      {` ${group.name}`}
+                    </>
+                  </Pill>
+                ))}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className={`settings-footer ${className}`}>
