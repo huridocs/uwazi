@@ -1,49 +1,50 @@
 import api from 'app/utils/api';
 import { actions } from 'app/BasicReducer';
 import debounce from 'app/utils/debounce';
+import { createSelector } from 'reselect';
 import { notificationActions } from 'app/Notifications';
 import { referencesActions } from 'app/Viewer';
 import { RequestParams } from 'app/utils/RequestParams';
 import SearchApi from 'app/Search/SearchAPI';
+import { t } from 'app/I18N';
 import EntitiesApi from '../../Entities/EntitiesAPI';
-
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
 import * as routeUtils from '../utils/routeUtils';
 
-export function parseResults(results, parentEntity, editing) {
+function parseResults(results, parentEntity, editing) {
   return { type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing };
 }
 
-export function edit(value, results, parentEntity) {
+function edit(value, results, parentEntity) {
   return { type: types.EDIT_RELATIONSHIPS, value, results, parentEntity, editing: value };
 }
 
-export function addHub() {
+function addHub() {
   return { type: types.ADD_RELATIONSHIPS_HUB };
 }
 
-export function toggelRemoveLeftRelationship(index) {
+function toggelRemoveLeftRelationship(index) {
   return { type: types.TOGGLE_REMOVE_RELATIONSHIPS_LEFT, index };
 }
 
-export function toggleRemoveRightRelationshipGroup(index, rightIndex) {
+function toggleRemoveRightRelationshipGroup(index, rightIndex) {
   return { type: types.TOGGLE_REMOVE_RELATIONSHIPS_RIGHT_GROUP, index, rightIndex };
 }
 
-export function updateLeftRelationshipType(index, _id) {
+function updateLeftRelationshipType(index, _id) {
   return { type: types.UPDATE_RELATIONSHIPS_LEFT_TYPE, index, _id };
 }
 
-export function setAddToData(index, rightIndex) {
+function setAddToData(index, rightIndex) {
   return { type: types.SET_RELATIONSHIPS_ADD_TO_DATA, index, rightIndex };
 }
 
-export function updateRelationshipEntityData(entity) {
+function updateRelationshipEntityData(entity) {
   return { type: types.UPDATE_RELATIONSHIP_ENTITY_DATA, entity };
 }
 
-export function updateRightRelationshipType(index, rightIndex, _id) {
+function updateRightRelationshipType(index, rightIndex, _id) {
   return (dispatch, getState) => {
     const { hubs } = getState().relationships;
     const newRightRelationshipType =
@@ -64,7 +65,7 @@ export function updateRightRelationshipType(index, rightIndex, _id) {
   };
 }
 
-export function addEntity(index, rightIndex, entity, errors = []) {
+function addEntity(index, rightIndex, entity, errors = []) {
   return dispatch => {
     const title = entity.title.length > 75 ? `${entity.title.slice(0, 75)}(...)` : entity.title;
     let message = `${title} added to hub`;
@@ -81,19 +82,19 @@ export function addEntity(index, rightIndex, entity, errors = []) {
   };
 }
 
-export function toggleRemoveEntity(index, rightIndex, relationshipIndex) {
+function toggleRemoveEntity(index, rightIndex, relationshipIndex) {
   return { type: types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex };
 }
 
-export function toggleMoveEntity(index, rightIndex, relationshipIndex) {
+function toggleMoveEntity(index, rightIndex, relationshipIndex) {
   return { type: types.TOGGLE_MOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex };
 }
 
-export function moveEntities(index, rightRelationshipIndex) {
+function moveEntities(index, rightRelationshipIndex) {
   return { type: types.MOVE_RELATIONSHIPS_ENTITY, index, rightRelationshipIndex };
 }
 
-export function reloadRelationships(sharedId) {
+function reloadRelationships(sharedId) {
   return (dispatch, getState) =>
     routeUtils
       .requestState(new RequestParams({ sharedId }), getState())
@@ -103,7 +104,7 @@ export function reloadRelationships(sharedId) {
       });
 }
 
-export function saveRelationships() {
+function saveRelationships() {
   return (dispatch, getState) => {
     dispatch({ type: types.SAVING_RELATIONSHIPS });
     const parentEntityId = getState().relationships.list.sharedId;
@@ -198,7 +199,7 @@ export function saveRelationships() {
   };
 }
 
-export function immidiateSearch(dispatch, searchTerm) {
+function immidiateSearch(dispatch, searchTerm) {
   dispatch(uiActions.searching());
 
   const requestParams = new RequestParams({
@@ -214,17 +215,64 @@ export function immidiateSearch(dispatch, searchTerm) {
 
 const debouncedSearch = debounce(immidiateSearch, 400);
 
-export function search(searchTerm) {
+const selectRelationTypes = createSelector(
+  state => state.translations,
+  state => state.relationTypes,
+  state => state.locale,
+  (translations, relationTypes, locale) => {
+    const translationContexts = translations.find(
+      translation => translation.get('locale') === locale
+    );
+    const relations = relationTypes.toJS().map(rel => {
+      const [translationContext] = translationContexts
+        .get('contexts')
+        .filter(context => context.get('id') === rel._id);
+      const name = translationContext
+        ? t(translationContext.get('id'), rel.name, null, false)
+        : rel.name;
+      return {
+        ...rel,
+        name,
+      };
+    });
+    return [{ _id: null, name: t('System', 'No Label', null, false) }].concat(relations);
+  }
+);
+
+function search(searchTerm) {
   return dispatch => {
     dispatch(actions.set('relationships/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm);
   };
 }
 
-export function selectConnection(connection) {
+function selectConnection(connection) {
   return actions.set('relationships/connection', connection);
 }
 
-export function unselectConnection() {
+function unselectConnection() {
   return actions.set('relationships/connection', {});
 }
+
+export {
+  unselectConnection,
+  selectConnection,
+  search,
+  selectRelationTypes,
+  immidiateSearch,
+  saveRelationships,
+  reloadRelationships,
+  toggleRemoveEntity,
+  toggleMoveEntity,
+  moveEntities,
+  addEntity,
+  updateRightRelationshipType,
+  updateRelationshipEntityData,
+  setAddToData,
+  parseResults,
+  edit,
+  addHub,
+  toggelRemoveLeftRelationship,
+  toggleRemoveRightRelationshipGroup,
+  updateLeftRelationshipType,
+};
