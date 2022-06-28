@@ -4,9 +4,14 @@ import { createError } from 'api/utils/index';
 import { appContext } from 'api/utils/AppContext';
 
 const ajvPrettifier = error => {
-  const errorMessage = [error.message];
+  const errorMessage = [];
   if (error.errors && error.errors.length) {
     error.errors.forEach(oneError => {
+      errorMessage.push(`${oneError.dataPath}: ${oneError.message}`);
+    });
+  }
+  if (error.validations && error.validations.length) {
+    error.validations.forEach(oneError => {
       errorMessage.push(`${oneError.dataPath}: ${oneError.message}`);
     });
   }
@@ -88,6 +93,18 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     ? ajvPrettifier(result)
     : joiPrettifier(result, obfuscatedRequest);
 
+  if (result.validations) {
+    const validations = result.validations.map(val => {
+      const key = val.dataPath.match(/\['(.*?)'\]/g).map(path => path.replace(/(\[')|('\])/g, ''));
+      return {
+        ...val,
+        propertyName: key[0],
+      };
+    });
+
+    result.validations = validations;
+  }
+
   return result;
 };
 
@@ -121,12 +138,10 @@ function simplifyError(result, error) {
   delete simplifiedError.original;
 
   if (error instanceof Error) {
-    simplifiedError.prettyMessage = error.message;
     simplifiedError.error = error.message;
     delete simplifiedError.message;
-  } else {
-    simplifiedError.prettyMessage = simplifiedError.prettyMessage || error.message;
   }
+  simplifiedError.prettyMessage = simplifiedError.prettyMessage || error.message;
 
   return simplifiedError;
 }

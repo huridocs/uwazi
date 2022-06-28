@@ -66,7 +66,13 @@ class PublicForm extends Component {
     const generatedIdTitle = props.template
       .get('commonProperties')
       .find(p => p.get('name') === 'title' && p.get('generatedId') === true);
-    this.state = { submiting: false, files: [], generatedIdTitle };
+    this.state = {
+      submiting: false,
+      files: [],
+      generatedIdTitle,
+      submitError: {},
+      showSubmitError: false,
+    };
   }
 
   fileDropped(files) {
@@ -110,6 +116,8 @@ class PublicForm extends Component {
       this.resetForm();
       this.setState({ submiting: false, files: [] });
     } catch (e) {
+      this.setState({ submitError: e.body });
+      this.setState({ showSubmitError: true });
       this.setState({ submiting: false });
     }
     this.refreshCaptcha();
@@ -200,35 +208,59 @@ class PublicForm extends Component {
 
   render() {
     const { template, thesauris, file, attachments } = this.props;
-    const { submiting } = this.state;
+    const { submiting, showSubmitError, submitError } = this.state;
     return (
-      <LocalForm
-        validators={this.validators}
-        model="publicform"
-        getDispatch={dispatch => this.attachDispatch(dispatch)}
-        onSubmit={this.handleSubmit}
-      >
-        {submiting && PublicForm.renderSubmitState()}
-        {!submiting && (
-          <div className="public-form">
-            {PublicForm.renderTitle(template)}
-            <MetadataFormFields
-              thesauris={thesauris}
-              model="publicform"
-              template={template}
-              boundChange={(formModel, value) =>
-                this.formDispatch(actions.change(formModel, value))
-              }
-            />
-            {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
-            {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
-            {this.renderCaptcha()}
-            <button type="submit" className="btn btn-success">
-              <Translate>Submit</Translate>
-            </button>
+      <>
+        {showSubmitError && submitError.validations && (
+          <div className="alert alert-danger">
+            <Icon icon="exclamation-triangle" />
+            <div className="alert-text">
+              <span>
+                <Translate>Validation Failed</Translate>
+              </span>
+              <ul>
+                {submitError.validations.map(err => {
+                  if (err.propertyName) {
+                    return (
+                      <li>
+                        {err.propertyName} {err.message}
+                      </li>
+                    );
+                  }
+                  return <Translate>Error</Translate>;
+                })}
+              </ul>
+            </div>
           </div>
         )}
-      </LocalForm>
+        <LocalForm
+          validators={this.validators}
+          model="publicform"
+          getDispatch={dispatch => this.attachDispatch(dispatch)}
+          onSubmit={this.handleSubmit}
+        >
+          {submiting && PublicForm.renderSubmitState()}
+          {!submiting && (
+            <div className="public-form">
+              {PublicForm.renderTitle(template)}
+              <MetadataFormFields
+                thesauris={thesauris}
+                model="publicform"
+                template={template}
+                boundChange={(formModel, value) =>
+                  this.formDispatch(actions.change(formModel, value))
+                }
+              />
+              {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
+              {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
+              {this.renderCaptcha()}
+              <button type="submit" className="btn btn-success">
+                <Translate>Submit</Translate>
+              </button>
+            </div>
+          )}
+        </LocalForm>
+      </>
     );
   }
 }
