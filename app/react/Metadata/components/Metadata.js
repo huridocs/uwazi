@@ -24,7 +24,7 @@ export const showByType = (prop, compact, templateId) => {
       result = t('System', 'No property');
       break;
     case 'markdown':
-      result = <MarkdownViewer markdown={prop.value} />;
+      result = <MarkdownViewer html markdown={prop.value} />;
       break;
     case 'link':
       result = (
