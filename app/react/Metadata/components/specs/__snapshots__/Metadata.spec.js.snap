@@ -62,7 +62,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
     >
       <MarkdownViewer
         compact={false}
-        html={false}
+        html={true}
         lists={Array []}
         markdown="some markdown text"
       />
