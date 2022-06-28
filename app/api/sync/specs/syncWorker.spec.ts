@@ -422,6 +422,6 @@ describe('syncWorker', () => {
         const syncedTemplates = await templates.get();
         expect(syncedTemplates).toHaveLength(1);
       }, 'target1');
-    });
+    }, 10000);
   });
 });
