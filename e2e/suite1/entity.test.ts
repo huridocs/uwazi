@@ -59,6 +59,18 @@ describe('Entities', () => {
     `${__dirname}/../test_files/valid.pdf`,
     `${__dirname}/../test_files/batman.jpg`,
   ];
+  const textWithHtml = `<h1>The title</h1>
+    <a href="https://duckduckgo.com/" target="_blank">
+      I am a link to an external site
+    </a>
+    <br />
+    <a href="/entity/mh5hwf3nzhq6w29">
+      I am a link to an internal entity
+    <a/>
+    <ol class="someClass">
+      <li>List item 1</li>
+      <li>List item 2</li>
+    </ol>`;
 
   it('Should create new entity', async () => {
     await expect(page).toClick('button', { text: 'Create entity' });
@@ -67,49 +79,80 @@ describe('Entities', () => {
     await saveEntityAndClosePanel();
   });
 
-  it('Should create a new entity with attachments', async () => {
-    await goToRestrictedEntities();
-    await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
-    await expect(page).toClick('.item-document', {
-      text: entityTitle,
+  describe('Rich text fields', () => {
+    it('should create an entity with HTML on a rich text field', async () => {
+      await expect(page).toClick('button', { text: 'Create entity' });
+      await expect(page).toSelect('select:first-of-type', 'Reporte');
+      await expect(page).toFill(
+        'textarea[name="library.sidepanel.metadata.title"]',
+        'Entity with HTML'
+      );
+      await expect(page).toFill('#tabpanel-edit > textarea', textWithHtml);
+      await expect(page).toClick('button', { text: 'Save' });
     });
-    const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
+
+    it('should check that the HTML is show as expected', async () => {
+      await expect(page).toMatchElement('h1', { text: 'The title' });
+      await expect(page).toMatchElement('a', { text: 'I am a link to an external site' });
+      await expect(page).toMatchElement('.someClass > li:nth-child(1)', { text: 'List item 1' });
+      await expect(page).toMatchElement('.someClass > li:nth-child(2)', { text: 'List item 2' });
+    });
+
+    it('should navigate to an entity via the rich text field link', async () => {
+      await expect(page).toClick('a', { text: 'I am a link to an internal entity' });
+      await page.waitForNavigation();
+      await disableTransitions();
+      await expect(page).toMatchElement('.content-header-title > h1:nth-child(1)', {
+        text: 'Artavia Murillo y otros',
+      });
+    });
   });
 
-  it('should rename an attachment', async () => {
-    await expect(page).toClick('.item-document', {
-      text: entityTitle,
+  describe('Entity with supporting files', () => {
+    it('Should create a new entity with supporting files', async () => {
+      await goToRestrictedEntities();
+      await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
+      await expect(page).toClick('.item-document', {
+        text: entityTitle,
+      });
+      const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+      expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
     });
-    await expect(page).toClick('button', { text: 'Edit' });
-    await expect(page).toFill(
-      'input[name="library.sidepanel.metadata.attachments.2.originalname"]',
-      'My PDF.pdf'
-    );
-    await saveEntityAndClosePanel();
-    await expect(page).toClick('.item-document', {
-      text: entityTitle,
+
+    it('should rename a supporting file', async () => {
+      await expect(page).toClick('.item-document', {
+        text: entityTitle,
+      });
+      await expect(page).toClick('button', { text: 'Edit' });
+      await expect(page).toFill(
+        'input[name="library.sidepanel.metadata.attachments.2.originalname"]',
+        'My PDF.pdf'
+      );
+      await saveEntityAndClosePanel();
+      await expect(page).toClick('.item-document', {
+        text: entityTitle,
+      });
+      const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+      expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
     });
-    const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
+
+    it('should delete the first supporting file', async () => {
+      await expect(page).toClick('.item-document', {
+        text: entityTitle,
+      });
+      await expect(page).toClick('button', { text: 'Edit' });
+      await expect(page).toClick('.delete-supporting-file');
+      await saveEntityAndClosePanel();
+      await expect(page).toClick('.item-document', {
+        text: entityTitle,
+      });
+      await page.waitForSelector('.attachment-name');
+      const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+      expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
+    });
   });
 
-  it('should delete the first attachment', async () => {
-    await expect(page).toClick('.item-document', {
-      text: entityTitle,
-    });
-    await expect(page).toClick('button', { text: 'Edit' });
-    await expect(page).toClick('.delete-supporting-file');
-    await saveEntityAndClosePanel();
-    await expect(page).toClick('.item-document', {
-      text: entityTitle,
-    });
-    await page.waitForSelector('.attachment-name');
-    const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-    expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
-  });
-
-  describe('entity with files in metadata fields', () => {
+  describe('Entity with files in metadata fields', () => {
     it('should create and entity with and image in a metadata field', async () => {
       await goToRestrictedEntities();
       await expect(page).toClick('button', { text: 'Create entity' });
