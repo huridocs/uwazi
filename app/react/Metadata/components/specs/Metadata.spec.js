@@ -272,4 +272,21 @@ describe('Metadata', () => {
       testSnapshot();
     });
   });
+
+  describe('when passing inheritted relationships', () => {
+    it('should flatten the results for display purposes', () => {
+      props.metadata = [
+        {
+          name: 'inherited from relationship',
+          type: 'inherit',
+          inheritedType: 'relationship',
+          value: [
+            { value: [{ value: 1, extraParams: 'not respected!' }, { value: 2 }] },
+            { value: [{ value: 1 }, { value: 3 }] },
+          ],
+        },
+      ];
+      testSnapshot();
+    });
+  });
 });

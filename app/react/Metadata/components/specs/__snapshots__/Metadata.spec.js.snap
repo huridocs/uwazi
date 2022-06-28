@@ -483,3 +483,42 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
   </dl>
 </Fragment>
 `;
+
+exports[`Metadata when passing inheritted relationships should flatten the results for display purposes 1`] = `
+<Fragment>
+  <dl
+    className="metadata-type-inherit metadata-name-inherited from relationship  "
+    key="inherited from relationship_0"
+  >
+    <dt />
+    <dd
+      className=""
+    >
+      <ValueList
+        compact={false}
+        property={
+          Object {
+            "inheritedType": "relationship",
+            "name": "inherited from relationship",
+            "type": "inherit",
+            "value": Array [
+              Object {
+                "value": 1,
+              },
+              Object {
+                "value": 2,
+              },
+              Object {
+                "value": 1,
+              },
+              Object {
+                "value": 3,
+              },
+            ],
+          }
+        }
+      />
+    </dd>
+  </dl>
+</Fragment>
+`;

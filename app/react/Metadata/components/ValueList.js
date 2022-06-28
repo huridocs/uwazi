@@ -34,7 +34,22 @@ const renderCompact = prop =>
         <span>, </span>
       );
 
-const ValueList = ({ property, compact }) =>
-  compact ? renderCompact(property) : renderList(property);
+const groupRepeatedValues = property =>
+  property.value
+    .reduce((results, v) => {
+      const previousValue = results.find(r => r.value === v.value);
+      if (previousValue) {
+        previousValue.valueCount += 1;
+      } else {
+        results.push({ ...v, valueCount: 1 });
+      }
+      return results;
+    }, [])
+    .map(v => ({ ...v, value: v.valueCount > 1 ? `${v.value} (${v.valueCount})` : v.value }));
+
+const ValueList = ({ property, compact }) => {
+  const propertyWithGroupedValues = { ...property, value: groupRepeatedValues(property) };
+  return compact ? renderCompact(propertyWithGroupedValues) : renderList(propertyWithGroupedValues);
+};
 
 export default ValueList;
