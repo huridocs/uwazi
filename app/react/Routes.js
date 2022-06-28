@@ -1,11 +1,15 @@
-import Activitylog from 'app/Activitylog/Activitylog';
+import React from 'react';
+import { IndexRoute, Route } from 'react-router';
 import App from 'app/App/App';
+import Activitylog from 'app/Activitylog/Activitylog';
 import { trackPage } from 'app/App/GoogleAnalytics';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
+import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
+import { IXSuggestions } from 'app/MetadataExtraction/SuggestionsContainer';
 import EditPage from 'app/Pages/EditPage';
 import NewPage from 'app/Pages/NewPage';
 import Pages from 'app/Pages/Pages';
@@ -40,36 +44,32 @@ import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
-import React from 'react';
-
-import { IndexRoute, Route } from 'react-router';
 import { UserManagement } from 'app/Users/UserManagement';
-import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
-import { IXSuggestions } from 'app/MetadataExtraction/SuggestionsContainer';
 import { store } from './store';
 import { LibraryTable } from './Library/LibraryTable';
 import { validateHomePageRoute } from './utils/routeHelpers';
 
-function onEnter() {
+const onEnter = () => {
   trackPage();
-}
+};
 
-function needsAuth(_nxtState, replace) {
+const needsAuth = (_nxtState, replace) => {
   if (!store.getState().user.get('_id')) {
     replace('/login');
   }
-}
+};
 
-function enterOnLibrary(_nxtState, replace) {
+const enterOnLibrary = (_nxtState, replace) => {
   const state = store.getState();
   if (blankState() && !state.user.get('_id')) {
     return replace('/login');
   }
 
   trackPage();
-}
+  return () => {};
+};
 
-function getDefaultLibraryComponent(defaultLibraryView) {
+const getDefaultLibraryComponent = defaultLibraryView => {
   switch (defaultLibraryView) {
     case 'table':
       return {
@@ -88,9 +88,10 @@ function getDefaultLibraryComponent(defaultLibraryView) {
         onEnter: enterOnLibrary,
       };
   }
-}
+};
 
-function getPageIndexRoute(customHomePage) {
+const getPageIndexRoute = customHomePage => {
+  onEnter();
   const pageId = customHomePage[customHomePage.indexOf('page') + 1];
   const component = props => <PageView {...props} params={{ sharedId: pageId }} />;
   component.requestState = requestParams =>
@@ -100,9 +101,9 @@ function getPageIndexRoute(customHomePage) {
     component,
     customHomePageId: pageId,
   };
-}
+};
 
-function libraryDefaults(callBack, state, defaultView) {
+const libraryDefaults = (callBack, state, defaultView) => {
   if (state.user.get('_id')) {
     return callBack(null, {
       onEnter: (_nextState, replace) => {
@@ -112,33 +113,24 @@ function libraryDefaults(callBack, state, defaultView) {
   }
 
   return callBack(null, getDefaultLibraryComponent(defaultView));
-}
-
-function getIndexRoute(_nextState, callBack) {
+};
+const getIndexRoute = (_nextState, callBack) => {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page') || '';
+  const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
   const defaultView = state.settings.collection.get('defaultLibraryView');
 
-  if (!validateHomePageRoute(homePageSetting)) {
+  if (!validateHomePageRoute(homePageSetting) || customHomePage.length === 0) {
     return libraryDefaults(callBack, state, defaultView);
   }
-
-  const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
-  const isPageRoute = customHomePage.includes('page');
-  if (isPageRoute) {
-    return callBack(null, getPageIndexRoute(customHomePage));
-  }
-
-  if (customHomePage.length) {
-    return callBack(null, {
-      onEnter: (_nxtState, replace) => {
-        replace(customHomePage.join('/'));
-      },
-    });
-  }
-
-  return libraryDefaults(callBack, state, defaultView);
-}
+  return customHomePage.includes('page')
+    ? callBack(null, getPageIndexRoute(customHomePage))
+    : callBack(null, {
+        onEnter: (_nxtState, replace) => {
+          replace(customHomePage.join('/'));
+        },
+      });
+};
 
 const routes = (
   <Route getIndexRoute={getIndexRoute}>
@@ -203,6 +195,8 @@ const routes = (
     <Route path="404" component={GeneralError} />
   </Route>
 );
+
+export { getIndexRoute };
 
 export default (
   <Route path="/" component={App}>

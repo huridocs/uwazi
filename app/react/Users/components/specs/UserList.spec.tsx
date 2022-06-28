@@ -1,8 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { Pill } from 'app/Metadata/components/Pill';
 import { UserSchema } from 'shared/types/userType';
 import { UserRole } from 'shared/types/userSchema';
+import { Translate } from 'app/I18N';
+import { Pill } from 'app/Metadata/components/Pill';
 import { UserList, UserListProps } from '../UserList';
 
 describe('UserList', () => {
@@ -46,8 +47,8 @@ describe('UserList', () => {
       expect(rows.length).toBe(3);
       const columns = rows.at(0).find('td');
       expect(columns.at(0).props().children).toEqual('Ana Brown');
-      expect(columns.at(1).find(Pill).at(0).props().children).toBe('Password + 2FA');
-      expect(columns.at(2).find(Pill).at(0).props().children).toBe('editor');
+      expect(columns.at(1).find(Pill).at(0).props().children).toContain(' + 2FA');
+      expect(columns.at(2).find(Translate).props().children).toBe('editor');
       expect(columns.at(3).find(Pill).children().at(1).text()).toBe(' Group1');
       expect(columns.at(3).find(Pill).children().at(3).text()).toBe(' Group2');
     });

@@ -14,7 +14,7 @@ import { reset2fa } from 'app/Auth2fa/actions/actions';
 import { recoverPassword } from 'app/Auth/actions';
 import { t } from 'app/I18N';
 
-export interface UserProps {
+interface UserProps {
   users: IImmutable<UserSchema[]>;
   userGroups: IImmutable<UserGroupSchema[]>;
   loadUsers: () => Promise<void>;
@@ -139,4 +139,5 @@ const mapDispatchToProps = {
   recoverPassword,
 };
 
+export type { UserProps };
 export const Users = connect(mapStateToProps, mapDispatchToProps)(UsersComponent);
