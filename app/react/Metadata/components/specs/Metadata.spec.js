@@ -1,8 +1,6 @@
-/* eslint-disable max-lines */
 import React from 'react';
-
 import { shallow } from 'enzyme';
-
+import MarkdownViewer from 'app/Markdown';
 import Metadata from '../Metadata';
 
 describe('Metadata', () => {
@@ -270,6 +268,44 @@ describe('Metadata', () => {
         },
       ];
       testSnapshot();
+    });
+  });
+
+  describe('markdown with HTML', () => {
+    it('should parse and use HTML tags in markdown fields', () => {
+      props.metadata = [
+        {
+          translateContext: 'oneTranslateContext',
+          name: 'label_array',
+          label: 'label array',
+          value: '<h1>A title in HTML</h1>',
+          type: 'markdown',
+        },
+      ];
+      const component = shallow(<Metadata {...props} />);
+      const markdown = component.find(MarkdownViewer);
+      expect(markdown.dive().props().children.type).toBe('h1');
+    });
+
+    it('should work with both mardown and HTML tags', () => {
+      props.metadata = [
+        {
+          translateContext: 'oneTranslateContext',
+          name: 'label_array',
+          label: 'label array',
+          value:
+            '## A subtitle in markdown\n<a href="https://somesite.com" target="_blank">A link</a>',
+          type: 'markdown',
+        },
+      ];
+      const component = shallow(<Metadata {...props} />);
+      const markdown = component.find(MarkdownViewer);
+      expect(markdown.dive().props().children[0].type).toBe('h2');
+      expect(markdown.dive().props().children[2].props.children.props).toEqual({
+        href: 'https://somesite.com',
+        target: '_blank',
+        children: 'A link',
+      });
     });
   });
 });
