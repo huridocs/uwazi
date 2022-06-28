@@ -31,7 +31,6 @@ describe('relationships routes', () => {
       const { body } = await request(app)
         .post('/api/relationships/bulk')
         .send({ save: [{ notAllowedProperty: 'test' }], delete: [] });
-
       expect(body.prettyMessage).toBe('validation failed');
     });
 

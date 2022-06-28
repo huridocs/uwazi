@@ -95,10 +95,11 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (result.validations) {
     const validations = result.validations.map(val => {
-      const key = val.dataPath.match(/\['(.*?)'\]/g).map(path => path.replace(/(\[')|('\])/g, ''));
+      const matches = val.dataPath.match(/\['(.*?)'\]/g);
+      const key = matches ? matches.map(path => path.replace(/(\[')|('\])/g, '')) : [];
       return {
         ...val,
-        propertyName: key[0],
+        propertyName: key.length ? key[0] : undefined,
       };
     });
 
@@ -138,11 +139,12 @@ function simplifyError(result, error) {
   delete simplifiedError.original;
 
   if (error instanceof Error) {
+    simplifiedError.prettyMessage = error.message;
     simplifiedError.error = error.message;
     delete simplifiedError.message;
+  } else {
+    simplifiedError.prettyMessage = simplifiedError.prettyMessage || error.message;
   }
-  simplifiedError.prettyMessage = simplifiedError.prettyMessage || error.message;
-
   return simplifiedError;
 }
 
