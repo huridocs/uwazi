@@ -67,7 +67,7 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
               templates: [
                 {
                   template: fixturesFactory.id(extractedTemplateName),
-                  properties: ['extracted_property_1', 'extracted_property_2'],
+                  properties: ['extracted_property_1', 'extracted_property_2', 'title'],
                 },
               ],
             },
@@ -148,6 +148,17 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     } else {
       expect(updateSpy).not.toHaveBeenCalled();
     }
+  });
+
+  it('should update suggestions, if title is configured and changed', async () => {
+    const after = {
+      ...extractedBefore,
+      title: 'new title',
+    };
+    await applicationEventsBus.emit(
+      new EntityUpdatedEvent({ before: [extractedBefore], after: [after], targetLanguageKey: 'en' })
+    );
+    expect(updateSpy).toHaveBeenCalled();
   });
 });
 

@@ -23,6 +23,7 @@ const extractedMetadataChanged = async (existingEntity: EntitySchema, newEntity:
   }
   const extractedProperties = extractionTemplatesIndexed[existingEntity.template!.toString()];
   const changedMetadata = shallowObjectDiff(newEntity.metadata, existingEntity.metadata || {}).all;
+  if (newEntity.title !== existingEntity.title) changedMetadata.push('title');
   return changedMetadata.some(m => extractedProperties.has(m));
 };
 
