@@ -52,7 +52,13 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
           if (url.startsWith('http')) {
             return (
               <li key={index}>
-                <a href={url} className="btn dropdown-item" target="_blank" rel="noreferrer">
+                <a
+                  href={url}
+                  className="btn dropdown-item"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={toggleShowing}
+                >
                   <Translate context="Menu">{sublink?.get('title') as string}</Translate>
                 </a>
               </li>
@@ -60,7 +66,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
           }
           return (
             <li key={index}>
-              <I18NLink to={url} className="btn dropdown-item">
+              <I18NLink to={url} className="btn dropdown-item" onClick={toggleShowing}>
                 <Translate context="Menu">{sublink?.get('title') as string}</Translate>
               </I18NLink>
             </li>
