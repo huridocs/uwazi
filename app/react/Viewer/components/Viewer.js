@@ -135,7 +135,7 @@ class Viewer extends Component {
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !targetDoc}>
               {raw || firstRender ? (
-                <div className={`${determineDirection(file)} raw-pdf`}>{pageText}</div>
+                <div className={`${determineDirection(file)} raw-text`}>{pageText}</div>
               ) : (
                 <SourceDocument
                   searchTerm={searchTerm}
