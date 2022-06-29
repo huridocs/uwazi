@@ -75,7 +75,7 @@ exports[`ValueList should group items with same value 1`] = `
     <span
       className="item-count"
     >
-      (3)
+      3
     </span>
   </li>
   <li
@@ -86,7 +86,7 @@ exports[`ValueList should group items with same value 1`] = `
     <span
       className="item-count"
     >
-      (2)
+      2
     </span>
   </li>
 </ul>
