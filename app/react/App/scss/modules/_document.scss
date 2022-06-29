@@ -32,10 +32,10 @@
 
 .document-viewer .main-wrapper {
   .raw-text {
-    white-space: pre;
+    white-space: pre-line;
 
-    @media (max-width: 1023px) {
-      white-space: pre-line;
+    @media (min-width: 1024px) {
+      white-space: pre;
     }
   }
 
