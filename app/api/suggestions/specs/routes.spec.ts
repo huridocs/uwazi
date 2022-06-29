@@ -348,7 +348,7 @@ describe('suggestions routes', () => {
           segment: '',
           suggestedValue: '',
           state: SuggestionState.labelEmpty,
-          status: 'ready'
+          status: 'ready',
         },
       ]);
       const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
