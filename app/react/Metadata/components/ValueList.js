@@ -13,14 +13,14 @@ const composeCount = (data, key) => {
   return data.value;
 };
 
-const withIcon = v =>
+const withIcon = (v, i) =>
   v.icon ? (
     <>
       <Icon className="item-icon item-icon-center" data={v.icon} />
-      {composeCount(v, 'withIcon')}
+      {composeCount(v, `icon${i}`)}
     </>
   ) : (
-    composeCount(v, 'withoutIcon')
+    composeCount(v, `noIcon${i}`)
   );
 
 const interpose = (array, separator) => [].concat(...array.map(e => [separator, e])).slice(1);
@@ -41,7 +41,7 @@ const renderCompact = prop =>
         <br />
       )
     : interpose(
-        prop.value.map(v => withIcon(v)),
+        prop.value.map((v, i) => withIcon(v, i)),
         <span>, </span>
       );
 
