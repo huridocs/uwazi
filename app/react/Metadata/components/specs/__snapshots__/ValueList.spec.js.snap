@@ -70,12 +70,24 @@ exports[`ValueList should group items with same value 1`] = `
   <li
     key="label_1"
   >
-    second_value (3)
+    second_value
+     
+    <span
+      className="item-count"
+    >
+      (3)
+    </span>
   </li>
   <li
     key="label_2"
   >
-    third value (2)
+    third value
+     
+    <span
+      className="item-count"
+    >
+      (2)
+    </span>
   </li>
 </ul>
 `;
