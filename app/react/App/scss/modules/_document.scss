@@ -31,7 +31,15 @@
 }
 
 .document-viewer .main-wrapper {
-  pre.force-rtl {
+  .raw-pdf {
+    white-space: pre;
+
+    @media (max-width: 1023px) {
+      white-space: pre-line;
+    }
+  }
+
+  div.force-rtl {
     /*!rtl:ignore*/
     direction: rtl;
   }
