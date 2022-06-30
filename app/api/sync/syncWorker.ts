@@ -19,9 +19,6 @@ async function createSyncIfNotExists(config: SettingsSyncSchema) {
   }
 }
 
-const ensureArray = (syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) =>
-  Array.isArray(syncSettings) ? syncSettings : [syncSettings];
-
 class InvalidSyncConfig extends Error {
   constructor(message: string) {
     super(message);
@@ -67,8 +64,8 @@ export const syncWorker = {
     }, Promise.resolve());
   },
 
-  async syncronize(syncSettings: SettingsSyncSchema | SettingsSyncSchema[]) {
-    await ensureArray(syncSettings).reduce(async (previousSync, config) => {
+  async syncronize(syncSettings: SettingsSyncSchema[]) {
+    await syncSettings.reduce(async (previousSync, config) => {
       await previousSync;
       const syncConfig = validateConfig(config);
       if (syncConfig.active) {
