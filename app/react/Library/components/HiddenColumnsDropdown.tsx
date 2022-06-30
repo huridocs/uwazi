@@ -62,7 +62,7 @@ const HideColumnsComponent = ({
   columns: columnsMap,
 }: HideColumnsComponentProps) => {
   const [open, setOpen] = useState(false);
-  const [clickOutside, setClickOutside] = useState(false);
+  const [clickedOutside, setClickedOutside] = useState(false);
 
   const { sortedColumns, hiddenColumns } = processColumns(columnsMap);
   const dropdownContainerRef = useRef(null);
@@ -70,16 +70,14 @@ const HideColumnsComponent = ({
 
   const onClickOutside = useCallback(event => {
     if (event.target.className === 'tableview-wrapper') {
-      setClickOutside(true);
-      if (dropdownRef !== null && dropdownRef.current !== null) {
-        dropdownRef.current.props.onToggle(false);
-      }
+      setClickedOutside(true);
+      dropdownRef.current?.props.onToggle(false);
     }
   }, []);
 
   useOnClickOutsideElement<HTMLLIElement>(dropdownContainerRef, onClickOutside);
 
-  const onSelect = (item: any) => {
+  const onSelect = (item: SelectableColumn) => {
     if (item.selectAll) {
       setAllColumnsHidden(item.indeterminate ? false : !item.hidden);
     } else {
@@ -103,14 +101,12 @@ const HideColumnsComponent = ({
         onSelect={(selected: SelectableColumn) => {
           onSelect(selected);
         }}
-        onToggle={(openStatus: boolean) => {
-          if (clickOutside) {
+        onToggle={(isOpening: boolean) => {
+          if (clickedOutside) {
             setOpen(false);
-            setClickOutside(false);
-            if (dropdownRef !== null && dropdownRef.current !== null) {
-              dropdownRef.current.forceUpdate(() => {});
-            }
-          } else if (openStatus) {
+            setClickedOutside(false);
+            dropdownRef.current?.forceUpdate();
+          } else if (isOpening) {
             setOpen(true);
           }
         }}
