@@ -365,6 +365,18 @@ describe('suggestions routes', () => {
           segment: '',
           suggestedValue: '',
         },
+        {
+          entityId: 'shared7',
+          propertyName: 'enemy',
+          segment: '',
+          suggestedValue: '',
+        },
+        {
+          entityId: 'shared8',
+          propertyName: 'enemy',
+          segment: '',
+          suggestedValue: '',
+        },
       ]);
     });
   });
