@@ -39,7 +39,7 @@ const getSuggestionState = (values: SuggestionValues, propertyType: PropertySche
   const coercedLabeledValue = coerceValue(labeledValue, propertyType);
   const equals = equalsForType(propertyType);
 
-  console.log({ ...values, coercedLabeledValue });
+  // console.log({ ...values, coercedLabeledValue });
 
   if (!!error && error !== '') {
     return SuggestionState.error;
@@ -53,6 +53,7 @@ const getSuggestionState = (values: SuggestionValues, propertyType: PropertySche
     return SuggestionState.valueEmpty;
   }
 
+  // if (suggestedValue === currentValue && suggestedValue === labeledValue) {
   if (suggestedValue === currentValue && equals(suggestedValue, coercedLabeledValue)) {
     return SuggestionState.labelMatch;
   }
@@ -63,13 +64,16 @@ const getSuggestionState = (values: SuggestionValues, propertyType: PropertySche
 
   if (
     equals(coercedLabeledValue, currentValue) &&
+    // labeledValue === currentValue &&
     !equals(coercedLabeledValue, suggestedValue) &&
+    // !(labeledValue === suggestedValue) &&
     suggestedValue === ''
   ) {
     return SuggestionState.labelEmpty;
   }
 
   if (equals(coercedLabeledValue, currentValue) && !equals(coercedLabeledValue, suggestedValue)) {
+    // if (labeledValue === currentValue && !(labeledValue === suggestedValue)) {
     return SuggestionState.labelMismatch;
   }
 

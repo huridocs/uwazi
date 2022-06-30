@@ -43,6 +43,15 @@ const stateUpdateCases = [
     },
   },
   {
+    state: SuggestionState.labelMatch,
+    reason: 'property is a date, file label exists, suggestion and entity value exist and match',
+    suggestionQuery: {
+      entityId: 'shared7',
+      propertyName: 'first_encountered',
+      language: 'es',
+    },
+  },
+  {
     state: SuggestionState.empty,
     reason: 'entity value, file label, suggestion are all empty',
     suggestionQuery: {
@@ -62,6 +71,15 @@ const stateUpdateCases = [
     },
   },
   {
+    state: SuggestionState.labelEmpty,
+    reason: 'property is a date, entity value and file label exists, suggestion is empty',
+    suggestionQuery: {
+      entityId: 'shared7',
+      propertyName: 'first_encountered',
+      language: 'en',
+    },
+  },
+  {
     state: SuggestionState.labelMismatch,
     reason: 'file label exists, suggestion and entity value exist but do not match',
     suggestionQuery: {
@@ -70,11 +88,31 @@ const stateUpdateCases = [
     },
   },
   {
+    state: SuggestionState.labelMismatch,
+    reason:
+      'property is a date, file label exists, suggestion and entity value exist but do not match',
+    suggestionQuery: {
+      entityId: 'shared7',
+      propertyName: 'first_encountered',
+      language: 'pr',
+    },
+  },
+  {
     state: SuggestionState.valueMatch,
     reason: 'file label is empty, but suggestion and entity value exist and match',
     suggestionQuery: {
       entityId: 'shared1',
       propertyName: 'enemy',
+    },
+  },
+  {
+    state: SuggestionState.valueMatch,
+    reason:
+      'property is a date, file label is empty, but suggestion and entity value exist and match',
+    suggestionQuery: {
+      entityId: 'shared8',
+      propertyName: 'first_encountered',
+      language: 'en',
     },
   },
   {
