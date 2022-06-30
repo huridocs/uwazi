@@ -84,5 +84,5 @@ const getSuggestionState = (values: SuggestionValues, propertyType: PropertySche
   return SuggestionState.valueMismatch;
 };
 
-export { getSuggestionState };
+export { coerceValue, getSuggestionState };
 export type { SuggestionValues };
