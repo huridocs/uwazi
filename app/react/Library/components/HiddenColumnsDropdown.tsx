@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
@@ -65,20 +65,17 @@ const HideColumnsComponent = ({
   const [clickOutside, setClickOutside] = useState(false);
 
   const { sortedColumns, hiddenColumns } = processColumns(columnsMap);
-  const dropdownRef = useRef(null);
-  const aRef = useRef(null);
+  const dropdownContainerRef = useRef(null);
+  const dropdownRef: RefObject<React.Component & React.ReactElement> = useRef(null);
 
   const onClickOutside = useCallback(() => {
-    console.log('clickOutside');
     setClickOutside(true);
-    aRef.current.props.onToggle(false);
+    if (dropdownRef !== null && dropdownRef.current !== null) {
+      dropdownRef.current.props.onToggle(false);
+    }
   }, []);
 
-  useEffect(() => {
-    console.log('useEffect');
-  }, [open]);
-
-  useOnClickOutsideElement<HTMLLIElement>(dropdownRef, onClickOutside);
+  useOnClickOutsideElement<HTMLLIElement>(dropdownContainerRef, onClickOutside);
 
   const onSelect = (item: any) => {
     if (item.selectAll) {
@@ -88,14 +85,12 @@ const HideColumnsComponent = ({
     }
   };
 
-  console.log('rendering');
-
   return (
-    <div className="hidden-columns-dropdown" ref={dropdownRef}>
+    <div className="hidden-columns-dropdown" ref={dropdownContainerRef}>
       {/*
         // @ts-ignore */}
       <DropdownList
-        ref={aRef}
+        ref={dropdownRef}
         open={open}
         data={sortedColumns}
         filter={(item: SelectableColumn, searchTerm: string) =>
@@ -110,7 +105,9 @@ const HideColumnsComponent = ({
           if (clickOutside) {
             setOpen(false);
             setClickOutside(false);
-            console.log(aRef.current.props);
+            if (dropdownRef !== null && dropdownRef.current !== null) {
+              dropdownRef.current.forceUpdate(() => {});
+            }
           } else if (openStatus) {
             setOpen(true);
           }
