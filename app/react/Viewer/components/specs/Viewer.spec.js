@@ -104,27 +104,26 @@ describe('Viewer', () => {
 
   it('should render plain text always, if raw is false should render SourceDocument on update', () => {
     render();
-
-    expect(component.find('pre').length).toBe(1);
+    expect(component.find('div[className="force-ltr raw-text"]').length).toBe(1);
     component.instance().componentDidMount();
     component.update();
     expect(component.find(SourceDocument).length).toBe(1);
 
     component.setProps({ raw: true });
-    expect(component.find('pre').length).toBe(1);
+    expect(component.find('div[className="force-ltr raw-text"]').length).toBe(1);
   });
 
   it('should add the plain text direction', () => {
     render();
-    expect(component.find('pre').props().className).toBe('force-ltr');
+    expect(component.find('div[className="force-ltr raw-text"]').length).toBe(1);
 
     props.file.language = 'arb';
     render();
-    expect(component.find('pre').props().className).toBe('force-rtl');
+    expect(component.find('div[className="force-rtl raw-text"]').length).toBe(1);
 
     props.file = {};
     render();
-    expect(component.find('pre').props().className).toBe('force-ltr');
+    expect(component.find('div[className="force-ltr raw-text"]').length).toBe(1);
   });
 
   describe('createConnectionPanel', () => {
