@@ -1,3 +1,6 @@
+import moment from 'moment';
+import { dateToSeconds } from 'shared/dateToSeconds';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 
 interface SuggestionValues {
@@ -8,11 +11,35 @@ interface SuggestionValues {
   modelCreationDate: number;
   error: string;
   date: number;
+  propertyName: string;
 }
 
+const coerceValue = (text: string | null, propertyType: PropertySchema['type']) => {
+  if (!text) return text;
+
+  const trimmedText = text.trim();
+  switch (propertyType) {
+    case 'numeric':
+      return parseFloat(trimmedText) || null;
+    case 'date':
+      return dateToSeconds(trimmedText);
+    default:
+      return trimmedText;
+  }
+};
+
+const isSameDate = (first: number, second: number) => moment(first).isSame(second, 'day');
+
+const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
+  type === 'date' ? isSameDate(first, second) : first === second;
+
 // eslint-disable-next-line max-statements
-const getSuggestionState = (values: SuggestionValues) => {
+const getSuggestionState = (values: SuggestionValues, propertyType: PropertySchema['type']) => {
   const { currentValue, labeledValue, suggestedValue, modelCreationDate, error, date } = values;
+  const coercedLabeledValue = coerceValue(labeledValue, propertyType);
+  const equals = equalsForType(propertyType);
+
+  console.log({ ...values, coercedLabeledValue });
 
   if (!!error && error !== '') {
     return SuggestionState.error;
@@ -26,7 +53,7 @@ const getSuggestionState = (values: SuggestionValues) => {
     return SuggestionState.valueEmpty;
   }
 
-  if (suggestedValue === currentValue && suggestedValue === labeledValue) {
+  if (suggestedValue === currentValue && equals(suggestedValue, coercedLabeledValue)) {
     return SuggestionState.labelMatch;
   }
 
@@ -34,11 +61,15 @@ const getSuggestionState = (values: SuggestionValues) => {
     return SuggestionState.empty;
   }
 
-  if (labeledValue === currentValue && labeledValue !== suggestedValue && suggestedValue === '') {
+  if (
+    equals(coercedLabeledValue, currentValue) &&
+    !equals(coercedLabeledValue, suggestedValue) &&
+    suggestedValue === ''
+  ) {
     return SuggestionState.labelEmpty;
   }
 
-  if (labeledValue === currentValue && labeledValue !== suggestedValue) {
+  if (equals(coercedLabeledValue, currentValue) && !equals(coercedLabeledValue, suggestedValue)) {
     return SuggestionState.labelMismatch;
   }
 

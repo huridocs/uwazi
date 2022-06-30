@@ -1,7 +1,8 @@
 import { AggregationCursor } from 'mongoose';
 
 import settings from 'api/settings';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguagesListSchema, PropertySchema } from 'shared/types/commonTypes';
+import templates from 'api/templates';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -64,10 +65,12 @@ const findSuggestions = (query: any, languages: LanguagesListSchema): Aggregatio
           _id: 1,
           currentValue: 1,
           labeledValue: 1,
+          labeledText: 1,
           suggestedValue: 1,
           modelCreationDate: 1,
           error: 1,
           date: 1,
+          propertyName: 1,
         },
       },
     ])
@@ -76,15 +79,21 @@ const findSuggestions = (query: any, languages: LanguagesListSchema): Aggregatio
 
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
+  const properties = (await templates.get({})).reduce<PropertySchema[]>(
+    (list, template) => list.concat(template.properties || []),
+    [{ name: 'title', type: 'text', label: 'title' }]
+  );
   const cursor = findSuggestions(query, languages || []);
-  let suggestion;
+  let suggestion: SuggestionValues;
   const writeStream = IXSuggestionsModel.openBulkWriteStream();
   // eslint-disable-next-line no-await-in-loop, no-cond-assign
   while ((suggestion = await cursor.next())) {
+    // eslint-disable-next-line no-loop-func
+    const propertyType = properties.find(p => p.name === suggestion.propertyName)!.type;
     // eslint-disable-next-line no-await-in-loop
     await writeStream.update(
       { _id: suggestion._id },
-      { $set: { state: getSuggestionState(suggestion) } }
+      { $set: { state: getSuggestionState(suggestion, propertyType) } }
     );
   }
   await writeStream.flush();
