@@ -19,6 +19,7 @@ const renderRelationshipLinks = linksProp => {
 
 export const showByType = (prop, compact, templateId) => {
   let result = prop.value;
+
   switch (prop.type) {
     case null:
       result = t('System', 'No property');
@@ -151,6 +152,18 @@ function filterProps(showSubset) {
   };
 }
 
+const flattenInherittedRelationships = metadata =>
+  metadata.map(property => {
+    if (property.type === 'inherit' && property.inheritedType === 'relationship') {
+      // eslint-disable-next-line no-param-reassign
+      property.value = property.value.reduce(
+        (flattenedValues, v) => flattenedValues.concat(v.value || []),
+        []
+      );
+    }
+    return property;
+  });
+
 const Metadata = ({
   metadata,
   compact,
@@ -161,9 +174,10 @@ const Metadata = ({
   templateId,
 }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
+  const flattenedMetadata = flattenInherittedRelationships(filteredMetadata);
   const groupedMetadata = groupGeolocations
-    ? groupAdjacentGeolocations(filteredMetadata)
-    : filteredMetadata;
+    ? groupAdjacentGeolocations(flattenedMetadata)
+    : flattenedMetadata;
 
   return (
     <>

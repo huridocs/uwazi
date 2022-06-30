@@ -5,12 +5,13 @@ import { shallow } from 'enzyme';
 import ValueList from '../ValueList';
 
 describe('ValueList', () => {
+  let component;
   const props = {};
 
-  function testSnapshot() {
-    const component = shallow(<ValueList {...props} />);
+  const testSnapshot = () => {
+    component = shallow(<ValueList {...props} />);
     expect(component).toMatchSnapshot();
-  }
+  };
 
   beforeEach(() => {
     props.property = {
@@ -25,6 +26,13 @@ describe('ValueList', () => {
   });
 
   it('should render the values as a ul list', () => {
+    testSnapshot();
+  });
+
+  it('should group items with same value', () => {
+    props.property.value.push({ value: 'second_value' });
+    props.property.value.push({ value: 'second_value' });
+    props.property.value.push({ value: 'third value' });
     testSnapshot();
   });
 
