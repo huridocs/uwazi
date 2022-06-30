@@ -68,10 +68,12 @@ const HideColumnsComponent = ({
   const dropdownContainerRef = useRef(null);
   const dropdownRef: RefObject<React.Component & React.ReactElement> = useRef(null);
 
-  const onClickOutside = useCallback(() => {
-    setClickOutside(true);
-    if (dropdownRef !== null && dropdownRef.current !== null) {
-      dropdownRef.current.props.onToggle(false);
+  const onClickOutside = useCallback(event => {
+    if (event.target.className === 'tableview-wrapper') {
+      setClickOutside(true);
+      if (dropdownRef !== null && dropdownRef.current !== null) {
+        dropdownRef.current.props.onToggle(false);
+      }
     }
   }, []);
 
