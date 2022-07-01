@@ -204,7 +204,7 @@ class InformationExtraction {
         );
         const property = allProps.find(p => p.name === rawSuggestion.property_name);
 
-        const suggestedValue = coerceSuggestionValue(rawSuggestion.text, property!.type);
+        const suggestedValue = coerceSuggestionValue(rawSuggestion.text, property?.type);
 
         if (suggestedValue === null) {
           status = 'failed';

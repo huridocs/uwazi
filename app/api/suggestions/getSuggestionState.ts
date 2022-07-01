@@ -14,7 +14,7 @@ interface SuggestionValues {
   propertyName: string;
 }
 
-const coerceValue = (text: string | null, propertyType: PropertySchema['type']) => {
+const coerceValue = (text: string | null, propertyType: PropertySchema['type'] | undefined) => {
   if (!text) return text;
 
   const trimmedText = text.trim();
