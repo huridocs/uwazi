@@ -133,6 +133,9 @@ const getState = (
     return SuggestionState.obsolete;
   }
 
+  const matchState = getSuggestionState(values, propertyType);
+  const labelState = getLabelingState(values);
+
   const state = {
     Empty: {
       Empty: SuggestionState.empty,
@@ -149,7 +152,7 @@ const getState = (
       Label: SuggestionState.labelMismatch,
       Value: SuggestionState.valueMismatch,
     },
-  }[getSuggestionState(values, propertyType)][getLabelingState(values)];
+  }[matchState][labelState];
 
   if (state === null) throw new Error('Invalid suggestion state');
 

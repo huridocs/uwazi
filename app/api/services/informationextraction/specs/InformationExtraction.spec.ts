@@ -7,6 +7,7 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import testingDB from 'api/utils/testing_db';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -260,7 +261,7 @@ describe('InformationExtraction', () => {
           suggestedValue: 'suggestion_text_1',
           segment: 'segment_text_1',
           status: 'ready',
-          state: SuggestionState.valueMismatch,
+          state: SuggestionState.labelMismatch,
         })
       );
     });
@@ -325,7 +326,7 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_other_language',
-          state: SuggestionState.valueMismatch,
+          state: SuggestionState.labelMismatch,
         })
       );
 
@@ -449,6 +450,7 @@ describe('InformationExtraction', () => {
       });
       expect(suggestionsMarkdown.length).toBe(1);
     });
+
     it('should store the suggestion text and suggestion value for dates', async () => {
       setIXServiceResults([
         {
