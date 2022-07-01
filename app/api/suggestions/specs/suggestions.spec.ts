@@ -55,9 +55,9 @@ const stateUpdateCases = [
     state: SuggestionState.empty,
     reason: 'entity value, file label, suggestion are all empty',
     suggestionQuery: {
-      entityId: 'shared6',
+      entityId: 'shared8',
       propertyName: 'enemy',
-      language: 'es',
+      language: 'en',
     },
   },
   {
@@ -286,7 +286,7 @@ describe('suggestions', () => {
 
       expect(
         enemySuggestions.find(
-          (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'es'
+          (s: EntitySuggestionType) => s.sharedId === 'shared8' && s.language === 'en'
         ).state
       ).toBe(SuggestionState.empty);
 

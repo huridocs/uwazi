@@ -318,6 +318,19 @@ const fixtures: DBFixture = {
       status: 'ready',
       error: '',
     },
+    {
+      fileId: factory.id('F6'),
+      _id: testingDB.id(),
+      entityId: 'shared8',
+      propertyName: 'enemy',
+      suggestedValue: '', // double check if this is okay
+      segment: 'Some text',
+      language: 'en',
+      date: 5,
+      page: 1,
+      status: 'ready',
+      error: '',
+    },
   ],
   entities: [
     {
