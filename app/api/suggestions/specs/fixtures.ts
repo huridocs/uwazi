@@ -284,7 +284,7 @@ const fixtures: DBFixture = {
       _id: testingDB.id(),
       entityId: 'shared7',
       propertyName: 'first_encountered',
-      suggestedValue: 1654732800, // double check if this is okay
+      suggestedValue: 1654732800,
       segment: 'Some text',
       language: 'es',
       date: 5,
@@ -310,7 +310,7 @@ const fixtures: DBFixture = {
       _id: testingDB.id(),
       entityId: 'shared8',
       propertyName: 'first_encountered',
-      suggestedValue: 1654732800, // double check if this is okay
+      suggestedValue: 1654732800,
       segment: 'Some text',
       language: 'en',
       date: 5,
@@ -323,7 +323,7 @@ const fixtures: DBFixture = {
       _id: testingDB.id(),
       entityId: 'shared8',
       propertyName: 'enemy',
-      suggestedValue: '', // double check if this is okay
+      suggestedValue: '',
       segment: 'Some text',
       language: 'en',
       date: 5,

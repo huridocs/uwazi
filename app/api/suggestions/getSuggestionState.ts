@@ -29,7 +29,7 @@ const coerceValue = (text: string | null, propertyType: PropertySchema['type']) 
 };
 
 const isSameDate = (first: number, second: number) => {
-  console.log(moment.unix(first).utc().toISOString(), moment.unix(second).utc().toISOString());
+  // console.log(moment.unix(first).utc().toISOString(), moment.unix(second).utc().toISOString());
   return moment.unix(first).utc().isSame(moment.unix(second).utc(), 'day');
 };
 
@@ -122,7 +122,7 @@ const getState = (
   values: SuggestionValues,
   propertyType: PropertySchema['type']
 ): SuggestionState => {
-  console.log(values);
+  // console.log(values);
   const { modelCreationDate, error, date } = values;
 
   if (!!error && error !== '') {
@@ -153,7 +153,7 @@ const getState = (
 
   if (state === null) throw new Error('Invalid suggestion state');
 
-  console.log(state);
+  // console.log(state);
   return state;
 };
 

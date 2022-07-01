@@ -159,7 +159,7 @@ describe('suggestions routes', () => {
           .expect(200);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
-            entityTitle: 'The Penguin',
+            entityTitle: 'Catwoman',
             state: SuggestionState.empty,
             suggestedValue: '',
             currentValue: '',
