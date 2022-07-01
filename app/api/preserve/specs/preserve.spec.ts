@@ -2,13 +2,18 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
 import { DBFixture } from 'api/utils/testing_db';
-import fixtures from './fixtures.js';
+import request from 'shared/JSONRequest';
+import { PreserveConfig } from 'shared/types/settingsType.js';
+import fixtures, { userId1, userId2 } from './fixtures.js';
 import { Preserve } from '../preserve';
 
 describe('Preserve', () => {
+  const user = { _id: userId1 };
   beforeAll(async () => {
+    spyOn(request, 'post').and.callFake(() => ({
+      json: () => ({ data: { token: 'sometoken' } }),
+    }));
     await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
   });
   afterAll(async () => {
@@ -16,55 +21,58 @@ describe('Preserve', () => {
   });
 
   describe('setup()', () => {
-    it('should be create a thesauri, template and a config when no config is found.', async () => {
-      await Preserve.setup('en');
-      const savedSettings: any = await settings.get({});
-      const preserveTemplateId: ObjectIdSchema =
-        savedSettings.features?.preserve?.config[0].template;
-      expect(preserveTemplateId).toBeDefined();
-      const template = await templates.getById(preserveTemplateId.toString());
-      expect(template?.name).toBe('Preserve');
-      expect(template?.properties).toMatchObject([
-        {
-          type: 'link',
-          name: 'url',
-          label: 'Url',
-        },
-        {
-          type: 'select',
-          name: 'source',
-          label: 'Source',
-        },
-      ]);
-      const thesauriId = template?.properties?.find(prop => prop.type === 'select')?.content;
-      const thesaurus = await thesauri.getById(thesauriId);
-      expect(thesaurus?.name).toBe('Preserve');
-    });
-    it('should not create template if configs exists in the DB', async () => {
-      const newFixtures = {
-        ...fixtures,
-        settings: [
+    describe('pass', () => {
+      it('should create a thesauri, template and a config when no config is found.', async () => {
+        await Preserve.setup('en', user);
+        const savedSettings: any = await settings.get({});
+        const configs: PreserveConfig['config'] = savedSettings.features.preserve.config;
+        const config = configs.find(conf => conf.user!.toString() === user._id.toString());
+        expect(config?.template).toBeDefined();
+        const template = await templates.getById(config!.template.toString());
+        expect(template?.name).toBe('Preserve');
+        expect(template?.properties).toMatchObject([
           {
-            ...fixtures.settings[0],
-            features: {
-              ...fixtures.settings[0].features,
-              preserve: {
-                ...fixtures.settings[0].features.preserve,
-                config: [
-                  {
-                    template: 'sometemplateId',
-                    token: 'sometoken',
-                  },
-                ],
-              },
-            },
+            type: 'link',
+            name: 'url',
+            label: 'Url',
           },
-        ],
-      };
-      await testingEnvironment.setUp(newFixtures, 'preserve-index');
-      jest.spyOn(Preserve, 'createTemplate');
-      await Preserve.setup('en');
-      expect(Preserve.createTemplate).not.toHaveBeenCalled();
+          {
+            type: 'select',
+            name: 'source',
+            label: 'Source',
+          },
+        ]);
+        const thesauriId = template?.properties?.find(prop => prop.type === 'select')?.content;
+        const thesaurus = await thesauri.getById(thesauriId);
+        expect(thesaurus?.name).toBe('Preserve');
+      });
+
+      it('should not create template if another configs exists in the DB', async () => {
+        const savedTemplates = await templates.get({});
+        await Preserve.setup('en', { _id: userId2 });
+        const templatesAfterSetup = await templates.get({});
+        expect(savedTemplates.length).toEqual(templatesAfterSetup.length);
+        const savedSettings: any = await settings.get({});
+        const savedConfigs = savedSettings.features.preserve.config;
+        expect(savedConfigs[0].template).toEqual(savedConfigs[1].template);
+      });
+    });
+
+    describe('fail', () => {
+      it('should throw an error if preserve feature is not configured', async () => {
+        const newSettings = [
+          {
+            ...fixtures.settings,
+            features: {},
+          },
+        ];
+        await testingEnvironment.setUp({ ...fixtures, settings: newSettings }, 'preserve-index');
+
+        await expect(Preserve.setup('en', { _id: 'someid' })).rejects.toEqual({
+          message: 'Preserve configuration not found',
+          code: 402,
+        });
+      });
     });
   });
 });
