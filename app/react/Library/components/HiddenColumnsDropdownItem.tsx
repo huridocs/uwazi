@@ -30,7 +30,7 @@ const ColumnItem = ({ item }: { item: SelectableColumn }) => (
 
 const ValueItem = (hiddenColumns: PropertySchema[]) => () =>
   (
-    <span>
+    <span className="columns-hint">
       <Icon icon="bars" rotation={90} />
       {hiddenColumns.length ? `${hiddenColumns.length} ` : ''}
       <Translate>{hiddenColumns.length ? 'columns hidden' : 'Hide columns'}</Translate>

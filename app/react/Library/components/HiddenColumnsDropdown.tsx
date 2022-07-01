@@ -21,15 +21,14 @@ interface HideColumnsComponentProps {
   columns: List<IImmutable<TableViewColumn>>;
   setTableViewColumnHidden: (name: string, hidden: boolean) => void;
   setTableViewAllColumnsHidden: (hidden: boolean) => void;
-  storeKey: 'library' | 'uploads';
 }
-const mapStateToProps = (state: IStore, props: HideColumnsComponentProps) => ({
-  columns: state[props.storeKey].ui.get('tableViewColumns'),
+const mapStateToProps = (state: IStore) => ({
+  columns: state.library.ui.get('tableViewColumns'),
 });
-const mapDispatchToProps = (dispatch: Dispatch<IStore>, props: HideColumnsComponentProps) =>
+const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
   bindActionCreators(
     { setTableViewColumnHidden, setTableViewAllColumnsHidden },
-    wrapDispatch(dispatch, props.storeKey)
+    wrapDispatch(dispatch, 'library')
   );
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
@@ -56,7 +55,7 @@ const processColumns = (
   return { sortedColumns, hiddenColumns };
 };
 
-const HideColumnsComponent = ({
+export const HideColumnsComponent = ({
   setTableViewAllColumnsHidden: setAllColumnsHidden,
   setTableViewColumnHidden: setColumnHidden,
   columns: columnsMap,
@@ -69,7 +68,10 @@ const HideColumnsComponent = ({
   const dropdownRef: RefObject<React.Component & React.ReactElement> = useRef(null);
 
   const onClickOutside = useCallback(event => {
-    if (event.target.className === 'tableview-wrapper') {
+    if (
+      event.target.className !== 'columns-hint' &&
+      (!event.target.parentElement || event.target.parentElement.className !== 'columns-hint')
+    ) {
       setClickedOutside(true);
       dropdownRef.current?.props.onToggle(false);
     }
@@ -77,13 +79,10 @@ const HideColumnsComponent = ({
 
   useOnClickOutsideElement<HTMLLIElement>(dropdownContainerRef, onClickOutside);
 
-  const onSelect = (item: SelectableColumn) => {
-    if (item.selectAll) {
-      setAllColumnsHidden(item.indeterminate ? false : !item.hidden);
-    } else {
-      setColumnHidden(item.name, !item.hidden);
-    }
-  };
+  const onSelect = (item: SelectableColumn) =>
+    item.selectAll
+      ? setAllColumnsHidden(item.indeterminate ? false : !item.hidden)
+      : setColumnHidden(item.name, !item.hidden);
 
   return (
     <div className="hidden-columns-dropdown" ref={dropdownContainerRef}>
@@ -101,14 +100,14 @@ const HideColumnsComponent = ({
         onSelect={(selected: SelectableColumn) => {
           onSelect(selected);
         }}
-        onToggle={(isOpening: boolean) => {
+        onToggle={() => {
           if (clickedOutside) {
             setOpen(false);
             setClickedOutside(false);
             dropdownRef.current?.forceUpdate();
-          } else if (isOpening) {
-            setOpen(true);
+            return;
           }
+          setOpen(true);
         }}
       />
     </div>
