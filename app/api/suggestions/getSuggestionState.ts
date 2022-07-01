@@ -136,6 +136,9 @@ const getState = (
   const matchState = getSuggestionState(values, propertyType);
   const labelState = getLabelingState(values);
 
+  // console.log(values)
+  // console.log(matchState, labelState)
+
   const state = {
     Empty: {
       Empty: SuggestionState.empty,
@@ -148,7 +151,7 @@ const getState = (
       Value: SuggestionState.valueMatch,
     },
     Mismatch: {
-      Empty: null,
+      Empty: SuggestionState.valueMismatch,
       Label: SuggestionState.labelMismatch,
       Value: SuggestionState.valueMismatch,
     },
