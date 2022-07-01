@@ -8,8 +8,8 @@ const PreserveSettings = () => {
   const [token, setToken] = useState('');
   const requestToken = async (e: FormEvent) => {
     e.preventDefault();
-    const result = await api.get('preserve');
-    setToken(result.json.token);
+    const result = await api.post('preserve');
+    setToken(result.token);
   };
 
   return (
