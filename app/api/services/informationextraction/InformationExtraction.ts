@@ -28,9 +28,9 @@ import {
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
-import { coerceValue as coerceSuggestionValue } from 'api/suggestions/getSuggestionState';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXModelType } from 'shared/types/IXModelType';
+import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 
@@ -204,7 +204,7 @@ class InformationExtraction {
         );
         const property = allProps.find(p => p.name === rawSuggestion.property_name);
 
-        const suggestedValue = coerceSuggestionValue(rawSuggestion.text, property?.type);
+        const suggestedValue = stringToTypeOfProperty(rawSuggestion.text, property?.type);
 
         if (suggestedValue === null) {
           status = 'failed';

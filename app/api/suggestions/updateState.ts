@@ -3,6 +3,7 @@ import { AggregationCursor } from 'mongoose';
 import settings from 'api/settings';
 import { LanguagesListSchema, PropertySchema } from 'shared/types/commonTypes';
 import templates from 'api/templates';
+import { getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -10,7 +11,6 @@ import {
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
-import { getSuggestionState, SuggestionValues } from './getSuggestionState';
 
 const getModelCreationDateStage = () => [
   {
