@@ -58,6 +58,40 @@ Array [
 ]
 `;
 
+exports[`ValueList should group items with same value 1`] = `
+<ul
+  className="multiline"
+>
+  <li
+    key="label_0"
+  >
+    first_value
+  </li>
+  <li
+    key="label_1"
+  >
+    second_value
+     
+    <span
+      className="item-count"
+    >
+      3
+    </span>
+  </li>
+  <li
+    key="label_2"
+  >
+    third value
+     
+    <span
+      className="item-count"
+    >
+      2
+    </span>
+  </li>
+</ul>
+`;
+
 exports[`ValueList should render the values as a ul list 1`] = `
 <ul
   className="multiline"
