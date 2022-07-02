@@ -57,7 +57,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
                   className="btn dropdown-item"
                   target="_blank"
                   rel="noreferrer"
-                  onClick={toggleShowing}
+                  onClick={() => setShowing(!showing)}
                 >
                   <Translate context="Menu">{sublink?.get('title') as string}</Translate>
                 </a>
@@ -66,7 +66,7 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
           }
           return (
             <li key={index}>
-              <I18NLink to={url} className="btn dropdown-item" onClick={toggleShowing}>
+              <I18NLink to={url} className="btn dropdown-item" onClick={() => setShowing(!showing)}>
                 <Translate context="Menu">{sublink?.get('title') as string}</Translate>
               </I18NLink>
             </li>
