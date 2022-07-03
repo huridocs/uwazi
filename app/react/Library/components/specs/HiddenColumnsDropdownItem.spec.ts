@@ -29,14 +29,21 @@ describe('ValueItem', () => {
       { label: 'Created at', name: 'created_at', type: propertyTypes.text },
       { label: 'Template', name: 'template', type: propertyTypes.text },
     ];
-    const valueItem = ValueItem(hiddenColumns)();
+    const valueItem = ValueItem(hiddenColumns, true, () => {})();
     expect(valueItem.props.children[1]).toEqual('2 ');
     expect(valueItem.props.children[2].props.children).toEqual('columns hidden');
   });
+
   it('should show hide columns as label if there are no hidden columns', () => {
     const hiddenColumns: SelectableColumn[] = [];
-    const valueItem = ValueItem(hiddenColumns)();
+    const valueItem = ValueItem(hiddenColumns, true, () => {})();
     expect(valueItem.props.children[1]).toEqual('');
     expect(valueItem.props.children[2].props.children).toEqual('Hide columns');
+  });
+
+  it('should display the close icon when open', () => {
+    const hiddenColumns: SelectableColumn[] = [];
+    const valueItem = ValueItem(hiddenColumns, true, () => {})();
+    expect(valueItem.props.children[0].props.icon).toEqual('times');
   });
 });
