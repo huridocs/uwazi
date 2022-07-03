@@ -73,9 +73,15 @@ export const HideColumnsComponent = ({
       (!event.target.parentElement || event.target.parentElement.className !== 'columns-hint')
     ) {
       setClickedOutside(true);
-      dropdownRef.current?.props.onToggle(false);
+      dropdownRef.current?.props.onToggle();
     }
   }, []);
+
+  const handleClick = () => {
+    if (open) {
+      setOpen(false);
+    }
+  };
 
   useOnClickOutsideElement<HTMLLIElement>(dropdownContainerRef, onClickOutside);
 
@@ -96,7 +102,7 @@ export const HideColumnsComponent = ({
           item.label.toLowerCase().includes(searchTerm.toLowerCase())
         }
         itemComponent={ColumnItem}
-        valueComponent={ValueItem(hiddenColumns)}
+        valueComponent={ValueItem(hiddenColumns, open, handleClick)}
         onSelect={(selected: SelectableColumn) => {
           onSelect(selected);
         }}
@@ -107,7 +113,9 @@ export const HideColumnsComponent = ({
             dropdownRef.current?.forceUpdate();
             return;
           }
-          setOpen(true);
+          if (!open) {
+            setOpen(true);
+          }
         }}
       />
     </div>
