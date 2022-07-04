@@ -31,6 +31,7 @@ export interface SettingsLinkSchema {
 
 export interface PreserveConfig {
   host: string;
+  masterToken: string;
   config: {
     token: string;
     template: ObjectIdSchema;
