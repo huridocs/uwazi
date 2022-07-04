@@ -5,11 +5,11 @@ const webpack = require('webpack');
 const config = require('./config')();
 
 const rootPath = `${__dirname}/../`;
-const RtlCssPlugin = require("rtlcss-webpack-plugin");
+const RtlCssPlugin = require('rtlcss-webpack-plugin');
 
 config['infrastructureLogging'] = {
-    level: 'error',
-}
+  level: 'error',
+};
 
 config.plugins = config.plugins.filter(plugin => !(plugin instanceof RtlCssPlugin));
 config.plugins = config.plugins.concat([
@@ -21,20 +21,24 @@ config.plugins = config.plugins.concat([
 
   new webpack.NoEmitOnErrorsPlugin(),
   // do not emit compiled assets that include errors
-  new webpack.DefinePlugin({ 'process.env': { HOT: true } })
+  new webpack.DefinePlugin({ 'process.env': { HOT: true } }),
 ]);
 
 config.output = {
   publicPath: 'http://localhost:8080/',
-  filename: '[name].js'
+  filename: '[name].js',
 };
 
 config.entry['pdf.worker'] = 'pdfjs-dist/build/pdf.worker.entry';
-  
+
 config.entry.main = [
   'react-hot-loader/patch',
   'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
-  path.join(rootPath, 'app/react/index.js')
+  path.join(rootPath, 'app/react/index.js'),
 ];
+
+config.watchOptions = {
+  ignored: '**/node_modules/*',
+};
 
 module.exports = config;
