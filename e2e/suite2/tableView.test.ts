@@ -16,6 +16,7 @@ describe('Table view', () => {
 
   it('Should go to the table view', async () => {
     await page.goto(`${host}/library/table`);
+    await disableTransitions();
     await page.waitForSelector('.tableview-wrapper > table > tbody > tr');
   });
 
@@ -45,15 +46,13 @@ describe('Table view', () => {
 
     it('Should show new selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
-      await page.waitForSelector('#rw_2_listbox li');
-      await expect(page).toClick('.rw-list-option', { text: 'Firmantes' });
-      await expect(page).toMatchElement('.hidden-columns-dropdown .rw-open');
       await expect(page).toClick('.rw-list-option', { text: 'Mecanismo' });
+      await expect(page).toClick('.rw-list-option', { text: 'Firmantes' });
       await page.click('.tableview-wrapper');
+      await expect(page).toMatchElement('.tableview-wrapper th:last-child', { text: 'Firmantes' });
       await expect(page).toMatchElement('.tableview-wrapper th:nth-last-child(3)', {
         text: 'Mecanismo',
       });
-      await expect(page).toMatchElement('.tableview-wrapper th:last-child', { text: 'Firmantes' });
       await expect(page).not.toMatchElement('.hidden-columns-dropdown .rw-open');
     });
 
