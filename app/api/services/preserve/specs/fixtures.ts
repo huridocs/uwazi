@@ -22,6 +22,7 @@ export const fixtures: DBFixture = {
       features: {
         preserve: {
           host: 'http://preserve-testing.org',
+          masterToken: 'master-token',
           config: [
             { token: 'auth-token', template: templateId, user: user._id },
             { token: 'another-auth-token', template: anotherTemplateId },

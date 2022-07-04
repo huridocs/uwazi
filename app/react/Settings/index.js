@@ -11,12 +11,14 @@ import ThesauriList from './components/ThesauriList';
 import TranslationsList from './components/TranslationsList';
 import Settings from './Settings';
 import SettingsAPI from './SettingsAPI';
+import { PreserveSettings } from './components/PreserveSettings';
 
 export { default as CustomUploads } from './components/CustomUploads';
 
 export {
   Settings,
   SettingsAPI,
+  PreserveSettings,
   AccountSettings,
   CollectionSettings,
   NavlinksSettings,
