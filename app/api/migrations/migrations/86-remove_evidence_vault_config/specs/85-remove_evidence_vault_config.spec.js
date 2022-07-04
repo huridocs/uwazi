@@ -12,7 +12,7 @@ describe('migration remove_evidence_vault_config', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(85);
+    expect(migration.delta).toBe(86);
   });
 
   it('should check if a reindex is needed', async () => {
