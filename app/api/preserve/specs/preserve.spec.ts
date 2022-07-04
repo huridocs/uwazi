@@ -12,7 +12,7 @@ describe('Preserve', () => {
   const user = { _id: userId1 };
   beforeAll(async () => {
     spyOn(request, 'post').and.callFake(() => ({
-      json: () => ({ data: { token: 'sometoken' } }),
+      json: { data: { token: 'sometoken' } },
     }));
     await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
   });

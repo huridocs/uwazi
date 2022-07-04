@@ -18,7 +18,7 @@ describe('entities get searchString', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
     spyOn(requestShared, 'post').and.callFake(() => ({
-      json: () => ({ data: { token: 'sometoken' } }),
+      json: { data: { token: 'sometoken' } },
     }));
   });
 
