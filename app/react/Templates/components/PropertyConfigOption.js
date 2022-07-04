@@ -6,7 +6,8 @@ import { Translate } from 'app/I18N';
 const PropertyConfigOption = ({ children, model, label }) => (
   <Field model={model}>
     <label className="property-label" htmlFor={`test${model}`}>
-      <input id={`test${model}`} type="checkbox" /> <Translate>{label}</Translate>
+      <input id={`test${model}`} type="checkbox" />{' '}
+      <Translate translationKey={label}>{label}</Translate>
     </label>
     {children}
   </Field>

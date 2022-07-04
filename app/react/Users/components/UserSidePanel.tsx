@@ -8,6 +8,7 @@ import { UserSchema } from 'shared/types/userType';
 import { MultiSelect } from 'app/Forms/components/MultiSelect';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
+import { roleTranslationKey } from '../UserManagement';
 
 export interface UserSidePanelProps {
   user: UserSchema;
@@ -38,6 +39,7 @@ export const UserSidePanel = ({
   );
   const { register, handleSubmit, errors } = useForm({ defaultValues: user });
   const availableGroups = groups;
+  const userRoles = Object.values(UserRole).map(role => t('System', role, null, false));
 
   const saveUser = (userToSave: UserSchema) => {
     const updatedGroups = groups
@@ -48,7 +50,6 @@ export const UserSidePanel = ({
       }));
     onSave({ ...userToSave, groups: updatedGroups });
   };
-
   const isUnique = (nameVal: string) =>
     !users.find(
       existingUser =>
@@ -56,12 +57,9 @@ export const UserSidePanel = ({
         (existingUser.username?.trim().toLowerCase() === nameVal.trim().toLowerCase() ||
           existingUser.email?.trim().toLowerCase() === nameVal.trim().toLowerCase())
     );
-
   const togglePermissionList = () => {
     setPermissionsModalOpened(!permissionsModalOpened);
   };
-
-  const userRoles = Object.values(UserRole).map(role => t('System', role, null, false));
 
   return (
     <SidePanel open={opened}>
@@ -112,9 +110,9 @@ export const UserSidePanel = ({
               </button>
             </div>
             <select name="role" className="form-control" ref={register}>
-              {userRoles.map(role => (
+              {userRoles.map((role: string) => (
                 <option key={role} value={role}>
-                  {role}
+                  {t('System', roleTranslationKey[role], null, false)}
                 </option>
               ))}
             </select>
@@ -240,7 +238,9 @@ export const UserSidePanel = ({
         <button id="saveChangesBtn" type="submit" form="userFrom" className="btn btn-success">
           <Icon icon="save" />
           <span id="submitLabel" className="btn-label">
-            <Translate>{`${user._id ? 'Save' : 'Create'} User`}</Translate>
+            <Translate translationKey={user._id ? 'Save User' : 'Create User'}>
+              {user._id ? 'Save User' : 'Create User'}
+            </Translate>
           </span>
         </button>
       </div>

@@ -66,7 +66,7 @@ export interface Settings {
   mapApiKey?: string;
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
-  sync?: SettingsSyncSchema | SettingsSyncSchema[];
+  sync?: SettingsSyncSchema[];
   evidencesVault?: {
     token: string;
     template: string;
@@ -115,21 +115,18 @@ export interface Settings {
 export type SettingsSyncRelationtypesSchema = string[];
 
 export interface SettingsSyncSchema {
-  url?: string;
+  url: string;
   active?: boolean;
-  username?: string;
-  password?: string;
-  name?: string;
-  config?: {
+  username: string;
+  password: string;
+  name: string;
+  config: {
     templates?: {
       [k: string]:
-        | (
-            | {
-                properties: string[];
-                filter?: string;
-              }
-            | string[]
-          )
+        | {
+            properties: string[];
+            filter?: string;
+          }
         | undefined;
     };
     relationtypes?: string[];
