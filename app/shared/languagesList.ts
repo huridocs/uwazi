@@ -57,7 +57,7 @@ const availableLanguages: LanguageSchema[] = [
   { label: 'Bashkir', key: 'ba', ISO639_3: 'bak' },
   { label: 'Basque', key: 'eu', ISO639_3: 'eus' },
   { label: 'Belarusian', key: 'be', ISO639_3: 'bel' },
-  { label: 'Bengali (Bangla)', key: 'bn', ISO639_3: 'ben'},
+  { label: 'Bengali (Bangla)', key: 'bn', ISO639_3: 'ben' },
   { label: 'Bihari', key: 'bh', ISO639_3: 'bih' },
   { label: 'Bislama', key: 'bi', ISO639_3: 'bis' },
   { label: 'Bosnian', key: 'bs', ISO639_3: 'bos' },
