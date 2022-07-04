@@ -13,7 +13,6 @@ import {
   getLabeledValueStage,
 } from './pipelineStages';
 
-
 const getModelCreationDateStage = () => [
   {
     $lookup: {
