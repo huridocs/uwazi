@@ -1,9 +1,10 @@
 import { AggregationCursor } from 'mongoose';
 
 import settings from 'api/settings';
-import { LanguagesListSchema, PropertySchema } from 'shared/types/commonTypes';
 import templates from 'api/templates';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -11,6 +12,7 @@ import {
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
+
 
 const getModelCreationDateStage = () => [
   {
@@ -44,7 +46,6 @@ const getModelCreationDateStage = () => [
   },
 ];
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async
 const findSuggestions = (query: any, languages: LanguagesListSchema): AggregationCursor =>
   IXSuggestionsModel.db
     .aggregateCursor<SuggestionValues[]>([
@@ -79,22 +80,23 @@ const findSuggestions = (query: any, languages: LanguagesListSchema): Aggregatio
 
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
-  const properties = (await templates.get({})).reduce<PropertySchema[]>(
-    (list, template) => list.concat(template.properties || []),
-    [{ name: 'title', type: 'text', label: 'title' }]
+  const propertyTypes = objectIndex(
+    (await templates.get({})).map(t => t.properties).flat(),
+    p => p.name,
+    p => p.type
   );
   const cursor = findSuggestions(query, languages || []);
-  let suggestion: SuggestionValues;
   const writeStream = IXSuggestionsModel.openBulkWriteStream();
-  // eslint-disable-next-line no-await-in-loop, no-cond-assign
-  while ((suggestion = await cursor.next())) {
-    // eslint-disable-next-line no-loop-func
-    const propertyType = properties.find(p => p.name === suggestion.propertyName)!.type;
+  let suggestion = await cursor.next();
+  while (suggestion) {
+    const propertyType = propertyTypes[suggestion.propertyName];
     // eslint-disable-next-line no-await-in-loop
     await writeStream.update(
       { _id: suggestion._id },
       { $set: { state: getSuggestionState(suggestion, propertyType) } }
     );
+    // eslint-disable-next-line no-await-in-loop
+    suggestion = await cursor.next();
   }
   await writeStream.flush();
 };
