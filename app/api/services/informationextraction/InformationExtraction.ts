@@ -29,8 +29,8 @@ import {
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { dateToSeconds } from 'shared/dateToSeconds';
 import { IXModelType } from 'shared/types/IXModelType';
+import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 
@@ -170,18 +170,6 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  coerceSuggestionValue = (suggestion: RawSuggestion, property?: PropertySchema) => {
-    const suggestedValue = suggestion.text.trim();
-    switch (property?.type) {
-      case 'numeric':
-        return parseFloat(suggestedValue) || null;
-      case 'date':
-        return dateToSeconds(suggestedValue);
-      default:
-        return suggestedValue;
-    }
-  };
-
   saveSuggestions = async (message: ResultsMessage) => {
     const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
@@ -216,7 +204,7 @@ class InformationExtraction {
         );
         const property = allProps.find(p => p.name === rawSuggestion.property_name);
 
-        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, property);
+        const suggestedValue = stringToTypeOfProperty(rawSuggestion.text, property?.type);
 
         if (suggestedValue === null) {
           status = 'failed';

@@ -57,9 +57,9 @@ const fixtures: DBFixture = {
       { language: 'other' }
     ),
     factory.entity('A2', 'templateToSegmentA'),
-    factory.entity('A3', 'templateToSegmentA'),
+    factory.entity('A3', 'templateToSegmentA', { property2: [{ value: 1 }] }),
     factory.entity('A4', 'templateToSegmentA'),
-    factory.entity('A5', 'templateToSegmentA'),
+    factory.entity('A5', 'templateToSegmentA', { property1: [{ value: 1 }] }),
     factory.entity('A6', 'templateToSegmentA'),
     factory.entity('A7', 'templateToSegmentA'),
     factory.entity('A8', 'templateToSegmentA'),

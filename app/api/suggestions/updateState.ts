@@ -1,8 +1,10 @@
 import { AggregationCursor } from 'mongoose';
 
 import settings from 'api/settings';
+import templates from 'api/templates';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -43,91 +45,9 @@ const getModelCreationDateStage = () => [
   },
 ];
 
-const getCalculateStateStage = () => [
-  {
-    $addFields: {
-      state: {
-        $switch: {
-          branches: [
-            {
-              case: {
-                $ne: ['$error', ''],
-              },
-              then: SuggestionState.error,
-            },
-            {
-              case: {
-                $lte: ['$date', '$modelCreationDate'],
-              },
-              then: SuggestionState.obsolete,
-            },
-            {
-              case: {
-                $and: [
-                  { $lte: ['$labeledValue', null] },
-                  { $eq: ['$suggestedValue', ''] },
-                  { $ne: ['$currentValue', ''] },
-                ],
-              },
-              then: SuggestionState.valueEmpty,
-            },
-            {
-              case: {
-                $and: [
-                  { $eq: ['$suggestedValue', '$currentValue'] },
-                  { $eq: ['$suggestedValue', '$labeledValue'] },
-                ],
-              },
-              then: SuggestionState.labelMatch,
-            },
-            {
-              case: {
-                $and: [{ $eq: ['$currentValue', ''] }, { $eq: ['$suggestedValue', ''] }],
-              },
-              then: SuggestionState.empty,
-            },
-            {
-              case: {
-                $and: [
-                  { $eq: ['$labeledValue', '$currentValue'] },
-                  { $ne: ['$labeledValue', '$suggestedValue'] },
-                  { $eq: ['$suggestedValue', ''] },
-                ],
-              },
-              then: SuggestionState.labelEmpty,
-            },
-            {
-              case: {
-                $and: [
-                  { $eq: ['$labeledValue', '$currentValue'] },
-                  { $ne: ['$labeledValue', '$suggestedValue'] },
-                ],
-              },
-              then: SuggestionState.labelMismatch,
-            },
-            {
-              case: {
-                $eq: ['$suggestedValue', '$currentValue'],
-              },
-              then: SuggestionState.valueMatch,
-            },
-          ],
-          default: SuggestionState.valueMismatch,
-        },
-      },
-    },
-  },
-];
-
-interface StateResult {
-  _id: any;
-  state: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/promise-function-async
-const recalculateStates = (query: any, languages: LanguagesListSchema): AggregationCursor =>
+const findSuggestions = (query: any, languages: LanguagesListSchema): AggregationCursor =>
   IXSuggestionsModel.db
-    .aggregateCursor<StateResult[]>([
+    .aggregateCursor<SuggestionValues[]>([
       { $match: { ...query, status: { $ne: 'processing' } } },
       ...getEntityStage(languages),
       ...getCurrentValueStage(),
@@ -140,11 +60,17 @@ const recalculateStates = (query: any, languages: LanguagesListSchema): Aggregat
         $unset: 'file',
       },
       ...getModelCreationDateStage(),
-      ...getCalculateStateStage(),
       {
         $project: {
           _id: 1,
-          state: 1,
+          currentValue: 1,
+          labeledValue: 1,
+          labeledText: 1,
+          suggestedValue: 1,
+          modelCreationDate: 1,
+          error: 1,
+          date: 1,
+          propertyName: 1,
         },
       },
     ])
@@ -153,13 +79,23 @@ const recalculateStates = (query: any, languages: LanguagesListSchema): Aggregat
 
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
-  const cursor = recalculateStates(query, languages || []);
-  let state;
+  const propertyTypes = objectIndex(
+    (await templates.get({})).map(t => t.properties).flat(),
+    p => p.name,
+    p => p.type
+  );
+  const cursor = findSuggestions(query, languages || []);
   const writeStream = IXSuggestionsModel.openBulkWriteStream();
-  // eslint-disable-next-line no-await-in-loop, no-cond-assign
-  while ((state = await cursor.next())) {
+  let suggestion = await cursor.next();
+  while (suggestion) {
+    const propertyType = propertyTypes[suggestion.propertyName];
     // eslint-disable-next-line no-await-in-loop
-    await writeStream.update({ _id: state._id }, { $set: { state: state.state } });
+    await writeStream.update(
+      { _id: suggestion._id },
+      { $set: { state: getSuggestionState(suggestion, propertyType) } }
+    );
+    // eslint-disable-next-line no-await-in-loop
+    suggestion = await cursor.next();
   }
   await writeStream.flush();
 };

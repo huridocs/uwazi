@@ -159,7 +159,7 @@ describe('suggestions routes', () => {
           .expect(200);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
-            entityTitle: 'The Penguin',
+            entityTitle: 'Catwoman',
             state: SuggestionState.empty,
             suggestedValue: '',
             currentValue: '',
@@ -361,6 +361,18 @@ describe('suggestions routes', () => {
         },
         {
           entityId: 'shared6',
+          propertyName: 'enemy',
+          segment: '',
+          suggestedValue: '',
+        },
+        {
+          entityId: 'shared7',
+          propertyName: 'enemy',
+          segment: '',
+          suggestedValue: '',
+        },
+        {
+          entityId: 'shared8',
           propertyName: 'enemy',
           segment: '',
           suggestedValue: '',
