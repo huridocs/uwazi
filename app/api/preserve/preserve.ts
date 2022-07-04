@@ -60,9 +60,8 @@ export const Preserve = {
   },
 
   async requestToken(host: string, headers: { [key: string]: string }) {
-    const resp = await request.post(`${host}/api/token`, headers);
-    const { data } = resp.json();
-    return data.token;
+    const resp = await request.post(`${host}/api/tokens`, {}, headers);
+    return resp.json.data.token;
   },
 
   async createTemplate(language: string) {
