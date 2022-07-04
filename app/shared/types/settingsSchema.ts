@@ -107,9 +107,10 @@ const settingsPreserveConfigSchema = {
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
-  required: ['host', 'config'],
+  required: ['host', 'config', 'masterToken'],
   properties: {
     host: { type: 'string' },
+    masterToken: { type: 'string' },
     config: {
       type: 'array',
       items: {

@@ -145,7 +145,7 @@ export interface IStore {
   settings: {
     collection: IImmutable<Settings>;
   };
-  user: IImmutable<UserSchema[]>;
+  user: IImmutable<UserSchema>;
   users: IImmutable<UserSchema[]>;
   userGroups: IImmutable<UserGroupSchema[]>;
   page: {
