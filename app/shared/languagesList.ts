@@ -38,7 +38,7 @@ const elasticLanguages: {
   tur: { franc: 'tur', elastic: 'turkish', ISO639_1: 'tr' },
 };
 
-const allLanguages: LanguageSchema[] = [
+const availableLanguages: LanguageSchema[] = [
   { label: 'Abkhazian', key: 'ab', ISO639_3: 'abk' },
   { label: 'Afar', key: 'aa', ISO639_3: 'aar' },
   { label: 'Afrikaans', key: 'af', ISO639_3: 'afr' },
@@ -69,8 +69,8 @@ const allLanguages: LanguageSchema[] = [
   { label: 'Chechen', key: 'ce', ISO639_3: 'che' },
   { label: 'Chichewa, Chewa, Nyanja', key: 'ny', ISO639_3: 'nya' },
   { label: 'Chinese', key: 'zh', ISO639_3: 'zho' },
-  { label: 'Chinese (Simplified)', key: 'zh-Hans' },
-  { label: 'Chinese (Traditional)', key: 'zh-Hant' },
+  // { label: 'Chinese (Simplified)', key: 'zh-Hans' },
+  // { label: 'Chinese (Traditional)', key: 'zh-Hant' },
   { label: 'Chuvash', key: 'cv', ISO639_3: 'chv' },
   { label: 'Cornish', key: 'kw', ISO639_3: 'cor' },
   { label: 'Corsican', key: 'co', ISO639_3: 'cos' },
@@ -89,9 +89,9 @@ const allLanguages: LanguageSchema[] = [
   { label: 'Fijian', key: 'fj', ISO639_3: 'fij' },
   { label: 'Finnish', key: 'fi', ISO639_3: 'fin' },
   { label: 'French', key: 'fr', ISO639_3: 'fra' },
-  { label: 'Fula, Fulah, Pulaar, Pular', key: 'ff' },
+  { label: 'Fula, Fulah, Pulaar, Pular', key: 'ff', ISO639_3: 'ful' },
   { label: 'Galician', key: 'gl', ISO639_3: 'glg' },
-  { label: 'Gaelic Scottish', key: 'gd', ISO639_3: 'glg' },
+  { label: 'Gaelic Scottish', key: 'gd', ISO639_3: 'gla' },
   { label: 'Gaelic (Manx)', key: 'gv', ISO639_3: 'glv' },
   { label: 'Georgian', key: 'ka', ISO639_3: 'kat' },
   { label: 'German', key: 'de', ISO639_3: 'deu' },
@@ -149,7 +149,7 @@ const allLanguages: LanguageSchema[] = [
   { label: 'Maori', key: 'mi', ISO639_3: 'mri' },
   { label: 'Marathi', key: 'mr', ISO639_3: 'mar' },
   { label: 'Marshallese', key: 'mh', ISO639_3: 'mah' },
-  { label: 'Moldavian', key: 'mo', ISO639_3: 'ron' },
+  // { label: 'Moldavian', key: 'mo', ISO639_3: 'ron' },
   { label: 'Mongolian', key: 'mn', ISO639_3: 'mon' },
   { label: 'Nauru', key: 'na', ISO639_3: 'nau' },
   { label: 'Navajo', key: 'nv', ISO639_3: 'nav' },
@@ -173,7 +173,7 @@ const allLanguages: LanguageSchema[] = [
   { label: 'Punjabi (Eastern)', key: 'pa', ISO639_3: 'pan' },
   { label: 'Quechua', key: 'qu', ISO639_3: 'que' },
   { label: 'Romansh', key: 'rm', ISO639_3: 'roh' },
-  { label: 'Romanian', key: 'ro', ISO639_3: 'ron' },
+  { label: 'Romanian/Moldavian', key: 'ro', ISO639_3: 'ron' },
   { label: 'Russian', key: 'ru', ISO639_3: 'rus' },
   { label: 'Sami', key: 'se', ISO639_3: 'sme' },
   { label: 'Samoan', key: 'sm', ISO639_3: 'smo' },
@@ -182,7 +182,7 @@ const allLanguages: LanguageSchema[] = [
   { label: 'Serbian', key: 'sr', ISO639_3: 'srp' },
   { label: 'Serbo-Croatian', key: 'sh', ISO639_3: 'hbs' },
   { label: 'Sesotho', key: 'st', ISO639_3: 'sot' },
-  { label: 'Setswana', key: 'tn', ISO639_3: 'sot' },
+  { label: 'Setswana', key: 'tn', ISO639_3: 'tsn' },
   { label: 'Shona', key: 'sn', ISO639_3: 'sna' },
   { label: 'Sichuan Yi, Nuosu', key: 'ii', ISO639_3: 'iii' },
   { label: 'Sindhi', key: 'sd', ISO639_3: 'snd' },
@@ -233,4 +233,4 @@ const language = (key: string, purpose: keyof typeof elasticLanguages[number] = 
   return elasticLanguages[key] ? elasticLanguages[key][purpose] : defaultValue;
 };
 
-export { elasticLanguages as languages, allLanguages, language };
+export { elasticLanguages, availableLanguages, language };

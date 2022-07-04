@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { actions, Translate } from 'app/I18N';
 import { Icon } from 'UI';
-import { languages as elasticLanguages, allLanguages as languagesList } from 'shared/languagesList';
+import { elasticLanguages, availableLanguages as languagesList } from 'shared/languagesList';
 import Warning from '../../Layout/Warning';
 import Tip from '../../Layout/Tip';
 
