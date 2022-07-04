@@ -1,21 +1,21 @@
-name: Deploy production
+name: Deploy staging
 
 on:
   push:
     branches:
-      - production
+      - staging
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  create_pre_release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: 'production'
+          ref: 'staging'
           fetch-depth: 0
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v1
@@ -40,8 +40,8 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.4
         with:
             ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-      - name: Release
-        run: ./scripts/release.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}
+      - name: Pre release
+        run: ./scripts/pre-release.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}
 
       - name: get-npm-version
         id: package-version
@@ -54,7 +54,7 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: uwazi-api
         with:
-          environment: production
+          environment: staging
           projects: ${{ secrets.SENTRY_PROJECTS }}
           version: ${{ steps.package-version.outputs.current-version}}
           ignore_empty: true

@@ -45,16 +45,16 @@ describe('Table view', () => {
 
     it('Should show new selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
-      const newColumn = await page.$$eval('#rw_2_listbox li:nth-child(9)', option => {
-        (<HTMLInputElement>option[0]).click();
-        return option[0].textContent;
+      await page.waitForSelector('#rw_2_listbox li');
+      await expect(page).toClick('.rw-list-option', { text: 'Firmantes' });
+      await expect(page).toMatchElement('.hidden-columns-dropdown .rw-open');
+      await expect(page).toClick('.rw-list-option', { text: 'Mecanismo' });
+      await page.click('.tableview-wrapper');
+      await expect(page).toMatchElement('.tableview-wrapper th:nth-last-child(3)', {
+        text: 'Mecanismo',
       });
-      await page.waitForSelector('.tableview-wrapper th:nth-child(5)');
-      const lastColumn = await page.$$eval(
-        '.tableview-wrapper th:last-child',
-        columns => columns[0].textContent
-      );
-      expect(lastColumn).toEqual(newColumn);
+      await expect(page).toMatchElement('.tableview-wrapper th:last-child', { text: 'Firmantes' });
+      await expect(page).not.toMatchElement('.hidden-columns-dropdown .rw-open');
     });
 
     it('Should show all properties if all of them are selected', async () => {
