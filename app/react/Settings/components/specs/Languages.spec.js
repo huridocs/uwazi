@@ -56,7 +56,11 @@ describe('Languages', () => {
       expect(context.confirm).toHaveBeenCalled();
       const confirmArguments = context.confirm.calls.allArgs()[0][0];
       confirmArguments.accept();
-      expect(props.addLanguage).toHaveBeenCalledWith({ key: 'ab', label: 'Abkhazian' });
+      expect(props.addLanguage).toHaveBeenCalledWith({
+        key: 'ab',
+        label: 'Abkhazian',
+        ISO639_3: 'abk',
+      });
       done();
     });
   });
