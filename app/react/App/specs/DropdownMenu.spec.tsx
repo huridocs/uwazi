@@ -3,7 +3,7 @@
  */
 
 import { shallow, ShallowWrapper } from 'enzyme';
-import React, { useState } from 'react';
+import React from 'react';
 import { fromJS } from 'immutable';
 import { IImmutable } from 'shared/types/Immutable';
 import { DropdownMenu, ILink } from '../DropdownMenu';
@@ -22,25 +22,13 @@ const links: ILink[] = [
   },
 ];
 
-jest.mock('react', () => {
-  const originReact = jest.requireActual('react');
-  const museState = jest.fn().mockReturnValueOnce([]);
-  return {
-    ...originReact,
-    useState: museState,
-  };
-});
-
 describe('DropdownMenu', () => {
   let component: ShallowWrapper;
   let immutableLinks: IImmutable<ILink[]>;
-  const setShowing = jest.fn();
-  const showing = false;
 
   beforeEach(() => {
     immutableLinks = fromJS(links);
     // @ts-ignore
-    useState.mockReturnValueOnce([showing, setShowing]);
   });
 
   it('should render children', () => {
@@ -50,17 +38,33 @@ describe('DropdownMenu', () => {
 
   it('should open drowpown when clicked', () => {
     const mountComp = shallow(<DropdownMenu link={immutableLinks.get(0)} position={1} />);
+    expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
     mountComp
       .find('li > button#navbarDropdownMenuLink')
       .first()
       .simulate('click', { stopPropagation: () => {} });
-    expect(setShowing).toBeCalledWith(true);
+    expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
   });
   it('should have correct link if the link is internal', () => {
     const mountComp = shallow(<DropdownMenu link={immutableLinks.get(0)} position={1} />);
-    expect(mountComp.find('ul').children().first().children().first().prop('to')).toBe('/some_url');
+    expect(mountComp.find('.dropdown-item').first().prop('to')).toBe('/some_url');
   });
-  it('should have correct link ifthe link is external', () => {
+
+  it('should close the dropdown when an option is clicked', () => {
+    const mountComp = shallow(<DropdownMenu link={immutableLinks.get(0)} position={1} />);
+    mountComp
+      .find('li > button#navbarDropdownMenuLink')
+      .first()
+      .simulate('click', { stopPropagation: () => {} });
+    expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
+    mountComp
+      .find('.dropdown-item')
+      .first()
+      .simulate('click', { stopPropagation: () => {} });
+    expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
+  });
+
+  it('should have correct link if the link is external', () => {
     const externalLink = fromJS({
       title: 'title 1',
       url: '/some_url',
@@ -73,8 +77,9 @@ describe('DropdownMenu', () => {
       type: 'group',
     });
     const mountComp = shallow(<DropdownMenu link={externalLink} position={1} />);
-    expect(mountComp.find('ul').children().first().children().first().prop('href')).toBe(
-      'http://google.com'
-    );
+    const option = mountComp.find('.dropdown-item').first();
+    expect(option.prop('href')).toBe('http://google.com');
+    expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
+    option.simulate('click', { stopPropagation: () => {} });
   });
 });
