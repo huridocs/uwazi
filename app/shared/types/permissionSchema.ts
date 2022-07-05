@@ -4,7 +4,7 @@ import { unique } from 'api/utils/filters';
 import { wrapValidator } from 'shared/tsUtils';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 
-const ajv = Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true });
 
 export const emitSchemaTypes = true;
 
@@ -43,7 +43,8 @@ export const permissionSchema = {
   required: ['refId', 'type', 'level'],
 };
 
-ajv.addKeyword('uniqueIds', {
+ajv.addKeyword({
+  keyword: 'uniqueIds',
   type: 'object',
   errors: true,
   validate: (fields: any, data: PermissionsDataSchema) => {
@@ -79,4 +80,6 @@ export const permissionsDataSchema = {
   required: ['ids', 'permissions'],
 };
 
-export const validateUniquePermissions = wrapValidator(ajv.compile({ uniqueIds: true }));
+export const validateUniquePermissions = wrapValidator(
+  ajv.compile({ type: 'object', uniqueIds: true })
+);

@@ -6,9 +6,10 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 import { userGroupSchema } from 'shared/types/userGroupSchema';
 import model from './userGroupsModel';
 
-const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
+const ajv = ajvKeywords(new Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
-ajv.addKeyword('uniqueName', {
+ajv.addKeyword({
+  keyword: 'uniqueName',
   async: true,
   validate: async (_config: any, userGroup: UserGroupSchema) => {
     const [duplicated] = await model.get({

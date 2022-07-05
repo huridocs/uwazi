@@ -8,7 +8,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { validateMetadataField } from './validateMetadataField';
 import { customErrorMessages, validators } from './metadataValidators';
 
-const ajv = Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true });
 
 const validateField =
   (entity: EntitySchema, template: TemplateSchema) =>
@@ -49,7 +49,8 @@ const validateAllowedProperties = async (template: TemplateSchema, entity: Entit
   return errors;
 };
 
-ajv.addKeyword('metadataMatchesTemplateProperties', {
+ajv.addKeyword({
+  keyword: 'metadataMatchesTemplateProperties',
   async: true,
   errors: true,
   type: 'object',
@@ -73,7 +74,8 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   },
 });
 
-ajv.addKeyword('validateTemplateExists', {
+ajv.addKeyword({
+  keyword: 'validateTemplateExists',
   async: true,
   errors: true,
   type: 'object',
@@ -97,7 +99,8 @@ ajv.addKeyword('validateTemplateExists', {
   },
 });
 
-ajv.addKeyword('stringMeetsLuceneMaxLimit', {
+ajv.addKeyword({
+  keyword: 'stringMeetsLuceneMaxLimit',
   errors: false,
   type: 'string',
   validate(_schema: any, data: EntitySchema) {

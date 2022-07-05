@@ -5,7 +5,7 @@ import { FileType } from './fileType';
 
 const emitSchemaTypes = true;
 
-const ajv = Ajv({ allErrors: true, removeAdditional: true });
+const ajv = new Ajv({ allErrors: true, removeAdditional: true });
 
 const fileSchema = {
   $schema: 'http://json-schema.org/schema#',

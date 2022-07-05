@@ -5,10 +5,10 @@ export const emitSchemaTypes = true;
 
 export const objectIdSchema = {
   oneOf: [
-    { type: 'string' },
+    { type: 'string', pattern: '^[0-9a-zA-Z]+$' },
     {
       type: 'object',
-      tsType: 'ObjectId',
+      // tsType: 'ObjectId',
     },
   ],
 };
@@ -120,8 +120,8 @@ export const metadataObjectSchema = {
 };
 
 export const metadataSchema = {
-  definitions: { metadataObjectSchema },
   type: 'object',
+  definitions: { metadataObjectSchema },
   additionalProperties: {
     anyOf: [{ type: 'array', items: metadataObjectSchema }],
   },
@@ -191,6 +191,7 @@ export const propertySchema = {
     content: { type: 'string' },
     relationType: { type: 'string' },
     inherit: {
+      type: 'object',
       additionalProperties: false,
       properties: {
         property: { type: 'string' },

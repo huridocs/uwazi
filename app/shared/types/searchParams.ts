@@ -1,8 +1,10 @@
 export const emitSchemaTypes = true;
 export const searchParamsSchema = {
+  type: 'object',
   title: 'searchParams',
   properties: {
     query: {
+      type: 'object',
       additionalProperties: false,
       properties: {
         aggregateGeneratedToc: { type: 'boolean' },
@@ -11,8 +13,8 @@ export const searchParamsSchema = {
         aggregatePublishingStatus: { type: 'boolean' },
         filters: { type: 'object' },
         customFilters: {
-          additionalProperties: false,
           type: 'object',
+          additionalProperties: false,
           properties: {
             generatedToc: {
               type: 'object',

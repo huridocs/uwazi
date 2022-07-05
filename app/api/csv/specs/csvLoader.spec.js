@@ -10,13 +10,14 @@ import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
 import typeParsers from '../typeParsers';
+import ValidationError from 'ajv/dist/runtime/validation_error';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
   const loader = new CSVLoader();
 
   beforeAll(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
@@ -34,7 +35,7 @@ describe('csvLoader', () => {
     let csv;
     let readStreamMock;
     beforeEach(async () => {
-      await db.clearAllAndLoad(fixtures);
+      await db.setupFixturesAndContext(fixtures);
 
       const nonExistent = 'Russian';
 
@@ -202,7 +203,7 @@ describe('csvLoader', () => {
     it('should stop processing on the first error', async () => {
       const testingLoader = new CSVLoader();
 
-      await db.clearAllAndLoad(fixtures);
+      await db.setupFixturesAndContext(fixtures);
       spyOn(entities, 'save').and.callFake(entity => {
         throw new Error(`error-${entity.title}`);
       });
@@ -217,7 +218,7 @@ describe('csvLoader', () => {
     it('should throw the error that occurred even if it was not the first row', async () => {
       const testingLoader = new CSVLoader();
 
-      await db.clearAllAndLoad(fixtures);
+      await db.setupFixturesAndContext(fixtures);
       jest
         .spyOn(entities, 'save')
         .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
@@ -240,7 +241,7 @@ describe('csvLoader', () => {
         }
         return entity;
       });
-      await db.clearAllAndLoad(fixtures);
+      await db.setupFixturesAndContext(fixtures);
     });
 
     it('should emit an error', async () => {
@@ -336,7 +337,7 @@ describe('csvLoader', () => {
           await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
         } catch (e) {
           expect(e.message).toEqual('validation failed');
-          expect(e.errors[0].dataPath).toEqual('.title');
+          expect(e.errors[0].instancePath).toEqual('/title');
         }
       });
     });

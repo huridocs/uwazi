@@ -76,7 +76,7 @@ describe('documents', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toBe('pattern');
-      expect(response.body.errors[0].dataPath).toBe('.query._id');
+      expect(response.body.errors[0].instancePath).toBe('/query/_id');
       expect(response.body.error).toBe('validation failed');
     });
     it('should return documents.get', async () => {
@@ -95,7 +95,7 @@ describe('documents', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toBe('required');
-      expect(response.body.errors[0].dataPath).toBe('.query');
+      expect(response.body.errors[0].instancePath).toBe('/query');
       expect(response.body.error).toBe('validation failed');
     });
     it('should return count of documents using a specific template', async () => {
@@ -118,7 +118,7 @@ describe('documents', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toBe('required');
-      expect(response.body.errors[0].dataPath).toBe('.query');
+      expect(response.body.errors[0].instancePath).toBe('/query');
       expect(response.body.error).toBe('validation failed');
     });
 

@@ -15,9 +15,10 @@ import { PropertySchema } from './commonTypes';
 
 export const emitSchemaTypes = true;
 
-const ajv = Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true });
 
-ajv.addKeyword('uniqueName', {
+ajv.addKeyword({
+  keyword: 'uniqueName',
   async: true,
   errors: false,
   type: 'object',
@@ -34,7 +35,8 @@ ajv.addKeyword('uniqueName', {
   },
 });
 
-ajv.addKeyword('requireTitleProperty', {
+ajv.addKeyword({
+  keyword: 'requireTitleProperty',
   errors: false,
   type: 'array',
   validate(_schema: any, properties: PropertySchema[]) {
@@ -42,7 +44,8 @@ ajv.addKeyword('requireTitleProperty', {
   },
 });
 
-ajv.addKeyword('uniquePropertyFields', {
+ajv.addKeyword({
+  keyword: 'uniquePropertyFields',
   errors: false,
   type: 'object',
   validate(fields: (keyof PropertySchema)[], data: TemplateSchema) {
@@ -78,7 +81,8 @@ ajv.addKeyword('uniquePropertyFields', {
   },
 });
 
-ajv.addKeyword('requireOrInvalidContentForSelectFields', {
+ajv.addKeyword({
+  keyword: 'requireOrInvalidContentForSelectFields',
   async: true,
   errors: false,
   type: 'object',
@@ -99,7 +103,8 @@ ajv.addKeyword('requireOrInvalidContentForSelectFields', {
   },
 });
 
-ajv.addKeyword('requireRelationTypeForRelationship', {
+ajv.addKeyword({
+  keyword: 'requireRelationTypeForRelationship',
   errors: false,
   type: 'object',
   validate(schema: any, data: PropertySchema) {
@@ -113,7 +118,8 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
   },
 });
 
-ajv.addKeyword('cantDeleteInheritedProperties', {
+ajv.addKeyword({
+  keyword: 'cantDeleteInheritedProperties',
   async: true,
   errors: true,
   type: 'object',
@@ -200,7 +206,8 @@ function filterInconsistentProperties(template: TemplateSchema, allProperties: P
   );
 }
 
-ajv.addKeyword('cantReuseNameWithDifferentType', {
+ajv.addKeyword({
+  keyword: 'cantReuseNameWithDifferentType',
   async: true,
   errors: true,
   type: 'object',
@@ -233,7 +240,8 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
   },
 });
 
-ajv.addKeyword('entityViewPageExistsAndIsEnabled', {
+ajv.addKeyword({
+  keyword: 'entityViewPageExistsAndIsEnabled',
   async: true,
   errors: true,
   type: 'object',

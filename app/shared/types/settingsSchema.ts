@@ -5,9 +5,10 @@ import { Settings } from './settingsType';
 
 const emitSchemaTypes = true;
 
-const ajv = Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true });
 
-ajv.addKeyword('hasDefaultLanguage', {
+ajv.addKeyword({
+  keyword: 'hasDefaultLanguage',
   errors: true,
   type: 'object',
   validate(schema: boolean, settings: Settings) {
@@ -68,13 +69,14 @@ const settingsSyncTemplateSchema = {
   type: 'object',
   required: ['properties'],
   properties: {
-    properties: { items: { type: 'string' } },
+    properties: { type: 'array', items: { type: 'string' } },
     filter: { type: 'string' },
   },
   additionalProperties: false,
 };
 
 const settingsSyncRelationtypesSchema = {
+  type: 'array',
   items: { type: 'string' },
 };
 

@@ -3,7 +3,11 @@
 import { ObjectId } from 'mongodb';
 
 export interface AttachmentSchema {
-  _id?: string | ObjectId;
+  _id?:
+    | string
+    | {
+        [k: string]: unknown | undefined;
+      };
   originalname?: string;
   filename?: string;
   mimetype?: string;
@@ -69,7 +73,11 @@ export interface InheritedValueSchema {
 }
 
 export interface LanguageSchema {
-  _id?: string | ObjectId;
+  _id?:
+    | string
+    | {
+        [k: string]: unknown | undefined;
+      };
   label: string;
   key: string;
   rtl?: boolean;
@@ -79,7 +87,11 @@ export interface LanguageSchema {
 }
 
 export type LanguagesListSchema = {
-  _id?: string | ObjectId;
+  _id?:
+    | string
+    | {
+        [k: string]: unknown | undefined;
+      };
   label: string;
   key: string;
   rtl?: boolean;
@@ -119,7 +131,11 @@ export interface MetadataSchema {
   [k: string]: MetadataObjectSchema[] | undefined;
 }
 
-export type ObjectIdSchema = string | ObjectId;
+export type ObjectIdSchema =
+  | string
+  | {
+      [k: string]: unknown | undefined;
+    };
 
 export interface PropertySchema {
   _id?: ObjectIdSchema;

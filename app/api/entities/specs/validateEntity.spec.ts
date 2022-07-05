@@ -72,7 +72,7 @@ describe('validateEntity', () => {
       await testValid(entity);
     });
 
-    it('should allow template to be missing', async () => {
+    fit('should allow template to be missing', async () => {
       let entity = createEntity({ template: undefined });
       await testValid(entity);
       entity = createEntity({ template: '' });
