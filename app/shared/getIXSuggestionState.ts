@@ -74,7 +74,7 @@ const getSuggestionState = (
       Value: SuggestionState.valueMatch,
     },
     Mismatch: {
-      Empty: SuggestionState.valueMismatch,
+      Empty: SuggestionState.emptyMismatch,
       Label: SuggestionState.labelMismatch,
       Value: SuggestionState.valueMismatch,
     },

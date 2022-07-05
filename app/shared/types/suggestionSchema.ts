@@ -18,6 +18,7 @@ export enum SuggestionState {
   valueEmpty = 'Empty / Value',
   error = 'Error',
   processing = 'Processing',
+  emptyMismatch = 'Mismatch / Empty',
 }
 
 export const IXSuggestionSchema = {
