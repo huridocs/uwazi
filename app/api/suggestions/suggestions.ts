@@ -209,6 +209,7 @@ export const Suggestions = {
           state: 1,
           page: 1,
           date: 1,
+          error: 1,
           labeledValue: 1,
         },
       },
