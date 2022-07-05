@@ -15,8 +15,8 @@ import {
   suggestionId,
 } from './fixtures';
 
-const getSuggestions = async (propertyName: string) =>
-  Suggestions.get({ propertyName }, { page: { size: 5, number: 1 } });
+const getSuggestions = async (propertyName: string, size = 5) =>
+  Suggestions.get({ propertyName }, { page: { size, number: 1 } });
 
 const findOneSuggestion = async (query: any) =>
   db.mongodb?.collection('ixsuggestions').findOne({ ...query });
@@ -272,7 +272,7 @@ describe('suggestions', () => {
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
       ).toBe(SuggestionState.labelMatch);
 
-      const { suggestions: enemySuggestions } = await getSuggestions('enemy');
+      const { suggestions: enemySuggestions } = await getSuggestions('enemy', 6);
 
       expect(
         enemySuggestions.filter(
@@ -314,6 +314,12 @@ describe('suggestions', () => {
           (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
         ).state
       ).toBe(SuggestionState.valueMismatch);
+
+      expect(
+        enemySuggestions.find(
+          (s: EntitySuggestionType) => s.sharedId === 'shared9' && s.language === 'en'
+        ).state
+      ).toBe(SuggestionState.emptyMismatch);
     });
 
     it('should return error status', async () => {
