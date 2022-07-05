@@ -39,6 +39,7 @@ const suggestionsTable = (
       <option value="">{t('System', 'All', 'All', false)}</option>
       {Object.values(SuggestionState)
         .filter(state => state !== SuggestionState.processing)
+        .sort()
         .map(state => (
           <option key={state} value={state}>
             {t('System', state, state, false)}

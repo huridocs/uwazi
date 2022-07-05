@@ -12,16 +12,16 @@ const defaultHeaders = [
   [
     'State',
     'All',
-    'Match / Label',
-    'Mismatch / Label',
-    'Match / Value',
-    'Mismatch / Value',
     'Empty / Empty',
-    'Obsolete',
     'Empty / Label',
     'Empty / Value',
     'Error',
+    'Match / Label',
+    'Match / Value',
     'Mismatch / Empty',
+    'Mismatch / Label',
+    'Mismatch / Value',
+    'Obsolete',
   ].join(''),
 ];
 
