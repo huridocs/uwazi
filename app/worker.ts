@@ -1,0 +1,75 @@
+import { DB } from 'api/odm';
+import { config } from 'api/config';
+import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { OcrManager } from 'api/services/ocr/OcrManager';
+import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
+import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
+import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
+import { preserveSync } from 'api/services/preserve/preserveSync';
+import { tocService } from 'api/toc_generation/tocService';
+import { syncWorker } from 'api/sync/syncWorker';
+
+let dbAuth = {};
+
+if (process.env.DBUSER) {
+  dbAuth = {
+    auth: { authSource: 'admin' },
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  };
+}
+
+DB.connect(config.DBHOST, dbAuth)
+  .then(async () => {
+    await tenants.run(async () => {
+      permissionsContext.setCommandContext();
+
+      console.info('==> 📡 starting external services...');
+      OcrManager.start();
+
+      const segmentationConnector = new PDFSegmentation();
+      const segmentationRepeater = new DistributedLoop(
+        'segmentation_repeat',
+        segmentationConnector.segmentPdfs,
+        { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 5000 }
+      );
+
+      // eslint-disable-next-line no-void
+      void segmentationRepeater.start();
+
+      const twitterIntegration = new TwitterIntegration();
+      const twitterRepeater = new DistributedLoop(
+        'twitter_repeat',
+        twitterIntegration.addTweetsRequestsToQueue,
+        { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 120000 }
+      );
+
+      // eslint-disable-next-line no-void
+      void twitterRepeater.start();
+
+      // eslint-disable-next-line no-void
+      void new DistributedLoop('preserve_integration', async () => preserveSync.syncAllTenants(), {
+        port: config.redis.port,
+        host: config.redis.host,
+        delayTimeBetweenTasks: 30000,
+      }).start();
+
+      // eslint-disable-next-line no-void
+      void new DistributedLoop('toc_service', async () => tocService.processAllTenants(), {
+        port: config.redis.port,
+        host: config.redis.host,
+        delayTimeBetweenTasks: 30000,
+      }).start();
+
+      // eslint-disable-next-line no-void
+      void new DistributedLoop('sync_job', async () => syncWorker.runAllTenants(), {
+        port: config.redis.port,
+        host: config.redis.host,
+        delayTimeBetweenTasks: 30000,
+      }).start();
+    });
+  })
+  .catch(error => {
+    throw error;
+  });
