@@ -101,12 +101,12 @@ class Languages extends Component {
     });
   }
 
-  addLanguage(language) {
+  addLanguage({ key, label, rtl }) {
     this.context.confirm({
-      accept: () => this.props.addLanguage(language),
+      accept: () => this.props.addLanguage({ key, label, rtl }),
       title: (
         <>
-          <Translate>Confirm add</Translate>&nbsp;{language.label}
+          <Translate>Confirm add</Translate>&nbsp;{label}
         </>
       ),
       message:
