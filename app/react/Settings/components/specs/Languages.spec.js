@@ -55,7 +55,6 @@ describe('Languages', () => {
       expect(props.addLanguage).toHaveBeenCalledWith({
         key: 'ab',
         label: 'Abkhazian',
-        ISO639_3: 'abk',
       });
       done();
     });
