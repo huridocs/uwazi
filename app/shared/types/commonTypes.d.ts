@@ -71,6 +71,7 @@ export interface InheritedValueSchema {
 export interface LanguageSchema {
   _id?: string | ObjectId;
   label: string;
+  label_en?: string;
   key: string;
   rtl?: boolean;
   default?: boolean;
@@ -79,6 +80,7 @@ export interface LanguageSchema {
 export type LanguagesListSchema = {
   _id?: string | ObjectId;
   label: string;
+  label_en?: string;
   key: string;
   rtl?: boolean;
   default?: boolean;

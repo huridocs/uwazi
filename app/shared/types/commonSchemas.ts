@@ -51,6 +51,7 @@ export const languageSchema = {
   properties: {
     _id: objectIdSchema,
     label: { type: 'string' },
+    label_en: { type: 'string' },
     key: { type: 'string' },
     rtl: { type: 'boolean' },
     default: { type: 'boolean' },
