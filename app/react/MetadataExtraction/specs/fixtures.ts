@@ -9,7 +9,20 @@ const defaultHeaders = [
   'Title',
   'Context',
   'Language',
-  'StateAllMatch / LabelMismatch / LabelMatch / ValueMismatch / ValueEmpty / EmptyObsolete',
+  [
+    'State',
+    'All',
+    'Match / Label',
+    'Mismatch / Label',
+    'Match / Value',
+    'Mismatch / Value',
+    'Empty / Empty',
+    'Obsolete',
+    'Empty / Label',
+    'Empty / Value',
+    'Error',
+    'Mismatch / Empty',
+  ].join(''),
 ];
 
 const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {
