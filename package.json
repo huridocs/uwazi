@@ -166,7 +166,7 @@
     "react-helmet": "^6.1.0",
     "react-hook-form": "^6.11.5",
     "react-hot-loader": "^4.13.0",
-    "react-image-gallery": "^1.2.7",
+    "react-image-gallery": "^1.2.8",
     "react-modal": "3.14.4",
     "react-player": "^2.10.1",
     "react-redux": "5.0.6",
