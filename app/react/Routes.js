@@ -19,6 +19,7 @@ import NewRelationType from 'app/RelationTypes/NewRelationType';
 import OneUpReview from 'app/Review/OneUpReview';
 import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
 import {
+  PreserveSettings,
   AccountSettings,
   CollectionSettings,
   Customisation,
@@ -139,6 +140,7 @@ const routes = (
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
       <Route path="users" component={UserManagement} />
+      <Route path="preserve" component={PreserveSettings} />
       <Route path="pages">
         <IndexRoute component={Pages} />
         <Route path="new" component={NewPage} />

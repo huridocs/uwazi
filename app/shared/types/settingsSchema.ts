@@ -102,24 +102,15 @@ const settingsSyncSchema = {
   },
 };
 
-const settingsEvidencesVaultSchema = {
-  type: 'object',
-  additionalProperties: false,
-  required: ['token', 'template'],
-  properties: {
-    token: { type: 'string' },
-    template: { type: 'string' },
-  },
-};
-
 const settingsPreserveConfigSchema = {
   title: 'PreserveConfig',
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
-  required: ['host', 'config'],
+  required: ['host', 'config', 'masterToken'],
   properties: {
     host: { type: 'string' },
+    masterToken: { type: 'string' },
     config: {
       type: 'array',
       items: {
@@ -192,8 +183,6 @@ const settingsSchema = {
     ocrServiceEnabled: { type: 'boolean' },
 
     sync: { type: 'array', items: settingsSyncSchema },
-
-    evidencesVault: settingsEvidencesVaultSchema,
 
     languages: languagesListSchema,
 
