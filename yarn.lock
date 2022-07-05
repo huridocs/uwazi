@@ -1494,10 +1494,10 @@
   dependencies:
     prop-types "^15.8.1"
 
-"@googlemaps/js-api-loader@^1.13.8":
-  version "1.13.8"
-  resolved "https://registry.yarnpkg.com/@googlemaps/js-api-loader/-/js-api-loader-1.13.8.tgz#9edfa766367dc145eec6a5ee6e90ba67244a4afb"
-  integrity sha512-xsn4vmrRc/p8PW6p6PglfInGiW9haEgkAeby4BGxNkVipWy8q0Wv16+sWpQ3rP31RahfWBoyVgAc1DgLXcZY3Q==
+"@googlemaps/js-api-loader@^1.14.3":
+  version "1.14.3"
+  resolved "https://registry.yarnpkg.com/@googlemaps/js-api-loader/-/js-api-loader-1.14.3.tgz#d7a161cd547be04ad46a1cb176e6c2647f6d74a7"
+  integrity sha512-6iIb+qpGgQpgIHmIFO44WhE1rDUxPVHuezNFL30wRJnkvhwFm94tD291UvNg9L05hLDSoL16jd0lbqqmdy4C5g==
   dependencies:
     fast-deep-equal "^3.1.3"
 
