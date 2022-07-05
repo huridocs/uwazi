@@ -276,7 +276,7 @@ describe('EntitySuggestions', () => {
         const selectedRow = within(screen.getAllByRole('row')[1])
           .getAllByRole('cell')
           .map(cell => cell.textContent);
-        expect(selectedRow[6]).toEqual(SuggestionState.labelMatch);
+        expect(selectedRow[6]).toEqual(SuggestionState.valueMatch);
       });
       it('should not accept a suggestion in confirmation is cancelled', async () => {
         const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;

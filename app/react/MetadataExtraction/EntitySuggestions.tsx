@@ -15,6 +15,7 @@ import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
 
@@ -147,12 +148,24 @@ export const EntitySuggestions = ({
       .catch(() => {});
   };
 
+  const getWrappedSuggestionState = (
+    acceptedSuggestion: any,
+    newCurrentValue: string | number | null
+  ) =>
+    getSuggestionState(
+      { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
+      reviewedProperty.type
+    );
+
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
       selectedFlatRows[0].toggleRowSelected();
-      selectedFlatRows[0].values.state = SuggestionState.labelMatch;
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        acceptedSuggestion,
+        acceptedSuggestion.suggestedValue as string
+      );
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
@@ -161,35 +174,6 @@ export const EntitySuggestions = ({
     toggleAllRowsSelected(false);
   };
 
-  const userHasSelectedLabel = (entity: any) => {
-    if (entity.__extractedMetadata.selections.length === 0) return false;
-    const selection = entity.__extractedMetadata.selections.find(
-      (s: any) => s.name === reviewedProperty.name
-    );
-    if (!selection) return false;
-    return selection.selection.text === entity.title;
-  };
-
-  const calculateTemporaryState = (
-    entity: ClientEntitySchema,
-    suggestedValue: string,
-    state: SuggestionState
-  ) => {
-    if (state === SuggestionState.obsolete) return state;
-    const selected = userHasSelectedLabel(entity);
-    const currentValue = entity.title;
-    if (suggestedValue === '') {
-      return selected ? SuggestionState.labelEmpty : SuggestionState.valueEmpty;
-    }
-
-    if (currentValue === suggestedValue) {
-      return selected ? SuggestionState.labelMatch : SuggestionState.valueMatch;
-    }
-
-    return selected ? SuggestionState.labelMismatch : SuggestionState.valueMismatch;
-  };
-
-  // eslint-disable-next-line max-statements
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const changedPropertyValue = (entity[reviewedProperty.name] ||
@@ -199,11 +183,10 @@ export const EntitySuggestions = ({
       : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
-    const { suggestedValue, state } = selectedFlatRows[0].original;
-    selectedFlatRows[0].values.state = calculateTemporaryState(
-      entity,
-      suggestedValue as string,
-      state as SuggestionState
+    const acceptedSuggestion = selectedFlatRows[0].original;
+    selectedFlatRows[0].values.state = getWrappedSuggestionState(
+      acceptedSuggestion,
+      entity.title as string
     );
     selectedFlatRows[0].setState({});
   };
