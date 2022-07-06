@@ -55,7 +55,6 @@ export class TaskManager {
     this.redisSMQ = new RedisSMQ({ client: this.redisClient });
 
     this.subscribeToEvents();
-    this.subscribeToResults();
   }
 
   subscribeToEvents() {
@@ -103,7 +102,7 @@ export class TaskManager {
     return queueAttributes.msgs;
   }
 
-  private subscribeToResults(): void {
+  subscribeToResults(): void {
     this.repeater = new Repeater(this.checkForResults.bind(this), 500);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.repeater.start();

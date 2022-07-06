@@ -62,6 +62,10 @@ class InformationExtraction {
     });
   }
 
+  start() {
+    this.taskManager.subscribeToResults();
+  }
+
   requestResults = async (message: ResultsMessage) => {
     const response = await request.get(message.data_url);
 
