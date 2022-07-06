@@ -13,6 +13,8 @@ import {
   getLabeledValueStage,
 } from './pipelineStages';
 
+type SuggestionsAggregationResult = SuggestionValues & { _id: any; propertyName: string };
+
 const getModelCreationDateStage = () => [
   {
     $lookup: {
@@ -47,7 +49,7 @@ const getModelCreationDateStage = () => [
 
 const findSuggestions = (query: any, languages: LanguagesListSchema): AggregationCursor =>
   IXSuggestionsModel.db
-    .aggregateCursor<SuggestionValues[]>([
+    .aggregateCursor<SuggestionsAggregationResult[]>([
       { $match: { ...query, status: { $ne: 'processing' } } },
       ...getEntityStage(languages),
       ...getCurrentValueStage(),
@@ -86,7 +88,7 @@ export const updateStates = async (query: any) => {
   );
   const cursor = findSuggestions(query, languages || []);
   const writeStream = IXSuggestionsModel.openBulkWriteStream();
-  let suggestion = await cursor.next();
+  let suggestion: SuggestionsAggregationResult = await cursor.next();
   while (suggestion) {
     const propertyType = propertyTypes[suggestion.propertyName];
     // eslint-disable-next-line no-await-in-loop

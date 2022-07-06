@@ -14,6 +14,7 @@ import {
   shared2esId,
   suggestionId,
 } from './fixtures';
+import { createDefaultSuggestions } from '../configurationManager';
 
 const getSuggestions = async (propertyName: string, size = 5) =>
   Suggestions.get({ propertyName }, { page: { size, number: 1 } });
@@ -147,7 +148,7 @@ const newErroringSuggestion: IXSuggestionType = {
   date: 5,
   page: 2,
   status: 'failed',
-  error: '',
+  error: 'Some error message',
 };
 
 describe('suggestions', () => {
@@ -179,7 +180,7 @@ describe('suggestions', () => {
           properties: ['title'],
         },
       ];
-      await Suggestions.createBlankState(settings, 'en');
+      await createDefaultSuggestions(settings, 'en');
       const newSuggestions = await IXSuggestionsModel.get({
         propertyName: 'title',
       });

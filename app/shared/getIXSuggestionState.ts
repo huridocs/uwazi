@@ -3,14 +3,12 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 
 interface SuggestionValues {
-  _id: any;
   currentValue: string | number | null;
   labeledValue: string | null;
   suggestedValue: string | null;
   modelCreationDate: number;
   error: string;
   date: number;
-  propertyName: string;
 }
 
 const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
