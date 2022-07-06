@@ -9,8 +9,8 @@ describe('Languages', () => {
   let props;
   let context;
   const currentLanguages = [
-    { label: 'Español', key: 'es', default: true },
-    { label: 'English', key: 'en' },
+    { label: 'Español', label_en: 'Spanish', key: 'es', default: true },
+    { label: 'English', label_en: 'English', key: 'en' },
   ];
 
   beforeEach(() => {
@@ -55,6 +55,7 @@ describe('Languages', () => {
       expect(props.addLanguage).toHaveBeenCalledWith({
         key: 'ab',
         label: 'Abkhazian',
+        label_en: 'Abkhazian',
       });
       done();
     });

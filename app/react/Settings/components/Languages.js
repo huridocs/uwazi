@@ -84,7 +84,7 @@ class Languages extends Component {
       accept: () => this.props.deleteLanguage(language.key),
       title: (
         <>
-          <Translate>Confirm delete </Translate> {language.label}
+          <Translate>Confirm delete </Translate> {language.label_en}
         </>
       ),
       message: (
@@ -101,12 +101,12 @@ class Languages extends Component {
     });
   }
 
-  addLanguage({ key, label, rtl }) {
+  addLanguage({ key, label, label_en: labelEn, rtl }) {
     this.context.confirm({
-      accept: () => this.props.addLanguage({ key, label, rtl }),
+      accept: () => this.props.addLanguage({ key, label, label_en: labelEn, rtl }),
       title: (
         <>
-          <Translate>Confirm add</Translate>&nbsp;{label}
+          <Translate>Confirm add</Translate>&nbsp;{labelEn}
         </>
       ),
       message:
@@ -131,7 +131,7 @@ class Languages extends Component {
         <ul className="list-group document-types">
           {currentLanguages.map((language, index) => (
             <li key={index} className="list-group-item">
-              <span className="force-ltr">{`${language.label} (${language.key})`}</span>
+              <span className="force-ltr">{`${language.label_en} (${language.key})`}</span>
               {language.default ? Languages.defaultLanguage() : ''}
               <div className="list-group-item-actions">
                 {!language.default ? this.setAsDeafultButton(language) : ''}
