@@ -4,16 +4,12 @@ import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
-import { config } from 'api/config';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { serviceMiddleware } from './serviceMiddleware';
 
-let IX: InformationExtraction;
-if (config.externalServices) {
-  IX = new InformationExtraction();
-}
+const IX = new InformationExtraction();
 
 async function processTrainFunction(
   callback: (property: string) => Promise<{ message: string; status: string }>,
