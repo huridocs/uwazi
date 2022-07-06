@@ -177,6 +177,7 @@ class OcrManager {
       serviceName: this.SERVICE_NAME,
       processResults,
     });
+    this.ocrTaskManager.subscribeToResults();
   }
 
   async stop() {
