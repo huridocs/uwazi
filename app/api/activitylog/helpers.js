@@ -10,7 +10,7 @@ import { Suggestions } from 'api/suggestions/suggestions';
 
 const formatLanguage = langKey => {
   const lang = availableLanguages.find(({ key }) => key === langKey);
-  return lang ? `${lang.label} (${lang.key})` : langKey;
+  return lang ? `${lang.label_en} (${lang.key})` : langKey;
 };
 
 const formatDataLanguage = data => formatLanguage(data.key);
