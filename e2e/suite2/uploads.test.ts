@@ -97,7 +97,7 @@ describe('Uploads', () => {
       });
       await page.waitForSelector('.filelist-header');
       await expect(page).toClick('.file-edit', { text: 'Edit' });
-      await expect(page).toSelect('#language', 'english');
+      await expect(page).toSelect('#language', 'English');
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toClick('div.alert', { text: 'File updated' });
       await expect(page).toClick('.is-active .closeSidepanel');
