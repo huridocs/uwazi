@@ -3,10 +3,11 @@
  */
 import React from 'react';
 import TestUtils from 'react-dom/test-utils';
+import { createStore } from 'redux';
 import { TestBackend } from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import Immutable from 'immutable';
 import PropertyOption, {
   dragSource as dragSourceOption,
 } from 'app/Templates/components/PropertyOption';
@@ -25,7 +26,10 @@ describe('PropertyOption', () => {
 
   function renderComponent(ComponentToRender, props) {
     let result;
-    store = createStore(() => ({}));
+    store = createStore(() => ({
+      translations: Immutable.fromJS([{ locale: 'en' }]),
+      inlineEdit: Immutable.fromJS({ inlineEdit: false }),
+    }));
     TestUtils.renderIntoDocument(
       <Provider store={store}>
         <ComponentToRender ref={ref => (result = ref)} {...props} />

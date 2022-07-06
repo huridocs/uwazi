@@ -1,4 +1,4 @@
-import { allLanguages } from 'shared/languagesList';
+import { availableLanguages } from 'shared/languagesList';
 import { typeParsers } from 'api/activitylog/migrationsParser';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
@@ -9,7 +9,7 @@ import { PermissionType } from 'shared/types/permissionSchema';
 import { Suggestions } from 'api/suggestions/suggestions';
 
 const formatLanguage = langKey => {
-  const lang = allLanguages.find(({ key }) => key === langKey);
+  const lang = availableLanguages.find(({ key }) => key === langKey);
   return lang ? `${lang.label} (${lang.key})` : langKey;
 };
 

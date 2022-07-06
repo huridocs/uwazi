@@ -31,6 +31,7 @@ export interface SettingsLinkSchema {
 
 export interface PreserveConfig {
   host: string;
+  masterToken: string;
   config: {
     token: string;
     template: ObjectIdSchema;
@@ -66,11 +67,7 @@ export interface Settings {
   mapApiKey?: string;
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
-  sync?: SettingsSyncSchema | SettingsSyncSchema[];
-  evidencesVault?: {
-    token: string;
-    template: string;
-  };
+  sync?: SettingsSyncSchema[];
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];
   links?: SettingsLinkSchema[];
@@ -115,21 +112,18 @@ export interface Settings {
 export type SettingsSyncRelationtypesSchema = string[];
 
 export interface SettingsSyncSchema {
-  url?: string;
+  url: string;
   active?: boolean;
-  username?: string;
-  password?: string;
-  name?: string;
-  config?: {
+  username: string;
+  password: string;
+  name: string;
+  config: {
     templates?: {
       [k: string]:
-        | (
-            | {
-                properties: string[];
-                filter?: string;
-              }
-            | string[]
-          )
+        | {
+            properties: string[];
+            filter?: string;
+          }
         | undefined;
     };
     relationtypes?: string[];

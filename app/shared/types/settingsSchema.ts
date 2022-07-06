@@ -81,6 +81,7 @@ const settingsSyncRelationtypesSchema = {
 const settingsSyncSchema = {
   type: 'object',
   additionalProperties: false,
+  required: ['url', 'username', 'password', 'name', 'config'],
   properties: {
     url: { type: 'string' },
     active: { type: 'boolean' },
@@ -92,9 +93,7 @@ const settingsSyncSchema = {
       properties: {
         templates: {
           type: 'object',
-          additionalProperties: {
-            anyOf: [settingsSyncTemplateSchema, { type: 'array', items: { type: 'string' } }],
-          },
+          additionalProperties: settingsSyncTemplateSchema,
         },
         relationtypes: settingsSyncRelationtypesSchema,
       },
@@ -103,24 +102,15 @@ const settingsSyncSchema = {
   },
 };
 
-const settingsEvidencesVaultSchema = {
-  type: 'object',
-  additionalProperties: false,
-  required: ['token', 'template'],
-  properties: {
-    token: { type: 'string' },
-    template: { type: 'string' },
-  },
-};
-
 const settingsPreserveConfigSchema = {
   title: 'PreserveConfig',
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
-  required: ['host', 'config'],
+  required: ['host', 'config', 'masterToken'],
   properties: {
     host: { type: 'string' },
+    masterToken: { type: 'string' },
     config: {
       type: 'array',
       items: {
@@ -192,9 +182,7 @@ const settingsSchema = {
     newNameGeneration: { type: 'boolean', enum: [true] },
     ocrServiceEnabled: { type: 'boolean' },
 
-    sync: { oneOf: [settingsSyncSchema, { type: 'array', items: settingsSyncSchema }] },
-
-    evidencesVault: settingsEvidencesVaultSchema,
+    sync: { type: 'array', items: settingsSyncSchema },
 
     languages: languagesListSchema,
 

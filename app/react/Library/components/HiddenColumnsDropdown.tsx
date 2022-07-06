@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
@@ -15,72 +15,110 @@ import {
   setTableViewAllColumnsHidden,
 } from 'app/Library/actions/libraryActions';
 import { IImmutable } from 'shared/types/Immutable';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
 interface HideColumnsComponentProps {
   columns: List<IImmutable<TableViewColumn>>;
   setTableViewColumnHidden: (name: string, hidden: boolean) => void;
   setTableViewAllColumnsHidden: (hidden: boolean) => void;
-  storeKey: 'library' | 'uploads';
 }
+const mapStateToProps = (state: IStore) => ({
+  columns: state.library.ui.get('tableViewColumns'),
+});
+const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
+  bindActionCreators(
+    { setTableViewColumnHidden, setTableViewAllColumnsHidden },
+    wrapDispatch(dispatch, 'library')
+  );
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
-class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
-  onSelect = (item: any) => {
-    if (item.selectAll) {
-      this.props.setTableViewAllColumnsHidden(item.indeterminate ? false : !item.hidden);
-    } else {
-      this.props.setTableViewColumnHidden(item.name, !item.hidden);
+const processColumns = (
+  columnsMap: List<{
+    toJS(): TableViewColumn;
+    get<Field extends keyof TableViewColumn>(_field: Field): IImmutable<TableViewColumn[Field]>;
+    filter(fn: (listElement: any) => boolean | undefined): List<any>;
+  }>
+) => {
+  const columns = columnsMap.toJS().slice(1);
+  const hiddenColumns = columns.filter((c: TableViewColumn) => c.hidden);
+  const shownColumns = columns.filter((c: TableViewColumn) => !c.hidden);
+  const selectAllColumn: Partial<SelectableColumn> = {
+    label: 'Show all',
+    selectAll: true,
+    indeterminate: hiddenColumns.length !== 0 && shownColumns.length !== 0,
+    hidden: shownColumns.length === 0,
+    type: 'text',
+  };
+  const sortedColumns = [selectAllColumn].concat(
+    shownColumns.concat(hiddenColumns).map((c: TableViewColumn) => ({ ...c, selectAll: false }))
+  );
+  return { sortedColumns, hiddenColumns };
+};
+
+export const HideColumnsComponent = ({
+  setTableViewAllColumnsHidden: setAllColumnsHidden,
+  setTableViewColumnHidden: setColumnHidden,
+  columns: columnsMap,
+}: HideColumnsComponentProps) => {
+  const [open, setOpen] = useState(false);
+  const [clickedOutside, setClickedOutside] = useState(false);
+
+  const { sortedColumns, hiddenColumns } = processColumns(columnsMap);
+  const dropdownContainerRef = useRef(null);
+  const dropdownRef: RefObject<React.Component & React.ReactElement> = useRef(null);
+
+  const onClickOutside = useCallback(event => {
+    if (
+      event.target.className !== 'columns-hint' &&
+      (!event.target.parentElement || event.target.parentElement.className !== 'columns-hint')
+    ) {
+      setClickedOutside(true);
+      dropdownRef.current?.props.onToggle();
+    }
+  }, []);
+
+  const handleClick = () => {
+    if (open) {
+      setOpen(false);
     }
   };
 
-  render() {
-    const columns = this.props.columns.toJS().slice(1);
-    const hiddenColumns = columns.filter((c: TableViewColumn) => c.hidden);
-    const shownColumns = columns.filter((c: TableViewColumn) => !c.hidden);
+  useOnClickOutsideElement<HTMLLIElement>(dropdownContainerRef, onClickOutside);
 
-    const selectAllColumn: Partial<SelectableColumn> = {
-      label: 'Show all',
-      selectAll: true,
-      indeterminate: hiddenColumns.length !== 0 && shownColumns.length !== 0,
-      hidden: shownColumns.length === 0,
-      type: 'text',
-    };
+  const onSelect = (item: SelectableColumn) =>
+    item.selectAll
+      ? setAllColumnsHidden(item.indeterminate ? false : !item.hidden)
+      : setColumnHidden(item.name, !item.hidden);
 
-    const sortedColumns = [selectAllColumn].concat(
-      shownColumns.concat(hiddenColumns).map((c: TableViewColumn) => ({ ...c, selectAll: false }))
-    );
-
-    return (
-      <div className="hidden-columns-dropdown">
-        {/*
+  return (
+    <div className="hidden-columns-dropdown" ref={dropdownContainerRef}>
+      {/*
         // @ts-ignore */}
-        <DropdownList
-          data={sortedColumns}
-          filter={(item: SelectableColumn, searchTerm: string) =>
-            item.label.toLowerCase().includes(searchTerm.toLowerCase())
+      <DropdownList
+        ref={dropdownRef}
+        open={open}
+        data={sortedColumns}
+        filter={(item: SelectableColumn, searchTerm: string) =>
+          item.label.toLowerCase().includes(searchTerm.toLowerCase())
+        }
+        itemComponent={ColumnItem}
+        valueComponent={ValueItem(hiddenColumns, open, handleClick)}
+        onSelect={(selected: SelectableColumn) => {
+          onSelect(selected);
+        }}
+        onToggle={() => {
+          if (clickedOutside) {
+            setOpen(false);
+            setClickedOutside(false);
+            dropdownRef.current?.forceUpdate();
+            return;
           }
-          itemComponent={ColumnItem}
-          valueComponent={ValueItem(hiddenColumns)}
-          onSelect={this.onSelect}
-        />
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = (state: IStore, props: HideColumnsComponentProps) => ({
-  columns: state[props.storeKey].ui.get('tableViewColumns'),
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<IStore>, props: HideColumnsComponentProps) =>
-  bindActionCreators(
-    {
-      setTableViewColumnHidden,
-      setTableViewAllColumnsHidden,
-    },
-    wrapDispatch(dispatch, props.storeKey)
+          if (!open) {
+            setOpen(true);
+          }
+        }}
+      />
+    </div>
   );
-
-export const HiddenColumnsDropdown = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HideColumnsComponent);
+};
+export const HiddenColumnsDropdown = connector(HideColumnsComponent);

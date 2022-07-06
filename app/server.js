@@ -13,14 +13,8 @@ import path from 'path';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 
-import { OcrManager } from 'api/services/ocr/OcrManager';
-import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
-import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
-import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
-
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
-import { tocService } from 'api/toc_generation/tocService';
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
 import uwaziMessage from '../message';
@@ -38,10 +32,10 @@ import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
-import { permissionsContext } from './api/permissions/permissionsContext';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
-import { preserveSync } from './api/services/preserve/preserveSync';
+import { permissionsContext } from './api/permissions/permissionsContext';
+
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
 
 mongoose.Promise = Promise;
@@ -70,6 +64,11 @@ const metricsMiddleware = promBundle({
     collectDefaultMetrics: {},
   },
 });
+
+if (config.externalServices) {
+  // eslint-disable-next-line global-require
+  require('./worker');
+}
 
 app.use(metricsMiddleware);
 if (config.sentry.dsn) {
@@ -117,10 +116,8 @@ app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '1mb' }));
 
 app.use(appContextMiddleware);
 
-//////
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
-//////
 app.use(requestIdMiddleware);
 let dbAuth = {};
 
@@ -175,43 +172,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-
       await startLegacyServicesNoMultiTenant();
-
-      if (config.externalServices) {
-        console.info('==> 📡 starting external services...');
-        OcrManager.start();
-
-        const segmentationConnector = new PDFSegmentation();
-        const segmentationRepeater = new DistributedLoop(
-          'segmentation_repeat',
-          segmentationConnector.segmentPdfs,
-          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 5000 }
-        );
-
-        segmentationRepeater.start();
-
-        const twitterIntegration = new TwitterIntegration();
-        const twitterRepeater = new DistributedLoop(
-          'twitter_repeat',
-          twitterIntegration.addTweetsRequestsToQueue,
-          { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 120000 }
-        );
-
-        twitterRepeater.start();
-
-        new DistributedLoop('preserve_integration', async () => preserveSync.syncAllTenants(), {
-          port: config.redis.port,
-          host: config.redis.host,
-          delayTimeBetweenTasks: 30000,
-        }).start();
-
-        new DistributedLoop('toc_service', async () => tocService.processAllTenants(), {
-          port: config.redis.port,
-          host: config.redis.host,
-          delayTimeBetweenTasks: 30000,
-        }).start();
-      }
     });
 
     console.info(

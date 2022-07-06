@@ -4,6 +4,12 @@ import { Translate } from 'app/I18N';
 import { UserGroups } from './components/usergroups/UserGroups';
 import { Users } from './components/Users';
 
+export const roleTranslationKey: { [role: string]: string } = {
+  admin: 'Admin',
+  editor: 'Editor',
+  collaborator: 'Collaborator',
+};
+
 export const UserManagement = () => {
   const [selectedTab, setSelectedTab] = useState('users');
   return (

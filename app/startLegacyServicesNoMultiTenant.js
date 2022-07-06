@@ -1,29 +1,11 @@
 import { config } from 'api/config';
-import { syncWorker } from 'api/sync/syncWorker';
-import settings from 'api/settings/settings';
 import { Repeater } from 'api/utils/Repeater';
 import { TaskProvider } from 'shared/tasks/tasks';
-import vaultSync from './api/evidences_vault';
 
 async function startLegacyServicesNoMultiTenant() {
   if (config.multiTenant || config.clusterMode) {
     return;
   }
-
-  const { sync } = await settings.get({}, 'sync');
-  if (sync) {
-    console.info('==> 📥  sync config config detected, started sync ....');
-    const syncRepeater = new Repeater(() => syncWorker.syncronize(sync), 10000);
-    syncRepeater.start();
-  }
-
-  const { evidencesVault } = await settings.get({}, '+evidencesVault');
-  if (evidencesVault) {
-    console.info('==> 📥  evidences vault config detected, started sync ....');
-    const vaultSyncRepeater = new Repeater(() => vaultSync.sync(evidencesVault), 10000);
-    vaultSyncRepeater.start();
-  }
-
   const anHour = 3600000;
   const topicClassificationRepeater = new Repeater(
     () =>
