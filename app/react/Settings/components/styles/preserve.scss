@@ -1,0 +1,69 @@
+.panel.panel-preserve {
+  padding-left: 32px;
+  .panel-preserve-heading {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 25.2px;
+  }
+  .panel-preserve-content {
+    div.status {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+    div.setup {
+      color: #78909c;
+      div.span {
+        width: 380px;
+        padding-bottom: 10px;
+      }
+      div.install-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        gap: 50px;
+
+        button {
+          display: flex;
+          align-items: center;
+          padding: 8px 12px;
+          font-weight: 400;
+          font-size: 13px;
+          line-height: 20px;
+
+          background: #29434e;
+          border: 1px solid #2d373b;
+          border-radius: 4px;
+          color: white;
+        }
+        div {
+          a {
+            display: flex;
+            align-items: center;
+            text-decoration: underline;
+            padding-top: 9px;
+            color: #29434e;
+          }
+        }
+      }
+      hr {
+        border-block-color: #d7d7dc;
+        border-block-width: 1.5px;
+      }
+      .preserve-token {
+        color: #444444;
+        form {
+          width: 40%;
+          margin-bottom: 10px;
+          button {
+            background-color: #29434e;
+          }
+        }
+        .info {
+          color: #78909c;
+        }
+      }
+    }
+  }
+}

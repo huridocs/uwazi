@@ -420,6 +420,15 @@ $item-padding: 15px;
 
   dd {
     width: 100%;
+
+    .item-count::before {
+      content: '(';
+    }
+
+    .item-count::after {
+      content: ')';
+    }
+
     &.item-metadata-empty {
       color: $c-grey;
       font-style: italic;
