@@ -57,7 +57,7 @@
  *         in:  formData
  *         required: true
  *         type: string
- *       - name: allLanguages
+ *       - name: availableLanguages
  *         description: Flag to add the attachments in all languages or not
  *         in:  formData
  *         required: false
