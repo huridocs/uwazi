@@ -61,9 +61,6 @@ const suggestionsTable = (
     const currentValue = formatValue(propertyValue);
     return (
       <div>
-        <span className="suggestion-label">
-          <Translate>{reviewedProperty.label}</Translate>
-        </span>
         <p className="current-value">{currentValue}</p>
       </div>
     );
@@ -74,9 +71,6 @@ const suggestionsTable = (
     const suggestedValue = formatValue(suggestion.suggestedValue);
     return (
       <div>
-        <span className="suggestion-label">
-          <Translate>Suggestion</Translate>
-        </span>
         <p className="suggested-value">{suggestedValue}</p>
       </div>
     );
@@ -100,7 +94,7 @@ const suggestionsTable = (
         id: 'currentValue',
         Header: () => (
           <>
-            <Translate>Property</Translate>
+            <Translate>Current value</Translate>
           </>
         ),
         Cell: currentValueCell,
