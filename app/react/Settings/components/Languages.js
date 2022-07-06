@@ -149,7 +149,7 @@ class Languages extends Component {
             return (
               <li key={index} className="list-group-item">
                 <span className="force-ltr">
-                  {`${language.label} (${language.key}) `}
+                  {`${language.label_en} (${language.key}) `}
                   {notSupported ? Languages.notSupportedLanguage() : ''}
                 </span>
                 <div className="list-group-item-actions">
