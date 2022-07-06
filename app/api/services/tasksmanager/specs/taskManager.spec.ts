@@ -24,20 +24,21 @@ describe('taskManager', () => {
       processResultsMessageHiddenTime: 1,
     };
     redisServer = new RedisServer(port);
-    await redisServer.start();
+    redisServer.start();
 
     externalDummyService = new ExternalDummyService(1234, service.serviceName);
     await externalDummyService.start(redisUrl);
 
     taskManager = new TaskManager(service);
+    taskManager.subscribeToResults();
 
     await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to be ready
   });
 
   afterAll(async () => {
-    await taskManager?.stop();
-    await externalDummyService.stop();
     await redisServer.stop();
+    await externalDummyService.stop();
+    await taskManager?.stop();
   });
 
   afterEach(() => {
@@ -205,9 +206,10 @@ describe('taskManager', () => {
         await redisServer.stop();
 
         taskManager = new TaskManager(service);
+        taskManager.subscribeToResults();
         expect(service.processResults).not.toHaveBeenCalled();
 
-        await redisServer.start();
+        redisServer.start();
 
         await waitForExpect(async () => {
           expect(service.processResults).toHaveBeenCalledWith(task);

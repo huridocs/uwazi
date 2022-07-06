@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Translate, t } from 'app/I18N';
-import { language as transformLanguage, languages } from 'shared/languagesList';
+import { language as transformLanguage, availableLanguages } from 'shared/languagesList';
 import { Icon } from 'UI';
 import { FileType } from 'shared/types/fileType';
 import { APIURL } from 'app/config.js';
@@ -173,9 +173,9 @@ export class File extends Component<FileProps, FileState> {
           </div>
           <div className="col-sm-9">
             <Control.select className="form-control" model=".language" id="language">
-              {Object.keys(languages).map(language => (
-                <option key={language} value={language}>
-                  {transformLanguage(language)}
+              {availableLanguages.map(language => (
+                <option key={language.ISO639_3} value={language.ISO639_3}>
+                  {language.label}
                 </option>
               ))}
               <option value="other">{t('System', 'other', 'other', false)}</option>
