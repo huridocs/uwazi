@@ -3,6 +3,7 @@ import { ResultsMessage, Service, TaskManager } from '../TaskManager';
 function mockTaskManagerImpl(taskManager: jest.Mock<TaskManager>) {
   const mock = {
     startTask: jest.fn().mockImplementation(() => {}),
+    subscribeToResults: jest.fn().mockImplementation(() => {}),
     stop: jest.fn().mockImplementation(() => {}),
   };
   let _service: Service;
