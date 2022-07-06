@@ -69,6 +69,8 @@ const availableLanguages: LanguageSchema[] = [
   { label: 'Chechen', key: 'ce', ISO639_3: 'che' },
   { label: 'Chichewa, Chewa, Nyanja', key: 'ny', ISO639_3: 'nya' },
   { label: 'Chinese', key: 'zh', ISO639_3: 'zho' },
+  { label: 'Chinese (Simplified)', key: 'zh-Hans', ISO639_3: 'zho-Hans' },
+  { label: 'Chinese (Traditional)', key: 'zh-Hant', ISO639_3: 'zho-Hant' },
   { label: 'Chuvash', key: 'cv', ISO639_3: 'chv' },
   { label: 'Cornish', key: 'kw', ISO639_3: 'cor' },
   { label: 'Corsican', key: 'co', ISO639_3: 'cos' },
