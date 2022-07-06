@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Form, Field } from 'react-redux-form';
 
 import { FormGroup, Select } from 'app/ReactReduxForms';
-import { languages } from 'shared/languagesList';
+import { elasticLanguages } from 'shared/languagesList';
 import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
 
@@ -12,9 +12,9 @@ export class AttachmentForm extends Component {
   render() {
     const { model } = this.props;
     const validators = { originalname: { required: val => !!val && val.trim() !== '' } };
-    const languageOptions = Object.keys(languages).map(key => ({
-      value: languages[key].franc,
-      label: languages[key].elastic,
+    const languageOptions = Object.keys(elasticLanguages).map(key => ({
+      value: elasticLanguages[key].franc,
+      label: elasticLanguages[key].elastic,
     }));
     languageOptions.push({ value: 'other', label: 'other' });
 
