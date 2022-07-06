@@ -1,6 +1,19 @@
 @import '../../scss/config/colors';
 @import '../../scss/config/typography';
 
+@mixin segment-hover-styles() {
+  div {
+    span.segment-pdf {
+      background-color: #5cb85c;
+      text-decoration: none;
+      color: white;
+    }
+    span.segment-context {
+      text-decoration: underline;
+    }
+  }
+}
+
 .service-request-button {
   border-color: #e0e0e0;
   background-color: white;
@@ -79,7 +92,7 @@
     min-width: 70px;
     display: flex;
     align-content: center;
-    padding: 2px;
+    padding: 4px;
 
     &.current {
       width: 20%;
@@ -99,8 +112,9 @@
 
       button {
         box-shadow: 0px 2px 2px rgba(55, 71, 79, 0.4);
-        &:focus, &:hover {
-          color: #ECA41A;
+        &:focus,
+        &:hover {
+          color: #eca41a;
         }
 
         &.label-match {
@@ -109,12 +123,12 @@
             color: #4cae4c;
           }
         }
-  
+
         &.label-value-mismatch {
-          border-color: #ECA41A;
-          color: #ECA41A;
+          border-color: #eca41a;
+          color: #eca41a;
         }
-  
+
         &.value-match {
           border-color: #5073cf;
           &:hover {
@@ -123,16 +137,15 @@
         }
 
         &.disabled[disabled] {
-          color: #D7D7DC;
-          border-color: #D7D7DC;
+          color: #d7d7dc;
+          border-color: #d7d7dc;
         }
-  
-        &:active, &:disabled {
+
+        &:active,
+        &:disabled {
           box-shadow: none;
         }
-  
       }
-
     }
 
     &.title {
@@ -146,12 +159,26 @@
       min-width: 100px;
       max-width: 375px;
       cursor: pointer;
+
+      &.hover {
+        @include segment-hover-styles();
+      }
+    }
+
+    &.language[role='cell'] {
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
     }
 
     &.long-segment {
       width: 55%;
       max-width: 475px;
       cursor: pointer;
+
+      &:hover {
+        @include segment-hover-styles();
+      }
     }
 
     &.state {
@@ -164,15 +191,15 @@
         z-index: 1;
         float: right;
       }
-      
     }
   }
 
   .segment-pdf {
     margin-right: 5px;
-    border: 1px solid $c-grey-light;
-    border-radius: 5px;
-    padding: 0 3px;
+    border: 1px solid $c-grey-lighten;
+    border-radius: 7px;
+    padding: 3px 6px;
+    background-color: $c-grey-lighten;
   }
 
   th {

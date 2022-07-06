@@ -111,9 +111,9 @@ export const EntitySuggestions = ({
     <div onClick={() => showPDF(row)}>
       <>
         <span className="segment-pdf">
-          <Translate>PDF</Translate>
+          <Translate>Open PDF</Translate>
         </span>
-        {row.original.segment}
+        <span className="segment-context">{row.original.segment}</span>
       </>
     </div>
   );

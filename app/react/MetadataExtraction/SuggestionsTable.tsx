@@ -121,6 +121,7 @@ const suggestionsTable = (
       {
         accessor: 'language' as const,
         Header: () => <Translate>Language</Translate>,
+        className: 'language',
         Cell: ({ row }: { row: Row<EntitySuggestionType> }) => (
           <Translate>{row.original.language}</Translate>
         ),
