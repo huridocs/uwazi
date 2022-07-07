@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
@@ -28,6 +28,7 @@ export const EntitySuggestions = ({
   property: reviewedProperty,
   acceptIXSuggestion,
 }: EntitySuggestionsProps) => {
+  const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState<{ key: string; data?: undefined }>({
@@ -208,7 +209,11 @@ export const EntitySuggestions = ({
 
   useEffect(retrieveSuggestions, [pageIndex, pageSize]);
   useEffect(() => {
-    retrieveSuggestions(1);
+    if (isMounted.current) {
+      retrieveSuggestions(1);
+    } else {
+      isMounted.current = true;
+    }
   }, [filters]);
   useEffect(() => {
     const params = new RequestParams({
