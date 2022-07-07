@@ -136,7 +136,7 @@ export const Suggestions = {
 
   saveMultiple: async (_suggestions: IXSuggestionType[]) => {
     const toSave: IXSuggestionType[] = [];
-    const update: IXSuggestionType[] = [];
+    let doStateUpdate = false;
     _suggestions.forEach(s => {
       if (s.status === 'failed') {
         toSave.push({ ...s, state: SuggestionState.error });
@@ -144,11 +144,11 @@ export const Suggestions = {
         toSave.push({ ...s, state: SuggestionState.processing });
       } else {
         toSave.push(s);
-        update.push(s);
+        doStateUpdate = true;
       }
     });
     const saved = await IXSuggestionsModel.saveMultiple(toSave);
-    if (update.length > 0) await updateStates({ _id: { $in: saved.map(s => s._id) } });
+    if (doStateUpdate) await updateStates({ _id: { $in: saved.map(s => s._id) } });
   },
 
   accept: async (acceptedSuggestion: AcceptedSuggestion, allLanguages: boolean) => {
