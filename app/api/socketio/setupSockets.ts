@@ -1,4 +1,4 @@
-import { RedisClient } from 'redis';
+import { createClient, RedisClient } from 'redis';
 import cookie from 'cookie';
 import { Server } from 'http';
 import { Server as SocketIoServer } from 'socket.io';
@@ -7,6 +7,7 @@ import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { handleError } from 'api/utils';
+import { Emitter } from '@socket.io/redis-emitter';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
@@ -25,11 +26,12 @@ declare global {
   }
 }
 
-let io: SocketIoServer;
+let io: SocketIoServer | Emitter;
 const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   if (!io) {
     throw new Error('Socket.io Server not initialized');
   }
+  // @ts-ignore
   io.to(tenantName).emit(event, ...data);
 };
 
@@ -48,6 +50,7 @@ const setupSockets = (server: Server, app: Application) => {
 
   const sockets = {
     emitToCurrentTenant: (event: string, ...args: any[]) => {
+      // @ts-ignore
       io.to(tenants.current().name).emit(event, ...args);
     },
   };
@@ -70,6 +73,7 @@ const setupSockets = (server: Server, app: Application) => {
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) => {
       const cookies = cookie.parse(req.get('cookie') || '');
+      // @ts-ignore
       io.to(cookies['connect.sid']).emit(event, ...args);
     };
 
@@ -77,8 +81,28 @@ const setupSockets = (server: Server, app: Application) => {
   });
 };
 
+const setupWorkerSockets = () => {
+  // io = new SocketIoServer();
+
+  // const pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
+  const redisClient = createClient({ host: config.redis.host, port: config.redis.port });
+  // const subClient = pubClient.duplicate();
+  // @ts-ignore
+  // io.adapter(createAdapter(pubClient, subClient));
+  // io.of('/').adapter.on('error', e => {
+  //   handleError(e, { useContext: false });
+  // });
+
+  // redisClient.on('error', reject);
+  // redisClient.on('end', resolve);
+
+  redisClient.on('ready', () => {
+    io = new Emitter(redisClient);
+  });
+};
+
 const closeSockets = () => {
   io.disconnectSockets();
 };
 
-export { setupSockets, emitToTenant, closeSockets };
+export { setupSockets, setupWorkerSockets, emitToTenant, closeSockets };

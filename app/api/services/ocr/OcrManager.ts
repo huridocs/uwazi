@@ -126,6 +126,8 @@ const processResults = async (message: ResultsMessage): Promise<void> => {
       }
 
       await processFiles(record, message, originalFile);
+      console.log('EMIT TO ', message.tenant);
+      console.log('CURRENT TENANT ', tenants.current().name);
       emitToTenant(message.tenant, 'ocr:ready', originalFile._id.toHexString());
     } catch (e) {
       handleError(e);
@@ -170,19 +172,21 @@ const validateTaskIsAdmissible = async (
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
 
-  private ocrTaskManager: TaskManager | null = null;
+  private ocrTaskManager: TaskManager;
 
-  start() {
+  constructor() {
     this.ocrTaskManager = new TaskManager({
       serviceName: this.SERVICE_NAME,
       processResults,
     });
+  }
+
+  start() {
     this.ocrTaskManager.subscribeToResults();
   }
 
   async stop() {
     await this.ocrTaskManager?.stop();
-    this.ocrTaskManager = null;
   }
 
   isReady() {
@@ -196,7 +200,7 @@ class OcrManager {
   }
 
   async addToQueue(file: EnforcedWithId<FileType>) {
-    this.validateIsReady();
+    // this.validateIsReady();
     const settingsValues = await getSettings();
 
     await validateTaskIsAdmissible(file, settingsValues);

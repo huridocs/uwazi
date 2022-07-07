@@ -10,6 +10,7 @@ import { preserveSync } from 'api/services/preserve/preserveSync';
 import { tocService } from 'api/toc_generation/tocService';
 import { syncWorker } from 'api/sync/syncWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { setupWorkerSockets } from 'api/socketio/setupSockets';
 
 let dbAuth = {};
 
@@ -23,6 +24,7 @@ if (process.env.DBUSER) {
 
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
+    setupWorkerSockets();
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
 
