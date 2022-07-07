@@ -82,19 +82,10 @@ const setupSockets = (server: Server, app: Application) => {
 };
 
 const setupWorkerSockets = () => {
-  // io = new SocketIoServer();
-
-  // const pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
   const redisClient = createClient({ host: config.redis.host, port: config.redis.port });
-  // const subClient = pubClient.duplicate();
-  // @ts-ignore
-  // io.adapter(createAdapter(pubClient, subClient));
-  // io.of('/').adapter.on('error', e => {
-  //   handleError(e, { useContext: false });
-  // });
-
-  // redisClient.on('error', reject);
-  // redisClient.on('end', resolve);
+  redisClient.on('error', (error) => {
+    throw error;
+  });
 
   redisClient.on('ready', () => {
     io = new Emitter(redisClient);
