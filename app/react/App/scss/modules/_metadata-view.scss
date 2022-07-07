@@ -36,9 +36,8 @@
       margin: 0;
 
       .multiline .item-value {
-        span {
-          padding-right: 5px;
-        }
+        display: flex;
+        gap: 3px;
       }
       .item-count::before {
         content: '(';
@@ -129,14 +128,22 @@
   .metadata-type-inherit .compact .item-value {
     span {
       span[class*='-icon'] {
-        margin-right: 5px;
+        margin-right: 3px;
       }
+    }
+
+    .item-count {
+      margin-left: 3px;
     }
   }
 
   .compact {
     display: flex;
     flex-direction: row;
+
+    .item-value {
+      display: flex;
+    }
 
     .item-value:not(:last-child):after {
       content: ', ';
