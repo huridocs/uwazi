@@ -31,6 +31,7 @@ DB.connect(config.DBHOST, dbAuth)
       new InformationExtraction().start();
 
       const segmentationConnector = new PDFSegmentation();
+      segmentationConnector.start();
       const segmentationRepeater = new DistributedLoop(
         'segmentation_repeat',
         segmentationConnector.segmentPdfs,
@@ -41,6 +42,7 @@ DB.connect(config.DBHOST, dbAuth)
       void segmentationRepeater.start();
 
       const twitterIntegration = new TwitterIntegration();
+      twitterIntegration.start();
       const twitterRepeater = new DistributedLoop(
         'twitter_repeat',
         twitterIntegration.addTweetsRequestsToQueue,
