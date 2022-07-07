@@ -131,13 +131,13 @@ export const EntitySuggestions = ({
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
-  const retrieveSuggestions = () => {
+  const retrieveSuggestions = (pageNumber: number = pageIndex + 1) => {
     const queryFilter = filters.reduce(
       (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
       {}
     );
     const params = new RequestParams({
-      page: { number: pageIndex + 1, size: pageSize },
+      page: { number: pageNumber, size: pageSize },
       filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
@@ -206,7 +206,10 @@ export const EntitySuggestions = ({
     }
   };
 
-  useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
+  useEffect(retrieveSuggestions, [pageIndex, pageSize]);
+  useEffect(() => {
+    retrieveSuggestions(1);
+  }, [filters]);
   useEffect(() => {
     const params = new RequestParams({
       property: reviewedProperty.name,
