@@ -30,6 +30,10 @@ class PDFSegmentation {
     });
   }
 
+  start() {
+    this.segmentationTaskManager.subscribeToResults();
+  }
+
   segmentOnePdf = async (
     file: { filename: string; _id: ObjectIdSchema },
     serviceUrl: string,
