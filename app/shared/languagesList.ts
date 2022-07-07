@@ -68,7 +68,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Albanian',
     key: 'sq',
     ISO639_3: 'sqi',
-    localized_label: 'shqip',
+    localized_label: 'Shqip',
   },
   {
     label: 'Amharic',
@@ -93,7 +93,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Armenian',
     key: 'hy',
     ISO639_3: 'hye',
-    localized_label: 'հայերեն',
+    localized_label: 'Հայերեն',
   },
   {
     label: 'Assamese',
@@ -123,13 +123,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Azerbaijani',
     key: 'az',
     ISO639_3: 'aze',
-    localized_label: 'azərbaycan',
+    localized_label: 'Azərbaycan',
   },
   {
     label: 'Bambara',
     key: 'bm',
     ISO639_3: 'bam',
-    localized_label: 'bamanakan',
+    localized_label: 'Bamanakan',
   },
   {
     label: 'Bashkir',
@@ -141,13 +141,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Basque',
     key: 'eu',
     ISO639_3: 'eus',
-    localized_label: 'euskara',
+    localized_label: 'Euskara',
   },
   {
     label: 'Belarusian',
     key: 'be',
     ISO639_3: 'bel',
-    localized_label: 'беларуская',
+    localized_label: 'Беларуская',
   },
   {
     label: 'Bengali (Bangla)',
@@ -171,19 +171,19 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Bosnian',
     key: 'bs',
     ISO639_3: 'bos',
-    localized_label: 'bosanski',
+    localized_label: 'Bosanski',
   },
   {
     label: 'Breton',
     key: 'br',
     ISO639_3: 'bre',
-    localized_label: 'brezhoneg',
+    localized_label: 'Brezhoneg',
   },
   {
     label: 'Bulgarian',
     key: 'bg',
     ISO639_3: 'bul',
-    localized_label: 'български',
+    localized_label: 'Български',
   },
   {
     label: 'Burmese',
@@ -195,7 +195,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Catalan',
     key: 'ca',
     ISO639_3: 'cat',
-    localized_label: 'català',
+    localized_label: 'Català',
   },
   {
     label: 'Chamorro',
@@ -207,7 +207,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Chechen',
     key: 'ce',
     ISO639_3: 'che',
-    localized_label: 'нохчийн',
+    localized_label: 'Нохчийн',
   },
   {
     label: 'Chichewa, Chewa, Nyanja',
@@ -243,7 +243,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Cornish',
     key: 'kw',
     ISO639_3: 'cor',
-    localized_label: 'kernewek',
+    localized_label: 'Kernewek',
   },
   {
     label: 'Corsican',
@@ -261,19 +261,19 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Croatian',
     key: 'hr',
     ISO639_3: 'hrv',
-    localized_label: 'hrvatski',
+    localized_label: 'Hrvatski',
   },
   {
     label: 'Czech',
     key: 'cs',
     ISO639_3: 'ces',
-    localized_label: 'čeština',
+    localized_label: 'Čeština',
   },
   {
     label: 'Danish',
     key: 'da',
     ISO639_3: 'dan',
-    localized_label: 'dansk',
+    localized_label: 'Dansk',
   },
   {
     label: 'Divehi, Dhivehi, Maldivian',
@@ -304,13 +304,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Esperanto',
     key: 'eo',
     ISO639_3: 'epo',
-    localized_label: 'esperanto',
+    localized_label: 'Esperanto',
   },
   {
     label: 'Estonian',
     key: 'et',
     ISO639_3: 'est',
-    localized_label: 'eesti',
+    localized_label: 'Eesti',
   },
   {
     label: 'Ewe',
@@ -322,7 +322,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Faroese',
     key: 'fo',
     ISO639_3: 'fao',
-    localized_label: 'føroyskt',
+    localized_label: 'Føroyskt',
   },
   {
     label: 'Fijian',
@@ -334,13 +334,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Finnish',
     key: 'fi',
     ISO639_3: 'fin',
-    localized_label: 'suomi',
+    localized_label: 'Suomi',
   },
   {
     label: 'French',
     key: 'fr',
     ISO639_3: 'fra',
-    localized_label: 'français',
+    localized_label: 'Français',
   },
   {
     label: 'Fula, Fulah, Pulaar, Pular',
@@ -352,7 +352,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Galician',
     key: 'gl',
     ISO639_3: 'glg',
-    localized_label: 'galego',
+    localized_label: 'Galego',
   },
   {
     label: 'Gaelic Scottish',
@@ -370,7 +370,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Georgian',
     key: 'ka',
     ISO639_3: 'kat',
-    localized_label: 'ქართული',
+    localized_label: 'Ქართული',
   },
   {
     label: 'German',
@@ -438,13 +438,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Hungarian',
     key: 'hu',
     ISO639_3: 'hun',
-    localized_label: 'magyar',
+    localized_label: 'Magyar',
   },
   {
     label: 'Icelandic',
     key: 'is',
     ISO639_3: 'isl',
-    localized_label: 'íslenska',
+    localized_label: 'Íslenska',
   },
   {
     label: 'Ido',
@@ -468,7 +468,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Interlingua',
     key: 'ia',
     ISO639_3: 'ina',
-    localized_label: 'interlingua',
+    localized_label: 'Interlingua',
   },
   {
     label: 'Interlingue',
@@ -498,7 +498,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Italian',
     key: 'it',
     ISO639_3: 'ita',
-    localized_label: 'italiano',
+    localized_label: 'Italiano',
   },
   {
     label: 'Japanese',
@@ -516,7 +516,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Kalaallisut, Greenlandic',
     key: 'kl',
     ISO639_3: 'kal',
-    localized_label: 'kalaallisut',
+    localized_label: 'Kalaallisut',
   },
   {
     label: 'Kannada',
@@ -541,7 +541,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Kazakh',
     key: 'kk',
     ISO639_3: 'kaz',
-    localized_label: 'қазақ тілі',
+    localized_label: 'Қазақ тілі',
   },
   {
     label: 'Khmer',
@@ -571,7 +571,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Kyrgyz',
     key: 'ky',
     ISO639_3: 'kir',
-    localized_label: 'кыргызча',
+    localized_label: 'Кыргызча',
   },
   {
     label: 'Komi',
@@ -596,7 +596,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'ku',
     rtl: true,
     ISO639_3: 'kur',
-    localized_label: 'kurdî',
+    localized_label: 'Kurdî',
   },
   {
     label: 'Kwanyama',
@@ -620,7 +620,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Latvian (Lettish)',
     key: 'lv',
     ISO639_3: 'lav',
-    localized_label: 'latviešu',
+    localized_label: 'Latviešu',
   },
   {
     label: 'Limburgish (Limburger)',
@@ -632,13 +632,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Lingala',
     key: 'ln',
     ISO639_3: 'lin',
-    localized_label: 'lingála',
+    localized_label: 'Lingála',
   },
   {
     label: 'Lithuanian',
     key: 'lt',
     ISO639_3: 'lit',
-    localized_label: 'lietuvių',
+    localized_label: 'Lietuvių',
   },
   {
     label: 'Luga-Katanga',
@@ -662,7 +662,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Macedonian',
     key: 'mk',
     ISO639_3: 'mkd',
-    localized_label: 'македонски',
+    localized_label: 'Македонски',
   },
   {
     label: 'Malagasy',
@@ -692,7 +692,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Maori',
     key: 'mi',
     ISO639_3: 'mri',
-    localized_label: 'te reo Māori',
+    localized_label: 'Te reo Māori',
   },
   {
     label: 'Marathi',
@@ -710,7 +710,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Mongolian',
     key: 'mn',
     ISO639_3: 'mon',
-    localized_label: 'монгол',
+    localized_label: 'Монгол',
   },
   {
     label: 'Nauru',
@@ -734,7 +734,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Northern Ndebele',
     key: 'nd',
     ISO639_3: 'nde',
-    localized_label: 'isiNdebele',
+    localized_label: 'IsiNdebele',
   },
   {
     label: 'Nepali',
@@ -746,19 +746,19 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Norwegian',
     key: 'no',
     ISO639_3: 'nor',
-    localized_label: 'norsk',
+    localized_label: 'Norsk',
   },
   {
     label: 'Norwegian bokmål',
     key: 'nb',
     ISO639_3: 'nob',
-    localized_label: 'norsk bokmål',
+    localized_label: 'Norsk bokmål',
   },
   {
     label: 'Norwegian nynorsk',
     key: 'nn',
     ISO639_3: 'nno',
-    localized_label: 'norsk nynorsk',
+    localized_label: 'Norsk nynorsk',
   },
   {
     label: 'Occitan',
@@ -794,7 +794,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Ossetian',
     key: 'os',
     ISO639_3: 'oss',
-    localized_label: 'ирон',
+    localized_label: 'Ирон',
   },
   {
     label: 'Pāli',
@@ -820,13 +820,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Polish',
     key: 'pl',
     ISO639_3: 'pol',
-    localized_label: 'polski',
+    localized_label: 'Polski',
   },
   {
     label: 'Portuguese',
     key: 'pt',
     ISO639_3: 'por',
-    localized_label: 'português',
+    localized_label: 'Português',
   },
   {
     label: 'Punjabi (Eastern)',
@@ -844,25 +844,25 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Romansh',
     key: 'rm',
     ISO639_3: 'roh',
-    localized_label: 'rumantsch',
+    localized_label: 'Rumantsch',
   },
   {
     label: 'Romanian/Moldavian',
     key: 'ro',
     ISO639_3: 'ron',
-    localized_label: 'română',
+    localized_label: 'Română',
   },
   {
     label: 'Russian',
     key: 'ru',
     ISO639_3: 'rus',
-    localized_label: 'русский',
+    localized_label: 'Русский',
   },
   {
     label: 'Sami',
     key: 'se',
     ISO639_3: 'sme',
-    localized_label: 'davvisámegiella',
+    localized_label: 'Davvisámegiella',
   },
   {
     label: 'Samoan',
@@ -886,13 +886,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Serbian',
     key: 'sr',
     ISO639_3: 'srp',
-    localized_label: 'српски',
+    localized_label: 'Српски',
   },
   {
     label: 'Serbo-Croatian',
     key: 'sh',
     ISO639_3: 'hbs',
-    localized_label: 'srpski (latinica)',
+    localized_label: 'Srpski (latinica)',
   },
   {
     label: 'Sesotho',
@@ -910,7 +910,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Shona',
     key: 'sn',
     ISO639_3: 'sna',
-    localized_label: 'chiShona',
+    localized_label: 'ChiShona',
   },
   {
     label: 'Sichuan Yi, Nuosu',
@@ -940,13 +940,13 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Slovak',
     key: 'sk',
     ISO639_3: 'slk',
-    localized_label: 'slovenčina',
+    localized_label: 'Slovenčina',
   },
   {
     label: 'Slovenian',
     key: 'sl',
     ISO639_3: 'slv',
-    localized_label: 'slovenščina',
+    localized_label: 'Slovenščina',
   },
   {
     label: 'Somali',
@@ -964,7 +964,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Spanish',
     key: 'es',
     ISO639_3: 'spa',
-    localized_label: 'español',
+    localized_label: 'Español',
   },
   {
     label: 'Sundanese',
@@ -982,7 +982,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Swedish',
     key: 'sv',
     ISO639_3: 'swe',
-    localized_label: 'svenska',
+    localized_label: 'Svenska',
   },
   {
     label: 'Tagalog',
@@ -1000,7 +1000,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Tajik',
     key: 'tg',
     ISO639_3: 'tgk',
-    localized_label: 'тоҷикӣ',
+    localized_label: 'Тоҷикӣ',
   },
   {
     label: 'Tamil',
@@ -1012,7 +1012,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Tatar',
     key: 'tt',
     ISO639_3: 'tat',
-    localized_label: 'татар',
+    localized_label: 'Татар',
   },
   {
     label: 'Telugu',
@@ -1042,7 +1042,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Tonga',
     key: 'to',
     ISO639_3: 'ton',
-    localized_label: 'lea fakatonga',
+    localized_label: 'Lea fakatonga',
   },
   {
     label: 'Tsonga',
@@ -1060,7 +1060,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Turkmen',
     key: 'tk',
     ISO639_3: 'tuk',
-    localized_label: 'türkmen dili',
+    localized_label: 'Türkmen dili',
   },
   {
     label: 'Twi',
@@ -1078,7 +1078,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Ukrainian',
     key: 'uk',
     ISO639_3: 'ukr',
-    localized_label: 'українська',
+    localized_label: 'Українська',
   },
   {
     label: 'Urdu',
@@ -1091,7 +1091,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Uzbek',
     key: 'uz',
     ISO639_3: 'uzb',
-    localized_label: 'o‘zbek',
+    localized_label: 'O‘zbek',
   },
   {
     label: 'Venda',
@@ -1139,7 +1139,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Xhosa',
     key: 'xh',
     ISO639_3: 'xho',
-    localized_label: 'isiXhosa',
+    localized_label: 'IsiXhosa',
   },
   {
     label: 'Yiddish',
@@ -1164,7 +1164,7 @@ const availableLanguages: LanguageSchema[] = [
     label: 'Zulu',
     key: 'zu',
     ISO639_3: 'zul',
-    localized_label: 'isiZulu',
+    localized_label: 'IsiZulu',
   },
 ];
 
