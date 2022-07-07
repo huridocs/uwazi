@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import { files } from 'api/files/files';
