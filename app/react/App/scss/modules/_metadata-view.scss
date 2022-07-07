@@ -35,6 +35,11 @@
       width: 100%;
       margin: 0;
 
+      .multiline .item-value {
+        span {
+          padding-right: 5px;
+        }
+      }
       .item-count::before {
         content: '(';
       }
@@ -116,12 +121,32 @@
       text-align: left;
       margin-bottom: 5px;
     }
-    dd {
-      span {
-        display: none;
+  }
+}
+
+.item-document,
+.metadata-sidepanel {
+  .metadata-type-inherit .compact .item-value {
+    span {
+      span[class*='-icon'] {
+        margin-right: 5px;
       }
     }
   }
+
+  .compact {
+    display: flex;
+    flex-direction: row;
+
+    .item-value:not(:last-child):after {
+      content: ', ';
+      white-space: pre;
+    }
+  }
+}
+
+.entity-viewer .compact .item-value {
+  display: block;
 }
 
 .sidepanel-body .view dl {

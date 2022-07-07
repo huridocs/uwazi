@@ -36,6 +36,7 @@ const RelationshipLink = ({ propValue: propVal, selectConnection }: mappedProps)
         onClick={() => selectConnection(propVal.relatedEntity)}
         key={propVal.url}
       >
+        {propVal.icon && <Icon className="item-icon" data={propVal.icon} />}
         {propVal.value}
       </button>
     );
