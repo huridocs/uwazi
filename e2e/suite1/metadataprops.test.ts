@@ -123,8 +123,9 @@ describe('Metadata Properties', () => {
     await expect(page).toMatchElement('.metadata-type-daterange', {
       text: 'Date RangeNov 23, 1963 ~ Sep 12, 1964',
     });
+
     await expect(page).toMatchElement('.metadata-type-multidate', {
-      text: 'Multi DateNov 23, 1963Sep 12, 19642',
+      text: 'Multi DateNov 23, 1963Sep 12, 1964',
     });
     await expect(page).toMatchElement('.metadata-type-multidaterange', {
       text: 'Multi Date RangeNov 23, 1963 ~ Sep 12, 19642',
