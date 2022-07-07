@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-lines */
-/* eslint-disable max-statements */
 import 'mutationobserver-shim';
 import '@testing-library/jest-dom';
 import React from 'react';
