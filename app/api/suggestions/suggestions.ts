@@ -6,7 +6,6 @@ import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonType
 import { EntitySchema } from 'shared/types/entityType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
-import { saveConfigurations } from './configurationManager';
 import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
@@ -185,5 +184,4 @@ export const Suggestions = {
   },
   delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
   registerEventListeners,
-  saveConfigurations,
 };

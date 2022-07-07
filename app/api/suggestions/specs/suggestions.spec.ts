@@ -14,7 +14,6 @@ import {
   shared2esId,
   suggestionId,
 } from './fixtures';
-import { createDefaultSuggestions } from '../configurationManager';
 
 const getSuggestions = async (propertyName: string, size = 5) =>
   Suggestions.get({ propertyName }, { page: { size, number: 1 } });
@@ -168,25 +167,6 @@ describe('suggestions', () => {
       await Suggestions.deleteByProperty('title', personTemplateId.toString());
       const newSuggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
       expect(newSuggestions.length).toBe(2);
-    });
-  });
-
-  describe('createBlankStates()', () => {
-    it('should create blank states based on settings', async () => {
-      await IXSuggestionsModel.delete({});
-      const settings = [
-        {
-          template: personTemplateId,
-          properties: ['title'],
-        },
-      ];
-      await createDefaultSuggestions(settings, 'en');
-      const newSuggestions = await IXSuggestionsModel.get({
-        propertyName: 'title',
-      });
-      expect(newSuggestions.length).toBe(2);
-      expect(newSuggestions[0].state).toBe(SuggestionState.valueEmpty);
-      expect(newSuggestions[1].state).toBe(SuggestionState.valueEmpty);
     });
   });
 

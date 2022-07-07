@@ -101,9 +101,10 @@ const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
 
 const fetchEntitiesSharedIds = async (
   template: ISettingsTemplate['template'],
-  defaultLanguage: string
+  defaultLanguage: string,
+  batchSize = 2000
 ) => {
-  const BATCH_SIZE = 2000;
+  const BATCH_SIZE = batchSize;
   let query: any = {
     template,
     language: defaultLanguage,
@@ -127,10 +128,15 @@ const fetchEntitiesSharedIds = async (
 
 const createDefaultSuggestions = async (
   settingsTemplates: ISettingsTemplate[],
-  defaultLanguage: string
+  defaultLanguage: string,
+  batchSize?: number
 ) => {
   const templatesPromises = settingsTemplates.map(async template => {
-    const entitiesSharedIds = await fetchEntitiesSharedIds(template.template, defaultLanguage);
+    const entitiesSharedIds = await fetchEntitiesSharedIds(
+      template.template,
+      defaultLanguage,
+      batchSize
+    );
 
     const fetchedFiles = await files.get(
       { entity: { $in: entitiesSharedIds }, type: 'document' },

@@ -8,6 +8,7 @@ import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { serviceMiddleware } from './serviceMiddleware';
+import { saveConfigurations } from './configurationManager';
 
 const IX = new InformationExtraction();
 
@@ -97,7 +98,7 @@ export const suggestionsRoutes = (app: Application) => {
       },
     }),
     (req, res, next) => {
-      Suggestions.saveConfigurations(req.body)
+      saveConfigurations(req.body)
         .then(response => res.json(response))
         .catch(next);
     }
