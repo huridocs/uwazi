@@ -172,7 +172,7 @@ const validateTaskIsAdmissible = async (
 class OcrManager {
   public readonly SERVICE_NAME = 'ocr';
 
-  private ocrTaskManager: TaskManager;
+  ocrTaskManager: TaskManager;
 
   constructor() {
     this.ocrTaskManager = new TaskManager({
@@ -189,18 +189,7 @@ class OcrManager {
     await this.ocrTaskManager?.stop();
   }
 
-  isReady() {
-    return Boolean(this.ocrTaskManager);
-  }
-
-  private validateIsReady() {
-    if (!this.isReady()) {
-      throw createError('The OCR manager is not ready.', 500);
-    }
-  }
-
   async addToQueue(file: EnforcedWithId<FileType>) {
-    // this.validateIsReady();
     const settingsValues = await getSettings();
 
     await validateTaskIsAdmissible(file, settingsValues);

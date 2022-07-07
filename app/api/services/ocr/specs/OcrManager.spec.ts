@@ -119,7 +119,8 @@ describe('OcrManager', () => {
       });
 
       it('should dispatch a job to the TaskManager', () => {
-        expect(mocks.taskManagerMock.mock.startTask).toHaveBeenCalledWith(
+        const mock = jest.spyOn(OcrManager.ocrTaskManager, 'startTask');
+        expect(mock).toHaveBeenCalledWith(
           expect.objectContaining({
             tenant: tenantName,
             params: { filename: 'sourceFileName.pdf', language: 'en' },
