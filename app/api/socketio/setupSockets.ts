@@ -35,7 +35,7 @@ const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   io.to(tenantName).emit(event, ...data);
 };
 
-const setupSockets = (server: Server, app: Application) => {
+const setupApiSockets = (server: Server, app: Application) => {
   io = new SocketIoServer(server);
 
   io.on('connection', socket => {
@@ -96,4 +96,4 @@ const closeSockets = () => {
   io.disconnectSockets();
 };
 
-export { setupSockets, setupWorkerSockets, emitToTenant, closeSockets };
+export { setupApiSockets, setupWorkerSockets, emitToTenant, closeSockets };

@@ -25,6 +25,7 @@ if (process.env.DBUSER) {
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
     setupWorkerSockets();
+
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
 
