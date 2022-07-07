@@ -82,8 +82,11 @@ const setupApiSockets = (server: Server, app: Application) => {
 };
 
 const setupWorkerSockets = () => {
+  if (io) {
+    return;
+  }
   const redisClient = createClient({ host: config.redis.host, port: config.redis.port });
-  redisClient.on('error', (error) => {
+  redisClient.on('error', error => {
     throw error;
   });
 
