@@ -69,7 +69,9 @@ export const showByType = (prop, compact, templateId) => {
       if (prop.value && prop.value.map) {
         prop.value = prop.value.map(_value => {
           const value = showByType(_value, compact, templateId);
-          return value && value.value ? value : { value };
+          return value && value.value
+            ? value
+            : { value, ...(_value.icon !== undefined ? { icon: _value.icon } : {}) };
         });
         result = prop.parent ? (
           <>
