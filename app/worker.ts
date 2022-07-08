@@ -2,7 +2,7 @@ import { DB } from 'api/odm';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { OcrManager } from 'api/services/ocr/OcrManager';
+import { ocrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
 import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
 import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
@@ -30,7 +30,7 @@ DB.connect(config.DBHOST, dbAuth)
       permissionsContext.setCommandContext();
 
       console.info('==> 📡 starting external services...');
-      OcrManager.start();
+      ocrManager.start();
       new InformationExtraction().start();
 
       const segmentationConnector = new PDFSegmentation();

@@ -81,8 +81,9 @@ class Mocks {
 
 describe('OcrManager', () => {
   let tenantName: string;
-  let mocks: Mocks;
   let mockedMessageFromRedis: ResultsMessage;
+  let ocrManager: OcrManager;
+  let mocks: Mocks;
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
@@ -95,7 +96,9 @@ describe('OcrManager', () => {
       params: { filename: 'sourceFileName.pdf', language: 'en' },
       success: true,
     };
-    OcrManager.start();
+
+    ocrManager = new OcrManager();
+    ocrManager.start();
   });
 
   afterAll(async () => {
@@ -106,7 +109,7 @@ describe('OcrManager', () => {
   describe('on success', () => {
     beforeAll(async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-      await OcrManager.addToQueue(sourceFile);
+      await ocrManager.addToQueue(sourceFile);
     });
 
     describe('when creating a new task', () => {
@@ -119,7 +122,7 @@ describe('OcrManager', () => {
       });
 
       it('should dispatch a job to the TaskManager', () => {
-        const mock = jest.spyOn(OcrManager.ocrTaskManager, 'startTask');
+        const mock = jest.spyOn(ocrManager.ocrTaskManager, 'startTask');
         expect(mock).toHaveBeenCalledWith(
           expect.objectContaining({
             tenant: tenantName,
@@ -217,29 +220,11 @@ describe('OcrManager', () => {
   });
 
   describe('on validation', () => {
-    it('should throw an error if the manager is not ready', async () => {
-      const [existingSourceFile] = await files.get({
-        _id: fixturesFactory.id('sourceForExistingRecord'),
-      });
-
-      await OcrManager.stop();
-      try {
-        await OcrManager.addToQueue(existingSourceFile);
-        fail('Should throw.');
-      } catch (err) {
-        expect(err).toMatchObject({
-          message: 'The OCR manager is not ready.',
-          code: 500,
-        });
-      }
-      OcrManager.start();
-    });
-
     it('should throw an error when enqueueing if the file is not a document', async () => {
       const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
 
       try {
-        await OcrManager.addToQueue(attachmentFile);
+        await ocrManager.addToQueue(attachmentFile);
         fail('Should throw.');
       } catch (err) {
         expect(err).toMatchObject({
@@ -269,8 +254,8 @@ describe('OcrManager', () => {
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
 
-      await OcrManager.addToQueue(sourceFile);
-      await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
+      await ocrManager.addToQueue(sourceFile);
+      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
     });
 
     it('should throw an error when settings are missing from the database', async () => {
@@ -279,7 +264,7 @@ describe('OcrManager', () => {
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
-      await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow(
+      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow(
         'Ocr settings are missing from the database'
       );
 
@@ -288,7 +273,7 @@ describe('OcrManager', () => {
 
     it('should throw an error when language is not supported', async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
-      await expect(OcrManager.addToQueue(sourceFile)).rejects.toThrow('Language not supported');
+      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('Language not supported');
     });
 
     it('should do nothing when record is missing', async () => {
@@ -310,7 +295,7 @@ describe('OcrManager', () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-      await OcrManager.addToQueue(sourceFile);
+      await ocrManager.addToQueue(sourceFile);
       await mocks.taskManagerMock.trigger({
         ...mockedMessageFromRedis,
         success: false,

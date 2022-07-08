@@ -126,8 +126,6 @@ const processResults = async (message: ResultsMessage): Promise<void> => {
       }
 
       await processFiles(record, message, originalFile);
-      console.log('EMIT TO ', message.tenant);
-      console.log('CURRENT TENANT ', tenants.current().name);
       emitToTenant(message.tenant, 'ocr:ready', originalFile._id.toHexString());
     } catch (e) {
       handleError(e);
@@ -216,5 +214,5 @@ class OcrManager {
   }
 }
 
-const OcrManagerInstance = new OcrManager();
-export { OcrManagerInstance as OcrManager, isEnabled as isOcrEnabled, getStatus as getOcrStatus };
+const ocrManager = new OcrManager();
+export { ocrManager, OcrManager, isEnabled as isOcrEnabled, getStatus as getOcrStatus };
