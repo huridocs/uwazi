@@ -4,7 +4,7 @@ import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 interface PaginationProps {
-  resetActivePage: boolean;
+  resetActivePage?: boolean;
   totalPages: number;
   onPageChange: (pageIndex: number) => void;
   onPageSizeChange: (pageSize: number) => void;
