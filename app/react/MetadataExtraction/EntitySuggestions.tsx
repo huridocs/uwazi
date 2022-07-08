@@ -31,6 +31,7 @@ export const EntitySuggestions = ({
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [activePage, setActivePage] = useState(0);
   const [status, setStatus] = useState<{ key: string; data?: undefined }>({
     key: 'ready',
   });
@@ -132,13 +133,13 @@ export const EntitySuggestions = ({
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
-  const retrieveSuggestions = (pageNumber: number = pageIndex + 1) => {
+  const retrieveSuggestions = () => {
     const queryFilter = filters.reduce(
       (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
       {}
     );
     const params = new RequestParams({
-      page: { number: pageNumber, size: pageSize },
+      page: { number: pageIndex + 1, size: pageSize },
       filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
@@ -207,10 +208,12 @@ export const EntitySuggestions = ({
     }
   };
 
-  useEffect(retrieveSuggestions, [pageIndex, pageSize]);
+  useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
   useEffect(() => {
     if (isMounted.current) {
-      retrieveSuggestions(1);
+      retrieveSuggestions();
+      gotoPage(0);
+      setActivePage(1);
     } else {
       isMounted.current = true;
     }
@@ -315,6 +318,7 @@ export const EntitySuggestions = ({
           </tbody>
         </table>
         <Pagination
+          currentActivePage={activePage}
           onPageChange={gotoPage}
           onPageSizeChange={setPageSize}
           totalPages={totalPages}
