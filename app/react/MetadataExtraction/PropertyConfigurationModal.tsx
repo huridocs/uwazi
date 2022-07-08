@@ -4,6 +4,7 @@ import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import Icons from 'app/Templates/components/Icons';
 
 const SUPPORTED_PROPERTIES = ['text', 'number', 'date'];
 
@@ -43,9 +44,17 @@ export const PropertyConfigurationModal = ({
         label: prop.label,
         value: `${template._id?.toString()}-${prop.name}`,
         type: prop.type,
+        icon: { type: 'Icons', _id: Icons[prop.type] },
       }))
       .filter(p => SUPPORTED_PROPERTIES.includes(p.type))
-      .concat([{ label: 'Title', value: `${template._id?.toString()}-title`, type: 'text' }]),
+      .concat([
+        {
+          label: 'Title',
+          value: `${template._id?.toString()}-title`,
+          type: 'text',
+          icon: { type: 'Icons', _id: Icons.text },
+        },
+      ]),
   }));
 
   const handleSubmit = (submitedValues: string[]) => {
