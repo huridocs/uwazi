@@ -87,7 +87,7 @@ describe('files routes', () => {
         });
 
       const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
-      emitSpy.expectToEmitEvent(FileUpdatedEvent, { before: original, after });
+      emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
       emitSpy.restore();
     });
 
@@ -234,7 +234,7 @@ describe('files routes', () => {
         const file = await db.mongodb?.collection('files').findOne({ _id: uploadId });
         await request(app).delete('/api/files').query({ _id: uploadId.toString() });
 
-        emitSpy.expectToEmitEvent(FilesDeletedEvent, { files: [file] });
+        emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file] });
         emitSpy.restore();
       });
     });
