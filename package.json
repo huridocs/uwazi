@@ -124,7 +124,7 @@
     "graylog2": "^0.2.1",
     "helmet": "^5.0.2",
     "html-to-react": "^1.4.8",
-    "htmlparser2": "^3.9.2",
+    "htmlparser2": "^8.0.1",
     "immutable": "^3.7.6",
     "is-reachable": "^5.1.1",
     "isomorphic-fetch": "3.0.0",
