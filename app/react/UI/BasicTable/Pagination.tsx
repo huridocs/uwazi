@@ -4,7 +4,7 @@ import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 interface PaginationProps {
-  currentActivePage: number;
+  resetActivePage: boolean;
   totalPages: number;
   onPageChange: (pageIndex: number) => void;
   onPageSizeChange: (pageSize: number) => void;
@@ -32,7 +32,7 @@ function pageLabel(array: number[], index: number, pageNumber: number) {
 
 const Pagination = ({
   totalPages,
-  currentActivePage,
+  resetActivePage,
   onPageChange,
   onPageSizeChange,
 }: PaginationProps) => {
@@ -45,8 +45,10 @@ const Pagination = ({
   }, [activePage, totalPages]);
 
   useEffect(() => {
-    setActivePage(currentActivePage);
-  }, [currentActivePage]);
+    if (resetActivePage) {
+      setActivePage(1);
+    }
+  }, [resetActivePage]);
 
   const changePage = (page: number) => {
     if (page !== activePage) {
