@@ -45,7 +45,7 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
       })
     );
 
-    expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
+    expect(deleteSpy).toHaveBeenCalledWith({ fileID: { $in: [file1Id, file2Id] } });
     deleteSpy.mockRestore();
   });
 });
