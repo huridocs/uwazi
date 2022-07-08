@@ -139,7 +139,7 @@ export const EntitySuggestions = ({
       {}
     );
     const params = new RequestParams({
-      page: { number: pageNumber, size: 2 },
+      page: { number: pageNumber, size: pageSize },
       filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
