@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { filesModel } from 'api/files/filesModel';
 import { SegmentationType } from 'shared/types/segmentationType';
@@ -16,6 +17,7 @@ interface FileWithAggregation {
   entity: string;
   language: string;
   extractedMetadata: ExtractedMetadataSchema[];
+  label_text: string;
 }
 
 type FileEnforcedNotUndefined = {
@@ -23,6 +25,7 @@ type FileEnforcedNotUndefined = {
   filename: string;
   language: string;
   entity: string;
+  label_text?: string;
 };
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
@@ -44,6 +47,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
     extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
     entity: file.entity,
     segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
+    label_text: file.label_text,
   }));
 }
 
@@ -55,7 +59,7 @@ async function getSegmentedFilesIds() {
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
   const entities = await entitiesModel.getUnrestricted(
     { template: { $in: templates } },
-    'sharedId'
+    `sharedId metadata.${property}`
   );
   const entitiesFromTrainingTemplatesIds = entities.filter(x => x.sharedId).map(x => x.sharedId);
   const files = (await filesModel.get(
@@ -71,7 +75,17 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
 
-  return getFilesWithAggregations(files);
+  const filesWithEntityValue = files.map(file => {
+    const entity = entities.find(e => e.sharedId === file.entity);
+    if (!entity?.metadata || !entity?.metadata[property]?.length) {
+      return file;
+    }
+    const [{ value }] = entity.metadata[property] || [{}];
+
+    return { ...file, label_text: value };
+  });
+
+  return getFilesWithAggregations(filesWithEntityValue);
 }
 
 async function getFilesForSuggestions(templates: ObjectIdSchema[], property: string) {
