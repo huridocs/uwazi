@@ -5,7 +5,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 const defaultHeaders = [
   'Suggestion',
   '',
-  'Property',
+  'Current value',
   'Title',
   'Context',
   'Language',
