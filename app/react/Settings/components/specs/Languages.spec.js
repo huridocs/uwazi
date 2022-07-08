@@ -55,6 +55,7 @@ describe('Languages', () => {
       expect(props.addLanguage).toHaveBeenCalledWith({
         key: 'ab',
         label: 'Abkhazian',
+        localized_label: 'Abkhazian',
       });
       done();
     });

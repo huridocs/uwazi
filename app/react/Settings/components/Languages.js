@@ -101,9 +101,9 @@ class Languages extends Component {
     });
   }
 
-  addLanguage({ key, label, rtl }) {
+  addLanguage({ key, label, localized_label: localizedLabel, rtl }) {
     this.context.confirm({
-      accept: () => this.props.addLanguage({ key, label, rtl }),
+      accept: () => this.props.addLanguage({ key, label, localized_label: localizedLabel, rtl }),
       title: (
         <>
           <Translate>Confirm add</Translate>&nbsp;{label}

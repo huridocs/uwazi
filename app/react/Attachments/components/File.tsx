@@ -15,7 +15,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { EntitySchema } from 'shared/types/entityType';
 import { ViewDocumentLink } from './ViewDocumentLink';
 
-export type FileProps = {
+type FileProps = {
   file: FileType;
   storeKey: string;
   readOnly: boolean;
@@ -28,7 +28,7 @@ type FileState = {
   editing: boolean;
 };
 
-export class File extends Component<FileProps, FileState> {
+class File extends Component<FileProps, FileState> {
   static defaultProps = { updateFile: () => {}, deleteFile: () => {} };
 
   static contextTypes = {
@@ -175,7 +175,7 @@ export class File extends Component<FileProps, FileState> {
             <Control.select className="form-control" model=".language" id="language">
               {availableLanguages.map(language => (
                 <option key={language.ISO639_3} value={language.ISO639_3}>
-                  {language.label}
+                  {language.localized_label} ({language.label})
                 </option>
               ))}
               <option value="other">{t('System', 'other', 'other', false)}</option>
@@ -214,4 +214,6 @@ export class File extends Component<FileProps, FileState> {
 const mapDispatchToProps = (dispatch: Dispatch<{}>, props: FileProps) =>
   bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, props.storeKey));
 
+export type { FileProps };
+export { File };
 export const ConnectedFile = connect(null, mapDispatchToProps)(File);
