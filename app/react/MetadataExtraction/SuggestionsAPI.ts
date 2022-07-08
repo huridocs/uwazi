@@ -10,6 +10,11 @@ const getSuggestions = async (requestParams: RequestParams) => {
   };
 };
 
+const getStats = async (requestParams: RequestParams) => {
+  const { json: response } = await api.get('suggestions/stats', requestParams);
+  return response;
+};
+
 const trainModel = async (requestParams: RequestParams) => {
   const { json: response } = await api.post('suggestions/train', requestParams);
   return response;
@@ -29,4 +34,11 @@ const saveConfigurations = async (requestParams: RequestParams<IXTemplateConfigu
   return response;
 };
 
-export { getSuggestions, trainModel, ixStatus, acceptEntitySuggestion, saveConfigurations };
+export {
+  getSuggestions,
+  getStats,
+  trainModel,
+  ixStatus,
+  acceptEntitySuggestion,
+  saveConfigurations,
+};

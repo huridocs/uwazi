@@ -128,6 +128,41 @@ export const Suggestions = {
     return { suggestions, totalPages };
   },
 
+  getStats: async (propertyName: string) =>
+    IXSuggestionsModel.db
+      .aggregate([
+        { $match: { propertyName } },
+        {
+          $group: {
+            _id: '$state',
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+      ])
+      .then(groups => ({
+        labeledMatching: groups.find(g => g._id === SuggestionState.labelMatch)?.count || 0,
+        labeled: groups
+          .filter(g =>
+            [
+              SuggestionState.labelMatch,
+              SuggestionState.labelMismatch,
+              SuggestionState.labelEmpty,
+            ].includes(g._id)
+          )
+          .reduce((sum, group) => sum + group.count, 0),
+        nonLabeledMatching: groups.find(g => g._id === SuggestionState.valueMatch)?.count || 0,
+        nonLabeledOthers: groups
+          .filter(g =>
+            [SuggestionState.valueMismatch, SuggestionState.emptyMismatch].includes(g._id)
+          )
+          .reduce((sum, group) => sum + group.count, 0),
+        emptyOrObsolete: groups
+          .filter(g => [SuggestionState.empty, SuggestionState.obsolete].includes(g._id))
+          .reduce((sum, group) => sum + group.count, 0),
+      })),
+
   updateStates,
 
   setObsolete: async (query: any) =>

@@ -16,8 +16,9 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
-import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
+import { getStats, getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
+import { TrainingDataDashboard } from './TrainingDataDashboard';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -37,6 +38,7 @@ export const EntitySuggestions = ({
   });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
+  const [stats, setStats] = useState(null);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -149,6 +151,17 @@ export const EntitySuggestions = ({
       .catch(() => {});
   };
 
+  const retriveStats = () => {
+    const params = new RequestParams({
+      propertyName: reviewedProperty.name,
+    });
+    getStats(params)
+      .then((response: any) => {
+        setStats(response);
+      })
+      .catch(() => {});
+  }
+
   const getWrappedSuggestionState = (
     acceptedSuggestion: any,
     newCurrentValue: string | number | null
@@ -177,6 +190,7 @@ export const EntitySuggestions = ({
 
     setAcceptingSuggestion(false);
     toggleAllRowsSelected(false);
+    retriveStats();
   };
 
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
@@ -194,6 +208,7 @@ export const EntitySuggestions = ({
       entity.title as string
     );
     selectedFlatRows[0].setState({});
+    retriveStats();
   };
 
   const _trainModel = async () => {
@@ -244,6 +259,9 @@ export const EntitySuggestions = ({
         }
       }
     );
+
+    retriveStats();
+
     return () => {
       socket.off('ix_model_status');
     };
@@ -270,7 +288,7 @@ export const EntitySuggestions = ({
           </I18NLink>
         </div>
         <div className="panel-subheading">
-          <div>
+          <div className='property-info-container'>
             <span className="suggestion-header">
               <Translate>Reviewing</Translate>:&nbsp;
             </span>
@@ -278,13 +296,16 @@ export const EntitySuggestions = ({
               <Translate>{reviewedProperty.label}</Translate>
             </span>
           </div>
-          <button
-            type="button"
-            className={`btn service-request-button ${status}`}
-            onClick={_trainModel}
-          >
-            <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
-          </button>
+          <TrainingDataDashboard stats={stats} />
+          <div className='actions-container'>
+            <button
+              type="button"
+              className={`btn service-request-button ${status}`}
+              onClick={_trainModel}
+            >
+              <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
+            </button>
+          </div>
         </div>
         <table {...getTableProps()}>
           <thead>
