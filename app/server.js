@@ -63,11 +63,6 @@ const metricsMiddleware = promBundle({
   },
 });
 
-if (config.externalServices) {
-  // eslint-disable-next-line global-require
-  require('./worker');
-}
-
 app.use(metricsMiddleware);
 if (config.sentry.dsn) {
   Sentry.init({
@@ -149,7 +144,10 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     app.use(Sentry.Handlers.errorHandler());
   }
   app.use(errorHandlingMiddleware);
-
+  if (config.externalServices) {
+    // eslint-disable-next-line global-require
+    require('./worker');
+  }
   if (!config.multiTenant && !config.clusterMode) {
     await tenants.run(async () => {
       const shouldMigrate = await migrator.shouldMigrate();

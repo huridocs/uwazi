@@ -1,7 +1,7 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import { uploadsPath, fileExists } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
-import { isOcrEnabled, OcrManager, getOcrStatus } from 'api/services/ocr/OcrManager';
+import { isOcrEnabled, ocrManager, getOcrStatus } from 'api/services/ocr/OcrManager';
 import { files } from './files';
 import { validation, createError } from '../utils';
 
@@ -57,7 +57,7 @@ const ocrRoutes = (app: Application) => {
     async (req, res) => {
       const file = await fileFromRequest(req);
 
-      await OcrManager.addToQueue(file);
+      await ocrManager.addToQueue(file);
 
       res.sendStatus(200);
     }

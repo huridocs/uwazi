@@ -2,7 +2,7 @@ import { DB } from 'api/odm';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { OcrManager } from 'api/services/ocr/OcrManager';
+import { ocrManager } from 'api/services/ocr/OcrManager';
 import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
 import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
 import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
@@ -10,6 +10,7 @@ import { preserveSync } from 'api/services/preserve/preserveSync';
 import { tocService } from 'api/toc_generation/tocService';
 import { syncWorker } from 'api/sync/syncWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { setupWorkerSockets } from 'api/socketio/setupSockets';
 
 let dbAuth = {};
 
@@ -23,11 +24,13 @@ if (process.env.DBUSER) {
 
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
+    setupWorkerSockets();
+
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
 
       console.info('==> 📡 starting external services...');
-      OcrManager.start();
+      ocrManager.start();
       new InformationExtraction().start();
 
       const segmentationConnector = new PDFSegmentation();

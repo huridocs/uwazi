@@ -6,7 +6,7 @@ import request from 'supertest';
 import { fileExists, uploadsPath } from 'api/files/filesystem';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
-import { OcrManager } from 'api/services/ocr/OcrManager';
+import { ocrManager } from 'api/services/ocr/OcrManager';
 import settings from 'api/settings/settings';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
@@ -89,7 +89,7 @@ describe('OCR service', () => {
   });
 
   beforeAll(() => {
-    OcrManager.start();
+    ocrManager.start();
   });
 
   afterAll(async () => {
