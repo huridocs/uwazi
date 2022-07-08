@@ -9,7 +9,7 @@ export default (app, server) => {
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 
-  require('./socketio/setupSockets').setupSockets(server, app);
+  require('./socketio/setupSockets').setupApiSockets(server, app);
 
   require('./auth2fa/routes').default(app);
   require('./relationships/routes').default(app);
