@@ -5,7 +5,7 @@ import { handleError } from 'api/utils/handleError';
 export class DistributedLoop {
   private lockName: string;
 
-  private task: () => void;
+  private task: () => Promise<void>;
 
   private redlock: Redlock | undefined;
 
@@ -25,7 +25,7 @@ export class DistributedLoop {
 
   constructor(
     lockName: string,
-    task: () => void,
+    task: () => Promise<void>,
     options: {
       maxLockTime?: number;
       delayTimeBetweenTasks?: number;

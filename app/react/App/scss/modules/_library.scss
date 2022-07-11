@@ -136,31 +136,32 @@
             padding-left: 5px;
             padding-right: 5px;
 
-            @media(min-width: 600px) {
+            @media (min-width: 600px) {
               width: 300px;
             }
 
             .rw-list {
               max-height: 58vh;
 
-              @media(min-width: 700px) {
+              @media (min-width: 700px) {
                 max-height: 72vh;
               }
             }
           }
         }
-  
+
         .rw-filter-input {
           width: calc(100% - 8px);
           left: 0;
         }
       }
 
-      .rw-input svg, li input {
+      .rw-input svg,
+      li input {
         margin-right: 7px;
         margin-left: 2px;
       }
-      
+
       input {
         padding-left: 4px;
       }
@@ -169,6 +170,10 @@
         padding-top: 5px;
         padding-bottom: 5px;
       }
+    }
+
+    .columns-hint {
+      cursor: pointer;
     }
 
     @media (min-width: 600px) {
@@ -199,7 +204,7 @@
     }
     &.only-mobile {
       @include mobileFilterBtn;
-      @media(min-width: 1023px) {
+      @media (min-width: 1023px) {
         display: none;
       }
     }

@@ -118,7 +118,7 @@ class PageCreator extends Component<mappedProps> {
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://github.com/huridocs/uwazi/wiki/Components"
+                    href="https://uwazi.readthedocs.io/en/latest/admin-docs/analysing-and-visualising-your-collection.html"
                   >
                     <Translate>Click here</Translate>
                   </a>{' '}
