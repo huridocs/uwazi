@@ -34,13 +34,17 @@ const toEmitEvent = async <T>(
   callable: (...args: any[]) => any | Promise<any>,
   event: EventConstructor<T>
 ): MatcherReturnType => {
-  const emitSpy = spyOnEmit();
+  const spy = jest.spyOn(applicationEventsBus, 'emit');
 
   await callable();
 
-  emitSpy.expectToEmitEvent(event);
+  const expectedCall = spy.mock.calls.find(call => call[0] instanceof event);
+  if (typeof expectedCall === 'undefined') {
+    spy.mockRestore();
+    return { pass: false, message: () => `No event of type ${event.name} was emitted.` };
+  }
 
-  emitSpy.restore();
+  spy.mockRestore();
   return { pass: true, message: () => 'Pass.' };
 };
 
@@ -49,13 +53,18 @@ const toEmitEventWith = async <T>(
   event: EventConstructor<T>,
   eventData: any
 ): MatcherReturnType => {
-  const emitSpy = spyOnEmit();
+  const spy = jest.spyOn(applicationEventsBus, 'emit');
 
   await callable();
 
-  emitSpy.expectToEmitEventWith(event, eventData);
+  const expectedCall = spy.mock.calls.find(call => call[0] instanceof event);
+  if (typeof expectedCall === 'undefined') {
+    spy.mockRestore();
+    return { pass: false, message: () => `No event of type ${event.name} was emitted.` };
+  }
+  expect(expectedCall[0].getData()).toEqual(eventData);
 
-  emitSpy.restore();
+  spy.mockRestore();
   return { pass: true, message: () => 'Pass.' };
 };
 
