@@ -27,10 +27,6 @@ describe('Languages', () => {
     component = shallow(<Languages {...props} />, { context });
   });
 
-  it('should render Languages component', () => {
-    expect(component).toMatchSnapshot();
-  });
-
   describe('clicking on Set as default', () => {
     it('should call setDefaultLanguage', done => {
       component.find('.btn-success').at(0).simulate('click');
@@ -56,7 +52,11 @@ describe('Languages', () => {
       expect(context.confirm).toHaveBeenCalled();
       const confirmArguments = context.confirm.calls.allArgs()[0][0];
       confirmArguments.accept();
-      expect(props.addLanguage).toHaveBeenCalledWith({ key: 'ab', label: 'Abkhazian' });
+      expect(props.addLanguage).toHaveBeenCalledWith({
+        key: 'ab',
+        label: 'Abkhazian',
+        localized_label: 'Abkhazian',
+      });
       done();
     });
   });

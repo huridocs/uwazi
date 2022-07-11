@@ -45,6 +45,10 @@ class TwitterIntegration {
     });
   }
 
+  start() {
+    this.twitterTaskManager.subscribeToResults();
+  }
+
   getTwitterIntegrationSettings = async (): Promise<TwitterIntegrationSettingsType> => {
     const settingsValues = await settings.get({}, 'features');
     if (!settingsValues.features || !settingsValues.features.twitterIntegration) {

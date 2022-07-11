@@ -55,7 +55,6 @@ export class TaskManager {
     this.redisSMQ = new RedisSMQ({ client: this.redisClient });
 
     this.subscribeToEvents();
-    this.subscribeToResults();
   }
 
   subscribeToEvents() {
@@ -79,23 +78,6 @@ export class TaskManager {
     });
   }
 
-  async clearQueue() {
-    while ((await this.countPendingTasks()) > 0) {
-      const message = (await this.redisSMQ.receiveMessageAsync({
-        qname: this.taskQueue,
-      })) as QueueMessage;
-
-      if (!message.id) {
-        break;
-      }
-
-      await this.redisSMQ.deleteMessageAsync({
-        qname: this.taskQueue,
-        id: message.id,
-      });
-    }
-  }
-
   async countPendingTasks(): Promise<number> {
     const queueAttributes = await this.redisSMQ!.getQueueAttributesAsync({
       qname: this.taskQueue,
@@ -103,7 +85,7 @@ export class TaskManager {
     return queueAttributes.msgs;
   }
 
-  private subscribeToResults(): void {
+  subscribeToResults(): void {
     this.repeater = new Repeater(this.checkForResults.bind(this), 500);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.repeater.start();

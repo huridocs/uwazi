@@ -17,8 +17,8 @@ describe('I18NMenu', () => {
 
   beforeEach(() => {
     const languages = [
-      { key: 'en', label: 'English', default: true },
-      { key: 'es', label: 'Español' },
+      { key: 'en', label: 'English', localized_label: 'English', default: true },
+      { key: 'es', label: 'Spanish', localized_label: 'Español' },
     ];
 
     props = {

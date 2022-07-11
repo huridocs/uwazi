@@ -54,6 +54,8 @@ export const languageSchema = {
     key: { type: 'string' },
     rtl: { type: 'boolean' },
     default: { type: 'boolean' },
+    ISO639_3: { type: 'string' },
+    localized_label: { type: 'string' },
   },
 };
 

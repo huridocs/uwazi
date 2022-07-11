@@ -68,10 +68,6 @@ export interface Settings {
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema[];
-  evidencesVault?: {
-    token: string;
-    template: string;
-  };
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];
   links?: SettingsLinkSchema[];
