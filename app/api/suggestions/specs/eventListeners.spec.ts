@@ -163,7 +163,7 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 });
 
 describe(`On ${EntityDeletedEvent.name}`, () => {
-  it('should delete all files that triggered the event', async () => {
+  it('should delete all suggestions related to entities that triggered the event', async () => {
     const deleteSpy = jest.spyOn(Suggestions, 'deleteByEntityId');
 
     const doc1Id = db.id();
@@ -274,7 +274,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
 });
 
 describe(`On ${FilesDeletedEvent.name}`, () => {
-  it('should delete all files that triggered the event', async () => {
+  it('should delete all suggestions related to files that triggered the event', async () => {
     const deleteSpy = jest.spyOn(Suggestions, 'delete');
 
     const file1Id = db.id();
