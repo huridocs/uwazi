@@ -1,6 +1,7 @@
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
+import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { search } from 'api/search';
@@ -13,12 +14,48 @@ import { Suggestions } from '../suggestions';
 
 const fixturesFactory = getFixturesFactory();
 
+const notExtractedTemplateName = 'not_extracted_template';
+const extractedTemplateName = 'extracted_template';
+
 beforeAll(() => {
   registerEventListeners(applicationEventsBus);
 });
 
 beforeEach(async () => {
   spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+  await db.setupFixturesAndContext({
+    templates: [
+      fixturesFactory.template(notExtractedTemplateName, [
+        fixturesFactory.property('some_property', propertyTypes.text),
+      ]),
+      fixturesFactory.template(extractedTemplateName, [
+        fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+        fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+        fixturesFactory.property('extracted_property_1', propertyTypes.text),
+        fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+      ]),
+    ],
+    entities: [
+      fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
+    ],
+    settings: [
+      {
+        _id: db.id(),
+        languages: [{ key: 'en', default: true, label: 'English' }],
+        features: {
+          metadataExtraction: {
+            url: 'service-url',
+            templates: [
+              {
+                template: fixturesFactory.id(extractedTemplateName).toString(),
+                properties: ['extracted_property_1', 'extracted_property_2', 'title'],
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
 });
 
 afterAll(async () => {
@@ -27,8 +64,6 @@ afterAll(async () => {
 
 describe(`On ${EntityUpdatedEvent.name}`, () => {
   let updateSpy: jest.SpyInstance;
-  const notExtractedTemplateName = 'not_extracted_template';
-  const extractedTemplateName = 'extracted_template';
   const extractedBefore = {
     _id: db.id(),
     sharedId: 'sid',
@@ -45,36 +80,6 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 
   beforeAll(async () => {
     updateSpy = jest.spyOn(Suggestions, 'updateStates');
-    await db.setupFixturesAndContext({
-      templates: [
-        fixturesFactory.template(notExtractedTemplateName, [
-          fixturesFactory.property('some_property', propertyTypes.text),
-        ]),
-        fixturesFactory.template(extractedTemplateName, [
-          fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-          fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-          fixturesFactory.property('extracted_property_1', propertyTypes.text),
-          fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-        ]),
-      ],
-      settings: [
-        {
-          _id: db.id(),
-          languages: [{ key: 'en', default: true, label: 'English' }],
-          features: {
-            metadataExtraction: {
-              url: 'service-url',
-              templates: [
-                {
-                  template: fixturesFactory.id(extractedTemplateName),
-                  properties: ['extracted_property_1', 'extracted_property_2', 'title'],
-                },
-              ],
-            },
-          },
-        },
-      ],
-    });
   });
 
   beforeEach(() => {
@@ -185,6 +190,31 @@ describe(`On ${EntityDeletedEvent.name}`, () => {
     );
 
     expect(deleteSpy).toHaveBeenCalledWith('shared');
+    deleteSpy.mockRestore();
+  });
+});
+
+describe(`On ${FileCreatedEvent.name}`, () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fit('should create blank suggestion, if the new file is an entity document', async () => {
+    const saveSpy = jest.spyOn(Suggestions, 'save');
+
+    const fileInfo = fixturesFactory.file(
+      'new file',
+      'entity for new file',
+      'document',
+      'new_file.pdf'
+    );
+
+    await applicationEventsBus.emit(
+      new FileCreatedEvent({
+        newFile: fileInfo,
+      })
+    );
+
+    expect(saveSpy).toHaveBeenCalledWith({ placeholder: 1 });
+
+    saveSpy.mockRestore();
   });
 });
 
@@ -230,6 +260,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     );
 
     expect(updateSpy).not.toHaveBeenCalled();
+    updateSpy.mockRestore();
   });
 
   it('should update ix suggestions if extractedMetada changes', async () => {
@@ -270,6 +301,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     );
 
     expect(updateSpy).toHaveBeenCalledWith({ fileId });
+    updateSpy.mockRestore();
   });
 });
 
@@ -306,5 +338,6 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
     );
 
     expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
+    deleteSpy.mockRestore();
   });
 });

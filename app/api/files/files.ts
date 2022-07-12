@@ -37,7 +37,7 @@ export const files = {
         new FileUpdatedEvent({ before: existingFile, after: savedFile })
       );
     } else {
-      await applicationEventsBus.emit(new FileCreatedEvent({ new: savedFile }));
+      await applicationEventsBus.emit(new FileCreatedEvent({ newFile: savedFile }));
     }
 
     return savedFile;

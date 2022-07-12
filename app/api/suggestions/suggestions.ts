@@ -170,7 +170,7 @@ const getTemplateDifference = (
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
   entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).exec();
 
-export const Suggestions = {
+const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
 
@@ -294,6 +294,46 @@ export const Suggestions = {
     return currentSettings;
   },
 
+  createBlankStatesForFiles: async (
+    fetchedFiles: FileType[],
+    defaultLanguage: string,
+    template: ISettingsTemplate
+  ) => {
+    const blankSuggestions: IXSuggestionType[] = [];
+    fetchedFiles.forEach((file: FileType) => {
+      const language = file.language
+        ? languages.get(file.language, 'ISO639_1') || defaultLanguage
+        : defaultLanguage;
+      template.properties.forEach((propertyName: string) => {
+        let state = SuggestionState.valueEmpty;
+        if (file.extractedMetadata) {
+          const metadata = file.extractedMetadata.find(
+            (md: ExtractedMetadataSchema) => md.name === propertyName
+          );
+          if (metadata) {
+            state = SuggestionState.labelEmpty;
+          }
+        }
+        if (file.entity) {
+          blankSuggestions.push({
+            language,
+            fileId: file._id,
+            entityId: file.entity,
+            propertyName,
+            state,
+            status: 'ready',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            date: new Date().getTime(),
+          });
+        }
+      });
+    });
+
+    await IXSuggestionsModel.db.dbForCurrentTenant().insertMany(blankSuggestions, { lean: true });
+  },
+
   createBlankState: async (settingsTemplates: any[], defaultLanguage: string) => {
     const templatesPromises = settingsTemplates.map(
       async (template: { template: string; properties: string[] }) => {
@@ -322,43 +362,12 @@ export const Suggestions = {
           '_id entity language extractedMetadata'
         );
 
-        const blankSuggestions: IXSuggestionType[] = [];
-        fetchedFiles.forEach((file: FileType) => {
-          const language = file.language
-            ? languages.get(file.language, 'ISO639_1') || defaultLanguage
-            : defaultLanguage;
-          template.properties.forEach((propertyName: string) => {
-            let state = SuggestionState.valueEmpty;
-            if (file.extractedMetadata) {
-              const metadata = file.extractedMetadata.find(
-                (md: ExtractedMetadataSchema) => md.name === propertyName
-              );
-              if (metadata) {
-                state = SuggestionState.labelEmpty;
-              }
-            }
-            if (file.entity) {
-              blankSuggestions.push({
-                language,
-                fileId: file._id,
-                entityId: file.entity,
-                propertyName,
-                state,
-                status: 'ready',
-                error: '',
-                segment: '',
-                suggestedValue: '',
-                date: new Date().getTime(),
-              });
-            }
-          });
-        });
-
-        await IXSuggestionsModel.db
-          .dbForCurrentTenant()
-          .insertMany(blankSuggestions, { lean: true });
+        await Suggestions.createBlankStatesForFiles(fetchedFiles, defaultLanguage, template);
       }
     );
     await Promise.all(templatesPromises);
   },
 };
+
+export type { ISettingsTemplate };
+export { Suggestions };
