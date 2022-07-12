@@ -176,7 +176,7 @@ class MetadataForm extends Component {
           />
           {!multipleEdition && !showSubset && (
             <>
-              <PDFUpload />
+              <PDFUpload entitySharedID={sharedId} model={model} />
               <SupportingFiles
                 supportingFiles={attachments}
                 entitySharedID={sharedId}
