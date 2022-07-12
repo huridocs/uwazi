@@ -17,7 +17,6 @@ import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
-import UploadButton from 'app/Metadata/components/UploadButton';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
@@ -29,7 +28,7 @@ import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 import helpers from '../helpers';
 
-class DocumentSidePanel extends Component {
+export class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
@@ -356,7 +355,7 @@ class DocumentSidePanel extends Component {
                 <button
                   type="button"
                   onClick={() => this.props.editToc(this.props.file.toc || [])}
-                  className="`edit-toc btn btn-primary"
+                  className="edit-toc btn btn-primary"
                 >
                   <Icon icon="pencil-alt" />
                   <span className="btn-label">
@@ -441,15 +440,6 @@ class DocumentSidePanel extends Component {
                         showType
                         groupGeolocations
                       />
-                      <div>
-                        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
-                          <UploadButton
-                            entitySharedId={jsDoc.sharedId || 'NEWID'}
-                            storeKey={this.props.storeKey}
-                          />
-                        </NeedAuthorization>
-                      </div>
-
                       <FileList files={documents} storeKey={this.props.storeKey} entity={jsDoc} />
                       <AttachmentsList
                         attachments={attachments}
@@ -570,7 +560,5 @@ export const mapStateToProps = (state, ownProps) => {
     formData: state[ownProps.storeKey].sidepanel.metadata,
   };
 };
-
-export { DocumentSidePanel };
 
 export default connect(mapStateToProps)(DocumentSidePanel);
