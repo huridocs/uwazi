@@ -1,9 +1,10 @@
 import superagent from 'superagent';
 import { Dispatch } from 'redux';
-import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { isObject, isString } from 'lodash';
+import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
+import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 import { ensure } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 
 export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
@@ -16,6 +17,9 @@ export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
     };
     reader.readAsDataURL(file);
   });
+
+const isBlobFile = (file: unknown): file is ClientBlobFile =>
+  isObject(file) && isString((file as ClientBlobFile).data);
 
 export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) =>
   new Promise((resolve, reject) => {
@@ -33,6 +37,8 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
         )
       : [[], []];
 
+    const { documents, ...entityToSave } = entity;
+
     const request = superagent
       .post('/api/entities')
       .set('Accept', 'application/json')
@@ -40,7 +46,7 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
       .field(
         'entity',
         JSON.stringify({
-          ...entity,
+          ...entityToSave,
           ...(attachments.length > 0 && { attachments }),
         })
       );
@@ -60,6 +66,20 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.attach(`attachments[${index}]`, file);
     });
+
+    const newDocuments = (entity.documents || []).filter(document =>
+      isBlobFile(document)
+    ) as ClientBlobFile[];
+
+    if (newDocuments.length > 0) {
+      newDocuments.map(async (file, index) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        const blob = await fetch(file.data).then(async r => r.blob());
+        const document = new File([blob], file.originalFile.name, { type: blob.type });
+        URL.revokeObjectURL(file.data);
+        return request.attach(`documents[${index}]`, document);
+      });
+    }
 
     return request.end((err, res) => {
       if (err) return reject(err);

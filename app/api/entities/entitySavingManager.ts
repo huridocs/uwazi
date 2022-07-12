@@ -8,6 +8,8 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { processDocument } from 'api/files/processDocument';
+import { set } from 'lodash';
 
 type FileAttachments = {
   originalname: string;
@@ -136,20 +138,27 @@ const handleAttachmentInMetadataProperties = (
   return entity;
 };
 
+// eslint-disable-next-line max-statements
 const saveEntity = async (
   _entity: EntityWithFilesSchema,
   {
     user,
     language,
-    files: fileAttachments,
+    files: reqFiles,
   }: { user: UserSchema; language: string; files?: FileAttachments[] }
 ) => {
   const fileSaveErrors: string[] = [];
 
-  const attachments = (fileAttachments || []).map(file => ({
-    ...file,
-    filename: generateFileName(file),
-  }));
+  const { attachments, documents } = (reqFiles || []).reduce(
+    (acum, file) => {
+      const namedFile = { ...file, filename: generateFileName(file) };
+      return set(acum, file.fieldname, namedFile);
+    },
+    {
+      attachments: [],
+      documents: [],
+    }
+  );
 
   const entity = handleAttachmentInMetadataProperties(_entity, attachments);
 
@@ -157,6 +166,12 @@ const saveEntity = async (
     entity,
     { user, language },
     { includeDocuments: false }
+  );
+
+  await Promise.all(
+    documents.map(async document => {
+      await processDocument(updatedEntity, document);
+    })
   );
 
   const proccessedAttachments = await processAttachments(entity, updatedEntity, attachments);
