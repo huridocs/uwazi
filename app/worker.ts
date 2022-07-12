@@ -24,7 +24,6 @@ if (process.env.DBUSER) {
 
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
-    await tenants.setupTenants();
     setupWorkerSockets();
 
     await tenants.run(async () => {
