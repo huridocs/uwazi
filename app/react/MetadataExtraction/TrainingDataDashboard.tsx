@@ -1,69 +1,49 @@
+import { Translate } from 'app/I18N';
 import React from 'react';
+import { SuggestionsStats } from 'shared/types/suggestionStats';
 import { GridChart } from './GridChart';
+import { TrainingDataLegend } from './TrainingDataLegend';
 
 interface TrainingDataDashboardProps {
-  stats: any;
+  stats?: SuggestionsStats;
 }
 
-const mapData = (data: any) => ({
-  main: [
-    {
-      color: '#CD4C4C',
-      value: data.labeled,
-    },
-    {
-      color: '#4CAE4C',
-      value: data.nonLabeledMatching,
-      label: { text: 'Matching' },
-    },
-    {
-      color: '#ECA41A',
-      value: data.nonLabeledOthers,
-      label: { text: 'Non-matching' },
-    },
-    {
-      color: '#E8E7EC',
-      value: data.emptyOrObsolete,
-      label: { text: 'Empty / Obsolete', color: 'black' },
-    },
-  ],
-  overlaying: {
+const mapStats = (data: SuggestionsStats['data']) => [
+  {
     color: '#5073CF',
     value: data.labeledMatching,
-    label: { text: 'Training' },
+    label: { text: <Translate>Training</Translate> },
+    overlaying: true,
   },
-});
+  {
+    color: '#CD4C4C',
+    value: data.labeled,
+  },
+  {
+    color: '#4CAE4C',
+    value: data.nonLabeledMatching,
+    label: { text: <Translate>Matching</Translate> },
+  },
+  {
+    color: '#ECA41A',
+    value: data.nonLabeledOthers,
+    label: { text: <Translate>Non-matching</Translate> },
+  },
+  {
+    color: '#E8E7EC',
+    value: data.emptyOrObsolete,
+    label: { text: <Translate>Empty / Obsolete</Translate>, color: 'black' },
+  },
+];
 
 export const TrainingDataDashboard = ({ stats }: TrainingDataDashboardProps) => {
   if (!stats) return null;
 
-  const data = mapData(stats);
-
-  const total = data.main.reduce((subtotal, components) => subtotal + components.value, 0);
+  const data = mapStats(stats.data);
 
   return (
     <div className="training-dashboard">
-      <ul className="legend">
-        <li>
-          Total: <b>{total}</b>
-        </li>
-        <li style={{ color: data.overlaying.color }}>
-          {data.overlaying.label.text}{' '}
-          <b>
-            {data.overlaying.value} ({((data.overlaying.value / total) * 100).toFixed(2)}%)
-          </b>
-        </li>
-        {data.main.map((td: any) =>
-          td.label ? (
-            <li style={{ color: td.label.color || td.color }}>
-              {td.label.text}{' '}
-              <b>
-                {td.value} ({((td.value / total) * 100).toFixed(2)}%)
-              </b>
-            </li>
-          ) : null
-        )}
-      </ul>
+      <TrainingDataLegend data={data} />
       <GridChart className="training-dashboard-chart" data={data} />
     </div>
   );

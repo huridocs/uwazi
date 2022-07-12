@@ -1,5 +1,6 @@
 import { RequestParams } from 'app/utils/RequestParams';
 import api from 'app/utils/api';
+import { SuggestionsStats } from 'shared/types/suggestionStats';
 import { IXTemplateConfiguration } from './PropertyConfigurationModal';
 
 const getSuggestions = async (requestParams: RequestParams) => {
@@ -10,7 +11,7 @@ const getSuggestions = async (requestParams: RequestParams) => {
   };
 };
 
-const getStats = async (requestParams: RequestParams) => {
+const getStats = async (requestParams: RequestParams): Promise<SuggestionsStats> => {
   const { json: response } = await api.get('suggestions/stats', requestParams);
   return response;
 };

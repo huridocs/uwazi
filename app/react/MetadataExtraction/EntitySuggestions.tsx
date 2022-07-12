@@ -19,6 +19,7 @@ import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { getStats, getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingDataDashboard } from './TrainingDataDashboard';
+import { SuggestionsStats } from 'shared/types/suggestionStats';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -38,7 +39,7 @@ export const EntitySuggestions = ({
   });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -160,7 +161,7 @@ export const EntitySuggestions = ({
         setStats(response);
       })
       .catch(() => {});
-  }
+  };
 
   const getWrappedSuggestionState = (
     acceptedSuggestion: any,
