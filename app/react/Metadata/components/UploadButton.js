@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
-import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import { uploadDocument, documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
 import { socket } from 'app/socket';
 import { Icon } from 'UI';
@@ -26,7 +25,7 @@ const renderProcessing = () => (
   </div>
 );
 
-export class UploadButton extends Component {
+class UploadButton extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -146,4 +145,5 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
+export { UploadButton };
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);
