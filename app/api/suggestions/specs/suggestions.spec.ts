@@ -147,7 +147,7 @@ const newErroringSuggestion: IXSuggestionType = {
   date: 5,
   page: 2,
   status: 'failed',
-  error: '',
+  error: 'Some error message',
 };
 
 describe('suggestions', () => {
@@ -167,25 +167,6 @@ describe('suggestions', () => {
       await Suggestions.deleteByProperty('title', personTemplateId.toString());
       const newSuggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
       expect(newSuggestions.length).toBe(2);
-    });
-  });
-
-  describe('createBlankStates()', () => {
-    it('should create blank states based on settings', async () => {
-      await IXSuggestionsModel.delete({});
-      const settings = [
-        {
-          template: personTemplateId,
-          properties: ['title'],
-        },
-      ];
-      await Suggestions.createBlankState(settings, 'en');
-      const newSuggestions = await IXSuggestionsModel.get({
-        propertyName: 'title',
-      });
-      expect(newSuggestions.length).toBe(2);
-      expect(newSuggestions[0].state).toBe(SuggestionState.valueEmpty);
-      expect(newSuggestions[1].state).toBe(SuggestionState.valueEmpty);
     });
   });
 
