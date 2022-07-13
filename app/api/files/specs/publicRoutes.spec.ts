@@ -54,7 +54,7 @@ describe('public routes', () => {
             JSON.stringify({ title: 'public submit', template: templateId.toString() })
           )
           .attach('file', `${__dirname}/12345.test.pdf`)
-          .attach('attachment', path.join(os.tmpdir(), 'attachment.txt'))
+          .attach('attachments[0]', path.join(os.tmpdir(), 'attachment.txt'))
           .expect(200)
       );
 
