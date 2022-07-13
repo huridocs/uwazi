@@ -76,6 +76,32 @@ describe('entitySavingManager', () => {
           },
         ]);
       });
+
+      it('should create an entity with main documents', async () => {
+        const entity = {
+          title: 'newEntity',
+          template: template1Id,
+        };
+        const pdfDocument = {
+          encoding: '7bit',
+          fieldname: 'documents[0]',
+          filename: '1657728187573c8y0l271sj.pdf',
+          originalname: 'sampleFile.pdf',
+          mimetype: 'application/pdf',
+          size: 12,
+          buffer,
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [pdfDocument] });
+        expect(advancedSort(savedEntity.documents)).toMatchObject([
+          {
+            mimetype: 'application/pdf',
+            originalname: 'sampleFile.pdf',
+            size: 12,
+            type: 'document',
+          },
+        ]);
+      });
     });
 
     describe('update entity', () => {
