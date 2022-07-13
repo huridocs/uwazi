@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { applicationEventsBus } from '.';
 import { EventConstructor } from './EventsBus';
 
