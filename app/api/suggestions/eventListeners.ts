@@ -12,7 +12,8 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { ensure } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
-import { ISettingsTemplate, Suggestions } from './suggestions';
+import { createDefaultSuggestionsForFiles, ISettingsTemplate } from './configurationManager';
+import { Suggestions } from './suggestions';
 
 const extractedMetadataChanged = async (existingEntity: EntitySchema, newEntity: EntitySchema) => {
   const extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
@@ -51,8 +52,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
         features?.metadataExtraction?.templates?.find(t => t.template === entityTemplateId)
       );
       const defaultLanguage = ensure<string>(languages?.find(lang => lang.default)?.key);
-      console.log(defaultLanguage);
-      await Suggestions.createBlankStatesForFiles([newFile], defaultLanguage, settingsTemplate);
+      await createDefaultSuggestionsForFiles([newFile], settingsTemplate, defaultLanguage);
     }
   });
 

@@ -125,6 +125,36 @@ const fetchEntitiesSharedIds = async (
   return sharedIds;
 };
 
+const createDefaultSuggestionsForFiles = async (
+  fileList: FileType[],
+  template: ISettingsTemplate,
+  defaultLanguage: string
+) => {
+  const blankSuggestions: IXSuggestionType[] = [];
+  fileList.forEach((file: FileType) => {
+    const language = file.language
+      ? languages.get(file.language, 'ISO639_1') || defaultLanguage
+      : defaultLanguage;
+    template.properties.forEach((propertyName: string) => {
+      if (file.entity) {
+        blankSuggestions.push({
+          language,
+          fileId: file._id,
+          entityId: file.entity,
+          propertyName,
+          status: 'ready',
+          error: '',
+          segment: '',
+          suggestedValue: '',
+          date: new Date().getTime(),
+        });
+      }
+    });
+  });
+
+  await Suggestions.saveMultiple(blankSuggestions);
+};
+
 const createDefaultSuggestions = async (
   settingsTemplates: ISettingsTemplate[],
   defaultLanguage: string,
@@ -142,29 +172,7 @@ const createDefaultSuggestions = async (
       '_id entity language extractedMetadata'
     );
 
-    const blankSuggestions: IXSuggestionType[] = [];
-    fetchedFiles.forEach((file: FileType) => {
-      const language = file.language
-        ? languages.get(file.language, 'ISO639_1') || defaultLanguage
-        : defaultLanguage;
-      template.properties.forEach((propertyName: string) => {
-        if (file.entity) {
-          blankSuggestions.push({
-            language,
-            fileId: file._id,
-            entityId: file.entity,
-            propertyName,
-            status: 'ready',
-            error: '',
-            segment: '',
-            suggestedValue: '',
-            date: new Date().getTime(),
-          });
-        }
-      });
-    });
-
-    await Suggestions.saveMultiple(blankSuggestions);
+    await createDefaultSuggestionsForFiles(fetchedFiles, template, defaultLanguage);
   });
   await Promise.all(templatesPromises);
 };
@@ -187,4 +195,5 @@ const saveConfigurations = async (settingsTemplates: ISettingsTemplate[]) => {
   return currentSettings;
 };
 
-export { saveConfigurations, createDefaultSuggestions };
+export type { ISettingsTemplate };
+export { createDefaultSuggestions, createDefaultSuggestionsForFiles, saveConfigurations };

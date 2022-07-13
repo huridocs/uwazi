@@ -78,7 +78,7 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
   return files.save(file);
 };
 
-export const Suggestions = {
+const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
 
@@ -186,5 +186,4 @@ export const Suggestions = {
   registerEventListeners,
 };
 
-export type { ISettingsTemplate };
 export { Suggestions };
