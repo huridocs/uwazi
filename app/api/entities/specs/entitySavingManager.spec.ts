@@ -228,7 +228,7 @@ describe('entitySavingManager', () => {
           sharedId: 'shared3',
           title: 'entity3',
           template: template1Id,
-          attachments: [{ ...changedFile }],
+          documents: [{ ...changedFile }],
         };
 
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });

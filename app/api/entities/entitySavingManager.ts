@@ -1,5 +1,12 @@
+/* eslint-disable max-lines */
 import { WithId } from 'api/odm';
-import { attachmentsPath, uploadsPath, files, generateFileName, storeFile } from 'api/files';
+import {
+  attachmentsPath,
+  uploadsPath,
+  files as filesAPI,
+  generateFileName,
+  storeFile,
+} from 'api/files';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
 import entities from 'api/entities/entities';
@@ -69,22 +76,25 @@ async function prepareNewFiles(
   return { attachments, documents };
 }
 
-const updateDeletedAttachments = async (
+const updateDeletedFiles = async (
   entityFiles: WithId<FileType>[],
   entity: EntityWithFilesSchema
 ) => {
-  const deletedAttachments = entityFiles.filter(
-    existingAttachment =>
-      existingAttachment._id &&
-      !entity.attachments!.find(
-        attachment => attachment._id?.toString() === existingAttachment._id.toString()
-      )
+  const deletedFiles = entityFiles.filter(
+    existingFile =>
+      existingFile._id &&
+      (!entity.attachments?.find(
+        attachment => attachment._id?.toString() === existingFile._id.toString()
+      ) ||
+        !entity.documents?.find(
+          document => document._id?.toString() === existingFile._id.toString()
+        ))
   );
-  await Promise.all(deletedAttachments.map(async attachment => files.delete(attachment)));
+  await Promise.all(deletedFiles.map(async file => filesAPI.delete(file)));
 };
 
-const filterRenamedAttachments = (entity: EntityWithFilesSchema, entityFiles: WithId<FileType>[]) =>
-  entity.attachments
+const filterRenamedFiles = (entity: EntityWithFilesSchema, entityFiles: WithId<FileType>[]) => {
+  const renamedAttachments = entity.attachments
     ? entity.attachments
         .filter(
           (attachment: FileType) =>
@@ -101,6 +111,26 @@ const filterRenamedAttachments = (entity: EntityWithFilesSchema, entityFiles: Wi
         }))
     : [];
 
+  const renamedDocuments = entity.documents
+    ? entity.documents
+        .filter(
+          (document: FileType) =>
+            document._id &&
+            entityFiles.find(
+              file =>
+                document._id?.toString() === file._id.toString() &&
+                file.originalname !== document.originalname
+            )
+        )
+        .map((document: FileType) => ({
+          _id: document._id!.toString(),
+          originalname: document.originalname,
+        }))
+    : [];
+
+  return { renamedAttachments, renamedDocuments };
+};
+
 const processFiles = async (
   entity: EntityWithFilesSchema,
   updatedEntity: EntityWithFilesSchema,
@@ -114,14 +144,18 @@ const processFiles = async (
     documentAttachments
   );
 
-  if (entity._id && entity.attachments) {
-    const entityFiles: WithId<FileType>[] = await files.get(
-      { entity: entity.sharedId, type: 'attachment' },
+  if (entity._id && (entity.attachments || entity.documents)) {
+    const entityFiles: WithId<FileType>[] = await filesAPI.get(
+      { entity: entity.sharedId, type: { $in: ['attachment', 'document'] } },
       '_id, originalname'
     );
-    await updateDeletedAttachments(entityFiles, entity);
-    const renamedAttachments = filterRenamedAttachments(entity, entityFiles);
+
+    await updateDeletedFiles(entityFiles, entity);
+
+    const { renamedAttachments, renamedDocuments } = filterRenamedFiles(entity, entityFiles);
+
     attachments.push(...renamedAttachments);
+    documents.push(...renamedDocuments);
   }
 
   return { proccessedAttachments: attachments, proccessedDocuments: documents };
@@ -195,7 +229,7 @@ const saveEntity = async (
     await Promise.all(
       proccessedAttachments.map(async attachment => {
         try {
-          await files.save(attachment, false);
+          await filesAPI.save(attachment, false);
         } catch (e) {
           errorLog.error(prettifyError(e));
           fileSaveErrors.push(`Could not save supporting file/s: ${attachment.originalname}`);
