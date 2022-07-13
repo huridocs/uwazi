@@ -19,7 +19,13 @@ describe('Render', () => {
     expect(list).toBe(null);
   });
 
-  // eslint-disable-next-line max-statements
+  const expectToMatchStrings = async (elements: HTMLElement[], data: string[][]) =>
+    Promise.all(
+      data.map(async (row, rowIndex) =>
+        Promise.all(row.map(async segment => expect(elements[rowIndex].outerHTML).toMatch(segment)))
+      )
+    );
+
   it('should render children with the data mapped and correct legend', async () => {
     const stats = {
       data: {
@@ -45,13 +51,11 @@ describe('Render', () => {
     const items = within(list).getAllByRole('listitem');
 
     expect(items.length).toBe(4);
-    await expect(items[0].outerHTML).toMatch('Training');
-    await expect(items[0].outerHTML).toMatch('40.00%');
-    await expect(items[1].outerHTML).toMatch('Matching');
-    await expect(items[1].outerHTML).toMatch('20.00%');
-    await expect(items[2].outerHTML).toMatch('Non-matching');
-    await expect(items[2].outerHTML).toMatch('20.00%');
-    await expect(items[3].outerHTML).toMatch('Empty / Obsolete');
-    await expect(items[3].outerHTML).toMatch('20.00%');
+    await expectToMatchStrings(items, [
+      ['Training', '40.00%'],
+      ['Matching', '20.00%'],
+      ['Non-matching', '20.00%'],
+      ['Empty / Obsolete', '20.00%'],
+    ]);
   });
 });
