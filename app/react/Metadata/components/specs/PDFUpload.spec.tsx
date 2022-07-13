@@ -1,16 +1,53 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { RenderResult } from '@testing-library/react';
+import { fireEvent, RenderResult } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { PDFUpload } from '../PDFUpload';
 
 describe('PDF upload', () => {
-  let reduxStore = {};
+  const reduxStore = { library: { sidepanel: { metadata: {} } } };
   let renderResult: RenderResult;
+  const mockedCreateObjectURL: jest.Mock = jest.fn();
+  const mockedRevokeObjectURL: jest.Mock = jest.fn();
 
   const render = () => {
-    reduxStore = {
-      ...defaultState,
-    };
-    ({ renderResult } = renderConnectedContainer(<PDFUpload />, () => reduxStore));
+    const store = { ...defaultState, ...reduxStore };
+    ({ renderResult } = renderConnectedContainer(
+      <PDFUpload model="library.sidepanel.metadata" />,
+      () => store
+    ));
   };
+
+  beforeAll(() => {
+    URL.createObjectURL = mockedCreateObjectURL;
+    mockedCreateObjectURL.mockReturnValue('blob:abc');
+    URL.revokeObjectURL = mockedRevokeObjectURL;
+  });
+
+  afterAll(() => {
+    mockedCreateObjectURL.mockReset();
+    mockedRevokeObjectURL.mockReset();
+  });
+
+  it('Should upload a main document', () => {
+    const newFile = new File([Buffer.from('pdf').toString('base64')], 'file.pdf', {
+      type: 'application/pdf',
+    });
+    render();
+    const fileInput = renderResult.container.querySelector('input[type="file"]') as HTMLElement;
+    fireEvent.change(fileInput, {
+      target: {
+        files: [newFile],
+      },
+    });
+    expect(mockedCreateObjectURL).toHaveBeenCalledWith(newFile);
+  });
+
+  it('should revoke the created URL', async () => {
+    render();
+    renderResult.unmount();
+    expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
+  });
 });

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { actions } from 'react-redux-form';
 import { get } from 'lodash';
+import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -8,7 +9,6 @@ import { connect, ConnectedProps } from 'react-redux';
 
 type PDFUploadProps = {
   model: string;
-  entitySharedID: string;
 };
 
 const handlePDFUpload =
@@ -35,7 +35,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = PDFUploadProps & mappedProps;
 
-const PDFUpload = ({ model, pdfFiles, entitySharedID, handlePDFUploadAction }: ComponentProps) => {
+const PDFUpload = ({ model, pdfFiles, handlePDFUploadAction }: ComponentProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadButtonClicked = () => {
@@ -48,7 +48,8 @@ const PDFUpload = ({ model, pdfFiles, entitySharedID, handlePDFUploadAction }: C
         <Translate>Primary Documents</Translate>
       </h2>
       <button type="button" onClick={handleUploadButtonClicked}>
-        Upload PDF
+        <Icon icon="paperclip" />
+        <Translate>Upload PDF</Translate>
       </button>
       <input
         aria-label="pdfInput"
