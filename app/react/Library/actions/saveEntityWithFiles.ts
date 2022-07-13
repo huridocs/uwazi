@@ -6,7 +6,7 @@ import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 import { ensure } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
 
-export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
+const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
     const reader = new FileReader();
 
@@ -21,7 +21,7 @@ export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
 const isBlobFile = (file: unknown): file is ClientBlobFile =>
   isObject(file) && isString((file as ClientBlobFile).data);
 
-export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) =>
+const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) =>
   new Promise((resolve, reject) => {
     const [attachments, supportingFiles] = entity.attachments
       ? entity.attachments.reduce(
@@ -86,3 +86,5 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
       return resolve(res.body);
     });
   });
+
+export { readFileAsBase64, saveEntityWithFiles };
