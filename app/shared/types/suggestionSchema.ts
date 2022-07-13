@@ -59,6 +59,8 @@ export const EntitySuggestionSchema = {
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
     currentValue: propertyValueSchema,
+    labeledValue: propertyValueSchema,
+    selectionRectangles: selectionRectanglesSchema,
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
     state: { type: 'string', enum: Object.values(SuggestionState) },

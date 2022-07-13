@@ -119,6 +119,7 @@ export const Suggestions = {
           date: 1,
           error: 1,
           labeledValue: 1,
+          selectionRectangles: 1,
         },
       },
     ]);

@@ -16,6 +16,14 @@ export interface EntitySuggestionType {
   propertyName: string;
   suggestedValue: PropertyValueSchema;
   currentValue?: PropertyValueSchema;
+  labeledValue?: PropertyValueSchema;
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    page?: string;
+  }[];
   segment: string;
   language: string;
   state:
