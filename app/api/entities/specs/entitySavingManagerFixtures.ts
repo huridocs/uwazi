@@ -7,6 +7,7 @@ const template1Id = db.id();
 const template2Id = db.id();
 const entity1Id = db.id();
 const entity2Id = db.id();
+const entity3Id = db.id();
 
 const editorUser: UserSchema = {
   _id: db.id(),
@@ -45,6 +46,26 @@ const pdfFile: FileType = {
   type: 'attachment',
 };
 
+const mainPdfFile: FileType = {
+  _id: db.id(),
+  entity: 'shared3',
+  language: 'en',
+  originalname: 'Sample main PDF File.pdf',
+  filename: 'samplepdffile.pdf',
+  mimetype: 'application/pdf',
+  type: 'document',
+};
+
+const entity3textFile: FileType = {
+  _id: db.id(),
+  entity: 'shared3',
+  language: 'en',
+  originalname: 'Sample Text File.txt',
+  filename: 'samplefile.txt',
+  mimetype: 'text/plain',
+  type: 'attachment',
+};
+
 const fixtures: DBFixture = {
   entities: [
     {
@@ -61,8 +82,23 @@ const fixtures: DBFixture = {
       metadata: {},
       attachments: [{ ...anotherTextFile }],
     },
+    {
+      _id: entity3Id,
+      sharedId: 'shared3',
+      language: 'en',
+      title: 'entity3',
+      metadata: {},
+      documents: [{ ...mainPdfFile }],
+      attachments: [{ ...entity3textFile }],
+    },
   ],
-  files: [{ ...textFile }, { ...pdfFile }, { ...anotherTextFile }],
+  files: [
+    { ...textFile },
+    { ...pdfFile },
+    { ...anotherTextFile },
+    { ...mainPdfFile },
+    { ...entity3textFile },
+  ],
   templates: [
     {
       _id: template1Id,
@@ -110,7 +146,9 @@ export {
   editorUser,
   entity1Id,
   entity2Id,
+  entity3Id,
   textFile,
   anotherTextFile,
   pdfFile,
+  mainPdfFile,
 };

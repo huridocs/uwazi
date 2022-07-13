@@ -16,6 +16,8 @@ import {
   textFile,
   anotherTextFile,
   pdfFile,
+  entity3Id,
+  mainPdfFile,
 } from './entitySavingManagerFixtures';
 
 describe('entitySavingManager', () => {
@@ -37,10 +39,20 @@ describe('entitySavingManager', () => {
 
   describe('saveEntity', () => {
     const reqData = { user: editorUser, language: 'en' };
+
     const buffer = Buffer.from('sample content');
+
     const file = {
       originalname: 'sampleFile.txt',
       mimetype: 'text/plain',
+      size: 12,
+      buffer,
+    };
+
+    const newMainPdfDocument = {
+      encoding: '7bit',
+      originalname: 'myNewFile.pdf',
+      mimetype: 'application/pdf',
       size: 12,
       buffer,
     };
@@ -49,6 +61,7 @@ describe('entitySavingManager', () => {
       it('should create an entity without attachments', async () => {
         const entity = { title: 'newEntity', template: template1Id };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+
         expect(savedEntity.permissions).toEqual([
           { level: 'write', refId: 'userId', type: 'user' },
         ]);
@@ -60,10 +73,12 @@ describe('entitySavingManager', () => {
           template: template1Id,
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
+
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
           files: [{ ...file, fieldname: 'attachments[0]' }],
         });
+
         expect(advancedSort(savedEntity.attachments, { property: 'originalname' })).toMatchObject([
           {
             mimetype: 'text/html',
@@ -85,24 +100,16 @@ describe('entitySavingManager', () => {
           title: 'newEntity',
           template: template1Id,
         };
-        const pdfDocument = {
-          encoding: '7bit',
-          fieldname: 'documents[0]',
-          filename: '1657728187573c8y0l271sj.pdf',
-          originalname: 'sampleFile.pdf',
-          mimetype: 'application/pdf',
-          size: 12,
-          buffer,
-        };
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [pdfDocument],
+          files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
         });
+
         expect(advancedSort(savedEntity.documents)).toMatchObject([
           {
             mimetype: 'application/pdf',
-            originalname: 'sampleFile.pdf',
+            originalname: 'myNewFile.pdf',
             size: 12,
             type: 'document',
           },
@@ -118,10 +125,12 @@ describe('entitySavingManager', () => {
           title: 'newEntity',
           template: template1Id,
         };
+
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
           files: [{ ...file, fieldname: 'attachments[0]' }],
         });
+
         expect(savedEntity.attachments).toMatchObject([
           {
             mimetype: 'text/plain',
@@ -144,8 +153,47 @@ describe('entitySavingManager', () => {
         ]);
       });
 
+      it('should keep existing documents', async () => {
+        const entity = {
+          _id: entity3Id,
+          sharedId: 'shared3',
+          title: 'entity3',
+          template: template1Id,
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
+        });
+
+        expect(savedEntity.attachments).toMatchObject([
+          {
+            mimetype: 'text/plain',
+            originalname: 'Sample Text File.txt',
+            filename: 'samplefile.txt',
+            type: 'attachment',
+          },
+        ]);
+
+        expect(savedEntity.documents).toMatchObject([
+          {
+            entity: 'shared3',
+            mimetype: 'application/pdf',
+            originalname: 'Sample main PDF File.pdf',
+            type: 'document',
+          },
+          {
+            entity: 'shared3',
+            mimetype: 'application/pdf',
+            originalname: 'myNewFile.pdf',
+            type: 'document',
+          },
+        ]);
+      });
+
       it('should update files for renamed attachments', async () => {
         const changedFile = { ...textFile, originalname: 'newName.txt' };
+
         const entity = {
           _id: entity1Id,
           sharedId: 'shared1',
@@ -155,6 +203,7 @@ describe('entitySavingManager', () => {
         };
 
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+
         expect(savedEntity.attachments).toMatchObject([
           {
             mimetype: 'text/plain',
@@ -171,6 +220,29 @@ describe('entitySavingManager', () => {
         ]);
       });
 
+      it('should update files for renamed documents', async () => {
+        const changedFile = { ...mainPdfFile, originalname: 'Renamed main pdf.pdf' };
+
+        const entity = {
+          _id: entity3Id,
+          sharedId: 'shared3',
+          title: 'entity3',
+          template: template1Id,
+          attachments: [{ ...changedFile }],
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+
+        expect(savedEntity.documents).toMatchObject([
+          {
+            filename: 'samplepdffile.pdf',
+            mimetype: 'application/pdf',
+            originalname: 'Renamed main pdf.pdf',
+            type: 'document',
+          },
+        ]);
+      });
+
       it('should remove files for deleted attachments', async () => {
         const entity = {
           _id: entity1Id,
@@ -181,6 +253,7 @@ describe('entitySavingManager', () => {
         };
 
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+
         expect(savedEntity.attachments).toMatchObject([textFile]);
       });
     });
@@ -229,7 +302,9 @@ describe('entitySavingManager', () => {
             { originalname: 'new url', url: 'https://google.com' },
           ],
         };
+
         await saveEntity(entity, { ...reqData });
+
         expect(search.indexEntities).toHaveBeenCalledTimes(2);
       });
     });
@@ -241,6 +316,7 @@ describe('entitySavingManager', () => {
         size: 12,
         buffer,
       };
+
       const newPdfFile = {
         originalname: 'pdf.pdf',
         mimetype: 'text/pdf',
@@ -275,6 +351,7 @@ describe('entitySavingManager', () => {
         });
 
         const sortedSavedFiles = advancedSort(savedFiles, { property: 'originalname' });
+
         expect(sortedSavedFiles).toEqual([
           expect.objectContaining({ originalname: 'image.jpg' }),
           expect.objectContaining({ originalname: 'pdf.pdf' }),
@@ -283,6 +360,7 @@ describe('entitySavingManager', () => {
         expect(savedEntity.metadata.image[0].value).toBe(
           `/api/files/${sortedSavedFiles[0].filename}`
         );
+
         expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });
 
@@ -317,9 +395,11 @@ describe('entitySavingManager', () => {
             expect.objectContaining({ originalname: 'pdf.pdf' }),
           ])
         );
+
         expect(savedFiles.length).toBe(3);
 
         const savedImage = savedFiles.find(f => f.originalname === 'image.jpg');
+
         expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedImage!.filename}`);
         expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
       });

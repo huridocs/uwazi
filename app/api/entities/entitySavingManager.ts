@@ -20,18 +20,19 @@ type FileAttachments = {
   encoding?: string;
 };
 
-async function prepareNewAttachments(
-  entityAttachments: FileType[] = [],
+async function prepareNewFiles(
+  entity: EntityWithFilesSchema,
+  updatedEntity: EntityWithFilesSchema,
   fileAttachments: FileType[] = [],
-  updatedEntity: EntityWithFilesSchema
+  documentAttachments: FileType[] = []
 ) {
   const attachments: FileType[] = [];
-  const newFiles = fileAttachments.filter(attachment => !attachment._id);
-  const newUrls = entityAttachments.filter(attachment => !attachment._id && attachment.url);
+  const documents: FileType[] = [];
+  const newUrls = entity.attachments?.filter(attachment => !attachment._id && attachment.url);
 
-  if (newFiles.length) {
+  if (fileAttachments.length) {
     await Promise.all(
-      newFiles.map(async (file: any) => {
+      fileAttachments.map(async (file: FileType) => {
         const savedFile = await storeFile(attachmentsPath, file, true);
         attachments.push({
           ...savedFile,
@@ -52,7 +53,20 @@ async function prepareNewAttachments(
     });
   }
 
-  return attachments;
+  if (documentAttachments.length) {
+    await Promise.all(
+      documentAttachments.map(async (document: FileType) => {
+        const savedDocument = await storeFile(uploadsPath, document, true);
+        documents.push({
+          ...savedDocument,
+          entity: updatedEntity.sharedId,
+          type: 'document',
+        });
+      })
+    );
+  }
+
+  return { attachments, documents };
 }
 
 const updateDeletedAttachments = async (
@@ -87,15 +101,17 @@ const filterRenamedAttachments = (entity: EntityWithFilesSchema, entityFiles: Wi
         }))
     : [];
 
-const processAttachments = async (
+const processFiles = async (
   entity: EntityWithFilesSchema,
   updatedEntity: EntityWithFilesSchema,
-  fileAttachments: FileType[] | undefined
+  fileAttachments: FileType[] | undefined,
+  documentAttachments: FileType[] | undefined
 ) => {
-  const attachments = await prepareNewAttachments(
-    entity.attachments,
+  const { attachments, documents } = await prepareNewFiles(
+    entity,
+    updatedEntity,
     fileAttachments,
-    updatedEntity
+    documentAttachments
   );
 
   if (entity._id && entity.attachments) {
@@ -108,7 +124,7 @@ const processAttachments = async (
     attachments.push(...renamedAttachments);
   }
 
-  return attachments;
+  return { proccessedAttachments: attachments, proccessedDocuments: documents };
 };
 
 const bindAttachmentToMetadataProperty = (
@@ -168,21 +184,12 @@ const saveEntity = async (
     { includeDocuments: false }
   );
 
-  if (documents.length) {
-    await Promise.all(
-      documents.map(async document => {
-        try {
-          const savedFile = await storeFile(uploadsPath, document, true);
-          await processDocument(updatedEntity.sharedId, savedFile);
-        } catch (e) {
-          errorLog.error(prettifyError(e));
-          fileSaveErrors.push(`Could not save pdf file/s: ${document.originalname}`);
-        }
-      })
-    );
-  }
-
-  const proccessedAttachments = await processAttachments(entity, updatedEntity, attachments);
+  const { proccessedAttachments, proccessedDocuments } = await processFiles(
+    entity,
+    updatedEntity,
+    attachments,
+    documents
+  );
 
   if (proccessedAttachments.length) {
     await Promise.all(
@@ -196,6 +203,19 @@ const saveEntity = async (
       })
     );
     await search.indexEntities({ sharedId: updatedEntity.sharedId }, '+fullText');
+  }
+
+  if (proccessedDocuments.length) {
+    await Promise.all(
+      proccessedDocuments.map(async document => {
+        try {
+          await processDocument(updatedEntity.sharedId, document);
+        } catch (e) {
+          errorLog.error(prettifyError(e));
+          fileSaveErrors.push(`Could not save pdf file/s: ${document.originalname}`);
+        }
+      })
+    );
   }
 
   const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
