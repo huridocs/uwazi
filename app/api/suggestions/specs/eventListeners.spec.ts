@@ -195,9 +195,8 @@ describe(`On ${EntityDeletedEvent.name}`, () => {
 });
 
 describe(`On ${FileCreatedEvent.name}`, () => {
-  // eslint-disable-next-line jest/no-focused-tests
-  fit('should create blank suggestion, if the new file is an entity document', async () => {
-    const saveSpy = jest.spyOn(Suggestions, 'save');
+  it('should create blank suggestions, if the new file is an entity document', async () => {
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
     const fileInfo = fixturesFactory.file(
       'new file',
@@ -212,7 +211,41 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       })
     );
 
-    expect(saveSpy).toHaveBeenCalledWith({ placeholder: 1 });
+    expect(saveSpy).toHaveBeenCalledWith([
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
+        propertyName: 'extracted_property_1',
+        segment: '',
+        status: 'ready',
+        suggestedValue: '',
+      },
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
+        propertyName: 'extracted_property_2',
+        segment: '',
+        status: 'ready',
+        suggestedValue: '',
+      },
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
+        propertyName: 'title',
+        segment: '',
+        status: 'ready',
+        suggestedValue: '',
+      },
+    ]);
 
     saveSpy.mockRestore();
   });
