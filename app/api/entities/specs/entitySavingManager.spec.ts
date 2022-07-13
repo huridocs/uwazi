@@ -60,7 +60,10 @@ describe('entitySavingManager', () => {
           template: template1Id,
           attachments: [{ originalname: 'Google link', url: 'https://google.com' }],
         };
-        const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [{ ...file, fieldname: 'attachments[0]' }],
+        });
         expect(advancedSort(savedEntity.attachments, { property: 'originalname' })).toMatchObject([
           {
             mimetype: 'text/html',
@@ -92,7 +95,10 @@ describe('entitySavingManager', () => {
           buffer,
         };
 
-        const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [pdfDocument] });
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [pdfDocument],
+        });
         expect(advancedSort(savedEntity.documents)).toMatchObject([
           {
             mimetype: 'application/pdf',
@@ -112,7 +118,10 @@ describe('entitySavingManager', () => {
           title: 'newEntity',
           template: template1Id,
         };
-        const { entity: savedEntity } = await saveEntity(entity, { ...reqData, files: [file] });
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [{ ...file, fieldname: 'attachments[0]' }],
+        });
         expect(savedEntity.attachments).toMatchObject([
           {
             mimetype: 'text/plain',
@@ -255,7 +264,10 @@ describe('entitySavingManager', () => {
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [newImageFile, newPdfFile],
+          files: [
+            { ...newImageFile, fieldname: 'attachments[0]' },
+            { ...newPdfFile, fieldname: 'attachments[1]' },
+          ],
         });
 
         const savedFiles = await filesAPI.get({
@@ -288,7 +300,10 @@ describe('entitySavingManager', () => {
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [newPdfFile, newImageFile],
+          files: [
+            { ...newPdfFile, fieldname: 'attachments[0]' },
+            { ...newImageFile, fieldname: 'attachments[1]' },
+          ],
         });
 
         const savedFiles = await filesAPI.get({
@@ -323,7 +338,7 @@ describe('entitySavingManager', () => {
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [newPdfFile],
+          files: [{ ...newPdfFile, fieldname: 'attachments[1]' }],
         });
 
         const savedFiles = await filesAPI.get({
@@ -355,7 +370,7 @@ describe('entitySavingManager', () => {
 
         const { entity: savedEntity } = await saveEntity(entity, {
           ...reqData,
-          files: [newPdfFile],
+          files: [{ ...newPdfFile, fieldname: 'attachments[1]' }],
         });
 
         expect(savedEntity._id).not.toBeNull();
