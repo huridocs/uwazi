@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
@@ -28,8 +28,10 @@ export const EntitySuggestions = ({
   property: reviewedProperty,
   acceptIXSuggestion,
 }: EntitySuggestionsProps) => {
+  const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [resetActivePage, setResetActivePage] = useState(false);
   const [status, setStatus] = useState<{ key: string; data?: undefined }>({
     key: 'ready',
   });
@@ -131,13 +133,13 @@ export const EntitySuggestions = ({
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
-  const retrieveSuggestions = () => {
+  const retrieveSuggestions = (pageNumber: number = pageIndex + 1) => {
     const queryFilter = filters.reduce(
       (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
       {}
     );
     const params = new RequestParams({
-      page: { number: pageIndex + 1, size: pageSize },
+      page: { number: pageNumber, size: pageSize },
       filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
@@ -207,6 +209,15 @@ export const EntitySuggestions = ({
   };
 
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
+  useEffect(() => {
+    if (isMounted.current) {
+      retrieveSuggestions(1);
+      gotoPage(0);
+      setResetActivePage(true);
+    } else {
+      isMounted.current = true;
+    }
+  }, [filters]);
   useEffect(() => {
     const params = new RequestParams({
       property: reviewedProperty.name,
@@ -307,6 +318,7 @@ export const EntitySuggestions = ({
           </tbody>
         </table>
         <Pagination
+          resetActivePage={resetActivePage}
           onPageChange={gotoPage}
           onPageSizeChange={setPageSize}
           totalPages={totalPages}
