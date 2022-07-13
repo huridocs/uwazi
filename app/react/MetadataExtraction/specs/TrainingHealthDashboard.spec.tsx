@@ -5,14 +5,14 @@ import { render, RenderResult, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { TrainingDataDashboard } from '../TrainingDataDashboard';
+import { TrainingHealthDashboard } from '../TrainingHealthDashboard';
 
 describe('Render', () => {
   it('should render empty if no stats yet', async () => {
     let component: RenderResult;
 
     act(() => {
-      component = render(<TrainingDataDashboard />);
+      component = render(<TrainingHealthDashboard />);
     });
     const list = component!.queryByRole('list');
 
@@ -42,7 +42,7 @@ describe('Render', () => {
 
     act(() => {
       ({ renderResult: component } = renderConnectedContainer(
-        <TrainingDataDashboard stats={stats} />,
+        <TrainingHealthDashboard stats={stats} />,
         () => defaultState
       ));
     });

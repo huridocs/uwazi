@@ -11,14 +11,14 @@ interface LegendDataComponent {
   color: Color;
 }
 
-interface TrainingDataLegendProps {
+interface TrainingHealthLegendProps {
   data: LegendDataComponent[];
   total: number;
 }
 
 const toPercentage = (value: number, total: number) => `${((value / total) * 100).toFixed(2)}%`;
 
-export const TrainingDataLegend = ({ data, total }: TrainingDataLegendProps) => (
+export const TrainingHealthLegend = ({ data, total }: TrainingHealthLegendProps) => (
   <ul className="legend">
     {data.map((td: any) =>
       td.label ? (

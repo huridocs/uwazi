@@ -2,9 +2,9 @@ import { Translate } from 'app/I18N';
 import React from 'react';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import { GridChart } from './GridChart';
-import { TrainingDataLegend } from './TrainingDataLegend';
+import { TrainingHealthLegend } from './TrainingHealthLegend';
 
-interface TrainingDataDashboardProps {
+interface TrainingHealthDashboardProps {
   stats?: SuggestionsStats;
 }
 
@@ -36,14 +36,14 @@ const mapStats = (data: SuggestionsStats['data']) => [
   },
 ];
 
-export const TrainingDataDashboard = ({ stats }: TrainingDataDashboardProps) => {
+export const TrainingHealthDashboard = ({ stats }: TrainingHealthDashboardProps) => {
   if (!stats) return null;
 
   const data = mapStats(stats.data);
 
   return (
     <div className="training-dashboard">
-      <TrainingDataLegend data={data} total={stats.data.all} />
+      <TrainingHealthLegend data={data} total={stats.data.all} />
       <GridChart className="training-dashboard-chart" data={data} />
     </div>
   );

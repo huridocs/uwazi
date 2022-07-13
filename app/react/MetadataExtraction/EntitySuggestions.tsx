@@ -19,7 +19,7 @@ import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import { getStats, getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
-import { TrainingDataDashboard } from './TrainingDataDashboard';
+import { TrainingHealthDashboard } from './TrainingHealthDashboard';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -297,7 +297,7 @@ export const EntitySuggestions = ({
               <Translate>{reviewedProperty.label}</Translate>
             </span>
           </div>
-          <TrainingDataDashboard stats={stats} />
+          <TrainingHealthDashboard stats={stats} />
           <div className="actions-container">
             <button
               type="button"
