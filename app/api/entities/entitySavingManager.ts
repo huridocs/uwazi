@@ -16,8 +16,8 @@ type FileAttachments = {
   buffer: Buffer;
   mimetype: string;
   size: number;
+  fieldname: string;
   encoding?: string;
-  fieldname?: string;
 };
 
 async function prepareNewAttachments(
@@ -155,8 +155,8 @@ const saveEntity = async (
       return set(acum, file.fieldname, namedFile);
     },
     {
-      attachments: [],
-      documents: [],
+      attachments: [] as FileAttachments[],
+      documents: [] as FileAttachments[],
     }
   );
 
@@ -168,11 +168,18 @@ const saveEntity = async (
     { includeDocuments: false }
   );
 
-  await Promise.all(
-    documents.map(async document => {
-      await processDocument(updatedEntity, document);
-    })
-  );
+  if (documents.length) {
+    await Promise.all(
+      documents.map(async document => {
+        try {
+          await processDocument(updatedEntity, document);
+        } catch (e) {
+          errorLog.error(prettifyError(e));
+          fileSaveErrors.push(`Could not save pdf file/s: ${document.originalname}`);
+        }
+      })
+    );
+  }
 
   const proccessedAttachments = await processAttachments(entity, updatedEntity, attachments);
 

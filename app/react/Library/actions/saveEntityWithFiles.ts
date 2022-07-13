@@ -67,14 +67,13 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
       request.attach(`attachments[${index}]`, file);
     });
 
-    const newDocuments = (entity.documents || []).filter(document =>
+    const newDocuments = (documents || []).filter(document =>
       isBlobFile(document)
     ) as ClientBlobFile[];
 
     if (newDocuments.length > 0) {
       newDocuments.map(async (file, index) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        const blob = await fetch(file.data).then(async r => r.blob());
+        const blob = await fetch(file.data).then(async response => response.blob());
         const document = new File([blob], file.originalFile.name, { type: blob.type });
         URL.revokeObjectURL(file.data);
         return request.attach(`documents[${index}]`, document);
