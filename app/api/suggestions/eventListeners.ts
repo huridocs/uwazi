@@ -12,7 +12,7 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { ensure } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
-import { createDefaultSuggestionsForFiles, ISettingsTemplate } from './configurationManager';
+import { createDefaultSuggestionsForFiles } from './configurationManager';
 import { Suggestions } from './suggestions';
 
 const extractedMetadataChanged = async (existingEntity: EntitySchema, newEntity: EntitySchema) => {
