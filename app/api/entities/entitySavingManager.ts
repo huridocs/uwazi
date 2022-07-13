@@ -16,7 +16,7 @@ type FileAttachments = {
   buffer: Buffer;
   mimetype: string;
   size: number;
-  fieldname: string;
+  fieldname?: string;
   encoding?: string;
 };
 
