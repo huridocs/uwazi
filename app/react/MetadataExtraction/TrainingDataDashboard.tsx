@@ -43,7 +43,7 @@ export const TrainingDataDashboard = ({ stats }: TrainingDataDashboardProps) => 
 
   return (
     <div className="training-dashboard">
-      <TrainingDataLegend data={data} />
+      <TrainingDataLegend data={data} total={stats.data.all} />
       <GridChart className="training-dashboard-chart" data={data} />
     </div>
   );

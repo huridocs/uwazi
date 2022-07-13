@@ -106,6 +106,7 @@ describe('when the property exists', () => {
         nonLabeledMatching: 1,
         nonLabeledOthers: 2,
         emptyOrObsolete: 3,
+        all: fixtures.ixsuggestions!.length,
       },
     });
   });

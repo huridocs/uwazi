@@ -5,5 +5,6 @@ export interface SuggestionsStats {
     nonLabeledMatching: number;
     nonLabeledOthers: number;
     emptyOrObsolete: number;
+    all: number;
   };
 }
