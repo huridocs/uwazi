@@ -86,7 +86,6 @@ export const EntitySuggestions = ({
             state === SuggestionState.valueEmpty ||
             state === SuggestionState.obsolete ||
             state === SuggestionState.labelMatch ||
-            state === SuggestionState.valueMatch ||
             state === SuggestionState.error ||
             isRequiredFieldWithoutSuggestion(row.original)
           }
@@ -163,9 +162,13 @@ export const EntitySuggestions = ({
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
+      let { labeledValue } = acceptedSuggestion;
+      if (!labeledValue && acceptedSuggestion.selectionRectangles?.length) {
+        labeledValue = acceptedSuggestion.suggestedValue;
+      }
       selectedFlatRows[0].toggleRowSelected();
       selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        acceptedSuggestion,
+        { ...acceptedSuggestion, labeledValue },
         acceptedSuggestion.suggestedValue as string
       );
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
