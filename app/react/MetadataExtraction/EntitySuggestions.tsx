@@ -16,10 +16,10 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
+import { SuggestionsStats } from 'shared/types/suggestionStats';
 import { getStats, getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingDataDashboard } from './TrainingDataDashboard';
-import { SuggestionsStats } from 'shared/types/suggestionStats';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -289,7 +289,7 @@ export const EntitySuggestions = ({
           </I18NLink>
         </div>
         <div className="panel-subheading">
-          <div className='property-info-container'>
+          <div className="property-info-container">
             <span className="suggestion-header">
               <Translate>Reviewing</Translate>:&nbsp;
             </span>
@@ -298,7 +298,7 @@ export const EntitySuggestions = ({
             </span>
           </div>
           <TrainingDataDashboard stats={stats} />
-          <div className='actions-container'>
+          <div className="actions-container">
             <button
               type="button"
               className={`btn service-request-button ${status}`}

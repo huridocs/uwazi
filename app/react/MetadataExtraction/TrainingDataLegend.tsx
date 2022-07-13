@@ -24,7 +24,7 @@ export const TrainingDataLegend = ({ data }: TrainingDataLegendProps) => {
     <ul className="legend">
       {data.map((td: any) =>
         td.label ? (
-          <li style={{ color: td.label.color || td.color }}>
+          <li key={`${td.color}-${td.value}`} style={{ color: td.label.color || td.color }}>
             {td.label.text}{' '}
             <b>
               {td.value} ({toPercentage(td.value, total)})

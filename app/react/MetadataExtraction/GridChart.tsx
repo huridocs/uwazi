@@ -1,4 +1,5 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
+import { useContainerWidth } from './useContainerWidthHook';
 
 type Color = string;
 
@@ -88,25 +89,6 @@ const buildChartData = (columns: number, data: GridChartDataComponent[]): Color[
   return [paddedMain, paddedOver];
 };
 
-function useContainerWidth<T extends HTMLElement>(containerRef: React.RefObject<T>): number {
-  const [containerWidth, setWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    const readWidth = () => {
-      setWidth(containerRef.current?.offsetWidth || 0);
-    };
-
-    readWidth();
-
-    window.addEventListener('resize', readWidth);
-    return () => {
-      window.removeEventListener('resize', readWidth);
-    };
-  }, []);
-
-  return containerWidth;
-}
-
 const getColumnsQuantity = (width: number, squareSide: number, spaceBetweenSquares: number) =>
   width ? Math.floor((width - spaceBetweenSquares) / (squareSide + spaceBetweenSquares)) : 0;
 
@@ -122,7 +104,7 @@ const GridChart = ({ data, className, squareSide, spaceBetweenSquares }: GridCha
   const rowKeys = [0, 1];
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} style={{ width: '100%' }}>
       {columns ? (
         <ul className="grid-chart" style={{ height: 2 * side + 1 * space }}>
           {columnKeys.map(col =>

@@ -39,7 +39,7 @@ const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
     SuggestionState.valueMismatch,
     SuggestionState.emptyMismatch,
   ]);
-  const emptyOrObsolete = addCountsOf(groups, [SuggestionState.empty, SuggestionState.obsolete]);
+  const emptyOrObsolete = addCountsOf(groups, [SuggestionState.empty, SuggestionState.obsolete, SuggestionState.valueEmpty ]);
 
   return {
     data: { labeledMatching, labeled, nonLabeledMatching, nonLabeledOthers, emptyOrObsolete },
