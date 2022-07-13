@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { applicationEventsBus } from '.';
 import { EventConstructor } from './EventsBus';
 
@@ -30,6 +31,11 @@ const spyOnEmit = () => {
 //wrappers for usage with expect.extend
 type MatcherReturnType = Promise<jest.CustomMatcherResult>;
 
+const failAndRestore = (spy: jest.SpyInstance, message: string) => {
+  spy.mockRestore();
+  return { pass: false, message: () => message };
+};
+
 const toEmitEvent = async <T>(
   callable: (...args: any[]) => any | Promise<any>,
   event: EventConstructor<T>
@@ -40,8 +46,7 @@ const toEmitEvent = async <T>(
 
   const expectedCall = spy.mock.calls.find(call => call[0] instanceof event);
   if (typeof expectedCall === 'undefined') {
-    spy.mockRestore();
-    return { pass: false, message: () => `No event of type ${event.name} was emitted.` };
+    return failAndRestore(spy, `No event of type ${event.name} was emitted.`);
   }
 
   spy.mockRestore();
@@ -59,8 +64,7 @@ const toEmitEventWith = async <T>(
 
   const expectedCall = spy.mock.calls.find(call => call[0] instanceof event);
   if (typeof expectedCall === 'undefined') {
-    spy.mockRestore();
-    return { pass: false, message: () => `No event of type ${event.name} was emitted.` };
+    return failAndRestore(spy, `No event of type ${event.name} was emitted.`);
   }
   expect(expectedCall[0].getData()).toEqual(eventData);
 
