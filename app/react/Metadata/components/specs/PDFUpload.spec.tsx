@@ -10,7 +10,6 @@ describe('PDF upload', () => {
   const reduxStore = { library: { sidepanel: { metadata: {} } } };
   let renderResult: RenderResult;
   const mockedCreateObjectURL: jest.Mock = jest.fn();
-  const mockedRevokeObjectURL: jest.Mock = jest.fn();
 
   const render = () => {
     const store = { ...defaultState, ...reduxStore };
@@ -23,12 +22,10 @@ describe('PDF upload', () => {
   beforeAll(() => {
     URL.createObjectURL = mockedCreateObjectURL;
     mockedCreateObjectURL.mockReturnValue('blob:abc');
-    URL.revokeObjectURL = mockedRevokeObjectURL;
   });
 
   afterAll(() => {
     mockedCreateObjectURL.mockReset();
-    mockedRevokeObjectURL.mockReset();
   });
 
   it('Should upload a main document', () => {
@@ -43,11 +40,5 @@ describe('PDF upload', () => {
       },
     });
     expect(mockedCreateObjectURL).toHaveBeenCalledWith(newFile);
-  });
-
-  it('should revoke the created URL', async () => {
-    render();
-    renderResult.unmount();
-    expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
   });
 });
