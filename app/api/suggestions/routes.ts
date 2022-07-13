@@ -5,7 +5,10 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import { IXSuggestionsQuerySchema, IXSuggestionsStatsQuerySchema } from 'shared/types/suggestionSchema';
+import {
+  IXSuggestionsQuerySchema,
+  IXSuggestionsStatsQuerySchema,
+} from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { serviceMiddleware } from './serviceMiddleware';
 import { saveConfigurations } from './configurationManager';
