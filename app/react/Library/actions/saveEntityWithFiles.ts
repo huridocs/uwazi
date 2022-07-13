@@ -21,24 +21,38 @@ const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
 const isBlobFile = (file: unknown): file is ClientBlobFile =>
   isObject(file) && isString((file as ClientBlobFile).data);
 
-const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) =>
-  new Promise((resolve, reject) => {
-    const [attachments, supportingFiles] = entity.attachments
-      ? entity.attachments.reduce(
-          (accumulator, attachmentInfo) => {
-            const { serializedFile, ...attachment } = attachmentInfo;
-            accumulator[0].push(attachment);
-            if (serializedFile) {
-              accumulator[1].push(constructFile(attachmentInfo));
-            }
-            return accumulator;
-          },
-          [[], []] as [ClientFile[], File[]]
-        )
-      : [[], []];
+const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) => {
+  const [attachments, supportingFiles] = entity.attachments
+    ? entity.attachments.reduce(
+        (accumulator, attachmentInfo) => {
+          const { serializedFile, ...attachment } = attachmentInfo;
+          accumulator[0].push(attachment);
+          if (serializedFile) {
+            accumulator[1].push(constructFile(attachmentInfo));
+          }
+          return accumulator;
+        },
+        [[], []] as [ClientFile[], File[]]
+      )
+    : [[], []];
 
-    const { documents, ...entityToSave } = entity;
+  const { documents, ...entityToSave } = entity;
 
+  const newDocuments = (entity.documents || []).filter(document =>
+    isBlobFile(document)
+  ) as ClientBlobFile[];
+
+  const addedDocuments = await Promise.all(
+    newDocuments.map(async file => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      const blob = await fetch(file.data).then(async r => r.blob());
+      const newDocument = new File([blob], file.originalFile.name, { type: blob.type });
+      URL.revokeObjectURL(file.data);
+      return newDocument;
+    })
+  );
+
+  return new Promise((resolve, reject) => {
     const request = superagent
       .post('/api/entities')
       .set('Accept', 'application/json')
@@ -67,23 +81,16 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
       request.attach(`attachments[${index}]`, file);
     });
 
-    const newDocuments = (documents || []).filter(document =>
-      isBlobFile(document)
-    ) as ClientBlobFile[];
-
-    if (newDocuments.length > 0) {
-      newDocuments.map(async (file, index) => {
-        const blob = await fetch(file.data).then(async response => response.blob());
-        const document = new File([blob], file.originalFile.name, { type: blob.type });
-        URL.revokeObjectURL(file.data);
-        return request.attach(`documents[${index}]`, document);
-      });
-    }
+    addedDocuments.forEach((file, index) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      request.attach(`documents[${index}]`, file);
+    });
 
     return request.end((err, res) => {
       if (err) return reject(err);
       return resolve(res.body);
     });
   });
+};
 
 export { readFileAsBase64, saveEntityWithFiles };

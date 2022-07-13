@@ -1,5 +1,5 @@
 import { WithId } from 'api/odm';
-import { attachmentsPath, files, generateFileName, storeFile } from 'api/files';
+import { attachmentsPath, uploadsPath, files, generateFileName, storeFile } from 'api/files';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
 import entities from 'api/entities/entities';
@@ -172,7 +172,8 @@ const saveEntity = async (
     await Promise.all(
       documents.map(async document => {
         try {
-          await processDocument(updatedEntity, document);
+          const savedFile = await storeFile(uploadsPath, document, true);
+          await processDocument(updatedEntity.sharedId, savedFile);
         } catch (e) {
           errorLog.error(prettifyError(e));
           fileSaveErrors.push(`Could not save pdf file/s: ${document.originalname}`);
