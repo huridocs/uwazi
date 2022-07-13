@@ -37,6 +37,12 @@ beforeEach(async () => {
     ],
     entities: [
       fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
+      fixturesFactory.entity(
+        'ent2',
+        notExtractedTemplateName,
+        {},
+        { sharedId: 'entity with template not in config' }
+      ),
     ],
     settings: [
       {
@@ -246,6 +252,27 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         suggestedValue: '',
       },
     ]);
+
+    saveSpy.mockRestore();
+  });
+
+  it('should not fail on not configured templates', async () => {
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+    const fileInfo = fixturesFactory.file(
+      'new file',
+      'entity with template not in config',
+      'document',
+      'new_file.pdf'
+    );
+
+    await applicationEventsBus.emit(
+      new FileCreatedEvent({
+        newFile: fileInfo,
+      })
+    );
+
+    expect(saveSpy).not.toHaveBeenCalled();
 
     saveSpy.mockRestore();
   });

@@ -48,11 +48,13 @@ const registerEventListeners = (eventsBus: EventsBus) => {
       const entityTemplateId = (
         await entities.get({ sharedId: newFile.entity }, 'template')
       )[0].template.toString();
-      const settingsTemplate = ensure<ISettingsTemplate>(
-        features?.metadataExtraction?.templates?.find(t => t.template === entityTemplateId)
+      const settingsTemplate = features?.metadataExtraction?.templates?.find(
+        t => t.template === entityTemplateId
       );
-      const defaultLanguage = ensure<string>(languages?.find(lang => lang.default)?.key);
-      await createDefaultSuggestionsForFiles([newFile], settingsTemplate, defaultLanguage);
+      if (settingsTemplate) {
+        const defaultLanguage = ensure<string>(languages?.find(lang => lang.default)?.key);
+        await createDefaultSuggestionsForFiles([newFile], settingsTemplate, defaultLanguage);
+      }
     }
   });
 
