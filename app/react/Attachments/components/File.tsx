@@ -8,15 +8,17 @@ import { Icon } from 'UI';
 import { FileType } from 'shared/types/fileType';
 import { APIURL } from 'app/config.js';
 import { LocalForm, Control } from 'react-redux-form';
+import { ClientBlobFile } from 'app/istore';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration';
 import { NeedAuthorization } from 'app/Auth';
 import { EntitySchema } from 'shared/types/entityType';
 import { ViewDocumentLink } from './ViewDocumentLink';
+import { isBlobFile } from 'shared/tsUtils';
 
 type FileProps = {
-  file: FileType;
+  file: FileType | ClientBlobFile;
   storeKey: string;
   readOnly: boolean;
   entity: EntitySchema;
@@ -97,6 +99,22 @@ class File extends Component<FileProps, FileState> {
     );
   }
 
+  renderClient() {
+    return (
+      <div>
+        <div>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
+            <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
+              <Icon icon="pencil-alt" />
+              &nbsp;
+              <Translate>Edit</Translate>
+            </button>
+          </NeedAuthorization>
+        </div>
+      </div>
+    );
+  }
+
   renderReady() {
     const { language, filename = '' } = this.props.file;
     return (
@@ -136,13 +154,24 @@ class File extends Component<FileProps, FileState> {
   }
 
   renderView() {
-    const { originalname, status } = this.props.file;
-
+    const { originalname, status } = !isBlobFile(this.props.file)
+      ? this.props.file
+      : { originalname: (this.props.file as ClientBlobFile).originalFile.name, status: 'ready' };
     return (
-      <div className="file">
-        <div className="file-originalname">{originalname}</div>
-        {status === 'ready' ? this.renderReady() : this.renderFailed()}
-      </div>
+      <>
+        {this.props.file._id && (
+          <div className="file">
+            <div className="file-originalname">{originalname}</div>
+            {status === 'ready' ? this.renderReady() : this.renderFailed()}
+          </div>
+        )}
+        {!this.props.file._id && (
+          <div className="file">
+            <div className="file-originalname">{originalname}</div>
+            {this.renderClient()}
+          </div>
+        )}
+      </>
     );
   }
 

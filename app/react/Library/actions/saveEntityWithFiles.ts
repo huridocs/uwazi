@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { isObject, isString } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import { ensure } from 'shared/tsUtils';
+import { ensure, isBlobFile } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
@@ -17,9 +17,6 @@ const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
     };
     reader.readAsDataURL(file);
   });
-
-const isBlobFile = (file: unknown): file is ClientBlobFile =>
-  isObject(file) && isString((file as ClientBlobFile).data);
 
 const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) => {
   const [attachments, supportingFiles] = entity.attachments

@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
+import { connect, ConnectedProps } from 'react-redux';
 import { get } from 'lodash';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
-import { bindActionCreators, Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedFile as File } from 'app/Attachments/components/File';
+import { FileType } from 'shared/types/fileType';
 
 type PDFUploadProps = {
   model: string;
@@ -23,7 +25,7 @@ const handlePDFUpload =
 const mapStateToProps = (state: IStore, ownProps: PDFUploadProps) => {
   const entity = get(state, ownProps.model);
   return {
-    pdfFiles: entity.documents,
+    entity,
   };
 };
 
@@ -35,7 +37,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = PDFUploadProps & mappedProps;
 
-const PDFUpload = ({ model, pdfFiles, handlePDFUploadAction }: ComponentProps) => {
+const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadButtonClicked = () => {
@@ -59,6 +61,13 @@ const PDFUpload = ({ model, pdfFiles, handlePDFUploadAction }: ComponentProps) =
         ref={inputFileRef}
         accept="application/pdf"
       />
+      <ul>
+        {entity.documents.map((file: FileType) => (
+          <li key={file.filename}>
+            <File file={file} storeKey="library" readOnly={false} entity={entity} />
+          </li>
+        ))}
+      </ul>
     </>
   );
 };

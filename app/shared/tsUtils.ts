@@ -1,5 +1,10 @@
 import util from 'util';
 import Ajv from 'ajv';
+import { isObject, isString } from 'lodash';
+import { ClientBlobFile } from 'app/istore';
+
+export const isBlobFile = (file: unknown): file is ClientBlobFile =>
+  isObject(file) && isString((file as ClientBlobFile).data);
 
 // Thanks to https://stackoverflow.com/questions/54738221/typescript-array-find-possibly-undefind
 export function ensure<T>(argument: T | undefined | null | any, message?: string): T {
