@@ -61,10 +61,11 @@ const addPaddings = (chartData: Color[], slots: number) => {
 };
 
 const extractOverlying = (data: GridChartDataComponent[]) => {
+  console.log({data});
   const main = [...data];
   const overlayingIndex = data.findIndex(c => c.overlaying);
 
-  if (overlayingIndex > 0) {
+  if (overlayingIndex >= 0) {
     const [overlaying] = main.splice(overlayingIndex, 1);
     return { main, overlaying };
   }
@@ -76,7 +77,7 @@ const buildChartData = (columns: number, data: GridChartDataComponent[]): Color[
   const { main, overlaying } = extractOverlying(data);
   const totalValue = getTotalValue(main);
   const ratio = totalValue / columns;
-
+  console.log({ main, overlaying })
   const mainChart = buildMainBar(main, ratio);
   const paddedMain = addPaddings(mainChart, columns);
 
