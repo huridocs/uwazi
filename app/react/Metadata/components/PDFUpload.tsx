@@ -6,8 +6,7 @@ import { get } from 'lodash';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
-import { ConnectedFile as File } from 'app/Attachments/components/File';
-import { FileType } from 'shared/types/fileType';
+import { MetadataFormFiles } from './MetadataFormFiles';
 
 type PDFUploadProps = {
   model: string;
@@ -61,13 +60,13 @@ const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => 
         ref={inputFileRef}
         accept="application/pdf"
       />
-      <ul>
-        {entity.documents?.map((file: FileType) => (
-          <li key={file.filename}>
-            <File file={file} storeKey="library" readOnly={false} entity={entity} />
-          </li>
-        ))}
-      </ul>
+      <MetadataFormFiles
+        type="document"
+        files={entity.documents}
+        removeFile={a => {
+          alert('removed' + a);
+        }}
+      />
     </>
   );
 };
