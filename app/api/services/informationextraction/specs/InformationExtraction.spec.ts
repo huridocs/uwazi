@@ -7,7 +7,6 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
-import templatesModel from 'api/templates/templates';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
