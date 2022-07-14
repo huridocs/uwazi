@@ -1,7 +1,4 @@
 import React from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
-import { actions } from 'react-redux-form';
 
 import { ClientFile } from 'app/istore';
 import { Translate } from 'app/I18N';
@@ -18,27 +15,7 @@ type SupportingFilesProps = {
   entitySharedID: string;
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: SupportingFilesProps) => {
-  const { model } = ownProps;
-  return bindActionCreators(
-    {
-      removeSupportingFile: (index: number) => actions.remove(`${model}.attachments`, index),
-    },
-    dispatch
-  );
-};
-
-const connector = connect(null, mapDispatchToProps);
-
-type mappedProps = ConnectedProps<typeof connector>;
-type ComponentProps = SupportingFilesProps & mappedProps;
-
-const SupportingFiles = ({
-  supportingFiles,
-  entitySharedID,
-  model,
-  removeSupportingFile,
-}: ComponentProps) => (
+const SupportingFiles = ({ supportingFiles, entitySharedID, model }: SupportingFilesProps) => (
   <div className="attachments-list-parent">
     <div className="attachments-list-header editor">
       <h2>
@@ -54,13 +31,8 @@ const SupportingFiles = ({
       />
     </div>
 
-    <MetadataFormFiles
-      type="attachment"
-      files={supportingFiles}
-      removeFile={removeSupportingFile}
-    />
+    <MetadataFormFiles model={model} type="attachment" files={supportingFiles} />
   </div>
 );
 
-const container = connector(SupportingFiles);
-export { container as SupportingFiles };
+export { SupportingFiles };

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Field } from 'react-redux-form';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
+import { Field, actions } from 'react-redux-form';
 import { ClientFile } from 'app/istore';
 import { Icon } from 'app/UI';
 import { Translate } from 'app/I18N';
@@ -48,11 +50,27 @@ const fieldModel = (file: ClientFile, type: string, index: number) => {
 
 type EntityFilesProps = {
   files: ClientFile[];
-  removeFile: (index: number) => void;
   type: 'attachment' | 'document';
+  model: string;
 };
 
-const MetadataFormFiles = ({ files = [], removeFile, type }: EntityFilesProps) => (
+const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: EntityFilesProps) => {
+  const { model, type } = ownProps;
+  const path = type === 'attachment' ? `${model}.attachments` : `${model}.documents`;
+  return bindActionCreators(
+    {
+      removeFile: (index: number) => actions.remove(path, index),
+    },
+    dispatch
+  );
+};
+
+const connector = connect(null, mapDispatchToProps);
+
+type mappedProps = ConnectedProps<typeof connector>;
+type ComponentProps = EntityFilesProps & mappedProps;
+
+const MetadataFormFiles = ({ files = [], removeFile, type }: ComponentProps) => (
   <div className="attachments-list editor">
     {files.map((file: ClientFile, index: number) => {
       const attachmentClass = file._id ? 'attachment' : 'attachment new';
@@ -78,4 +96,5 @@ const MetadataFormFiles = ({ files = [], removeFile, type }: EntityFilesProps) =
   </div>
 );
 
-export { MetadataFormFiles };
+const container = connector(MetadataFormFiles);
+export { container as MetadataFormFiles };

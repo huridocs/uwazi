@@ -1,6 +1,6 @@
 import superagent from 'superagent';
 import { Dispatch } from 'redux';
-import { groupBy, values } from 'lodash';
+import { groupBy } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 import { ensure } from 'shared/tsUtils';

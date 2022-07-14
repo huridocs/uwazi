@@ -60,13 +60,7 @@ const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => 
         ref={inputFileRef}
         accept="application/pdf"
       />
-      <MetadataFormFiles
-        type="document"
-        files={entity.documents}
-        removeFile={a => {
-          alert('removed' + a);
-        }}
-      />
+      <MetadataFormFiles model={model} type="document" files={entity.documents} />
     </>
   );
 };
