@@ -7,6 +7,7 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import templatesModel from 'api/templates/templates';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -129,6 +130,31 @@ describe('InformationExtraction', () => {
         page_height: 841,
         language_iso: 'en',
         label_text: 'different from selected text',
+        label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+      });
+    });
+
+    it('should sanitize dates before sending', async () => {
+      await informationExtraction.trainModel('property2');
+
+      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
+        xml_file_name: 'documentA.xml',
+        property_name: 'property2',
+        tenant: 'tenant1',
+        xml_segments_boxes: [
+          {
+            left: 58,
+            top: 63,
+            width: 457,
+            height: 15,
+            page_number: 1,
+            text: 'something',
+          },
+        ],
+        page_width: 595,
+        page_height: 841,
+        language_iso: 'en',
+        label_text: '3/4/2011',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
     });

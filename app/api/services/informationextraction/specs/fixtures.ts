@@ -43,6 +43,11 @@ const fixtures: DBFixture = {
           value: 'different from selected text',
         },
       ],
+      property2: [
+        {
+          value: 1299196800,
+        },
+      ],
     }),
     factory.entity(
       'A1',
@@ -76,6 +81,13 @@ const fixtures: DBFixture = {
         name: 'property1',
         selection: {
           text: 'something not in the entity',
+          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        },
+      },
+      {
+        name: 'property2',
+        selection: {
+          text: 'Fri Mar 04 2011',
           selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
         },
       },

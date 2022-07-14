@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
+/* eslint-disable camelcase */
 import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
@@ -36,7 +37,6 @@ import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
   tenant: string;
-  /* eslint-disable camelcase */
   property_name: string;
   xml_file_name: string;
   text: string;
@@ -48,7 +48,6 @@ type RawSuggestion = {
     height: number;
     page_number: number;
   }[];
-  /* eslint-enable camelcase */
 };
 
 class InformationExtraction {
@@ -126,7 +125,7 @@ class InformationExtraction {
           data = {
             ...data,
             language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
-            label_text: file.label_text,
+            label_text: file.propertyValue,
             label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
               const { page, ...selection } = r;
               return { ...selection, page_number: page };
