@@ -39,6 +39,12 @@ module.exports = production => {
     },
     resolve: {
       extensions: ['*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      fallback: {
+        // TODO check for this
+        util: false,
+        url: false,
+        path: false,
+      },
     },
     resolveLoader: {
       modules: ['node_modules', path.join(__dirname, '/webpackLoaders')],
@@ -46,27 +52,28 @@ module.exports = production => {
       mainFields: ['loader', 'main'],
     },
     optimization: {
+      moduleIds: 'named',
       splitChunks: {
         cacheGroups: {
           default: false,
-          vendors: false,
-          vendor: {
-            chunks: 'all',
-            test: /node_modules/,
-            name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-
-              if (
-                packageName.match(
-                  /qrcode.react|pdfjs-dist|recharts|react-map-gl|leaflet|mapbox-gl|LazyLoad/
-                )
-              ) {
-                return packageName;
-              }
-
-              return 'vendor';
-            },
-          },
+          defaultVendors: false,
+          // vendor: {
+          //   chunks: 'all',
+          //   test: /node_modules/,
+          //   name(module) {
+          //     const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+          //
+          //     if (
+          //       packageName.match(
+          //         /qrcode.react|pdfjs-dist|recharts|react-map-gl|leaflet|mapbox-gl|LazyLoad/
+          //       )
+          //     ) {
+          //       return packageName;
+          //     }
+          //
+          //     return 'vendor';
+          //   },
+          // },
         },
       },
     },
@@ -74,12 +81,16 @@ module.exports = production => {
       rules: [
         {
           test: /\.(js|jsx|ts|tsx)$/,
-          loader: 'babel-loader?cacheDirectory',
           include: path.join(rootPath, 'app'),
           exclude: /node_modules/,
-          options: {
-            sourceMap: process.env.BABEL_ENV === 'debug',
-          },
+          use: [
+            {
+              loader: 'babel-loader?cacheDirectory',
+              options: {
+                sourceMap: process.env.BABEL_ENV === 'debug',
+              },
+            },
+          ],
         },
         {
           test: /\.s?[ac]ss$/,
@@ -96,7 +107,8 @@ module.exports = production => {
       ],
     },
     plugins: [
-      new CleanWebpackPlugin(),
+      new CleanWebpackPlugin(), // TODO clean-webpack-plugin: options.output.path not defined. Plugin disabled...
+
       new MiniCssExtractPlugin({
         filename: stylesName,
       }),

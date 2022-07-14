@@ -11,7 +11,6 @@ config.context = __dirname;
 config.mode = 'production';
 
 config.plugins = config.plugins.concat([
-  new webpack.optimize.OccurrenceOrderPlugin(),
   new OptimizeCssAssetsPlugin(),
   new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.DefinePlugin({
@@ -24,7 +23,6 @@ config.plugins = config.plugins.concat([
 config.optimization.minimize = true;
 config.optimization.minimizer = [
   new TerserWebpackPlugin({
-    cache: true,
     parallel: true,
   }),
 ];
