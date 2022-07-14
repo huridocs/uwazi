@@ -3,7 +3,7 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
-import { spyOnEmit } from 'api/eventsbus/eventTesting';
+import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/eventsbus/eventTesting';
 import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
 import connections from 'api/relationships';
 import { search } from 'api/search';
@@ -20,10 +20,13 @@ import {
   adminUser,
   writerUser,
 } from './fixtures';
-import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
+import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
+import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+
+expect.extend({ toEmitEvent, toEmitEventWith });
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
@@ -89,6 +92,21 @@ describe('files routes', () => {
       const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
       emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
       emitSpy.restore();
+    });
+
+    it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
+      const fileInfo = {
+        creationDate: 1,
+        entity: 'someid',
+        originalname: 'doc.pdf',
+        type: 'document',
+        language: 'eng',
+      };
+      const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
+      await expect(caller).toEmitEventWith(FileCreatedEvent, {
+        newFile: { ...fileInfo, _id: expect.anything() },
+      });
+      await expect(caller).not.toEmitEvent(FileUpdatedEvent);
     });
 
     describe('when external url file', () => {

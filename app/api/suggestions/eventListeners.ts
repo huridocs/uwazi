@@ -1,13 +1,18 @@
 import _ from 'lodash';
+
+import entities from 'api/entities';
+import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
+import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import settings from 'api/settings';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
+import { ensure } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
-import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
+import { createDefaultSuggestionsForFiles } from './configurationManager';
 import { Suggestions } from './suggestions';
 
 const extractedMetadataChanged = async (existingEntity: EntitySchema, newEntity: EntitySchema) => {
@@ -34,6 +39,22 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
     if (await extractedMetadataChanged(originalDoc, modifiedDoc)) {
       await Suggestions.updateStates({ entityId: originalDoc.sharedId });
+    }
+  });
+
+  eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
+    if (newFile.entity && newFile.type === 'document') {
+      const { languages, features } = await settings.get({}, 'languages features');
+      const entityTemplateId = (
+        await entities.get({ sharedId: newFile.entity }, 'template')
+      )[0].template.toString();
+      const settingsTemplate = features?.metadataExtraction?.templates?.find(
+        t => t.template === entityTemplateId
+      );
+      if (settingsTemplate) {
+        const defaultLanguage = ensure<string>(languages?.find(lang => lang.default)?.key);
+        await createDefaultSuggestionsForFiles([newFile], settingsTemplate, defaultLanguage);
+      }
     }
   });
 

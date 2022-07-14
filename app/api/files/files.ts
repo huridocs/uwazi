@@ -7,8 +7,9 @@ import connections from 'api/relationships';
 import { search } from 'api/search';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
-import { FileUpdatedEvent } from './events/FileUpdatedEvent';
+import { FileCreatedEvent } from './events/FileCreatedEvent';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent';
+import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 import { filesModel } from './filesModel';
 
 const deduceMimeType = (_file: FileType) => {
@@ -35,6 +36,8 @@ export const files = {
       await applicationEventsBus.emit(
         new FileUpdatedEvent({ before: existingFile, after: savedFile })
       );
+    } else {
+      await applicationEventsBus.emit(new FileCreatedEvent({ newFile: savedFile }));
     }
 
     return savedFile;
