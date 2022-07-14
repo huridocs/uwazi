@@ -45,7 +45,6 @@ const getGroups = async (propertyName: string): Promise<Groups> =>
 
 const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
   const groups = await getGroups(propertyName);
-
   const labeledMatching = addCountsOf(groups, [SuggestionState.labelMatch]);
   const labeled = addCountsOf(groups, [
     SuggestionState.labelMatch,
@@ -62,7 +61,7 @@ const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
     SuggestionState.obsolete,
     SuggestionState.valueEmpty,
   ]);
-  const all = groups.all[0].count;
+  const all = groups.all[0]?.count || 0;
 
   return {
     data: {

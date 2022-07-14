@@ -111,3 +111,9 @@ describe('when the property exists', () => {
     });
   });
 });
+
+describe('when the property does not exists', () => {
+  it('should not fail', async () => {
+    await getStats('non existent prop');
+  });
+});
