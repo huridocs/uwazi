@@ -80,6 +80,7 @@ describe('saveEntityWithFiles', () => {
           originalname: 'existing file',
         },
       ],
+      documents: [],
     });
 
     const mockUpload = mockSuperAgent();
@@ -97,6 +98,7 @@ describe('saveEntityWithFiles', () => {
       _id: 'entity1',
       title: 'entity1',
       metadata: { data: [{ value: 'string' }] },
+      documents: [],
     };
 
     const mockUpload = mockSuperAgent();
@@ -123,6 +125,7 @@ describe('saveEntityWithFiles', () => {
       _id: 'entity1',
       title: 'entity1',
       attachments: [],
+      documents: [],
     });
 
     const mockUpload = mockSuperAgent();
