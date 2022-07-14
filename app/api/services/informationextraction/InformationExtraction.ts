@@ -310,6 +310,7 @@ class InformationExtraction {
     });
 
     await this.saveModelProcess(property);
+
     return { status: 'processing_model', message: 'Training model' };
   };
 
@@ -319,17 +320,17 @@ class InformationExtraction {
       status: ModelStatus.processing,
     });
 
-    if (currentModel) {
-      return { status: 'processing_model', message: 'Training model' };
-    }
-
-    const [suggestion] = await ixmodels.get({
+    const suggestionsCount = await IXSuggestionsModel.count({
       propertyName: property,
       status: ModelStatus.processing,
     });
 
-    if (suggestion) {
-      return { status: 'processing_suggestions', message: 'Getting suggestions' };
+    if (currentModel) {
+      if (suggestionsCount) {
+        const suggestionStatus = this.getSuggestionsStatus(property, currentModel.creationDate);
+        return { status: 'processing_suggestions', message: '', data: suggestionStatus };
+      }
+      return { status: 'processing_model', message: 'Training model' };
     }
 
     return { status: 'ready', message: 'Ready' };
