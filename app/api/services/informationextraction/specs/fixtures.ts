@@ -40,7 +40,12 @@ const fixtures: DBFixture = {
     factory.entity('A1', 'templateToSegmentA', {
       property1: [
         {
-          value: 1088985600,
+          value: 'different from selected text',
+        },
+      ],
+      property2: [
+        {
+          value: 1299196800,
         },
       ],
     }),
@@ -75,7 +80,14 @@ const fixtures: DBFixture = {
       {
         name: 'property1',
         selection: {
-          text: 'something',
+          text: 'something not in the entity',
+          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        },
+      },
+      {
+        name: 'property2',
+        selection: {
+          text: 'Fri Mar 04 2011',
           selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
         },
       },
@@ -127,7 +139,7 @@ const fixtures: DBFixture = {
             width: 457,
             height: 15,
             page_number: 1,
-            text: 'something something',
+            text: 'something',
           },
         ],
       },

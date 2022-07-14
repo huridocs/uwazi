@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { filesModel } from 'api/files/filesModel';
 import { SegmentationType } from 'shared/types/segmentationType';
@@ -6,6 +7,9 @@ import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationMode
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { FileType } from 'shared/types/fileType';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import templatesModel from 'api/templates/templates';
+import { propertyTypes } from 'shared/propertyTypes';
 
 const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
@@ -16,6 +20,7 @@ interface FileWithAggregation {
   entity: string;
   language: string;
   extractedMetadata: ExtractedMetadataSchema[];
+  propertyValue?: string;
 }
 
 type FileEnforcedNotUndefined = {
@@ -23,6 +28,7 @@ type FileEnforcedNotUndefined = {
   filename: string;
   language: string;
   entity: string;
+  propertyValue?: string;
 };
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
@@ -44,6 +50,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
     extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
     entity: file.entity,
     segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
+    propertyValue: file.propertyValue,
   }));
 }
 
@@ -55,7 +62,7 @@ async function getSegmentedFilesIds() {
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
   const entities = await entitiesModel.getUnrestricted(
     { template: { $in: templates } },
-    'sharedId'
+    `sharedId metadata.${property}`
   );
   const entitiesFromTrainingTemplatesIds = entities.filter(x => x.sharedId).map(x => x.sharedId);
   const files = (await filesModel.get(
@@ -71,7 +78,29 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
 
-  return getFilesWithAggregations(files);
+  const indextedEntities = objectIndex(entities, e => e.sharedId);
+  const template = await templatesModel.getById(templates[0]);
+  const { type } = template?.properties?.find(p => p.name === property) || {};
+
+  if (!type) {
+    throw new Error(`Property "${property}" does not exists`);
+  }
+
+  const filesWithEntityValue = files.map(file => {
+    const entity = indextedEntities[file.entity];
+    if (!entity?.metadata || !entity?.metadata[property]?.length) {
+      return file;
+    }
+
+    let [{ value }] = entity.metadata[property] || [{}];
+    if (type === propertyTypes.date) {
+      value = new Date(value * 1000).toLocaleDateString(entity.language);
+    }
+
+    return { ...file, propertyValue: value };
+  });
+
+  return getFilesWithAggregations(filesWithEntityValue);
 }
 
 async function getFilesForSuggestions(templates: ObjectIdSchema[], property: string) {
