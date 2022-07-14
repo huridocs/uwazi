@@ -62,7 +62,7 @@ const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => 
         accept="application/pdf"
       />
       <ul>
-        {entity.documents.map((file: FileType) => (
+        {entity.documents?.map((file: FileType) => (
           <li key={file.filename}>
             <File file={file} storeKey="library" readOnly={false} entity={entity} />
           </li>

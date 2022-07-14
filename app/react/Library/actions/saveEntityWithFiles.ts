@@ -1,6 +1,5 @@
 import superagent from 'superagent';
 import { Dispatch } from 'redux';
-import { isObject, isString } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 import { ensure, isBlobFile } from 'shared/tsUtils';
