@@ -78,17 +78,16 @@ async function prepareNewFiles(
 
 const updateDeletedFiles = async (
   entityFiles: WithId<FileType>[],
-  entity: EntityWithFilesSchema
+  entity: EntityWithFilesSchema,
+  type: 'attachment' | 'document'
 ) => {
   const deletedFiles = entityFiles.filter(
     existingFile =>
       existingFile._id &&
-      (!entity.attachments?.find(
+      existingFile.type === type &&
+      !entity[type === 'attachment' ? 'attachments' : 'documents']?.find(
         attachment => attachment._id?.toString() === existingFile._id.toString()
-      ) ||
-        !entity.documents?.find(
-          document => document._id?.toString() === existingFile._id.toString()
-        ))
+      )
   );
   await Promise.all(deletedFiles.map(async file => filesAPI.delete(file)));
 };
@@ -147,10 +146,11 @@ const processFiles = async (
   if (entity._id && (entity.attachments || entity.documents)) {
     const entityFiles: WithId<FileType>[] = await filesAPI.get(
       { entity: entity.sharedId, type: { $in: ['attachment', 'document'] } },
-      '_id, originalname'
+      '_id, originalname, type'
     );
 
-    await updateDeletedFiles(entityFiles, entity);
+    await updateDeletedFiles(entityFiles, entity, 'attachment');
+    await updateDeletedFiles(entityFiles, entity, 'document');
 
     const { renamedAttachments, renamedDocuments } = filterRenamedFiles(entity, entityFiles);
 

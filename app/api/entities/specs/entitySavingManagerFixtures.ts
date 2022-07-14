@@ -151,4 +151,5 @@ export {
   anotherTextFile,
   pdfFile,
   mainPdfFile,
+  entity3textFile,
 };

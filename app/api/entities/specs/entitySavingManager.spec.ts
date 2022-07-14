@@ -18,6 +18,7 @@ import {
   pdfFile,
   entity3Id,
   mainPdfFile,
+  entity3textFile,
 } from './entitySavingManagerFixtures';
 
 describe('entitySavingManager', () => {
@@ -255,6 +256,21 @@ describe('entitySavingManager', () => {
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
 
         expect(savedEntity.attachments).toMatchObject([textFile]);
+      });
+
+      it('should remove files for deleted documents', async () => {
+        const entity = {
+          _id: entity3Id,
+          sharedId: 'shared3',
+          title: 'entity3',
+          template: template1Id,
+          attachments: [entity3textFile],
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
+
+        expect(savedEntity.documents).toMatchObject([]);
+        expect(savedEntity.attachments).toMatchObject([entity3textFile]);
       });
     });
 
