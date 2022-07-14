@@ -52,7 +52,7 @@ type EntityFilesProps = {
   type: 'attachment' | 'document';
 };
 
-const MetadataFormFiles = ({ files, removeFile, type }: EntityFilesProps) => (
+const MetadataFormFiles = ({ files = [], removeFile, type }: EntityFilesProps) => (
   <div className="attachments-list editor">
     {files.map((file: ClientFile, index: number) => {
       const attachmentClass = file._id ? 'attachment' : 'attachment new';

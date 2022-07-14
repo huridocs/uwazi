@@ -1,8 +1,9 @@
 import superagent from 'superagent';
 import { Dispatch } from 'redux';
+import { groupBy, values } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import { ensure, isBlobFile } from 'shared/tsUtils';
+import { ensure } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
@@ -32,14 +33,13 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
       )
     : [[], []];
 
-  const { documents, ...entityToSave } = entity;
-
-  const newDocuments = (entity.documents || []).filter(document =>
-    isBlobFile(document)
-  ) as ClientBlobFile[];
+  const { oldDocuments = [], newDocuments = [] } = groupBy(entity.documents || [], document =>
+    document._id !== undefined ? 'oldDocuments' : 'newDocuments'
+  );
+  const entityToSave = { ...entity, documents: oldDocuments };
 
   const addedDocuments = await Promise.all(
-    newDocuments.map(async file => {
+    (newDocuments as ClientBlobFile[]).map(async file => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       const blob = await fetch(file.data).then(async r => r.blob());
       const newDocument = new File([blob], file.originalFile.name, { type: blob.type });
