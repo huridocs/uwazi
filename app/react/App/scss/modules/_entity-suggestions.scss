@@ -49,15 +49,48 @@
   }
 
   .panel-subheading {
-    font-size: $f-size-xl;
-    justify-content: flex-start;
+    display: block;
     position: relative;
-    align-items: center;
+    font-size: $f-size-sm;
+    padding: 0;
 
-    button {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
+    & > div {
+      width: 100%;
+      margin: 18px 0;
+
+      &.property-info-container {
+        font-size: $f-size-xl;
+      }
+
+      &.training-dashboard {
+        border: 1px solid #E8E7EC;
+        padding: 12px 16px;
+      
+        box-shadow: 0px 1px 1px rgba(55, 71, 79, 0.4);
+        border-radius: 6px;
+      
+        width: 100%;
+        .training-dashboard-chart {
+          width: 100%;
+        }
+      
+        .legend {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-content: flex-start;
+          gap: 4px 16px;
+          padding: 0;
+      
+          li {
+            display: block;
+          }
+        }
+      }
+
+      &.actions-container {
+        text-align: center;
+      }
     }
   }
 
@@ -312,5 +345,22 @@
     .btn.cancel-button {
       opacity: 1;
     }
+  }
+}
+
+.grid-chart {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: block;
+    width: 14px;
+    height: 14px;
+    background-color: black;
   }
 }

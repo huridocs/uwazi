@@ -85,6 +85,10 @@ export interface IXSuggestionsQuery {
   };
 }
 
+export interface IXSuggestionsStatsQuery {
+  propertyName: string;
+}
+
 export interface IXSuggestionsFilter {
   language?: string;
   propertyName: string;

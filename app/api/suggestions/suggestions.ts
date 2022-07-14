@@ -13,6 +13,7 @@ import {
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
+import { getStats } from './stats';
 import { updateStates } from './updateState';
 
 interface AcceptedSuggestion {
@@ -127,6 +128,8 @@ const Suggestions = {
     const totalPages = Math.ceil(count / limit);
     return { suggestions, totalPages };
   },
+
+  getStats,
 
   updateStates,
 
