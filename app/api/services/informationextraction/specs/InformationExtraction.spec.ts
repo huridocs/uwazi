@@ -83,6 +83,12 @@ describe('InformationExtraction', () => {
     );
   };
 
+  describe('status', () => {
+    it('should return processing_model status', async () => {
+      const resp = await informationExtraction.status('age');
+    });
+  });
+
   describe('trainModel', () => {
     it('should send xmls', async () => {
       await informationExtraction.trainModel('property1');
