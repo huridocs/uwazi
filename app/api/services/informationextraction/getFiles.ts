@@ -80,7 +80,12 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
 
   const indextedEntities = objectIndex(entities, e => e.sharedId);
   const template = await templatesModel.getById(templates[0]);
-  const { type } = template?.properties?.find(p => p.name === property) || {};
+
+  let type: string | undefined = 'text';
+  if (property !== 'title') {
+    const prop = template?.properties?.find(p => p.name === property);
+    type = prop?.type;
+  }
 
   if (!type) {
     throw new Error(`Property "${property}" does not exists`);

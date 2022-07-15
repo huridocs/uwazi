@@ -5,7 +5,10 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
+import {
+  IXSuggestionsQuerySchema,
+  IXSuggestionsStatsQuerySchema,
+} from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { serviceMiddleware } from './serviceMiddleware';
 import { saveConfigurations } from './configurationManager';
@@ -59,6 +62,22 @@ export const suggestionsRoutes = (app: Application) => {
         { page: req.query.page }
       );
       res.json(suggestionsList);
+    }
+  );
+
+  app.get(
+    '/api/suggestions/stats',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    parseQuery,
+    validateAndCoerceRequest({
+      properties: {
+        query: IXSuggestionsStatsQuerySchema,
+      },
+    }),
+    async (req, res, _next) => {
+      const stats = await Suggestions.getStats(req.query.propertyName);
+      res.json(stats);
     }
   );
 
