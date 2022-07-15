@@ -393,13 +393,18 @@ describe('entitySavingManager', () => {
       let savedEntity: EntityWithFilesSchema;
       let expectedDocuments: FileType[];
 
+      beforeEach(() => {
+        savedEntity = {};
+        expectedDocuments = [];
+      });
+
       const expectCheck = (entity: EntityWithFilesSchema) => {
         expect(entity.documents).toMatchObject(expectedDocuments);
       };
 
       const emiter = jest
         .fn()
-        .mockImplementationOnce(event => event === 'documentProcessed' && expectCheck(savedEntity));
+        .mockImplementation(event => event === 'documentProcessed' && expectCheck(savedEntity));
 
       it('should create an entity with main documents', async () => {
         const entity = {
@@ -423,140 +428,145 @@ describe('entitySavingManager', () => {
         }));
       });
 
-      it('should keep existing documents', async () => {
-        const entity = {
-          _id: entity3Id,
-          sharedId: 'shared3',
-          title: 'entity3',
-          template: template1Id,
-        };
-
-        expectedDocuments = [
-          {
-            entity: 'shared3',
-            mimetype: 'application/pdf',
-            originalname: 'Sample main PDF File.pdf',
-            type: 'document',
-          },
-          {
-            entity: 'shared3',
-            mimetype: 'application/pdf',
-            originalname: 'myNewFile.pdf',
-            type: 'document',
-          },
-        ];
-
-        ({ entity: savedEntity } = await saveEntity(entity, {
-          ...reqData,
-          files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
-          socketEmiter: emiter,
-        }));
-
-        expect(savedEntity.attachments).toMatchObject([
-          {
-            mimetype: 'text/plain',
-            originalname: 'Sample Text File.txt',
-            filename: 'samplefile.txt',
-            type: 'attachment',
-          },
-        ]);
-      });
-
-      it('should remove files for deleted documents', async () => {
-        const entity = {
-          _id: entity3Id,
-          sharedId: 'shared3',
-          title: 'entity3',
-          template: template1Id,
-          attachments: [entity3textFile],
-        };
-
-        expectedDocuments = [];
-
-        ({ entity: savedEntity } = await saveEntity(entity, { ...reqData }));
-
-        expect(savedEntity.attachments).toMatchObject([entity3textFile]);
-      });
-
-      it('should update files for renamed documents', async () => {
-        const changedFile = { ...mainPdfFile, originalname: 'Renamed main pdf.pdf' };
-
-        const entity = {
-          _id: entity3Id,
-          sharedId: 'shared3',
-          title: 'entity3',
-          template: template1Id,
-          documents: [{ ...changedFile }],
-        };
-
-        ({ entity: savedEntity } = await saveEntity(entity, { ...reqData }));
-
-        expectedDocuments = [
-          {
-            filename: 'samplepdffile.pdf',
-            mimetype: 'application/pdf',
-            originalname: 'Renamed main pdf.pdf',
-            type: 'document',
-          },
-        ];
-      });
-
-      it('should not reprocess existing documents', async () => {
-        jest
-          .spyOn(processDocumentApi, 'processDocument')
-          .mockResolvedValueOnce({ _id: db.id() as ObjectId });
-
-        const changedFile = { ...mainPdfFile, originalname: 'Renamed main pdf.pdf' };
-
-        const entity = {
-          _id: entity3Id,
-          sharedId: 'shared3',
-          title: 'entity3',
-          template: template1Id,
-          documents: [{ ...changedFile }],
-        };
-
-        ({ entity: savedEntity } = await saveEntity(entity, {
-          ...reqData,
-          files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
-        }));
-
-        expectedDocuments = [
-          {
-            filename: 'samplepdffile.pdf',
-            mimetype: 'application/pdf',
-            originalname: 'Renamed main pdf.pdf',
-            type: 'document',
-          },
-          {
-            mimetype: 'application/pdf',
-            originalname: 'myNewFile.pdf',
-            type: 'document',
-          },
-        ];
-
-        expect(processDocumentApi.processDocument).not.toHaveBeenCalledWith('shared3', {
-          _id: mainPdfFileId.toString(),
-          originalname: 'Renamed main pdf.pdf',
-        });
-      });
-
-      it('should return an error if an existing main document cannot be saved', async () => {
-        jest.spyOn(filesAPI, 'save').mockRejectedValueOnce({ error: { name: 'failed' } });
-
-        const { errors } = await saveEntity(
-          {
+      describe('updating an entity', () => {
+        it('should keep existing documents', async () => {
+          const entity = {
             _id: entity3Id,
             sharedId: 'shared3',
-            title: 'Entity with broken file',
+            title: 'entity3',
             template: template1Id,
-            documents: [{ ...mainPdfFile, originalname: 'changed.pdf' }],
-          },
-          {
+          };
+
+          expectedDocuments = [
+            {
+              entity: 'shared3',
+              mimetype: 'application/pdf',
+              originalname: 'Sample main PDF File.pdf',
+              type: 'document',
+            },
+            {
+              entity: 'shared3',
+              mimetype: 'application/pdf',
+              originalname: 'myNewFile.pdf',
+              type: 'document',
+            },
+          ];
+
+          ({ entity: savedEntity } = await saveEntity(entity, {
             ...reqData,
-          }
-        );
-        expect(errors[0]).toBe('Could not save main pdf file/s: changed.pdf');
+            files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
+            socketEmiter: emiter,
+          }));
+
+          expect(savedEntity.attachments).toMatchObject([
+            {
+              mimetype: 'text/plain',
+              originalname: 'Sample Text File.txt',
+              filename: 'samplefile.txt',
+              type: 'attachment',
+            },
+          ]);
+        });
+
+        it('should remove files for deleted documents', async () => {
+          const entity = {
+            _id: entity3Id,
+            sharedId: 'shared3',
+            title: 'entity3',
+            template: template1Id,
+            attachments: [entity3textFile],
+          };
+
+          expectedDocuments = [];
+
+          ({ entity: savedEntity } = await saveEntity(entity, {
+            ...reqData,
+          }));
+
+          expect(savedEntity.attachments).toMatchObject([entity3textFile]);
+        });
+
+        it('should update files for renamed documents', async () => {
+          const changedFile = { ...mainPdfFile, originalname: 'Renamed main pdf.pdf' };
+
+          const entity = {
+            _id: entity3Id,
+            sharedId: 'shared3',
+            title: 'entity3',
+            template: template1Id,
+            documents: [{ ...changedFile }],
+          };
+
+          ({ entity: savedEntity } = await saveEntity(entity, { ...reqData }));
+
+          expectedDocuments = [
+            {
+              filename: 'samplepdffile.pdf',
+              mimetype: 'application/pdf',
+              originalname: 'Renamed main pdf.pdf',
+              type: 'document',
+            },
+          ];
+        });
+
+        it('should not reprocess existing documents', async () => {
+          jest
+            .spyOn(processDocumentApi, 'processDocument')
+            .mockResolvedValueOnce({ _id: db.id() as ObjectId });
+
+          const changedFile = { ...mainPdfFile, originalname: 'Renamed main pdf.pdf' };
+
+          const entity = {
+            _id: entity3Id,
+            sharedId: 'shared3',
+            title: 'entity3',
+            template: template1Id,
+            documents: [{ ...changedFile }],
+          };
+
+          ({ entity: savedEntity } = await saveEntity(entity, {
+            ...reqData,
+            socketEmiter: emiter,
+            files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
+          }));
+
+          expectedDocuments = [
+            {
+              filename: 'samplepdffile.pdf',
+              mimetype: 'application/pdf',
+              originalname: 'Renamed main pdf.pdf',
+              type: 'document',
+            },
+            {
+              mimetype: 'application/pdf',
+              originalname: 'myNewFile.pdf',
+              type: 'document',
+            },
+          ];
+
+          expect(processDocumentApi.processDocument).not.toHaveBeenCalledWith('shared3', {
+            _id: mainPdfFileId.toString(),
+            originalname: 'Renamed main pdf.pdf',
+          });
+        });
+
+        it('should return an error if an existing main document cannot be saved', async () => {
+          jest.spyOn(filesAPI, 'save').mockRejectedValueOnce({ error: { name: 'failed' } });
+
+          const { errors } = await saveEntity(
+            {
+              _id: entity3Id,
+              sharedId: 'shared3',
+              title: 'Entity with broken file',
+              template: template1Id,
+              documents: [{ ...mainPdfFile, originalname: 'changed.pdf' }],
+            },
+            {
+              ...reqData,
+            }
+          );
+          expect(errors[0]).toBe('Could not save main pdf file/s: changed.pdf');
+        });
       });
     });
   });
