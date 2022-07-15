@@ -58,6 +58,13 @@ describe('entitySavingManager', () => {
       buffer,
     };
 
+    const brokenFile = {
+      originalname: 'broken file.brk',
+      mimetype: 'application/pdf',
+      size: 0,
+      buffer: Buffer.from('broken'),
+    };
+
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {
         const entity = { title: 'newEntity', template: template1Id };
@@ -302,6 +309,27 @@ describe('entitySavingManager', () => {
       it('should return an error', async () => {
         const { errors } = await saveEntity(entity, { ...reqData });
         expect(errors[0]).toBe('Could not save supporting file/s: malformed url');
+      });
+
+      it('should return an error if the main document cannot be saved', async () => {
+        const { errors } = await saveEntity(
+          {
+            _id: entity1Id,
+            title: 'newEntity',
+            template: template1Id,
+          },
+          {
+            ...reqData,
+            files: [
+              {
+                ...brokenFile,
+                fieldname: 'documents[0]',
+              },
+            ],
+          }
+        );
+
+        expect(errors[0]).toBe('Could not save main pdf file/s: broken file.brk');
       });
     });
 
