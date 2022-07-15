@@ -85,7 +85,17 @@ describe('InformationExtraction', () => {
 
   describe('status', () => {
     it('should return processing_model status', async () => {
-      const resp = await informationExtraction.status('age');
+      const resp = await informationExtraction.status('property3');
+      expect(resp.status).toEqual('processing_model');
+    });
+    it('should return getting suggestion status', async () => {
+      const resp = await informationExtraction.status('property2');
+      expect(resp.status).toEqual('processing_suggestions');
+      expect(resp.data).toEqual({ total: 1, processed: 0 });
+    });
+    it('should return ready status', async () => {
+      const resp = await informationExtraction.status('property1');
+      expect(resp.status).toEqual('ready');
     });
   });
 
@@ -245,7 +255,7 @@ describe('InformationExtraction', () => {
     it('should create the suggestions placeholder with status processing', async () => {
       await informationExtraction.getSuggestions('property1');
       const suggestions = await IXSuggestionsModel.get();
-      expect(suggestions.length).toBe(4);
+      expect(suggestions.length).toBe(5);
       expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',

@@ -329,7 +329,7 @@ class InformationExtraction {
     });
 
     if (currentModel.status === ModelStatus.ready && suggestionsCount) {
-      const suggestionStatus = this.getSuggestionsStatus(property, currentModel.creationDate);
+      const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
       return {
         status: 'processing_suggestions',
         message: 'Finding suggestions',
