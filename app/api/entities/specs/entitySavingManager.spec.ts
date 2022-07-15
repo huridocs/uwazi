@@ -4,6 +4,7 @@ import { search } from 'api/search';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { errorLog } from 'api/log';
 import { files as filesAPI } from 'api/files';
+import * as processDocumentApi from 'api/files/processDocument';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { advancedSort } from 'app/utils/advancedSort';
 import {
@@ -19,6 +20,7 @@ import {
   entity3Id,
   mainPdfFile,
   entity3textFile,
+  mainPdfFileId,
 } from './entitySavingManagerFixtures';
 
 describe('entitySavingManager', () => {
@@ -249,6 +251,44 @@ describe('entitySavingManager', () => {
             type: 'document',
           },
         ]);
+      });
+
+      it('should not reprocess existing documents', async () => {
+        jest.spyOn(processDocumentApi, 'processDocument');
+
+        const changedFile = { ...mainPdfFile, originalname: 'Renamed main pdf.pdf' };
+
+        const entity = {
+          _id: entity3Id,
+          sharedId: 'shared3',
+          title: 'entity3',
+          template: template1Id,
+          documents: [{ ...changedFile }],
+        };
+
+        const { entity: savedEntity } = await saveEntity(entity, {
+          ...reqData,
+          files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
+        });
+
+        expect(savedEntity.documents).toMatchObject([
+          {
+            filename: 'samplepdffile.pdf',
+            mimetype: 'application/pdf',
+            originalname: 'Renamed main pdf.pdf',
+            type: 'document',
+          },
+          {
+            mimetype: 'application/pdf',
+            originalname: 'myNewFile.pdf',
+            type: 'document',
+          },
+        ]);
+
+        expect(processDocumentApi.processDocument).not.toHaveBeenCalledWith('shared3', {
+          _id: mainPdfFileId.toString(),
+          originalname: 'Renamed main pdf.pdf',
+        });
       });
 
       it('should remove files for deleted attachments', async () => {

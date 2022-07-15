@@ -182,7 +182,11 @@ const saveFiles = async (
     await Promise.all(
       documents.map(async document => {
         try {
-          await processDocument(entity.sharedId!, document);
+          if (!document._id) {
+            await processDocument(entity.sharedId!, document);
+          } else {
+            await filesAPI.save(document, false);
+          }
         } catch (e) {
           errorLog.error(prettifyError(e));
           saveResults.push(`Could not save main pdf file/s: ${document.originalname}`);

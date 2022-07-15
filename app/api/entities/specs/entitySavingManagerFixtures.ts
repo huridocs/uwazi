@@ -8,6 +8,7 @@ const template2Id = db.id();
 const entity1Id = db.id();
 const entity2Id = db.id();
 const entity3Id = db.id();
+const mainPdfFileId = db.id();
 
 const editorUser: UserSchema = {
   _id: db.id(),
@@ -47,7 +48,7 @@ const pdfFile: FileType = {
 };
 
 const mainPdfFile: FileType = {
-  _id: db.id(),
+  _id: mainPdfFileId,
   entity: 'shared3',
   language: 'en',
   originalname: 'Sample main PDF File.pdf',
@@ -152,4 +153,5 @@ export {
   pdfFile,
   mainPdfFile,
   entity3textFile,
+  mainPdfFileId,
 };
