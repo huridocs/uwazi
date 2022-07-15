@@ -59,13 +59,6 @@ describe('entitySavingManager', () => {
     buffer,
   };
 
-  const brokenFile = {
-    originalname: 'broken file.brk',
-    mimetype: 'application/pdf',
-    size: 0,
-    buffer: Buffer.from('broken'),
-  };
-
   describe('saveEntity', () => {
     const reqData = { user: editorUser, language: 'en', socketEmiter: () => {} };
 
