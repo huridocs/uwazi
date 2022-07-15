@@ -1,3 +1,4 @@
+import { groupBy } from 'lodash';
 import { WithId } from 'api/odm';
 import { attachmentsPath, uploadsPath, files as filesAPI, storeFile } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
@@ -160,7 +161,8 @@ const handleAttachmentInMetadataProperties = (
 const saveFiles = async (
   attachments: FileType[],
   documents: FileType[],
-  entity: ClientEntitySchema
+  entity: ClientEntitySchema,
+  socketEmiter: Function
 ) => {
   const saveResults: string[] = [];
 
@@ -178,21 +180,34 @@ const saveFiles = async (
     await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
   }
 
-  if (documents.length) {
-    await Promise.all(
-      documents.map(async document => {
-        try {
-          if (!document._id) {
-            await processDocument(entity.sharedId!, document);
-          } else {
-            await filesAPI.save(document, false);
-          }
-        } catch (e) {
-          errorLog.error(prettifyError(e));
-          saveResults.push(`Could not save main pdf file/s: ${document.originalname}`);
-        }
+  const { documentsToProcess = [], documentsToSave = [] } = groupBy(documents, document =>
+    document._id ? 'documentsToSave' : 'documentsToProcess'
+  );
+
+  await Promise.all(
+    documentsToSave.map(async document => {
+      try {
+        await filesAPI.save(document, false);
+      } catch (e) {
+        errorLog.error(prettifyError(e));
+        saveResults.push(`Could not save main pdf file/s: ${document.originalname}`);
+      }
+    })
+  );
+
+  if (documentsToProcess.length) {
+    socketEmiter('conversionStart', entity.sharedId!);
+    Promise.all(
+      documentsToProcess.map(async document => processDocument(entity.sharedId!, document))
+    )
+      .then(() => {})
+      .catch(e => {
+        errorLog.error(prettifyError(e));
+        socketEmiter('conversionFailed', entity.sharedId!);
       })
-    );
+      .finally(() => {
+        socketEmiter('documentProcessed', entity.sharedId!);
+      });
   }
 
   return saveResults;

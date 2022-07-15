@@ -33,6 +33,7 @@ export default app => {
         const result = await saveEntity(entityToSave, {
           user: req.user,
           language: req.language,
+          socketEmiter: req.emitToSessionSocket,
           files: req.files,
         });
         const { entity } = result;
