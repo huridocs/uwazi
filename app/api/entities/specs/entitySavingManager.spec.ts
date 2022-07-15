@@ -352,6 +352,10 @@ describe('entitySavingManager', () => {
       });
 
       it('should return an error if the main document cannot be saved', async () => {
+        jest
+          .spyOn(processDocumentApi, 'processDocument')
+          .mockRejectedValueOnce({ error: { name: 'failed' } });
+
         const { errors } = await saveEntity(
           {
             _id: entity1Id,
