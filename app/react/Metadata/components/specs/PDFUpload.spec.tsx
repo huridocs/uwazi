@@ -4,6 +4,7 @@
 import React from 'react';
 import { fromJS } from 'immutable';
 import { fireEvent, screen, RenderResult } from '@testing-library/react';
+import { actions as formActions } from 'react-redux-form';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { UserRole } from 'shared/types/userSchema';
 import { PDFUpload } from '../PDFUpload';
@@ -15,6 +16,7 @@ describe('PDF upload', () => {
         metadata: {
           documents: [
             {
+              _id: 'file1',
               filename: '1657737319513hr3c3v5nnm.pdf',
               mimetype: 'application/pdf',
               status: 'ready',
@@ -68,9 +70,17 @@ describe('PDF upload', () => {
     expect(mockedCreateObjectURL).toHaveBeenCalledWith(newFile);
   });
 
-  it('should list the existing documents', () => {
+  it('should list the existing documents', async () => {
+    spyOn(formActions, 'remove').and.callFake(form => ({ type: 'ACTION-TYPE', value: form }));
+
     render();
-    const listFile = screen.queryByText('Previously saved file.pdf');
-    expect(listFile).toBeInTheDocument();
+    const fileNameInput = (await screen.getByRole('textbox')) as HTMLInputElement;
+    expect(fileNameInput.getAttribute('name')).toEqual('.documents.0.originalname');
+    const deleteButton = (await screen.getByRole('button', {
+      name: 'Delete file',
+    })) as HTMLButtonElement;
+
+    fireEvent.click(deleteButton);
+    expect(formActions.remove).toHaveBeenCalledWith('library.sidepanel.metadata.documents', 0);
   });
 });
