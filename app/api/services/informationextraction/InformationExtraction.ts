@@ -125,7 +125,7 @@ class InformationExtraction {
           data = {
             ...data,
             language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
-            label_text: file.propertyValue,
+            label_text: file.propertyValue || propertyLabeledData.selection?.text,
             label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
               const { page, ...selection } = r;
               return { ...selection, page_number: page };
@@ -318,6 +318,10 @@ class InformationExtraction {
     const [currentModel] = await ixmodels.get({
       propertyName: property,
     });
+
+    if (!currentModel) {
+      return { status: 'ready', message: 'Ready' };
+    }
 
     if (currentModel.status === ModelStatus.processing) {
       return { status: 'processing_model', message: 'Training model' };
