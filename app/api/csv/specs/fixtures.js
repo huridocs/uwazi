@@ -4,7 +4,7 @@ import { templateUtils } from 'api/templates';
 
 const template1Id = db.id();
 const thesauri1Id = db.id();
-const thesauri2Id = db.id();
+const nestedThesauriId = db.id();
 const templateToRelateId = db.id();
 
 export default {
@@ -112,4 +112,4 @@ export default {
   ],
 };
 
-export { template1Id, thesauri1Id, thesauri2Id, templateToRelateId };
+export { template1Id, thesauri1Id, nestedThesauriId, templateToRelateId };

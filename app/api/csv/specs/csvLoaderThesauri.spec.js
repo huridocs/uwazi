@@ -118,5 +118,97 @@ describe('csvLoader thesauri', () => {
       ]);
       mockedFile.mockRestore();
     });
+
+    describe('nesting', () => {
+      it('should allow nesting thesauri by prefixing the children', async () => {
+        const { _id } = await thesauri.save({ name: 'nestedThesauri' });
+
+        const csv = `English, Spanish, French
+        value1, valor1, valeur1
+        - value2, - valor2, - valeur2
+        - value3, - valor3, - valeur3
+        value4, valor4, valeur4`;
+
+        const mockedFile = mockCsvFileReadStream(csv);
+        const updated = await loader.loadThesauri('mockedFileFromString', _id, {
+          language: 'en',
+        });
+
+        expect(updated).toMatchObject({
+          name: 'nestedThesauri',
+          values: [
+            {
+              label: 'value1',
+              values: [
+                {
+                  label: 'value2',
+                },
+                {
+                  label: 'value3',
+                },
+              ],
+            },
+            {
+              label: 'value4',
+            },
+          ],
+        });
+        mockedFile.mockRestore();
+      });
+
+      it('should allow updating an existing thesauri', async () => {
+        const { _id } = await thesauri.save({
+          name: 'existingNestedThesauri',
+          values: [
+            {
+              label: 'value1',
+              values: [
+                {
+                  label: 'value11',
+                },
+              ],
+            },
+            {
+              label: 'value2',
+            },
+          ],
+        });
+
+        const csv = `English, Spanish, French
+        value1, valor1, valeur1
+        - value12, - valor12, - valeur12
+        value3, valor3, valeur3`;
+
+        const mockedFile = mockCsvFileReadStream(csv);
+        const updated = await loader.loadThesauri('mockedFileFromString', _id, {
+          language: 'en',
+        });
+
+        expect(updated).toMatchObject({
+          name: 'existingNestedThesauri',
+          values: [
+            {
+              label: 'value1',
+              values: [
+                {
+                  label: 'value11',
+                },
+                {
+                  label: 'value12',
+                },
+              ],
+            },
+            {
+              label: 'value2',
+            },
+            {
+              label: 'value3',
+            },
+          ],
+        });
+
+        mockedFile.mockRestore();
+      });
+    });
   });
 });
