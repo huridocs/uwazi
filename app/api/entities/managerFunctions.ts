@@ -200,7 +200,14 @@ const saveFiles = async (
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.allSettled(
       documentsToProcess.map(async document => processDocument(entity.sharedId!, document))
-    ).then(() => {
+    ).then(results => {
+      results
+        .filter(result => result.status === 'rejected')
+        .map(rejected => {
+          const { reason } = rejected as PromiseRejectedResult;
+          return errorLog.error(prettifyError(reason));
+        });
+
       socketEmiter('documentProcessed', entity.sharedId!);
     });
   }
