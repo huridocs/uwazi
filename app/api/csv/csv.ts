@@ -1,6 +1,6 @@
 import csvtojson from 'csvtojson';
 
-import { allLanguages } from 'shared/languagesList';
+import { availableLanguages } from 'shared/languagesList';
 import { Readable } from 'stream';
 import { ensure } from 'shared/tsUtils';
 import { LanguageSchema } from 'shared/types/commonTypes';
@@ -43,14 +43,14 @@ const csv = (readStream: Readable, stopOnError = false) => ({
       });
   },
 
-  async toThesauri(language: string, availableLanguages: string[]) {
+  async toThesauri(language: string, iso6391Languages: string[]) {
     const values = await csvtojson({ delimiter: [',', ';'] }).fromStream(readStream);
     const languageLabel: string = ensure<LanguageSchema>(
-      allLanguages.find(l => l.key === language)
+      availableLanguages.find(l => l.key === language)
     ).label;
 
-    const languagesToTranslate: { [k: string]: string } = allLanguages
-      .filter(l => availableLanguages.includes(l.key) && Object.keys(values[0]).includes(l.label))
+    const languagesToTranslate: { [k: string]: string } = availableLanguages
+      .filter(l => iso6391Languages.includes(l.key) && Object.keys(values[0]).includes(l.label))
       .reduce((map, lang) => ({ ...map, [lang.key]: lang.label }), {});
 
     return {

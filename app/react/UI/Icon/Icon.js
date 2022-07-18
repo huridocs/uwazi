@@ -5,7 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { allLanguages as languagesList } from 'shared/languagesList';
+import { availableLanguages as languagesList } from 'shared/languagesList';
 import { loadIcons } from './library';
 
 loadIcons();

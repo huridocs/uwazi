@@ -32,6 +32,9 @@ import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
+import { permissionsContext } from './api/permissions/permissionsContext';
+
+import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
 
 mongoose.Promise = Promise;
 
@@ -59,11 +62,6 @@ const metricsMiddleware = promBundle({
     collectDefaultMetrics: {},
   },
 });
-
-if (config.externalServices) {
-  // eslint-disable-next-line global-require
-  require('./worker');
-}
 
 app.use(metricsMiddleware);
 if (config.sentry.dsn) {
@@ -146,7 +144,10 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     app.use(Sentry.Handlers.errorHandler());
   }
   app.use(errorHandlingMiddleware);
-
+  if (config.externalServices) {
+    // eslint-disable-next-line global-require
+    require('./worker');
+  }
   if (!config.multiTenant && !config.clusterMode) {
     await tenants.run(async () => {
       const shouldMigrate = await migrator.shouldMigrate();
@@ -164,6 +165,11 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   const port = config.PORT;
 
   http.listen(port, bindAddress, async () => {
+    await tenants.run(async () => {
+      permissionsContext.setCommandContext();
+      await startLegacyServicesNoMultiTenant();
+    });
+
     console.info(
       '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
       port,

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { actions, Translate } from 'app/I18N';
 import { Icon } from 'UI';
-import { languages as elasticLanguages, allLanguages as languagesList } from 'shared/languagesList';
+import { elasticLanguages, availableLanguages as languagesList } from 'shared/languagesList';
 import Warning from '../../Layout/Warning';
 import Tip from '../../Layout/Tip';
 
@@ -101,12 +101,12 @@ class Languages extends Component {
     });
   }
 
-  addLanguage(language) {
+  addLanguage({ key, label, localized_label: localizedLabel, rtl }) {
     this.context.confirm({
-      accept: () => this.props.addLanguage(language),
+      accept: () => this.props.addLanguage({ key, label, localized_label: localizedLabel, rtl }),
       title: (
         <>
-          <Translate>Confirm add</Translate>&nbsp;{language.label}
+          <Translate>Confirm add</Translate>&nbsp;{label}
         </>
       ),
       message:
