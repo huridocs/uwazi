@@ -4,7 +4,7 @@ import * as types from 'app/Uploads/actions/actionTypes';
 
 const initialState = {};
 
-export default function documents(state = initialState, action = {}) {
+const documents = (state = initialState, action = {}) => {
   if (action.type === types.NEW_UPLOAD_DOCUMENT) {
     return state.set(action.doc, 0);
   }
@@ -13,9 +13,11 @@ export default function documents(state = initialState, action = {}) {
     return state.set(action.doc, action.progress);
   }
 
-  if (action.type === types.UPLOAD_COMPLETE) {
+  if ([types.UPLOAD_COMPLETE, types.BATCH_UPLOAD_COMPLETE].includes(action.type)) {
     return state.delete(action.doc);
   }
 
   return Immutable.fromJS(state);
-}
+};
+
+export default documents;

@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
-import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import Immutable from 'immutable';
+import { isEmpty } from 'lodash';
+import { Icon } from 'UI';
+import { uploadDocument, documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
 import { socket } from 'app/socket';
-import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import Immutable from 'immutable';
 
 const renderProgress = progress => (
   <div className="upload-button btn btn-default btn-disabled">
@@ -95,22 +95,26 @@ export class UploadButton extends Component {
   }
 
   render() {
+    const progress = this.props.progress.get(this.props.entitySharedId);
+
+    if (progress === 0) {
+      return renderProcessing();
+    }
+
+    if (progress > 0 && progress < 100) {
+      return renderProgress(progress);
+    }
+
+    if (this.state.completed || progress === 100) {
+      return this.renderButton('success', 'check', 'Success, Upload another?');
+    }
+
     if (this.state.processing) {
       return renderProcessing();
     }
 
     if (this.state.failed) {
       return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
-    }
-
-    if (this.state.completed) {
-      return this.renderButton('success', 'check', 'Success, Upload another?');
-    }
-
-    const progress = this.props.progress.get(this.props.entitySharedId);
-
-    if (progress) {
-      return renderProgress(progress);
     }
 
     return this.renderButton();
@@ -137,7 +141,9 @@ UploadButton.contextTypes = {
   confirm: PropTypes.func,
 };
 
-const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });
+const mapStateToProps = ({ metadata, progress }) => ({
+  progress: isEmpty(progress) ? metadata.progress : progress,
+});
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(

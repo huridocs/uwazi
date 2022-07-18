@@ -3,6 +3,7 @@ import { Dispatch } from 'redux';
 import { groupBy } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
+import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
 import { ensure } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
 
@@ -84,6 +85,13 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
 
     return request.end((err, res) => {
       if (err) return reject(err);
+
+      if (dispatch && addedDocuments.length) {
+        dispatch({
+          type: uploadsActionTypes.NEW_UPLOAD_DOCUMENT,
+          doc: res.body.entity.sharedId,
+        });
+      }
       return resolve(res.body);
     });
   });
