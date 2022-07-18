@@ -197,17 +197,12 @@ const saveFiles = async (
 
   if (documentsToProcess.length) {
     socketEmiter('conversionStart', entity.sharedId!);
-    Promise.all(
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    Promise.allSettled(
       documentsToProcess.map(async document => processDocument(entity.sharedId!, document))
-    )
-      .then(() => {})
-      .catch(e => {
-        errorLog.error(prettifyError(e));
-        socketEmiter('conversionFailed', entity.sharedId!);
-      })
-      .finally(() => {
-        socketEmiter('documentProcessed', entity.sharedId!);
-      });
+    ).then(() => {
+      socketEmiter('documentProcessed', entity.sharedId!);
+    });
   }
 
   return saveResults;
