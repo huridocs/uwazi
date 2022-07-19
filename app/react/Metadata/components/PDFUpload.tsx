@@ -16,8 +16,10 @@ const handlePDFUpload =
   (event: React.FormEvent<HTMLInputElement>, model: string) => (dispatch: Dispatch<{}>) => {
     const { files } = event.target as HTMLInputElement;
     if (files && files.length > 0) {
-      const data = { data: URL.createObjectURL(files[0]), originalFile: files[0] };
-      dispatch(actions.push(`${model}.documents`, data));
+      Array.from(files).forEach(file => {
+        const data = { data: URL.createObjectURL(file), originalFile: file };
+        dispatch(actions.push(`${model}.documents`, data));
+      });
     }
   };
 
@@ -59,6 +61,7 @@ const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => 
         style={{ display: 'none' }}
         ref={inputFileRef}
         accept="application/pdf"
+        multiple
       />
       <MetadataFormFiles model={model} type="document" files={entity.documents} />
     </>

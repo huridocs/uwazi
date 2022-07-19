@@ -56,31 +56,42 @@ describe('PDF upload', () => {
     mockedCreateObjectURL.mockReset();
   });
 
-  it('Should upload a main document', () => {
-    const newFile = new File([Buffer.from('pdf').toString('base64')], 'file.pdf', {
-      type: 'application/pdf',
-    });
+  it('Should upload main documents', () => {
+    const newFiles = [
+      new File([Buffer.from('pdf').toString('base64')], 'file1.pdf', {
+        type: 'application/pdf',
+      }),
+      new File([Buffer.from('pdf').toString('base64')], 'file2.pdf', {
+        type: 'application/pdf',
+      }),
+    ];
+
     render();
     const fileInput = renderResult.container.querySelector('input[type="file"]') as HTMLElement;
     fireEvent.change(fileInput, {
       target: {
-        files: [newFile],
+        files: [newFiles],
       },
     });
-    expect(mockedCreateObjectURL).toHaveBeenCalledWith(newFile);
+
+    expect(mockedCreateObjectURL).toHaveBeenCalledWith(newFiles);
   });
 
-  it('should list the existing documents', async () => {
+  it('should list the existing documents and allow removing them', async () => {
     spyOn(formActions, 'remove').and.callFake(form => ({ type: 'ACTION-TYPE', value: form }));
 
     render();
+
     const fileNameInput = (await screen.getByRole('textbox')) as HTMLInputElement;
+
     expect(fileNameInput.getAttribute('name')).toEqual('.documents.0.originalname');
+
     const deleteButton = (await screen.getByRole('button', {
       name: 'Delete file',
     })) as HTMLButtonElement;
 
     fireEvent.click(deleteButton);
+
     expect(formActions.remove).toHaveBeenCalledWith('library.sidepanel.metadata.documents', 0);
   });
 });
