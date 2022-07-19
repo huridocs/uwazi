@@ -5,7 +5,7 @@ export const emitSchemaTypes = true;
 
 export const objectIdSchema = {
   oneOf: [
-    { type: 'string', pattern: '^[0-9a-zA-Z]+$' },
+    { type: 'string' },
     {
       type: 'object',
       // tsType: 'ObjectId',

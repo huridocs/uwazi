@@ -71,14 +71,7 @@ describe('documents', () => {
     beforeEach(() => {
       spyOn(documents, 'getById').and.returnValue(new Promise(resolve => resolve('documents')));
     });
-    it('should return a validation error for no valid id', async () => {
-      const response = await request(app).get('/api/documents').query({ _id: '/@novalidID//' });
 
-      expect(response.status).toBe(400);
-      expect(response.body.errors[0].keyword).toBe('pattern');
-      expect(response.body.errors[0].instancePath).toBe('/query/_id');
-      expect(response.body.error).toBe('validation failed');
-    });
     it('should return documents.get', async () => {
       const response = await request(app).get('/api/documents').query({ _id: 'id' });
       expect(documents.getById).toHaveBeenCalledWith('id', 'es');
