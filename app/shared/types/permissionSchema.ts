@@ -57,7 +57,7 @@ ajv.addKeyword({
           schemaPath: '',
           params: { keyword: 'duplicatedPermissions', fields },
           message: 'Permissions should be unique by person/group',
-          dataPath: '.permissions',
+          instancePath: '.permissions',
         },
       ]);
     }
@@ -74,7 +74,6 @@ export const permissionsDataSchema = {
     permissions: {
       type: 'array',
       items: { ...permissionSchema },
-      range: true,
     },
   },
   required: ['ids', 'permissions'],
