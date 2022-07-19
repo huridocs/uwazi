@@ -37,6 +37,7 @@
 }
 
 .entity-suggestions {
+  max-height: 70%;
   .dashboard-link {
     a {
       text-decoration: unset;
@@ -109,7 +110,7 @@
     border-collapse: separate;
     font-size: $f-size-sm;
     overflow-x: auto;
-    height: 200px;
+    height: 100%;
     overflow-y: auto;
 
     thead {
@@ -246,7 +247,6 @@
 
     &.long-segment {
       width: 55%;
-      max-width: 475px;
       cursor: pointer;
 
       &:hover {
