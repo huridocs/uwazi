@@ -196,6 +196,7 @@ const saveFiles = async (
   );
 
   if (documentsToProcess.length) {
+    socketEmiter('batchUploadStart', entity.sharedId!);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     Promise.allSettled(
       documentsToProcess.map(async document => processDocument(entity.sharedId!, document))

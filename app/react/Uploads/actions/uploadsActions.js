@@ -191,7 +191,7 @@ export function documentProcessed(sharedId, __reducerKey) {
       dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
       dispatch(basicActions.update('entityView/entity', doc));
       dispatch(basicActions.update('viewer/doc', doc));
-      dispatch({ type: types.BATCH_UPLOAD_COMPLETE, doc: sharedId });
+      dispatch({ type: types.BATCH_UPLOAD_COMPLETE, sharedId });
     });
   };
 }
@@ -200,5 +200,12 @@ export function conversionComplete(docId) {
   return {
     type: types.CONVERSION_COMPLETE,
     doc: docId,
+  };
+}
+
+export function startUpload(sharedId) {
+  return {
+    type: types.BATCH_UPLOAD_START,
+    sharedId,
   };
 }

@@ -96,8 +96,9 @@ export class UploadButton extends Component {
 
   render() {
     const progress = this.props.progress.get(this.props.entitySharedId);
+    const batchProgress = this.props.progress.get('batch').get(this.props.entitySharedId);
 
-    if (progress === 0) {
+    if (batchProgress) {
       return renderProcessing();
     }
 
