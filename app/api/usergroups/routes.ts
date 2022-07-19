@@ -30,8 +30,10 @@ export default (app: Application) => {
     '/api/usergroups',
     needsAuthorization(['admin']),
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           required: ['_id'],
           properties: {
             _id: { type: 'string' },

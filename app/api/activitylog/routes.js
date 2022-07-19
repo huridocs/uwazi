@@ -9,14 +9,17 @@ export default app => {
     needsAuthorization(['admin']),
     parseQuery,
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
           additionalProperties: false,
+          type: 'object',
           properties: {
             user: objectIdSchema,
             username: { type: 'string' },
             find: { type: 'string' },
             time: {
+              type: 'object',
               properties: {
                 from: { type: 'number' },
                 to: { type: 'number' },

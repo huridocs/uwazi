@@ -1,9 +1,10 @@
-import Ajv from 'ajv';
+import Ajv, { ErrorObject } from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { wrapValidator } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
+import ValidationError from 'ajv/dist/runtime/validation_error';
 
 import { validateMetadataField } from './validateMetadataField';
 import { customErrorMessages, validators } from './metadataValidators';
@@ -12,13 +13,13 @@ const ajv = new Ajv({ allErrors: true });
 
 const validateField =
   (entity: EntitySchema, template: TemplateSchema) =>
-  async (err: Promise<Ajv.ErrorObject[]>, property: PropertySchema) => {
+  async (err: Promise<ErrorObject[]>, property: PropertySchema) => {
     try {
       await validateMetadataField(property, entity, template);
       return err;
     } catch (e) {
       const currentErrors = await err;
-      if (e instanceof Ajv.ValidationError) {
+      if (e instanceof ValidationError) {
         return currentErrors.concat(e.errors);
       }
       throw e;
@@ -26,14 +27,15 @@ const validateField =
   };
 
 const validateFields = async (template: TemplateSchema, entity: EntitySchema) => {
-  const errors: Ajv.ErrorObject[] = await (template.properties || []).reduce<
-    Promise<Ajv.ErrorObject[]>
-  >(validateField(entity, template), Promise.resolve([]));
+  const errors: ErrorObject[] = await (template.properties || []).reduce<Promise<ErrorObject[]>>(
+    validateField(entity, template),
+    Promise.resolve([])
+  );
   return errors;
 };
 
 const validateAllowedProperties = async (template: TemplateSchema, entity: EntitySchema) => {
-  const errors: Ajv.ErrorObject[] = [];
+  const errors: ErrorObject[] = [];
   const allowedProperties = (template.properties || []).map(p => p.name);
   Object.keys(entity.metadata || {}).forEach((propName: string) => {
     if (!allowedProperties.includes(propName)) {
@@ -61,7 +63,7 @@ ajv.addKeyword({
 
     const [template = {} as TemplateSchema] = await templatesModel.get({ _id: entity.template });
 
-    const errors: Ajv.ErrorObject[] = [
+    const errors: ErrorObject[] = [
       ...(await validateFields(template, entity)),
       ...(await validateAllowedProperties(template, entity)),
     ];

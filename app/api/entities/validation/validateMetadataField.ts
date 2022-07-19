@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { ErrorObject } from 'ajv';
 import { isUndefined, isNull } from 'util';
 import { ensure } from 'shared/tsUtils';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -14,7 +14,7 @@ import { validators, customErrorMessages } from './metadataValidators';
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
 const validationError = (
-  error: Partial<Ajv.ErrorObject>,
+  error: Partial<ErrorObject>,
   property: PropertySchema,
   entity: EntitySchema
 ) => ({
@@ -32,7 +32,7 @@ const validateRequired = (
   property: PropertySchema,
   entity: EntitySchema,
   value: MetadataObjectSchema[] = []
-): Ajv.ErrorObject[] => {
+): ErrorObject[] => {
   if (!validators.validateRequiredProperty(property, value)) {
     return [validationError({ message: customErrorMessages.required }, property, entity)];
   }
@@ -174,7 +174,7 @@ export const validateMetadataField = async (
 ) => {
   const value = entity.metadata?.[ensure<string>(property.name)];
 
-  const errors: Ajv.ErrorObject[] = [
+  const errors: ErrorObject[] = [
     ...validateRequired(property, entity, value),
     ...validateType(property, entity, value),
     ...validateFieldSize(property, entity, value),

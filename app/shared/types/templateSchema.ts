@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { ErrorObject } from 'ajv';
 import { ObjectId } from 'mongodb';
 
 import model from 'api/templates/templatesModel';
@@ -56,7 +56,7 @@ ajv.addKeyword({
 
     const allProperties = (data.properties || []).concat(data.commonProperties || []);
 
-    const errors: Ajv.ErrorObject[] = [];
+    const errors: ErrorObject[] = [];
     allProperties.forEach(property => {
       fields.forEach(field => {
         const value = property[field] && (property[field]?.toString() || '').toLowerCase().trim();
@@ -136,7 +136,7 @@ ajv.addKeyword({
         )
     );
 
-    const errors: Ajv.ErrorObject[] = [];
+    const errors: ErrorObject[] = [];
     await Promise.all(
       toRemoveProperties.map(async property => {
         const canDelete = await templates.canDeleteProperty(

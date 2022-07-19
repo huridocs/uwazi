@@ -1,6 +1,7 @@
 /* eslint-disable max-lines,max-statements */
 
-import Ajv from 'ajv';
+import Ajv, { ErrorObject } from 'ajv';
+import ValidationError from 'ajv/dist/runtime/validation_error';
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -16,7 +17,7 @@ describe('validateEntity', () => {
   beforeEach(async () => {
     spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
     //@ts-ignore
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -39,7 +40,7 @@ describe('validateEntity', () => {
       try {
         await validateEntity(entity);
       } catch (e) {
-        if (e instanceof Ajv.ValidationError) {
+        if (e instanceof ValidationError) {
           throw JSON.stringify(e, null, ' ');
         }
         throw e;
@@ -50,7 +51,7 @@ describe('validateEntity', () => {
       entity: EntitySchema,
       message: string,
       instancePath: string,
-      restOfError: Partial<Ajv.ErrorObject> = {}
+      restOfError: Partial<ErrorObject> = {}
     ) => {
       await expect(validateEntity(entity)).rejects.toHaveProperty(
         'errors',
@@ -72,7 +73,7 @@ describe('validateEntity', () => {
       await testValid(entity);
     });
 
-    fit('should allow template to be missing', async () => {
+    it('should allow template to be missing', async () => {
       let entity = createEntity({ template: undefined });
       await testValid(entity);
       entity = createEntity({ template: '' });
@@ -86,16 +87,16 @@ describe('validateEntity', () => {
 
     it('should fail if title is not a string', async () => {
       let entity = createEntity({ title: {} });
-      await expectError(entity, expect.any(String), '.title');
+      await expectError(entity, expect.any(String), '/title');
       entity = createEntity({ title: 10 });
-      await expectError(entity, expect.any(String), '.title');
+      await expectError(entity, expect.any(String), '/title');
     });
 
     it('should fail if title exceeds the lucene term byte-length limit', async () => {
       const entity = createEntity({
         title: Math.random().toString(36).repeat(20000),
       });
-      await expectError(entity, expect.any(String), '.title');
+      await expectError(entity, expect.any(String), '/title');
     });
 
     it('should allow title to be missing', async () => {
@@ -571,7 +572,7 @@ describe('validateEntity', () => {
           const entity = createEntity({
             metadata: { geolocation: [{ value: { lat: 10, lon: 10, label: 10 } }] },
           });
-          await expectError(entity, 'should be string', ".metadata['geolocation'][0].value");
+          await expectError(entity, 'must be string', '/metadata/geolocation/0/value');
         });
 
         it('should not fail if label is not present', async () => {
@@ -588,7 +589,7 @@ describe('validateEntity', () => {
           await expect(validateEntity(entity)).rejects.toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ instancePath: ".metadata['geolocation'][0].value" }),
+              expect.objectContaining({ instancePath: '/metadata/geolocation/0/value' }),
             ])
           );
           entity = createEntity({
@@ -609,7 +610,7 @@ describe('validateEntity', () => {
           await expect(validateEntity(entity)).rejects.toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ instancePath: ".metadata['geolocation'][0].value" }),
+              expect.objectContaining({ instancePath: '/metadata/geolocation/0/value' }),
             ])
           );
           entity = createEntity({
@@ -618,7 +619,7 @@ describe('validateEntity', () => {
           await expect(validateEntity(entity)).rejects.toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ instancePath: ".metadata['geolocation'][0].value" }),
+              expect.objectContaining({ instancePath: '/metadata/geolocation/0/value' }),
             ])
           );
         });

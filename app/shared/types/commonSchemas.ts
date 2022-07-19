@@ -8,7 +8,7 @@ export const objectIdSchema = {
     { type: 'string' },
     {
       type: 'object',
-      tsType: 'ObjectId',
+      // tsType: 'ObjectId',
     },
   ],
 };

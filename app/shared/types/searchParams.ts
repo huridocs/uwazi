@@ -20,7 +20,7 @@ export const searchParamsSchema = {
               type: 'object',
               additionalProperties: false,
               properties: {
-                values: { type: 'array', items: [{ type: 'boolean' }] },
+                values: { type: 'array', items: { type: 'boolean' } },
               },
             },
             permissions: {
@@ -29,26 +29,24 @@ export const searchParamsSchema = {
               properties: {
                 values: {
                   type: 'array',
-                  items: [
-                    {
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        refId: { type: 'string' },
-                        level: { type: 'string' },
-                      },
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                      refId: { type: 'string' },
+                      level: { type: 'string' },
                     },
-                  ],
+                  },
                 },
                 and: { type: 'boolean' },
               },
             },
           },
         },
-        types: { type: 'array', items: [{ type: 'string' }] },
-        _types: { type: 'array', items: [{ type: 'string' }] },
-        fields: { type: 'array', items: [{ type: 'string' }] },
-        include: { type: 'array', items: [{ type: 'string' }] },
+        types: { type: 'array', items: { type: 'string' } },
+        _types: { type: 'array', items: { type: 'string' } },
+        fields: { type: 'array', items: { type: 'string' } },
+        include: { type: 'array', items: { type: 'string' } },
         allAggregations: { type: 'boolean' },
         aggregations: { type: 'string' },
         order: { type: 'string', enum: ['asc', 'desc'] },
@@ -60,7 +58,7 @@ export const searchParamsSchema = {
         userSelectedSorting: { type: 'boolean' },
         treatAs: { type: 'string' },
         unpublished: { type: 'boolean' },
-        select: { type: 'array', items: [{ type: 'string' }] },
+        select: { type: 'array', items: { type: 'string' } },
         geolocation: { type: 'boolean' },
         includeReviewAggregations: { type: 'boolean' },
       },

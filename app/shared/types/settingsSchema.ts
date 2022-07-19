@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { ErrorObject } from 'ajv';
 import { wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, languagesListSchema, geolocationSchema } from 'shared/types/commonSchemas';
 import { Settings } from './settingsType';
@@ -12,7 +12,7 @@ ajv.addKeyword({
   errors: true,
   type: 'object',
   validate(schema: boolean, settings: Settings) {
-    const errors: Ajv.ErrorObject[] = [];
+    const errors: ErrorObject[] = [];
     const { languages = [] } = settings;
     const defaultLanguage = languages.filter(language => language.default === true);
 

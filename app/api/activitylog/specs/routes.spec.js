@@ -31,8 +31,8 @@ describe('Activitylog routes', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setTenant();
-    await testingEnvironment.setRequestId();
-    await testingEnvironment.setPermissions({
+    testingEnvironment.setRequestId();
+    testingEnvironment.setPermissions({
       _id: 'userId',
       role: 'admin',
       username: 'adminUser',
@@ -80,9 +80,9 @@ describe('Activitylog routes', () => {
       };
       it.each`
         changedProperty          | expectedError             | expectedPath
-        ${{ additional: 'abc' }} | ${'additionalProperties'} | ${'.query'}
-        ${{ limit: 'abc' }}      | ${'type'}                 | ${'.query.limit'}
-        ${{ before: 'abc' }}     | ${'type'}                 | ${'.query.before'}
+        ${{ additional: 'abc' }} | ${'additionalProperties'} | ${'/query'}
+        ${{ limit: 'abc' }}      | ${'type'}                 | ${'/query/limit'}
+        ${{ before: 'abc' }}     | ${'type'}                 | ${'/query/before'}
       `(
         'should return a validation error',
         async ({ changedProperty, expectedError, expectedPath }) => {
