@@ -220,7 +220,7 @@ export const EntitySuggestions = ({
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
-    setStatus({ key: response.status });
+    setStatus({ key: response.status, data: response.data });
     store?.dispatch(notify(response.message, type));
     if (status.key === 'ready') {
       await retrieveSuggestions();

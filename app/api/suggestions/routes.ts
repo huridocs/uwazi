@@ -123,11 +123,11 @@ export const suggestionsRoutes = (app: Application) => {
     }
   );
 
-  app.get(
+  app.post(
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('query'),
+    propertyRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.status, req, res);
     }

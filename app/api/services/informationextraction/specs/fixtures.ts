@@ -196,11 +196,23 @@ const fixtures: DBFixture = {
       page: 1,
       date: 100,
     },
+    {
+      fileId: factory.id('F4'),
+      entityId: 'A1',
+      language: 'en',
+      propertyName: 'property2',
+      suggestedValue: 'suggestion_text_1',
+      segment: 'segment_text_1',
+      status: 'processing',
+      page: 1,
+      date: 100,
+    },
   ],
   ixmodels: [
     { propertyName: 'property1', creationDate: 200, status: 'ready' },
     { propertyName: 'property4', creationDate: 200, status: 'ready' },
     { propertyName: 'property2', creationDate: 200, status: 'ready' },
+    { propertyName: 'property3', creationDate: 200, status: 'processing' },
   ],
   templates: [
     factory.template('templateToSegmentA', [
