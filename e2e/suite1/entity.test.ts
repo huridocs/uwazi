@@ -268,6 +268,8 @@ describe('Entities', () => {
           text: 'Entity with main documents',
         });
 
+        await page.waitForSelector('.file-originalname');
+
         await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
         await expect(page).toMatchElement('.file-originalname', { text: 'invalid.pdf' });
       });
