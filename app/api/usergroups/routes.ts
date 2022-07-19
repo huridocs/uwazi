@@ -21,19 +21,9 @@ export default (app: Application) => {
   app.post(
     '/api/usergroups',
     needsAuthorization(['admin']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: userGroupSchema,
-      },
-    }),
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const userGroup = await userGroups.save(req.body);
-        res.json(userGroup);
-      } catch (err) {
-        next(err);
-      }
+    async (req: Request, res: Response) => {
+      const userGroup = await userGroups.save(req.body);
+      res.json(userGroup);
     }
   );
 

@@ -21,8 +21,7 @@ describe('usergroups routes', () => {
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
 
   beforeAll(async () => {
-    await testingEnvironment.setTenant();
-    await testingEnvironment.setRequestId();
+    await testingEnvironment.setUp({});
   });
 
   afterAll(async () => {
@@ -68,34 +67,23 @@ describe('usergroups routes', () => {
 
   describe('POST', () => {
     const userGroup = { _id: 'group1', name: 'group 1', members: [] };
-    beforeEach(() => {
-      spyOn(userGroups, 'save').and.returnValue(Promise.resolve(userGroup));
-    });
-
-    it('should save a user group and return the updated data', async () => {
-      user = { username: 'user 1', role: 'admin' };
-      const response = await postUserGroup();
-      expect(response.body._id).toEqual('group1');
-      expect(userGroups.save).toHaveBeenCalledWith(userGroup);
-    });
 
     describe('validation', () => {
       it('should return a validation error if user group data is not valid', async () => {
         user = { username: 'user 1', role: 'admin' };
         const response = await postUserGroup({ name: undefined });
-        expect(response.status).toBe(400);
-        expect(userGroups.save).not.toHaveBeenCalled();
-        expect(response.body.errors[0].keyword).toBe('required');
-        expect(response.body.errors[0].dataPath).toBe('.body');
+        expect(response.status).toBe(422);
+        expect(response.body.validations[0].keyword).toBe('required');
+        expect(response.body.validations[0].instancePath).toBe('');
         expect(response.body.error).toBe('validation failed');
       });
 
       it('should validate a user group that has an undefined user id', async () => {
         user = { username: 'user 1', role: 'admin' };
         const response = await postUserGroup({ name: 'group 1', members: [{ _id: undefined }] });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toBe('required');
-        expect(response.body.errors[0].dataPath).toBe('.body.members[0]');
+        expect(response.status).toBe(422);
+        expect(response.body.validations[0].keyword).toBe('required');
+        expect(response.body.validations[0].instancePath).toBe('/members/0');
         expect(response.body.error).toBe('validation failed');
       });
 
@@ -106,11 +94,11 @@ describe('usergroups routes', () => {
           other: 'invalid',
           members: [{ refId: 'user1', other: 'invalid1' }],
         });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toBe('additionalProperties');
-        expect(response.body.errors[0].dataPath).toBe('.body');
-        expect(response.body.errors[1].keyword).toBe('additionalProperties');
-        expect(response.body.errors[1].dataPath).toBe('.body.members[0]');
+        expect(response.status).toBe(422);
+        expect(response.body.validations[0].keyword).toBe('additionalProperties');
+        expect(response.body.validations[0].instancePath).toBe('');
+        expect(response.body.validations[1].keyword).toBe('additionalProperties');
+        expect(response.body.validations[1].instancePath).toBe('/members/0');
         expect(response.body.error).toBe('validation failed');
       });
     });
