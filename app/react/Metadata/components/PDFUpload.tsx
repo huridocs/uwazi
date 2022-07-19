@@ -46,14 +46,17 @@ const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => 
   };
 
   return (
-    <>
-      <h2>
-        <Translate>Primary Documents</Translate>
-      </h2>
-      <button type="button" onClick={handleUploadButtonClicked}>
-        <Icon icon="paperclip" />
-        <Translate>Upload PDF</Translate>
-      </button>
+    <div className="document-list-parent">
+      <div className="attachments-list-header editor">
+        <h2>
+          <Translate>Primary Documents</Translate>
+        </h2>
+        <button type="button" onClick={handleUploadButtonClicked} className="btn">
+          <Icon icon="plus" />
+          &nbsp;
+          <Translate>Add PDF</Translate>
+        </button>
+      </div>
       <input
         aria-label="pdfInput"
         type="file"
@@ -64,7 +67,7 @@ const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => 
         multiple
       />
       <MetadataFormFiles model={model} type="document" files={entity.documents} />
-    </>
+    </div>
   );
 };
 
