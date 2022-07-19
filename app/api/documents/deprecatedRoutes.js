@@ -19,11 +19,11 @@ export default app => {
       properties: {
         query: {
           type: 'object',
+          required: ['templateId'],
           additionalProperties: false,
           properties: {
             templateId: objectIdSchema,
           },
-          required: ['templateId'],
         },
       },
     }),
@@ -43,7 +43,7 @@ export default app => {
           type: 'object',
           additionalProperties: false,
           properties: {
-            _id: { ...objectIdSchema },
+            _id: objectIdSchema,
           },
           required: ['_id'],
         },

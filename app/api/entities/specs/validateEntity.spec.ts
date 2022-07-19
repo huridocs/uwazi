@@ -11,6 +11,7 @@ import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validat
 
 import { customErrorMessages } from '../validation/metadataValidators.js';
 import { validateEntity } from '../validateEntity';
+import { ObjectId } from 'mongodb';
 
 describe('validateEntity', () => {
   beforeEach(async () => {
