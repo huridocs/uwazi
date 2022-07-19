@@ -130,7 +130,7 @@
     "isomorphic-fetch": "3.0.0",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
-    "json-schema-to-typescript": "^9.1.1",
+    "json-schema-to-typescript": "^11.0.1",
     "jvent": "1.0.2",
     "leaflet": "^1.7.1",
     "leaflet.gridlayer.googlemutant": "^0.13.5",
