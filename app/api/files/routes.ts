@@ -10,6 +10,7 @@ import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 
@@ -74,6 +75,7 @@ export default (app: Application) => {
     uploadMiddleware(attachmentsPath),
     activitylogMiddleware,
     (req, res, next) => {
+      console.log('REQ: ', req);
       files
         .save({ ...req.file, ...req.body, type: 'attachment' })
         .then(saved => {
@@ -148,13 +150,13 @@ export default (app: Application) => {
 
         const filename = file.filename || '';
 
-        if (
-          !filename ||
-          !(await fileExists(uploadsPath(filename))) ||
-          !(await checkEntityPermission(file))
-        ) {
-          throw createError('file not found', 404);
-        }
+        // if (
+        //   !filename ||
+        //   !(await fileExists(uploadsPath(filename))) ||
+        //   !(await checkEntityPermission(file))
+        // ) {
+        //   throw createError('file not found', 404);
+        // }
 
         if (file.originalname) {
           res.setHeader(
@@ -162,8 +164,25 @@ export default (app: Application) => {
             `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
           );
         }
-
-        res.sendFile(uploadsPath(filename));
+        const s3 = new S3Client({
+          apiVersion: 'latest',
+          region: 'greenhost',
+          endpoint: 'https://store.greenhost.net',
+          credentials: {
+            accessKeyId: '25GIOIR4BHE759AD5XLI',
+            secretAccessKey: 'NMQcbQGOfXYmueT4gnHwkBMmm7BC34He2kCk4Bdb',
+          },
+        });
+        const getObjectCommand = new GetObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: file.filename,
+        });
+        const response = await s3.send(getObjectCommand);
+        // res.sendFile(uploadsPath(filename));
+        // res.attachment(file.filename); // Set Filename
+        res.type(response.ContentType);
+        response.Body.pipe(res);
+        // res.sendFile(response.Body);
       } catch (e) {
         next(e);
       }

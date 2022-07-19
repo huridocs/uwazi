@@ -2,6 +2,8 @@ import path from 'path';
 import { fs, generateFileName, pathFunction, deleteFile } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import multer, { StorageEngine } from 'multer';
+import { S3Client } from '@aws-sdk/client-s3';
+import multerS3 from 'multer-s3';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -24,7 +26,7 @@ const move = async (req: Request, filePath: pathFunction) => {
 };
 
 const singleUpload =
-  (filePath?: pathFunction, storage = defaultStorage) =>
+  (filePath?: pathFunction, storage: multer.StorageEngine = defaultStorage) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await new Promise<void>((resolve, reject) => {
@@ -33,10 +35,11 @@ const singleUpload =
           reject(err);
         });
       });
+      req.file.filename = req.file.key;
 
-      if (filePath) {
-        await move(req, filePath);
-      }
+      // if (filePath) {
+      //   await move(req, filePath);
+      // }
       next();
     } catch (e) {
       next(e);
@@ -61,8 +64,22 @@ const multipleUpload = async (req: Request, res: Response, next: NextFunction) =
  * accepts a single file and moves it to the path provided by path function
  * @param pathFunction is optional, when undefined the file will be stored on the os tmp default dir
  */
-const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) =>
-  singleUpload(filePath, storage);
+const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
+  const s3 = new S3Client({
+    apiVersion: 'latest',
+    region: 'greenhost',
+    endpoint: 'https://store.greenhost.net',
+    credentials: { accessKeyId: '25GIOIR4BHE759AD5XLI', secretAccessKey: 'NMQcbQGOfXYmueT4gnHwkBMmm7BC34He2kCk4Bdb' }});
+  const _storage = multerS3({
+    s3: s3,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    bucket: 'uwazi-development',
+    key(_req: Request, file: Express.Multer.File, cb: multerCallback) {
+      cb(null, generateFileName(file));
+    },
+  })
+  return singleUpload(filePath, _storage);
+}
 
 /**
  * accepts multiple files and places them in req.files array
