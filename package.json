@@ -96,6 +96,7 @@
     "@types/redlock": "^4.0.2",
     "@types/url-join": "^4.0.1",
     "ajv": "^8.11.0",
+    "ajv-formats": "^2.1.1",
     "ajv-keywords": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "big.js": "^6.1.1",
