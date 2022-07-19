@@ -26,7 +26,7 @@ const renderProcessing = () => (
   </div>
 );
 
-export class UploadButton extends Component {
+class UploadButton extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -97,7 +97,11 @@ export class UploadButton extends Component {
   render() {
     const progress = this.props.progress.get(this.props.entitySharedId);
 
-    if (progress === 0) {
+    if (this.state.failed) {
+      return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
+    }
+
+    if (this.state.processing || progress === 0) {
       return renderProcessing();
     }
 
@@ -107,14 +111,6 @@ export class UploadButton extends Component {
 
     if (this.state.completed || progress === 100) {
       return this.renderButton('success', 'check', 'Success, Upload another?');
-    }
-
-    if (this.state.processing) {
-      return renderProcessing();
-    }
-
-    if (this.state.failed) {
-      return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
     }
 
     return this.renderButton();
@@ -152,4 +148,5 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
+export { UploadButton };
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);
