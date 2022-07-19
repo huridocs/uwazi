@@ -22,7 +22,7 @@ ajv.addKeyword({
         schemaPath: '',
         params: { keyword: 'hasDefaultLanguage', schema },
         message: 'At least one language must be selected as default',
-        dataPath: 'settings.languages',
+        instancePath: 'settings.languages',
       });
     }
 
@@ -32,7 +32,7 @@ ajv.addKeyword({
         schemaPath: '',
         params: { keyword: 'hasDefaultLanguage', schema },
         message: 'Only one language must be selected as default',
-        dataPath: 'settings.languages',
+        instancePath: 'settings.languages',
       });
     }
 

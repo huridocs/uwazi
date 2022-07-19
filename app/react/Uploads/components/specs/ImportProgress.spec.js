@@ -45,7 +45,7 @@ describe('ImportProgress', () => {
         validations: [
           {
             message: 'should be number',
-            dataPath: ".metadata['number']",
+            instancePath: ".metadata['number']",
             schemaPath: '#/metadataMatchesTemplateProperties',
           },
         ],

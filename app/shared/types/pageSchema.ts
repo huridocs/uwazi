@@ -31,7 +31,7 @@ ajv.addKeyword({
             message: `This page is in use by the following templates: ${templatesTitles.join(
               ', '
             )}`,
-            dataPath: '.pages',
+            instancePath: '.pages',
           },
         ]);
       }

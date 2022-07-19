@@ -66,7 +66,7 @@ ajv.addKeyword({
             schemaPath: '',
             params: { keyword: 'uniquePropertyFields', fields },
             message: `duplicated property value { ${field}: "${value}" }`,
-            dataPath: `.properties.${field}`,
+            instancePath: `.properties.${field}`,
           });
         }
         uniqueValues[field].add(value || '');
@@ -150,7 +150,7 @@ ajv.addKeyword({
             schemaPath: '',
             params: { keyword: 'noDeleteInheritedProperty' },
             message: "Can't delete properties being inherited",
-            dataPath: `.properties.${property.name}`,
+            instancePath: `.properties.${property.name}`,
           });
         }
       })
@@ -231,7 +231,7 @@ ajv.addKeyword({
           params: { keyword: 'cantReuseNameWithDifferentType' },
           message:
             'Entered label is already in use on another property with a different type, thesaurus or inherit',
-          dataPath: `.properties.${property}`,
+          instancePath: `.properties.${property}`,
         }))
       );
     }
@@ -257,7 +257,7 @@ ajv.addKeyword({
             schemaPath: '',
             params: { keyword: 'entityViewPageExists', fields },
             message: 'The selected page does not exist',
-            dataPath: '.templates',
+            instancePath: '.templates',
           },
         ]);
       }
@@ -268,7 +268,7 @@ ajv.addKeyword({
             schemaPath: '',
             params: { keyword: 'entityViewPageIsEnabled', fields },
             message: 'The selected page is not enabled for entity view',
-            dataPath: '.templates',
+            instancePath: '.templates',
           },
         ]);
       }
