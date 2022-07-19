@@ -162,7 +162,7 @@ class File extends Component<FileProps, FileState> {
               <div>
                 <Icon icon="clock" />
                 &nbsp;
-                <Translate>Processing ...</Translate>
+                <Translate>Processing</Translate>
               </div>
             )}
           </div>

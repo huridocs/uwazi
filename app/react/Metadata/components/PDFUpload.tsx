@@ -54,7 +54,7 @@ const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => 
         <button type="button" onClick={handleUploadButtonClicked} className="btn">
           <Icon icon="plus" />
           &nbsp;
-          <Translate>Add PDF</Translate>
+          <Translate>Add pdf</Translate>
         </button>
       </div>
       <input
