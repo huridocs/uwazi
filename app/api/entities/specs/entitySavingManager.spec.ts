@@ -208,7 +208,7 @@ describe('entitySavingManager', () => {
 
       it('should return an error', async () => {
         const { errors } = await saveEntity(entity, { ...reqData });
-        expect(errors[0]).toBe('Could not save supporting file/s: malformed url');
+        expect(errors[0]).toBe('Could not save file/s: malformed url');
       });
     });
 
@@ -558,7 +558,7 @@ describe('entitySavingManager', () => {
               ...reqData,
             }
           );
-          expect(errors[0]).toBe('Could not save main pdf file/s: changed.pdf');
+          expect(errors[0]).toBe('Could not save file/s: changed.pdf');
         });
       });
     });

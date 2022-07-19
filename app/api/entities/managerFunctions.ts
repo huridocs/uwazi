@@ -166,31 +166,19 @@ const saveFiles = async (
 ) => {
   const saveResults: string[] = [];
 
-  if (attachments.length) {
-    await Promise.all(
-      attachments.map(async attachment => {
-        try {
-          await filesAPI.save(attachment, false);
-        } catch (e) {
-          errorLog.error(prettifyError(e));
-          saveResults.push(`Could not save supporting file/s: ${attachment.originalname}`);
-        }
-      })
-    );
-    await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
-  }
-
   const { documentsToProcess = [], documentsToSave = [] } = groupBy(documents, document =>
     document._id ? 'documentsToSave' : 'documentsToProcess'
   );
 
+  const filesToSave = [...attachments, ...documentsToSave];
+
   await Promise.all(
-    documentsToSave.map(async document => {
+    filesToSave.map(async file => {
       try {
-        await filesAPI.save(document, false);
+        await filesAPI.save(file, false);
       } catch (e) {
         errorLog.error(prettifyError(e));
-        saveResults.push(`Could not save main pdf file/s: ${document.originalname}`);
+        saveResults.push(`Could not save file/s: ${file.originalname}`);
       }
     })
   );
@@ -209,6 +197,10 @@ const saveFiles = async (
 
       socketEmiter('documentProcessed', entity.sharedId!);
     });
+  }
+
+  if (attachments.length || documents.length) {
+    await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
   }
 
   return saveResults;
