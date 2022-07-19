@@ -49,7 +49,7 @@ describe('validateEntity', () => {
     const expectError = async (
       entity: EntitySchema,
       message: string,
-      dataPath: string,
+      instancePath: string,
       restOfError: Partial<Ajv.ErrorObject> = {}
     ) => {
       await expect(validateEntity(entity)).rejects.toHaveProperty(
@@ -588,7 +588,7 @@ describe('validateEntity', () => {
           await expect(validateEntity(entity)).rejects.toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].value" }),
+              expect.objectContaining({ instancePath: ".metadata['geolocation'][0].value" }),
             ])
           );
           entity = createEntity({
@@ -609,7 +609,7 @@ describe('validateEntity', () => {
           await expect(validateEntity(entity)).rejects.toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].value" }),
+              expect.objectContaining({ instancePath: ".metadata['geolocation'][0].value" }),
             ])
           );
           entity = createEntity({
@@ -618,7 +618,7 @@ describe('validateEntity', () => {
           await expect(validateEntity(entity)).rejects.toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].value" }),
+              expect.objectContaining({ instancePath: ".metadata['geolocation'][0].value" }),
             ])
           );
         });

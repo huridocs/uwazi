@@ -42,7 +42,7 @@ const validateAllowedProperties = async (template: TemplateSchema, entity: Entit
         schemaPath: '',
         params: { keyword: 'metadataMatchesTemplateProperties', data: entity },
         message: customErrorMessages.property_not_allowed,
-        dataPath: `.metadata['${propName}']`,
+        instancePath: `.metadata['${propName}']`,
       });
     }
   });
@@ -91,7 +91,7 @@ ajv.addKeyword({
           schemaPath: '',
           params: { keyword: 'metadataMatchesTemplateProperties', fields },
           message: 'template does not exist',
-          dataPath: '.template',
+          instancePath: '.template',
         },
       ]);
     }

@@ -24,7 +24,7 @@ const validationError = (
     keyword: 'metadataMatchesTemplateProperties',
     data: entity[ensure<string>(property.name)],
   },
-  dataPath: `.metadata['${property.name}']`,
+  instancePath: `.metadata['${property.name}']`,
   ...error,
 });
 
