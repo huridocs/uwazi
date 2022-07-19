@@ -308,8 +308,8 @@ export const EntitySuggestions = ({
             </button>
           </div>
         </div>
-        <table {...getTableProps()}>
-          <thead>
+        <table {...getTableProps()} className="table sticky">
+          <thead className="header">
             {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => {
