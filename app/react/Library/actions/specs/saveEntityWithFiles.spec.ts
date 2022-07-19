@@ -16,7 +16,9 @@ describe('saveEntityWithFiles', () => {
     spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
 
     jest.spyOn(mockUpload, 'end').mockImplementation(cb => {
-      const response: Partial<superagent.Response> = { body: { title: 'entity1' } };
+      const response: Partial<superagent.Response> = {
+        body: { entity: { title: 'entity1', sharedId: 'entity1' } },
+      };
       cb?.(null, response as superagent.Response);
     });
     spyOn(superagent, 'post').and.returnValue(mockUpload);
@@ -54,6 +56,7 @@ describe('saveEntityWithFiles', () => {
     const entity = {
       _id: 'entity1',
       title: 'entity1',
+      sharedId: 'entity1',
       attachments: [
         {
           _id: 'file_id',
@@ -70,6 +73,7 @@ describe('saveEntityWithFiles', () => {
     const expectedEntityJson = JSON.stringify({
       _id: 'entity1',
       title: 'entity1',
+      sharedId: 'entity1',
       attachments: [
         {
           _id: 'file_id',
@@ -90,13 +94,14 @@ describe('saveEntityWithFiles', () => {
     expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
 
     expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
-    expect(updatedEntity).toEqual({ title: 'entity1' });
+    expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
   });
 
   it('should save the entity without files', async () => {
     const entity = {
       _id: 'entity1',
       title: 'entity1',
+      sharedId: 'entity1',
       metadata: { data: [{ value: 'string' }] },
       documents: [],
     };
@@ -106,7 +111,7 @@ describe('saveEntityWithFiles', () => {
 
     expect(mockUpload.field).toHaveBeenLastCalledWith('entity', JSON.stringify(entity));
 
-    expect(updatedEntity).toEqual({ title: 'entity1' });
+    expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
   });
 
   it('should save the entity with added documents', async () => {
@@ -116,6 +121,7 @@ describe('saveEntityWithFiles', () => {
 
     const entity = {
       _id: 'entity1',
+      sharedId: 'entity1',
       title: 'entity1',
       attachments: [],
       documents: [{ data: 'blob:http://localhost:3000/blob/file_id', originalFile: file }],
@@ -123,6 +129,7 @@ describe('saveEntityWithFiles', () => {
 
     const expectedEntityJson = JSON.stringify({
       _id: 'entity1',
+      sharedId: 'entity1',
       title: 'entity1',
       attachments: [],
       documents: [],
@@ -133,6 +140,6 @@ describe('saveEntityWithFiles', () => {
     const updatedEntity = await saveEntityWithFiles(entity, dispatch);
     expect(mockUpload.attach).toHaveBeenCalledWith('documents[0]', file);
     expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
-    expect(updatedEntity).toEqual({ title: 'entity1' });
+    expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
   });
 });
