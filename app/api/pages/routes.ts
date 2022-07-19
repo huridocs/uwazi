@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import { Application } from 'express';
 
-import { PageSchema } from 'shared/types/pageSchema';
 import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';

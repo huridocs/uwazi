@@ -11,7 +11,6 @@ import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validat
 
 import { customErrorMessages } from '../validation/metadataValidators.js';
 import { validateEntity } from '../validateEntity';
-import { ObjectId } from 'mongodb';
 
 describe('validateEntity', () => {
   beforeEach(async () => {
@@ -55,7 +54,7 @@ describe('validateEntity', () => {
     ) => {
       await expect(validateEntity(entity)).rejects.toHaveProperty(
         'errors',
-        expect.arrayContaining([expect.objectContaining({ dataPath, message, ...restOfError })])
+        expect.arrayContaining([expect.objectContaining({ instancePath, message, ...restOfError })])
       );
     };
 
@@ -193,7 +192,7 @@ describe('validateEntity', () => {
       describe('any property', () => {
         it('should fail if value is not an array', async () => {
           const entity = createEntity({ metadata: { name: { value: 10 } } });
-          await expectError(entity, 'should be array', ".metadata['name']");
+          await expectError(entity, 'must be array', '/metadata/name');
         });
       });
 
@@ -598,7 +597,7 @@ describe('validateEntity', () => {
           await expect(validateEntity(entity)).rejects.toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].value" }),
+              expect.objectContaining({ instancePath: '/metadata/geolocation/0/value' }),
             ])
           );
         });

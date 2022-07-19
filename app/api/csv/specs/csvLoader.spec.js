@@ -10,7 +10,6 @@ import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
 import typeParsers from '../typeParsers';
-import ValidationError from 'ajv/dist/runtime/validation_error';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');

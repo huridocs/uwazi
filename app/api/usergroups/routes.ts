@@ -1,6 +1,5 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { needsAuthorization } from 'api/auth';
-import { userGroupSchema } from 'shared/types/userGroupSchema';
 import { validation } from 'api/utils';
 import userGroups from './userGroups';
 

@@ -66,8 +66,6 @@ describe('usergroups routes', () => {
   });
 
   describe('POST', () => {
-    const userGroup = { _id: 'group1', name: 'group 1', members: [] };
-
     describe('validation', () => {
       it('should return a validation error if user group data is not valid', async () => {
         user = { username: 'user 1', role: 'admin' };
