@@ -12,7 +12,7 @@ import { Icon } from 'UI';
 import { ShareButton } from 'app/Permissions/components/ShareButton';
 import * as actions from '../actions/actions';
 
-export class MetadataFormButtons extends Component {
+class MetadataFormButtons extends Component {
   render() {
     const { entityBeingEdited, exclusivelyViewButton, formName, hideDelete, uploadFileprogress } =
       this.props;
@@ -80,9 +80,13 @@ export class MetadataFormButtons extends Component {
               className="btn btn-success"
               disabled={uploadFileprogress !== undefined}
             >
-              <Icon icon="save" />
+              {uploadFileprogress ? <Icon icon="cog" spin /> : <Icon icon="save" />}
               <span className="btn-label">
-                <Translate>Save</Translate>
+                {uploadFileprogress ? (
+                  <span>`${uploadFileprogress} %`</span>
+                ) : (
+                  <Translate>Save</Translate>
+                )}
               </span>
             </button>
             <button
@@ -176,4 +180,5 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
+export { MetadataFormButtons };
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormButtons);
