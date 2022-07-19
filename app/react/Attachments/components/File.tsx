@@ -93,22 +93,6 @@ class File extends Component<FileProps, FileState> {
     );
   }
 
-  renderClient() {
-    return (
-      <div>
-        <div>
-          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
-            <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
-              <Icon icon="pencil-alt" />
-              &nbsp;
-              <Translate>Edit</Translate>
-            </button>
-          </NeedAuthorization>
-        </div>
-      </div>
-    );
-  }
-
   renderReady() {
     const { language, filename = '' } = this.props.file;
     return (
@@ -153,26 +137,18 @@ class File extends Component<FileProps, FileState> {
       : { originalname: (this.props.file as ClientBlobFile).originalFile.name, status: 'ready' };
     return (
       <>
-        {this.props.file._id && (
-          <div className="file">
-            <div className="file-originalname">{originalname}</div>
-            {status === 'ready' && this.renderReady()}
-            {status === 'failed' && this.renderFailed()}
-            {status === 'processing' && (
-              <div>
-                <Icon icon="clock" />
-                &nbsp;
-                <Translate>Processing</Translate>
-              </div>
-            )}
-          </div>
-        )}
-        {!this.props.file._id && (
-          <div className="file">
-            <div className="file-originalname">{originalname}</div>
-            {this.renderClient()}
-          </div>
-        )}
+        <div className="file">
+          <div className="file-originalname">{originalname}</div>
+          {status === 'ready' && this.renderReady()}
+          {status === 'failed' && this.renderFailed()}
+          {status === 'processing' && (
+            <div>
+              <Icon icon="clock" />
+              &nbsp;
+              <Translate>Processing</Translate>
+            </div>
+          )}
+        </div>
       </>
     );
   }
