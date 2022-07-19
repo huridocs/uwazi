@@ -1,13 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { get } from 'lodash';
 import { Icon } from 'UI';
-import { socket } from 'app/socket';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
-import { startUpload } from 'app/Uploads/actions/uploadsActions';
 import { MetadataFormFiles } from './MetadataFormFiles';
 
 type PDFUploadProps = {
@@ -31,28 +29,19 @@ const mapStateToProps = (state: IStore, ownProps: PDFUploadProps) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators(
-    { handlePDFUploadAction: handlePDFUpload, startUploadAction: startUpload },
-    dispatch
-  );
+  bindActionCreators({ handlePDFUploadAction: handlePDFUpload }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = PDFUploadProps & mappedProps;
 
-const PDFUpload = ({ model, entity, handlePDFUploadAction, startUploadAction }: ComponentProps) => {
+const PDFUpload = ({ model, entity, handlePDFUploadAction }: ComponentProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadButtonClicked = () => {
     inputFileRef.current?.click();
   };
-
-  useEffect(() => {
-    socket.on('batchUploadStart', (sharedId: string) => {
-      startUploadAction(sharedId);
-    });
-  }, [entity]);
 
   return (
     <>
