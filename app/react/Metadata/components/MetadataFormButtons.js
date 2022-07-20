@@ -83,7 +83,7 @@ class MetadataFormButtons extends Component {
               {uploadFileprogress ? <Icon icon="cog" spin /> : <Icon icon="save" />}
               <span className="btn-label">
                 {uploadFileprogress ? (
-                  <span>`${uploadFileprogress} %`</span>
+                  <span>{`${uploadFileprogress} %`}</span>
                 ) : (
                   <Translate>Save</Translate>
                 )}
