@@ -155,7 +155,7 @@ original error: {
         message: 'hello',
         errors: [
           {
-            dataPath: 'a property',
+            instancePath: 'a property',
             message: 'an error',
           },
         ],
