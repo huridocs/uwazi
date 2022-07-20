@@ -8,7 +8,7 @@ import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 // eslint-disable-next-line max-statements
 const processNested = (value: string) => {
-  let processedValue = value;
+  let processedValue = [...value];
   let nested = false;
   let stop = false;
 
@@ -22,16 +22,12 @@ const processNested = (value: string) => {
       stop = true;
     }
 
-    processedValue = rest.join('');
-  }
-
-  if (!nested) {
-    processedValue = value;
+    processedValue = rest;
   }
 
   return {
     nested,
-    processedValue,
+    processedValue: nested ? processedValue.join('') : value,
   };
 };
 
