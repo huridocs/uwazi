@@ -5,9 +5,11 @@ import { thesaurusSchema } from 'shared/types/thesaurusSchema';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import model from './dictionariesModel';
 
-const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
+const ajv = ajvKeywords(new Ajv({ allErrors: true }), ['uniqueItemProperties']);
+ajv.addVocabulary(['tsType']);
 
-ajv.addKeyword('uniqueName', {
+ajv.addKeyword({
+  keyword: 'uniqueName',
   async: true,
   validate: async (_config: any, thesaurus: ThesaurusSchema) => {
     const [duplicated] = await model.get({
@@ -28,7 +30,8 @@ const validateUniqeLabels = (values: { label: string }[] | undefined): boolean =
   return values.length === asSet.size;
 };
 
-ajv.addKeyword('uniqueLabels', {
+ajv.addKeyword({
+  keyword: 'uniqueLabels',
   async: true,
   validate: async (_config: any, thesaurus: ThesaurusSchema) =>
     !thesaurus.values ||

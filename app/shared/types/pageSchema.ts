@@ -8,9 +8,11 @@ import { PageType } from './pageType';
 
 export const emitSchemaTypes = true;
 
-const ajv = Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
-ajv.addKeyword('validatePageIsNotEntityView', {
+ajv.addKeyword({
+  keyword: 'validatePageIsNotEntityView',
   async: true,
   errors: true,
   type: 'object',
@@ -30,7 +32,7 @@ ajv.addKeyword('validatePageIsNotEntityView', {
             message: `This page is in use by the following templates: ${templatesTitles.join(
               ', '
             )}`,
-            dataPath: '.pages',
+            instancePath: '.pages',
           },
         ]);
       }

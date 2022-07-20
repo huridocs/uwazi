@@ -106,8 +106,10 @@ export default (app: Application) => {
     '/api/files/tocReviewed',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
+      type: 'object',
       properties: {
         body: {
+          type: 'object',
           required: ['fileId'],
           properties: {
             fileId: { type: 'string' },
@@ -127,8 +129,10 @@ export default (app: Application) => {
   app.get(
     '/api/files/:filename',
     validation.validateRequest({
+      type: 'object',
       properties: {
         params: {
+          type: 'object',
           properties: {
             filename: { type: 'string' },
           },
@@ -171,8 +175,10 @@ export default (app: Application) => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
 
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           required: ['_id'],
           additionalProperties: false,
           properties: {
@@ -203,8 +209,10 @@ export default (app: Application) => {
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           additionalProperties: false,
           properties: {
             _id: { type: 'string' },
@@ -232,8 +240,10 @@ export default (app: Application) => {
     uploadMiddleware(),
 
     validation.validateRequest({
+      type: 'object',
       properties: {
         body: {
+          type: 'object',
           required: ['template'],
           properties: {
             template: { type: 'string' },

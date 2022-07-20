@@ -51,10 +51,13 @@ const routes = app => {
       next();
     },
     validation.validateRequest({
+      type: 'object',
       properties: {
         body: {
+          type: 'object',
           properties: {
             email: {
+              type: 'object',
               properties: {
                 to: { type: 'string' },
                 from: { type: 'string' },
