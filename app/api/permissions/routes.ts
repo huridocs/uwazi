@@ -10,6 +10,7 @@ export const permissionRoutes = (app: Application) => {
     '/api/entities/permissions',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
+      type: 'object',
       properties: {
         body: {
           ...permissionsDataSchema,
@@ -30,6 +31,7 @@ export const permissionRoutes = (app: Application) => {
     '/api/entities/permissions/',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
+      type: 'object',
       properties: {
         body: {
           type: 'object',
@@ -56,8 +58,10 @@ export const permissionRoutes = (app: Application) => {
     '/api/collaborators',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           required: ['filterTerm'],
           properties: {
             filterTerm: { type: 'string' },

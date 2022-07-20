@@ -18,7 +18,7 @@ const conformValidations = (expand, validations) => {
           memo.concat(
             // eslint-disable-next-line react/no-array-index-key
             <div key={i}>
-              {v.get('message')}: {v.get('dataPath')}
+              {v.get('message')}: {v.get('instancePath')}
             </div>
           ),
         []

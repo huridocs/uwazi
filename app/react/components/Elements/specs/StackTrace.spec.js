@@ -20,12 +20,12 @@ describe('StackTrace', () => {
     validations: fromJS([
       {
         message: 'should be number',
-        dataPath: ".metadata['number']",
+        instancePath: ".metadata['number']",
         schemaPath: '#/metadataMatchesTemplateProperties',
       },
       {
         message: 'should be a date',
-        dataPath: ".metadata['date']",
+        instancePath: ".metadata['date']",
         schemaPath: '#/metadataMatchesTemplateProperties',
       },
     ]),

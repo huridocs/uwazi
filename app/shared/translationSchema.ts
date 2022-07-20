@@ -5,7 +5,8 @@ import { TranslationType } from './translationType';
 
 export const emitSchemaTypes = true;
 
-const ajv = Ajv({ allErrors: true, removeAdditional: true });
+const ajv = new Ajv({ allErrors: true, removeAdditional: true });
+ajv.addVocabulary(['tsType']);
 
 export const translationSchema = {
   $schema: 'http://json-schema.org/schema#',

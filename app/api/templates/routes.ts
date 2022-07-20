@@ -52,8 +52,10 @@ export default (app: Application) => {
     '/api/templates/setasdefault',
     needsAuthorization(),
     validation.validateRequest({
+      type: 'object',
       properties: {
         body: {
+          type: 'object',
           required: ['_id'],
           properties: {
             _id: { type: 'string' },
@@ -86,8 +88,10 @@ export default (app: Application) => {
     '/api/templates',
     needsAuthorization(),
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           required: ['_id'],
           properties: {
             _id: { type: 'string' },
@@ -112,8 +116,10 @@ export default (app: Application) => {
   app.get(
     '/api/templates/count_by_thesauri',
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           required: ['_id'],
           properties: {
             _id: { type: 'string' },
