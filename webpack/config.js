@@ -24,6 +24,10 @@ module.exports = production => {
   }
 
   return {
+    node: {
+      Buffer: false,
+      process: false,
+    },
     context: rootPath,
     devtool: 'eval-source-map',
     mode: 'development',
@@ -49,7 +53,7 @@ module.exports = production => {
       splitChunks: {
         cacheGroups: {
           default: false,
-          vendors: false,
+          defaultVendors: false,
           vendor: {
             chunks: 'all',
             test: /node_modules/,

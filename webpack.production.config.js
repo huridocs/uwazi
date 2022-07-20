@@ -11,7 +11,7 @@ config.context = __dirname;
 config.mode = 'production';
 
 config.plugins = config.plugins.concat([
-  new webpack.optimize.OccurrenceOrderPlugin(),
+  // new webpack.optimize.OccurrenceOrderPlugin(),
   new OptimizeCssAssetsPlugin(),
   new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.DefinePlugin({
@@ -20,6 +20,9 @@ config.plugins = config.plugins.concat([
     },
   }),
 ]);
+
+config.optimization.chunkIds = 'total-size';
+config.optimization.moduleIds = 'size';
 
 config.optimization.minimize = true;
 config.optimization.minimizer = [
