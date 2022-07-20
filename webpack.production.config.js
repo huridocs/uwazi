@@ -24,7 +24,6 @@ config.plugins = config.plugins.concat([
 config.optimization.minimize = true;
 config.optimization.minimizer = [
   new TerserWebpackPlugin({
-    cache: true,
     parallel: true,
   }),
 ];
