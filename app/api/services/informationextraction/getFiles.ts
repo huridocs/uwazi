@@ -80,7 +80,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
 
-  const indextedEntities = objectIndex(entities, e => e.sharedId + e.language);
+  const indexedEntities = objectIndex(entities, e => e.sharedId + e.language);
   const template = await templatesModel.getById(templates[0]);
 
   let type: string | undefined = 'text';
@@ -96,7 +96,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
 
   const filesWithEntityValue = files.map(file => {
     const fileLang = languages.get(file.language, 'ISO639_1') || defaultLang;
-    const entity = indextedEntities[file.entity + fileLang];
+    const entity = indexedEntities[file.entity + fileLang];
     if (!entity?.metadata || !entity?.metadata[property]?.length) {
       return file;
     }
