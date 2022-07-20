@@ -97,23 +97,19 @@ class UploadButton extends Component {
   render() {
     const progress = this.props.progress.get(this.props.entitySharedId);
 
-    if (this.state.failed) {
-      return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
-    }
+    switch (true) {
+      case this.state.failed:
+        return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
+      case this.state.processing || progress === 0:
+        return renderProcessing();
+      case progress > 0 && progress < 100:
+        return renderProgress(progress);
+      case this.state.completed || progress === 100:
+        return this.renderButton('success', 'check', 'Success, Upload another?');
 
-    if (this.state.processing || progress === 0) {
-      return renderProcessing();
+      default:
+        return this.renderButton();
     }
-
-    if (progress > 0 && progress < 100) {
-      return renderProgress(progress);
-    }
-
-    if (this.state.completed || progress === 100) {
-      return this.renderButton('success', 'check', 'Success, Upload another?');
-    }
-
-    return this.renderButton();
   }
 }
 
