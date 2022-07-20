@@ -19,5 +19,6 @@ export const IXModelSchema = {
     propertyName: { type: 'string', minLength: 1 },
     creationDate: { type: 'number' },
     status: { type: String, enum: Object.values(ModelStatus), default: ModelStatus.processing },
+    findingSuggestions: { type: 'boolean', default: true },
   },
 };

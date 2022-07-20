@@ -203,6 +203,8 @@ describe('InformationExtraction', () => {
   });
 
   describe('getSuggestions()', () => {
+    it('should not send any materials if model findSuggestions flag is not set', async () => {});
+
     it('should send the materials for the suggestions', async () => {
       await informationExtraction.getSuggestions('property1');
 

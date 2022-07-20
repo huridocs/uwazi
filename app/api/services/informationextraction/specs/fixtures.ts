@@ -209,10 +209,15 @@ const fixtures: DBFixture = {
     },
   ],
   ixmodels: [
-    { propertyName: 'property1', creationDate: 200, status: 'ready' },
-    { propertyName: 'property4', creationDate: 200, status: 'ready' },
-    { propertyName: 'property2', creationDate: 200, status: 'ready' },
-    { propertyName: 'property3', creationDate: 200, status: 'processing' },
+    { propertyName: 'property1', creationDate: 200, status: 'ready', findingSuggestions: true },
+    { propertyName: 'property4', creationDate: 200, status: 'ready', findingSuggestions: true },
+    { propertyName: 'property2', creationDate: 200, status: 'ready', findingSuggestions: true },
+    {
+      propertyName: 'property3',
+      creationDate: 200,
+      status: 'processing',
+      findingSuggestions: true,
+    },
   ],
   templates: [
     factory.template('templateToSegmentA', [

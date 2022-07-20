@@ -344,6 +344,19 @@ class InformationExtraction {
     return { status: 'ready', message: 'Ready' };
   };
 
+  stopModel = async (propertyName: string) => {
+    const res = await IXModelsModel.db.findOneAndUpdate(
+      { propertyName },
+      { $set: { findingSuggestions: false } },
+      {}
+    );
+    if (res) {
+      return { status: 'ready', message: 'Ready' };
+    }
+
+    return { status: 'error', message: '' };
+  };
+
   materialsForModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
     const files = await getFilesForTraining(templates, property);
     if (!files.length) {
