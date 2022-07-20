@@ -14,6 +14,7 @@ import csv, { CSVRow } from './csv';
 import importFile from './importFile';
 import { importEntity, translateEntity } from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
+import { thesauriFromStream } from './importThesauri';
 
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
@@ -87,9 +88,12 @@ export class CSVLoader extends EventEmitter {
       .map((l: LanguageSchema) => l.key)
       .filter((l: string) => l !== language);
 
-    const { thesauriValues: thesaurusValues, thesauriTranslations } = await csv(
-      await file.readStream()
-    ).toThesauri(language, availableLanguages);
+    const fileStream = await file.readStream();
+    const { thesauriValues: thesaurusValues, thesauriTranslations } = await thesauriFromStream(
+      fileStream,
+      language,
+      availableLanguages
+    );
 
     const currentThesauri = (await thesauri.getById(thesaurusId)) || ({} as ThesaurusSchema);
     const theaurusToSave = thesauri.appendValues(currentThesauri, thesaurusValues);

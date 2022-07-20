@@ -209,6 +209,45 @@ describe('csvLoader thesauri', () => {
 
         mockedFile.mockRestore();
       });
+
+      it('should throw error if csv has nesting inconsistencies across langs', async () => {
+        const { _id } = await thesauri.save({ name: 'nestedThesauri2' });
+
+        const csv = `English, Spanish, French
+        value1, valor1, valeur1
+        - value2, - valor2,  valeur2
+        - value3, - valor3, - valeur3
+        value4, valor4, valeur4`;
+
+        const mockedFile = mockCsvFileReadStream(csv);
+        try {
+          await loader.loadThesauri('mockedFileFromString', _id, {
+            language: 'en',
+          });
+          fail('should throw error');
+        } catch (e) {
+          expect(e.message).toMatch('Invalid');
+        }
+        mockedFile.mockRestore();
+      });
+
+      it('should throw error if csv has nesting without parent', async () => {
+        const { _id } = await thesauri.save({ name: 'nestedThesauri3' });
+
+        const csv = `English, Spanish, French
+        - value2, - valor2,  -valeur2`;
+
+        const mockedFile = mockCsvFileReadStream(csv);
+        try {
+          await loader.loadThesauri('mockedFileFromString', _id, {
+            language: 'en',
+          });
+          fail('should throw error');
+        } catch (e) {
+          expect(e.message).toMatch('Invalid');
+        }
+        mockedFile.mockRestore();
+      });
     });
   });
 });
