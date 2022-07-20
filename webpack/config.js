@@ -24,10 +24,6 @@ module.exports = production => {
   }
 
   return {
-    node: {
-      Buffer: false,
-      process: false,
-    },
     context: rootPath,
     devtool: 'eval-source-map',
     mode: 'development',
@@ -43,6 +39,11 @@ module.exports = production => {
     },
     resolve: {
       extensions: ['*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      fallback: {
+        util: false,
+        url: false,
+        path: false,
+      },
     },
     resolveLoader: {
       modules: ['node_modules', path.join(__dirname, '/webpackLoaders')],
@@ -78,12 +79,16 @@ module.exports = production => {
       rules: [
         {
           test: /\.(js|jsx|ts|tsx)$/,
-          loader: 'babel-loader?cacheDirectory',
           include: path.join(rootPath, 'app'),
           exclude: /node_modules/,
-          options: {
-            sourceMap: process.env.BABEL_ENV === 'debug',
-          },
+          use: [
+            {
+              loader: 'babel-loader?cacheDirectory',
+              options: {
+                sourceMap: process.env.BABEL_ENV === 'debug',
+              },
+            },
+          ],
         },
         {
           test: /\.s?[ac]ss$/,
