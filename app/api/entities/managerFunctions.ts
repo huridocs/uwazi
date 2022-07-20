@@ -162,7 +162,7 @@ const saveFiles = async (
   attachments: FileType[],
   documents: FileType[],
   entity: ClientEntitySchema,
-  socketEmiter: Function
+  socketEmiter?: Function
 ) => {
   const saveResults: string[] = [];
 
@@ -195,7 +195,9 @@ const saveFiles = async (
           return errorLog.error(prettifyError(reason));
         });
 
-      socketEmiter('documentProcessed', entity.sharedId!);
+      if (socketEmiter) {
+        socketEmiter('documentProcessed', entity.sharedId!);
+      }
     });
   }
 

@@ -21,7 +21,7 @@ const saveEntity = async (
     language,
     files: reqFiles,
     socketEmiter,
-  }: { user: UserSchema; language: string; socketEmiter: Function; files?: FileAttachments[] }
+  }: { user: UserSchema; language: string; socketEmiter?: Function; files?: FileAttachments[] }
 ) => {
   const { attachments, documents } = (reqFiles || []).reduce(
     (acum, file) => {
