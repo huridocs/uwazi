@@ -10,7 +10,8 @@ const documents = (state = initialState, action = {}) => {
   }
 
   if (action.type === types.UPLOAD_PROGRESS) {
-    return state.set(action.doc, action.progress);
+    const progress = action.progress === 100 ? 0 : action.progress;
+    return state.set(action.doc, progress);
   }
 
   if ([types.UPLOAD_COMPLETE, types.BATCH_UPLOAD_COMPLETE].includes(action.type)) {
