@@ -60,12 +60,12 @@ module.exports = production => {
             test: /node_modules/,
             name(module) {
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-
               if (
                 packageName.match(
                   /qrcode.react|pdfjs-dist|recharts|react-map-gl|leaflet|mapbox-gl|LazyLoad/
                 )
               ) {
+                console.log(packageName);
                 return packageName;
               }
 
