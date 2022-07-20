@@ -13,7 +13,7 @@ const ajv = new Ajv({ allErrors: true });
 
 const validateField =
   (entity: EntitySchema, template: TemplateSchema) =>
-  async (err: Promise<ErrorObject[]>, property: PropertySchema) => {
+  async (err: Promise<Partial<ErrorObject>[]>, property: PropertySchema) => {
     try {
       await validateMetadataField(property, entity, template);
       return err;
@@ -27,7 +27,7 @@ const validateField =
   };
 
 const validateFields = async (template: TemplateSchema, entity: EntitySchema) => {
-  const errors: ErrorObject[] = await (template.properties || []).reduce<Promise<ErrorObject[]>>(
+  const errors = await (template.properties || []).reduce<Promise<Partial<ErrorObject>[]>>(
     validateField(entity, template),
     Promise.resolve([])
   );
@@ -63,7 +63,7 @@ ajv.addKeyword({
 
     const [template = {} as TemplateSchema] = await templatesModel.get({ _id: entity.template });
 
-    const errors: ErrorObject[] = [
+    const errors = [
       ...(await validateFields(template, entity)),
       ...(await validateAllowedProperties(template, entity)),
     ];

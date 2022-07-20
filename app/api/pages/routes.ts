@@ -4,7 +4,6 @@ import { Application } from 'express';
 import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
-import { PageSchema } from 'shared/types/pageSchema';
 
 export default (app: Application) => {
   app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {

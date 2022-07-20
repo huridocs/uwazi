@@ -1,6 +1,6 @@
 /* eslint-disable max-lines,max-statements */
 
-import Ajv, { ErrorObject } from 'ajv';
+import { ErrorObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
