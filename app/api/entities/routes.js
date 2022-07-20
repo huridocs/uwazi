@@ -105,14 +105,16 @@ export default app => {
     '/api/entities',
     parseQuery,
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           properties: {
             sharedId: { type: 'string' },
             _id: { type: 'string' },
             withPdf: { type: 'string' },
             omitRelationships: { type: 'boolean' },
-            include: { type: 'array', items: [{ type: 'string', enum: ['permissions'] }] },
+            include: { type: 'array', items: { type: 'string', enum: ['permissions'] } },
           },
         },
       },

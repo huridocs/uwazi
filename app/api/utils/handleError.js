@@ -7,7 +7,7 @@ const ajvPrettifier = error => {
   const errorMessage = [error.message];
   if (error.errors && error.errors.length) {
     error.errors.forEach(oneError => {
-      errorMessage.push(`${oneError.dataPath}: ${oneError.message}`);
+      errorMessage.push(`${oneError.instancePath}: ${oneError.message}`);
     });
   }
   return errorMessage.join('\n');

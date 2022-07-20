@@ -23,9 +23,11 @@ export default (app: Application) => {
     tcModelPrefix,
     needsAuthorization(),
     validation.validateRequest({
+      type: 'object',
       required: ['query'],
       properties: {
         query: {
+          type: 'object',
           required: ['thesaurus'],
           properties: {
             thesaurus: { type: 'string' },
@@ -46,9 +48,11 @@ export default (app: Application) => {
   app.get(
     `${tcModelPrefix}/train`,
     validation.validateRequest({
+      type: 'object',
       required: ['query'],
       properties: {
         query: {
+          type: 'object',
           required: ['thesaurus'],
           properties: {
             thesaurus: { type: 'string' },
@@ -71,9 +75,11 @@ export default (app: Application) => {
     `${tcModelPrefix}/train`,
     needsAuthorization(),
     validation.validateRequest({
+      type: 'object',
       required: ['body'],
       properties: {
         body: {
+          type: 'object',
           required: ['thesaurusId'],
           properties: {
             thesaurusId: { type: 'string' },

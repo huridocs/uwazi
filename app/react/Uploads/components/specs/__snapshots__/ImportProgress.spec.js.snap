@@ -102,7 +102,7 @@ exports[`ImportProgress rendering states should render a state for errors 2`] = 
       Immutable.List [
         Immutable.Map {
           "message": "should be number",
-          "dataPath": ".metadata['number']",
+          "instancePath": ".metadata['number']",
           "schemaPath": "#/metadataMatchesTemplateProperties",
         },
       ]

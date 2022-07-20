@@ -13,8 +13,10 @@ const validateOcrIsEnabled = async (_req: Request, res: Response, next: NextFunc
 };
 
 const ocrRequestDecriptor = {
+  type: 'object',
   properties: {
     params: {
+      type: 'object',
       properties: {
         filename: { type: 'string' },
       },

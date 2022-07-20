@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { ErrorObject } from 'ajv';
 import { ObjectId } from 'mongodb';
 
 import model from 'api/templates/templatesModel';
@@ -15,9 +15,11 @@ import { PropertySchema } from './commonTypes';
 
 export const emitSchemaTypes = true;
 
-const ajv = Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
-ajv.addKeyword('uniqueName', {
+ajv.addKeyword({
+  keyword: 'uniqueName',
   async: true,
   errors: false,
   type: 'object',
@@ -34,7 +36,8 @@ ajv.addKeyword('uniqueName', {
   },
 });
 
-ajv.addKeyword('requireTitleProperty', {
+ajv.addKeyword({
+  keyword: 'requireTitleProperty',
   errors: false,
   type: 'array',
   validate(_schema: any, properties: PropertySchema[]) {
@@ -42,7 +45,8 @@ ajv.addKeyword('requireTitleProperty', {
   },
 });
 
-ajv.addKeyword('uniquePropertyFields', {
+ajv.addKeyword({
+  keyword: 'uniquePropertyFields',
   errors: false,
   type: 'object',
   validate(fields: (keyof PropertySchema)[], data: TemplateSchema) {
@@ -53,7 +57,7 @@ ajv.addKeyword('uniquePropertyFields', {
 
     const allProperties = (data.properties || []).concat(data.commonProperties || []);
 
-    const errors: Ajv.ErrorObject[] = [];
+    const errors: ErrorObject[] = [];
     allProperties.forEach(property => {
       fields.forEach(field => {
         const value = property[field] && (property[field]?.toString() || '').toLowerCase().trim();
@@ -63,7 +67,7 @@ ajv.addKeyword('uniquePropertyFields', {
             schemaPath: '',
             params: { keyword: 'uniquePropertyFields', fields },
             message: `duplicated property value { ${field}: "${value}" }`,
-            dataPath: `.properties.${field}`,
+            instancePath: `.properties.${field}`,
           });
         }
         uniqueValues[field].add(value || '');
@@ -78,7 +82,8 @@ ajv.addKeyword('uniquePropertyFields', {
   },
 });
 
-ajv.addKeyword('requireOrInvalidContentForSelectFields', {
+ajv.addKeyword({
+  keyword: 'requireOrInvalidContentForSelectFields',
   async: true,
   errors: false,
   type: 'object',
@@ -99,7 +104,8 @@ ajv.addKeyword('requireOrInvalidContentForSelectFields', {
   },
 });
 
-ajv.addKeyword('requireRelationTypeForRelationship', {
+ajv.addKeyword({
+  keyword: 'requireRelationTypeForRelationship',
   errors: false,
   type: 'object',
   validate(schema: any, data: PropertySchema) {
@@ -113,7 +119,8 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
   },
 });
 
-ajv.addKeyword('cantDeleteInheritedProperties', {
+ajv.addKeyword({
+  keyword: 'cantDeleteInheritedProperties',
   async: true,
   errors: true,
   type: 'object',
@@ -130,7 +137,7 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
         )
     );
 
-    const errors: Ajv.ErrorObject[] = [];
+    const errors: ErrorObject[] = [];
     await Promise.all(
       toRemoveProperties.map(async property => {
         const canDelete = await templates.canDeleteProperty(
@@ -144,7 +151,7 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
             schemaPath: '',
             params: { keyword: 'noDeleteInheritedProperty' },
             message: "Can't delete properties being inherited",
-            dataPath: `.properties.${property.name}`,
+            instancePath: `.properties.${property.name}`,
           });
         }
       })
@@ -200,7 +207,8 @@ function filterInconsistentProperties(template: TemplateSchema, allProperties: P
   );
 }
 
-ajv.addKeyword('cantReuseNameWithDifferentType', {
+ajv.addKeyword({
+  keyword: 'cantReuseNameWithDifferentType',
   async: true,
   errors: true,
   type: 'object',
@@ -224,7 +232,7 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
           params: { keyword: 'cantReuseNameWithDifferentType' },
           message:
             'Entered label is already in use on another property with a different type, thesaurus or inherit',
-          dataPath: `.properties.${property}`,
+          instancePath: `.properties.${property}`,
         }))
       );
     }
@@ -233,7 +241,8 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
   },
 });
 
-ajv.addKeyword('entityViewPageExistsAndIsEnabled', {
+ajv.addKeyword({
+  keyword: 'entityViewPageExistsAndIsEnabled',
   async: true,
   errors: true,
   type: 'object',
@@ -249,7 +258,7 @@ ajv.addKeyword('entityViewPageExistsAndIsEnabled', {
             schemaPath: '',
             params: { keyword: 'entityViewPageExists', fields },
             message: 'The selected page does not exist',
-            dataPath: '.templates',
+            instancePath: '.templates',
           },
         ]);
       }
@@ -260,7 +269,7 @@ ajv.addKeyword('entityViewPageExistsAndIsEnabled', {
             schemaPath: '',
             params: { keyword: 'entityViewPageIsEnabled', fields },
             message: 'The selected page is not enabled for entity view',
-            dataPath: '.templates',
+            instancePath: '.templates',
           },
         ]);
       }

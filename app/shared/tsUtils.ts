@@ -1,6 +1,7 @@
 import util from 'util';
 import Ajv from 'ajv';
 import { isObject, isString } from 'lodash';
+import ValidationError from 'ajv/dist/runtime/validation_error';
 import { ClientBlobFile } from 'app/istore';
 
 export const isBlobFile = (file: unknown): file is ClientBlobFile =>
@@ -20,8 +21,8 @@ export function wrapValidator(validator: any) {
     try {
       return validator(value);
     } catch (error) {
-      if (error as Ajv.ValidationError) {
-        const e = new Ajv.ValidationError(error.errors);
+      if (error as ValidationError) {
+        const e = new ValidationError(error.errors);
         e.message = util.inspect(error, false, null);
         e.stack = error.stack;
         throw e;
