@@ -8,7 +8,9 @@ import createError from './Error';
 Joi.objectId = objectId(Joi);
 
 const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 const coercedAjv = new Ajv({ allErrors: true, coerceTypes: 'array' });
+coercedAjv.addVocabulary(['tsType']);
 
 addFormats(ajv);
 

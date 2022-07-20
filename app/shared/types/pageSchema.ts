@@ -9,6 +9,7 @@ import { PageType } from './pageType';
 export const emitSchemaTypes = true;
 
 const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
 ajv.addKeyword({
   keyword: 'validatePageIsNotEntityView',

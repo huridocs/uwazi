@@ -10,9 +10,6 @@ export interface TemplateSchema {
   default?: boolean;
   entityViewPage?: string;
   synced?: boolean;
-  /**
-   * @minItems 1
-   */
   commonProperties?: [PropertySchema, ...PropertySchema[]];
   properties?: PropertySchema[];
   [k: string]: unknown | undefined;

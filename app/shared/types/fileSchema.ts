@@ -6,6 +6,7 @@ import { FileType } from './fileType';
 const emitSchemaTypes = true;
 
 const ajv = new Ajv({ allErrors: true, removeAdditional: true });
+ajv.addVocabulary(['tsType']);
 
 const fileSchema = {
   $schema: 'http://json-schema.org/schema#',

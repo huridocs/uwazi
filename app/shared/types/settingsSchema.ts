@@ -6,6 +6,7 @@ import { Settings } from './settingsType';
 const emitSchemaTypes = true;
 
 const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
 ajv.addKeyword({
   keyword: 'hasDefaultLanguage',

@@ -7,6 +7,7 @@ import { userGroupSchema } from 'shared/types/userGroupSchema';
 import model from './userGroupsModel';
 
 const ajv = ajvKeywords(new Ajv({ allErrors: true }), ['uniqueItemProperties']);
+ajv.addVocabulary(['tsType']);
 
 ajv.addKeyword({
   keyword: 'uniqueName',

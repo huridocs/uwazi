@@ -163,9 +163,6 @@ export interface ConnectionSchema {
   };
   reference?: {
     text: string;
-    /**
-     * @minItems 1
-     */
     selectionRectangles: [
       {
         top: number;

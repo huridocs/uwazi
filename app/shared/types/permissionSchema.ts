@@ -5,6 +5,7 @@ import { wrapValidator } from 'shared/tsUtils';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 
 const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
 export const emitSchemaTypes = true;
 

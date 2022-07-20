@@ -10,6 +10,7 @@ import { validateMetadataField } from './validateMetadataField';
 import { customErrorMessages, validators } from './metadataValidators';
 
 const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
 const validateField =
   (entity: EntitySchema, template: TemplateSchema) =>

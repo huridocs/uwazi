@@ -16,6 +16,7 @@ import { PropertySchema } from './commonTypes';
 export const emitSchemaTypes = true;
 
 const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
 ajv.addKeyword({
   keyword: 'uniqueName',
