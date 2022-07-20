@@ -2,39 +2,50 @@ import React from 'react';
 
 import { Icon } from '../../Layout';
 
+const composeIcon = data =>
+  typeof data.value === 'string' && data.icon !== undefined ? (
+    <>
+      <Icon data={data.icon} />
+      <span>&nbsp;</span>
+    </>
+  ) : null;
+
 const composeCount = (data, key) => {
   if (data.valueCount > 1) {
     return (
       <React.Fragment key={key}>
-        {typeof data.value === 'string' && data.icon !== undefined && <Icon data={data.icon} />}
+        {composeIcon(data)}
         {data.value}
+        &nbsp;
         <span className="item-count">{data.valueCount}</span>
       </React.Fragment>
     );
   }
   return (
     <>
-      {typeof data.value === 'string' && data.icon !== undefined && <Icon data={data.icon} />}
+      {composeIcon(data)}
       {data.value}
     </>
   );
 };
 
-const renderItemValue = (v, i) => (
-  <div className="item-value">{composeCount(v, `item-value-${i}`)}</div>
+const renderItemValue = (v, key, i) => (
+  <li key={key} className="item-value">
+    {composeCount(v, `item-value-${i}`)}
+  </li>
 );
 
 const renderList = prop => (
   <ul className="multiline">
     {prop.value.map((v, index) => {
       const key = `${prop.name}_${index}`;
-      return <li key={key}>{renderItemValue(v, index)}</li>;
+      return renderItemValue(v, key, index);
     })}
   </ul>
 );
 
 const renderCompact = prop => (
-  <div className="compact">{prop.value.map((v, i) => renderItemValue(v, i))}</div>
+  <ul className="compact comma-separated">{prop.value.map((v, i) => renderItemValue(v, i, i))}</ul>
 );
 
 const groupRepeatedValues = property =>
