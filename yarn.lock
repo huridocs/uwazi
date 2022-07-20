@@ -5783,10 +5783,10 @@ electron-to-chromium@^1.4.172:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.177.tgz#b6a4436eb788ca732556cd69f384b8a3c82118c5"
   integrity sha512-FYPir3NSBEGexSZUEeht81oVhHfLFl6mhUKSkjHN/iB/TwEIt/WHQrqVGfTLN5gQxwJCQkIJBe05eOXjI7omgg==
 
-electron@^1.4.4:
-  version "1.8.8"
-  resolved "https://registry.npmjs.org/electron/-/electron-1.8.8.tgz"
-  integrity sha512-1f9zJehcTTGjrkb06o6ds+gsRq6SYhZJyxOk6zIWjRH8hVy03y/RzUDELzNas71f5vcvXmfGVvyjeEsadDI8tg==
+electron@^1.4.4, electron@^2.0.18:
+  version "2.0.18"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-2.0.18.tgz#52f1b248c3cc013b5a870094de3b6ba5de313a0f"
+  integrity sha512-PQRHtFvLxHdJzMMIwTddUtkS+Te/fZIs+PHO+zPmTUTBE76V3Od3WRGzMQwiJHxN679licmCKhJpMyxZfDEVWQ==
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^3.0.1"
@@ -10462,7 +10462,8 @@ nightmare-upload@^0.1.1:
 
 nightmare@2.10.0:
   version "2.10.0"
-  resolved "https://registry.npmjs.org/nightmare/-/nightmare-2.10.0.tgz"
+  resolved "https://registry.yarnpkg.com/nightmare/-/nightmare-2.10.0.tgz#e9c5d590bb296f59685fd48218c2fbac44767b21"
+  integrity sha512-rh9gT9gJdSvVWAYQELxnDVgx/o44XotxJACR6Iuh0hJyww5zkegJaLl4/yMGeLn2ftY2QDrbio8XyxQWhXIlNA==
   dependencies:
     debug "^2.2.0"
     deep-defaults "^1.0.3"
