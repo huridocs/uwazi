@@ -1,5 +1,4 @@
 import util from 'util';
-import Ajv from 'ajv';
 import { isObject, isString } from 'lodash';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 import { ClientBlobFile } from 'app/istore';
