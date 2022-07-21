@@ -1,3 +1,4 @@
+import { createError } from 'api/utils';
 import csvtojson from 'csvtojson';
 import { availableLanguages } from 'shared/languagesList';
 import { ensure } from 'shared/tsUtils';
@@ -70,12 +71,15 @@ const validate = (rows: ParsedRow[]) => {
   rows.forEach((row, index) => {
     const [firstValue, ...restOfTheValues] = Object.values(row);
     if (index === 0 && firstValue.nested) {
-      throw new Error('Invalid csv: nested value need to be under a non-nested value');
+      throw createError('Invalid csv: nested value need to be under a non-nested value', 400);
     }
 
     const allEqual = restOfTheValues.every(value => value.nested === firstValue.nested);
     if (!allEqual) {
-      throw new Error('Invalid csv: all the values for a row must be either nested or non-nested');
+      throw createError(
+        'Invalid csv: all the values for a row must be either nested or non-nested',
+        400
+      );
     }
   });
 };
