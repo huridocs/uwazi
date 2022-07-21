@@ -93,7 +93,7 @@ module.exports = production => {
       new webpack.ProvidePlugin({
         process: 'process/browser',
       }),
-      new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util'] }),
+      new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: stylesName,
