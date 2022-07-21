@@ -78,23 +78,6 @@ export class TaskManager {
     });
   }
 
-  async clearQueue() {
-    while ((await this.countPendingTasks()) > 0) {
-      const message = (await this.redisSMQ.receiveMessageAsync({
-        qname: this.taskQueue,
-      })) as QueueMessage;
-
-      if (!message.id) {
-        break;
-      }
-
-      await this.redisSMQ.deleteMessageAsync({
-        qname: this.taskQueue,
-        id: message.id,
-      });
-    }
-  }
-
   async countPendingTasks(): Promise<number> {
     const queueAttributes = await this.redisSMQ!.getQueueAttributesAsync({
       qname: this.taskQueue,

@@ -124,8 +124,10 @@ export default app => {
     '/api/users',
     needsAuthorization(),
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           required: ['_id'],
           properties: {
             _id: { type: 'string' },

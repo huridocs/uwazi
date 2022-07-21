@@ -40,7 +40,6 @@ describe('Pagination', () => {
       .query({ page: { limit: 2 } });
 
     expect(body.data).toMatchObject([{ title: 'First' }, { title: 'Second' }]);
-
     expect(body.links.first).toEqual(`/api/v2/entities?${qs.stringify({ page: { limit: 2 } })}`);
   });
 

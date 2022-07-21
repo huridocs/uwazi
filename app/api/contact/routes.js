@@ -5,8 +5,10 @@ export default app => {
   app.post(
     '/api/contact',
     validation.validateRequest({
+      type: 'object',
       properties: {
         body: {
+          type: 'object',
           properties: {
             email: { type: 'string', format: 'email' },
             name: { type: 'string', minLength: 3 },
