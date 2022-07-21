@@ -21,7 +21,7 @@ module.exports = production => {
   if (production) {
     outputPath = path.join(rootPath, 'prod/dist');
     stylesName = '[name].[chunkhash].css';
-    rtlStylesName = 'rtl-[name].[hash].css';
+    rtlStylesName = 'rtl-[name].[fullhash].css';
     jsChunkHashName = '.[chunkhash]';
   }
 
