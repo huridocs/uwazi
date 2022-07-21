@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import * as uploadActions from 'app/Uploads/actions/uploadsActions';
 import { socket } from '../../socket';
 import '../sockets';
 import { store } from '../../store';
@@ -118,6 +119,14 @@ describe('sockets', () => {
         type: 'translations/UPDATE',
         value: { id: '123' },
       });
+    });
+  });
+
+  describe('documentProcessed', () => {
+    it('should dispatch the documentProcessed action', () => {
+      jest.spyOn(uploadActions, 'documentProcessed').mockImplementationOnce(() => {});
+      socket._callbacks.$documentProcessed[0]('entitySharedId');
+      expect(uploadActions.documentProcessed).toHaveBeenCalledWith('entitySharedId');
     });
   });
 });

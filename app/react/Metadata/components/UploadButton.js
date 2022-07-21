@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { isEmpty } from 'lodash';
 import { Icon } from 'UI';
-import { uploadDocument, documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
 import { socket } from 'app/socket';
 import { Translate } from 'app/I18N';
@@ -56,7 +56,6 @@ class UploadButton extends Component {
 
   documentProcessed(docId) {
     if (docId === this.props.entitySharedId) {
-      this.props.documentProcessed(docId);
       this.setState({ processing: false, failed: false, completed: true }, () => {
         this.timeout = setTimeout(() => {
           this.setState({ processing: false, failed: false, completed: false });
@@ -114,7 +113,6 @@ class UploadButton extends Component {
 }
 
 UploadButton.defaultProps = {
-  documentProcessed: () => {},
   progress: Immutable.fromJS({}),
   storeKey: '',
   entitySharedId: '',
@@ -123,7 +121,6 @@ UploadButton.defaultProps = {
 
 UploadButton.propTypes = {
   uploadDocument: PropTypes.func,
-  documentProcessed: PropTypes.func,
   entitySharedId: PropTypes.string,
   progress: PropTypes.instanceOf(Immutable.Map),
   storeKey: PropTypes.string, // eslint-disable-line
@@ -138,10 +135,7 @@ const mapStateToProps = ({ metadata, progress }) => ({
 });
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators(
-    { uploadDocument, documentProcessed },
-    wrapDispatch(dispatch, props.storeKey)
-  );
+  return bindActionCreators({ uploadDocument }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export { UploadButton };
