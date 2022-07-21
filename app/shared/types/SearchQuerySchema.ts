@@ -9,12 +9,14 @@ export const PageSchema = {
 
 export const RangeFilterSchema = {
   title: 'RangeFilter',
+  type: 'object',
   additionalProperties: false,
   properties: { from: { type: 'number' }, to: { type: 'number' } },
 };
 
 export const CompoundFilterSchema = {
   title: 'CompoundFilter',
+  type: 'object',
   additionalProperties: false,
   properties: {
     values: { type: 'array', items: { type: 'string' } },
@@ -24,6 +26,7 @@ export const CompoundFilterSchema = {
 
 export const SearchQuerySchema = {
   title: 'SearchQuery',
+  type: 'object',
   additionalProperties: false,
   properties: {
     page: PageSchema,
@@ -45,6 +48,6 @@ export const SearchQuerySchema = {
       },
     },
     sort: { type: 'string' },
-    fields: { type: 'array', items: { type: 'string', minlength: 1 } },
+    fields: { type: 'array', items: { type: 'string', minLength: 1 } },
   },
 };

@@ -185,11 +185,11 @@ describe('suggestions routes', () => {
     });
   });
 
-  describe('GET /api/suggestions/status', () => {
+  describe('POST /api/suggestions/status', () => {
     it('should return the status of the IX process', async () => {
       const response = await request(app)
-        .get('/api/suggestions/status')
-        .query({ property: 'super_powers' })
+        .post('/api/suggestions/status')
+        .send({ property: 'super_powers' })
         .expect(200);
 
       expect(response.body).toMatchObject({ status: 'ready' });
@@ -197,8 +197,8 @@ describe('suggestions routes', () => {
     it('should reject with unauthorized when user has not admin role', async () => {
       user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
-        .get('/api/suggestions/status')
-        .query({ property: 'super_powers' })
+        .post('/api/suggestions/status')
+        .send({ property: 'super_powers' })
         .expect(401);
       expect(response.unauthorized).toBe(true);
     });

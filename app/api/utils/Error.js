@@ -1,6 +1,6 @@
 export default function (message, code = 500) {
   if (message.ajv) {
-    return { ...message, code };
+    return { message: message.message, ...message, code };
   }
 
   if (message instanceof Error) {

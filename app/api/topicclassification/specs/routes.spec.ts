@@ -73,7 +73,7 @@ describe('topic classification routes', () => {
 
   beforeEach(async () => {
     const elasticIndex = 'tc_routes_test';
-    await db.clearAllAndLoad(fixtures, elasticIndex);
+    await db.setupFixturesAndContext(fixtures, elasticIndex);
     spyOn(JSONRequest, 'post').and.callFake(fakePost);
     spyOn(JSONRequest, 'get').and.callFake(fakeGet);
     spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);

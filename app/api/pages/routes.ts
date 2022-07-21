@@ -1,30 +1,17 @@
 import Joi from 'joi';
 import { Application } from 'express';
 
-import { PageSchema } from 'shared/types/pageSchema';
 import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
 
 export default (app: Application) => {
-  app.post(
-    '/api/pages',
-    needsAuthorization(['admin']),
-
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: PageSchema,
-      },
-    }),
-
-    (req, res, next) => {
-      pages
-        .save(req.body, req.user, req.language)
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
+  app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {
+    pages
+      .save(req.body, req.user, req.language)
+      .then(response => res.json(response))
+      .catch(next);
+  });
 
   app.get(
     '/api/pages',

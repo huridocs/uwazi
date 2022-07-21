@@ -6,44 +6,36 @@ const composeCount = (data, key) => {
   if (data.valueCount > 1) {
     return (
       <React.Fragment key={key}>
-        {data.value} <span className="item-count">{data.valueCount}</span>
+        {typeof data.value === 'string' && data.icon !== undefined && <Icon data={data.icon} />}
+        {data.value}
+        <span className="item-count">{data.valueCount}</span>
       </React.Fragment>
     );
   }
-  return data.value;
+  return (
+    <>
+      {typeof data.value === 'string' && data.icon !== undefined && <Icon data={data.icon} />}
+      {data.value}
+    </>
+  );
 };
 
-const withIcon = (v, i) =>
-  v.icon ? (
-    <>
-      <Icon className="item-icon item-icon-center" data={v.icon} />
-      {composeCount(v, `icon${i}`)}
-    </>
-  ) : (
-    composeCount(v, `noIcon${i}`)
-  );
-
-const interpose = (array, separator) => [].concat(...array.map(e => [separator, e])).slice(1);
+const renderItemValue = (v, i) => (
+  <div className="item-value">{composeCount(v, `item-value-${i}`)}</div>
+);
 
 const renderList = prop => (
   <ul className="multiline">
     {prop.value.map((v, index) => {
       const key = `${prop.name}_${index}`;
-      return <li key={key}>{withIcon(v)}</li>;
+      return <li key={key}>{renderItemValue(v, index)}</li>;
     })}
   </ul>
 );
 
-const renderCompact = prop =>
-  prop.type === 'multidate' || prop.type === 'multidaterange'
-    ? interpose(
-        prop.value.map((v, i) => composeCount(v, i)),
-        <br />
-      )
-    : interpose(
-        prop.value.map((v, i) => withIcon(v, i)),
-        <span>, </span>
-      );
+const renderCompact = prop => (
+  <div className="compact">{prop.value.map((v, i) => renderItemValue(v, i))}</div>
+);
 
 const groupRepeatedValues = property =>
   property.value.reduce((results, v) => {

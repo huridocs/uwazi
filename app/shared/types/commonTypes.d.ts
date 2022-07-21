@@ -75,6 +75,7 @@ export interface LanguageSchema {
   rtl?: boolean;
   default?: boolean;
   ISO639_3?: string;
+  localized_label?: string;
 }
 
 export type LanguagesListSchema = {
@@ -84,6 +85,7 @@ export type LanguagesListSchema = {
   rtl?: boolean;
   default?: boolean;
   ISO639_3?: string;
+  localized_label?: string;
 }[];
 
 export interface LatLonSchema {
