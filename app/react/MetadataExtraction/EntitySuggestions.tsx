@@ -243,7 +243,8 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus({ key: response.status });
+        console.log(response);
+        setStatus({ key: response.status, data: response.data });
       })
       .catch(() => {
         setStatus({ key: 'error' });
@@ -254,7 +255,7 @@ export const EntitySuggestions = ({
       (propertyName: string, modelStatus: string, _: string, data: any) => {
         if (propertyName === reviewedProperty.name) {
           setStatus({ key: modelStatus, data });
-          if (data && data.total === data.processed) {
+          if ((data && data.total === data.processed) || modelStatus === 'ready') {
             retrieveSuggestions();
           }
         }
@@ -301,7 +302,8 @@ export const EntitySuggestions = ({
           <div className="actions-container">
             <button
               type="button"
-              className={`btn service-request-button ${status}`}
+              disabled={status.key !== 'processing_suggestions' && status.key !== 'ready'}
+              className={`btn service-request-button ${status.key}`}
               onClick={_trainModel}
             >
               <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
