@@ -4,9 +4,12 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { fs } from 'api/files';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { IXModelsModel } from '../IXModelsModel';
+import * as setupSockets from 'api/socketio/setupSockets';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -45,6 +48,7 @@ describe('InformationExtraction', () => {
     });
 
     await IXExternalService.start();
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
 
   beforeEach(async () => {
@@ -203,8 +207,6 @@ describe('InformationExtraction', () => {
   });
 
   describe('getSuggestions()', () => {
-    it('should not send any materials if model findSuggestions flag is not set', async () => {});
-
     it('should send the materials for the suggestions', async () => {
       await informationExtraction.getSuggestions('property1');
 
@@ -265,6 +267,36 @@ describe('InformationExtraction', () => {
           state: SuggestionState.processing,
         })
       );
+    });
+  });
+
+  describe('processResults', () => {
+    it('should not continue sending suggestions if flag is not set', async () => {
+      const [model] = await IXModelsModel.get({ propertyName: 'property2' });
+      model.findingSuggestions = false;
+      await IXModelsModel.save(model);
+
+      const message: ResultsMessage = {
+        task: 'create_model',
+        data_url: 'some/url',
+        error_message: '',
+        params: {
+          property_name: 'property2',
+        },
+        tenant: 'tenant1',
+        file_url: '',
+        success: true,
+      };
+
+      await informationExtraction.processResults(message);
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        message.tenant,
+        'ix_model_status',
+        message.params!.property_name,
+        'ready',
+        'Canceled'
+      );
+      expect(informationExtraction.taskManager?.startTask).not.toHaveBeenCalled();
     });
   });
 

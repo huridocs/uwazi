@@ -296,6 +296,11 @@ class InformationExtraction {
   };
 
   trainModel = async (property: string) => {
+    const [model] = await IXModelsModel.get({ propertyName: property });
+    if (model && !model.findingSuggestions) {
+      model.findingSuggestions = true;
+      await IXModelsModel.save(model);
+    }
     const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
@@ -400,14 +405,25 @@ class InformationExtraction {
           creationDate: new Date().getTime(),
         });
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
 
       if (message.task === 'suggestions') {
         await this.saveSuggestions(message);
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
+
+      if (!currentModel.findingSuggestions) {
+        emitToTenant(
+          message.tenant,
+          'ix_model_status',
+          message.params!.property_name,
+          'ready',
+          'Canceled'
+        );
+        return;
+      }
+
+      await this.getSuggestions(message.params!.property_name);
     }, message.tenant);
   };
 
