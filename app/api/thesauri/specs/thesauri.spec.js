@@ -53,8 +53,8 @@ describe('thesauri', () => {
       expect(dictionaries.length).toBe(6);
       expect(dictionaries[4].values).toEqual([
         { id: 'sharedId2' },
-        { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
         { id: 'other', label: 'unpublished entity' },
+        { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
       ]);
     });
 

@@ -55,6 +55,7 @@ export const languageSchema = {
     rtl: { type: 'boolean' },
     default: { type: 'boolean' },
     ISO639_3: { type: 'string' },
+    localized_label: { type: 'string' },
   },
 };
 
@@ -119,8 +120,8 @@ export const metadataObjectSchema = {
 };
 
 export const metadataSchema = {
-  definitions: { metadataObjectSchema },
   type: 'object',
+  definitions: { metadataObjectSchema },
   additionalProperties: {
     anyOf: [{ type: 'array', items: metadataObjectSchema }],
   },
@@ -190,6 +191,7 @@ export const propertySchema = {
     content: { type: 'string' },
     relationType: { type: 'string' },
     inherit: {
+      type: 'object',
       additionalProperties: false,
       properties: {
         property: { type: 'string' },

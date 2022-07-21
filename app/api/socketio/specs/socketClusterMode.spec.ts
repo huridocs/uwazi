@@ -9,7 +9,7 @@ import { RedisServer } from 'api/services/tasksmanager/RedisServer';
 import { config } from 'api/config';
 import waitForExpect from 'wait-for-expect';
 
-import { setupSockets } from '../setupSockets';
+import { setupApiSockets } from '../setupSockets';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
@@ -50,7 +50,7 @@ const createServer = async (app: Application, port: number) => {
   app.use(appContextMiddleware);
   app.use(multitenantMiddleware);
   config.redis.activated = true;
-  setupSockets(server, app);
+  setupApiSockets(server, app);
 };
 
 const port = 3051;

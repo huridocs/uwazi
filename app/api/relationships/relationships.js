@@ -175,6 +175,7 @@ export default {
         'type',
         'published',
         'metadata',
+        'icon',
       ]).then(_connectedDocuments => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;

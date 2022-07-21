@@ -17,13 +17,13 @@ jest.mock(
 );
 
 const invalidUserProperties = [
-  { field: 'username', value: undefined, dataPath: '.body', keyword: 'required' },
-  { field: 'email', value: undefined, dataPath: '.body', keyword: 'required' },
-  { field: 'role', value: undefined, dataPath: '.body', keyword: 'required' },
-  { field: 'username', value: '', dataPath: '.body.username', keyword: 'minLength' },
-  { field: 'email', value: '', dataPath: '.body.email', keyword: 'minLength' },
-  { field: 'role', value: 'INVALID', dataPath: '.body.role', keyword: 'enum' },
-  { field: 'password', value: '', dataPath: '.body.password', keyword: 'minLength' },
+  { field: 'username', value: undefined, instancePath: '/body', keyword: 'required' },
+  { field: 'email', value: undefined, instancePath: '/body', keyword: 'required' },
+  { field: 'role', value: undefined, instancePath: '/body', keyword: 'required' },
+  { field: 'username', value: '', instancePath: '/body/username', keyword: 'minLength' },
+  { field: 'email', value: '', instancePath: '/body/email', keyword: 'minLength' },
+  { field: 'role', value: 'INVALID', instancePath: '/body/role', keyword: 'enum' },
+  { field: 'password', value: '', instancePath: '/body/password', keyword: 'minLength' },
 ];
 
 describe('users routes', () => {
@@ -79,12 +79,12 @@ describe('users routes', () => {
       describe('validation', () => {
         it.each(invalidUserProperties)(
           'should invalidate if there is an invalid property',
-          async ({ field, value, dataPath, keyword }) => {
+          async ({ field, value, instancePath, keyword }) => {
             // @ts-ignore
             const invalidUser = { ...userToUpdate, [field]: value };
             const response = await request(app).post('/api/users').send(invalidUser);
             expect(response.status).toBe(400);
-            expect(response.body.errors[0].dataPath).toEqual(dataPath);
+            expect(response.body.errors[0].instancePath).toEqual(instancePath);
             expect(response.body.errors[0].keyword).toEqual(keyword);
           }
         );
@@ -106,12 +106,12 @@ describe('users routes', () => {
       describe('validation', () => {
         it.each(invalidUserProperties)(
           'should invalidate if there is an invalid property',
-          async ({ field, value, dataPath, keyword }) => {
+          async ({ field, value, instancePath, keyword }) => {
             // @ts-ignore
             const invalidUser = { ...userToUpdate, [field]: value };
             const response = await request(app).post('/api/users/new').send(invalidUser);
             expect(response.status).toBe(400);
-            expect(response.body.errors[0].dataPath).toEqual(dataPath);
+            expect(response.body.errors[0].instancePath).toEqual(instancePath);
             expect(response.body.errors[0].keyword).toEqual(keyword);
           }
         );

@@ -13,8 +13,10 @@ export default (app: Application) => {
   app.get(
     tasksPrefix,
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           properties: {
             name: { type: 'string' },
           },
@@ -35,9 +37,11 @@ export default (app: Application) => {
     tasksPrefix,
     needsAuthorization(),
     validation.validateRequest({
+      type: 'object',
       required: ['query', 'body'],
       properties: {
         query: {
+          type: 'object',
           required: ['name', 'type'],
           properties: {
             name: { type: 'string' },

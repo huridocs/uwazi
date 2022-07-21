@@ -25,7 +25,7 @@ const prepareDropdownValues = (languageMap, locale, user) => {
 
 const listItem = (item, i18nmode) => {
   if (!item.type) {
-    return <span>{item.label}</span>;
+    return <span>{item.localized_label || item.label}</span>;
   }
 
   return (
@@ -80,7 +80,7 @@ class I18NMenu extends Component {
             data={languages}
             id="key"
             defaultValue={selectedLanguage}
-            textField="label"
+            textField="localized_label"
             className="menuNav-language"
             itemComponent={({ item }) => listItem(item)}
             valueField="key"
