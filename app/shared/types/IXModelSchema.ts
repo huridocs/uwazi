@@ -18,6 +18,6 @@ export const IXModelSchema = {
     _id: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     creationDate: { type: 'number' },
-    status: { type: String, enum: Object.values(ModelStatus), default: ModelStatus.processing },
+    status: { type: 'string', enum: Object.values(ModelStatus), default: ModelStatus.processing },
   },
 };
