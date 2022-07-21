@@ -189,6 +189,12 @@ export function documentProcessed(sharedId, __reducerKey) {
       dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
       dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
       dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
+      dispatch({
+        type: types.UPLOADS_COMPLETE,
+        doc: sharedId,
+        files: doc.documents,
+        __reducerKey: 'library',
+      });
       dispatch(basicActions.update('entityView/entity', doc));
       dispatch(basicActions.update('viewer/doc', doc));
       dispatch({ type: types.BATCH_UPLOAD_COMPLETE, doc: sharedId });
