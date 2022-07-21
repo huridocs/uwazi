@@ -67,22 +67,16 @@ export const showByType = (prop, compact, templateId) => {
       break;
     default:
       if (prop.value && prop.value.map) {
+        const propValue = prop.value
+          .map(_value =>
+            _value.parent && Array.isArray(_value.value)
+              ? _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` })).flat()
+              : _value
+          )
+          .flat();
+
         // eslint-disable-next-line no-param-reassign
-        prop.value = prop.value.reduce((results, _value) => {
-          if (_value.parent && Array.isArray(_value.value)) {
-            _value.value.forEach(v => {
-              // eslint-disable-next-line no-param-reassign
-              v.value = `${_value.parent}: ${v.value}`;
-              results.push(v);
-              return v;
-            });
-          } else {
-            results.push(_value);
-          }
-          return results;
-        }, []);
-        // eslint-disable-next-line no-param-reassign
-        prop.value = prop.value.map(_value => {
+        prop.value = propValue.map(_value => {
           const value = showByType(_value, compact, templateId);
           return value && value.value
             ? value
