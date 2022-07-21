@@ -69,7 +69,7 @@ const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
     apiVersion: 'latest',
     region: 'greenhost',
     endpoint: 'https://store.greenhost.net',
-    credentials: { accessKeyId: '25GIOIR4BHE759AD5XLI', secretAccessKey: 'NMQcbQGOfXYmueT4gnHwkBMmm7BC34He2kCk4Bdb' }});
+    credentials: { accessKeyId: '', secretAccessKey: '' }});
   const _storage = multerS3({
     s3: s3,
     contentType: multerS3.AUTO_CONTENT_TYPE,

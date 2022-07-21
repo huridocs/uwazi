@@ -169,8 +169,8 @@ export default (app: Application) => {
           region: 'greenhost',
           endpoint: 'https://store.greenhost.net',
           credentials: {
-            accessKeyId: '25GIOIR4BHE759AD5XLI',
-            secretAccessKey: 'NMQcbQGOfXYmueT4gnHwkBMmm7BC34He2kCk4Bdb',
+            accessKeyId: '',
+            secretAccessKey: '',
           },
         });
         const getObjectCommand = new GetObjectCommand({
