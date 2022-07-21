@@ -40,7 +40,7 @@ describe('migration add-localized-language', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(90);
+    expect(migration.delta).toBe(87);
   });
 
   it('should check if a reindex is needed', async () => {
