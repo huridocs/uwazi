@@ -304,6 +304,7 @@
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.1.0",
     "nightmare-upload": "^0.1.1",
+    "node-polyfill-webpack-plugin": "^2.0.0",
     "node-sass": "4.14.1",
     "nodemon": "^2.0.19",
     "optimize-css-assets-webpack-plugin": "^6.0.1",

@@ -7,7 +7,6 @@ import { availableLanguages as languagesList } from 'shared/languagesList';
 
 const determineHotAssets = query => ({
   JS: [
-    'http://localhost:8080/pdfjs-dist.js',
     'http://localhost:8080/nprogress.js',
     'http://localhost:8080/main.js',
     'http://localhost:8080/vendor.js',
@@ -15,17 +14,12 @@ const determineHotAssets = query => ({
   CSS: [
     `http://localhost:8080/CSS/vendor.css${query}`,
     `http://localhost:8080/CSS/main.css${query}`,
-    'http://localhost:8080/pdfjs-dist.css',
   ],
 });
 
 const determineAssets = (assets, languageData) => ({
   JS: [assets.nprogress.js, assets.vendor.js, assets.main.js],
-  CSS: [
-    assets.vendor.css[languageData.rtl ? 1 : 0],
-    assets.main.css[languageData.rtl ? 1 : 0],
-    assets['pdfjs-dist'].css[0],
-  ],
+  CSS: [assets.vendor.css[languageData.rtl ? 1 : 0], assets.main.css[languageData.rtl ? 1 : 0]],
 });
 
 const googelFonts = (
