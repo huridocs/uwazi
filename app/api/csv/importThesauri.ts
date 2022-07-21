@@ -7,9 +7,12 @@ import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Readable } from 'stream';
 import { CSVRow } from './csv';
 
-const buildThesauri = (values: ParsedRow[], languageLabel: string) =>
-  values.reduce<ThesaurusValueSchema[]>((thesauriValues, value) => {
-    const { value: valueForLanguage, nested } = value[languageLabel];
+type ParsedValue = { nested: boolean; value: string };
+type ParsedRow = Record<string, ParsedValue>;
+
+const buildThesauri = (rows: ParsedRow[], languageLabel: string) =>
+  rows.reduce<ThesaurusValueSchema[]>((thesauriValues, row) => {
+    const { value: valueForLanguage, nested } = row[languageLabel];
     const newThesauriValue = { label: valueForLanguage };
 
     if (!nested) {
@@ -22,7 +25,7 @@ const buildThesauri = (values: ParsedRow[], languageLabel: string) =>
   }, []);
 
 const buildTranslation = (
-  values: ParsedRow[],
+  rows: ParsedRow[],
   languagesToTranslate: Record<string, string>,
   languageLabel: string
 ) =>
@@ -30,13 +33,10 @@ const buildTranslation = (
     Object.keys(languagesToTranslate).map(lang => [
       lang,
       Object.fromEntries(
-        values.map(t => [t[languageLabel].value, t[languagesToTranslate[lang]].value])
+        rows.map(row => [row[languageLabel].value, row[languagesToTranslate[lang]].value])
       ),
     ])
   );
-
-type ParsedValue = { nested: boolean; value: string };
-type ParsedRow = Record<string, ParsedValue>;
 
 const parseValue = (value: string) => {
   const processedValue = [...value];
