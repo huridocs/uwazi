@@ -1,5 +1,5 @@
 export default {
-  delta: 87,
+  delta: 90,
 
   name: 'add-localized-language',
 
