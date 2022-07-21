@@ -59,21 +59,27 @@
       margin: 18px 0;
 
       &.property-info-container {
+        display: flex;
+        flex-direction: row;
         font-size: $f-size-xl;
+
+        div {
+          width: 50%;
+        }
       }
 
       &.training-dashboard {
-        border: 1px solid #E8E7EC;
+        border: 1px solid #e8e7ec;
         padding: 12px 16px;
-      
+
         box-shadow: 0px 1px 1px rgba(55, 71, 79, 0.4);
         border-radius: 6px;
-      
+
         width: 100%;
         .training-dashboard-chart {
           width: 100%;
         }
-      
+
         .legend {
           display: flex;
           flex-direction: row;
@@ -81,7 +87,7 @@
           align-content: flex-start;
           gap: 4px 16px;
           padding: 0;
-      
+
           li {
             display: block;
           }
