@@ -1,3 +1,4 @@
+import { Translate } from 'app/I18N';
 import React, { ReactElement } from 'react';
 
 type Color = string;
@@ -14,11 +15,12 @@ interface LegendDataComponent {
 interface TrainingHealthLegendProps {
   data: LegendDataComponent[];
   total: number;
+  accuracy: number;
 }
 
 const toPercentage = (value: number, total: number) => `${((value / total) * 100).toFixed(2)}%`;
 
-export const TrainingHealthLegend = ({ data, total }: TrainingHealthLegendProps) => (
+export const TrainingHealthLegend = ({ data, total, accuracy }: TrainingHealthLegendProps) => (
   <ul className="legend">
     {data.map((td: any) =>
       td.label ? (
@@ -30,5 +32,8 @@ export const TrainingHealthLegend = ({ data, total }: TrainingHealthLegendProps)
         </li>
       ) : null
     )}
+    <li style={{ color: '#E8E7EC' }}>
+      <Translate>Accuracy</Translate> {accuracy * 100}%
+    </li>
   </ul>
 );

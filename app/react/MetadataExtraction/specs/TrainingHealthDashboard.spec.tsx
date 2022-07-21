@@ -28,14 +28,15 @@ describe('Render', () => {
 
   it('should render children with the data mapped and correct legend', async () => {
     const stats = {
-      data: {
+      counts: {
         labeledMatching: 2,
         labeled: 2,
         nonLabeledMatching: 1,
-        nonLabeledOthers: 1,
+        nonLabeledNotMatching: 1,
         emptyOrObsolete: 1,
         all: 5,
       },
+      accuracy: 0.5,
     };
 
     let component: RenderResult;
@@ -50,12 +51,13 @@ describe('Render', () => {
     const list = component!.getByRole('list');
     const items = within(list).getAllByRole('listitem');
 
-    expect(items.length).toBe(4);
+    expect(items.length).toBe(5);
     await expectToMatchStrings(items, [
       ['Training', '40.00%'],
       ['Matching', '20.00%'],
       ['Non-matching', '20.00%'],
       ['Empty / Obsolete', '20.00%'],
     ]);
+    await expect(items[4].innerHTML).toMatch(new RegExp('Accuracy(.*)50%'));
   });
 });

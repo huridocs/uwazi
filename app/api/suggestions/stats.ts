@@ -45,33 +45,32 @@ const getGroups = async (propertyName: string): Promise<Groups> =>
 
 const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
   const groups = await getGroups(propertyName);
-  const labeledMatching = addCountsOf(groups, [SuggestionState.labelMatch]);
+
   const labeled = addCountsOf(groups, [
     SuggestionState.labelMatch,
     SuggestionState.labelMismatch,
     SuggestionState.labelEmpty,
   ]);
   const nonLabeledMatching = addCountsOf(groups, [SuggestionState.valueMatch]);
-  const nonLabeledOthers = addCountsOf(groups, [
-    SuggestionState.valueMismatch,
-    SuggestionState.emptyMismatch,
-  ]);
+  const nonLabeledNotMatching = addCountsOf(groups, [SuggestionState.valueMismatch]);
   const emptyOrObsolete = addCountsOf(groups, [
     SuggestionState.empty,
     SuggestionState.obsolete,
     SuggestionState.valueEmpty,
+    SuggestionState.emptyMismatch,
   ]);
   const all = groups.all[0]?.count || 0;
+  const accuracy = nonLabeledMatching / (nonLabeledMatching + nonLabeledNotMatching);
 
   return {
-    data: {
-      labeledMatching,
+    counts: {
       labeled,
       nonLabeledMatching,
-      nonLabeledOthers,
+      nonLabeledNotMatching,
       emptyOrObsolete,
       all,
     },
+    accuracy,
   };
 };
 
