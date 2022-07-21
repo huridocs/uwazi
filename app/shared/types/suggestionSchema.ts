@@ -90,6 +90,7 @@ export const SuggestionsQueryFilterSchema = {
 };
 
 export const IXSuggestionsQuerySchema = {
+  type: 'object',
   title: 'IXSuggestionsQuery',
   additionalProperties: false,
   definitions: { SuggestionsQueryFilterSchema },

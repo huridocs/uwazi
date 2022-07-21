@@ -103,11 +103,11 @@ describe('template schema', () => {
           expect(e.errors).toEqual([
             expect.objectContaining({
               message: 'duplicated property value { name: "my_label" }',
-              dataPath: '.properties.name',
+              instancePath: '.properties.name',
             }),
             expect.objectContaining({
               message: 'duplicated property value { id: "same" }',
-              dataPath: '.properties.id',
+              instancePath: '.properties.id',
             }),
           ]);
         }
@@ -282,19 +282,19 @@ describe('template schema', () => {
             'errors',
             expect.arrayContaining([
               expect.objectContaining({
-                dataPath: '.properties.sharedproperty1',
+                instancePath: '.properties.sharedproperty1',
                 keyword: validatorKeyword,
               }),
               expect.objectContaining({
-                dataPath: '.properties.sharedproperty2',
+                instancePath: '.properties.sharedproperty2',
                 keyword: validatorKeyword,
               }),
               expect.objectContaining({
-                dataPath: '.properties.sharedproperty3',
+                instancePath: '.properties.sharedproperty3',
                 keyword: validatorKeyword,
               }),
               expect.objectContaining({
-                dataPath: '.properties.sharedrelationship1',
+                instancePath: '.properties.sharedrelationship1',
                 keyword: validatorKeyword,
               }),
             ])

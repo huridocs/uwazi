@@ -1,17 +1,19 @@
-import Ajv from 'ajv';
+import Ajv, { ErrorObject } from 'ajv';
 import { wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, languagesListSchema, geolocationSchema } from 'shared/types/commonSchemas';
 import { Settings } from './settingsType';
 
 const emitSchemaTypes = true;
 
-const ajv = Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
 
-ajv.addKeyword('hasDefaultLanguage', {
+ajv.addKeyword({
+  keyword: 'hasDefaultLanguage',
   errors: true,
   type: 'object',
   validate(schema: boolean, settings: Settings) {
-    const errors: Ajv.ErrorObject[] = [];
+    const errors: ErrorObject[] = [];
     const { languages = [] } = settings;
     const defaultLanguage = languages.filter(language => language.default === true);
 
@@ -21,7 +23,7 @@ ajv.addKeyword('hasDefaultLanguage', {
         schemaPath: '',
         params: { keyword: 'hasDefaultLanguage', schema },
         message: 'At least one language must be selected as default',
-        dataPath: 'settings.languages',
+        instancePath: 'settings.languages',
       });
     }
 
@@ -31,7 +33,7 @@ ajv.addKeyword('hasDefaultLanguage', {
         schemaPath: '',
         params: { keyword: 'hasDefaultLanguage', schema },
         message: 'Only one language must be selected as default',
-        dataPath: 'settings.languages',
+        instancePath: 'settings.languages',
       });
     }
 
@@ -68,13 +70,14 @@ const settingsSyncTemplateSchema = {
   type: 'object',
   required: ['properties'],
   properties: {
-    properties: { items: { type: 'string' } },
+    properties: { type: 'array', items: { type: 'string' } },
     filter: { type: 'string' },
   },
   additionalProperties: false,
 };
 
 const settingsSyncRelationtypesSchema = {
+  type: 'array',
   items: { type: 'string' },
 };
 

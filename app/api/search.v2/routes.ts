@@ -58,6 +58,7 @@ const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
     validateAndCoerceRequest({
+      type: 'object',
       properties: {
         query: SearchQuerySchema,
       },

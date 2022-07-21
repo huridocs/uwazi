@@ -16,7 +16,7 @@ export default app => {
         if (
           e instanceof Ajv.ValidationError &&
           e.errors.find(
-            error => error.dataPath.match(/selectionRectangles/) && error.keyword === 'minItems'
+            error => error.instancePath.match(/selectionRectangles/) && error.keyword === 'minItems'
           )
         ) {
           next(new Error('selectionRectangles should not be empty'));

@@ -6,10 +6,11 @@ import { documents } from './documents';
 export const documentRoutes = (app: Application) => {
   app.get(
     '/api/documents/page',
-
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           properties: {
             _id: { type: 'string' },
             page: { type: 'string' },
