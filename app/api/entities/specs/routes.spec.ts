@@ -31,7 +31,7 @@ describe('entities routes', () => {
 
   beforeEach(async () => {
     //@ts-ignore
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => db.disconnect());

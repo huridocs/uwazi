@@ -33,8 +33,10 @@ async function processTrainFunction(
 
 function propertyRequestValidation(root = 'body') {
   return validateAndCoerceRequest({
+    type: 'object',
     properties: {
       [root]: {
+        type: 'object',
         additionalProperties: false,
         required: ['property'],
         properties: {
@@ -52,6 +54,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin']),
     parseQuery,
     validateAndCoerceRequest({
+      type: 'object',
       properties: {
         query: IXSuggestionsQuerySchema,
       },
@@ -138,12 +141,15 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
+      type: 'object',
       properties: {
         body: {
+          type: 'object',
           additionalProperties: false,
           required: ['suggestion', 'allLanguages'],
           properties: {
             suggestion: {
+              type: 'object',
               additionalProperties: false,
               required: ['_id', 'sharedId', 'entityId'],
               properties: {

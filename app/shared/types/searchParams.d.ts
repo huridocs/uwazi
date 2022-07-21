@@ -12,24 +12,20 @@ export interface SearchParams {
     };
     customFilters?: {
       generatedToc?: {
-        values?: [] | [boolean];
+        values?: boolean[];
       };
       permissions?: {
-        values?:
-          | []
-          | [
-              {
-                refId?: string;
-                level?: string;
-              }
-            ];
+        values?: {
+          refId?: string;
+          level?: string;
+        }[];
         and?: boolean;
       };
     };
-    types?: [] | [string];
-    _types?: [] | [string];
-    fields?: [] | [string];
-    include?: [] | [string];
+    types?: string[];
+    _types?: string[];
+    fields?: string[];
+    include?: string[];
     allAggregations?: boolean;
     aggregations?: string;
     order?: 'asc' | 'desc';
@@ -41,7 +37,7 @@ export interface SearchParams {
     userSelectedSorting?: boolean;
     treatAs?: string;
     unpublished?: boolean;
-    select?: [] | [string];
+    select?: string[];
     geolocation?: boolean;
     includeReviewAggregations?: boolean;
   };

@@ -32,7 +32,7 @@ describe('permissions routes', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setTenant();
-    await testingEnvironment.setRequestId();
+    testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {

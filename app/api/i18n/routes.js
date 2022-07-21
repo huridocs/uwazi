@@ -1,14 +1,11 @@
-/** @format */
-
 import Joi from 'joi';
-
 import { validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
 import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
-
 import { uploadMiddleware } from 'api/files';
+import { languageSchema } from 'shared/types/commonSchemas';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
@@ -109,15 +106,12 @@ export default app => {
   app.post(
     '/api/translations/languages',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          key: Joi.string(),
-          label: Joi.string(),
-          rtl: Joi.boolean(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: languageSchema,
+      },
+    }),
 
     async (req, res, next) => {
       try {

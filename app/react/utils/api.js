@@ -50,7 +50,7 @@ function extractMessageFromValidation(error) {
   if (!error.json.validations) return error.json.error;
   return error.json.validations.reduce(
     (message, validationError) =>
-      `${message} ${validationError.dataPath} ${validationError.message},`,
+      `${message} ${validationError.instancePath} ${validationError.message},`,
     `${error.json.error}: `
   );
 }

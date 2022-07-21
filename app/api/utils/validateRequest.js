@@ -2,11 +2,17 @@ import Ajv from 'ajv';
 import Joi from 'joi';
 import objectId from 'joi-objectid';
 import { wrapValidator } from 'shared/tsUtils';
+import addFormats from 'ajv-formats';
 import createError from './Error';
 
 Joi.objectId = objectId(Joi);
-const ajv = Ajv({ allErrors: true });
-const coercedAjv = Ajv({ allErrors: true, coerceTypes: 'array' });
+
+const ajv = new Ajv({ allErrors: true });
+ajv.addVocabulary(['tsType']);
+const coercedAjv = new Ajv({ allErrors: true, coerceTypes: 'array' });
+coercedAjv.addVocabulary(['tsType']);
+
+addFormats(ajv);
 
 const JoiDeprecatedValidation = (schema, propTovalidate, req, next) => {
   const result = Joi.validate(req[propTovalidate], schema);
