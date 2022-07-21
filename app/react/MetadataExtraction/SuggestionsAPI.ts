@@ -21,6 +21,11 @@ const trainModel = async (requestParams: RequestParams) => {
   return response;
 };
 
+const cancelFindingSuggestions = async (requestParams: RequestParams) => {
+  const { json: response } = await api.post('suggestions/stop', requestParams);
+  return response;
+};
+
 const ixStatus = async (requestParams: RequestParams) => {
   const { json: response } = await api.post('suggestions/status', requestParams);
   return response;
@@ -39,6 +44,7 @@ export {
   getSuggestions,
   getStats,
   trainModel,
+  cancelFindingSuggestions,
   ixStatus,
   acceptEntitySuggestion,
   saveConfigurations,
