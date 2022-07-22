@@ -270,9 +270,7 @@ class InformationExtraction {
   };
 
   getSuggestions = async (property: string) => {
-    const files = await getFilesForSuggestions(
-      property
-    );
+    const files = await getFilesForSuggestions(property);
     if (files.length === 0) {
       emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
