@@ -8,8 +8,10 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { FileType } from 'shared/types/fileType';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
+import languages from 'shared/languages';
 
 const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
@@ -62,7 +64,7 @@ async function getSegmentedFilesIds() {
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
   const entities = await entitiesModel.getUnrestricted(
     { template: { $in: templates } },
-    `sharedId metadata.${property}`
+    `sharedId metadata.${property} language`
   );
   const entitiesFromTrainingTemplatesIds = entities.filter(x => x.sharedId).map(x => x.sharedId);
   const files = (await filesModel.get(
@@ -78,7 +80,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
 
-  const indextedEntities = objectIndex(entities, e => e.sharedId);
+  const indexedEntities = objectIndex(entities, e => e.sharedId + e.language);
   const template = await templatesModel.getById(templates[0]);
 
   let type: string | undefined = 'text';
@@ -90,9 +92,11 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   if (!type) {
     throw new Error(`Property "${property}" does not exists`);
   }
+  const defaultLang = (await settings.getDefaultLanguage())?.key;
 
   const filesWithEntityValue = files.map(file => {
-    const entity = indextedEntities[file.entity];
+    const fileLang = languages.get(file.language, 'ISO639_1') || defaultLang;
+    const entity = indexedEntities[file.entity + fileLang];
     if (!entity?.metadata || !entity?.metadata[property]?.length) {
       return file;
     }
