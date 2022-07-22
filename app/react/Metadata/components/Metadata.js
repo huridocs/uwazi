@@ -1,7 +1,7 @@
 /* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
-import {flattenDeep} from 'lodash';
+import { flattenDeep } from 'lodash';
 import { t } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
@@ -68,12 +68,13 @@ export const showByType = (prop, compact, templateId) => {
       break;
     default:
       if (prop.value && prop.value.map) {
-        const propValue = flattenDeep(prop.value
-          .map(_value =>
+        const propValue = flattenDeep(
+          prop.value.map(_value =>
             _value.parent && Array.isArray(_value.value)
               ? _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` })).flat()
               : _value
-          ));
+          )
+        );
 
         // eslint-disable-next-line no-param-reassign
         prop.value = propValue.map(_value => {
