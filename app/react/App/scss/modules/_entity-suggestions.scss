@@ -37,6 +37,7 @@
 }
 
 .entity-suggestions {
+  max-height: 70%;
   .dashboard-link {
     a {
       text-decoration: unset;
@@ -108,16 +109,56 @@
     table-layout: fixed;
     display: flex;
     flex-wrap: wrap;
+    flex-flow: column;
     flex-direction: column;
     width: 100%;
     border: 0;
     border-collapse: separate;
     font-size: $f-size-sm;
-    overflow-x: scroll;
+    overflow-x: auto;
+    height: 100%;
+    overflow-y: auto;
+
+    thead {
+      align-items: stretch;
+      width: 100%;
+      tr {
+        width: 100%;
+      }
+    }
+    tbody {
+      width: 100%;
+    }
+
+    &.sticky {
+      overflow: auto;
+      .header,
+      .footer {
+        display: flex;
+        align-items: stretch;
+        position: sticky;
+        z-index: 1;
+        width: 100%;
+      }
+
+      .header {
+        top: 0;
+      }
+
+      .body {
+        position: relative;
+        z-index: 0;
+      }
+
+      [data-sticky-td] {
+        position: sticky;
+      }
+    }
   }
 
   tr {
     display: flex;
+    align-items: stretch;
   }
 
   th {
@@ -212,7 +253,6 @@
 
     &.long-segment {
       width: 55%;
-      max-width: 475px;
       cursor: pointer;
 
       &:hover {

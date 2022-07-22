@@ -37,18 +37,6 @@ const fixturesPdfNameF = 'documentF.pdf';
 const fixtures: DBFixture = {
   settings,
   entities: [
-    factory.entity('A1', 'templateToSegmentA', {
-      property1: [
-        {
-          value: 'different from selected text',
-        },
-      ],
-      property2: [
-        {
-          value: 1299196800,
-        },
-      ],
-    }),
     factory.entity(
       'A1',
       'templateToSegmentA',
@@ -61,6 +49,18 @@ const fixtures: DBFixture = {
       },
       { language: 'other' }
     ),
+    factory.entity('A1', 'templateToSegmentA', {
+      property1: [
+        {
+          value: 'different from selected text',
+        },
+      ],
+      property2: [
+        {
+          value: 1299196800,
+        },
+      ],
+    }),
     factory.entity('A2', 'templateToSegmentA'),
     factory.entity('A3', 'templateToSegmentA', { property2: [{ value: 1 }] }),
     factory.entity('A4', 'templateToSegmentA'),

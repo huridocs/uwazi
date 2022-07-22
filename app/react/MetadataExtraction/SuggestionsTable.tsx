@@ -11,6 +11,7 @@ import {
   useRowState,
   useTable,
 } from 'react-table';
+import { useSticky } from 'react-table-sticky';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
@@ -250,7 +251,8 @@ const suggestionsTable = (
     useFilters,
     usePagination,
     useRowSelect,
-    useRowState
+    useRowState,
+    useSticky
   );
 };
 
