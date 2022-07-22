@@ -296,6 +296,11 @@ class InformationExtraction {
   };
 
   trainModel = async (property: string) => {
+    const [model] = await IXModelsModel.get({ propertyName: property });
+    if (model && !model.findingSuggestions) {
+      model.findingSuggestions = true;
+      await IXModelsModel.save(model);
+    }
     const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
@@ -327,12 +332,7 @@ class InformationExtraction {
       return { status: 'processing_model', message: 'Training model' };
     }
 
-    const suggestionsCount = await IXSuggestionsModel.count({
-      propertyName: property,
-      status: ModelStatus.processing,
-    });
-
-    if (currentModel.status === ModelStatus.ready && suggestionsCount) {
+    if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
       return {
         status: 'processing_suggestions',
@@ -342,6 +342,19 @@ class InformationExtraction {
     }
 
     return { status: 'ready', message: 'Ready' };
+  };
+
+  stopModel = async (propertyName: string) => {
+    const res = await IXModelsModel.db.findOneAndUpdate(
+      { propertyName },
+      { $set: { findingSuggestions: false } },
+      {}
+    );
+    if (res) {
+      return { status: 'ready', message: 'Ready' };
+    }
+
+    return { status: 'error', message: '' };
   };
 
   materialsForModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
@@ -387,14 +400,25 @@ class InformationExtraction {
           creationDate: new Date().getTime(),
         });
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
 
       if (message.task === 'suggestions') {
         await this.saveSuggestions(message);
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
+
+      if (!currentModel.findingSuggestions) {
+        emitToTenant(
+          message.tenant,
+          'ix_model_status',
+          message.params!.property_name,
+          'ready',
+          'Canceled'
+        );
+        return;
+      }
+
+      await this.getSuggestions(message.params!.property_name);
     }, message.tenant);
   };
 

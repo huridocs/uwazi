@@ -60,7 +60,13 @@
       margin: 18px 0;
 
       &.property-info-container {
+        display: flex;
+        flex-direction: row;
         font-size: $f-size-xl;
+
+        div {
+          width: 50%;
+        }
       }
 
       &.training-dashboard {

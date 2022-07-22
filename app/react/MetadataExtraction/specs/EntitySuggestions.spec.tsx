@@ -74,11 +74,11 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(firstRow).toEqual([
+          'Open PDFOlowo Kamali Case',
           'Olowo Kamali',
           '',
           'Entity title1',
           'Entity title1',
-          'Open PDFOlowo Kamali Case',
           'English',
           SuggestionState.labelMismatch,
         ]);
@@ -86,11 +86,11 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(secondRow).toEqual([
+          'Open PDFDetalle Violación caso 1',
           'Violación caso 1',
           '',
           '-',
           'Título entidad',
-          'Open PDFDetalle Violación caso 1',
           'Spanish',
           SuggestionState.valueEmpty,
         ]);
@@ -340,7 +340,7 @@ describe('EntitySuggestions', () => {
       const originalRow = within(rows[2])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(originalRow[2]).toEqual('-');
+      expect(originalRow[3]).toEqual('-');
       const openPDFButton = within(rows[2]).getByText('Open PDF').parentElement!;
       await act(async () => {
         fireEvent.click(openPDFButton);
@@ -351,7 +351,7 @@ describe('EntitySuggestions', () => {
       const updatedRow = within(screen.getAllByRole('row')[2])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(updatedRow[2]).toEqual(filledPropertyValue);
+      expect(updatedRow[3]).toEqual(filledPropertyValue);
     });
   });
 

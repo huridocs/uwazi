@@ -80,6 +80,12 @@ const suggestionsTable = (
   const columns: Column<EntitySuggestionType>[] = React.useMemo(
     () => [
       {
+        accessor: 'segment' as const,
+        Header: () => <Translate>Context</Translate>,
+        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
+        Cell: segmentCell,
+      },
+      {
         id: 'suggestion',
         Header: () => <Translate>Suggestion</Translate>,
         Cell: suggestionCell,
@@ -106,12 +112,6 @@ const suggestionsTable = (
         accessor: 'entityTitle' as const,
         Header: () => <Translate>Title</Translate>,
         className: 'title',
-      },
-      {
-        accessor: 'segment' as const,
-        Header: () => <Translate>Context</Translate>,
-        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
-        Cell: segmentCell,
       },
       {
         accessor: 'language' as const,

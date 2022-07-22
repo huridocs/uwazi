@@ -4,9 +4,12 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { fs } from 'api/files';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { ResultsMessage } from 'api/services/tasksmanager/TaskManager';
+import * as setupSockets from 'api/socketio/setupSockets';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { IXModelsModel } from '../IXModelsModel';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -45,6 +48,7 @@ describe('InformationExtraction', () => {
     });
 
     await IXExternalService.start();
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
 
   beforeEach(async () => {
@@ -83,17 +87,23 @@ describe('InformationExtraction', () => {
     );
   };
 
-  describe('status', () => {
-    it('should return processing_model status', async () => {
+  describe('status()', () => {
+    it('should return status: processing_model', async () => {
       const resp = await informationExtraction.status('property3');
       expect(resp.status).toEqual('processing_model');
     });
-    it('should return getting suggestion status', async () => {
+
+    it('should return status: fetching suggestion', async () => {
       const resp = await informationExtraction.status('property2');
       expect(resp.status).toEqual('processing_suggestions');
-      expect(resp.data).toEqual({ total: 1, processed: 0 });
+      expect(resp.data).toEqual({ total: 5, processed: 2 });
     });
-    it('should return ready status', async () => {
+
+    it('should return status: ready', async () => {
+      const [model] = await IXModelsModel.get({ propertyName: 'property1' });
+      model.findingSuggestions = false;
+      await IXModelsModel.save(model);
+
       const resp = await informationExtraction.status('property1');
       expect(resp.status).toEqual('ready');
     });
@@ -255,14 +265,44 @@ describe('InformationExtraction', () => {
     it('should create the suggestions placeholder with status processing', async () => {
       await informationExtraction.getSuggestions('property1');
       const suggestions = await IXSuggestionsModel.get();
-      expect(suggestions.length).toBe(5);
-      expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
+      expect(suggestions.length).toBe(9);
+      expect(suggestions.find(s => s.entityId === 'A1' && s.propertyName === 'property1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',
           status: 'processing',
           state: SuggestionState.processing,
         })
       );
+    });
+  });
+
+  describe('processResults', () => {
+    it('should not continue sending suggestions if flag is not set', async () => {
+      const [model] = await IXModelsModel.get({ propertyName: 'property2' });
+      model.findingSuggestions = false;
+      await IXModelsModel.save(model);
+
+      const message: ResultsMessage = {
+        task: 'create_model',
+        data_url: 'some/url',
+        error_message: '',
+        params: {
+          property_name: 'property2',
+        },
+        tenant: 'tenant1',
+        file_url: '',
+        success: true,
+      };
+
+      await informationExtraction.processResults(message);
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        message.tenant,
+        'ix_model_status',
+        message.params!.property_name,
+        'ready',
+        'Canceled'
+      );
+      expect(informationExtraction.taskManager?.startTask).not.toHaveBeenCalled();
     });
   });
 
@@ -444,7 +484,7 @@ describe('InformationExtraction', () => {
         status: 'ready',
         propertyName: 'property2',
       });
-      expect(suggestions.length).toBe(0);
+      expect(suggestions.length).toBe(4);
     });
 
     it('should store empty suggestions when they are of type text', async () => {
@@ -514,7 +554,9 @@ describe('InformationExtraction', () => {
       const suggestions = await IXSuggestionsModel.get({
         status: 'ready',
         propertyName: 'property2',
+        entityId: 'A3',
       });
+
       expect(suggestions).toMatchObject([
         { suggestedValue: 1570838400, suggestedText: 'October 12, 2019' },
       ]);

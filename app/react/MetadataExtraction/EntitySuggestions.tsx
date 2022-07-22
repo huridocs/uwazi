@@ -17,9 +17,16 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
-import { getStats, getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
+import {
+  getStats,
+  getSuggestions,
+  ixStatus,
+  trainModel,
+  cancelFindingSuggestions,
+} from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingHealthDashboard } from './TrainingHealthDashboard';
+import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -38,6 +45,7 @@ export const EntitySuggestions = ({
     key: 'ready',
   });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
+  const [openCancelFindingSuggestions, setOpenCancelFindingSuggestions] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
 
@@ -227,6 +235,27 @@ export const EntitySuggestions = ({
     }
   };
 
+  const _cancelFindingSuggestions = async () => {
+    setOpenCancelFindingSuggestions(false);
+    const params = new RequestParams({
+      property: reviewedProperty.name,
+    });
+
+    if (status.key !== 'ready') {
+      setStatus({ key: 'cancel' });
+      await cancelFindingSuggestions(params);
+    }
+  };
+
+  const onFindSuggestionButtonClicked = async () => {
+    if (status.key === 'ready') {
+      setStatus({ key: 'sending_labeled_data' });
+      await _trainModel();
+    } else {
+      setOpenCancelFindingSuggestions(true);
+    }
+  };
+
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
   useEffect(() => {
     if (isMounted.current) {
@@ -243,7 +272,7 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus({ key: response.status });
+        setStatus({ key: response.status, data: response.data });
       })
       .catch(() => {
         setStatus({ key: 'error' });
@@ -254,7 +283,8 @@ export const EntitySuggestions = ({
       (propertyName: string, modelStatus: string, _: string, data: any) => {
         if (propertyName === reviewedProperty.name) {
           setStatus({ key: modelStatus, data });
-          if (data && data.total === data.processed) {
+          if ((data && data.total === data.processed) || modelStatus === 'ready') {
+            setStatus({ key: 'ready' });
             retrieveSuggestions();
           }
         }
@@ -273,6 +303,7 @@ export const EntitySuggestions = ({
     sending_labeled_data: 'Sending labeled data...',
     processing_model: 'Training model...',
     processing_suggestions: 'Finding suggestions',
+    cancel: 'Cancelling...',
     error: 'Error',
   };
 
@@ -290,23 +321,26 @@ export const EntitySuggestions = ({
         </div>
         <div className="panel-subheading">
           <div className="property-info-container">
-            <span className="suggestion-header">
-              <Translate>Reviewing</Translate>:&nbsp;
-            </span>
-            <span className="suggestion-property">
-              <Translate>{reviewedProperty.label}</Translate>
-            </span>
+            <div>
+              <span className="suggestion-header">
+                <Translate>Reviewing</Translate>:&nbsp;
+              </span>
+              <span className="suggestion-property">
+                <Translate>{reviewedProperty.label}</Translate>
+              </span>
+            </div>
+            <div>
+              <button
+                type="button"
+                title={status.key !== 'ready' ? 'Cancel' : 'Train'}
+                className={`btn service-request-button ${status.key}`}
+                onClick={onFindSuggestionButtonClicked}
+              >
+                <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
+              </button>
+            </div>
           </div>
           <TrainingHealthDashboard stats={stats} />
-          <div className="actions-container">
-            <button
-              type="button"
-              className={`btn service-request-button ${status}`}
-              onClick={_trainModel}
-            >
-              <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
-            </button>
-          </div>
         </div>
         <table {...getTableProps()} className="table sticky">
           <thead className="header">
@@ -353,6 +387,11 @@ export const EntitySuggestions = ({
           propertyType={reviewedProperty.type}
           onClose={() => setAcceptingSuggestion(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
+        />
+        <CancelFindingSuggestionModal
+          isOpen={openCancelFindingSuggestions}
+          onClose={() => setOpenCancelFindingSuggestions(false)}
+          onAccept={async () => _cancelFindingSuggestions()}
         />
       </div>
       {Boolean(selectedFlatRows.length) && (

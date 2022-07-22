@@ -85,6 +85,16 @@ export const suggestionsRoutes = (app: Application) => {
   );
 
   app.post(
+    '/api/suggestions/stop',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    propertyRequestValidation('body'),
+    async (req, res, _next) => {
+      await processTrainFunction(IX.stopModel, req, res);
+    }
+  );
+
+  app.post(
     '/api/suggestions/train',
     serviceMiddleware,
     needsAuthorization(['admin']),
