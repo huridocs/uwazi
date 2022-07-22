@@ -10,7 +10,7 @@ import { CSVRow } from './csv';
 type ParsedValue = { nested: boolean; value: string };
 type ParsedRow = Record<string, ParsedValue>;
 
-const buildThesauri = (rows: ParsedRow[], languageLabel: string) => {
+const buildThesauriValues = (rows: ParsedRow[], languageLabel: string) => {
   const result: ThesaurusValueSchema[] = [];
   rows.forEach(row => {
     const { value: valueForLanguage, nested } = row[languageLabel];
@@ -108,7 +108,7 @@ async function thesauriFromStream(
   const languagesToTranslate = getLanguagesToTranslate(iso6391Languages, parsedRows);
 
   return {
-    thesauriValues: buildThesauri(parsedRows, languageLabel),
+    thesauriValues: buildThesauriValues(parsedRows, languageLabel),
     thesauriTranslations: buildTranslation(parsedRows, languagesToTranslate, languageLabel),
   };
 }

@@ -7,6 +7,10 @@ import { CSVLoader } from '../csvLoader';
 import fixtures, { thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
 
+const getTranslation = async (lang, id) =>
+  (await translations.get()).find(t => t.locale === lang).contexts.find(c => c.id === id.toString())
+    .values;
+
 describe('csvLoader thesauri', () => {
   const loader = new CSVLoader();
 
@@ -42,11 +46,6 @@ describe('csvLoader thesauri', () => {
       mockedFile.mockRestore();
     });
 
-    const getTranslation = async lang =>
-      (await translations.get())
-        .find(t => t.locale === lang)
-        .contexts.find(c => c.id === thesauriId.toString()).values;
-
     it('should set thesauri values using the language passed and ignore blank values', async () => {
       const thesaurus = await thesauri.getById(thesauriId);
       expect(thesaurus.values.map(v => v.label)).toEqual([
@@ -63,7 +62,7 @@ describe('csvLoader thesauri', () => {
     });
 
     it('should translate thesauri values to english', async () => {
-      const english = await getTranslation('en');
+      const english = await getTranslation('en', thesauriId);
 
       expect(Object.keys(english).length).toBe(5);
 
@@ -75,7 +74,7 @@ describe('csvLoader thesauri', () => {
     });
 
     it('should translate thesauri values to spanish', async () => {
-      const spanish = await getTranslation('es');
+      const spanish = await getTranslation('es', thesauriId);
 
       expect(Object.keys(spanish).length).toBe(5);
 
@@ -87,7 +86,7 @@ describe('csvLoader thesauri', () => {
     });
 
     it('should translate thesauri values to french', async () => {
-      const french = await getTranslation('fr');
+      const french = await getTranslation('fr', thesauriId);
 
       expect(Object.keys(french).length).toBe(5);
 
@@ -153,6 +152,23 @@ describe('csvLoader thesauri', () => {
             },
           ],
         });
+
+        expect(await getTranslation('es', _id)).toMatchObject({
+          nestedThesauri: 'nestedThesauri',
+          value1: 'valor1',
+          value2: 'valor2',
+          value3: 'valor3',
+          value4: 'valor4',
+        });
+
+        expect(await getTranslation('fr', _id)).toMatchObject({
+          nestedThesauri: 'nestedThesauri',
+          value1: 'valeur1',
+          value2: 'valeur2',
+          value3: 'valeur3',
+          value4: 'valeur4',
+        });
+
         mockedFile.mockRestore();
       });
 
@@ -174,8 +190,19 @@ describe('csvLoader thesauri', () => {
           ],
         });
 
+        await translations.updateEntries(_id.toString(), {
+          es: {
+            value11: 'valor11',
+            value2: 'valor2',
+          },
+          fr: {
+            value11: 'valeur11',
+            value2: 'valeur2',
+          },
+        });
+
         const csv = `English, Spanish, French
-        value1, valor1, valeur1
+        value1, different translation for value1, valeur1
         - value12, - valor12, - valeur12
         value3, valor3, valeur3`;
 
@@ -207,6 +234,23 @@ describe('csvLoader thesauri', () => {
           ],
         });
 
+        expect(await getTranslation('es', _id)).toMatchObject({
+          existingNestedThesauri: 'existingNestedThesauri',
+          value1: 'different translation for value1',
+          value11: 'valor11',
+          value12: 'valor12',
+          value2: 'valor2',
+          value3: 'valor3',
+        });
+
+        expect(await getTranslation('fr', _id)).toMatchObject({
+          existingNestedThesauri: 'existingNestedThesauri',
+          value1: 'valeur1',
+          value11: 'valeur11',
+          value12: 'valeur12',
+          value2: 'valeur2',
+          value3: 'valeur3',
+        });
         mockedFile.mockRestore();
       });
 
