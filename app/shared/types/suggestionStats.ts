@@ -1,10 +1,10 @@
 export interface SuggestionsStats {
-  data: {
-    labeledMatching: number;
+  counts: {
     labeled: number;
     nonLabeledMatching: number;
-    nonLabeledOthers: number;
+    nonLabeledNotMatching: number;
     emptyOrObsolete: number;
     all: number;
   };
+  accuracy: number;
 }

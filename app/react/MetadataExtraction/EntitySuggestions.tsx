@@ -287,6 +287,7 @@ export const EntitySuggestions = ({
             setStatus({ key: 'ready' });
             retrieveSuggestions();
           }
+          retriveStats();
         }
       }
     );

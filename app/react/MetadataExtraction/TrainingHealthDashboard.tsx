@@ -8,16 +8,12 @@ interface TrainingHealthDashboardProps {
   stats?: SuggestionsStats;
 }
 
-const mapStats = (data: SuggestionsStats['data']) => [
+const mapStats = (data: SuggestionsStats['counts']) => [
   {
     color: '#5073CF',
-    value: data.labeledMatching,
+    value: data.labeled,
     label: { text: <Translate>Training</Translate> },
     overlaying: true,
-  },
-  {
-    color: '#CD4C4C',
-    value: data.labeled,
   },
   {
     color: '#4CAE4C',
@@ -26,7 +22,7 @@ const mapStats = (data: SuggestionsStats['data']) => [
   },
   {
     color: '#ECA41A',
-    value: data.nonLabeledOthers,
+    value: data.nonLabeledNotMatching,
     label: { text: <Translate>Non-matching</Translate> },
   },
   {
@@ -39,11 +35,11 @@ const mapStats = (data: SuggestionsStats['data']) => [
 export const TrainingHealthDashboard = ({ stats }: TrainingHealthDashboardProps) => {
   if (!stats) return null;
 
-  const data = mapStats(stats.data);
+  const data = mapStats(stats.counts);
 
   return (
     <div className="training-dashboard">
-      <TrainingHealthLegend data={data} total={stats.data.all} />
+      <TrainingHealthLegend data={data} total={stats.counts.all} accuracy={stats.accuracy} />
       <GridChart className="training-dashboard-chart" data={data} />
     </div>
   );
