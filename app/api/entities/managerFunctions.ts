@@ -73,7 +73,15 @@ const updateDeletedFiles = async (
         attachment => attachment._id?.toString() === existingFile._id.toString()
       )
   );
-  await Promise.all(deletedFiles.map(async file => filesAPI.delete(file)));
+  await Promise.all(
+    deletedFiles.map(async file => {
+      if (file.type === 'document') {
+        const thumbnailFileName = `${file._id}.jpg`;
+        await filesAPI.delete({ filename: thumbnailFileName });
+      }
+      return filesAPI.delete(file);
+    })
+  );
 };
 
 const filterRenamedFiles = (entity: EntityWithFilesSchema, entityFiles: WithId<FileType>[]) => {

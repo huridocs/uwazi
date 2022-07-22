@@ -461,7 +461,7 @@ describe('entitySavingManager', () => {
           ]);
         });
 
-        it('should remove files for deleted documents', async () => {
+        it('should remove files and thumbnails for deleted documents', async () => {
           const entity = {
             _id: entity3Id,
             sharedId: 'shared3',
@@ -477,6 +477,9 @@ describe('entitySavingManager', () => {
           }));
 
           expect(savedEntity.attachments).toMatchObject([entity3textFile]);
+
+          const entityFiles = await filesAPI.get({ entity: entity.sharedId });
+          expect(entityFiles).toMatchObject([entity3textFile]);
         });
 
         it('should update files for renamed documents', async () => {

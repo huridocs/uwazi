@@ -57,6 +57,14 @@ const mainPdfFile: FileType = {
   type: 'document',
 };
 
+const mainPdfFileThumbnail: FileType = {
+  _id: db.id(),
+  entity: 'shared3',
+  type: 'thumbnail',
+  language: 'eng',
+  filename: `${mainPdfFileId}.jpg`,
+};
+
 const entity3textFile: FileType = {
   _id: db.id(),
   entity: 'shared3',
@@ -98,6 +106,7 @@ const fixtures: DBFixture = {
     { ...pdfFile },
     { ...anotherTextFile },
     { ...mainPdfFile },
+    { ...mainPdfFileThumbnail },
     { ...entity3textFile },
   ],
   templates: [
