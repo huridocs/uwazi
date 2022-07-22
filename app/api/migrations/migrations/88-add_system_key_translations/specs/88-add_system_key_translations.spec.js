@@ -19,7 +19,7 @@ const alreadyInAllContexts = {
 describe('migration add_system_key_translations', () => {
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
-    await testingDB.clearAllAndLoad(fixtures);
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
