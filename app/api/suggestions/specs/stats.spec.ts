@@ -100,14 +100,14 @@ afterAll(async () => {
 describe('when the property exists', () => {
   it('should return the training stats', async () => {
     expect(await getStats('age')).toEqual({
-      data: {
-        labeledMatching: 1,
+      counts: {
         labeled: 3,
         nonLabeledMatching: 1,
-        nonLabeledOthers: 2,
-        emptyOrObsolete: 3,
+        nonLabeledNotMatching: 1,
+        emptyOrObsolete: 4,
         all: fixtures.ixsuggestions!.length,
       },
+      accuracy: 0.5,
     });
   });
 });
