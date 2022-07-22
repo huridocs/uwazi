@@ -5,7 +5,9 @@ import entitiesModel from 'api/entities/entitiesModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from 'api/services/informationextraction/ixmodels';
+import settings from 'api/settings';
 import { FileType } from 'shared/types/fileType';
+
 
 const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
@@ -58,6 +60,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     'sharedId'
   );
   const entitiesFromTrainingTemplatesIds = entities.filter(x => x.sharedId).map(x => x.sharedId);
+
   const files = (await filesModel.get(
     {
       type: 'document',
@@ -75,6 +78,10 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
 }
 
 async function getFilesForSuggestions(templates: ObjectIdSchema[], property: string) {
+  const numberOfLanguages = (await settings.get({}))?.languages?.length;
+
+  if (!numberOfLanguages) return [];
+
   const [currentModel] = await ixmodels.get({ propertyName: property });
 
   const suggestions = await IXSuggestionsModel.get(
@@ -86,9 +93,19 @@ async function getFilesForSuggestions(templates: ObjectIdSchema[], property: str
 
   const entities = await entitiesModel.getUnrestricted(
     { template: { $in: templates }, sharedId: { $nin: suggestionsIds } },
-    'sharedId'
+    'sharedId',
+    { limit: Math.ceil(BATCH_SIZE / numberOfLanguages) }
   );
+
+  // console.log('entities-----');
+  // console.log('length', entities.length);
+  // console.log(entities);
+
   const entitiesFromTrainingTemplatesIds = entities.filter(x => x.sharedId).map(x => x.sharedId);
+
+  // console.log('entitiesFromTrainingTemplates-----');
+  // console.log('length', entitiesFromTrainingTemplatesIds.length);
+  // console.log(entitiesFromTrainingTemplatesIds);
 
   const files = (await filesModel.get(
     {
@@ -96,14 +113,55 @@ async function getFilesForSuggestions(templates: ObjectIdSchema[], property: str
       filename: { $exists: true },
       _id: { $in: await getSegmentedFilesIds() },
       entity: { $in: entitiesFromTrainingTemplatesIds },
-      language: { $exists: true },
+      language: { $exists: true }, // language problem-------------------------------------------
     },
     'extractedMetadata entity language filename',
-    { limit: BATCH_SIZE }
   )) as (FileType & FileEnforcedNotUndefined)[];
+
+  // console.log('files------');
+  // console.log('length', files.length);
+  // console.log(files);
 
   return getFilesWithAggregations(files);
 }
+
+// eslint-disable-next-line max-statements
+// async function getFilesForSuggestions(templates: ObjectIdSchema[], property: string) {
+//   const [currentModel] = await ixmodels.get({ propertyName: property });
+
+//   const suggestions = await IXSuggestionsModel.get(
+//     { propertyName: property, date: { $lt: currentModel.creationDate } },
+//     'fileId',
+//     { limit: BATCH_SIZE }
+//   );
+
+//   // console.log('suggestions--------------------');
+//   // console.log('length', suggestions.length);
+//   // console.log(suggestions);
+
+//   const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
+
+//   const files = (await filesModel.get(
+//     {
+//       $and: [
+//         {
+//           type: 'document',
+//           filename: { $exists: true },
+//           _id: { $in: await getSegmentedFilesIds() },
+//           language: { $exists: true }, // language problem-------------------------------------------
+//         },
+//         { _id: { $in: fileIds } },
+//       ],
+//     },
+//     'extractedMetadata entity language filename'
+//   )) as (FileType & FileEnforcedNotUndefined)[];
+
+//   // console.log('files------');
+//   // console.log('length', files.length);
+//   // console.log(files);
+
+//   return getFilesWithAggregations(files);
+// }
 
 export { getFilesForTraining, getFilesForSuggestions };
 export type { FileWithAggregation };
