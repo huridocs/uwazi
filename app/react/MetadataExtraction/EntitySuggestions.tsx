@@ -272,7 +272,6 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        console.log(response);
         setStatus({ key: response.status, data: response.data });
       })
       .catch(() => {

@@ -332,12 +332,7 @@ class InformationExtraction {
       return { status: 'processing_model', message: 'Training model' };
     }
 
-    const suggestionsCount = await IXSuggestionsModel.count({
-      propertyName: property,
-      status: ModelStatus.processing,
-    });
-
-    if (currentModel.status === ModelStatus.ready && suggestionsCount) {
+    if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
       return {
         status: 'processing_suggestions',
