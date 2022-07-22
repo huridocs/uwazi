@@ -40,6 +40,7 @@ export default app => {
     '/api/search_snippets',
     validation.validateRequest(
       {
+        type: 'object',
         required: ['query'],
         properties: {
           query: {

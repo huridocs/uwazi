@@ -17,11 +17,11 @@ describe('api', () => {
       error: 'validation failed',
       validations: [
         {
-          dataPath: ".metadata['prop1']",
+          instancePath: ".metadata['prop1']",
           message: 'should be string',
         },
         {
-          dataPath: ".metadata['prop2']",
+          instancePath: ".metadata['prop2']",
           message: 'is too long',
         },
       ],

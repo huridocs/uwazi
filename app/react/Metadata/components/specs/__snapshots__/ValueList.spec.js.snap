@@ -1,48 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ValueList compact render should render array values separated by ", " 1`] = `
-Array [
-  "first_value",
-  <span>
-    , 
-  </span>,
-  "second_value",
-  <span>
-    , 
-  </span>,
-  "third value",
-]
+<div
+  className="compact"
+>
+  <div
+    className="item-value"
+  >
+    first_value
+  </div>
+  <div
+    className="item-value"
+  >
+    second_value
+  </div>
+  <div
+    className="item-value"
+  >
+    third value
+  </div>
+</div>
 `;
 
-exports[`ValueList compact render should render multidate in multiple lines 1`] = `
-Array [
-  "first_value",
-  <br />,
-  "second_value",
-  <br />,
-  "third value",
-]
-`;
-
-exports[`ValueList compact render should render multidaterange in multiple lines 1`] = `
-Array [
-  "first_value",
-  <br />,
-  "second_value",
-  <br />,
-  "third value",
-]
-`;
-
-exports[`ValueList compact render should rendern icons when the value has one 1`] = `
-Array [
-  "first_value",
-  <span>
-    , 
-  </span>,
-  <Fragment>
+exports[`ValueList compact render should render icons when the value has one 1`] = `
+<div
+  className="compact"
+>
+  <div
+    className="item-value"
+  >
+    first_value
+  </div>
+  <div
+    className="item-value"
+  >
     <Connect(Icon)
-      className="item-icon item-icon-center"
       data={
         Object {
           "icon": "icon2",
@@ -50,12 +42,57 @@ Array [
       }
     />
     second_value
-  </Fragment>,
-  <span>
-    , 
-  </span>,
-  "third value",
-]
+  </div>
+  <div
+    className="item-value"
+  >
+    third value
+  </div>
+</div>
+`;
+
+exports[`ValueList compact render should render multidate in multiple lines 1`] = `
+<div
+  className="compact"
+>
+  <div
+    className="item-value"
+  >
+    first_value
+  </div>
+  <div
+    className="item-value"
+  >
+    second_value
+  </div>
+  <div
+    className="item-value"
+  >
+    third value
+  </div>
+</div>
+`;
+
+exports[`ValueList compact render should render multidaterange in multiple lines 1`] = `
+<div
+  className="compact"
+>
+  <div
+    className="item-value"
+  >
+    first_value
+  </div>
+  <div
+    className="item-value"
+  >
+    second_value
+  </div>
+  <div
+    className="item-value"
+  >
+    third value
+  </div>
+</div>
 `;
 
 exports[`ValueList should group items with same value 1`] = `
@@ -65,29 +102,87 @@ exports[`ValueList should group items with same value 1`] = `
   <li
     key="label_0"
   >
-    first_value
+    <div
+      className="item-value"
+    >
+      first_value
+    </div>
   </li>
   <li
     key="label_1"
   >
-    second_value
-     
-    <span
-      className="item-count"
+    <div
+      className="item-value"
     >
-      3
-    </span>
+      second_value
+      <span
+        className="item-count"
+      >
+        3
+      </span>
+    </div>
   </li>
   <li
     key="label_2"
   >
-    third value
-     
-    <span
-      className="item-count"
+    <div
+      className="item-value"
     >
-      2
-    </span>
+      third value
+      <span
+        className="item-count"
+      >
+        2
+      </span>
+    </div>
+  </li>
+</ul>
+`;
+
+exports[`ValueList should render icons when the value has one 1`] = `
+<ul
+  className="multiline"
+>
+  <li
+    key="label_0"
+  >
+    <div
+      className="item-value"
+    >
+      <Connect(Icon)
+        data={
+          Object {
+            "icon": "icon",
+          }
+        }
+      />
+      first_value
+    </div>
+  </li>
+  <li
+    key="label_1"
+  >
+    <div
+      className="item-value"
+    >
+      <Connect(Icon)
+        data={
+          Object {
+            "icon": "icon2",
+          }
+        }
+      />
+      second_value
+    </div>
+  </li>
+  <li
+    key="label_2"
+  >
+    <div
+      className="item-value"
+    >
+      third value
+    </div>
   </li>
 </ul>
 `;
@@ -99,55 +194,29 @@ exports[`ValueList should render the values as a ul list 1`] = `
   <li
     key="label_0"
   >
-    first_value
+    <div
+      className="item-value"
+    >
+      first_value
+    </div>
   </li>
   <li
     key="label_1"
   >
-    second_value
+    <div
+      className="item-value"
+    >
+      second_value
+    </div>
   </li>
   <li
     key="label_2"
   >
-    third value
-  </li>
-</ul>
-`;
-
-exports[`ValueList should rendern icons when the value has one 1`] = `
-<ul
-  className="multiline"
->
-  <li
-    key="label_0"
-  >
-    <Connect(Icon)
-      className="item-icon item-icon-center"
-      data={
-        Object {
-          "icon": "icon",
-        }
-      }
-    />
-    first_value
-  </li>
-  <li
-    key="label_1"
-  >
-    <Connect(Icon)
-      className="item-icon item-icon-center"
-      data={
-        Object {
-          "icon": "icon2",
-        }
-      }
-    />
-    second_value
-  </li>
-  <li
-    key="label_2"
-  >
-    third value
+    <div
+      className="item-value"
+    >
+      third value
+    </div>
   </li>
 </ul>
 `;

@@ -11,6 +11,7 @@ import {
   useRowState,
   useTable,
 } from 'react-table';
+import { useSticky } from 'react-table-sticky';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
@@ -79,6 +80,12 @@ const suggestionsTable = (
   const columns: Column<EntitySuggestionType>[] = React.useMemo(
     () => [
       {
+        accessor: 'segment' as const,
+        Header: () => <Translate>Context</Translate>,
+        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
+        Cell: segmentCell,
+      },
+      {
         id: 'suggestion',
         Header: () => <Translate>Suggestion</Translate>,
         Cell: suggestionCell,
@@ -105,12 +112,6 @@ const suggestionsTable = (
         accessor: 'entityTitle' as const,
         Header: () => <Translate>Title</Translate>,
         className: 'title',
-      },
-      {
-        accessor: 'segment' as const,
-        Header: () => <Translate>Context</Translate>,
-        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
-        Cell: segmentCell,
       },
       {
         accessor: 'language' as const,
@@ -250,7 +251,8 @@ const suggestionsTable = (
     useFilters,
     usePagination,
     useRowSelect,
-    useRowState
+    useRowState,
+    useSticky
   );
 };
 

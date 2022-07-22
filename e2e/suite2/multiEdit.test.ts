@@ -91,9 +91,9 @@ describe('multi edit', () => {
   it('should edit the 3 entities with a single multiEdit action', async () => {
     await multiEdit({ from: 'Another sentence', to: 'A case' }, ['Argentina', 'Bahamas']);
 
-    await expectValues('A sentence', ['Argentina, Bahamas']);
-    await expectValues('Another sentence', ['Argentina, Bahamas']);
-    await expectValues('A case', ['Argentina, Bahamas']);
+    await expectValues('A sentence', ['ArgentinaBahamas']);
+    await expectValues('Another sentence', ['ArgentinaBahamas']);
+    await expectValues('A case', ['ArgentinaBahamas']);
   });
 
   it('should publish the entities', async () => {
@@ -131,8 +131,8 @@ describe('multi edit', () => {
       await expect(page).toClick('.multi-edit button', { text: 'Save' });
       await expect(page).toClick('.alert.alert-success');
 
-      await expectValues('A sentence', ['edited value', 'Argentina, Bahamas']);
-      await expectValues('Another sentence', ['edited value', 'Argentina, Bahamas']);
+      await expectValues('A sentence', ['edited value', 'ArgentinaBahamas']);
+      await expectValues('Another sentence', ['edited value', 'ArgentinaBahamas']);
     });
   });
 

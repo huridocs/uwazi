@@ -3,11 +3,11 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { PropertySchema } from 'shared/types/commonTypes';
 
 const defaultHeaders = [
+  'Context',
   'Suggestion',
   '',
   'Current value',
   'Title',
-  'Context',
   'Language',
   [
     'State',

@@ -609,9 +609,9 @@ describe('templates', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(Ajv.ValidationError);
         expect(error.errors.some(e => e.params.missingProperty === 'label')).toBe(true);
-        expect(
-          error.errors.some(e => e.params.keyword === 'requireOrInvalidContentForSelectFields')
-        ).toBe(true);
+        expect(error.errors.some(e => e.keyword === 'requireOrInvalidContentForSelectFields')).toBe(
+          true
+        );
       }
     });
   });

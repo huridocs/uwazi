@@ -28,8 +28,10 @@ export default (app: Application) => {
     async (req: Request, res: Response, next: NextFunction) =>
       req.user ? next() : captchaMiddleware()(req, res, next),
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           properties: {
             filters: { type: 'string' },
             types: { type: 'string' },

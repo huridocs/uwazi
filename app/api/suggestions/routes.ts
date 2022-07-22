@@ -5,7 +5,10 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
+import {
+  IXSuggestionsQuerySchema,
+  IXSuggestionsStatsQuerySchema,
+} from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { serviceMiddleware } from './serviceMiddleware';
 import { saveConfigurations } from './configurationManager';
@@ -30,8 +33,10 @@ async function processTrainFunction(
 
 function propertyRequestValidation(root = 'body') {
   return validateAndCoerceRequest({
+    type: 'object',
     properties: {
       [root]: {
+        type: 'object',
         additionalProperties: false,
         required: ['property'],
         properties: {
@@ -49,6 +54,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin']),
     parseQuery,
     validateAndCoerceRequest({
+      type: 'object',
       properties: {
         query: IXSuggestionsQuerySchema,
       },
@@ -59,6 +65,32 @@ export const suggestionsRoutes = (app: Application) => {
         { page: req.query.page }
       );
       res.json(suggestionsList);
+    }
+  );
+
+  app.get(
+    '/api/suggestions/stats',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    parseQuery,
+    validateAndCoerceRequest({
+      properties: {
+        query: IXSuggestionsStatsQuerySchema,
+      },
+    }),
+    async (req, res, _next) => {
+      const stats = await Suggestions.getStats(req.query.propertyName);
+      res.json(stats);
+    }
+  );
+
+  app.post(
+    '/api/suggestions/stop',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    propertyRequestValidation('body'),
+    async (req, res, _next) => {
+      await processTrainFunction(IX.stopModel, req, res);
     }
   );
 
@@ -104,11 +136,11 @@ export const suggestionsRoutes = (app: Application) => {
     }
   );
 
-  app.get(
+  app.post(
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('query'),
+    propertyRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.status, req, res);
     }
@@ -119,12 +151,15 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
+      type: 'object',
       properties: {
         body: {
+          type: 'object',
           additionalProperties: false,
           required: ['suggestion', 'allLanguages'],
           properties: {
             suggestion: {
+              type: 'object',
               additionalProperties: false,
               required: ['_id', 'sharedId', 'entityId'],
               properties: {

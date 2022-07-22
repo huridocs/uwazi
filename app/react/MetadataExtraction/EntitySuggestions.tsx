@@ -16,8 +16,17 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
-import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
+import { SuggestionsStats } from 'shared/types/suggestionStats';
+import {
+  getStats,
+  getSuggestions,
+  ixStatus,
+  trainModel,
+  cancelFindingSuggestions,
+} from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
+import { TrainingHealthDashboard } from './TrainingHealthDashboard';
+import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -36,7 +45,9 @@ export const EntitySuggestions = ({
     key: 'ready',
   });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
+  const [openCancelFindingSuggestions, setOpenCancelFindingSuggestions] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
+  const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -149,6 +160,17 @@ export const EntitySuggestions = ({
       .catch(() => {});
   };
 
+  const retriveStats = () => {
+    const params = new RequestParams({
+      propertyName: reviewedProperty.name,
+    });
+    getStats(params)
+      .then((response: any) => {
+        setStats(response);
+      })
+      .catch(() => {});
+  };
+
   const getWrappedSuggestionState = (
     acceptedSuggestion: any,
     newCurrentValue: string | number | null
@@ -177,6 +199,7 @@ export const EntitySuggestions = ({
 
     setAcceptingSuggestion(false);
     toggleAllRowsSelected(false);
+    retriveStats();
   };
 
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
@@ -194,6 +217,7 @@ export const EntitySuggestions = ({
       entity.title as string
     );
     selectedFlatRows[0].setState({});
+    retriveStats();
   };
 
   const _trainModel = async () => {
@@ -204,10 +228,31 @@ export const EntitySuggestions = ({
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
-    setStatus({ key: response.status });
+    setStatus({ key: response.status, data: response.data });
     store?.dispatch(notify(response.message, type));
     if (status.key === 'ready') {
       await retrieveSuggestions();
+    }
+  };
+
+  const _cancelFindingSuggestions = async () => {
+    setOpenCancelFindingSuggestions(false);
+    const params = new RequestParams({
+      property: reviewedProperty.name,
+    });
+
+    if (status.key !== 'ready') {
+      setStatus({ key: 'cancel' });
+      await cancelFindingSuggestions(params);
+    }
+  };
+
+  const onFindSuggestionButtonClicked = async () => {
+    if (status.key === 'ready') {
+      setStatus({ key: 'sending_labeled_data' });
+      await _trainModel();
+    } else {
+      setOpenCancelFindingSuggestions(true);
     }
   };
 
@@ -227,7 +272,7 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus({ key: response.status });
+        setStatus({ key: response.status, data: response.data });
       })
       .catch(() => {
         setStatus({ key: 'error' });
@@ -238,12 +283,16 @@ export const EntitySuggestions = ({
       (propertyName: string, modelStatus: string, _: string, data: any) => {
         if (propertyName === reviewedProperty.name) {
           setStatus({ key: modelStatus, data });
-          if (data && data.total === data.processed) {
+          if ((data && data.total === data.processed) || modelStatus === 'ready') {
+            setStatus({ key: 'ready' });
             retrieveSuggestions();
           }
         }
       }
     );
+
+    retriveStats();
+
     return () => {
       socket.off('ix_model_status');
     };
@@ -254,6 +303,7 @@ export const EntitySuggestions = ({
     sending_labeled_data: 'Sending labeled data...',
     processing_model: 'Training model...',
     processing_suggestions: 'Finding suggestions',
+    cancel: 'Cancelling...',
     error: 'Error',
   };
 
@@ -270,24 +320,30 @@ export const EntitySuggestions = ({
           </I18NLink>
         </div>
         <div className="panel-subheading">
-          <div>
-            <span className="suggestion-header">
-              <Translate>Reviewing</Translate>:&nbsp;
-            </span>
-            <span className="suggestion-property">
-              <Translate>{reviewedProperty.label}</Translate>
-            </span>
+          <div className="property-info-container">
+            <div>
+              <span className="suggestion-header">
+                <Translate>Reviewing</Translate>:&nbsp;
+              </span>
+              <span className="suggestion-property">
+                <Translate>{reviewedProperty.label}</Translate>
+              </span>
+            </div>
+            <div>
+              <button
+                type="button"
+                title={status.key !== 'ready' ? 'Cancel' : 'Train'}
+                className={`btn service-request-button ${status.key}`}
+                onClick={onFindSuggestionButtonClicked}
+              >
+                <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            className={`btn service-request-button ${status}`}
-            onClick={_trainModel}
-          >
-            <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
-          </button>
+          <TrainingHealthDashboard stats={stats} />
         </div>
-        <table {...getTableProps()}>
-          <thead>
+        <table {...getTableProps()} className="table sticky">
+          <thead className="header">
             {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => {
@@ -331,6 +387,11 @@ export const EntitySuggestions = ({
           propertyType={reviewedProperty.type}
           onClose={() => setAcceptingSuggestion(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
+        />
+        <CancelFindingSuggestionModal
+          isOpen={openCancelFindingSuggestions}
+          onClose={() => setOpenCancelFindingSuggestions(false)}
+          onAccept={async () => _cancelFindingSuggestions()}
         />
       </div>
       {Boolean(selectedFlatRows.length) && (

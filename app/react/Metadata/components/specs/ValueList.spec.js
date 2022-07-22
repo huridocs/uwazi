@@ -36,7 +36,7 @@ describe('ValueList', () => {
     testSnapshot();
   });
 
-  it('should rendern icons when the value has one', () => {
+  it('should render icons when the value has one', () => {
     props.property = {
       label: 'label',
       name: 'label',
@@ -76,7 +76,7 @@ describe('ValueList', () => {
       testMultilineCase('multidate');
     });
 
-    it('should rendern icons when the value has one', () => {
+    it('should render icons when the value has one', () => {
       props.property = {
         label: 'label',
         name: 'label',

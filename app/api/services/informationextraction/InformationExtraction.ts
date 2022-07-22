@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
+/* eslint-disable camelcase */
 import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
@@ -36,7 +37,6 @@ import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
   tenant: string;
-  /* eslint-disable camelcase */
   property_name: string;
   xml_file_name: string;
   text: string;
@@ -48,7 +48,6 @@ type RawSuggestion = {
     height: number;
     page_number: number;
   }[];
-  /* eslint-enable camelcase */
 };
 
 class InformationExtraction {
@@ -126,7 +125,7 @@ class InformationExtraction {
           data = {
             ...data,
             language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
-            label_text: propertyLabeledData.selection?.text,
+            label_text: file.propertyValue || propertyLabeledData.selection?.text,
             label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
               const { page, ...selection } = r;
               return { ...selection, page_number: page };
@@ -294,6 +293,11 @@ class InformationExtraction {
   };
 
   trainModel = async (property: string) => {
+    const [model] = await IXModelsModel.get({ propertyName: property });
+    if (model && !model.findingSuggestions) {
+      model.findingSuggestions = true;
+      await IXModelsModel.save(model);
+    }
     const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
@@ -308,29 +312,46 @@ class InformationExtraction {
     });
 
     await this.saveModelProcess(property);
+
     return { status: 'processing_model', message: 'Training model' };
   };
 
   status = async (property: string) => {
     const [currentModel] = await ixmodels.get({
       propertyName: property,
-      status: ModelStatus.processing,
     });
 
-    if (currentModel) {
+    if (!currentModel) {
+      return { status: 'ready', message: 'Ready' };
+    }
+
+    if (currentModel.status === ModelStatus.processing) {
       return { status: 'processing_model', message: 'Training model' };
     }
 
-    const [suggestion] = await ixmodels.get({
-      propertyName: property,
-      status: ModelStatus.processing,
-    });
-
-    if (suggestion) {
-      return { status: 'processing_suggestions', message: 'Getting suggestions' };
+    if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
+      const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
+      return {
+        status: 'processing_suggestions',
+        message: 'Finding suggestions',
+        data: suggestionStatus,
+      };
     }
 
     return { status: 'ready', message: 'Ready' };
+  };
+
+  stopModel = async (propertyName: string) => {
+    const res = await IXModelsModel.db.findOneAndUpdate(
+      { propertyName },
+      { $set: { findingSuggestions: false } },
+      {}
+    );
+    if (res) {
+      return { status: 'ready', message: 'Ready' };
+    }
+
+    return { status: 'error', message: '' };
   };
 
   materialsForModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
@@ -376,14 +397,25 @@ class InformationExtraction {
           creationDate: new Date().getTime(),
         });
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
 
       if (message.task === 'suggestions') {
         await this.saveSuggestions(message);
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
+
+      if (!currentModel.findingSuggestions) {
+        emitToTenant(
+          message.tenant,
+          'ix_model_status',
+          message.params!.property_name,
+          'ready',
+          'Canceled'
+        );
+        return;
+      }
+
+      await this.getSuggestions(message.params!.property_name);
     }, message.tenant);
   };
 

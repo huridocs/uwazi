@@ -905,13 +905,13 @@ describe('entities', () => {
       const docs = await entities.getByTemplate(templateId, 'en', false);
       expect(docs.length).toBe(7);
       expect(docs.map(d => d.title)).toEqual([
-        'Batman finishes',
-        'Batman still not done',
-        'Unpublished entity',
-        'EN',
         'shared2title',
         'value2',
         'value0',
+        'Unpublished entity',
+        'Batman finishes',
+        'Batman still not done',
+        'EN',
       ]);
     });
 
@@ -923,9 +923,9 @@ describe('entities', () => {
       });
       const docs = await entities.getByTemplate(templateId, 'en', false);
       expect(docs.length).toBe(4);
-      expect(docs[0].title).toBe('Batman finishes');
-      expect(docs[1].title).toBe('Batman still not done');
-      expect(docs[2].title).toBe('Unpublished entity');
+      expect(docs[0].title).toBe('Unpublished entity');
+      expect(docs[1].title).toBe('Batman finishes');
+      expect(docs[2].title).toBe('Batman still not done');
       expect(docs[3].title).toBe('EN');
     });
   });

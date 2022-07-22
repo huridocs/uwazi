@@ -37,13 +37,6 @@ const fixturesPdfNameF = 'documentF.pdf';
 const fixtures: DBFixture = {
   settings,
   entities: [
-    factory.entity('A1', 'templateToSegmentA', {
-      property1: [
-        {
-          value: 1088985600,
-        },
-      ],
-    }),
     factory.entity(
       'A1',
       'templateToSegmentA',
@@ -56,6 +49,18 @@ const fixtures: DBFixture = {
       },
       { language: 'other' }
     ),
+    factory.entity('A1', 'templateToSegmentA', {
+      property1: [
+        {
+          value: 'different from selected text',
+        },
+      ],
+      property2: [
+        {
+          value: 1299196800,
+        },
+      ],
+    }),
     factory.entity('A2', 'templateToSegmentA'),
     factory.entity('A3', 'templateToSegmentA', { property2: [{ value: 1 }] }),
     factory.entity('A4', 'templateToSegmentA'),
@@ -75,7 +80,14 @@ const fixtures: DBFixture = {
       {
         name: 'property1',
         selection: {
-          text: 'something',
+          text: 'something not in the entity',
+          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        },
+      },
+      {
+        name: 'property2',
+        selection: {
+          text: 'Fri Mar 04 2011',
           selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
         },
       },
@@ -127,7 +139,7 @@ const fixtures: DBFixture = {
             width: 457,
             height: 15,
             page_number: 1,
-            text: 'something something',
+            text: 'something',
           },
         ],
       },
@@ -185,21 +197,71 @@ const fixtures: DBFixture = {
       date: 100,
     },
     {
-      fileId: factory.id('F3'),
-      entityId: 'A3',
+      fileId: factory.id('F4'),
+      entityId: 'A1',
       language: 'en',
-      propertyName: 'property1',
-      suggestedValue: 'suggestion_text_3',
-      segment: 'segment_text_3',
+      propertyName: 'property2',
+      suggestedValue: 'suggestion_text_1',
+      segment: 'segment_text_1',
+      status: 'processing',
+      page: 1,
+      date: 100,
+    },
+    {
+      fileId: factory.id('F4'),
+      entityId: 'A1',
+      language: 'en',
+      propertyName: 'property2',
+      suggestedValue: 'suggestion_text_1',
+      segment: 'segment_text_1',
       status: 'ready',
       page: 1,
       date: 100,
     },
+    {
+      fileId: factory.id('F4'),
+      entityId: 'A1',
+      language: 'en',
+      propertyName: 'property2',
+      suggestedValue: 'suggestion_text_property2_1',
+      segment: 'segment_text_property2_1',
+      status: 'ready',
+      page: 1,
+      date: 220,
+    },
+    {
+      fileId: factory.id('F4'),
+      entityId: 'A1',
+      language: 'en',
+      propertyName: 'property2',
+      suggestedValue: 'suggestion_text_property2_2',
+      segment: 'segment_text_property2_2',
+      status: 'ready',
+      page: 1,
+      date: 190,
+    },
+    {
+      fileId: factory.id('F4'),
+      entityId: 'A1',
+      language: 'en',
+      propertyName: 'property2',
+      suggestedValue: 'suggestion_text_property2_3',
+      segment: 'segment_text_property2_3',
+      status: 'ready',
+      page: 1,
+      date: 220,
+    },
   ],
   ixmodels: [
-    { propertyName: 'property1', creationDate: 200, status: 'ready' },
-    { propertyName: 'property4', creationDate: 200, status: 'ready' },
-    { propertyName: 'property2', creationDate: 200, status: 'ready' },
+    { propertyName: 'property1', creationDate: 200, status: 'ready', findingSuggestions: true },
+    { propertyName: 'property4', creationDate: 200, status: 'ready', findingSuggestions: true },
+    { propertyName: 'property2', creationDate: 200, status: 'ready', findingSuggestions: true },
+    {
+      propertyName: 'property3',
+      creationDate: 200,
+      status: 'processing',
+      findingSuggestions: true,
+    },
   ],
   templates: [
     factory.template('templateToSegmentA', [
