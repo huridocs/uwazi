@@ -106,49 +106,5 @@ async function getFilesForSuggestions(property: string) {
   return getFilesWithAggregations(files);
 }
 
-// async function getFilesForSuggestions(templates: ObjectIdSchema[], property: string) {
-//   const [currentModel] = await ixmodels.get({ propertyName: property });
-
-//   const suggestions = await IXSuggestionsModel.get(
-//     { propertyName: property, date: { $gt: currentModel.creationDate } },
-//     'entityId'
-//   );
-
-//   const suggestionsIds = suggestions.filter(x => x.entityId).map(x => x.entityId);
-
-//   const entities = await entitiesModel.getUnrestricted(
-//     { template: { $in: templates }, sharedId: { $nin: suggestionsIds } },
-//     'sharedId'
-//   );
-
-//   console.log('entities-----');
-//   console.log('length', entities.length);
-//   console.log(entities);
-
-//   const entitiesFromTrainingTemplatesIds = entities.filter(x => x.sharedId).map(x => x.sharedId);
-
-//   console.log('entitiesFromTrainingTemplates-----');
-//   console.log('length', entitiesFromTrainingTemplatesIds.length);
-//   console.log(entitiesFromTrainingTemplatesIds);
-
-//   const files = (await filesModel.get(
-//     {
-//       type: 'document',
-//       filename: { $exists: true },
-//       _id: { $in: await getSegmentedFilesIds() },
-//       entity: { $in: entitiesFromTrainingTemplatesIds },
-//       language: { $exists: true }, // language problem-------------------------------------------
-//     },
-//     'extractedMetadata entity language filename',
-//     { limit: BATCH_SIZE }
-//   )) as (FileType & FileEnforcedNotUndefined)[];
-
-//   console.log('files------');
-//   console.log('length', files.length);
-//   console.log(files);
-
-//   return getFilesWithAggregations(files);
-// }
-
 export { getFilesForTraining, getFilesForSuggestions };
 export type { FileWithAggregation };
