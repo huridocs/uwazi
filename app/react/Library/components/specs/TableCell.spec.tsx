@@ -55,11 +55,10 @@ describe('TableCell', () => {
 
   it('should render a multi select of nested values as a list of values', () => {
     props.content = {
-      parent: 'Male',
       label: 'People',
       type: 'multiselect',
       name: 'people',
-      value: [{ value: 'A guy' }],
+      value: [{ parent: 'male', value: [{ value: 'A guy' }] }],
     };
     const cellContent = renderContent();
     expect(cellContent.props().children).toMatchSnapshot();
