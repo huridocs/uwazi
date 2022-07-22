@@ -272,7 +272,6 @@ class InformationExtraction {
 
   getSuggestions = async (property: string) => {
     const files = await getFilesForSuggestions(
-      // await this.getTemplatesWithProperty(property),
       property
     );
     if (files.length === 0) {
