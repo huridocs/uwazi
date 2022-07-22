@@ -128,7 +128,7 @@ describe('Metadata Properties', () => {
       text: 'Multi DateNov 23, 1963Sep 12, 1964',
     });
     await expect(page).toMatchElement('.metadata-type-multidaterange', {
-      text: 'Multi Date RangeNov 23, 1963 ~ Sep 12, 19642',
+      text: 'Multi Date RangeNov 23, 1963 ~ Sep 12, 1964 2',
     });
     await expect(page).toMatchElement('.metadata-type-markdown strong', { text: 'smile' });
     const linkMetaData = await page.$('.metadata-type-link a');
