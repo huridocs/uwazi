@@ -60,7 +60,9 @@ const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
     SuggestionState.emptyMismatch,
   ]);
   const all = groups.all[0]?.count || 0;
-  const accuracy = nonLabeledMatching / (nonLabeledMatching + nonLabeledNotMatching);
+
+  const labeledNonEmpty = nonLabeledMatching + nonLabeledNotMatching;
+  const accuracy = labeledNonEmpty ? nonLabeledMatching / labeledNonEmpty : 0;
 
   return {
     counts: {
