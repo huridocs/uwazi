@@ -71,7 +71,9 @@ export const showByType = (prop, compact, templateId) => {
         const propValue = flattenDeep(
           prop.value.map(_value =>
             _value.parent && Array.isArray(_value.value)
-              ? _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` })).flat()
+              ? flattenDeep(
+                  _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` }))
+                )
               : _value
           )
         );
