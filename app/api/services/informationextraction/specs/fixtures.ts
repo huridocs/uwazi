@@ -197,6 +197,17 @@ const fixtures: DBFixture = {
       date: 100,
     },
     {
+      fileId: factory.id('F3'),
+      entityId: 'A3',
+      language: 'en',
+      propertyName: 'property1',
+      suggestedValue: 'suggestion_text_3',
+      segment: 'segment_text_3',
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
+    {
       fileId: factory.id('F4'),
       entityId: 'A1',
       language: 'en',
