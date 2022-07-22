@@ -271,7 +271,10 @@ class InformationExtraction {
   };
 
   getSuggestions = async (property: string) => {
-    const files = await this.getFilesForSuggestions(property);
+    const files = await getFilesForSuggestions(
+      // await this.getTemplatesWithProperty(property),
+      property
+    );
     if (files.length === 0) {
       emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
@@ -283,11 +286,6 @@ class InformationExtraction {
       tenant: tenants.current().name,
       params: { property_name: property },
     });
-  };
-
-  getFilesForSuggestions = async (property: string) => {
-    const templates = await this.getTemplatesWithProperty(property);
-    return getFilesForSuggestions(templates, property);
   };
 
   materialsForSuggestions = async (files: FileWithAggregation[], property: string) => {
