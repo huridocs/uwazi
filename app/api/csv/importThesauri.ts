@@ -10,19 +10,22 @@ import { CSVRow } from './csv';
 type ParsedValue = { nested: boolean; value: string };
 type ParsedRow = Record<string, ParsedValue>;
 
-const buildThesauri = (rows: ParsedRow[], languageLabel: string) =>
-  rows.reduce<ThesaurusValueSchema[]>((thesauriValues, row) => {
+const buildThesauri = (rows: ParsedRow[], languageLabel: string) => {
+  const result: ThesaurusValueSchema[] = [];
+  rows.forEach(row => {
     const { value: valueForLanguage, nested } = row[languageLabel];
     const newThesauriValue = { label: valueForLanguage };
 
     if (!nested) {
-      return [...thesauriValues, newThesauriValue];
+      result.push(newThesauriValue);
+    } else {
+      const lastValue = result[result.length - 1];
+      lastValue.values = lastValue.values ?? [];
+      lastValue.values.push(newThesauriValue);
     }
-
-    const lastValue = thesauriValues[thesauriValues.length - 1];
-    lastValue.values = (lastValue.values ?? []).concat([newThesauriValue]);
-    return thesauriValues;
-  }, []);
+  });
+  return result;
+};
 
 const buildTranslation = (
   rows: ParsedRow[],

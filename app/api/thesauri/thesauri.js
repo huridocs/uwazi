@@ -137,13 +137,14 @@ const update = async thesauri => {
 
 function recursivelyAppendValues(originalValues, newValues) {
   const values = [...originalValues];
-  const existingLabels = new Set(values.map(v => v.label));
+  const valuesByLabel = Object.fromEntries(values.map(value => [value.label, value]));
+  const existingLabels = new Set(Object.keys(valuesByLabel));
 
   newValues.forEach(newValue => {
     if (!existingLabels.has(newValue.label)) {
       values.push(newValue);
     } else if (newValue.values) {
-      const originalValue = values.find(v => v.label === newValue.label);
+      const originalValue = valuesByLabel[newValue.label];
       originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);
     }
   });
