@@ -15,13 +15,15 @@ export default app => {
   app.get(
     '/api/documents/count_by_template',
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
+          required: ['templateId'],
           additionalProperties: false,
           properties: {
             templateId: objectIdSchema,
           },
-          required: ['templateId'],
         },
       },
     }),
@@ -35,11 +37,13 @@ export default app => {
   app.get(
     '/api/documents',
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           additionalProperties: false,
           properties: {
-            _id: { ...objectIdSchema, pattern: '^[0-9a-zA-Z]+$' },
+            _id: objectIdSchema,
           },
           required: ['_id'],
         },
@@ -69,8 +73,10 @@ export default app => {
     '/api/documents',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
+      type: 'object',
       properties: {
         query: {
+          type: 'object',
           additionalProperties: false,
           properties: {
             sharedId: objectIdSchema,

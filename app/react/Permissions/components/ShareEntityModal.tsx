@@ -129,7 +129,7 @@ export const ShareEntityModalComponent = ({
   const currentPublicLevel = findPublicPermission(members)?.level || false;
 
   return (
-    <Modal isOpen={isOpen} type="content" className="share-modal">
+    <Modal isOpen={isOpen} type="content" className="share-modal" zIndex={1000}>
       <Modal.Header>
         <div className="round-icon">
           <Icon icon="user-plus" />
