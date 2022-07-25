@@ -1,5 +1,9 @@
+/* eslint-disable global-require */
 require('dotenv').config();
-require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
+
+if (process.env.NODE_ENV !== 'production') {
+  require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
+}
 
 process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
 
