@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 require('dotenv').config();
 
 process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
