@@ -22,26 +22,19 @@ exports[`TableCell should render a multi select as a list of values 1`] = `
 `;
 
 exports[`TableCell should render a multi select of nested values as a list of values 1`] = `
-<React.Fragment>
-  <span>
-    Male
-  </span>
-   
-  <ValueList
-    compact={true}
-    property={
-      Object {
-        "label": "People",
-        "name": "people",
-        "parent": "Male",
-        "type": "multiselect",
-        "value": Array [
-          Object {
-            "value": "A guy",
-          },
-        ],
-      }
+<ValueList
+  compact={true}
+  property={
+    Object {
+      "label": "People",
+      "name": "people",
+      "type": "multiselect",
+      "value": Array [
+        Object {
+          "value": "male: A guy",
+        },
+      ],
     }
-  />
-</React.Fragment>
+  }
+/>
 `;

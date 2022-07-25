@@ -1,6 +1,6 @@
 process.env.NODE_ENV = 'production';
 const webpack = require('webpack');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 
 const production = true;
@@ -11,9 +11,6 @@ config.context = __dirname;
 config.mode = 'production';
 
 config.plugins = config.plugins.concat([
-  new webpack.optimize.OccurrenceOrderPlugin(),
-  new OptimizeCssAssetsPlugin(),
-  new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify('production'),
@@ -23,8 +20,8 @@ config.plugins = config.plugins.concat([
 
 config.optimization.minimize = true;
 config.optimization.minimizer = [
+  new CssMinimizerPlugin(),
   new TerserWebpackPlugin({
-    cache: true,
     parallel: true,
   }),
 ];

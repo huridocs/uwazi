@@ -1,6 +1,7 @@
 /* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { flattenDeep } from 'lodash';
 import { t } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
@@ -8,13 +9,13 @@ import GeolocationViewer from './GeolocationViewer';
 import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
 
-const renderRelationshipLinks = linksProp => {
+const renderRelationshipLinks = (linksProp, compact) => {
   const formattedLinkValues = Array.isArray(linksProp.value) ? linksProp.value : [linksProp.value];
   const hydratedValues = formattedLinkValues.map(linkValue => ({
     value: <RelationshipLink propValue={linkValue} />,
   }));
   const hydratedProp = { ...linksProp, value: hydratedValues };
-  return <ValueList compact property={hydratedProp} />;
+  return <ValueList compact={compact} property={hydratedProp} />;
 };
 
 export const showByType = (prop, compact, templateId) => {
@@ -63,23 +64,28 @@ export const showByType = (prop, compact, templateId) => {
       result = <GroupedGeolocationViewer members={prop.members} templateId={templateId} />;
       break;
     case 'relationship':
-      result = renderRelationshipLinks(prop);
+      result = renderRelationshipLinks(prop, compact);
       break;
     default:
       if (prop.value && prop.value.map) {
-        prop.value = prop.value.map(_value => {
+        const propValue = flattenDeep(
+          prop.value.map(_value =>
+            _value.parent && Array.isArray(_value.value)
+              ? flattenDeep(
+                  _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` }))
+                )
+              : _value
+          )
+        );
+
+        // eslint-disable-next-line no-param-reassign
+        prop.value = propValue.map(_value => {
           const value = showByType(_value, compact, templateId);
           return value && value.value
             ? value
             : { value, ...(_value.icon !== undefined ? { icon: _value.icon } : {}) };
         });
-        result = prop.parent ? (
-          <>
-            <span>{prop.parent}</span> <ValueList compact={compact} property={prop} />
-          </>
-        ) : (
-          <ValueList compact={compact} property={prop} />
-        );
+        result = <ValueList compact={compact} property={prop} />;
       }
       break;
   }
