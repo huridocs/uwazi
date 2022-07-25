@@ -263,7 +263,11 @@ describe('Metadata', () => {
         {
           name: 'name',
           label: 'label',
-          value: [{ parent: 'Parent', value: ['one', 'two'] }, { value: 'three' }],
+          value: [
+            { parent: 'Parent', value: [{ value: 'one' }, { value: 'two' }] },
+            { parent: 'Parent', value: [{ value: 'two' }] },
+            { value: 'three' },
+          ],
           parent: 'Parent',
         },
       ];
