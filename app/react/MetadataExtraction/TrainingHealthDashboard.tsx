@@ -13,7 +13,6 @@ const mapStats = (data: SuggestionsStats['counts']) => [
     color: '#5073CF',
     value: data.labeled,
     label: { text: <Translate>Training</Translate> },
-    overlaying: true,
   },
   {
     color: '#4CAE4C',

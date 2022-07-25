@@ -33,7 +33,7 @@ export const TrainingHealthLegend = ({ data, total, accuracy }: TrainingHealthLe
       ) : null
     )}
     <li style={{ color: '#6c6c7b' }}>
-      <Translate>Accuracy</Translate> {accuracy * 100}%
+      <Translate>Accuracy</Translate> {(accuracy * 100).toFixed(2)}%
     </li>
   </ul>
 );
