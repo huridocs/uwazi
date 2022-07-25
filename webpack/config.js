@@ -1,8 +1,10 @@
 const path = require('path');
+const webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const RtlCssPlugin = require('rtlcss-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
@@ -19,7 +21,7 @@ module.exports = production => {
   if (production) {
     outputPath = path.join(rootPath, 'prod/dist');
     stylesName = '[name].[chunkhash].css';
-    rtlStylesName = 'rtl-[name].[hash].css';
+    rtlStylesName = 'rtl-[name].[fullhash].css';
     jsChunkHashName = '.[chunkhash]';
   }
 
@@ -48,23 +50,11 @@ module.exports = production => {
     optimization: {
       splitChunks: {
         cacheGroups: {
-          default: false,
-          vendors: false,
-          vendor: {
-            chunks: 'all',
-            test: /node_modules/,
-            name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-
-              if (
-                packageName.match(
-                  /qrcode.react|pdfjs-dist|recharts|react-map-gl|leaflet|mapbox-gl|LazyLoad/
-                )
-              ) {
-                return packageName;
-              }
-
-              return 'vendor';
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendor',
+            chunks(chunk) {
+              return !chunk.name.match(/LazyLoad/);
             },
           },
         },
@@ -74,12 +64,16 @@ module.exports = production => {
       rules: [
         {
           test: /\.(js|jsx|ts|tsx)$/,
-          loader: 'babel-loader?cacheDirectory',
           include: path.join(rootPath, 'app'),
           exclude: /node_modules/,
-          options: {
-            sourceMap: process.env.BABEL_ENV === 'debug',
-          },
+          use: [
+            {
+              loader: 'babel-loader?cacheDirectory',
+              options: {
+                sourceMap: process.env.BABEL_ENV === 'debug',
+              },
+            },
+          ],
         },
         {
           test: /\.s?[ac]ss$/,
@@ -96,6 +90,10 @@ module.exports = production => {
       ],
     },
     plugins: [
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
+      new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: stylesName,

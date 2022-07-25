@@ -9,8 +9,11 @@ interface TableCellProps {
 
 type FormattedMetadataValue = Omit<PropertySchema, 'type'> & {
   inheritedName?: string;
-  parent?: string;
-  value?: string | MetadataObjectSchema | MetadataObjectSchema[];
+  value?:
+    | string
+    | MetadataObjectSchema
+    | MetadataObjectSchema[]
+    | [{ parent: string; value: MetadataObjectSchema[] }];
   type: 'inherit' | PropertySchema['type'];
   inheritedType?: PropertySchema['type'];
   onlyForCards?: boolean;

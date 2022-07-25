@@ -8,6 +8,7 @@ services:
       - "9200:9200"
     environment:
         - bootstrap.memory_lock=true
+        - indices.query.bool.max_clause_count=2048
         - discovery.type=single-node
         - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
         - cluster.routing.allocation.disk.threshold_enabled=false

@@ -189,7 +189,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
       className=""
     >
       <ValueList
-        compact={true}
+        compact={false}
         property={
           Object {
             "label": "label array",
@@ -239,7 +239,7 @@ exports[`Metadata should render links when the property has url 1`] = `
       className=""
     >
       <ValueList
-        compact={true}
+        compact={false}
         property={
           Object {
             "label": "withUrl",
@@ -275,7 +275,7 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
       className=""
     >
       <ValueList
-        compact={true}
+        compact={false}
         property={
           Object {
             "icon": Object {
@@ -368,10 +368,6 @@ exports[`Metadata when passing a prop with multivalue and parents should render 
     <dd
       className=""
     >
-      <span>
-        Parent
-      </span>
-       
       <ValueList
         compact={false}
         property={
@@ -381,28 +377,13 @@ exports[`Metadata when passing a prop with multivalue and parents should render 
             "parent": "Parent",
             "value": Array [
               Object {
-                "value": <React.Fragment>
-                  <span>
-                    Parent
-                  </span>
-                   
-                  <ValueList
-                    compact={false}
-                    property={
-                      Object {
-                        "parent": "Parent",
-                        "value": Array [
-                          Object {
-                            "value": undefined,
-                          },
-                          Object {
-                            "value": undefined,
-                          },
-                        ],
-                      }
-                    }
-                  />
-                </React.Fragment>,
+                "value": "Parent: one",
+              },
+              Object {
+                "value": "Parent: two",
+              },
+              Object {
+                "value": "Parent: two",
               },
               Object {
                 "value": "three",

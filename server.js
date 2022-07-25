@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 require('dotenv').config();
 
 process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
@@ -8,10 +9,9 @@ require.extensions['.css'] = function css() {};
 
 if (NODE_ENV === 'production') {
   try {
-    require('./prod/app/server.js');
-  } catch (err) {
-    require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
     require('./app/server.js');
+  } catch (err) {
+    require('./prod/app/server.js');
   }
 } else {
   require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
