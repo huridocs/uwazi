@@ -1,4 +1,4 @@
-import moment from 'moment';
+import parser from 'any-date-parser';
 
 const arrayDeepEquals = (a: Array<any>, b: Array<any>): boolean => {
   if (a.length !== b.length) return false;
@@ -37,12 +37,11 @@ const deepEquals = (a: any, b: any): boolean => {
 };
 
 const dateToSeconds = (value: string) => {
-  let getDate = Date.parse(`${value} GMT`);
-  if (Number.isNaN(getDate)) {
-    const momentDate = moment
-      .utc(value, ['DD-MM-YYYY', 'MM-DD-YYYY', 'YYYY-MM-DD', 'YYYY'], false)
-      .format('x');
-    getDate = parseInt(momentDate, 10);
+  // Remove accents
+  const parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  let getDate = parser.fromString(parsedValue);
+  if (getDate.invalid) {
+    getDate = Date.parse(`${parsedValue} GMT`);
   }
   const formattedDate = getDate / 1000;
   return formattedDate;
