@@ -22,7 +22,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
-import { dateToSeconds } from 'shared/dataUtils';
+import date from 'api/utils/date';
 import {
   FileWithAggregation,
   getFilesForTraining,
@@ -173,13 +173,17 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  coerceSuggestionValue = (suggestion: RawSuggestion, property?: PropertySchema) => {
+  coerceSuggestionValue = (
+    suggestion: RawSuggestion,
+    property?: PropertySchema,
+    language?: string
+  ) => {
     const suggestedValue = suggestion.text.trim();
     switch (property?.type) {
       case 'numeric':
         return parseFloat(suggestedValue) || null;
       case 'date':
-        return dateToSeconds(suggestedValue);
+        return date.dateToSeconds(suggestedValue, language);
       default:
         return suggestedValue;
     }
@@ -219,7 +223,11 @@ class InformationExtraction {
         );
         const property = allProps.find(p => p.name === rawSuggestion.property_name);
 
-        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, property);
+        const suggestedValue = this.coerceSuggestionValue(
+          rawSuggestion,
+          property,
+          currentSuggestion.language
+        );
 
         if (suggestedValue === null) {
           status = 'failed';

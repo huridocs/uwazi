@@ -22,7 +22,11 @@ describe('MetadataExtractor', () => {
   const render = () => {
     component = shallow(
       <Provider store={store}>
-        <MetadataExtractor fieldName="field" model="documentViewer.sidepanel.metadata" />
+        <MetadataExtractor
+          fieldName="field"
+          model="documentViewer.sidepanel.metadata"
+          locale="en"
+        />
       </Provider>
     )
       .dive()

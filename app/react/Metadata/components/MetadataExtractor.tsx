@@ -11,6 +11,7 @@ export type OwnPropTypes = {
   model: string;
   fieldId?: string;
   fieldType?: string;
+  locale?: string;
 };
 
 type selection = {
@@ -25,10 +26,10 @@ const mapStateToProps = (state: IStore) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
-  const { fieldName, fieldId, model, fieldType = undefined } = ownProps;
+  const { fieldName, fieldId, model, fieldType, locale } = ownProps;
   return bindActionCreators(
     {
-      updateField: value => updateFormField(value, model, fieldType),
+      updateField: value => updateFormField(value, model, fieldType, locale),
       setSelection: selection => updateSelection(selection, fieldName, fieldId),
     },
     dispatch
@@ -40,7 +41,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const MetadataExtractorComponent = ({ selection, setSelection, updateField }: mappedProps) => {
-  const onClick = () => {
+  const onClick = async () => {
     setSelection(selection);
     updateField(selection.text);
   };
