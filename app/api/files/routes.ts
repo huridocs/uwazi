@@ -10,9 +10,9 @@ import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
+import { readableFile } from './storage';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
@@ -142,50 +142,30 @@ export default (app: Application) => {
       },
     }),
 
-    async (req, res, next) => {
-      try {
-        const [file = { filename: '', originalname: undefined }] = await files.get({
-          filename: req.params.filename,
-        });
+    async (req, res) => {
+      const [file = { filename: '', originalname: undefined }] = await files.get({
+        filename: req.params.filename,
+      });
 
-        const filename = file.filename || '';
+      const filename = file.filename || '';
 
-        // if (
-        //   !filename ||
-        //   !(await fileExists(uploadsPath(filename))) ||
-        //   !(await checkEntityPermission(file))
-        // ) {
-        //   throw createError('file not found', 404);
-        // }
-
-        if (file.originalname) {
-          res.setHeader(
-            'Content-Disposition',
-            `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
-          );
-        }
-        const s3 = new S3Client({
-          apiVersion: 'latest',
-          region: 'greenhost',
-          endpoint: 'https://store.greenhost.net',
-          credentials: {
-            accessKeyId: '',
-            secretAccessKey: '',
-          },
-        });
-        const getObjectCommand = new GetObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: file.filename,
-        });
-        const response = await s3.send(getObjectCommand);
-        // res.sendFile(uploadsPath(filename));
-        // res.attachment(file.filename); // Set Filename
-        res.type(response.ContentType);
-        response.Body.pipe(res);
-        // res.sendFile(response.Body);
-      } catch (e) {
-        next(e);
+      if (
+        !filename ||
+        !(await fileExists(uploadsPath(filename))) ||
+        !(await checkEntityPermission(file))
+      ) {
+        throw createError('file not found', 404);
       }
+
+      if (file.originalname) {
+        res.setHeader(
+          'Content-Disposition',
+          `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
+        );
+      }
+
+      res.setHeader('Content-Type', 'application/pdf');
+      (await readableFile(filename, 'document')).pipe(res);
     }
   );
 

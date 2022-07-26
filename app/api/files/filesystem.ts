@@ -129,8 +129,6 @@ const streamToString = async (stream: Readable): Promise<string> =>
 const getFileContent = async (fileName: FilePath): Promise<string> =>
   fs.readFile(uploadsPath(fileName), 'utf8');
 
-const readFile = async (fileName: FilePath): Promise<Buffer> => fs.readFile(fileName);
-
 const storeFile: (
   filePathFunction: pathFunction,
   file: any,
@@ -157,7 +155,6 @@ export {
   temporalFilesPath,
   attachmentsPath,
   activityLogPath,
-  readFile,
   storeFile,
   testingUploadPaths,
 };
