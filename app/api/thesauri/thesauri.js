@@ -135,6 +135,23 @@ const update = async thesauri => {
   return model.save(thesauri);
 };
 
+function recursivelyAppendValues(originalValues, newValues) {
+  const values = [...originalValues];
+  const valuesByLabel = Object.fromEntries(values.map(value => [value.label, value]));
+  const existingLabels = new Set(Object.keys(valuesByLabel));
+
+  newValues.forEach(newValue => {
+    if (!existingLabels.has(newValue.label)) {
+      values.push(newValue);
+    } else if (newValue.values) {
+      const originalValue = valuesByLabel[newValue.label];
+      originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);
+    }
+  });
+
+  return values;
+}
+
 const thesauri = {
   async save(t) {
     const toSave = { values: [], type: 'thesauri', ...t };
@@ -150,11 +167,9 @@ const thesauri = {
   },
 
   appendValues(thesaurus, newValues) {
-    const existingValues = thesaurus.values || [];
-    const existingLabels = new Set(existingValues.map(v => v.label));
     return {
       ...thesaurus,
-      values: [...existingValues, ...newValues.filter(v => !existingLabels.has(v.label))],
+      values: recursivelyAppendValues(thesaurus.values || [], newValues),
     };
   },
 
