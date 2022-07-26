@@ -28,8 +28,6 @@ import serverRenderingRoutes from './react/server.js';
 import { DB } from './api/odm';
 import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
-import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
-import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { closeSockets } from './api/socketio/setupSockets';
 import { permissionsContext } from './api/permissions/permissionsContext';
@@ -128,14 +126,6 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   authRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
-  // app.use('/assets/:fileName', staticFilesMiddleware([customUploadsPath]));
-
-  app.use('/assets/:fileName', (req, res) => {
-    res.redirect(301, `/api/files/${req.params.fileName}`);
-  });
-  app.use('/uploaded_documents/:fileName', (req, res) => {
-    res.redirect(301, `/api/files/${req.params.fileName}`);
-  });
 
   apiRoutes(app, http);
   serverRenderingRoutes(app);

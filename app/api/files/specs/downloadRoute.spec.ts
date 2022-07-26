@@ -12,6 +12,7 @@ import {
   collabUser,
   writerUser,
   adminUser,
+  customPdfFileName,
 } from './fixtures';
 
 import uploadRoutes from '../routes';
@@ -36,9 +37,9 @@ describe('files routes download', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET/', () => {
-    it('should send the file', async () => {
+    it.each([fileName1, customPdfFileName])('should send the file (%s)', async filename => {
       const response: SuperTestResponse = await request(app)
-        .get(`/api/files/${fileName1}`)
+        .get(`/api/files/${filename}`)
         .expect(200);
 
       expect(response.body instanceof Buffer).toBe(true);

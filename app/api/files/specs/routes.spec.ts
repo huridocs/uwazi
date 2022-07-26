@@ -89,7 +89,7 @@ describe('files routes', () => {
       testingEnvironment.setPermissions(writerUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ type: 'custom' })
+        .query({ type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
@@ -103,11 +103,12 @@ describe('files routes', () => {
       testingEnvironment.setPermissions(adminUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ type: 'custom' })
+        .query({ type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'upload1',
+        'fileNotInDisk',
         'restrictedUpload',
         'restrictedUpload2',
         'upload2',
@@ -126,7 +127,7 @@ describe('files routes', () => {
 
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ _id: uploadId.toString(), type: 'custom' })
+        .query({ _id: uploadId.toString(), type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual(['upload1']);

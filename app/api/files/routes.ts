@@ -127,6 +127,14 @@ export default (app: Application) => {
     }
   );
 
+  app.use('/assets/:fileName', (req, res) => {
+    res.redirect(301, `/api/files/${req.params.fileName}`);
+  });
+
+  app.use('/uploaded_documents/:fileName', (req, res) => {
+    res.redirect(301, `/api/files/${req.params.fileName}`);
+  });
+
   app.get(
     '/api/files/:filename',
     validation.validateRequest({
@@ -142,15 +150,15 @@ export default (app: Application) => {
     }),
 
     async (req, res) => {
-      const [file = { filename: '', originalname: undefined }] = await files.get({
+      const [file] = await files.get({
         filename: req.params.filename,
       });
 
-      const filename = file.filename || '';
-
       if (
-        !filename ||
-        !(await fileExists(filename, file.type)) ||
+        !file?.filename ||
+        !file?.type ||
+        !file?.mimetype ||
+        !(await fileExists(file.filename, file.type)) ||
         !(await checkEntityPermission(file))
       ) {
         throw createError('file not found', 404);
@@ -164,7 +172,7 @@ export default (app: Application) => {
       }
 
       res.setHeader('Content-Type', file.mimetype);
-      (await readableFile(filename, file.type)).pipe(res);
+      (await readableFile(file.filename, file.type)).pipe(res);
     }
   );
 

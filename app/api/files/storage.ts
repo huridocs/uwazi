@@ -13,7 +13,7 @@ const paths: { [k in FileTypes]: (filename: string) => string } = {
 };
 
 export const readableFile = async (filename: string, type: FileTypes) => {
-  return createReadStream(uploadsPath(filename));
+  return createReadStream(paths[type](filename));
 };
 
 export const fileContents = async (filename: string, type: FileTypes) => {
