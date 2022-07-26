@@ -474,6 +474,7 @@ describe('entitySavingManager', () => {
 
           ({ entity: savedEntity } = await saveEntity(entity, {
             ...reqData,
+            socketEmiter: emiter,
           }));
 
           expect(savedEntity.attachments).toMatchObject([entity3textFile]);
@@ -493,7 +494,10 @@ describe('entitySavingManager', () => {
             documents: [{ ...changedFile }],
           };
 
-          ({ entity: savedEntity } = await saveEntity(entity, { ...reqData }));
+          ({ entity: savedEntity } = await saveEntity(entity, {
+            ...reqData,
+            socketEmiter: emiter,
+          }));
 
           expectedDocuments = [
             {
@@ -559,6 +563,7 @@ describe('entitySavingManager', () => {
             },
             {
               ...reqData,
+              socketEmiter: emiter,
             }
           );
           expect(errors[0]).toBe('Could not save file/s: changed.pdf');

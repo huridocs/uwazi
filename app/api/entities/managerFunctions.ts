@@ -5,10 +5,11 @@ import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
+import { ClientEntitySchema } from 'app/istore';
 import { FileType } from 'shared/types/fileType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
-import { ClientEntitySchema } from 'app/istore';
+import { TypeOfFile } from 'shared/types/fileSchema';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -28,7 +29,7 @@ const prepareNewFiles = async (
         attachments.push({
           ...savedFile,
           entity: updatedEntity.sharedId,
-          type: 'attachment',
+          type: TypeOfFile.attachment,
         });
       })
     );
@@ -41,7 +42,7 @@ const prepareNewFiles = async (
         documents.push({
           ...savedDocument,
           entity: updatedEntity.sharedId,
-          type: 'document',
+          type: TypeOfFile.document,
         });
       })
     );
@@ -52,7 +53,7 @@ const prepareNewFiles = async (
       attachments.push({
         ...url,
         entity: updatedEntity.sharedId,
-        type: 'attachment',
+        type: TypeOfFile.attachment,
       });
     });
   }
@@ -63,25 +64,21 @@ const prepareNewFiles = async (
 const updateDeletedFiles = async (
   entityFiles: WithId<FileType>[],
   entity: EntityWithFilesSchema,
-  type: 'attachment' | 'document'
+  type: TypeOfFile.attachment | TypeOfFile.document
 ) => {
   const deletedFiles = entityFiles.filter(
     existingFile =>
       existingFile._id &&
       existingFile.type === type &&
-      !entity[type === 'attachment' ? 'attachments' : 'documents']?.find(
+      !entity[type === TypeOfFile.attachment ? 'attachments' : 'documents']?.find(
         attachment => attachment._id?.toString() === existingFile._id.toString()
       )
   );
-  await Promise.all(
-    deletedFiles.map(async file => {
-      if (file.type === 'document') {
-        const thumbnailFileName = `${file._id}.jpg`;
-        await filesAPI.delete({ filename: thumbnailFileName });
-      }
-      return filesAPI.delete(file);
-    })
-  );
+  const fileIdList = deletedFiles.map(file => file._id.toString());
+  const fileNameList = fileIdList.map(fileId => `${fileId}.jpg`);
+  await filesAPI.delete({
+    $or: [{ _id: { $in: fileIdList } }, { filename: { $in: fileNameList } }],
+  });
 };
 
 const filterRenamedFiles = (entity: EntityWithFilesSchema, entityFiles: WithId<FileType>[]) => {
@@ -123,12 +120,12 @@ const processFiles = async (
 
   if (entity._id && (entity.attachments || entity.documents)) {
     const entityFiles: WithId<FileType>[] = await filesAPI.get(
-      { entity: entity.sharedId, type: { $in: ['attachment', 'document'] } },
+      { entity: entity.sharedId, type: { $in: [TypeOfFile.attachment, TypeOfFile.document] } },
       '_id, originalname, type'
     );
 
-    await updateDeletedFiles(entityFiles, entity, 'attachment');
-    await updateDeletedFiles(entityFiles, entity, 'document');
+    await updateDeletedFiles(entityFiles, entity, TypeOfFile.attachment);
+    await updateDeletedFiles(entityFiles, entity, TypeOfFile.document);
 
     const { renamedAttachments, renamedDocuments } = filterRenamedFiles(entity, entityFiles);
 
