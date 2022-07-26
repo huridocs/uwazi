@@ -1,12 +1,6 @@
-/*
-This migration is meant to be repeatable.
-After copy-pasting:
-  - change the INDICES_TO_REMOVE object
-  - change the tests, if necessary
-*/
 const INDICES_TO_REMOVE = {
-  // collectionName: [...arrayOfIndexNames...],
   entities: ['template_1'],
+  ixsuggestions: ['propertyName_text'],
 };
 
 const handleCollection = async (collection, indexNames) => {
