@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Translate, t } from 'app/I18N';
 import { language as transformLanguage, availableLanguages } from 'shared/languagesList';
+import { isBlobFile } from 'shared/tsUtils';
 import { Icon } from 'UI';
 import { FileType } from 'shared/types/fileType';
 import { APIURL } from 'app/config.js';
 import { LocalForm, Control } from 'react-redux-form';
+import { ClientBlobFile } from 'app/istore';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration';
@@ -16,14 +18,12 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ViewDocumentLink } from './ViewDocumentLink';
 
 type FileProps = {
-  file: FileType;
+  file: FileType | ClientBlobFile;
   storeKey: string;
-  readOnly: boolean;
   entity: EntitySchema;
   updateFile: (file: FileType, entity: Object) => any | void;
   deleteFile: (file: FileType, entity: Object) => any | void;
 };
-
 type FileState = {
   editing: boolean;
 };
@@ -37,11 +37,9 @@ class File extends Component<FileProps, FileState> {
 
   constructor(props: FileProps) {
     super(props);
-
     this.state = {
       editing: false,
     };
-
     this.edit = this.edit.bind(this);
     this.cancel = this.cancel.bind(this);
     this.delete = this.delete.bind(this);
@@ -84,12 +82,10 @@ class File extends Component<FileProps, FileState> {
 
   renderFailed() {
     return (
-      <div>
-        <div className="file-failed">
-          <Icon icon="times" />
-          &nbsp;
-          <Translate>Conversion failed</Translate>
-        </div>
+      <div className="file-failed">
+        <Icon icon="times" />
+        &nbsp;
+        <Translate>Conversion failed</Translate>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
           {this.renderDeleteButton()}
         </NeedAuthorization>
@@ -136,13 +132,24 @@ class File extends Component<FileProps, FileState> {
   }
 
   renderView() {
-    const { originalname, status } = this.props.file;
-
+    const { originalname, status } = !isBlobFile(this.props.file)
+      ? this.props.file
+      : { originalname: (this.props.file as ClientBlobFile).originalFile.name, status: 'ready' };
     return (
-      <div className="file">
-        <div className="file-originalname">{originalname}</div>
-        {status === 'ready' ? this.renderReady() : this.renderFailed()}
-      </div>
+      <>
+        <div className="file">
+          <div className="file-originalname">{originalname}</div>
+          {status === 'ready' && this.renderReady()}
+          {status === 'failed' && this.renderFailed()}
+          {status === 'processing' && (
+            <div>
+              <Icon icon="clock" />
+              &nbsp;
+              <Translate>Processing</Translate>
+            </div>
+          )}
+        </div>
+      </>
     );
   }
 

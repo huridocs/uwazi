@@ -33,7 +33,7 @@ describe('Metadata Properties', () => {
     await expect(page).toFill('input[name="template.data.name"]', 'All props');
 
     const propertyAddButtons = await page.$$('.property-options-list li button');
-    //intentionaly leaving the last fields out of the test: geolocation, violated articles (nested), generated id.
+    //intentionaly leaving the last fields out of the test: violated articles (nested), generated id.
     for (let propIndex = 0; propIndex < 15; propIndex += 1) {
       // eslint-disable-next-line no-await-in-loop
       await propertyAddButtons[propIndex].click();
@@ -116,10 +116,6 @@ describe('Metadata Properties', () => {
     await expect(page).toMatchElement('.metadata-type-multiselect', { text: 'Activo' });
     await expect(page).toMatchElement('.metadata-type-relationship', { text: '19 Comerciantes' });
     await expect(page).toMatchElement('.metadata-type-date', { text: 'Sep 8, 1966' });
-    await scrollTo('.leaflet-container');
-    const marker = await page.$$('.leaflet-marker-icon');
-    expect(marker.length).toBe(1);
-
     await expect(page).toMatchElement('.metadata-type-daterange', {
       text: 'Date RangeNov 23, 1963 ~ Sep 12, 1964',
     });
@@ -136,6 +132,10 @@ describe('Metadata Properties', () => {
     const link = await (await linkMetaData?.getProperty('href'))?.jsonValue();
     expect(linkText).toBe('Huridocs');
     expect(link).toBe('https://www.huridocs.org/');
+
+    await scrollTo('.leaflet-container');
+    const marker = await page.$$('.leaflet-marker-icon');
+    expect(marker.length).toBe(1);
   });
 
   it('should be able to remove all the values from properties.', async () => {
@@ -151,9 +151,6 @@ describe('Metadata Properties', () => {
     await expect(page).toClick('.form-group.relationship li.multiselectItem', {
       text: '19 Comerciantes',
     });
-    await scrollTo('.leaflet-container');
-    await clearInput('.form-group #lat');
-    await clearInput('.form-group #lon');
 
     await scrollTo('.form-group.date input');
     await expect(page).toClick('.form-group.date button');
@@ -171,6 +168,10 @@ describe('Metadata Properties', () => {
     await clearInput('.form-group.markdown textarea');
     await clearInput('.form-group.link #label');
     await clearInput('.form-group.link #url');
+
+    await scrollTo('.form-group #lat');
+    await clearInput('.form-group #lat');
+    await clearInput('.form-group #lon');
 
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert-success');

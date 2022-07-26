@@ -32,6 +32,7 @@ const removeDocuments = (items, currentState, getFilter, updateTotalRows = false
     return _state;
   }, currentState);
 
+// eslint-disable-next-line max-statements
 export const documentsReducer = (state = initialState, action = {}) => {
   let docIndex = 0;
   let doc;
@@ -83,9 +84,23 @@ export const documentsReducer = (state = initialState, action = {}) => {
 
     case uploadTypes.UPLOAD_COMPLETE:
       docIndex = state.get('rows').findIndex(_doc => _doc.get('sharedId') === action.doc);
-      doc = state.get('rows').get(docIndex).toJS();
-      doc.documents.push(action.file);
-      return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
+      if (docIndex >= 0) {
+        doc = state.get('rows').get(docIndex).toJS();
+        doc.documents.push(action.file);
+        return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
+      }
+      break;
+
+    case uploadTypes.UPLOADS_COMPLETE:
+      docIndex = state.get('rows').findIndex(_doc => _doc.get('sharedId') === action.doc);
+      if (docIndex >= 0) {
+        doc = state.get('rows').get(docIndex).toJS();
+        return state.setIn(
+          ['rows', docIndex],
+          Immutable.fromJS({ ...doc, documents: action.files })
+        );
+      }
+      break;
 
     case attachmentTypes.ATTACHMENT_COMPLETE:
       ({ docIndex, doc } = getBySharedId(state, action));
