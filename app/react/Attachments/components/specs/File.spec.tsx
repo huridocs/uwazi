@@ -16,13 +16,13 @@ describe('file', () => {
       filename: 'random.ext',
       language: 'eng',
       status: 'ready',
+      _id: 'fileId',
     };
     const entity = { title: 'The humans', _id: '123', language: 'en' };
 
     props = {
       file,
       entity,
-      readOnly: false,
       storeKey: 'library',
       updateFile: jasmine.createSpy('updateFile'),
       deleteFile: jasmine.createSpy('deleteFile'),
