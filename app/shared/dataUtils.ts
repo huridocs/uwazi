@@ -1,5 +1,3 @@
-import parser from 'any-date-parser';
-
 const arrayDeepEquals = (a: Array<any>, b: Array<any>): boolean => {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i += 1) {
@@ -36,15 +34,4 @@ const deepEquals = (a: any, b: any): boolean => {
   return a === b;
 };
 
-const dateToSeconds = (value: string) => {
-  // Remove accents
-  const parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  let getDate = parser.fromString(parsedValue);
-  if (getDate.invalid) {
-    getDate = Date.parse(`${parsedValue} GMT`);
-  }
-  const formattedDate = getDate / 1000;
-  return formattedDate;
-};
-
-export { deepEquals, dateToSeconds };
+export { deepEquals };
