@@ -1,12 +1,10 @@
-import { fs } from 'api/files';
-
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { mockID } from 'shared/uniqueID';
 import relationships from 'api/relationships';
 import entities from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import { fileExistsOnPath, uploadsPath } from 'api/files';
+import { fs, fileExistsOnPath, uploadsPath } from 'api/files';
 
 import { fixtures } from './fixtures';
 import { documents } from '../documents.js';
@@ -17,7 +15,7 @@ describe('documents', () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     mockID();
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    db.setupFixturesAndContext(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterAll(async () => db.disconnect());
@@ -93,9 +91,15 @@ describe('documents', () => {
 
     it('should delete the original file', async () => {
       await documents.delete('shared');
-      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
-      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
-      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
+      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(
+        false
+      );
+      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(
+        false
+      );
+      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(
+        false
+      );
     });
   });
 });

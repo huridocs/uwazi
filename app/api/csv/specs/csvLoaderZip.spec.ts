@@ -20,7 +20,7 @@ describe('csvLoader zip file', () => {
   beforeAll(async () => {
     const zip = path.join(__dirname, '/zipData/test.zip');
     const loader = new CSVLoader();
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoaderZip');
     await createTestingZip(
       [
@@ -60,20 +60,24 @@ describe('csvLoader zip file', () => {
     expect(await filesystem.fileExistsOnPath(filesystem.uploadsPath('generated2.pdf'))).toBe(true);
     expect(await filesystem.fileExistsOnPath(filesystem.uploadsPath('generated3.pdf'))).toBe(true);
 
-    expect(await filesystem.fileExistsOnPath(filesystem.attachmentsPath('generatedatt1.doc'))).toBe(true);
-    expect(await filesystem.fileExistsOnPath(filesystem.attachmentsPath('generatedatt2.jpg'))).toBe(true);
+    expect(await filesystem.fileExistsOnPath(filesystem.attachmentsPath('generatedatt1.doc'))).toBe(
+      true
+    );
+    expect(await filesystem.fileExistsOnPath(filesystem.attachmentsPath('generatedatt2.jpg'))).toBe(
+      true
+    );
   });
 
   it('should create thumbnails of the pdf files', async () => {
-    expect(await filesystem.fileExistsOnPath(filesystem.uploadsPath(`${imported[0]._id}.jpg`))).toBe(
-      true
-    );
-    expect(await filesystem.fileExistsOnPath(filesystem.uploadsPath(`${imported[1]._id}.jpg`))).toBe(
-      true
-    );
-    expect(await filesystem.fileExistsOnPath(filesystem.uploadsPath(`${imported[2]._id}.jpg`))).toBe(
-      true
-    );
+    expect(
+      await filesystem.fileExistsOnPath(filesystem.uploadsPath(`${imported[0]._id}.jpg`))
+    ).toBe(true);
+    expect(
+      await filesystem.fileExistsOnPath(filesystem.uploadsPath(`${imported[1]._id}.jpg`))
+    ).toBe(true);
+    expect(
+      await filesystem.fileExistsOnPath(filesystem.uploadsPath(`${imported[2]._id}.jpg`))
+    ).toBe(true);
   });
 
   it('should import the file asociated with each entity', async () => {

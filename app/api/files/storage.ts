@@ -16,7 +16,7 @@ export const readableFile = async (filename: string, type: FileTypes) => {
   return createReadStream(paths[type](filename));
 };
 
-export const fileContents = async (filename: string, type: FileTypes) => {
+export const fileContents = async (filename: string, _type: FileTypes) => {
   return readFile(uploadsPath(filename));
 };
 

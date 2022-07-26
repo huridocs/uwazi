@@ -2,7 +2,6 @@ import path from 'path';
 import { fs, generateFileName, pathFunction, deleteFile } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import multer, { StorageEngine } from 'multer';
-import { S3Client } from '@aws-sdk/client-s3';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 

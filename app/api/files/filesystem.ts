@@ -2,12 +2,12 @@ import path from 'path';
 import { Readable } from 'stream';
 
 import ID from 'shared/uniqueID';
+import { access } from 'fs/promises';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
 
 import { uwaziFS as fs } from './uwaziFS';
 import { FileType } from '../../shared/types/fileType';
-import { access } from 'fs/promises';
 
 type FilePath = string;
 type pathFunction = (fileName?: string) => FilePath;
@@ -153,7 +153,7 @@ export {
   activityLogPath,
   storeFile,
   testingUploadPaths,
-  fileExistsOnPath
+  fileExistsOnPath,
 };
 
 export type { FilePath, pathFunction };

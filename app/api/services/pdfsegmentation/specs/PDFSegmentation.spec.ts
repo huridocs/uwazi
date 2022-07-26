@@ -13,7 +13,7 @@ import {
   fixturesMissingPdf,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
-import { fs, fileExists, readableFile, fileContents } from 'api/files';
+import { fs, fileExists, fileContents } from 'api/files';
 import path from 'path';
 
 import { tenants } from 'api/tenants/tenantContext';
@@ -269,10 +269,7 @@ describe('PDFSegmentation', () => {
         success: true,
       });
       await tenants.run(async () => {
-        const fileContent = await fileContents(
-          'segmentation/documentA.xml',
-          'document'
-        );
+        const fileContent = await fileContents('segmentation/documentA.xml', 'document');
         const xml = '<description>Cold shrimps soup</description>';
         expect(fileContent.includes(xml)).toBe(true);
 
