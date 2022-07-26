@@ -20,7 +20,7 @@ const ItemFooter = ({ children, onClick }) => (
 const ProgressBar = ({ progress }) => {
   let message = `${progress} % Completed`;
   let icon = 'upload';
-  if (progress === 100) {
+  if (progress === 0 || progress === 100) {
     message = 'Processing...';
     icon = 'clock';
   }

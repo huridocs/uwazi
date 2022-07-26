@@ -17,13 +17,13 @@ interface UploadSupportingFileProps {
   attachmentCompleted: (entity: string) => (dispatch: Dispatch<{}>) => void;
 }
 
-export function mapStateToProps({ attachments }: { attachments: any }) {
+function mapStateToProps({ attachments }: { attachments: any }) {
   return {
     progress: attachments.progress,
   };
 }
 
-export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators({ attachmentCompleted }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -48,18 +48,12 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
 
   return (
     <>
-      {getPercentage === undefined ? (
-        <button type="button" onClick={openModal} className="btn attachments-modal-trigger">
-          <Icon icon="plus" />
-          &nbsp;&nbsp;
-          <Translate>Add file</Translate>
-        </button>
-      ) : (
-        <div className="btn btn-default btn-disabled">
-          <Translate>Uploading</Translate>
-          <span>&nbsp;{getPercentage}%</span>
-        </div>
-      )}
+      <button type="button" onClick={openModal} className="btn attachments-modal-trigger">
+        <Icon icon="plus" />
+        &nbsp;
+        <Translate>Add file</Translate>
+      </button>
+
       <AttachmentsModal
         isOpen={modalOpen}
         onClose={closeModal}
@@ -74,4 +68,5 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
   );
 };
 
+export { mapDispatchToProps, mapStateToProps };
 export default connector(UploadSupportingFile);

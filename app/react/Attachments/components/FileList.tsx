@@ -16,14 +16,12 @@ import './scss/filelist.scss';
 const defaultProps = {
   files: [],
   entity: null,
-  readOnly: false,
   storeKey: '',
 };
 
 export type FileListProps = {
   files: Array<FileType>;
   entity: EntitySchema;
-  readOnly: boolean;
   storeKey: string;
 };
 
@@ -35,10 +33,10 @@ export class FileList extends Component<FileListProps> {
   static defaultProps = defaultProps;
 
   renderFile(file: FileType, index: number) {
-    const { readOnly, storeKey, entity } = this.props;
+    const { storeKey, entity } = this.props;
     return (
       <li key={index}>
-        <File file={file} storeKey={storeKey} readOnly={readOnly} entity={entity} />
+        <File file={file} storeKey={storeKey} entity={entity} />
       </li>
     );
   }
