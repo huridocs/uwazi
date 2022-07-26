@@ -3,7 +3,6 @@ import { fs, generateFileName, pathFunction, deleteFile } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import multer, { StorageEngine } from 'multer';
 import { S3Client } from '@aws-sdk/client-s3';
-import multerS3 from 'multer-s3';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -35,11 +34,11 @@ const singleUpload =
           reject(err);
         });
       });
-      req.file.filename = req.file.key;
+      // req.file.filename = req.file.key;
 
-      // if (filePath) {
-      //   await move(req, filePath);
-      // }
+      if (filePath) {
+        await move(req, filePath);
+      }
       next();
     } catch (e) {
       next(e);
@@ -65,21 +64,21 @@ const multipleUpload = async (req: Request, res: Response, next: NextFunction) =
  * @param pathFunction is optional, when undefined the file will be stored on the os tmp default dir
  */
 const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
-  const s3 = new S3Client({
-    apiVersion: 'latest',
-    region: 'greenhost',
-    endpoint: 'https://store.greenhost.net',
-    credentials: { accessKeyId: '', secretAccessKey: '' }});
-  const _storage = multerS3({
-    s3: s3,
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    bucket: 'uwazi-development',
-    key(_req: Request, file: Express.Multer.File, cb: multerCallback) {
-      cb(null, generateFileName(file));
-    },
-  })
-  return singleUpload(filePath, _storage);
-}
+  // const s3 = new S3Client({
+  //   apiVersion: 'latest',
+  //   region: 'greenhost',
+  //   endpoint: 'https://store.greenhost.net',
+  //   credentials: { accessKeyId: '', secretAccessKey: '' }});
+  // const _storage = multerS3({
+  //   s3: s3,
+  //   contentType: multerS3.AUTO_CONTENT_TYPE,
+  //   bucket: 'uwazi-development',
+  //   key(_req: Request, file: Express.Multer.File, cb: multerCallback) {
+  //     cb(null, generateFileName(file));
+  //   },
+  // })
+  return singleUpload(filePath, storage);
+};
 
 /**
  * accepts multiple files and places them in req.files array

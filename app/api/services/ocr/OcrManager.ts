@@ -188,13 +188,13 @@ class OcrManager {
   }
 
   async addToQueue(file: EnforcedWithId<FileType>) {
+    if (!file.filename) {
+      return;
+    }
     const settingsValues = await getSettings();
 
     await validateTaskIsAdmissible(file, settingsValues);
 
-    if (!file.filename) {
-      return;
-    }
     const fileContent = await fileContents(file.filename, 'document');
     const tenant = tenants.current();
 
