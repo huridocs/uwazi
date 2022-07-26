@@ -46,7 +46,7 @@ describe('upload routes', () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
       const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
-      expect(await fileExists(uploadsPath(upload.filename))).toBe(true);
+      expect(await fileExists(upload.filename!, 'document')).toBe(true);
     }, 10000);
 
     it('should process and reindex the document after upload', async () => {

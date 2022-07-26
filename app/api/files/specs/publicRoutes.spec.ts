@@ -66,13 +66,13 @@ describe('public routes', () => {
         attachment => attachment.originalname === 'attachment.txt'
       );
       expect(textAttachment).not.toBeUndefined();
-      expect(await fileExists(attachmentsPath(textAttachment?.filename))).toBe(true);
+      expect(await fileExists(textAttachment?.filename!, 'attachment')).toBe(true);
 
       const [document] = newEntity.documents!;
       expect(document).toEqual(
         expect.objectContaining({ originalname: '12345.test.pdf', status: 'ready' })
       );
-      expect(await fileExists(uploadsPath(document.filename))).toBe(true);
+      expect(await fileExists(document.filename!, 'document')).toBe(true);
     });
 
     it('should send an email', async () => {

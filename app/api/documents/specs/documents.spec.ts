@@ -6,7 +6,7 @@ import relationships from 'api/relationships';
 import entities from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import { fileExists, uploadsPath } from 'api/files/filesystem';
+import { fileExistsOnPath, uploadsPath } from 'api/files';
 
 import { fixtures } from './fixtures';
 import { documents } from '../documents.js';
@@ -93,9 +93,9 @@ describe('documents', () => {
 
     it('should delete the original file', async () => {
       await documents.delete('shared');
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
+      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
+      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
+      expect(await fileExistsOnPath(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
     });
   });
 });

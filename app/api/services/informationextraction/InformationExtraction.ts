@@ -94,7 +94,8 @@ class InformationExtraction {
       files.map(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await fileExists(
-          uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+          path.join(PDFSegmentation.SERVICE_NAME, xmlName),
+          'document'
         );
 
         const propertyLabeledData = file.extractedMetadata?.find(

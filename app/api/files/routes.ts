@@ -4,7 +4,7 @@ import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
-import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
+import { uploadsPath, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
@@ -12,7 +12,7 @@ import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
-import { readableFile } from './storage';
+import { readableFile, fileExists } from './storage';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
@@ -75,7 +75,6 @@ export default (app: Application) => {
     uploadMiddleware(attachmentsPath),
     activitylogMiddleware,
     (req, res, next) => {
-      console.log('REQ: ', req);
       files
         .save({ ...req.file, ...req.body, type: 'attachment' })
         .then(saved => {
@@ -151,7 +150,7 @@ export default (app: Application) => {
 
       if (
         !filename ||
-        !(await fileExists(uploadsPath(filename))) ||
+        !(await fileExists(filename, file.type)) ||
         !(await checkEntityPermission(file))
       ) {
         throw createError('file not found', 404);
@@ -164,8 +163,8 @@ export default (app: Application) => {
         );
       }
 
-      res.setHeader('Content-Type', 'application/pdf');
-      (await readableFile(filename, 'document')).pipe(res);
+      res.setHeader('Content-Type', file.mimetype);
+      (await readableFile(filename, file.type)).pipe(res);
     }
   );
 

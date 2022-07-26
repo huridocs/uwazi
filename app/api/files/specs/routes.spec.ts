@@ -3,7 +3,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
-import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
+import { fileExists } from '../storage';
 import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 import connections from 'api/relationships';
@@ -159,7 +159,7 @@ describe('files routes', () => {
 
       await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
-      expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
+      expect(await fileExists(file.filename!, 'custom')).toBe(false);
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {
@@ -276,7 +276,7 @@ describe('files routes', () => {
         .attach('file', path.join(__dirname, 'test.txt'));
       expect(response.status).toBe(200);
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-      expect(await fileExists(uploadsPath(file.filename || ''))).toBe(true);
+      expect(await fileExists(file.filename!, 'document')).toBe(true);
     });
   });
 });

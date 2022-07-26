@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { pathFunction, fileExists } from 'api/files';
+import { pathFunction, fileExistsOnPath } from 'api/files';
 import { createError } from '.';
 
 const checkFilePath = async (fileName: string, filePath: string) => {
-  if (!fileName || !(await fileExists(filePath))) {
+  if (!fileName || !(await fileExistsOnPath(filePath))) {
     throw createError('file not found', 404);
   }
 };
@@ -11,7 +11,7 @@ const checkFilePath = async (fileName: string, filePath: string) => {
 const staticFilesMiddleware =
   (pathFunctions: pathFunction[]) => async (req: Request, res: Response, next: NextFunction) => {
     const pathToUse = await pathFunctions.reduce<Promise<pathFunction>>(async (current, path) => {
-      if (await fileExists(path(req.params.fileName))) {
+      if (await fileExistsOnPath(path(req.params.fileName))) {
         return path;
       }
       return current;

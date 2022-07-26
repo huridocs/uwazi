@@ -128,16 +128,15 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   authRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
-  app.use('/assets/:fileName', staticFilesMiddleware([customUploadsPath]));
-  app.use(
-    '/uploaded_documents/:fileName',
-    staticFilesMiddleware([
-      uploadsPath,
-      // retained for backwards compatibility
-      customUploadsPath,
-      //
-    ])
-  );
+  // app.use('/assets/:fileName', staticFilesMiddleware([customUploadsPath]));
+
+  app.use('/assets/:fileName', (req, res) => {
+    res.redirect(301, `/api/files/${req.params.fileName}`);
+  });
+  app.use('/uploaded_documents/:fileName', (req, res) => {
+    res.redirect(301, `/api/files/${req.params.fileName}`);
+  });
+
   apiRoutes(app, http);
   serverRenderingRoutes(app);
   if (config.sentry.dsn) {
