@@ -1,7 +1,6 @@
 import { actions as formActions } from 'react-redux-form';
 import { dateToSeconds } from 'app/utils/dateAPI';
 import { actions } from 'app/BasicReducer';
-import { Dispatch } from 'redux';
 
 const updateSelection = (
   selection: { [key: string]: string },
@@ -19,19 +18,22 @@ const updateSelection = (
   return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data, 'propertyID');
 };
 
-const updateFormField =
-  (value: string, model: string, fieldType?: string, locale?: string) =>
-  async (dispatch: Dispatch<{}>) => {
-    if (fieldType === 'date') {
-      const { date } = await dateToSeconds(value, locale);
-      return dispatch(formActions.change(model, date));
-    }
+const updateFormField = async (
+  value: string,
+  model: string,
+  fieldType?: string,
+  locale?: string
+) => {
+  if (fieldType === 'date') {
+    const { date } = await dateToSeconds(value, locale);
+    return formActions.change(model, date);
+  }
 
-    if (fieldType === 'numeric' && Number.isNaN(Number.parseInt(value, 10))) {
-      return dispatch(formActions.change(model, '0'));
-    }
+  if (fieldType === 'numeric' && Number.isNaN(Number.parseInt(value, 10))) {
+    return formActions.change(model, '0');
+  }
 
-    return dispatch(formActions.change(model, value));
-  };
+  return formActions.change(model, value);
+};
 
 export { updateSelection, updateFormField };

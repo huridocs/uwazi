@@ -29,7 +29,10 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
   const { fieldName, fieldId, model, fieldType, locale } = ownProps;
   return bindActionCreators(
     {
-      updateField: value => updateFormField(value, model, fieldType, locale),
+      updateField: value => async (dis: Dispatch<{}>) => {
+        const action = await updateFormField(value, model, fieldType, locale);
+        dis(action);
+      },
       setSelection: selection => updateSelection(selection, fieldName, fieldId),
     },
     dispatch
