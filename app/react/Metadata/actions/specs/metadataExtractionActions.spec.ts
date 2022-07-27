@@ -1,6 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
-import * as api from 'app/utils/dateAPI';
+import api from 'app/Entities/EntitiesAPI';
 import { updateSelection, updateFormField } from '../metadataExtractionActions';
 
 describe('metadataExtractionActions', () => {
@@ -18,8 +18,8 @@ describe('metadataExtractionActions', () => {
       'should format valid date inputs for Datepicker.js component',
       async dateStrings => {
         const dateForDatepickerInUTC = 917654400;
-        spyOn(api, 'dateToSeconds').and.returnValue(
-          Promise.resolve({ date: dateForDatepickerInUTC })
+        spyOn(api, 'coerceValue').and.returnValue(
+          Promise.resolve({ value: dateForDatepickerInUTC, success: true })
         );
         await updateFormField(dateStrings, 'fieldModel', 'date');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', dateForDatepickerInUTC);
@@ -28,8 +28,8 @@ describe('metadataExtractionActions', () => {
 
     it('should parse dates that are only years, and set it to 01/01/YEAR', async () => {
       const dateForDatepickerInUTC = 1609459200;
-      spyOn(api, 'dateToSeconds').and.returnValue(
-        Promise.resolve({ date: dateForDatepickerInUTC })
+      spyOn(api, 'coerceValue').and.returnValue(
+        Promise.resolve({ value: dateForDatepickerInUTC, success: true })
       );
 
       await updateFormField('2021', 'fieldModel', 'date');

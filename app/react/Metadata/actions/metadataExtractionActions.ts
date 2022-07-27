@@ -1,6 +1,9 @@
 import { actions as formActions } from 'react-redux-form';
-import { dateToSeconds } from 'app/utils/dateAPI';
+import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
+import { notificationActions } from 'app/Notifications';
+import { t } from 'app/I18N';
 
 const updateSelection = (
   selection: { [key: string]: string },
@@ -25,8 +28,19 @@ const updateFormField = async (
   locale?: string
 ) => {
   if (fieldType === 'date') {
-    const { date } = await dateToSeconds(value, locale);
-    return formActions.change(model, date);
+    const requestParams = new RequestParams({
+      locale,
+      value,
+      type: 'date',
+    });
+    const { value: coercedValue, success } = await entitiesAPI.coerceValue(requestParams);
+    if (!success) {
+      return notificationActions.notify(
+        t('System', 'Value cannot be transformed to date', null, false),
+        'danger'
+      );
+    }
+    return formActions.change(model, coercedValue);
   }
 
   if (fieldType === 'numeric' && Number.isNaN(Number.parseInt(value, 10))) {

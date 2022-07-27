@@ -5,6 +5,7 @@ import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
+import { ModelAction } from 'react-redux-form';
 
 export type OwnPropTypes = {
   fieldName: string;
@@ -31,7 +32,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
     {
       updateField: value => async (dis: Dispatch<{}>) => {
         const action = await updateFormField(value, model, fieldType, locale);
-        dis(action);
+        dis(action as ModelAction);
       },
       setSelection: selection => updateSelection(selection, fieldName, fieldId),
     },
