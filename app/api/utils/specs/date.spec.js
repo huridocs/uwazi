@@ -51,7 +51,6 @@ describe('date helper', () => {
       ${'Marzo 14, 2006'}            | ${undefined} | ${1142294400}
       ${'28 августа 2017'}           | ${'ru'}      | ${1503878400}
       ${'августа 28, 2017'}          | ${'ru'}      | ${1503878400}
-      ${'shahr sibtambar 2017'}      | ${'ar'}      | ${1000}
     `(
       'should convert $stringDate to $expectedMilliseconds',
       ({ stringDate, language, expectedMilliseconds }) => {
