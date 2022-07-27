@@ -2,8 +2,9 @@
 import { createReadStream } from 'fs';
 import { access, readFile } from 'fs/promises';
 import { attachmentsPath, customUploadsPath, uploadsPath } from './filesystem';
+import { FileType } from 'shared/types/fileType';
 
-type FileTypes = 'custom' | 'document' | 'thumbnail' | 'attachment';
+type FileTypes = NonNullable<FileType['type']>;
 
 const paths: { [k in FileTypes]: (filename: string) => string } = {
   custom: customUploadsPath,
@@ -16,8 +17,8 @@ export const readableFile = async (filename: string, type: FileTypes) => {
   return createReadStream(paths[type](filename));
 };
 
-export const fileContents = async (filename: string, _type: FileTypes) => {
-  return readFile(uploadsPath(filename));
+export const fileContents = async (filename: string, type: FileTypes) => {
+  return readFile(paths[type](filename));
 };
 
 export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
