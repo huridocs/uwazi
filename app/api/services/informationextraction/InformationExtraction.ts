@@ -226,7 +226,7 @@ class InformationExtraction {
         const suggestedValue = this.coerceSuggestionValue(
           rawSuggestion,
           property,
-          currentSuggestion.language
+          currentSuggestion?.language || entity.language
         );
 
         if (suggestedValue === null) {
