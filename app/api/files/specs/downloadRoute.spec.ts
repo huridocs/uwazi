@@ -53,6 +53,14 @@ describe('files routes download', () => {
       expect(response.get('Content-Disposition')).toBe("filename*=UTF-8''upload1");
     });
 
+    it('should set the original filename as content-disposition header', async () => {
+      const response: SuperTestResponse = await request(app)
+        .get(`/api/files/${fileName1}/?download=true`)
+        .expect(200);
+
+      expect(response.get('Content-Disposition')).toBe("attachment; filename*=UTF-8''upload1");
+    });
+
     it('should properly uri encode original names', async () => {
       await files.save({ _id: uploadId, originalname: '테스트 한글chinese-file' });
 

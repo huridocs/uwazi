@@ -10,9 +10,11 @@ import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
+import Joi from 'joi';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 import { readableFile, fileExists } from './storage';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
@@ -136,14 +138,36 @@ export default (app: Application) => {
   });
 
   app.get(
+    '/api/attachments/download',
+
+    validation.validateRequest(
+      Joi.object({
+        file: Joi.string().required(),
+      }).required(),
+      'query'
+    ),
+
+    async (req, res) => {
+      res.redirect(301, `/api/files/${req.query.file}?download=true`);
+    }
+  );
+
+  app.get(
     '/api/files/:filename',
-    validation.validateRequest({
+    validateAndCoerceRequest({
       type: 'object',
       properties: {
         params: {
           type: 'object',
+          required: ['filename'],
           properties: {
             filename: { type: 'string' },
+          },
+        },
+        query: {
+          type: 'object',
+          properties: {
+            download: { type: 'boolean' },
           },
         },
       },
@@ -163,10 +187,16 @@ export default (app: Application) => {
         throw createError('file not found', 404);
       }
 
-      if (file.originalname) {
+      const headerFilename = file.originalname || file.filename;
+      res.setHeader(
+        'Content-Disposition',
+        `filename*=UTF-8''${encodeURIComponent(headerFilename)}`
+      );
+
+      if (req.query.download === true) {
         res.setHeader(
           'Content-Disposition',
-          `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
+          `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
         );
       }
 
