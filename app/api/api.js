@@ -40,5 +40,4 @@ export default (app, server) => {
   require('./permissions/routes').permissionRoutes(app);
   require('./suggestions/routes').suggestionsRoutes(app);
   require('./preserve/routes').PreserveRoutes(app);
-  require('./dates/routes').datesConversionRoutes(app);
 };

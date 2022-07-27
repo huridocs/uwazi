@@ -27,7 +27,6 @@ export default {
   },
 
   dateToSeconds(value, locale) {
-    // console.log('Date value: ', value, ' locale: ', locale);
     const parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     let getDate = parser.fromString(parsedValue, locale);
     if (getDate.invalid) {
