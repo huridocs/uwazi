@@ -157,7 +157,6 @@ export default (app: Application) => {
       if (
         !file?.filename ||
         !file?.type ||
-        !file?.mimetype ||
         !(await fileExists(file.filename, file.type)) ||
         !(await checkEntityPermission(file))
       ) {
@@ -171,7 +170,7 @@ export default (app: Application) => {
         );
       }
 
-      res.setHeader('Content-Type', file.mimetype);
+      res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
       (await readableFile(file.filename, file.type)).pipe(res);
     }
   );
