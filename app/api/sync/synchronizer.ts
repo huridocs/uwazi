@@ -1,7 +1,7 @@
 import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
-import { fs, customUploadsPath, uploadsPath, fileContents } from 'api/files';
+import { fileContents } from 'api/files';
 import { DataType } from 'api/odm';
 import { UpdateLog } from 'api/updatelogs';
 import { FileType } from 'shared/types/fileType';
