@@ -76,7 +76,7 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
         </tbody>
       </table>
       <div className={`settings-footer ${className}`}>
-        <button type="button" className="btn btn-success" onClick={addUser}>
+        <button type="button" className="btn btn-default" onClick={addUser}>
           <Icon icon="plus" />
           <span className="btn-label">
             <Translate>Add user</Translate>

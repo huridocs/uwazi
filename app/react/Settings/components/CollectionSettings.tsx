@@ -9,7 +9,7 @@ import { IStore, ClientTemplateSchema } from 'app/istore';
 import { useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
-import { Icon, ToggleButton } from 'app/UI';
+import { ToggleButton } from 'app/UI';
 import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -348,9 +348,12 @@ const CollectionSettings = ({
         </SettingsFormElement>
       </form>
 
-      <div className="settings-footer">
-        <button type="submit" form="collectionSettings" className="btn btn-success">
-          <Icon icon="save" />
+      <div className="settings-footer content-right">
+        <button
+          type="submit"
+          form="collectionSettings"
+          className="btn btn-success btn-extra-padding"
+        >
           <span className="btn-label">
             <Translate>Save</Translate>
           </span>

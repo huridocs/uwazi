@@ -1,3 +1,7 @@
+$SettingsNavigationWidth: 250px;
+$SettingsContentWidth: calc(100% - 250px);
+$FooterHeight: 51px;
+
 .settings {
   display: -webkit-flex;
   display: flex;
@@ -17,7 +21,7 @@
 
 @media (min-width: 1024px) {
   .settings-navigation {
-    width: 250px;
+    width: $SettingsNavigationWidth;
     height: 100%;
     overflow-y: auto;
     border-right: 1px solid $c-grey-light;
@@ -25,7 +29,7 @@
 
   .settings-content {
     position: relative;
-    width: calc(100% - 250px);
+    width: $SettingsContentWidth;
     overflow-y: auto;
   }
 }
@@ -109,9 +113,10 @@
 
 .settings-content {
   padding: 15px;
+  margin-bottom: $FooterHeight;
 
   form {
-    margin-bottom: 100px;
+    // margin-bottom: 100px;
   }
 
   .panel-heading {
@@ -162,43 +167,104 @@
 }
 
 .settings-footer {
+  width: $SettingsContentWidth;
+  height: $FooterHeight;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+  padding: 10px 16px;
+  margin-left: -15px;
   position: fixed;
   bottom: 0;
-  right: 50%;
-  transform: translateX(50%);
-  padding: 0 0 20px;
-  text-align: center;
-  white-space: nowrap;
-  z-index: 4;
-  @media (min-width: 1024px) {
-    right: calc((100% - 400px) / 2);
+  /*
+  // position: fixed;
+  // bottom: 0;
+  // right: 50%;
+  // transform: translateX(50%);
+  // padding: 0 0 20px;
+  // text-align: center;
+  // white-space: nowrap;
+  // z-index: 4;
+  // @media (min-width: 1024px) {
+  //   right: calc((100% - 400px) / 2);
+  // }
+  */
+
+  &.content-mixed {
+    display: flex;
+  }
+
+  &.content-right,
+  .btn-cluster.content-right {
+    text-align: right;
+  }
+
+  .btn-cluster {
+    flex: 1;
+
+    .btn:not(:last-child) {
+      margin-right: 16px;
+    }
   }
 
   .btn {
-    position: relative;
-    border-radius: 50%;
-    width: $header-height;
-    height: $header-height;
-    line-height: $header-height;
-    font-size: $f-size-lg;
-    padding: 0;
-    margin: 0 6px;
+    /*
+    // position: relative;
+    // border-radius: 50%;
+    // width: $header-height;
+    // height: $header-height;
+    // line-height: $header-height;
+    // font-size: $f-size-lg;
+    // padding: 0;
+    // margin: 0 6px;
+    */
+  }
+  // .btn.btn-success {
+  //   background-color: #eceff1;
+  //   border-color: #cfd8dc;
+
+  //   &:hover {
+  //     border-color: #3655ba;
+  //     color: #3655ba;
+  //   }
+  // }
+
+  .btn {
+    padding: 4px 8px;
+    color: $c-black;
+
+    &.btn-extra-padding {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+
+    &.btn-danger,
+    &.btn-success {
+      color: #fff;
+    }
+
+    &.btn-default {
+      background-color: #eceff1;
+      border-color: #cfd8dc;
+
+      &:hover {
+        border-color: #3655ba;
+        color: #3655ba;
+      }
+    }
   }
 
   .btn-label {
-    color: $c-grey-dark;
-    position: absolute;
-    top: 100%;
-    font-size: $f-size-xs;
-    line-height: 1.5em;
-    left: 50%;
-    transform: translateX(-50%) translateY(2px);
-    background: rgba(255, 255, 255, 0.8);
+    /*
+    // color: $c-grey-dark;
+    // position: absolute;
+    // top: 100%;
+    // font-size: $f-size-xs;
+    // line-height: 1.5em;
+    // left: 50%;
+    // transform: translateX(-50%) translateY(2px);
+    // background: rgba(255, 255, 255, 0.8);
+    */
     padding: 0 5px;
-  }
-
-  .btn:hover .btn-label {
-    color: $c-black;
   }
 }
 
@@ -244,7 +310,7 @@
 .settings-content > .panel > .panel-body,
 .settings-content > .panel > .list-group {
   // height: calc(100% - 51px);
-  padding-bottom: 85px;
+  // padding-bottom: 85px;
   // overflow-y: scroll;
   div {
     @include pillItem;

@@ -15,7 +15,7 @@ import validator from 'app/Settings/utils/ValidateNavlinks';
 import NavlinkForm from './NavlinkForm';
 import './styles/menu.scss';
 
-export class NavlinksSettings extends Component {
+class NavlinksSettings extends Component {
   componentDidMount() {
     this.props.loadLinks(this.props.collection.get('links').toJS());
   }
@@ -69,39 +69,38 @@ export class NavlinksSettings extends Component {
                   sortLink={this.props.sortLink}
                 />
               ))}
-              <li className="list-group-item">
-                <div className="footer-buttons">
-                  <button
-                    type="button"
-                    className="menu-link-group-button"
-                    id="main-add-link-button"
-                    onClick={this.props.addLink.bind(this, links, 'link')}
-                  >
-                    <Icon icon="link" />
-                    &nbsp;<Translate>Add link</Translate>
-                  </button>
-                  <button
-                    type="button"
-                    className="menu-link-group-button"
-                    onClick={this.props.addLink.bind(this, links, 'group')}
-                  >
-                    <Icon icon="caret-square-down" />
-                    &nbsp;<Translate>Add group</Translate>
-                  </button>
-                </div>
-              </li>
             </ul>
-            <div className="settings-footer">
-              <button
-                type="submit"
-                className="btn btn-success"
-                disabled={!!this.props.savingNavlinks}
-              >
-                <Icon icon="save" />
-                <span className="btn-label">
-                  <Translate>Save</Translate>
-                </span>
-              </button>
+            <div className="settings-footer content-mixed">
+              <div className="btn-cluster">
+                <button
+                  type="button"
+                  className="btn btn-default"
+                  onClick={this.props.addLink.bind(this, links, 'group')}
+                >
+                  <Icon icon="caret-square-down" />
+                  &nbsp;<Translate>Add group</Translate>
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-default"
+                  id="main-add-link-button"
+                  onClick={this.props.addLink.bind(this, links, 'link')}
+                >
+                  <Icon icon="link" />
+                  &nbsp;<Translate>Add link</Translate>
+                </button>
+              </div>
+              <div className="btn-cluster content-right">
+                <button
+                  type="submit"
+                  className="btn btn-success btn-extra-padding"
+                  disabled={!!this.props.savingNavlinks}
+                >
+                  <span className="btn-label">
+                    <Translate>Save</Translate>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </Form>
@@ -120,7 +119,7 @@ NavlinksSettings.propTypes = {
   savingNavlinks: PropTypes.bool,
 };
 
-export const mapStateToProps = state => {
+const mapStateToProps = state => {
   const { settings } = state;
   const { collection } = settings;
   const { links } = settings.navlinksData;
@@ -130,6 +129,8 @@ export const mapStateToProps = state => {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ loadLinks, addLink, sortLink, saveLinks }, dispatch);
 }
+
+export { NavlinksSettings, mapStateToProps };
 
 export default DragDropContext(HTML5Backend)(
   connect(mapStateToProps, mapDispatchToProps)(NavlinksSettings)
