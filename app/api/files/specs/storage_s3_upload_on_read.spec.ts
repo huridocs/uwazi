@@ -1,9 +1,9 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { config } from 'api/config';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Readable } from 'stream';
-import { fs } from '..';
 import { streamToString } from '../filesystem';
-import { fileContents, readableFile } from '../storage';
+import { fileContents } from '../storage';
 
 const s3 = new S3Client({
   apiVersion: 'latest',
@@ -18,7 +18,14 @@ const s3 = new S3Client({
 
 describe('storage with s3 feature active', () => {
   beforeEach(async () => {
-    await testingEnvironment.setTenant();
+    await testingEnvironment.setTenant('uwazi_development');
+    config.s3 = {
+      endpoint: 'http://192.168.1.223:9000',
+      credentials: {
+        accessKeyId: 'YTmqw9gKSqfRDjFC',
+        secretAccessKey: 'OUHB77FxYB2DUCmmsfi8ZeUK6juClJru',
+      },
+    };
     await s3.send(
       new DeleteObjectCommand({
         Bucket: 'uwazi-development',

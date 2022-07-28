@@ -71,4 +71,11 @@ export const config = {
     dsn: SENTRY_API_DSN,
     tracesSampleRate: 0.1,
   },
+  s3: {
+    endpoint: process.env.S3_ENDPOINT || '',
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+    },
+  },
 };

@@ -1,24 +1,28 @@
 // eslint-disable-next-line node/no-restricted-import
+import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { config } from 'api/config';
+import { tenants } from 'api/tenants';
 import { createReadStream } from 'fs';
+import { access, readFile } from 'fs/promises';
 import { FileType } from 'shared/types/fileType';
-import { access } from 'fs/promises';
 import { Readable } from 'stream';
 import { attachmentsPath, customUploadsPath, uploadsPath } from './filesystem';
-import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { fs } from '.';
 
 type FileTypes = NonNullable<FileType['type']>;
 
-const s3 = new S3Client({
-  apiVersion: 'latest',
-  region: 'uwazi-development',
-  endpoint: 'http://192.168.1.223:9000',
-  credentials: {
-    accessKeyId: 'YTmqw9gKSqfRDjFC',
-    secretAccessKey: 'OUHB77FxYB2DUCmmsfi8ZeUK6juClJru',
-  },
-  forcePathStyle: true, // needed for minio
-});
+let s3ClientInstance: S3Client;
+const s3instance = () => {
+  if (config.s3.endpoint && !s3ClientInstance) {
+    s3ClientInstance = new S3Client({
+      apiVersion: 'latest',
+      region: 'uwazi-development',
+      endpoint: config.s3.endpoint,
+      credentials: config.s3.credentials,
+      forcePathStyle: true, // needed for minio
+    });
+  }
+  return s3ClientInstance;
+};
 
 const paths: { [k in FileTypes]: (filename: string) => string } = {
   custom: customUploadsPath,
@@ -36,33 +40,35 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
   });
 
 export const readableFile = async (filename: string, type: FileTypes) => {
-  try {
-    await s3.send(
-      new GetObjectCommand({
-        Bucket: 'uwazi-development',
-        Key: filename,
-      })
-    );
-  } catch (e: unknown) {
-    if (e instanceof NoSuchKey) {
+  if (config.s3.endpoint) {
+    const s3 = s3instance();
+    try {
       await s3.send(
-        new PutObjectCommand({
-          Bucket: 'uwazi-development',
+        new GetObjectCommand({
+          Bucket: tenants.current().name.replace('_', '-'),
           Key: filename,
-          Body: await fs.readFile(paths[type](filename)),
         })
       );
-    } else {
-      throw e;
+    } catch (e: unknown) {
+      if (e instanceof NoSuchKey) {
+        await s3.send(
+          new PutObjectCommand({
+            Bucket: tenants.current().name.replace('_', '-'),
+            Key: filename,
+            Body: await readFile(paths[type](filename)),
+          })
+        );
+      } else {
+        throw e;
+      }
     }
   }
 
   return createReadStream(paths[type](filename));
 };
 
-export const fileContents = async (filename: string, type: FileTypes) => {
-  return streamToBuffer(await readableFile(filename, type));
-};
+export const fileContents = async (filename: string, type: FileTypes) =>
+  streamToBuffer(await readableFile(filename, type));
 
 export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
   try {
