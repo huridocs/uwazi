@@ -1,8 +1,9 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { access, readFile } from 'fs/promises';
-import { attachmentsPath, customUploadsPath, uploadsPath } from './filesystem';
 import { FileType } from 'shared/types/fileType';
+import { access } from 'fs/promises';
+import { Readable } from 'stream';
+import { attachmentsPath, customUploadsPath, uploadsPath } from './filesystem';
 
 type FileTypes = NonNullable<FileType['type']>;
 
@@ -13,12 +14,20 @@ const paths: { [k in FileTypes]: (filename: string) => string } = {
   attachment: attachmentsPath,
 };
 
+const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
+  new Promise((resolve, reject) => {
+    const _buf: Buffer[] = [];
+    stream.on('data', (chunk: any) => _buf.push(chunk));
+    stream.on('end', () => resolve(Buffer.concat(_buf)));
+    stream.on('error', (err: unknown) => reject(err));
+  });
+
 export const readableFile = async (filename: string, type: FileTypes) => {
   return createReadStream(paths[type](filename));
 };
 
 export const fileContents = async (filename: string, type: FileTypes) => {
-  return readFile(paths[type](filename));
+  return streamToBuffer(await readableFile(filename, type));
 };
 
 export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
