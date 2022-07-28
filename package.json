@@ -73,6 +73,7 @@
     "electron": "^2.0.18"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.137.0",
     "@elastic/elasticsearch": "~7.10.0",
     "@fast-csv/format": "^4.3.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",

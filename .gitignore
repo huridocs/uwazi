@@ -29,6 +29,7 @@ app/api/csv/specs/*.jpg
 !app/api/files/specs/uploads/import.zip
 !app/api/files/specs/uploads/importcsv.csv
 !app/api/files/specs/uploads/invalid_document.txt
+!app/api/files/specs/uploads/test_s3_file.txt
 app/api/attachments/specs/uploads/toDelete.txt
 uploaded_documents/*
 custom_uploads/*
