@@ -1,20 +1,17 @@
-import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  CreateBucketCommand,
+  DeleteBucketCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Readable } from 'stream';
 import { streamToString } from '../filesystem';
 import { fileContents } from '../storage';
 
-const s3 = new S3Client({
-  apiVersion: 'latest',
-  region: 'uwazi-development',
-  endpoint: 'http://192.168.1.223:9000',
-  credentials: {
-    accessKeyId: 'YTmqw9gKSqfRDjFC',
-    secretAccessKey: 'OUHB77FxYB2DUCmmsfi8ZeUK6juClJru',
-  },
-  forcePathStyle: true, // needed for minio
-});
+let s3: S3Client;
 
 describe('storage with s3 feature active', () => {
   beforeEach(async () => {
@@ -22,19 +19,27 @@ describe('storage with s3 feature active', () => {
     config.s3 = {
       endpoint: 'http://192.168.1.223:9000',
       credentials: {
-        accessKeyId: 'YTmqw9gKSqfRDjFC',
-        secretAccessKey: 'OUHB77FxYB2DUCmmsfi8ZeUK6juClJru',
+        accessKeyId: 'minioadmin',
+        secretAccessKey: 'minioadmin',
       },
     };
-    await s3.send(
-      new DeleteObjectCommand({
-        Bucket: 'uwazi-development',
-        Key: 'test_s3_file.txt',
-      })
-    );
+
+    s3 = new S3Client({
+      apiVersion: 'latest',
+      region: 'uwazi-development',
+      forcePathStyle: true, // needed for minio
+      ...config.s3,
+    });
+
+    await s3.send(new CreateBucketCommand({ Bucket: 'uwazi-development' }));
   });
 
-  afterEach(async () => {});
+  afterEach(async () => {
+    await s3.send(
+      new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'test_s3_file.txt' })
+    );
+    await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
+  });
 
   describe('readableFile', () => {
     describe('when file is not stored on s3 bucket', () => {

@@ -23,3 +23,10 @@ services:
       - "6379:6379"
     environment:
       - REDIS_REPLICATION_MODE=master
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./storage/minio:/data
+    command: server /data
