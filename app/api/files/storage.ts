@@ -3,8 +3,8 @@ import { config } from 'api/config';
 import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { access, readFile } from 'fs/promises';
 import { FileType } from 'shared/types/fileType';
+import { access, readFile } from 'fs/promises';
 import { Readable } from 'stream';
 import { attachmentsPath, customUploadsPath, uploadsPath } from './filesystem';
 
