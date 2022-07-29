@@ -13,6 +13,7 @@ const importTemplate = db.id();
 const writerUserId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
 const restrictedFileName = 'f2082bf51b6ef839690485d7153e847b.pdf';
+const customPdfFileName = 'customPDF.pdf';
 
 const collabUser = {
   _id: db.id(),
@@ -41,7 +42,8 @@ const fixtures: DBFixture = {
       generatedToc: true,
       originalname: 'upload1',
       filename: fileName1,
-      type: 'custom',
+      mimetype: 'application/pdf',
+      type: 'document',
       language: 'eng',
     },
     {
@@ -49,6 +51,17 @@ const fixtures: DBFixture = {
       generatedToc: true,
       entity: 'sharedId1',
       filename: 'fileNotInDisk',
+      originalname: 'fileNotInDisk',
+      type: 'document',
+    },
+    {
+      _id: db.id(),
+      entity: 'restrictedSharedId',
+      originalname: 'customPdf',
+      filename: customPdfFileName,
+      mimetype: 'application/pdf',
+      type: 'custom',
+      language: 'eng',
     },
     {
       _id: restrictedUploadId,
@@ -56,7 +69,8 @@ const fixtures: DBFixture = {
       generatedToc: true,
       originalname: 'restrictedUpload',
       filename: restrictedFileName,
-      type: 'custom',
+      mimetype: 'application/pdf',
+      type: 'document',
       language: 'eng',
     },
     {
@@ -65,16 +79,16 @@ const fixtures: DBFixture = {
       generatedToc: true,
       originalname: 'restrictedUpload2',
       filename: 'restricted file 2 not on disk',
-      type: 'custom',
+      type: 'document',
       language: 'eng',
     },
     {
       entity: 'sharedId1',
       filename: 'fileWithoutTocFlag',
     },
-    { _id: db.id(), filename: 'fileNotOnDisk' },
-    { _id: db.id(), originalname: 'upload2', type: 'custom' },
-    { _id: db.id(), originalname: 'upload3', type: 'document' },
+    { _id: db.id(), originalname: 'fileNotONDisk', filename: 'fileNotOnDisk', type: 'custom' },
+    { _id: db.id(), originalname: 'upload2', type: 'document' },
+    { _id: db.id(), originalname: 'upload3', type: 'custom' },
   ],
   connections: [
     { entity: 'entity1', file: uploadId2.toString(), hub: '1' },
@@ -135,6 +149,7 @@ export {
   entityEnId,
   fileName1,
   restrictedFileName,
+  customPdfFileName,
   uploadId,
   uploadId2,
   restrictedUploadId2,

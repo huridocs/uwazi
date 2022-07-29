@@ -4,7 +4,7 @@ import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import { fileExists, readFile, uploadsPath } from 'api/files';
+import { fileContents, fileExists } from 'api/files';
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
@@ -78,8 +78,9 @@ class InformationExtraction {
     property: string,
     type: string
   ) => {
-    const fileContent = await readFile(
-      uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+    const fileContent = await fileContents(
+      path.join(PDFSegmentation.SERVICE_NAME, xmlName),
+      'document'
     );
     const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
     const url = urljoin(serviceUrl, endpoint, tenants.current().name, property);
@@ -96,7 +97,8 @@ class InformationExtraction {
       files.map(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await fileExists(
-          uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+          path.join(PDFSegmentation.SERVICE_NAME, xmlName),
+          'document'
         );
 
         const propertyLabeledData = file.extractedMetadata?.find(

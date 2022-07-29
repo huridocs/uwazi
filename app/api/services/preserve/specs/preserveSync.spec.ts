@@ -1,5 +1,6 @@
 import entities from 'api/entities';
-import { fileExists, generateFileName, testingUploadPaths } from 'api/files/filesystem';
+import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
+import { fileExists } from 'api/files/storage';
 import { uwaziFS } from 'api/files/uwaziFS';
 import { errorLog } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -228,17 +229,15 @@ describe('preserveSync', () => {
 
     it('should save evidences downloads to disk', async () => {
       await tenants.run(async () => {
+        permissionsContext.setCommandContext();
         const entitiesImported: EntityWithFilesSchema[] = await entities.get();
         const attachments: FileType[] = entitiesImported
           .map(entity => entity.attachments || [])
           .flat();
-        const testingPaths = await testingUploadPaths();
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const attachment of attachments) {
-          expect(
-            await fileExists(path.join(testingPaths.attachments, attachment.filename || ''))
-          ).toBe(true);
-        }
+        await attachments.reduce(async (promise, attachment) => {
+          await promise;
+          expect(await fileExists(attachment.filename!, 'attachment')).toBe(true);
+        }, Promise.resolve());
       }, tenantName);
     });
 

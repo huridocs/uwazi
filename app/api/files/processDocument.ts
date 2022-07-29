@@ -37,6 +37,7 @@ export const processDocument = async (
     type: 'thumbnail',
     language: conversion.language,
     filename: thumbnail,
+    mimetype: 'image/jpeg',
   });
 
   const saved = await files.save({
