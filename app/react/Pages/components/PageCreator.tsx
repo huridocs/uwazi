@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import React, { Component } from 'react';
 import _ from 'lodash';
 
+import { Icon, ToggleButton } from 'UI';
 import { MarkDown } from 'app/ReactReduxForms';
 import {
   resetPage as resetPageAction,
@@ -12,10 +13,9 @@ import {
 } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
 import { BackButton } from 'app/Layout';
-import { Icon, ToggleButton } from 'UI';
+import { Translate, I18NLink } from 'app/I18N';
 
 import { IStore } from 'app/istore';
-import { Translate } from 'app/I18N';
 import validator from './ValidatePage';
 
 const mapStateToProps = ({ page }: IStore) => ({
@@ -32,7 +32,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-export type mappedProps = ConnectedProps<typeof connector>;
+type mappedProps = ConnectedProps<typeof connector>;
 
 class PageCreator extends Component<mappedProps> {
   componentWillUnmount() {
@@ -158,14 +158,26 @@ class PageCreator extends Component<mappedProps> {
               </div>
             </div>
           </div>
-          <div className="settings-footer">
-            <BackButton to={backUrl} />
-            <button type="submit" className="btn btn-success save-template" disabled={!!savingPage}>
-              <Icon icon="save" />
-              <span className="btn-label">
-                <Translate>Save</Translate>
-              </span>
-            </button>
+          <div className="settings-footer content-mixed">
+            <div className="btn-cluster">
+              <BackButton to={backUrl} className="btn-plain" />
+            </div>
+            <div className="btn-cluster content-right">
+              <I18NLink to={backUrl} className="btn btn-extra-padding btn-default">
+                <span className="btn-label">
+                  <Translate>Cancel</Translate>
+                </span>
+              </I18NLink>
+              <button
+                type="submit"
+                className="btn btn-extra-padding btn-success save-template"
+                disabled={!!savingPage}
+              >
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
+              </button>
+            </div>
           </div>
         </Form>
       </div>
@@ -174,4 +186,6 @@ class PageCreator extends Component<mappedProps> {
 }
 
 const container = connector(PageCreator);
+
+export type { mappedProps };
 export { container as PageCreator };

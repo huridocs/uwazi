@@ -1,11 +1,16 @@
 .menu-link-group-button {
-  background: #2c56c0;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #eceff1;
+  border: 1px solid #cfd8dc;
   box-sizing: border-box;
   border-radius: 3px;
-  padding: 8px 16px;
+  padding: 4px 12px;
   margin-right: 10px;
-  color: white;
+  color: #444444;
+
+  &:hover {
+    border: 1px solid #3655ba;
+    color: #3655ba;
+  }
 }
 
 .menu-delete-button {
