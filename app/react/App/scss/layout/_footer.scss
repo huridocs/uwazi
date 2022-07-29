@@ -9,7 +9,7 @@ footer {
     color: $c-grey;
   }
 
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     position: absolute;
     width: 100%;
     bottom: 0;
@@ -26,7 +26,7 @@ footer {
   line-height: 20px;
   flex-wrap: wrap;
 
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     justify-content: center;
   }
 
@@ -34,7 +34,7 @@ footer {
     display: inline-block;
     padding-left: 15px;
     position: relative;
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       padding: 0 15px;
     }
   }
@@ -46,7 +46,7 @@ footer {
     height: 1px;
     margin: 15px 0;
     border-bottom: 1px solid $c-grey-light;
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: auto;
       height: auto;
       margin: 0;
@@ -78,8 +78,118 @@ footer {
   }
 }
 
-@media(min-width: 1024px) {
-.footer-collection_name {
+@media (min-width: 1024px) {
+  .footer-collection_name {
     width: auto;
+  }
+}
+
+/* ----------------------------------------- */
+/* Sticky Footers                            */
+/* ----------------------------------------- */
+
+.settings-footer,
+.sidepanel-footer {
+  height: $FooterHeight;
+  border-top: 1px solid #ddd;
+  padding: 10px 16px;
+  bottom: 0;
+  z-index: 1;
+
+  &.extra-row {
+    height: calc(#{$FooterHeight} * 2 - 12px);
+  }
+
+  &.content-mixed {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .footer-extra-row {
+    height: 38px;
+    width: 100%;
+  }
+
+  &.content-right,
+  .btn-cluster.content-right {
+    text-align: right;
+  }
+
+  .btn-cluster {
+    flex: 1;
+
+    .btn:not(:last-child) {
+      margin-right: 12px;
+    }
+  }
+
+  .btn {
+    padding: 4px 8px;
+    color: $c-black;
+
+    &.btn-extra-padding {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+
+    &.btn-danger,
+    &.btn-primary,
+    &.btn-success {
+      color: #fff;
+    }
+
+    &.btn-default {
+      background-color: #eceff1;
+      border-color: #cfd8dc;
+
+      &:hover {
+        border-color: #3655ba;
+        color: #3655ba;
+      }
+    }
+
+    &.btn-plain {
+      background-color: unset;
+      border-color: transparent;
+    }
+  }
+
+  .btn-label {
+    padding: 0 5px;
+  }
+}
+
+.settings-footer {
+  width: 100%;
+  background-color: #fff;
+  margin-left: -15px;
+  position: fixed;
+
+  &.with-sidepanel {
+    width: calc(#{$SettingsContentWidth} - 400px);
+  }
+}
+
+.sidepanel-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+
+  .btn:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+  .btn:disabled .btn-label {
+    color: $c-grey !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .settings-footer {
+    width: $SettingsContentWidth;
+  }
+
+  .sidepanel-footer {
+    width: 400px;
   }
 }

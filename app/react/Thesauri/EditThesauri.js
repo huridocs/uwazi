@@ -15,6 +15,10 @@ export default class EditThesauri extends RouteHandler {
   }
 
   render() {
-    return <ThesauriForm />;
+    return (
+      <div className="settings-content">
+        <ThesauriForm />
+      </div>
+    );
   }
 }

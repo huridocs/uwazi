@@ -38,7 +38,7 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
   }, []);
 
   return (
-    <>
+    <div className="settings-content">
       <div className="panel panel-preserve">
         <div className="panel-preserve-heading">
           <Icon icon="square" /> <Translate>Preserve Extension</Translate>
@@ -117,7 +117,7 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 const container = connector(PreserveSettingsComp);

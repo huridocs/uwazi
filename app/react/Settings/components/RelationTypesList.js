@@ -13,7 +13,7 @@ import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 
-export class RelationTypesList extends RouteHandler {
+class RelationTypesList extends RouteHandler {
   static async requestState(requestParams) {
     const relationTypes = await relationTypesAPI.get(requestParams.onlyHeaders());
     return [actions.set('relationTypes', relationTypes)];
@@ -51,40 +51,42 @@ export class RelationTypesList extends RouteHandler {
 
   render() {
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Relationship types')}</div>
-        <ul className="list-group relation-types">
-          {this.props.relationTypes.toJS().map((relationType, index) => (
-            <li key={index} className="list-group-item">
-              <I18NLink to={`/settings/connections/edit/${relationType._id}`}>
-                {relationType.name}
-              </I18NLink>
-              <div className="list-group-item-actions">
-                <I18NLink
-                  to={`/settings/connections/edit/${relationType._id}`}
-                  className="btn btn-default btn-xs"
-                >
-                  <Icon icon="pencil-alt" />
-                  &nbsp;
-                  <span>{t('System', 'Edit')}</span>
+      <div className="settings-content">
+        <div className="panel panel-default">
+          <div className="panel-heading">{t('System', 'Relationship types')}</div>
+          <ul className="list-group relation-types">
+            {this.props.relationTypes.toJS().map((relationType, index) => (
+              <li key={index} className="list-group-item">
+                <I18NLink to={`/settings/connections/edit/${relationType._id}`}>
+                  {relationType.name}
                 </I18NLink>
-                <a
-                  onClick={this.deleteRelationType.bind(this, relationType)}
-                  className="btn btn-danger btn-xs template-remove"
-                >
-                  <Icon icon="trash-alt" />
-                  &nbsp;
-                  <span>{t('System', 'Delete')}</span>
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className="settings-footer">
-          <I18NLink to="/settings/connections/new" className="btn btn-success">
-            <Icon icon="plus" />
-            <span className="btn-label">{t('System', 'Add connection')}</span>
-          </I18NLink>
+                <div className="list-group-item-actions">
+                  <I18NLink
+                    to={`/settings/connections/edit/${relationType._id}`}
+                    className="btn btn-default btn-xs"
+                  >
+                    <Icon icon="pencil-alt" />
+                    &nbsp;
+                    <span>{t('System', 'Edit')}</span>
+                  </I18NLink>
+                  <a
+                    onClick={this.deleteRelationType.bind(this, relationType)}
+                    className="btn btn-danger btn-xs template-remove"
+                  >
+                    <Icon icon="trash-alt" />
+                    &nbsp;
+                    <span>{t('System', 'Delete')}</span>
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="settings-footer">
+            <I18NLink to="/settings/connections/new" className="btn btn-success">
+              <Icon icon="plus" />
+              <span className="btn-label">{t('System', 'Add connection')}</span>
+            </I18NLink>
+          </div>
         </div>
       </div>
     );
@@ -103,7 +105,7 @@ RelationTypesList.contextTypes = {
   store: PropTypes.object,
 };
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return { relationTypes: state.relationTypes };
 }
 
@@ -113,5 +115,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { RelationTypesList, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationTypesList);

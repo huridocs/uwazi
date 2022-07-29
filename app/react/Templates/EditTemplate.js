@@ -35,9 +35,11 @@ export default class EditTemplate extends RouteHandler {
 
   render() {
     return (
-      <OnTemplateLoaded>
-        <TemplateCreator />
-      </OnTemplateLoaded>
+      <div className="settings-content">
+        <OnTemplateLoaded>
+          <TemplateCreator />
+        </OnTemplateLoaded>
+      </div>
     );
   }
 }

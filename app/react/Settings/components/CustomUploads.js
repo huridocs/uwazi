@@ -14,7 +14,7 @@ import { Icon } from 'UI';
 
 import { uploadCustom, deleteCustomUpload } from '../../Uploads/actions/uploadsActions';
 
-export class CustomUploads extends RouteHandler {
+class CustomUploads extends RouteHandler {
   static async requestState(requestParams) {
     const customUploads = await api.get('files', requestParams.add({ type: 'custom' }));
     return [actions.set('customUploads', customUploads.json)];
@@ -33,42 +33,44 @@ export class CustomUploads extends RouteHandler {
 
   render() {
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">
-          <Translate>Custom Uploads</Translate>
-        </div>
-        <div className="panel-body custom-uploads">
-          <Dropzone className="upload-box" onDrop={this.onDrop}>
-            <div className="upload-box_wrapper">
-              <Icon icon="upload" />
-              <button className="upload-box_link" type="button">
-                <Translate>Browse files to upload</Translate>
-              </button>
-              <span>
-                &nbsp;<Translate>or drop your files here.</Translate>
-              </span>
-            </div>
-            {this.props.progress && (
-              <div className="uploading">
-                <Icon icon="spinner" spin />
-                <Translate>Uploading ...</Translate>
+      <div className="settings-content">
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <Translate>Custom Uploads</Translate>
+          </div>
+          <div className="panel-body custom-uploads">
+            <Dropzone className="upload-box" onDrop={this.onDrop}>
+              <div className="upload-box_wrapper">
+                <Icon icon="upload" />
+                <button className="upload-box_link" type="button">
+                  <Translate>Browse files to upload</Translate>
+                </button>
+                <span>
+                  &nbsp;<Translate>or drop your files here.</Translate>
+                </span>
               </div>
-            )}
-          </Dropzone>
-          <ul>
-            {this.props.customUploads.map(upload => (
-              <li key={upload.get('filename')}>
-                <Thumbnail file={`/assets/${upload.get('filename')}`} />
-                <div className="info">
-                  <span no-translate>URL:</span>
-                  <span className="thumbnail-url">{`/assets/${upload.get('filename')}`}</span>
-                  <ConfirmButton action={() => this.props.deleteCustomUpload(upload.get('_id'))}>
-                    <Translate>Delete</Translate>
-                  </ConfirmButton>
+              {this.props.progress && (
+                <div className="uploading">
+                  <Icon icon="spinner" spin />
+                  <Translate>Uploading ...</Translate>
                 </div>
-              </li>
-            ))}
-          </ul>
+              )}
+            </Dropzone>
+            <ul>
+              {this.props.customUploads.map(upload => (
+                <li key={upload.get('filename')}>
+                  <Thumbnail file={`/assets/${upload.get('filename')}`} />
+                  <div className="info">
+                    <span no-translate>URL:</span>
+                    <span className="thumbnail-url">{`/assets/${upload.get('filename')}`}</span>
+                    <ConfirmButton action={() => this.props.deleteCustomUpload(upload.get('_id'))}>
+                      <Translate>Delete</Translate>
+                    </ConfirmButton>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     );
@@ -93,5 +95,7 @@ export const mapStateToProps = ({ customUploads, progress }) => ({
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ upload: uploadCustom, deleteCustomUpload }, dispatch);
+
+export { CustomUploads };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CustomUploads);

@@ -3,14 +3,13 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { Field, Form } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { t, actions, Translate } from 'app/I18N';
+import { t, actions, Translate, I18NLink } from 'app/I18N';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { SelectFileButton } from 'app/App/SelectFileButton';
-
-export class EditTranslationForm extends Component {
+class EditTranslationForm extends Component {
   static getDefaultTranslation(translations, languages) {
     const defaultLocale = languages.find(lang => lang.default).key;
     return translations.find(tr => tr.locale === defaultLocale);
@@ -132,13 +131,23 @@ export class EditTranslationForm extends Component {
               })()}
             </ul>
           </div>
-          <div className="settings-footer">
-            <BackButton to="/settings/translations" />
-            {importButton}
-            <button type="submit" className="btn btn-success save-template">
-              <Icon icon="save" />
-              <span className="btn-label">{t('System', 'Save')}</span>
-            </button>
+          <div className="settings-footer content-mixed">
+            <div className="btn-cluster">
+              <BackButton to="/settings/translations" className="btn-plain" />
+              {importButton}
+            </div>
+            <div className="btn-cluster content-right">
+              <I18NLink to="/settings/translations" className="btn btn-extra-padding btn-default">
+                <span className="btn-label">
+                  <Translate>Cancel</Translate>
+                </span>
+              </I18NLink>
+              <button type="submit" className="btn btn-extra-padding btn-success save-template">
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
+              </button>
+            </div>
           </div>
         </Form>
       </div>
@@ -156,7 +165,7 @@ EditTranslationForm.propTypes = {
   formState: PropTypes.object,
 };
 
-export function mapStateToProps({ translationsForm, translationsFormState, settings }) {
+function mapStateToProps({ translationsForm, translationsFormState, settings }) {
   return {
     translationsForm,
     settings,
@@ -174,5 +183,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { EditTranslationForm, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditTranslationForm);
