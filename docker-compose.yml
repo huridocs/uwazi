@@ -27,6 +27,7 @@ services:
     image: minio/minio
     ports:
       - "9000:9000"
+      - "9001:9001"
     volumes:
       - ./storage/minio:/data
-    command: server /data
+    command: server /data --console-address :9001

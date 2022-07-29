@@ -1,7 +1,7 @@
-// eslint-disable-next-line node/no-restricted-import
 import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
+// eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { access, readFile } from 'fs/promises';
 import { FileType } from 'shared/types/fileType';
@@ -39,28 +39,32 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
     stream.on('error', (err: unknown) => reject(err));
   });
 
-export const readableFile = async (filename: string, type: FileTypes) => {
+const s3KeyWithPath = (filename: string, type: FileTypes) =>
+  paths[type](filename).split('/').slice(-2).join('/');
+
+export const readableFile = async (filename: string, type: FileTypes): Promise<Readable> => {
   if (tenants.current().featureFlags?.s3Storage) {
     const s3 = s3instance();
     try {
-      await s3.send(
+      const response = await s3.send(
         new GetObjectCommand({
           Bucket: tenants.current().name.replace('_', '-'),
-          Key: filename,
+          Key: s3KeyWithPath(filename, type),
         })
       );
+      return response.Body as Readable;
     } catch (e: unknown) {
       if (e instanceof NoSuchKey) {
         await s3.send(
           new PutObjectCommand({
             Bucket: tenants.current().name.replace('_', '-'),
-            Key: filename,
+            Key: s3KeyWithPath(filename, type),
             Body: await readFile(paths[type](filename)),
           })
         );
-      } else {
-        throw e;
+        return readableFile(filename, type);
       }
+      throw e;
     }
   }
 

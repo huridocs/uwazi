@@ -39,8 +39,9 @@ describe('storage with s3 feature active', () => {
 
   afterEach(async () => {
     await s3.send(
-      new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'test_s3_file.txt' })
+      new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
     );
+    await s3.send(new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/' }));
     await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
     await s3.send(new DeleteBucketCommand({ Bucket: 'another-tenant' }));
   });
@@ -62,12 +63,8 @@ describe('storage with s3 feature active', () => {
       );
 
       const response = await s3.send(
-        new GetObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'test_s3_file.txt',
-        })
+        new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
       );
-
       await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
         'test content'
       );
@@ -88,7 +85,9 @@ describe('storage with s3 feature active', () => {
       );
 
       await expect(async () =>
-        s3.send(new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'test_s3_file.txt' }))
+        s3.send(
+          new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+        )
       ).rejects.toBeInstanceOf(NoSuchKey);
     });
   });
