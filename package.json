@@ -152,7 +152,7 @@
     "otplib": "^11.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "2.3.200",
+    "pdfjs-dist": "^2.14.305",
     "prom-client": "^14.0.1",
     "prop-types": "^15.8.1",
     "qrcode.react": "^3.0.2",
@@ -328,7 +328,8 @@
     "webpack-cli": "4.10.0",
     "webpack-dev-middleware": "5.3.3",
     "webpack-hot-middleware": "^2.25.1",
-    "winston-transport": "^4.5.0"
+    "winston-transport": "^4.5.0",
+    "worker-loader": "^3.0.8"
   },
   "config": {
     "mongodbMemoryServer": {

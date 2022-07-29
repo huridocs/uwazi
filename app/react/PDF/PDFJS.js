@@ -1,5 +1,7 @@
 /* eslint-disable import/no-mutable-exports, global-require, prefer-destructuring */
 import { isClient } from 'app/utils';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
+import { EventBus } from 'pdfjs-dist/web/pdf_viewer';
 
 let PDFJS = {};
 let pdfjsLib = {};
@@ -13,9 +15,10 @@ if (isClient) {
   } else {
     pdfjsLib = require('pdfjs-dist/webpack');
   }
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
   textLayerFactory = new PDFJS.DefaultTextLayerFactory();
 }
 
 export default { ...PDFJS, ...pdfjsLib };
 
-export { textLayerFactory };
+export { textLayerFactory, EventBus };
