@@ -58,6 +58,9 @@ export const config = {
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
     activityLogs: ACTIVITY_LOGS_FOLDER || `${rootPath}/log/`,
+    featureFlags: {
+      s3Storage: false,
+    },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
 

@@ -40,7 +40,7 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
   });
 
 export const readableFile = async (filename: string, type: FileTypes) => {
-  if (config.s3.endpoint) {
+  if (tenants.current().featureFlags?.s3Storage) {
     const s3 = s3instance();
     try {
       await s3.send(
