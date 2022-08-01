@@ -17,7 +17,7 @@ let s3: S3Client;
 describe('storage with s3 feature active', () => {
   beforeAll(async () => {
     config.s3 = {
-      endpoint: 'http://192.168.1.223:9000',
+      endpoint: 'http://127.0.0.1:9000',
       credentials: {
         accessKeyId: 'minioadmin',
         secretAccessKey: 'minioadmin',
@@ -35,7 +35,7 @@ describe('storage with s3 feature active', () => {
   beforeEach(async () => {
     await s3.send(new CreateBucketCommand({ Bucket: 'uwazi-development' }));
     await s3.send(new CreateBucketCommand({ Bucket: 'another-tenant' }));
-  }, 20000);
+  });
 
   afterEach(async () => {
     await s3.send(
@@ -44,7 +44,7 @@ describe('storage with s3 feature active', () => {
     await s3.send(new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/' }));
     await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
     await s3.send(new DeleteBucketCommand({ Bucket: 'another-tenant' }));
-  }, 20000);
+  });
 
   describe('readableFile when s3 feature active', () => {
     it('should store it on the s3 bucket and then return it as a readable', async () => {
@@ -68,7 +68,7 @@ describe('storage with s3 feature active', () => {
       await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
         'test content'
       );
-    }, 20000);
+    });
   });
 
   describe('readableFile when s3 feature not active', () => {
@@ -89,6 +89,6 @@ describe('storage with s3 feature active', () => {
           new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
         )
       ).rejects.toBeInstanceOf(NoSuchKey);
-    }, 20000);
+    });
   });
 });
