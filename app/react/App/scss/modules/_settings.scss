@@ -115,6 +115,10 @@
     margin-bottom: 0px;
   }
 
+  &.footer-extra-row {
+    margin-bottom: calc(#{$FooterHeight} * 2);
+  }
+
   .panel-heading {
     background-color: transparent;
     font-size: $f-size-xxl;
@@ -158,6 +162,14 @@
       span {
         flex: 1;
       }
+    }
+  }
+}
+
+@media (max-width: 1023px) {
+  .settings-content {
+    &.sm-footer-extra-row {
+      margin-bottom: calc(#{$FooterHeight} * 2);
     }
   }
 }

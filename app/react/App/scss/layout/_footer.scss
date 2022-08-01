@@ -122,6 +122,10 @@ footer {
     .btn:not(:last-child) {
       margin-right: 12px;
     }
+
+    &.sm-order-1 {
+      order: -1;
+    }
   }
 
   .btn {
@@ -184,19 +188,42 @@ footer {
   }
 }
 
-@media (min-width: 1024px) {
-  .btn {
-    &.btn-extra-padding {
-      padding-left: 50px;
-      padding-right: 50px;
+@media (max-width: 1023px) {
+  .settings-footer,
+  .sidepanel-footer {
+    &.sm-extra-row {
+      height: calc(#{$FooterHeight} * 2);
+    }
+
+    .sm-footer-extra-row {
+      width: 100%;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #ccc;
     }
   }
+}
 
+@media (min-width: 1024px) {
   .settings-footer {
     width: $SettingsContentWidth;
   }
 
   .sidepanel-footer {
     width: 400px;
+  }
+
+  .settings-footer,
+  .sidepanel-footer {
+    .btn-cluster.sm-order-1 {
+      order: unset;
+    }
+
+    .btn {
+      &.btn-extra-padding {
+        padding-left: 50px;
+        padding-right: 50px;
+      }
+    }
   }
 }

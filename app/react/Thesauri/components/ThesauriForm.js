@@ -196,11 +196,11 @@ export class ThesauriForm extends Component {
                 iconHandle
               />
             </div>
-            <div className="settings-footer content-mixed">
+            <div className="settings-footer sm-extra-row content-mixed">
               <div className="btn-cluster">
                 <BackButton to="/settings/dictionaries" className="btn-plain" />
               </div>
-              <div className="btn-cluster">
+              <div className="btn-cluster sm-order-1 sm-footer-extra-row">
                 <button type="button" className="btn btn-default" onClick={this.props.addGroup}>
                   <Icon icon="plus" />
                   <span className="btn-label">
