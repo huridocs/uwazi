@@ -18,6 +18,7 @@ import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 import { MetadataExtractor } from './MetadataExtractor';
 import { SupportingFiles } from './SupportingFiles';
+import { PDFUpload } from './PDFUpload';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 const selectTemplateOptions = createSelector(
@@ -174,11 +175,14 @@ class MetadataForm extends Component {
             storeKey={storeKey}
           />
           {!multipleEdition && !showSubset && (
-            <SupportingFiles
-              supportingFiles={attachments}
-              entitySharedID={sharedId}
-              model={model}
-            />
+            <>
+              <PDFUpload entitySharedID={sharedId} model={model} />
+              <SupportingFiles
+                supportingFiles={attachments}
+                entitySharedID={sharedId}
+                model={model}
+              />
+            </>
           )}
         </Form>
       </fieldset>

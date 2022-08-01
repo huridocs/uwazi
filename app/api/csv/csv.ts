@@ -1,11 +1,8 @@
 import csvtojson from 'csvtojson';
 
-import { availableLanguages } from 'shared/languagesList';
 import { Readable } from 'stream';
-import { ensure } from 'shared/tsUtils';
-import { LanguageSchema } from 'shared/types/commonTypes';
 
-export type CSVRow = { [k: string]: string };
+type CSVRow = { [k: string]: string };
 
 const csv = (readStream: Readable, stopOnError = false) => ({
   reading: false,
@@ -42,30 +39,7 @@ const csv = (readStream: Readable, stopOnError = false) => ({
         }
       });
   },
-
-  async toThesauri(language: string, iso6391Languages: string[]) {
-    const values = await csvtojson({ delimiter: [',', ';'] }).fromStream(readStream);
-    const languageLabel: string = ensure<LanguageSchema>(
-      availableLanguages.find(l => l.key === language)
-    ).label;
-
-    const languagesToTranslate: { [k: string]: string } = availableLanguages
-      .filter(l => iso6391Languages.includes(l.key) && Object.keys(values[0]).includes(l.label))
-      .reduce((map, lang) => ({ ...map, [lang.key]: lang.label }), {});
-
-    return {
-      thesauriValues: values.map(v => ({ label: v[languageLabel] })),
-
-      thesauriTranslations: Object.keys(languagesToTranslate).reduce((translations, lang) => {
-        // eslint-disable-line no-param-reassign
-        translations[lang] = Object.fromEntries(
-          values.map(t => [t[languageLabel], t[languagesToTranslate[lang]]])
-        );
-
-        return translations;
-      }, {} as { [k: string]: { [k: string]: string } }),
-    };
-  },
 });
 
 export default csv;
+export type { CSVRow };

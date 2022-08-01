@@ -280,10 +280,10 @@ describe('syncWorker', () => {
         { type: 'custom' },
       ]);
 
-      expect(await fileExists(attachmentsPath(syncedFiles[0].filename))).toBe(true);
-      expect(await fileExists(attachmentsPath(syncedFiles[1].filename))).toBe(true);
-      expect(await fileExists(attachmentsPath(syncedFiles[2].filename))).toBe(true);
-      expect(await fileExists(customUploadsPath(syncedFiles[3].filename))).toBe(true);
+      expect(await fileExists(syncedFiles[0].filename!, 'attachment')).toBe(true);
+      expect(await fileExists(syncedFiles[1].filename!, 'attachment')).toBe(true);
+      expect(await fileExists(syncedFiles[2].filename!, 'attachment')).toBe(true);
+      expect(await fileExists(syncedFiles[3].filename!, 'custom')).toBe(true);
     }, 'target1');
   });
 

@@ -83,6 +83,7 @@ const routes = app => {
       const { entity: savedEntity } = await saveEntity(entity, {
         user: {},
         language: req.language,
+        socketEmiter: req.emitToSessionSocket,
         files: req.files,
       });
 

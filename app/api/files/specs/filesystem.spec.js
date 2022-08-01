@@ -1,6 +1,6 @@
 import { testingTenants } from 'api/utils/testingTenants';
 import { uwaziFS as fs } from '../uwaziFS';
-import { deleteFiles, fileExists, storeFile, activityLogPath } from '../filesystem';
+import { deleteFiles, fileExistsOnPath, storeFile, activityLogPath } from '../filesystem';
 
 describe('files', () => {
   beforeEach(async () => {
@@ -16,14 +16,14 @@ describe('files', () => {
   describe('deleteFiles', () => {
     it('should delete all files passed', async () => {
       await deleteFiles([`${__dirname}/file1`, `${__dirname}/file2`]);
-      expect(await fileExists(`${__dirname}/file1`)).toBe(false);
-      expect(await fileExists(`${__dirname}/file2`)).toBe(false);
+      expect(await fileExistsOnPath(`${__dirname}/file1`)).toBe(false);
+      expect(await fileExistsOnPath(`${__dirname}/file2`)).toBe(false);
     });
 
     it('should not fail when trying to delete a non existent file', async () => {
       await deleteFiles([`${__dirname}/file0`, `${__dirname}/file1`, `${__dirname}/file2`]);
-      expect(await fileExists(`${__dirname}/file1`)).toBe(false);
-      expect(await fileExists(`${__dirname}/file2`)).toBe(false);
+      expect(await fileExistsOnPath(`${__dirname}/file1`)).toBe(false);
+      expect(await fileExistsOnPath(`${__dirname}/file2`)).toBe(false);
     });
   });
   describe('activityLogPath', () => {
@@ -46,7 +46,7 @@ describe('files', () => {
     it('should store files with auto-generated filenames', async () => {
       const storedFile = await storeFile(mockedFilePath, generateFile());
 
-      expect(await fileExists(`${__dirname}/customFile`)).toBe(true);
+      expect(await fileExistsOnPath(`${__dirname}/customFile`)).toBe(true);
       expect(storedFile.filename).not.toBeUndefined();
       expect(storedFile.filename).not.toBe('file1');
       expect(storedFile.originalname).toBe('file1');

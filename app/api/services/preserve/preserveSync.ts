@@ -154,7 +154,8 @@ const preserveSync = {
 
   async sync(preserveConfig: PreserveConfig) {
     // eslint-disable-next-line no-restricted-syntax
-    for await (const config of preserveConfig.config) {
+    await preserveConfig.config.reduce(async (promise, config) => {
+      await promise;
       const preservationSync = await preserveSyncModel.db.findOne({ token: config.token }, {});
 
       const queryString = qs.stringify({
@@ -184,7 +185,7 @@ const preserveSync = {
           token: config.token,
         });
       }
-    }
+    }, Promise.resolve());
   },
 };
 

@@ -46,7 +46,7 @@ describe('upload routes', () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
       const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
-      expect(await fileExists(uploadsPath(upload.filename))).toBe(true);
+      expect(await fileExists(upload.filename!, 'document')).toBe(true);
     }, 10000);
 
     it('should process and reindex the document after upload', async () => {
@@ -87,12 +87,13 @@ describe('upload routes', () => {
     it('should generate a thumbnail for the document', async () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
-      const [{ filename = '', language }] = await files.get({
+      const [{ filename = '', language, mimetype }] = await files.get({
         entity: 'sharedId1',
         type: 'thumbnail',
       });
 
       expect(language).toBe('other');
+      expect(mimetype).toEqual('image/jpeg');
       expect(await fs.readFile(uploadsPath(filename))).toBeDefined();
     });
 
