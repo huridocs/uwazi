@@ -6,6 +6,7 @@ import {
   NoSuchKey,
   S3Client,
 } from '@aws-sdk/client-s3';
+import waitForExpect from 'wait-for-expect';
 import { config } from 'api/config';
 import { testingTenants } from 'api/utils/testingTenants';
 import { Readable } from 'stream';
@@ -62,12 +63,14 @@ describe('storage with s3 feature active', () => {
         'test content'
       );
 
-      const response = await s3.send(
-        new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
-      );
-      await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
-        'test content'
-      );
+      await waitForExpect(async () => {
+        const response = await s3.send(
+          new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+        );
+        await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
+          'test content'
+        );
+      });
     });
   });
 
