@@ -1,6 +1,9 @@
 import { actions as formActions } from 'react-redux-form';
-import { dateToSeconds } from 'shared/dataUtils';
+import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
+import { notificationActions } from 'app/Notifications';
+import { t } from 'app/I18N';
 
 const updateSelection = (
   selection: { [key: string]: string },
@@ -18,10 +21,26 @@ const updateSelection = (
   return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data, 'propertyID');
 };
 
-const updateFormField = (value: string, model: string, fieldType?: string) => {
+const updateFormField = async (
+  value: string,
+  model: string,
+  fieldType?: string,
+  locale?: string
+) => {
   if (fieldType === 'date') {
-    const dateForPicker = dateToSeconds(value);
-    return formActions.change(model, dateForPicker);
+    const requestParams = new RequestParams({
+      locale,
+      value,
+      type: 'date',
+    });
+    const { value: coercedValue, success } = await entitiesAPI.coerceValue(requestParams);
+    if (!success) {
+      return notificationActions.notify(
+        t('System', 'Value cannot be transformed to date', null, false),
+        'danger'
+      );
+    }
+    return formActions.change(model, coercedValue);
   }
 
   if (fieldType === 'numeric' && Number.isNaN(Number.parseInt(value, 10))) {
