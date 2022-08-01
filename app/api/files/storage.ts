@@ -7,6 +7,7 @@ import { FileType } from 'shared/types/fileType';
 import { access, readFile } from 'fs/promises';
 import { Readable } from 'stream';
 import { attachmentsPath, customUploadsPath, uploadsPath } from './filesystem';
+import { errorLog } from 'api/log';
 
 type FileTypes = NonNullable<FileType['type']>;
 
@@ -54,14 +55,31 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
     return response.Body as Readable;
   } catch (e: unknown) {
     if (e instanceof NoSuchKey) {
-      await s3.send(
+      const start = Date.now();
+      s3.send(
         new PutObjectCommand({
           Bucket: tenants.current().name.replace('_', '-'),
           Key: s3KeyWithPath(filename, type),
           Body: await readFile(paths[type](filename)),
         })
-      );
-      return readFromS3(filename, type);
+      )
+        .then(() => {
+          const finish = Date.now();
+          errorLog.debug(
+            `File "${filename}" uploaded to S3 in ${(finish - start) / 1000} for tenant ${
+              tenants.current().name
+            }`
+          );
+        })
+        .catch(error => {
+          errorLog.error(
+            `File "${filename}" Failed to be uploaded to S3 with error: ${
+              error.message
+            } for tenant ${tenants.current().name}`
+          );
+        });
+
+      return createReadStream(paths[type](filename));
     }
     throw e;
   }
