@@ -256,23 +256,26 @@ class FiltersForm extends Component {
               </div>
             </div>
           </div>
-          <div className="settings-footer">
-            <button
-              type="button"
-              onClick={this.addGroup.bind(this)}
-              className="btn btn-sm btn-primary"
-            >
-              <Icon icon="plus" />
-              <span className="btn-label">
-                <Translate>Create group</Translate>
-              </span>
-            </button>
-            <button type="button" onClick={this.save.bind(this)} className="btn btn-sm btn-success">
-              <Icon icon="save" />
-              <span className="btn-label">
-                <Translate>Save</Translate>
-              </span>
-            </button>
+          <div className="settings-footer content-mixed">
+            <div className="btn-cluster">
+              <button type="button" onClick={this.addGroup.bind(this)} className="btn btn-default">
+                <Icon icon="plus" />
+                <span className="btn-label">
+                  <Translate>Create group</Translate>
+                </span>
+              </button>
+            </div>
+            <div className="btn-cluster content-right">
+              <button
+                type="button"
+                onClick={this.save.bind(this)}
+                className="btn btn-success btn-extra-padding"
+              >
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

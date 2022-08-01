@@ -4,9 +4,8 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from 'UI';
 
-import { t } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 
 import saveSettings from '../actions/settingsActions';
 
@@ -22,17 +21,18 @@ class Customisation extends Component {
           <div className="panel-heading">{t('System', 'Custom styles')}</div>
           <div className="panel-body">
             <Form model="settings.settings" onSubmit={this.props.saveSettings}>
-              <Field model=".customCSS">
+              <Field model=".customCSS" className="test">
                 <label className="form-group-label" htmlFor="custom_css">
                   {t('System', 'Custom CSS')}
                   <textarea className="form-control" id="custom_css" />
                 </label>
               </Field>
-              <div className="settings-footer">
-                <button type="submit" className="btn btn-success">
-                  <Icon icon="save" />
-                  <span className="btn-label">{t('System', 'Update')}</span>
-                </button>
+              <div className="settings-footer remove-extra-nesting">
+                <div className="btn-cluster content-right">
+                  <button type="submit" className="btn btn-success btn-extra-padding">
+                    <Translate>Save</Translate>
+                  </button>
+                </div>
               </div>
             </Form>
           </div>

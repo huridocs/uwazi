@@ -72,10 +72,10 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     templateConflict: {
       title: 'Template conflict',
       key: 'Mapping conflict error',
-      text: `A reindex of your collection is necessary. The reason may vary 
+      text: `A reindex of your collection is necessary. The reason may vary
        -- from certain changes made to a template's property to new fields
-       that need to be populated across entities. 
-       This process will not negatively affect the data in your collection. 
+       that need to be populated across entities.
+       This process will not negatively affect the data in your collection.
        It can last a few minutes and some parts of your collection might take
        some time to reappear in the Library, but this is temporary. Do you want to continue?`,
     },
@@ -236,23 +236,31 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             </>
           )}
 
-          <div className="settings-footer">
-            <I18NLink to={this.props.backUrl} className="btn btn-default">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">
-                <Translate>Back</Translate>
-              </span>
-            </I18NLink>
-            <button
-              type="submit"
-              className="btn btn-success save-template"
-              disabled={!!this.props.savingTemplate}
-            >
-              <Icon icon="save" />
-              <span className="btn-label">
-                <Translate>Save</Translate>
-              </span>
-            </button>
+          <div className="settings-footer remove-extra-nesting content-mixed">
+            <div className="btn-cluster">
+              <I18NLink to={this.props.backUrl} className="btn btn-default btn-plain">
+                <Icon icon="arrow-left" directionAware />
+                <span className="btn-label">
+                  <Translate>Back</Translate>
+                </span>
+              </I18NLink>
+            </div>
+            <div className="btn-cluster content-right">
+              <I18NLink to={this.props.backUrl} className="btn btn-default btn-extra-padding">
+                <span className="btn-label">
+                  <Translate>Cancel</Translate>
+                </span>
+              </I18NLink>
+              <button
+                type="submit"
+                className="btn btn-success save-template btn-extra-padding"
+                disabled={!!this.props.savingTemplate}
+              >
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
+              </button>
+            </div>
           </div>
         </Form>
       </div>

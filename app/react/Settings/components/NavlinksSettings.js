@@ -73,15 +73,7 @@ class NavlinksSettings extends Component {
                 ))}
               </ul>
               <div className="settings-footer content-mixed">
-                <div className="btn-cluster">
-                  <button
-                    type="button"
-                    className="btn btn-default"
-                    onClick={this.props.addLink.bind(this, links, 'group')}
-                  >
-                    <Icon icon="caret-square-down" />
-                    &nbsp;<Translate>Add group</Translate>
-                  </button>
+                <div className="btn-cluster btn-cluster-grow">
                   <button
                     type="button"
                     className="btn btn-default"
@@ -90,6 +82,14 @@ class NavlinksSettings extends Component {
                   >
                     <Icon icon="link" />
                     &nbsp;<Translate>Add link</Translate>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    onClick={this.props.addLink.bind(this, links, 'group')}
+                  >
+                    <Icon icon="caret-square-down" />
+                    &nbsp;<Translate>Add group</Translate>
                   </button>
                 </div>
                 <div className="btn-cluster content-right">

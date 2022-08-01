@@ -217,7 +217,7 @@ $c-sidebar: $c-white;
   margin-bottom: $FooterHeight;
 
   &.footer-extra-row {
-    margin-bottom: calc(#{$FooterHeight} * 2 - 12px);
+    margin-bottom: calc(#{$FooterHeight} * 2);
   }
 
   // & > *:last-child {

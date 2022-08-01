@@ -18,7 +18,7 @@ export class ActivityLog extends RouteHandler {
 
   render() {
     return (
-      <div className="settings-content">
+      <div className="settings-content without-footer">
         <div className="activity-log">
           <ActivitylogForm>
             <ActivitylogList />

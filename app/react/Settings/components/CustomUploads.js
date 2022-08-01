@@ -33,7 +33,7 @@ class CustomUploads extends RouteHandler {
 
   render() {
     return (
-      <div className="settings-content">
+      <div className="settings-content without-footer">
         <div className="panel panel-default">
           <div className="panel-heading">
             <Translate>Custom Uploads</Translate>

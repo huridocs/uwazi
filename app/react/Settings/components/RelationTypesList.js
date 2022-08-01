@@ -82,7 +82,7 @@ class RelationTypesList extends RouteHandler {
             ))}
           </ul>
           <div className="settings-footer">
-            <I18NLink to="/settings/connections/new" className="btn btn-success">
+            <I18NLink to="/settings/connections/new" className="btn btn-default">
               <Icon icon="plus" />
               <span className="btn-label">{t('System', 'Add connection')}</span>
             </I18NLink>

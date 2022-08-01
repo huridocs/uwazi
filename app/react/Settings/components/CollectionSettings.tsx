@@ -354,16 +354,18 @@ const CollectionSettings = ({
           </SettingsFormElement>
         </form>
 
-        <div className="settings-footer content-right">
-          <button
-            type="submit"
-            form="collectionSettings"
-            className="btn btn-success btn-extra-padding"
-          >
-            <span className="btn-label">
-              <Translate>Save</Translate>
-            </span>
-          </button>
+        <div className="settings-footer">
+          <div className="btn-cluster content-right">
+            <button
+              type="submit"
+              form="collectionSettings"
+              className="btn btn-success btn-extra-padding"
+            >
+              <span className="btn-label">
+                <Translate>Save</Translate>
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

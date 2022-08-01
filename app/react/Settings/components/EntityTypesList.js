@@ -137,7 +137,7 @@ class EntityTypesList extends Component {
             ))}
           </ul>
           <div className="settings-footer">
-            <Link to="/settings/templates/new" className="btn btn-success">
+            <Link to="/settings/templates/new" className="btn btn-default">
               <Icon icon="plus" />
               <span className="btn-label">
                 <Translate>Add template</Translate>

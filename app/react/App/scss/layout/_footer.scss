@@ -97,26 +97,27 @@ footer {
   z-index: 1;
 
   &.extra-row {
-    height: calc(#{$FooterHeight} * 2 - 12px);
+    height: calc(#{$FooterHeight} * 2);
   }
 
   &.content-mixed {
     display: flex;
+    align-content: flex-end;
     flex-wrap: wrap;
   }
 
   .footer-extra-row {
-    height: 38px;
     width: 100%;
-  }
-
-  &.content-right,
-  .btn-cluster.content-right {
-    text-align: right;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #ccc;
   }
 
   .btn-cluster {
-    flex: 1;
+    &.content-right {
+      text-align: right;
+      margin-left: auto;
+    }
 
     .btn:not(:last-child) {
       margin-right: 12px;
@@ -126,11 +127,6 @@ footer {
   .btn {
     padding: 4px 8px;
     color: $c-black;
-
-    &.btn-extra-padding {
-      padding-left: 50px;
-      padding-right: 50px;
-    }
 
     &.btn-danger,
     &.btn-primary,
@@ -165,6 +161,10 @@ footer {
   margin-left: -15px;
   position: fixed;
 
+  &.remove-extra-nesting {
+    margin-left: -30px;
+  }
+
   &.with-sidepanel {
     width: calc(#{$SettingsContentWidth} - 400px);
   }
@@ -185,6 +185,13 @@ footer {
 }
 
 @media (min-width: 1024px) {
+  .btn {
+    &.btn-extra-padding {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+  }
+
   .settings-footer {
     width: $SettingsContentWidth;
   }

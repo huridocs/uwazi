@@ -19,7 +19,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 
 import { SelectFileButton } from 'app/App/SelectFileButton';
 import { ThesauriFormItem } from './ThesauriFormItem';
@@ -196,34 +196,44 @@ export class ThesauriForm extends Component {
                 iconHandle
               />
             </div>
-            <div className="settings-footer">
-              <BackButton to="/settings/dictionaries" />
-              <button type="button" className="btn btn-primary" onClick={this.props.addGroup}>
-                <Icon icon="plus" />
-                <span className="btn-label">
-                  <Translate>Add group</Translate>
-                </span>
-              </button>
-              <button type="button" className="btn btn-primary" onClick={this.props.sortValues}>
-                <Icon icon="sort-alpha-down" />
-                <span className="btn-label">
-                  <Translate>Sort</Translate>
-                </span>
-              </button>
-              <SelectFileButton onFileImported={this.importThesaurusFile}>
-                <button type="button" className="btn btn-primary import-template">
-                  <Icon icon="upload" />
+            <div className="settings-footer content-mixed">
+              <div className="btn-cluster">
+                <BackButton to="/settings/dictionaries" className="btn-plain" />
+              </div>
+              <div className="btn-cluster btn-cluster-grow">
+                <button type="button" className="btn btn-default" onClick={this.props.addGroup}>
+                  <Icon icon="plus" />
                   <span className="btn-label">
-                    <Translate>Import</Translate>
+                    <Translate>Add group</Translate>
                   </span>
                 </button>
-              </SelectFileButton>
-              <button type="submit" className="btn btn-success save-template">
-                <Icon icon="save" />
-                <span className="btn-label">
-                  <Translate>Save</Translate>
-                </span>
-              </button>
+                <button type="button" className="btn btn-default" onClick={this.props.sortValues}>
+                  <Icon icon="sort-alpha-down" />
+                  <span className="btn-label">
+                    <Translate>Sort</Translate>
+                  </span>
+                </button>
+                <SelectFileButton onFileImported={this.importThesaurusFile}>
+                  <button type="button" className="btn btn-default import-template">
+                    <Icon icon="upload" />
+                    <span className="btn-label">
+                      <Translate>Import</Translate>
+                    </span>
+                  </button>
+                </SelectFileButton>
+              </div>
+              <div className="btn-cluster content-right">
+                <I18NLink to="/settings/dictionaries" className="btn btn-default btn-extra-padding">
+                  <span className="btn-label">
+                    <Translate>Cancel</Translate>
+                  </span>
+                </I18NLink>
+                <button type="submit" className="btn btn-success btn-extra-padding save-template">
+                  <span className="btn-label">
+                    <Translate>Save</Translate>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </Form>
