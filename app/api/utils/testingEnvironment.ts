@@ -15,10 +15,10 @@ const testingEnvironment = {
     await this.setElastic(elasticIndex);
   },
 
-  async setTenant() {
+  async setTenant(name = 'defaultDB') {
     testingTenants.mockCurrentTenant({
-      name: testingDB.dbName || 'defaultDB',
-      dbName: testingDB.dbName || 'defaultDB',
+      name: testingDB.dbName || name,
+      dbName: testingDB.dbName || name,
       indexName: 'index',
     });
     await setupTestUploadedPaths();
