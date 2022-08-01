@@ -62,7 +62,8 @@ jobs:
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2
+        # run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2
+        run: node ./node_modules/.bin/jest storage_s3_upload_on_read.spec --coverage --coverageDirectory  coverage/api --maxWorkers=2
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
