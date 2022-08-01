@@ -1,4 +1,5 @@
 import React from 'react';
+import thunk from 'redux-thunk';
 import { shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
@@ -9,7 +10,7 @@ import { MetadataExtractor } from '../MetadataExtractor';
 describe('MetadataExtractor', () => {
   let component: ShallowWrapper<typeof MetadataExtractor>;
   let store: MockStore<object>;
-  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>();
+  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([thunk]);
 
   beforeEach(() => {
     store = mockStoreCreator({
@@ -22,7 +23,11 @@ describe('MetadataExtractor', () => {
   const render = () => {
     component = shallow(
       <Provider store={store}>
-        <MetadataExtractor fieldName="field" model="documentViewer.sidepanel.metadata" />
+        <MetadataExtractor
+          fieldName="field"
+          model="documentViewer.sidepanel.metadata"
+          locale="en"
+        />
       </Provider>
     )
       .dive()
@@ -42,10 +47,10 @@ describe('MetadataExtractor', () => {
     render();
     expect(component.find('.extraction-button')).toHaveLength(0);
   });
-  it('should call update store function and the react redux form change function on click', () => {
+  it('should call update store function and the react redux form change function on click', async () => {
     render();
     component.find('.extraction-button').simulate('click');
-    expect(store.getActions()).toEqual(
+    expect(await store.getActions()).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           type: 'documentViewer.metadataExtraction/UPDATE_IN',
