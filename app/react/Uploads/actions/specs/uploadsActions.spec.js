@@ -1,15 +1,15 @@
 import superagent from 'superagent';
 import thunk from 'redux-thunk';
-
+import backend from 'fetch-mock';
+import configureMockStore from 'redux-mock-store';
 import { RequestParams } from 'app/utils/RequestParams';
 import { APIURL } from 'app/config.js';
 import { actions as basicActions } from 'app/BasicReducer';
-import { mockID } from 'shared/uniqueID.js';
 import * as actions from 'app/Uploads/actions/uploadsActions';
-import backend from 'fetch-mock';
-import configureMockStore from 'redux-mock-store';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
-
+import entitiesApi from 'app/Entities/EntitiesAPI';
+import { mockID } from 'shared/uniqueID.js';
 import api from '../../../utils/api';
 
 const middlewares = [thunk];
@@ -315,6 +315,49 @@ describe('uploadsActions', () => {
           expect(api.delete).toHaveBeenCalledWith('files', new RequestParams({ _id: 'id' }));
           done();
         });
+      });
+    });
+  });
+
+  describe('documentProcessed', () => {
+    it('should dispatch the actions to update the documents status across the store', async () => {
+      const sharedId = 'abc1';
+      const __reducerKey = 'library';
+      const dispatch = jasmine.createSpy('dispatch');
+      const file = getMockFile();
+      const doc = { sharedId, documents: [file] };
+      jest.spyOn(entitiesApi, 'get').mockResolvedValue([doc]);
+      await actions.documentProcessed(sharedId, __reducerKey)(dispatch);
+      const expectedActions = [
+        {
+          type: types.UPLOAD_PROGRESS,
+          doc: sharedId,
+          progress: 100,
+        },
+        {
+          type: libraryTypes.UPDATE_DOCUMENT,
+          doc,
+          __reducerKey,
+        },
+        {
+          type: libraryTypes.UNSELECT_ALL_DOCUMENTS,
+          __reducerKey,
+        },
+        {
+          type: libraryTypes.SELECT_DOCUMENT,
+          doc,
+          __reducerKey,
+        },
+        {
+          type: types.UPLOADS_COMPLETE,
+          doc: sharedId,
+          files: doc.documents,
+          __reducerKey: 'library',
+        },
+        { type: types.BATCH_UPLOAD_COMPLETE, doc: sharedId },
+      ];
+      expectedActions.forEach(action => {
+        expect(dispatch).toHaveBeenCalledWith(action);
       });
     });
   });

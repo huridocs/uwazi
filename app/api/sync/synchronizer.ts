@@ -1,21 +1,23 @@
 import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
-import { fs, customUploadsPath, uploadsPath } from 'api/files';
+import { fileContents } from 'api/files';
 import { DataType } from 'api/odm';
 import { UpdateLog } from 'api/updatelogs';
+import { FileType } from 'shared/types/fileType';
 
-const uploadFile = async (url: string, filename: string, type = 'document', cookie: string) => {
-  let pathFunction = uploadsPath;
+const uploadFile = async (
+  url: string,
+  filename: string,
+  type: FileType['type'] = 'document',
+  cookie: string
+) => {
   let apiEndpoint = 'api/sync/upload';
-
   if (type === 'custom') {
-    pathFunction = customUploadsPath;
     apiEndpoint = 'api/sync/upload/custom';
   }
 
-  const filepath = pathFunction(filename);
-  const file = await fs.readFile(filepath);
+  const file = await fileContents(filename, type);
   return request.uploadFile(urljoin(url, apiEndpoint), filename, file, cookie);
 };
 

@@ -2,6 +2,7 @@ import path from 'path';
 import { Readable } from 'stream';
 
 import ID from 'shared/uniqueID';
+import { access } from 'fs/promises';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
 
@@ -80,20 +81,6 @@ const deleteUploadedFiles = async (files: FileType[]) =>
       })
   );
 
-const fileExists = async (filePath: FilePath): Promise<boolean> => {
-  try {
-    await fs.access(filePath);
-  } catch (err) {
-    if (err?.code === 'ENOENT') {
-      return false;
-    }
-    if (err) {
-      throw err;
-    }
-  }
-  return true;
-};
-
 const generateFileName = ({ originalname = '' }: FileType) =>
   Date.now() + ID() + path.extname(originalname);
 
@@ -126,11 +113,6 @@ const streamToString = async (stream: Readable): Promise<string> =>
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
 
-const getFileContent = async (fileName: FilePath): Promise<string> =>
-  fs.readFile(uploadsPath(fileName), 'utf8');
-
-const readFile = async (fileName: FilePath): Promise<Buffer> => fs.readFile(fileName);
-
 const storeFile: (
   filePathFunction: pathFunction,
   file: any,
@@ -141,6 +123,20 @@ const storeFile: (
   return Object.assign(file, { filename, destination: filePathFunction() });
 };
 
+const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
+  try {
+    await access(filePath);
+  } catch (err) {
+    if (err?.code === 'ENOENT') {
+      return false;
+    }
+    if (err) {
+      throw err;
+    }
+  }
+  return true;
+};
+
 export {
   setupTestUploadedPaths,
   deleteUploadedFiles,
@@ -149,17 +145,15 @@ export {
   deleteFile,
   generateFileName,
   fileFromReadStream,
-  fileExists,
   streamToString,
-  getFileContent,
   customUploadsPath,
   uploadsPath,
   temporalFilesPath,
   attachmentsPath,
   activityLogPath,
-  readFile,
   storeFile,
   testingUploadPaths,
+  fileExistsOnPath,
 };
 
 export type { FilePath, pathFunction };

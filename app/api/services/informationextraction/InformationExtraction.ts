@@ -4,7 +4,7 @@ import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import { fileExists, readFile, uploadsPath } from 'api/files';
+import { fileContents, fileExists } from 'api/files';
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
@@ -22,7 +22,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
-import { dateToSeconds } from 'shared/dataUtils';
+import date from 'api/utils/date';
 import {
   FileWithAggregation,
   getFilesForTraining,
@@ -78,8 +78,9 @@ class InformationExtraction {
     property: string,
     type: string
   ) => {
-    const fileContent = await readFile(
-      uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+    const fileContent = await fileContents(
+      path.join(PDFSegmentation.SERVICE_NAME, xmlName),
+      'document'
     );
     const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
     const url = urljoin(serviceUrl, endpoint, tenants.current().name, property);
@@ -96,7 +97,8 @@ class InformationExtraction {
       files.map(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await fileExists(
-          uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+          path.join(PDFSegmentation.SERVICE_NAME, xmlName),
+          'document'
         );
 
         const propertyLabeledData = file.extractedMetadata?.find(
@@ -171,13 +173,17 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  coerceSuggestionValue = (suggestion: RawSuggestion, property?: PropertySchema) => {
+  coerceSuggestionValue = (
+    suggestion: RawSuggestion,
+    property?: PropertySchema,
+    language?: string
+  ) => {
     const suggestedValue = suggestion.text.trim();
     switch (property?.type) {
       case 'numeric':
         return parseFloat(suggestedValue) || null;
       case 'date':
-        return dateToSeconds(suggestedValue);
+        return date.dateToSeconds(suggestedValue, language);
       default:
         return suggestedValue;
     }
@@ -217,7 +223,11 @@ class InformationExtraction {
         );
         const property = allProps.find(p => p.name === rawSuggestion.property_name);
 
-        const suggestedValue = this.coerceSuggestionValue(rawSuggestion, property);
+        const suggestedValue = this.coerceSuggestionValue(
+          rawSuggestion,
+          property,
+          currentSuggestion?.language || entity.language
+        );
 
         if (suggestedValue === null) {
           status = 'failed';

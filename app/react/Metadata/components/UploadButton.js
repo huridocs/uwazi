@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Immutable from 'immutable';
+import { isEmpty } from 'lodash';
+import { Icon } from 'UI';
 import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
-import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
 import { socket } from 'app/socket';
-import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import Immutable from 'immutable';
 
 const renderProgress = progress => (
   <div className="upload-button btn btn-default btn-disabled">
@@ -26,7 +26,7 @@ const renderProcessing = () => (
   </div>
 );
 
-export class UploadButton extends Component {
+class UploadButton extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -56,7 +56,6 @@ export class UploadButton extends Component {
 
   documentProcessed(docId) {
     if (docId === this.props.entitySharedId) {
-      this.props.documentProcessed(docId);
       this.setState({ processing: false, failed: false, completed: true }, () => {
         this.timeout = setTimeout(() => {
           this.setState({ processing: false, failed: false, completed: false });
@@ -95,30 +94,25 @@ export class UploadButton extends Component {
   }
 
   render() {
-    if (this.state.processing) {
-      return renderProcessing();
-    }
-
-    if (this.state.failed) {
-      return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
-    }
-
-    if (this.state.completed) {
-      return this.renderButton('success', 'check', 'Success, Upload another?');
-    }
-
     const progress = this.props.progress.get(this.props.entitySharedId);
 
-    if (progress) {
-      return renderProgress(progress);
-    }
+    switch (true) {
+      case this.state.failed:
+        return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
+      case this.state.processing || progress === 0:
+        return renderProcessing();
+      case progress > 0 && progress < 100:
+        return renderProgress(progress);
+      case this.state.completed || progress === 100:
+        return this.renderButton('success', 'check', 'Success, Upload another?');
 
-    return this.renderButton();
+      default:
+        return this.renderButton();
+    }
   }
 }
 
 UploadButton.defaultProps = {
-  documentProcessed: () => {},
   progress: Immutable.fromJS({}),
   storeKey: '',
   entitySharedId: '',
@@ -127,7 +121,6 @@ UploadButton.defaultProps = {
 
 UploadButton.propTypes = {
   uploadDocument: PropTypes.func,
-  documentProcessed: PropTypes.func,
   entitySharedId: PropTypes.string,
   progress: PropTypes.instanceOf(Immutable.Map),
   storeKey: PropTypes.string, // eslint-disable-line
@@ -137,13 +130,13 @@ UploadButton.contextTypes = {
   confirm: PropTypes.func,
 };
 
-const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });
+const mapStateToProps = ({ metadata, progress }) => ({
+  progress: isEmpty(progress) ? metadata.progress : progress,
+});
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators(
-    { uploadDocument, documentProcessed },
-    wrapDispatch(dispatch, props.storeKey)
-  );
+  return bindActionCreators({ uploadDocument }, wrapDispatch(dispatch, props.storeKey));
 }
 
+export { UploadButton };
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);

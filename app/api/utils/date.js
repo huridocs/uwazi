@@ -1,4 +1,6 @@
 import moment from 'moment';
+// @ts-ignore
+import parser from 'any-date-parser';
 
 export default {
   currentUTC() {
@@ -22,5 +24,15 @@ export default {
     newDate.setHours(0, 0, 0, 0);
     newDate.setFullYear(newDate.getFullYear() + yearsToAdd);
     return newDate;
+  },
+
+  dateToSeconds(value, locale) {
+    const parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    let getDate = parser.fromString(parsedValue, locale);
+    if (getDate.invalid) {
+      getDate = Date.parse(`${parsedValue} GMT`);
+    }
+    const formattedDate = getDate / 1000;
+    return formattedDate;
   },
 };

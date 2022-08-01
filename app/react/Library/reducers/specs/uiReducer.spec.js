@@ -324,4 +324,28 @@ describe('uiReducer', () => {
       expect(selectableColumns.get(1).get('hidden')).toBe(false);
     });
   });
+
+  describe('UPLOADS_COMPLETE', () => {
+    it('should update the documents of the selected document', () => {
+      const previousState = Immutable.fromJS({
+        selectedDocuments: [
+          { sharedId: 'entity1', documents: [{ filename: 'file1', status: 'processing' }] },
+        ],
+      });
+      const uploadsCompleteAction = {
+        type: 'UPLOADS_COMPLETE',
+        doc: 'entity1',
+        files: [{ filename: 'file1', status: 'ready' }],
+      };
+      const newState = uiReducer(previousState, uploadsCompleteAction);
+      expect(newState.toJS()).toEqual({
+        selectedDocuments: [
+          {
+            sharedId: 'entity1',
+            documents: [{ filename: 'file1', status: 'ready' }],
+          },
+        ],
+      });
+    });
+  });
 });

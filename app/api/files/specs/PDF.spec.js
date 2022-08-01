@@ -1,6 +1,6 @@
 import { errorLog } from 'api/log';
 import { PDF } from '../PDF.js';
-import { deleteFile, fileExists } from '../filesystem';
+import { deleteFile, fileExistsOnPath } from '../filesystem';
 
 describe('PDF', () => {
   let pdf;
@@ -66,7 +66,7 @@ describe('PDF', () => {
 
     it('should create thumbnail', async () => {
       await pdf.createThumbnail('documentId');
-      expect(await fileExists(thumbnailName)).toBe(true);
+      expect(await fileExistsOnPath(thumbnailName)).toBe(true);
     });
 
     it('should correctly log errors, but continue with the flow', async () => {
@@ -85,9 +85,9 @@ describe('PDF', () => {
   describe('deleteThumbnail', () => {
     it('should unlink the file from the system', async () => {
       await pdf.createThumbnail('documentId');
-      expect(await fileExists(thumbnailName)).toBe(true);
+      expect(await fileExistsOnPath(thumbnailName)).toBe(true);
       await pdf.deleteThumbnail('documentId');
-      expect(await fileExists(thumbnailName)).toBe(false);
+      expect(await fileExistsOnPath(thumbnailName)).toBe(false);
     });
   });
 });

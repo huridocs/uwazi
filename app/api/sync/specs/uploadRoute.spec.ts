@@ -3,7 +3,6 @@ import 'api/utils/jasmineHelpers';
 import express, { Request, Response, NextFunction, Express } from 'express';
 
 import requestAPI from 'supertest';
-import request from 'superagent';
 import path from 'path';
 
 import {
@@ -51,17 +50,13 @@ describe('sync', () => {
       await deleteFile(customUploadsPath('testUpload.txt'));
     });
 
-    const expectCorrectFileUpload = async (response: request.Response, pathName: string) => {
-      expect(response.status).toBe(200);
-      expect(await fileExists(pathName)).toBeTruthy();
-    };
-
     it('should place document without changing name on /uploads', async () => {
       const response = await requestAPI(app)
         .post('/api/sync/upload')
         .attach('file', path.join(__dirname, 'testUpload.txt'));
 
-      await expectCorrectFileUpload(response, uploadsPath('testUpload.txt'));
+      expect(response.status).toBe(200);
+      expect(await fileExists('testUpload.txt', 'document')).toBeTruthy();
     });
 
     it("should allow uploading collection's custom files", async () => {
@@ -69,7 +64,8 @@ describe('sync', () => {
         .post('/api/sync/upload/custom')
         .attach('file', path.join(__dirname, 'testUpload.txt'));
 
-      await expectCorrectFileUpload(response, customUploadsPath('testUpload.txt'));
+      expect(response.status).toBe(200);
+      expect(await fileExists('testUpload.txt', 'custom')).toBeTruthy();
     });
   });
 });

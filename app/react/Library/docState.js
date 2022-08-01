@@ -22,7 +22,7 @@ const docState = createSelector(
       };
     }
 
-    if (docsStatus === null && (progress || progress === 0)) {
+    if (progress >= 0 && progress < 100) {
       return {
         progress,
         status: 'processing',

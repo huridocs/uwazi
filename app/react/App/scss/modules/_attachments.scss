@@ -217,9 +217,8 @@ label.add:focus-within {
   }
 }
 
-.attachments-list-parent {
-  margin-bottom: 64px;
-
+.attachments-list-parent,
+.document-list-parent {
   .attachments-list-header {
     align-items: center;
 

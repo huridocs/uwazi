@@ -32,7 +32,6 @@ describe('FileList', () => {
 
     props = {
       files: [file, file2],
-      readOnly: false,
       storeKey: 'library',
       entity,
     };

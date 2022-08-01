@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { files, uploadsPath, readFile } from 'api/files';
+import { files, uploadsPath, fileContents } from 'api/files';
 import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import settings from 'api/settings/settings';
@@ -188,11 +188,14 @@ class OcrManager {
   }
 
   async addToQueue(file: EnforcedWithId<FileType>) {
+    if (!file.filename) {
+      return;
+    }
     const settingsValues = await getSettings();
 
     await validateTaskIsAdmissible(file, settingsValues);
 
-    const fileContent = await readFile(uploadsPath(file.filename));
+    const fileContent = await fileContents(file.filename, 'document');
     const tenant = tenants.current();
 
     await request.uploadFile(
