@@ -25,6 +25,7 @@ $c-sidebar: $c-white;
     display: none;
   }
   @media (max-width: 1023px) {
+    z-index: 6;
     .only-mobile {
       display: inline-block;
     }

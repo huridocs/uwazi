@@ -28,7 +28,7 @@ import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 import helpers from '../helpers';
 
-export class DocumentSidePanel extends Component {
+class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
@@ -315,7 +315,7 @@ export class DocumentSidePanel extends Component {
         <SidePanel open={this.props.open} className={className}>
           {this.renderHeader(tab, doc, isEntity)}
           <ShowIf if={(this.props.tab === 'metadata' || !this.props.tab) && !this.state.copyFrom}>
-            <div className="sidepanel-footer">
+            <div className="sidepanel-footer content-mixed">
               <MetadataFormButtons
                 delete={this.deleteDocument}
                 data={this.props.doc}
@@ -330,41 +330,43 @@ export class DocumentSidePanel extends Component {
           <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
             {this.props.tab === 'toc' && this.props.tocBeingEdited && (
               <div className="sidepanel-footer">
-                <button
-                  type="button"
-                  className="edit-toc btn btn-primary"
-                  onClick={this.props.leaveEditMode}
-                >
-                  <Icon icon="times" />
-                  <span className="btn-label">
-                    <Translate>Cancel</Translate>
-                  </span>
-                </button>
-                <button type="submit" form="tocForm" className="edit-toc btn btn-success">
-                  <Icon icon="save" />
-                  <span className="btn-label">
-                    <Translate>Save</Translate>
-                  </span>
-                </button>
+                <div className="btn-cluster content-right">
+                  <button
+                    type="button"
+                    className="edit-toc btn btn-default"
+                    onClick={this.props.leaveEditMode}
+                  >
+                    <span className="btn-label">
+                      <Translate>Cancel</Translate>
+                    </span>
+                  </button>
+                  <button type="submit" form="tocForm" className="edit-toc btn btn-success">
+                    <span className="btn-label">
+                      <Translate>Save</Translate>
+                    </span>
+                  </button>
+                </div>
               </div>
             )}
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
             {this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly && (
               <div className="sidepanel-footer">
-                <button
-                  type="button"
-                  onClick={() => this.props.editToc(this.props.file.toc || [])}
-                  className="edit-toc btn btn-primary"
-                >
-                  <Icon icon="pencil-alt" />
-                  <span className="btn-label">
-                    <Translate>Edit</Translate>
-                  </span>
-                </button>
-                <ReviewTocButton file={this.props.file}>
-                  <Translate>Mark as Reviewed</Translate>
-                </ReviewTocButton>
+                <div className="btn-cluster">
+                  <button
+                    type="button"
+                    onClick={() => this.props.editToc(this.props.file.toc || [])}
+                    className="edit-toc btn btn-default"
+                  >
+                    <Icon icon="pencil-alt" />
+                    <span className="btn-label">
+                      <Translate>Edit</Translate>
+                    </span>
+                  </button>
+                  <ReviewTocButton file={this.props.file}>
+                    <Translate>Mark as Reviewed</Translate>
+                  </ReviewTocButton>
+                </div>
               </div>
             )}
           </NeedAuthorization>
@@ -537,7 +539,7 @@ DocumentSidePanel.contextTypes = {
   confirm: PropTypes.func,
 };
 
-export const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state, ownProps) => {
   const isTargetDoc = state.documentViewer.targetDoc.get('_id');
   const relevantReferences = isTargetDoc
     ? viewerModule.selectors.selectTargetReferences(state)
@@ -560,5 +562,7 @@ export const mapStateToProps = (state, ownProps) => {
     formData: state[ownProps.storeKey].sidepanel.metadata,
   };
 };
+
+export { DocumentSidePanel, mapStateToProps };
 
 export default connect(mapStateToProps)(DocumentSidePanel);

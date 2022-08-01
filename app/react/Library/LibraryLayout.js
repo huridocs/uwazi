@@ -17,7 +17,7 @@ export class LibraryLayoutBase extends Component {
     const { className, children, quickLabelThesaurus, sidePanelMode, noScrollable } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
-    } content-holder library-viewer document-viewer with-panel ${sidePanelMode} ${
+    } content-holder library-viewer document-viewer with-footer with-panel ${sidePanelMode} ${
       noScrollable ? 'no-scroll-layout' : ''
     }`;
 

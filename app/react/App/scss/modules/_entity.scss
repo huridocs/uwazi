@@ -11,6 +11,10 @@
 
   @media (min-width: 1024px) {
     height: calc(100% - 51px);
+
+    &.with-footer {
+      height: calc(100% - #{$FooterHeight} - 51px);
+    }
   }
 
   @media (min-width: 1024px) {

@@ -88,6 +88,7 @@ footer {
 /* Sticky Footers                            */
 /* ----------------------------------------- */
 
+.entity-footer,
 .settings-footer,
 .sidepanel-footer {
   height: $FooterHeight;
@@ -159,15 +160,23 @@ footer {
   }
 }
 
+.entity-footer,
 .settings-footer {
   width: 100%;
   background-color: #fff;
-  margin-left: -15px;
   position: fixed;
 
   &.remove-extra-nesting {
     margin-left: -30px;
   }
+
+  &.with-sidepanel {
+    width: calc(100% - 400px);
+  }
+}
+
+.settings-footer {
+  margin-left: -15px;
 
   &.with-sidepanel {
     width: calc(#{$SettingsContentWidth} - 400px);
@@ -189,6 +198,7 @@ footer {
 }
 
 @media (max-width: 1023px) {
+  .entity-footer,
   .settings-footer,
   .sidepanel-footer {
     &.sm-extra-row {
@@ -213,6 +223,7 @@ footer {
     width: 400px;
   }
 
+  .entity-footer,
   .settings-footer,
   .sidepanel-footer {
     .btn-cluster.sm-order-1 {

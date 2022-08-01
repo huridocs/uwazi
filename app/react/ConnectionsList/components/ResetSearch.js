@@ -9,12 +9,12 @@ import { Icon } from 'UI';
 
 import { resetSearch } from '../actions/actions';
 
-export class ResetSearch extends Component {
+class ResetSearch extends Component {
   render() {
     const { connectionsGroups } = this.props;
     return (
       <ShowIf if={Boolean(connectionsGroups.size)}>
-        <button onClick={this.props.resetSearch} className="btn btn-primary">
+        <button type="button" onClick={this.props.resetSearch} className="btn btn-default">
           <Icon icon="sync" />
           <span className="btn-label">{t('System', 'Reset')}</span>
         </button>
@@ -37,5 +37,7 @@ function mapStateToProps({ relationships }) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ resetSearch }, dispatch);
 }
+
+export { ResetSearch };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ResetSearch);

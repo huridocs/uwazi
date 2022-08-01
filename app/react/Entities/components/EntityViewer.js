@@ -132,7 +132,7 @@ class EntityViewer extends Component {
           </div>
         )}
 
-        <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
+        <main className={`entity-viewer with-footer ${panelOpen ? 'with-panel' : ''}`}>
           <Tabs selectedTab={selectedTab}>
             {hasPageView && (
               <TabContent for="page">
@@ -176,7 +176,7 @@ class EntityViewer extends Component {
         </main>
 
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
-          <div className="sidepanel-footer">
+          <div className={`entity-footer content-mixed ${panelOpen ? 'with-sidepanel' : ''}`}>
             <MetadataFormButtons
               includeViewButton={false}
               delete={this.deleteEntity}
@@ -189,7 +189,7 @@ class EntityViewer extends Component {
         </ShowIf>
 
         <ShowIf if={selectedTab === 'connections'}>
-          <div className="sidepanel-footer">
+          <div className={`entity-footer ${panelOpen ? 'with-sidepanel' : ''}`}>
             <RelationshipsFormButtons />
           </div>
         </ShowIf>
