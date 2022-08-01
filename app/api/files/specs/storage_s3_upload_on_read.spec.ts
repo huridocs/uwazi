@@ -4,8 +4,10 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   NoSuchKey,
+  PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import waitForExpect from 'wait-for-expect';
 import { config } from 'api/config';
 import { testingTenants } from 'api/utils/testingTenants';
 import { Readable } from 'stream';
@@ -41,13 +43,16 @@ describe('storage with s3 feature active', () => {
     await s3.send(
       new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
     );
+    await s3.send(
+      new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/already_uploaded.txt' })
+    );
     await s3.send(new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/' }));
     await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
     await s3.send(new DeleteBucketCommand({ Bucket: 'another-tenant' }));
   });
 
   describe('readableFile when s3 feature active', () => {
-    it('should store it on the s3 bucket and then return it as a readable', async () => {
+    beforeAll(async () => {
       testingTenants.mockCurrentTenant({
         name: 'uwazi_development',
         dbName: 'uwazi_development',
@@ -57,16 +62,33 @@ describe('storage with s3 feature active', () => {
         },
       });
       await setupTestUploadedPaths();
+    });
 
+    it('should store it on the s3 bucket and then return it as a readable', async () => {
       await expect((await fileContents('test_s3_file.txt', 'document')).toString()).toMatch(
         'test content'
       );
 
-      const response = await s3.send(
-        new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+      await waitForExpect(async () => {
+        const response = await s3.send(
+          new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+        );
+        await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
+          'test content'
+        );
+      });
+    });
+
+    it('should return a file from s3 when it is already there', async () => {
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'uploads/already_uploaded.txt',
+          Body: Buffer.from('already uploaded content', 'utf-8'),
+        })
       );
-      await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
-        'test content'
+      await expect((await fileContents('already_uploaded.txt', 'document')).toString()).toMatch(
+        'already uploaded content'
       );
     });
   });
