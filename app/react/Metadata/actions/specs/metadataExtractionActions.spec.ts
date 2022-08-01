@@ -1,5 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
+import api from 'app/Entities/EntitiesAPI';
 import { updateSelection, updateFormField } from '../metadataExtractionActions';
 
 describe('metadataExtractionActions', () => {
@@ -8,33 +9,40 @@ describe('metadataExtractionActions', () => {
       spyOn(formActions, 'change');
     });
 
-    it('should update the form fields with the selected value', () => {
-      updateFormField('value to put in form', 'fieldModel');
+    it('should update the form fields with the selected value', async () => {
+      await updateFormField('value to put in form', 'fieldModel');
       expect(formActions.change).toHaveBeenCalledWith('fieldModel', 'value to put in form');
     });
 
     it.each(['01/30/1999', '30/01/1999', '01-30-1999', '01 30 1999', '30 01 1999'])(
       'should format valid date inputs for Datepicker.js component',
-      dateStrings => {
+      async dateStrings => {
         const dateForDatepickerInUTC = 917654400;
-        updateFormField(dateStrings, 'fieldModel', 'date');
+        spyOn(api, 'coerceValue').and.returnValue(
+          Promise.resolve({ value: dateForDatepickerInUTC, success: true })
+        );
+        await updateFormField(dateStrings, 'fieldModel', 'date');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', dateForDatepickerInUTC);
       }
     );
 
-    it('should parse dates that are only years, and set it to 01/01/YEAR', () => {
+    it('should parse dates that are only years, and set it to 01/01/YEAR', async () => {
       const dateForDatepickerInUTC = 1609459200;
-      updateFormField('2021', 'fieldModel', 'date');
+      spyOn(api, 'coerceValue').and.returnValue(
+        Promise.resolve({ value: dateForDatepickerInUTC, success: true })
+      );
+
+      await updateFormField('2021', 'fieldModel', 'date');
       expect(formActions.change).toHaveBeenCalledWith('fieldModel', dateForDatepickerInUTC);
     });
 
     describe('numeric fields', () => {
-      it('should check that selections for numeric fields are actual numbers', () => {
-        updateFormField('12345', 'fieldModel', 'numeric');
+      it('should check that selections for numeric fields are actual numbers', async () => {
+        await updateFormField('12345', 'fieldModel', 'numeric');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', '12345');
       });
-      it('should set the numeric field to 0 if the value is not a number', () => {
-        updateFormField('une two three', 'fieldModel', 'numeric');
+      it('should set the numeric field to 0 if the value is not a number', async () => {
+        await updateFormField('une two three', 'fieldModel', 'numeric');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', '0');
       });
     });
