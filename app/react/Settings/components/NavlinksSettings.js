@@ -73,7 +73,7 @@ class NavlinksSettings extends Component {
                 ))}
               </ul>
               <div className="settings-footer content-mixed">
-                <div className="btn-cluster btn-cluster-grow">
+                <div className="btn-cluster">
                   <button
                     type="button"
                     className="btn btn-default"

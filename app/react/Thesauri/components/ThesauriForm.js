@@ -200,7 +200,7 @@ export class ThesauriForm extends Component {
               <div className="btn-cluster">
                 <BackButton to="/settings/dictionaries" className="btn-plain" />
               </div>
-              <div className="btn-cluster btn-cluster-grow">
+              <div className="btn-cluster">
                 <button type="button" className="btn btn-default" onClick={this.props.addGroup}>
                   <Icon icon="plus" />
                   <span className="btn-label">
