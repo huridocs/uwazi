@@ -13,7 +13,7 @@ const mongoSchema = new mongoose.Schema(
     mongoLanguage: { type: String, select: false },
     sharedId: { type: String, index: true },
     title: { type: String, required: true },
-    template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
+    template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates' },
     published: Boolean,
     generatedToc: Boolean,
     icon: new mongoose.Schema({
@@ -34,6 +34,7 @@ const mongoSchema = new mongoose.Schema(
 //mongodb types not updated yet for language_override?
 //@ts-ignore
 mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
+mongoSchema.index({ template: 1, language: 1, published: 1 });
 
 const Model = instanceModelWithPermissions<EntitySchema>('entities', mongoSchema);
 

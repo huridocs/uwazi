@@ -1,5 +1,3 @@
-/** @format */
-
 import Joi from 'joi';
 
 import middleware from '../validateRequest.js';
@@ -50,14 +48,17 @@ describe('validateRequest', () => {
   describe('using AJV schema', () => {
     it('should call next when body or query is valid', async () => {
       const schema = {
+        type: 'object',
         properties: {
           body: {
+            type: 'object',
             properties: {
               prop1: { type: 'string' },
               prop2: { type: 'number' },
             },
           },
           query: {
+            type: 'object',
             properties: {
               prop1: { type: 'string' },
               prop2: { type: 'number' },
@@ -78,8 +79,10 @@ describe('validateRequest', () => {
 
     it('should call next with the error', async () => {
       const schema = {
+        type: 'object',
         properties: {
           body: {
+            type: 'object',
             properties: {
               prop1: { type: 'string' },
               prop2: { type: 'number' },
@@ -93,8 +96,8 @@ describe('validateRequest', () => {
       const expected = expect.objectContaining({
         message: 'validation failed',
         errors: [
-          expect.objectContaining({ message: 'should be string' }),
-          expect.objectContaining({ message: 'should be number' }),
+          expect.objectContaining({ message: 'must be string' }),
+          expect.objectContaining({ message: 'must be number' }),
         ],
         code: 400,
       });

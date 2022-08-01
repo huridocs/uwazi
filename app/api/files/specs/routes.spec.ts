@@ -205,7 +205,7 @@ describe('files routes', () => {
         .delete('/api/files')
         .query({ _id: { test: 'test' } });
 
-      expect(response.body.errors[0].message).toBe('should be string');
+      expect(response.body.errors[0].message).toBe('must be string');
     });
 
     describe('api/files/tocReviewed', () => {

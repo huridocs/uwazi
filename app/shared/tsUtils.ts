@@ -1,5 +1,5 @@
 import util from 'util';
-import Ajv from 'ajv';
+import ValidationError from 'ajv/dist/runtime/validation_error';
 
 // Thanks to https://stackoverflow.com/questions/54738221/typescript-array-find-possibly-undefind
 export function ensure<T>(argument: T | undefined | null | any, message?: string): T {
@@ -15,8 +15,8 @@ export function wrapValidator(validator: any) {
     try {
       return validator(value);
     } catch (error) {
-      if (error as Ajv.ValidationError) {
-        const e = new Ajv.ValidationError(error.errors);
+      if (error as ValidationError) {
+        const e = new ValidationError(error.errors);
         e.message = util.inspect(error, false, null);
         e.stack = error.stack;
         throw e;

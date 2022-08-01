@@ -23,14 +23,14 @@ describe('Error', () => {
       const validationErrors = [
         {
           keyword: 'type',
-          dataPath: '.body.prop1',
+          instancePath: '.body.prop1',
           schemaPath: '#/properties/body/properties/prop1/type',
           params: [],
           message: 'should be string',
         },
         {
           keyword: 'type',
-          dataPath: '.body.prop2',
+          instancePath: '.body.prop2',
           schemaPath: '#/properties/body/properties/prop2/type',
           params: [],
           message: 'should be number',
